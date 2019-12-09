@@ -1,0 +1,46 @@
+{
+  "analysis": {
+    "pass_visits": 200,
+    "pass_visits_fast": 50,
+    "visits": 3500,
+    "visits_fast": 1500,
+    "nopass_visits": 10
+  },
+  "board": {
+    "size": 19,
+    "komi": 7.5
+  },
+  "ui": {
+    "size_min": 1,
+    "size_max": 15,
+    "stones": [ [0.05, 0.05, 0.05], [0.95, 0.95, 0.95] ],
+    "ghost_alpha": 0.5,
+    "eval_colors": [[0.537, 0.129, 0.42], [1, 0, 0], [1, 0.95, 0], [0.117, 0.588, 0]],
+    "undo_circle_col": [0.88,0.02,0.17,0.5],
+    "undo_alpha": 0.5,	
+    "eval_knots": [0, 0.5, 0.875, 1],
+    "eval_bounds": [1,12],
+    "board_margin": 1.5,
+    "starpoint_size": 0.1,
+    "stone_size": 0.475,
+    "board_color": [0.85, 0.68, 0.40],
+    "line_color": [0,0,0]
+  },
+  "engine": {
+    "command": "../lizzie/katago/katago.exe gtp -model models/b10.gz -config gtp_explore_score.cfg"
+  },
+  "trainer": {
+    "balance_play_target_score": 2,
+    "balance_play_randomize_eval": 0.95,
+    "balance_play_min_eval": 0.875,
+    "balance_play_min_visits": 20,
+    "undo_eval_threshold": 0.875,
+    "undo_outdated_eval_threshold": 0.8,
+    "undo_point_threshold": 1,
+    "num_undo_prompts": 1,
+    "show_ai_options": true
+  },
+  "debug": {
+    "level": 1
+  }
+}

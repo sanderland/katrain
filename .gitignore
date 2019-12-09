@@ -1,3 +1,11 @@
+# Mine
+KataGoData
+old
+models
+.idea
+gtp.log
+*.zip
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

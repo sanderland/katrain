@@ -1,0 +1,288 @@
+#:kivy 1.11.0
+
+
+
+
+<StyledButton@Button>:
+    text_color: 0.95,0.95,0.95,1
+    button_color: 0.157,0.455,0.753,1
+    button_color_down: (*[c/2 for c in self.button_color[:3]],1)
+    margin: (2,1)
+    bold: True
+    font_size: self.size[1] * 0.4
+    radius: int(self.size[1]/3)
+    # dont set these
+    disabled_mask: (0.5,0.5,0.5,1) if self.disabled else (1,1,1,1)
+    color: self.disabled_mask if self.disabled else self.text_color
+    background_color: 0,0,0,0
+    background_normal: ''
+    face_color: [c*m for c,m in zip(self.button_color if root.state=='normal' else self.button_color_down,self.disabled_mask)]
+    canvas.before:
+        Color:
+            rgba: root.face_color or [0,0,0,0]
+        RoundedRectangle:
+            size: self.size[0]-2*self.margin[0],self.size[1]-2*self.margin[1]
+            pos: (self.pos[0]+self.margin[0],self.pos[1]+self.margin[1])
+            radius: (root.radius or 0,)
+
+<DarkLabel@Label>:
+    color: (0.05,0.05,0.05,1)
+
+<LargeLabel@DarkLabel>:
+	bold: True
+
+<CheckBox>
+    color: (0.05,0.05,0.05,1)
+
+<CheckBoxHintLabel@ButtonBehavior+DarkLabel>:
+	halign: 'center'
+	valign: 'center'
+
+<CheckBoxHint>
+	orientation: 'vertical'
+	checkbox: checkbox
+	text: ''
+	default_active: False
+	CheckBoxHintLabel:
+		size_hint: 1,0.45
+		font_size: root.height * 0.2
+		text: root.text
+		on_press: if not checkbox.disabled: checkbox._do_press()
+	CheckBox:
+		size_hint: 1,0.55
+		id: checkbox
+		on_active: root.dispatch('on_active')
+		active: root.default_active
+
+<BWCheckBoxHint>
+    black: black
+    white: white
+	orientation: 'vertical'
+	text: ''
+	default_active: False
+	CheckBoxHintLabel:
+		size_hint: 1,0.2
+		text: root.text
+		font_size: self.height
+		on_press: if not white.disabled: white._do_press(); black._do_press()
+	CheckBox:
+		size_hint: 1,0.4
+		id: black
+		active: root.default_active
+		on_active: root.dispatch('on_active')
+	CheckBox:
+		size_hint: 1,0.4
+		id: white
+		active: root.default_active
+		on_active: root.dispatch('on_active')
+
+
+<CensorableLabel>
+	orientation: 'horizontal'
+	text: ''
+	label: ''
+	CheckBoxHintLabel:
+		size_hint: 0.6,1
+		text: root.label
+		font_size: self.height  * 0.6
+		on_press: value.opacity =  1 if  value.opacity==0 else 0
+	DarkLabel:
+		size_hint: 0.4,1
+		text: root.text
+		font_size: self.height * 0.6
+		id: value
+		bold: True
+
+<Badukpan>:
+	size: self.parent.height, self.parent.height
+	engine: self.parent.controls
+	
+<EngineControls>
+	cols: 1
+	rows: 9
+	info: info
+	temperature: temperature
+	evaluation: evaluation
+	score: score
+	hints: hints
+	ownership: ownership
+    eval: eval
+	ai_balance: ai_balance
+	ai_auto: ai_auto
+	ai_fast: ai_fast
+	ai_lock: ai_lock
+	auto_undo: auto_undo
+	undo: undo
+	GridLayout:
+		cols: 7
+		rows: 1
+		size_hint: 1, 0.05
+        Label:
+            size_hint: 0.01, 1
+		BoxLayout:
+		    orientation: 'vertical'
+			size_hint: 0.1, 0.5
+			Label:
+			    size_hint: 1, 0.2
+			DarkLabel:
+			    pos: self.parent.pos[0] + self.width * 0.1, self.parent.pos[1]
+			    size_hint: 1, 0.4
+			    text: 'B'
+			    color: 0.95,0.95,0.95,1
+				font_size: min(self.height,self.width) * 0.6
+                halign: 'center'
+                valign: 'center'
+                bold: True
+                canvas.before:
+                    Color:
+                        rgba: 0.05,0.05,0.05,1
+                    Ellipse:
+                        pos: self.pos[0] + self.width/2 - min(self.height,self.width) * 0.48, self.pos[1]  + self.height/2 - min(self.height,self.width) * 0.48
+                        size: min(self.height,self.width) * 0.96, min(self.height,self.width) * 0.96
+			DarkLabel:
+			    size_hint: 1, 0.4
+			    text: 'W'
+                halign: 'center'
+                valign: 'center'
+				font_size: min(self.height,self.width) * 0.6
+                bold: True
+                canvas.after:
+                    Color:
+                        rgba: 0.05,0.05,0.05,1
+                    Line:
+                        circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, min(self.height,self.width)*0.45
+                        width: 1.1
+		BWCheckBoxHint:
+			size_hint: 0.2, 0.5
+			id: eval
+			text: 'eval'
+			default_active: True
+			on_active: root.parent.board.redraw()
+		BWCheckBoxHint:
+			size_hint: 0.2, 0.5
+			id: hints
+			text: 'hints'
+			on_active: root.parent.board.redraw()
+		BWCheckBoxHint:
+			size_hint: 0.2, 0.5
+			id: auto_undo
+			text: 'undo'
+			on_active: root.parent.board.redraw()
+		CheckBoxHint:
+			size_hint: 0.2, 0.5
+			text: 'lock\nai'
+			id: ai_lock
+			on_active: self.checkbox.disabled = hints.black.disabled = hints.white.disabled = ai_move.disabled = auto_undo.black.disabled = auto_undo.white.disabled = ai_auto.checkbox.disabled = True
+		CheckBoxHint:
+			size_hint: 0.2, 0.5
+			id: ownership
+			text: 'show\nowner'
+			on_active: root.parent.board.redraw()
+	GridLayout:
+		cols: 4
+		rows: 1
+		size_hint: 1, 0.05
+		StyledButton:
+		    id: ai_move
+			size_hint: 0.5, 0.5
+			text: 'AI Move'
+			on_press: root.action("aimove")
+		CheckBoxHint:
+			size_hint: 0.166, 0.5
+			text: 'auto\nmove'
+			id: ai_auto
+			default_active: False
+		CheckBoxHint:
+			size_hint: 0.166, 0.5
+			text: 'balance\nscore'
+			id: ai_balance
+			default_active: True
+		CheckBoxHint:
+			size_hint: 0.166, 0.5
+			text: 'fast'
+			id: ai_fast
+			default_active: True
+	GridLayout:
+		cols: 2
+		rows: 1
+		size_hint: 1, 0.05
+		StyledButton:
+		    id: undo
+			text: 'Undo'
+			on_press: root.action("undo")
+			default_active: True
+		StyledButton:
+			text: 'Pass'
+			on_press: root.action("play",(None,None))
+    CensorableLabel:
+        id: temperature
+        size_hint: 1, 0.025
+        label: 'Temperature'
+        text: '...'
+    CensorableLabel:
+        id: evaluation
+        size_hint: 1, 0.025
+        label: 'Evaluation'
+        text: '...'
+    CensorableLabel:
+        id: score
+        size_hint: 1, 0.025
+        label: 'Score'
+        text: '...'
+	TextInput:
+		id: info
+		size_hint: 1, 0.2
+		valign: 'middle'
+	BoxLayout:
+		orientation: 'horizontal'
+		size_hint: 1, 0.05
+		StyledButton:
+			text: 'Save'
+			size_hint: 0.37, 1
+			on_press: info.text = root.sgf()
+		StyledButton:
+			text: 'Analyze'
+			size_hint: 0.49, 1
+			margin: (0,1)
+			on_press: root.action("analyze-sgf",info.text)
+	GridLayout:
+		size_hint: 1, 0.05
+		cols: 4
+		rows: 1
+		LargeLabel:
+			size_hint: 0.3, 0.25
+			text: ' New\nGame'
+			font_size: 0.3*self.size[1]
+		StyledButton:
+			size_hint: 0.233, 1
+			text: '9'
+			margin: (1,1)
+			on_press: root.restart(9)
+		StyledButton:
+			size_hint: 0.233, 1
+			text: '13'
+			margin: (0,1)
+			on_press: root.restart(13)
+		StyledButton:
+			size_hint: 0.233, 1
+			text: '19'
+			margin: (1,1)
+			on_press: root.restart(19)
+
+<KaTrainGui>:
+	board: board
+	controls: controls
+    canvas.before:
+        Color:
+            rgba: 0.95, 0.95, 0.95, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size	
+    Badukpan:
+		id: board
+        pos_hint: {"x":0, "top":0}
+    EngineControls:
+		id: controls
+        pos_hint: {"right":1, "top":1}
+		size_hint: (self.parent.width - self.parent.height)/self.parent.width, 1
+
