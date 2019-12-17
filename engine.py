@@ -238,15 +238,25 @@ class KataEngine:
                     break
                 if mode == 0:
                     passmove = Move(player=self.current_player(), gtpcoords="pass")
-                    if len(self.moves) > 2 and len({self.moves[-2].coords, self.moves[-1].coords} - {(x, y) for _, x, y in self.stones}) == 0:  # nothing got captured
-                        undo_mode = 0
+                    if len(self.moves) >= 2:
+                        undo_mode = 0  # reverse order mode
                         self.raw_gtpplaycommand("undo")
                         self.raw_gtpplaycommand("undo")
                         self.raw_gtpplaycommand(passmove)
-                        self.raw_gtpplaycommand(self.moves[-1])
-                        self.raw_gtpplaycommand(self.moves[-2])
+                        if not self.raw_gtpplaycommand(self.moves[-1]):  # could not change order -> restore state and fall back
+                            undo_mode = 1
+                            self.raw_gtpplaycommand("undo")  # pass
+                            self.raw_gtpplaycommand(self.moves[-2])
+                            self.raw_gtpplaycommand(self.moves[-1])
+                        elif not self.raw_gtpplaycommand(self.moves[-2]):  # could not change order -> restore state and fall back
+                            undo_mode = 1
+                            self.raw_gtpplaycommand("undo")  # moves[-1]
+                            self.raw_gtpplaycommand("undo")  # pass
+                            self.raw_gtpplaycommand(self.moves[-2])
+                            self.raw_gtpplaycommand(self.moves[-1])
                     else:
-                        undo_mode = 1
+                        undo_mode = 1 # play corner for pass mode
+                    if undo_mode == 1:
                         for coords in [(0, 0), (0, self.boardsize - 1), (self.boardsize - 1, 0), (self.boardsize - 1, self.boardsize - 1), (None, None)]:
                             if self.raw_gtpplaycommand(Move(player=self.current_player(), coords=coords)):
                                 break
