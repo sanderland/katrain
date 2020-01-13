@@ -5,6 +5,10 @@ models
 .idea
 gtp.log
 *.zip
+log.txt
+*.sgf
+# too big
+KataGo/b20.gz
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

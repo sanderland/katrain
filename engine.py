@@ -80,6 +80,7 @@ class KataEngine:
 
     def update_stones(self):
         board_output = self.gtpcommand("showboard")
+        info = self.gtpread() # new kata
         board = [re.sub(r"[^\.ox]", "", l.lower()) for l in board_output[2:]]
         self.stones = []
         for y, line in enumerate(board[::-1]):
