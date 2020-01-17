@@ -1,15 +1,67 @@
 from kivy.storage.jsonstore import JsonStore
 
 
+class MoveTree:
+    _move_id_counter = 0 # used to make a map to all moves across all games
+
+    def __init__(self, board_size):
+        self.root = Move(None, (None, None))
+        self.current = self.root
+        self.board_size = board_size
+        self.all_moves = {}
+
+    def play(self, move):
+        move = self.current.play(move)
+        if not move.id:
+            move.id = MoveTree._move_id_counter
+            MoveTree._move_id_counter += 1
+        self.all_moves[move.id] = move
+
+    def undo(self):
+        if self.current != self.root:
+            self.current = self.current.parent
+
+    def store_analysis(self,json):
+        id = int(json["id"])
+        move = self.all_moves.get(id)
+        if move: # else this should be old
+            move.set
+        else:
+            print("WARNING: ORPHANED ANALYSIS FOUND - RECENT NEW GAME?")
+
+    def moves(self):  # flat list of moves to current
+        moves = []
+        p = self.current
+        while p != self.root:
+            moves.append(p)
+            p = p.parent
+        return moves[::-1]
+
+    def __iter__(self):
+        return self.moves.__iter__()
+
+    def __getitem__(self, ix):
+        if ix == -1:
+            return self.current
+        else:
+            return self.moves[ix]
+
+    def sgf(self):
+        return "SGF[]"
+
+
 class Move:
     GTP_COORD = "ABCDEFGHJKLMNOPQRSTUVWYXYZ"
     PLAYERS = "BW"
     SGF_COORD = [chr(i) for i in range(97, 123)]
 
     def __init__(self, player, coords=None, gtpcoords=None, sgfcoords=None, robot=False):
+        self.id = None
         self.player = player
-        self.robot = robot
         self.coords = coords or (gtpcoords and self.gtp2ix(gtpcoords)) or self.sgf2ix(sgfcoords)
+        self.children = []
+        self.parent = None
+        self.robot = robot
         self.analysis = None
         self.outdated_evaluation = None
         self.pass_analysis = None
@@ -17,11 +69,21 @@ class Move:
         self.ownership = None
         self.points_lost = 0
         self.previous_temperature = None
-        self.undos = []
         self.comment = ""
 
     def __repr__(self):
         return f"{Move.PLAYERS[self.player]}{self.gtp()}"
+
+    def __eq__(self, other):
+        return self.coords == other.coords and self.player == other.player
+
+    def play(self, move: MoveTree):
+        try:
+            return self.children[self.children.index(move)]
+        except ValueError:
+            move.parent = self
+            self.children.append(move)
+            return move
 
     def temperature(self):
         if self.analysis:
@@ -31,7 +93,10 @@ class Move:
         else:
             return 0
 
-    def evaluate(self, previous_move):
+    def evaluate(self,analysis):
+        self.analysis = analysis
+        previous_move = self.parent
+        # TODO: update children?
         best_score = float(previous_move.analysis[0]["scoreMean"])
         worst_score = -float(previous_move.pass_analysis[0]["scoreMean"])
         last_move_score = -float(self.analysis[0]["scoreMean"])
@@ -47,7 +112,9 @@ class Move:
         if self.evaluation:
             self.comment = f"Evaluation: {100*self.evaluation:.1f}%{' (AI Move)' if self.robot else ''}\n"
             if prev_analysis_current_move:
-                self.outdated_evaluation = (prev_analysis_current_move[0]["scoreMean"] - worst_score) / (best_score - worst_score)
+                self.outdated_evaluation = (prev_analysis_current_move[0]["scoreMean"] - worst_score) / (
+                    best_score - worst_score
+                )
                 self.comment += f"(Was considered last move as: {100 * self.outdated_evaluation:.1f}%)\n"
         else:
             self.comment = "Temperature too low for evaluation\n"

@@ -86,7 +86,7 @@ class EngineControls(GridLayout):
             undo_comment = "".join(f"\nUndo: {u.gtp()} was {100*u.evaluation:.1f}%" for u in pm.undos if u.evaluation)
             undo_cr = "".join(f"MA[{u.sgfcoords(self.boardsize)}]" for u in pm.undos if u.coords[0])
             if pm.analysis and pm.analysis[0]["move"] != "pass":
-                best_sq = f"SQ[{Move(gtpcoords=pm.analysis[0]['move'],player=0).sgfcoords(self.boardsize)}]"
+                best_sq = f"SQ[{Move(gtpcoords=pm.analysis[0]['move'], player=0).sgfcoords(self.boardsize)}]"
             else:
                 best_sq = ""
             return m.sgf(self.boardsize) + f"C[{m.comment}{undo_comment}]{undo_cr}{best_sq}"

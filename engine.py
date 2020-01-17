@@ -3,9 +3,10 @@ import random
 import shlex
 import subprocess
 import threading
+import json
 import time
 from queue import Queue
-from move import Move
+from move import Move, MoveTree
 
 
 class KataEngine:
@@ -23,12 +24,12 @@ class KataEngine:
         self.ready = False
         self.stones = []
         self.message_queue = None
-        self.moves = [Move(player=1, coords=(None, None))]  # sentinel
+        self.move_tree = MoveTree()
 
         self.kata = None
 
     def current_player(self):
-        return 1 - self.moves[-1].player
+        return self.move_tree.current_player
 
     def restart(self, boardsize):
         self.ready = False
@@ -94,11 +95,9 @@ class KataEngine:
         self.analysis_semaphore.acquire()
         if self.raw_gtpplaycommand(move):  # update moves array if engine accepts move
             if move == "undo":
-                self.moves[-2].undos.append(self.moves[-1])
-                self.moves.pop()
+                self.move_tree.undo()
             else:
-                self.moves[-1].undos = [m for m in self.moves[-1].undos if m.coords != move.coords]
-                self.moves.append(move)
+                self.move_tree.play(move)
         self.update_stones()
         # start analyzing new board position
         self.stop_analyzing = False
@@ -136,7 +135,7 @@ class KataEngine:
         self.controls.undo.disabled = False
 
     def _evaluate_move(self, show=True):
-        while not self.moves[-1].analysis:  # ensure analysis has started, otherwise race condition on multi ai move
+        while not self.move_tree[-1].analysis:  # ensure analysis has started, otherwise race condition on multi ai move
             time.sleep(0.01)
         self.analysis_semaphore.acquire() and self.analysis_semaphore.release()  # wait for analysis to finish
         if self.moves[-1].evaluation and show:
@@ -207,7 +206,7 @@ class KataEngine:
         self.stop_analyzing = True
         self.analysis_semaphore.acquire()
         self.stones = []
-        self.moves = [Move(player=1, coords=(None, None))]  # sentinel
+        self.move_tree = MoveTree()
         self.controls.redraw(include_board=True)
         self.gtpcommand(f"boardsize {boardsize}")
         self.gtpcommand(f"komi {komi or self.komi}")

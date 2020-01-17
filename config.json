@@ -27,7 +27,7 @@
     "line_color": [0,0,0]
   },
   "engine": {
-    "command": "KataGo/katago gtp -model KataGo/b10.gz -config KataGo/japanese_explore_score.cfg"
+    "command": "KataGo/katago analysis -model KataGo/b10.gz -config KataGo/japanese_explore_score.cfg"
   },
   "trainer": {
     "balance_play_target_score": 2,
