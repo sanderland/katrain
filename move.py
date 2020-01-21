@@ -1,53 +1,3 @@
-from kivy.storage.jsonstore import JsonStore
-
-
-class MoveTree:
-    _move_id_counter = 0 # used to make a map to all moves across all games
-
-    def __init__(self, board_size):
-        self.root = Move(None, (None, None))
-        self.current = self.root
-        self.board_size = board_size
-        self.all_moves = {}
-
-    def play(self, move):
-        move = self.current.play(move)
-        if not move.id:
-            move.id = MoveTree._move_id_counter
-            MoveTree._move_id_counter += 1
-        self.all_moves[move.id] = move
-
-    def undo(self):
-        if self.current != self.root:
-            self.current = self.current.parent
-
-    def store_analysis(self,json):
-        id = int(json["id"])
-        move = self.all_moves.get(id)
-        if move: # else this should be old
-            move.set
-        else:
-            print("WARNING: ORPHANED ANALYSIS FOUND - RECENT NEW GAME?")
-
-    def moves(self):  # flat list of moves to current
-        moves = []
-        p = self.current
-        while p != self.root:
-            moves.append(p)
-            p = p.parent
-        return moves[::-1]
-
-    def __iter__(self):
-        return self.moves.__iter__()
-
-    def __getitem__(self, ix):
-        if ix == -1:
-            return self.current
-        else:
-            return self.moves[ix]
-
-    def sgf(self):
-        return "SGF[]"
 
 
 class Move:
@@ -77,7 +27,7 @@ class Move:
     def __eq__(self, other):
         return self.coords == other.coords and self.player == other.player
 
-    def play(self, move: MoveTree):
+    def play(self, move):
         try:
             return self.children[self.children.index(move)]
         except ValueError:
