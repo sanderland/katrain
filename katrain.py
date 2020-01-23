@@ -37,7 +37,7 @@ class BadukPanWidget(Widget):
         xd, xp = self._find_closest(touch.x)
         yd, yp = self._find_closest(touch.y)
         prevghost = self.ghost_stone
-        if self.engine.ready and max(yd, xd) < self.grid_size / 2 and (xp, yp) not in [(x, y) for _, x, y in self.engine.stones]:
+        if self.engine.ready and max(yd, xd) < self.grid_size / 2 and (xp, yp) not in [m.coords for m in self.engine.stones]:
             self.ghost_stone = (xp, yp)
         else:
             self.ghost_stone = None

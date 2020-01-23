@@ -32,7 +32,7 @@ class EngineControls(GridLayout):
 
     @property
     def stones(self):
-        return self.engine.stones
+        return self.engine.board.stones
 
     @property
     def moves(self):

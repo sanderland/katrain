@@ -71,11 +71,11 @@ class KataEngine:
     def play(self, move):
         try:
             mr = self.board.play(move)
-            move_id = mr.id
         except IllegalMoveException as e:
             print(str(e))
             self.controls.info.text = f"Illegal move: {str(e)}"
             return
+        print("PLAYED",move,self.board.stones)
         self._request_analysis(mr)
 
     def _request_analysis(self, move):
@@ -116,8 +116,9 @@ class KataEngine:
         if self.controls.auto_undo.active(1 - self.current_player):
             undid = self._auto_undo(move)
         if self.controls.ai_auto.active and not undid:
-            self._do_aimove(True)
+            self._do_aimove(move,True)
         self.controls.undo.disabled = False
+        self.controls.redraw()
 
     def _evaluate_move(self, move, show=True):
         while not move.analysis:
