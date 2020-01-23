@@ -19,6 +19,10 @@ class EngineControls(GridLayout):
         self.engine.action(message, *args)
 
     @property
+    def board(self):
+        return self.engine.board
+
+    @property
     def ready(self):
         return self.engine.ready
 
@@ -32,11 +36,11 @@ class EngineControls(GridLayout):
 
     @property
     def moves(self):
-        return self.engine.moves
+        return self.engine.board.moves
 
     @property
     def current_player(self):
-        return self.engine.current_player()
+        return self.engine.current_player
 
     def redraw(self, include_board=False):
         if include_board:

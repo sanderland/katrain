@@ -17,9 +17,9 @@ COLORS = Config.get("ui")["stones"]
 GHOST_ALPHA = Config.get("ui")["ghost_alpha"]
 
 
-class Badukpan(Widget):
+class BadukPanWidget(Widget):
     def __init__(self, **kwargs):
-        super(Badukpan, self).__init__(**kwargs)
+        super(BadukPanWidget, self).__init__(**kwargs)
         self.ghost_stone = []
         self.gridpos = []
         self.grid_size = 0
@@ -113,20 +113,21 @@ class Badukpan(Widget):
         self.canvas.clear()
         with self.canvas:
             # stones
-            last_move = self.engine.moves[-1].coords
-            eval_map = {m.coords: (m.evaluation, m.previous_temperature) for m in self.engine.moves}
+            moves = self.engine.board.moves
+            last_move = self.engine.board.current_move
+            eval_map = {m.coords: (m.evaluation, m.previous_temperature) for m in moves}
             eval_on = [self.engine.eval.active(0), self.engine.eval.active(1)]
             has_stone = {}
-            for i, (ci, x, y) in enumerate(self.engine.stones):
-                has_stone[(x, y)] = ci
-                eval, evalsize = eval_map.get((x, y), (None, None))
-                evalcol = self._eval_spectrum(eval) if eval_on[ci] and eval else None
-                inner = COLORS[1 - ci] if ((x, y) == last_move) else None
-                self.draw_stone(x, y, COLORS[ci], inner, evalcol, evalsize)
+            for i, m in enumerate(self.engine.stones):
+                has_stone[m.coords] = m.player
+                eval, evalsize = eval_map.get(m.coords, (None, None))
+                evalcol = self._eval_spectrum(eval) if eval_on[m.player] and eval else None
+                inner = COLORS[1 - m.player] if (m == last_move) else None
+                self.draw_stone(m.coords[0], m.coords[1], COLORS[m.player], inner, evalcol, evalsize)
 
             # ownership
-            ownership = self.engine.moves[-1].ownership
-            if self.engine.ownership.active and ownership:
+            if self.engine.ownership.active and last_move.ownership:
+                ownership = last_move.ownership
                 rsz = self.grid_size * 0.2
                 ix = 0
                 cp = self.engine.current_player
@@ -141,15 +142,15 @@ class Badukpan(Widget):
             # undos
             undo_coords = set()
             alpha = Config.get("ui")["undo_alpha"]
-            for m in self.engine.moves[-1].undos:
+            for m in self.engine.board.current_move.children:
                 if m.evaluation and m.coords[0] is not None:
                     undo_coords.add(m.coords)
                     evalcol = (*self._eval_spectrum(m.evaluation), alpha)
                     self.draw_stone(m.coords[0], m.coords[1], (*COLORS[m.player][:3], alpha), Config.get("ui")["undo_circle_col"], evalcol, self.EVAL_BOUNDS[1])
 
             # hints
-            if self.engine.moves[-1].analysis and self.engine.hints.active(self.engine.current_player):
-                for d in self.engine.moves[-1].analysis:
+            if last_move.analysis and self.engine.hints.active(self.engine.current_player):
+                for d in last_move.analysis:
                     move = Move(gtpcoords=d["move"], player=0)
                     c = [*self._eval_spectrum(d["evaluation"]), 0.5]
                     if move.coords[0] is not None and move.coords not in undo_coords:
@@ -160,9 +161,9 @@ class Badukpan(Widget):
                 self.draw_stone(*self.ghost_stone, (*COLORS[self.engine.current_player], GHOST_ALPHA))
 
             # pass circle
-            passed = len(self.engine.moves) > 1 and self.engine.moves[-1].gtp() == "pass"
+            passed = len(moves) > 1 and last_move.is_pass
             if passed:
-                if len(self.engine.moves) > 2 and self.engine.moves[-2].gtp() == "pass":
+                if len(moves) > 2 and moves[-2].is_pass:
                     text = "game\nend"
                 else:
                     text = "pass"
