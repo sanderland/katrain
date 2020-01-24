@@ -1,6 +1,6 @@
-
 class IllegalMoveException(Exception):
     pass
+
 
 class Move:
     GTP_COORD = "ABCDEFGHJKLMNOPQRSTUVWYXYZ"
@@ -16,12 +16,7 @@ class Move:
         self.robot = robot
         self.analysis = None
         self.pass_analysis = None
-        self.outdated_evaluation = None
-        self.evaluation = None
         self.ownership = None
-        self.points_lost = 0
-        self.previous_temperature = None
-        self.comment = ""
 
     def __repr__(self):
         return f"{Move.PLAYERS[self.player]}{self.gtp()}"
@@ -48,46 +43,82 @@ class Move:
         else:
             return 0
 
-    def set_analysis(self,analysis_blob,is_pass):
+    ### various analysis functions
+    def set_analysis(self, analysis_blob, is_pass):
         if is_pass:
-            self.pass_analysis = analysis_blob['moveInfos']
+            self.pass_analysis = analysis_blob["moveInfos"]
         else:
-            self.analysis = analysis_blob['moveInfos']
-            self.ownership = analysis_blob['ownership']
-        if self.analysis and self.pass_analysis:
-            if self.parent.analysis:
-                self.evaluate()
-            for cm in self.children:
-                cm.evaluate()
+            self.analysis = analysis_blob["moveInfos"]
+            self.ownership = analysis_blob["ownership"]
 
-    def evaluate(self):
-        previous_move = self.parent
-        best_score = float(previous_move.analysis[0]["scoreLead"])
-        worst_score = -float(previous_move.pass_analysis[0]["scoreLead"])
-        last_move_score = -float(self.analysis[0]["scoreLead"])
-        self.previous_temperature = best_score - worst_score
-        self.points_lost = best_score - last_move_score
-        prev_analysis_current_move = [d for d in previous_move.analysis if d["move"] == self.gtp()]
+    @property
+    def analysis_ready(self):
+        return self.analysis and self.pass_analysis
 
-        if abs(self.previous_temperature) > 0.5:
-            self.evaluation = (last_move_score - worst_score) / (best_score - worst_score)
-            self.move_options = [previous_move.analysis[0]["scoreLead"]]
+    @property
+    def comment(self):
+        text = "(AI Move)\n" if self.robot else ""
+        if self.analysis_ready:
+            score, _, temperature = self.temperature_stats
+            text += f"Current score: {self.bw_player()}{score:+.1f}\n"
+            text += f"Current temperature: {temperature:+.1f}\n"
+            if self.parent and self.parent.analysis_ready:
+                prev_best_score, prev_worst_score, prev_temperature = self.parent.temperature_stats
+                text += f"Score of top move was {prev_best_score:.1f} @ {self.parent.analysis[0]['move']}\n"
+                text += f"Pass score was {prev_worst_score:.1f}\n"
+                if prev_temperature < 0.5:
+                    text += f"Previous temperature ({prev_temperature}) too low for evaluation\n"
+                else:
+                    if eval:
+                        text += f"Evaluation: {100*self.evaluation:.1f}%\n"
+                        text += f"Estimate point loss: {prev_best_score - score:.1f}\n"
+                    if self.outdated_evaluation:
+                        text += f"(Was considered last move as: {100 * self.outdated_evaluation:.1f}%)\n"
         else:
-            self.evaluation = None
-        if self.evaluation:
-            self.comment = f"Evaluation: {100*self.evaluation:.1f}%{' (AI Move)' if self.robot else ''}\n"
-            if prev_analysis_current_move:
-                self.outdated_evaluation = (prev_analysis_current_move[0]["scoreLead"] - worst_score) / (
-                    best_score - worst_score
-                )
-                self.comment += f"(Was considered last move as: {100 * self.outdated_evaluation:.1f}%)\n"
-        else:
-            self.comment = "Temperature too low for evaluation\n"
-        self.comment += f"Estimate point loss: {self.points_lost:.1f}\n"
-        self.comment += f"Last move score was {last_move_score:.1f}\n"
-        self.comment += f"Score of top move was {previous_move.analysis[0]['scoreLead']:.1f} @ {previous_move.analysis[0]['move']}\n"
-        self.comment += f"Pass score was {worst_score:.1f}\n"
+            text += "(No analysis available yet)"
+        return text
 
+    # returns evaluation, temperature scale or None, None when not ready
+    def evaluation_info(self):
+        if self.parent and self.parent.analysis_ready and self.analysis_ready:
+            return (self.evaluation,self.parent.temperature_stats[2])
+        else:
+            return (None,None)
+
+    # needing own analysis ready
+    @property
+    def temperature_stats(self):
+        best = -float(self.analysis[0]["scoreLead"])
+        worst= float(self.pass_analysis[0]["scoreLead"])
+        return best, worst, best - worst
+
+    @property
+    def score(self):
+        return self.temperature_stats[0]
+
+    # need parent analysis ready
+    @property
+    def evaluation(self):
+        best, worst, temp = self.parent.temperature_stats
+        return (self.score - worst) / temp
+
+    @property
+    def outdated_evaluation(self):
+        prev_analysis_current_move = [d for d in self.parent.analysis if d["move"] == self.gtp()]
+        if prev_analysis_current_move:
+            best_score, worst_score, prev_temp = self.parent.temperature_stats
+            return (prev_analysis_current_move[0]["scoreLead"] - worst_score) / prev_temp
+
+    @property
+    def ai_moves(self):
+        if not self.analysis_ready:
+            return []
+        _, worst_score, temperature = self.temperature_stats
+        for d in self.analysis:
+            d["evaluation"] = (d["scoreLead"] - worst_score) / temperature
+        return self.analysis
+
+    ### various output and conversion functions
     @property
     def is_pass(self):
         return self.coords[0] is None
@@ -111,11 +142,14 @@ class Move:
     def sgfcoords(self, board_size):
         return f"{Move.SGF_COORD[self.coords[0]]}{Move.SGF_COORD[board_size - self.coords[1] - 1]}"
 
+    def bw_player(self, next_move=False):
+        return Move.PLAYERS[1 - self.player if next_move else self.player]
+
     def sgf(self, board_size):
         if self.is_pass:
-            return f"{Move.PLAYERS[self.player]}[]"
+            return f"{self.bw_player()}[]"
         else:
-            return f"{Move.PLAYERS[self.player]}[{self.sgfcoords(board_size)}]"
+            return f"{self.bw_player()}[{self.sgfcoords(board_size)}]"
 
 
 class Board:
@@ -188,7 +222,7 @@ class Board:
         if -1 not in neighbours(self.chains[this_chain]):
             raise IllegalMoveException("Suicide")
 
-    # Play a Move from the current position, returns false if invalid.
+    # Play a Move from the current position, raise IllegalMoveException if invalid.
     def play(self, move, ignore_ko=False):
         try:
             self._validate_move_and_update_chains(move, ignore_ko)
@@ -222,8 +256,6 @@ class Board:
     def current_player(self):
         return 1 - self.current_move.player
 
-    # --analysis
-
     def store_analysis(self, json):
         if json["id"].startswith("PASS_"):
             id = int(json["id"].lstrip("PASS_"))
@@ -233,23 +265,23 @@ class Board:
             is_pass = False
         move = self.all_moves.get(id)
         if move:  # else this should be old
-            move.set_analysis(json,is_pass)
+            move.set_analysis(json, is_pass)
         else:
             print("WARNING: ORPHANED ANALYSIS FOUND - RECENT NEW GAME?")
-
-    # -- board visualization etc
-    # ko: single capture and
-    # other not allowed: suicide
 
     @property
     def stones(self):
         return sum(self.chains, [])
+
+    @property
+    def prisoner_count(self):
+        return [sum([m.player==player for m in self.prisoners]) for player in [0,1]]
 
     def sgf(self):
         return "SGF[]"
 
     def __str__(self):
         return (
-            "\n".join("".join("BW"[self.chains[c][0].player] if c >= 0 else "-" for c in l) for l in self.board)
-            + f"\ncaptures: {self.prisoners}"
+            "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in l) for l in self.board)
+            + f"\ncaptures: {self.prisoner_count}"
         )

@@ -1,7 +1,5 @@
-from kivy.storage.jsonstore import JsonStore
-from kivy.uix.gridlayout import GridLayout
-import json
 import copy
+import json
 import random
 import re
 import shlex
@@ -10,13 +8,15 @@ import threading
 import time
 from queue import Queue
 
-from board import Board, Move, IllegalMoveException
+from kivy.storage.jsonstore import JsonStore
+from kivy.uix.gridlayout import GridLayout
 
-Config = JsonStore("Config.json")
+from board import Board, IllegalMoveException, Move
+
+Config = JsonStore("config.json")
 
 
 class EngineControls(GridLayout):
-
     def __init__(self, **kwargs):
         super(EngineControls, self).__init__(**kwargs)
         self.command = shlex.split(Config.get("engine")["command"])
@@ -34,20 +34,8 @@ class EngineControls(GridLayout):
         self.ready = False
         self.message_queue = None
         self.board = Board(self.board_size)
-        self.outstanding_analysis_queries = [] # allows faster interaction while kata is starting
+        self.outstanding_analysis_queries = []  # allows faster interaction while kata is starting
         self.kata = None
-
-    @property
-    def current_player(self):
-        return self.board.current_player
-
-    @property
-    def stones(self):
-        return self.board.stones
-
-    @property
-    def moves(self):
-        return self.board.moves
 
     def redraw(self, include_board=False):
         if include_board:
@@ -90,35 +78,39 @@ class EngineControls(GridLayout):
             print(str(e))
             self.info.text = f"Illegal move: {str(e)}"
             return
-        print("PLAYED",move,self.board.stones)
+        print("PLAYED", move, self.board.stones)
         self._request_analysis(mr)
+        return mr
 
     # engine action functions
     def _do_play(self, *args):
-        print("CURRENT PLAYER",self.current_player)
-        move = Move(player=self.current_player, coords=args[0])
+        print("CURRENT PLAYER", self.board.current_player)
+        move = Move(player=self.board.current_player, coords=args[0])
         self.play(move)
-
-        self.undo.disabled = True  # undo while waiting for this does weird things
-        undid = False
-        self.info.text = ""
-        if self.auto_undo.active(1 - self.current_player):
-            undid = self._auto_undo(move)
-        if self.ai_auto.active and not undid:
-            self._do_aimove(move,True)
-        self.undo.disabled = False
+        # mr.waiting_for_analysis
         self.redraw()
 
-    def _evaluate_move(self, move, show=True):
-        while not move.analysis:
-            time.sleep(0.01)  # wait for analysis
-        if self.board.current_move.evaluation and show:
-            self.info.text = f"Your move {self.moves[-1].gtp()} was {100 * self.moves[-1].evaluation:.1f}% efficient and lost {self.moves[-1].points_lost:.1f} point(s).\n"
+    def update_evaluation(self):
+        self.info.text = self.board.current_move.comment
+        #self.temperature.text = f"{self.board.current_move.temperature_stats[2]:.1f}"
+        #self.score.text = f"{Move.PLAYERS[self.board.current_player]}{self.board.current_move.score}".replace("-", "\u2013")  # en dash
+        #self.evaluation.text = f"{100 * self.board.current_move.evaluation:.1f}%"
+
+        #f"Your move {self.board.current_move.gtp()} was {100 * self.board.current_move.evaluation:.1f}% efficient and lost {self.moves[-1].points_lost:.1f} point(s).\n"
+        # when to trigger auto undo?
+#      self.undo.disabled = True  # undo while waiting for this does weird things
+#      undid = False
+#       self.info.text = ""
+#        if self.auto_undo.active(1 - self.board.current_player):
+#            undid = self._auto_undo(move)
+#        if self.ai_auto.active and not undid:
+#            self._do_aimove(move, True)
+#        self.undo.disabled = False
+
 
     def _auto_undo(self, move):
         ts = self.train_settings
         self.info.text = "Evaluating..."
-        self._evaluate_move()
         if (
             move.evaluation
             and move.evaluation < ts["undo_eval_threshold"]
@@ -147,22 +139,21 @@ class EngineControls(GridLayout):
                     return True
                 else:
                     evaled_moves = sorted(
-                        [m for m in self.board.current_move.parent.children if m.evaluation], key=lambda m: -m.evaluation
+                        [m for m in self.board.current_move.parent.children if m.evaluation],
+                        key=lambda m: -m.evaluation,
                     )
                     if evaled_moves and evaled_moves[0].coords != move.coords:
                         self.board.undo()
                         self.board.play(evaled_moves[0])
                     summary = "\n".join(f"{m.gtp()}: {100*m.evaluation:.1f}% effective" for m in evaled_moves)
-                    self.info.text += (
-                        f"\nYour moves:\n{summary}.\nLet's continue with {evaled_moves[0].gtp()}.\n"
-                    )
+                    self.info.text += f"\nYour moves:\n{summary}.\nLet's continue with {evaled_moves[0].gtp()}.\n"
         return False
 
     def _do_aimove(self, move, auto=False):
         ts = self.train_settings
         if not auto:
             self.info.text = "Thinking..."
-        self._evaluate_move(auto and not self.auto_undo.active(1 - self.current_player))
+        self._evaluate_move(auto and not self.auto_undo.active(1 - self.board.current_player))
         # select move
         pos_moves = [
             (d["move"], float(d["scoreMean"]), d["evaluation"])
@@ -185,7 +176,7 @@ class EngineControls(GridLayout):
                 and score > ts["balance_play_target_score"]
             ]
             selmove = random.choice(selmoves)  # some kind of when further ahead play worse?
-        self.board.play(Move(player=self.current_player, gtpcoords=selmove, robot=True))
+        self.board.play(Move(player=self.board.current_player, gtpcoords=selmove, robot=True))
 
     def _do_undo(self):
         if self.ai_auto.active and self.board.current_move.robot:
@@ -195,9 +186,7 @@ class EngineControls(GridLayout):
             and self.auto_undo.active(self.board.current_move.parent.player)
             and len(self.board.current_move.parent.player.children) > self.train_settings["num_undo_prompts"]
         ):
-            self.info.text = (
-                f"Can't undo more than {self.train_settings['num_undo_prompts']} time(s) when locked"
-            )
+            self.info.text = f"Can't undo more than {self.train_settings['num_undo_prompts']} time(s) when locked"
             return
         self.board.undo()
 
@@ -222,18 +211,18 @@ class EngineControls(GridLayout):
     def _analysis_read_thread(self):
         while True:
             while self.outstanding_analysis_queries:
-                print("processing outstanding query")
                 self._send_analysis_query(self.outstanding_analysis_queries.pop(0))
-            print('reading kata line')
             line = self.kata.stdout.readline()
-            print("KATA LINE", line)
+            print("KATA ANALYSIS RECEIVED:", line)
             self.board.store_analysis(json.loads(line))
+            self.update_evaluation()
+            self.redraw(include_board=False)
 
-    def _send_analysis_query(self,query):
+    def _send_analysis_query(self, query):
         if self.kata:
             self.kata.stdin.write((json.dumps(query) + "\n").encode())
             self.kata.stdin.flush()
-        else: # early on / root / etc
+        else:  # early on / root / etc
             self.outstanding_analysis_queries.append(copy.copy(query))
 
     def _request_analysis(self, move):
@@ -242,7 +231,7 @@ class EngineControls(GridLayout):
         fast = self.ai_fast.active
         query = {
             "id": str(move_id),
-            "moves": [str(m) for m in moves],
+            "moves": [[m.bw_player(), m.gtp()] for m in moves],
             "rules": "japanese",
             "komi": self.komi,
             "boardXSize": self.board_size,
@@ -251,51 +240,49 @@ class EngineControls(GridLayout):
             "includeOwnership": True,
             "maxVisits": self.visits[fast][1],
         }
-        print('query',query)
+        print("query", query)
         self._send_analysis_query(query)
-        query.update({"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0], "includeOwnership": False})  # TODO: merge?
-        query["moves"] += ["pass"]
+        query.update(
+            {"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0], "includeOwnership": False}
+        )  # TODO: merge?
+        query["moves"] += [[move.bw_player(next_move=True), "pass"]]
         query["analyzeTurns"][0] += 1
         print("pass-query", query)
         self._send_analysis_query(query)
 
-
-
-#    def update_analysis(self, analysis, mode, ownership):
-#        for d in analysis:
-#            d["scoreMean"] = float(d["scoreMean"])
-#
-#        if mode == 0:
-#            pm = [d for d in analysis if d["move"] == "pass"]
-#            npm = [d for d in analysis if d["move"] != "pass"]
-#            if pm:
-#                pv = sum([int(d["visits"]) for d in pm], 0)
-#                npv = sum([int(d["visits"]) for d in npm], 0)
-#                print("pass visits", pv, "other", npv)
-#                if pv > npv:
-#                    print(analysis)
-#            self.moves[-1].pass_analysis = [d for d in analysis if d["move"] != "pass"]
-#        else:
-#            if ownership:
-#                self.moves[-1].ownership = [float(p) for p in ownership[0].strip().split(" ")]
-#            best = analysis[0]["scoreMean"]
-#            worst = -self.moves[-1].pass_analysis[0]["scoreMean"]
-#            for d in analysis:
-#                d["evaluation"] = (d["scoreMean"] - worst) / (best - worst)
-#            self.moves[-1].analysis = analysis
-#            if self.eval.active(1 - self.current_player):
-#                self.temperature.text = f"{self.moves[-1].temperature():.1f}"
-#                self.score.text = f"{Move.PLAYERS[self.current_player]}{float(analysis[0]['scoreMean']):+.1f}".replace("-", "\u2013")  # en dash
-#            if len(self.moves) >= 2 and self.moves[-2].analysis:
-#                self.moves[-1].evaluate(self.moves[-2])
-#                if self.eval.active(1 - self.current_player):
-#                    if self.moves[-1].evaluation:
-#                       self.evaluation.text = f"{100 * self.moves[-1].evaluation:.1f}%"
-#                    else:
-#                        self.evaluation.text = "N/A"
-#                self.redraw(include_board=False)  # for dots and stuff
-
-
+    #    def update_analysis(self, analysis, mode, ownership):
+    #        for d in analysis:
+    #            d["scoreMean"] = float(d["scoreMean"])
+    #
+    #        if mode == 0:
+    #            pm = [d for d in analysis if d["move"] == "pass"]
+    #            npm = [d for d in analysis if d["move"] != "pass"]
+    #            if pm:
+    #                pv = sum([int(d["visits"]) for d in pm], 0)
+    #                npv = sum([int(d["visits"]) for d in npm], 0)
+    #                print("pass visits", pv, "other", npv)
+    #                if pv > npv:
+    #                    print(analysis)
+    #            self.moves[-1].pass_analysis = [d for d in analysis if d["move"] != "pass"]
+    #        else:
+    #            if ownership:
+    #                self.moves[-1].ownership = [float(p) for p in ownership[0].strip().split(" ")]
+    #            best = analysis[0]["scoreMean"]
+    #            worst = -self.moves[-1].pass_analysis[0]["scoreMean"]
+    #            for d in analysis:
+    #                d["evaluation"] = (d["scoreMean"] - worst) / (best - worst)
+    #            self.moves[-1].analysis = analysis
+    #            if self.eval.active(1 - self.board.current_player):
+    #                self.temperature.text = f"{self.moves[-1].temperature():.1f}"
+    #                self.score.text = f"{Move.PLAYERS[self.board.current_player]}{float(analysis[0]['scoreMean']):+.1f}".replace("-", "\u2013")  # en dash
+    #            if len(self.moves) >= 2 and self.moves[-2].analysis:
+    #                self.moves[-1].evaluate(self.moves[-2])
+    #                if self.eval.active(1 - self.board.current_player):
+    #                    if self.moves[-1].evaluation:
+    #                       self.evaluation.text = f"{100 * self.moves[-1].evaluation:.1f}%"
+    #                    else:
+    #                        self.evaluation.text = "N/A"
+    #                self.redraw(include_board=False)  # for dots and stuff
 
     def sgf(self):
         def sgfify(mvs):

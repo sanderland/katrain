@@ -34,7 +34,7 @@ class BadukPanWidget(Widget):
         xd, xp = self._find_closest(touch.x)
         yd, yp = self._find_closest(touch.y)
         prev_ghost = self.ghost_stone
-        if self.engine.ready and max(yd, xd) < self.grid_size / 2 and (xp, yp) not in [m.coords for m in self.engine.stones]:
+        if self.engine.ready and max(yd, xd) < self.grid_size / 2 and (xp, yp) not in [m.coords for m in self.engine.board.stones]:
             self.ghost_stone = (xp, yp)
         else:
             self.ghost_stone = None
@@ -48,7 +48,7 @@ class BadukPanWidget(Widget):
         if self.ghost_stone:
             self.engine.action("play", self.ghost_stone)
         self.ghost_stone = None
-        self.redraw()
+        self.redraw() # remove ghost
 
     # drawing functions
     def on_size(self, *args):
@@ -111,13 +111,13 @@ class BadukPanWidget(Widget):
         with self.canvas:
             # stones
             moves = self.engine.board.moves
-            last_move = self.engine.board.current_move
-            eval_map = {m.coords: (m.evaluation, m.previous_temperature) for m in moves}
+            last_move = moves[-1] if moves else self.engine.board.root
+            current_player = self.engine.board.current_player
             eval_on = [self.engine.eval.active(0), self.engine.eval.active(1)]
             has_stone = {}
-            for i, m in enumerate(self.engine.stones):
+            for i, m in enumerate(self.engine.board.stones):
                 has_stone[m.coords] = m.player
-                eval, evalsize = eval_map.get(m.coords, (None, None))
+                eval, evalsize = m.evaluation_info
                 evalcol = self._eval_spectrum(eval) if eval_on[m.player] and eval else None
                 inner = COLORS[1 - m.player] if (m == last_move) else None
                 self.draw_stone(m.coords[0], m.coords[1], COLORS[m.player], inner, evalcol, evalsize)
@@ -127,10 +127,9 @@ class BadukPanWidget(Widget):
                 ownership = last_move.ownership
                 rsz = self.grid_size * 0.2
                 ix = 0
-                cp = self.engine.current_player
                 for y in range(self.engine.board_size - 1, -1, -1):
                     for x in range(self.engine.board_size):
-                        ix_owner = cp if ownership[ix] > 0 else 1 - cp
+                        ix_owner = current_player if ownership[ix] > 0 else 1 - current_player
                         if ix_owner != (has_stone.get((x, y), -1)):
                             Color(*COLORS[ix_owner], abs(ownership[ix]))
                             Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
@@ -139,15 +138,15 @@ class BadukPanWidget(Widget):
             # undos
             undo_coords = set()
             alpha = Config.get("ui")["undo_alpha"]
-            for m in self.engine.board.current_move.children:
+            for m in last_move.children:
                 if m.evaluation and m.coords[0] is not None:
                     undo_coords.add(m.coords)
                     evalcol = (*self._eval_spectrum(m.evaluation), alpha)
                     self.draw_stone(m.coords[0], m.coords[1], (*COLORS[m.player][:3], alpha), Config.get("ui")["undo_circle_col"], evalcol, self.EVAL_BOUNDS[1])
 
             # hints
-            if last_move.analysis and self.engine.hints.active(self.engine.current_player):
-                for d in last_move.analysis:
+            if self.engine.hints.active(current_player):
+                for d in last_move.ai_moves:
                     move = Move(gtpcoords=d["move"], player=0)
                     c = [*self._eval_spectrum(d["evaluation"]), 0.5]
                     if move.coords[0] is not None and move.coords not in undo_coords:
@@ -155,7 +154,7 @@ class BadukPanWidget(Widget):
 
             # hover next move ghost stone
             if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*COLORS[self.engine.current_player], GHOST_ALPHA))
+                self.draw_stone(*self.ghost_stone, (*COLORS[current_player], GHOST_ALPHA))
 
             # pass circle
             passed = len(moves) > 1 and last_move.is_pass
