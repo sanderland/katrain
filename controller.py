@@ -91,12 +91,16 @@ class EngineControls(GridLayout):
         self.redraw()
 
     def update_evaluation(self):
-        self.info.text = self.board.current_move.comment
-        #self.temperature.text = f"{self.board.current_move.temperature_stats[2]:.1f}"
-        #self.score.text = f"{Move.PLAYERS[self.board.current_player]}{self.board.current_move.score}".replace("-", "\u2013")  # en dash
-        #self.evaluation.text = f"{100 * self.board.current_move.evaluation:.1f}%"
+        current_move = self.board.current_move
+        if self.eval.active(current_move.player):
+            self.info.text = current_move.comment
+        self.evaluation.text = ''
+        if current_move.analysis_ready:
+            self.score.text = current_move.format_score().replace("-", "\u2013")
+            self.temperature.text = f"{current_move.temperature_stats[2]:.1f}"
+            if current_move.parent and current_move.parent.analysis_ready:
+                self.evaluation.text = f"{100 * current_move.evaluation:.1f}%"
 
-        #f"Your move {self.board.current_move.gtp()} was {100 * self.board.current_move.evaluation:.1f}% efficient and lost {self.moves[-1].points_lost:.1f} point(s).\n"
         # when to trigger auto undo?
 #      self.undo.disabled = True  # undo while waiting for this does weird things
 #      undid = False
@@ -106,7 +110,6 @@ class EngineControls(GridLayout):
 #        if self.ai_auto.active and not undid:
 #            self._do_aimove(move, True)
 #        self.undo.disabled = False
-
 
     def _auto_undo(self, move):
         ts = self.train_settings
@@ -149,34 +152,33 @@ class EngineControls(GridLayout):
                     self.info.text += f"\nYour moves:\n{summary}.\nLet's continue with {evaled_moves[0].gtp()}.\n"
         return False
 
-    def _do_aimove(self, move, auto=False):
+    def _do_aimove(self, auto=False):
         ts = self.train_settings
-        if not auto:
+        while not self.board.current_move.analysis_ready:
             self.info.text = "Thinking..."
-        self._evaluate_move(auto and not self.auto_undo.active(1 - self.board.current_player))
+            time.sleep(0.05)
+
         # select move
+        current_move = self.board.current_move
         pos_moves = [
             (d["move"], float(d["scoreMean"]), d["evaluation"])
-            for d in move.analysis
+            for d in current_move.ai_moves
             if int(d["visits"]) >= ts["balance_play_min_visits"]
         ]
-        if ts["show_ai_options"]:
-            self.info.text += "AI Options: " + " ".join(
-                [f"{move}({100*eval:.0f}%,{score:.1f}pt)" for move, score, eval in pos_moves]
-            )
         selmove = pos_moves[0][0]
-        if (
-            self.ai_balance.active and pos_moves[0][0] != "pass"
-        ):  # don't play suicidal to balance score - pass when it's best
+        # don't play suicidal to balance score - pass when it's best
+        if self.ai_balance.active and pos_moves[0][0] != "pass":
             selmoves = [
                 move
                 for move, score, eval in pos_moves
                 if eval > ts["balance_play_randomize_eval"]
                 or eval > ts["balance_play_min_eval"]
-                and score > ts["balance_play_target_score"]
+                and current_move.player_sign * score > ts["balance_play_target_score"]
             ]
-            selmove = random.choice(selmoves)  # some kind of when further ahead play worse?
-        self.board.play(Move(player=self.board.current_player, gtpcoords=selmove, robot=True))
+            selmove = random.choice(selmoves)  # TODO: some kind of when further ahead play worse?
+            print('SEL',selmoves)
+        print('POS',pos_moves, 'MOVE', selmove)
+        self.play(Move(player=self.board.current_player, gtpcoords=selmove, robot=True))
 
     def _do_undo(self):
         if self.ai_auto.active and self.board.current_move.robot:
@@ -213,7 +215,7 @@ class EngineControls(GridLayout):
             while self.outstanding_analysis_queries:
                 self._send_analysis_query(self.outstanding_analysis_queries.pop(0))
             line = self.kata.stdout.readline()
-            print("KATA ANALYSIS RECEIVED:", line)
+            print("KATA ANALYSIS RECEIVED:", line[:50])
             self.board.store_analysis(json.loads(line))
             self.update_evaluation()
             self.redraw(include_board=False)
@@ -250,43 +252,10 @@ class EngineControls(GridLayout):
         print("pass-query", query)
         self._send_analysis_query(query)
 
-    #    def update_analysis(self, analysis, mode, ownership):
-    #        for d in analysis:
-    #            d["scoreMean"] = float(d["scoreMean"])
-    #
-    #        if mode == 0:
-    #            pm = [d for d in analysis if d["move"] == "pass"]
-    #            npm = [d for d in analysis if d["move"] != "pass"]
-    #            if pm:
-    #                pv = sum([int(d["visits"]) for d in pm], 0)
-    #                npv = sum([int(d["visits"]) for d in npm], 0)
-    #                print("pass visits", pv, "other", npv)
-    #                if pv > npv:
-    #                    print(analysis)
-    #            self.moves[-1].pass_analysis = [d for d in analysis if d["move"] != "pass"]
-    #        else:
-    #            if ownership:
-    #                self.moves[-1].ownership = [float(p) for p in ownership[0].strip().split(" ")]
-    #            best = analysis[0]["scoreMean"]
-    #            worst = -self.moves[-1].pass_analysis[0]["scoreMean"]
-    #            for d in analysis:
-    #                d["evaluation"] = (d["scoreMean"] - worst) / (best - worst)
-    #            self.moves[-1].analysis = analysis
-    #            if self.eval.active(1 - self.board.current_player):
-    #                self.temperature.text = f"{self.moves[-1].temperature():.1f}"
-    #                self.score.text = f"{Move.PLAYERS[self.board.current_player]}{float(analysis[0]['scoreMean']):+.1f}".replace("-", "\u2013")  # en dash
-    #            if len(self.moves) >= 2 and self.moves[-2].analysis:
-    #                self.moves[-1].evaluate(self.moves[-2])
-    #                if self.eval.active(1 - self.board.current_player):
-    #                    if self.moves[-1].evaluation:
-    #                       self.evaluation.text = f"{100 * self.moves[-1].evaluation:.1f}%"
-    #                    else:
-    #                        self.evaluation.text = "N/A"
-    #                self.redraw(include_board=False)  # for dots and stuff
 
     def sgf(self):
         def sgfify(mvs):
-            return f"(;GM[1]FF[4]SZ[{self.board_size}]KM[{self.komi}]RU[CN];" + ";".join(mvs) + ")"
+            return f"(;GM[1]FF[4]SZ[{self.board_size}]KM[{self.komi}]RU[JP];" + ";".join(mvs) + ")"
 
         def format_move(m, pm):
             undo_comment = "".join(f"\nUndo: {u.gtp()} was {100*u.evaluation:.1f}%" for u in pm.undos if u.evaluation)

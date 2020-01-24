@@ -17,6 +17,7 @@ class Move:
         self.analysis = None
         self.pass_analysis = None
         self.ownership = None
+        self.move_number = 0
 
     def __repr__(self):
         return f"{Move.PLAYERS[self.player]}{self.gtp()}"
@@ -32,6 +33,7 @@ class Move:
             return self.children[self.children.index(move)]
         except ValueError:
             move.parent = self
+            move.move_number = self.move_number + 1
             self.children.append(move)
             return move
 
@@ -55,59 +57,74 @@ class Move:
     def analysis_ready(self):
         return self.analysis and self.pass_analysis
 
+    def format_score(self,score=None):
+        score = score or self.score
+        return f"{'B' if score >= 0 else 'W'}+{abs(score):.1f}"
+
     @property
-    def comment(self):
-        text = "(AI Move)\n" if self.robot else ""
+    def comment(self,sgf=False):
+        if not self.parent: # root
+            return ""
+        text = f"Move {self.move_number}: {self.bw_player()} @ {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
         if self.analysis_ready:
             score, _, temperature = self.temperature_stats
-            text += f"Current score: {self.bw_player()}{score:+.1f}\n"
-            text += f"Current temperature: {temperature:+.1f}\n"
+            if sgf:
+                text += f"Score: {self.format_score(score)}\n"
+                text += f"Temperature: {temperature:.1f}\n"
             if self.parent and self.parent.analysis_ready:
                 prev_best_score, prev_worst_score, prev_temperature = self.parent.temperature_stats
-                text += f"Score of top move was {prev_best_score:.1f} @ {self.parent.analysis[0]['move']}\n"
-                text += f"Pass score was {prev_worst_score:.1f}\n"
+                text += f"Top move was {self.format_score(prev_best_score)} @ {self.parent.analysis[0]['move']}\n"
+                text += f"Pass score was {self.format_score(prev_worst_score)}\n"
                 if prev_temperature < 0.5:
                     text += f"Previous temperature ({prev_temperature}) too low for evaluation\n"
                 else:
                     if eval:
                         text += f"Evaluation: {100*self.evaluation:.1f}%\n"
-                        text += f"Estimate point loss: {prev_best_score - score:.1f}\n"
-                    if self.outdated_evaluation:
-                        text += f"(Was considered last move as: {100 * self.outdated_evaluation:.1f}%)\n"
+                        outdated_evaluation = self.outdated_evaluation
+                        if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.01:
+                            text += f"(Was considered last move as: {100 * outdated_evaluation :.1f}%)\n"
+                        points_lost = self.player_sign * (prev_best_score - score)
+                        if points_lost > 0.5:
+                            text += f"Estimate point loss: {points_lost:.1f}\n"
         else:
-            text += "(No analysis available yet)"
+            text = "No analysis available" if sgf else "Analyzing move..."
         return text
 
     # returns evaluation, temperature scale or None, None when not ready
+    @property
     def evaluation_info(self):
         if self.parent and self.parent.analysis_ready and self.analysis_ready:
-            return (self.evaluation,self.parent.temperature_stats[2])
+            return self.evaluation,self.parent.temperature_stats[2]
         else:
-            return (None,None)
+            return None,None
 
     # needing own analysis ready
     @property
     def temperature_stats(self):
-        best = -float(self.analysis[0]["scoreLead"])
+        best = float(self.analysis[0]["scoreLead"])
         worst= float(self.pass_analysis[0]["scoreLead"])
-        return best, worst, best - worst
+        return best, worst, abs(best - worst)
 
     @property
     def score(self):
         return self.temperature_stats[0]
 
+    @property
+    def player_sign(self):
+        return 1 if self.player == 0 else -1
+
     # need parent analysis ready
     @property
     def evaluation(self):
         best, worst, temp = self.parent.temperature_stats
-        return (self.score - worst) / temp
+        return self.player_sign * (self.score - worst) / temp
 
     @property
     def outdated_evaluation(self):
         prev_analysis_current_move = [d for d in self.parent.analysis if d["move"] == self.gtp()]
         if prev_analysis_current_move:
             best_score, worst_score, prev_temp = self.parent.temperature_stats
-            return (prev_analysis_current_move[0]["scoreLead"] - worst_score) / prev_temp
+            return self.player_sign * (prev_analysis_current_move[0]["scoreLead"] - worst_score) / prev_temp
 
     @property
     def ai_moves(self):
@@ -115,7 +132,7 @@ class Move:
             return []
         _, worst_score, temperature = self.temperature_stats
         for d in self.analysis:
-            d["evaluation"] = (d["scoreLead"] - worst_score) / temperature
+            d["evaluation"] = -self.player_sign * (d["scoreLead"] - worst_score) / temperature
         return self.analysis
 
     ### various output and conversion functions

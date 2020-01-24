@@ -37,8 +37,7 @@
     "undo_eval_threshold": 0.875,
     "undo_outdated_eval_threshold": 0.8,
     "undo_point_threshold": 1,
-    "num_undo_prompts": 1,
-    "show_ai_options": true
+    "num_undo_prompts": 1
   },
   "debug": {
     "level": 1
