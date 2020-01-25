@@ -22,17 +22,14 @@ class EngineControls(GridLayout):
         self.command = shlex.split(Config.get("engine")["command"])
 
         analysis_settings = Config.get("analysis")
-        self.visits = [
-            [analysis_settings["pass_visits"], analysis_settings["visits"]],
-            [analysis_settings["pass_visits_fast"], analysis_settings["visits_fast"]],
-        ]
+        self.visits = [[analysis_settings["pass_visits"], analysis_settings["visits"]], [analysis_settings["pass_visits_fast"], analysis_settings["visits_fast"]]]
         self.train_settings = Config.get("trainer")
         self.debug = Config.get("debug")["level"]
         self.board_size = Config.get("board")["size"]
-        self.komi = Config.get("board")["komi"]
         self.ready = False
         self.message_queue = None
         self.board = Board(self.board_size)
+        self.komi = 6.5  # loaded from config in init
         self.outstanding_analysis_queries = []  # allows faster interaction while kata is starting
         self.kata = None
 
@@ -87,11 +84,11 @@ class EngineControls(GridLayout):
         # mr.waiting_for_analysis
         self.redraw()
 
-    def update_evaluation(self,undo_triggered = False):
+    def update_evaluation(self, undo_triggered=False):
         current_move = self.board.current_move
         if self.eval.active(current_move.player):
             self.info.text = current_move.comment(eval=self.eval.active(current_move.player), hints=self.hints.active(current_move.player))
-        self.evaluation.text = ''
+        self.evaluation.text = ""
         if current_move.analysis_ready and self.eval.active(current_move.player):
             self.score.text = current_move.format_score().replace("-", "\u2013")
             self.temperature.text = f"{current_move.temperature_stats[2]:.1f}"
@@ -111,7 +108,7 @@ class EngineControls(GridLayout):
                     self.board.undo()
                     undo_triggered = True
                     if len(current_move.parent.children) >= ts["num_undo_prompts"] + 1:
-                        best_move = sorted([m for m in current_move.parent.children], key=lambda m: -(m.evaluation_info[0] or 0) )[0]
+                        best_move = sorted([m for m in current_move.parent.children], key=lambda m: -(m.evaluation_info[0] or 0))[0]
                         best_move.x_comment = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
                         self.board.play(best_move)
                     self.update_evaluation(undo_triggered=True)
@@ -127,24 +124,21 @@ class EngineControls(GridLayout):
 
         # select move
         current_move = self.board.current_move
-        pos_moves = [
-            (d["move"], float(d["scoreMean"]), d["evaluation"])
-            for d in current_move.ai_moves
-            if int(d["visits"]) >= ts["balance_play_min_visits"]
-        ]
-        sel_moves = [pos_moves[0][0]]
+        pos_moves = [(d["move"], float(d["scoreMean"]), d["evaluation"]) for d in current_move.ai_moves if int(d["visits"]) >= ts["balance_play_min_visits"]]
+        sel_moves = pos_moves[:1]
         # don't play suicidal to balance score - pass when it's best
         if self.ai_balance.active and pos_moves[0][0] != "pass":
             sel_moves = [
-                move
+                (move, score, eval)
                 for move, score, eval in pos_moves
                 if eval > ts["balance_play_randomize_eval"]
+                and -current_move.player_sign * score > 0
                 or eval > ts["balance_play_min_eval"]
                 and -current_move.player_sign * score > ts["balance_play_target_score"]
             ] or sel_moves
-        aimove = Move(player=self.board.current_player, gtpcoords=random.choice(sel_moves), robot=True)
+        aimove = Move(player=self.board.current_player, gtpcoords=random.choice(sel_moves)[0], robot=True)
         if len(sel_moves) > 1:
-            aimove.x_comment = "{'AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, eval in sel_moves) + "\n"
+            aimove.x_comment = "AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, _ in sel_moves) + "\n"
         self.play(aimove)
 
     def _do_undo(self):
@@ -159,22 +153,20 @@ class EngineControls(GridLayout):
             return
         self.board.undo()
 
-    def _do_init(self, board_size, komi=None):
+    def _do_init(self, board_size):
         self.board_size = board_size
+        self.komi = Config.get("board")[f"komi_{board_size}"]
         self.board = Board(board_size)
         self._request_analysis(self.board.root)
         self.redraw(include_board=True)
         self.ready = True
 
     def _do_analyze_sgf(self, sgf):
-        self._do_init(self.board_size, self.komi)
+        self._do_init(self.board_size)
         sgfmoves = re.findall(r"([BW])\[([a-z]{2})\]", sgf)
         moves = [Move(player=Move.PLAYERS.index(p.upper()), sgfcoords=(mv, self.board_size)) for p, mv in sgfmoves]
         for move in moves:
             self.play(move)
-        while not all(m.analysis for m in moves):
-            time.sleep(0.05)
-            self.info.text = f"{sum([1 if m.analysis else 0 for m in moves])}/{len(moves)} analyzed"
 
     # analysis thread
     def _analysis_read_thread(self):
@@ -213,9 +205,7 @@ class EngineControls(GridLayout):
         if self.debug:
             print("query", query)
         self._send_analysis_query(query)
-        query.update(
-            {"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0], "includeOwnership": False}
-        )
+        query.update({"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0], "includeOwnership": False})
         query["moves"] += [[move.bw_player(next_move=True), "pass"]]
         query["analyzeTurns"][0] += 1
         self._send_analysis_query(query)
@@ -225,13 +215,19 @@ class EngineControls(GridLayout):
             return f"(;GM[1]FF[4]SZ[{self.board_size}]KM[{self.komi}]RU[JP];" + ";".join(mvs) + ")"
 
         def format_move(move, prev_move):
-            undos = [m for m in prev_move.children if m!=move]
+            undos = [m for m in prev_move.children if m != move]
             undo_cr = "".join(f"MA[{u.sgfcoords(self.board_size)}]" for u in undos if u.coords[0])
-            if prev_move.analysis and prev_move.analysis[0]["move"] != "pass" and (move.evaluation_info[0] or 0.0) < self.train_settings['sgf_show_best_move_threshold']:
+            if (
+                prev_move.analysis
+                and prev_move.analysis[0]["move"] != "pass"
+                and (move.evaluation_info[0] or 0.0) < self.train_settings["sgf_show_best_move_threshold"]
+                and prev_move.analysis[0]["move"] != move.gtp()
+            ):
                 best_sq = f"SQ[{Move(gtpcoords=prev_move.analysis[0]['move'], player=0).sgfcoords(self.board_size)}]"
             else:
                 best_sq = ""
             return move.sgf(self.board_size) + f"C[{move.comment(sgf=True)}]{undo_cr}{best_sq}"
+
         moves = self.board.moves
         sgfmoves_small = [mv.sgf(self.board_size) for mv in moves]
         sgfmoves = [format_move(mv, pmv) for mv, pmv in zip(moves, [self.board.root] + moves[:-1])]

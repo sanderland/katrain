@@ -50,25 +50,25 @@ class BadukPanWidget(Widget):
         else:
             xd, xp = self._find_closest(touch.x)
             yd, yp = self._find_closest(touch.y)
-            stones_here = [m for m in self.engine.board.stones if m.coords == (xp,yp)]
+            stones_here = [m for m in self.engine.board.stones if m.coords == (xp, yp)]
             if stones_here and max(yd, xd) < self.grid_size / 2:  # load old comment
                 self.engine.info.text = stones_here[-1].comment(sgf=True)
         self.ghost_stone = None
-        self.redraw() # remove ghost
+        self.redraw()  # remove ghost
 
     # drawing functions
     def on_size(self, *args):
         self.draw_board()
         self.redraw()
 
-    def draw_stone(self, x, y, col, innercol=None, evalcol=None, evalsize=10.0):
-        draw_circle((self.gridpos[x], self.gridpos[y]), self.stone_size, col)
+    def draw_stone(self, x, y, col, innercol=None, evalcol=None, evalsize=10.0, scale=1.0):
+        draw_circle((self.gridpos[x], self.gridpos[y]), self.stone_size * scale, col)
         if evalcol:
             evalsize = min(self.EVAL_BOUNDS[1], max(evalsize, self.EVAL_BOUNDS[0])) / self.EVAL_BOUNDS[1]
-            draw_circle((self.gridpos[x], self.gridpos[y]), math.sqrt(evalsize) * self.stone_size * 0.5, evalcol)
+            draw_circle((self.gridpos[x], self.gridpos[y]), math.sqrt(evalsize) * self.stone_size * scale * 0.5, evalcol)
         if innercol:
             Color(*innercol)
-            Line(circle=(self.gridpos[x], self.gridpos[y], self.stone_size * 0.45 / 0.85), width=1.75)
+            Line(circle=(self.gridpos[x], self.gridpos[y], self.stone_size * scale * 0.45 / 0.85), width=1.75)
 
     def _eval_spectrum(self, score):
         score = max(0, score)
@@ -153,11 +153,11 @@ class BadukPanWidget(Widget):
 
             # hints
             if self.engine.hints.active(current_player):
-                for d in last_move.ai_moves:
+                for i, d in enumerate(last_move.ai_moves):
                     move = Move(gtpcoords=d["move"], player=0)
                     c = [*self._eval_spectrum(d["evaluation"]), 0.5]
                     if move.coords[0] is not None and move.coords not in undo_coords:
-                        self.draw_stone(move.coords[0], move.coords[1], c)
+                        self.draw_stone(move.coords[0], move.coords[1], c, scale=1.0 if i == 0 else 0.8)
 
             # hover next move ghost stone
             if self.ghost_stone:

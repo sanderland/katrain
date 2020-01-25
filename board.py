@@ -54,12 +54,12 @@ class Move:
     def analysis_ready(self):
         return self.analysis and self.pass_analysis
 
-    def format_score(self,score=None):
+    def format_score(self, score=None):
         score = score or self.score
         return f"{'B' if score >= 0 else 'W'}+{abs(score):.1f}"
 
-    def comment(self,sgf=False, eval=False, hints=False):
-        if not self.parent: # root
+    def comment(self, sgf=False, eval=False, hints=False):
+        if not self.parent:  # root
             return ""
         text = f"Move {self.move_number}: {self.bw_player()} {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
         text += self.x_comment
@@ -89,8 +89,8 @@ class Move:
                         if points_lost > 0.5:
                             text += f"Estimate point loss: {points_lost:.1f}\n"
 
-        if eval or sgf: # show undos on move itself in both sgf and while playing
-            undids = [m.gtp() + (f"({m.evaluation_info[0]*100:.1f}% efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m!=self]
+        if eval or sgf:  # show undos on move itself in both sgf and while playing
+            undids = [m.gtp() + (f"({m.evaluation_info[0]*100:.1f}% efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m != self]
             if undids:
                 text += "Other attempted move(s): " + ", ".join(undids) + "\n"
 
@@ -104,13 +104,13 @@ class Move:
         if self.parent and self.parent.analysis_ready and self.analysis_ready:
             return self.evaluation, self.parent.temperature_stats[2]
         else:
-            return None,None
+            return None, None
 
     # needing own analysis ready
     @property
     def temperature_stats(self):
         best = float(self.analysis[0]["scoreLead"])
-        worst= float(self.pass_analysis[0]["scoreLead"])
+        worst = float(self.pass_analysis[0]["scoreLead"])
         return best, worst, abs(best - worst)
 
     @property
@@ -178,7 +178,6 @@ class Move:
 
 
 class Board:
-
     def __init__(self, board_size=19):
         self.board_size = board_size
         self.root = Move(1, (None, None))  # root is 1=white so black is first
@@ -219,9 +218,7 @@ class Board:
         nb_chains = list({c for c in neighbours([move]) if c >= 0 and self.chains[c][0].player == move.player})
         if nb_chains:
             this_chain = nb_chains[0]
-            self.board = [
-                [nb_chains[0] if sq in nb_chains else sq for sq in line] for line in self.board
-            ]  # merge chains connected by this move
+            self.board = [[nb_chains[0] if sq in nb_chains else sq for sq in line] for line in self.board]  # merge chains connected by this move
             for oc in nb_chains[1:]:
                 self.chains[nb_chains[0]] += self.chains[oc]
                 self.chains[oc] = []
@@ -299,10 +296,7 @@ class Board:
 
     @property
     def prisoner_count(self):
-        return [sum([m.player==player for m in self.prisoners]) for player in [0,1]]
+        return [sum([m.player == player for m in self.prisoners]) for player in [0, 1]]
 
     def __str__(self):
-        return (
-            "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in l) for l in self.board)
-            + f"\ncaptures: {self.prisoner_count}"
-        )
+        return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in l) for l in self.board) + f"\ncaptures: {self.prisoner_count}"

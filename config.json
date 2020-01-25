@@ -7,7 +7,9 @@
   },
   "board": {
     "size": 19,
-    "komi": 6.5
+    "komi_19": 6.5,
+    "komi_13": 6.5,
+    "komi_9": 6.5
   },
   "ui": {
     "size_min": 1,
