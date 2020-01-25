@@ -168,11 +168,11 @@
 			id: auto_undo
 			text: 'undo'
 			on_active: root.parent.board.redraw()
-		CheckBoxHint:
-			size_hint: 0.2, 0.5
-			text: 'lock\nai'
-			id: ai_lock
-			on_active: self.checkbox.disabled = hints.black.disabled = hints.white.disabled = ai_move.disabled = auto_undo.black.disabled = auto_undo.white.disabled = ai_auto.checkbox.disabled = True
+		BWCheckBoxHint:
+			size_hint: 0.166, 0.5
+			text: 'ai'
+			id: ai_auto
+			default_active: False
 		CheckBoxHint:
 			size_hint: 0.2, 0.5
 			id: ownership
@@ -189,19 +189,19 @@
 			on_press: root.action("aimove")
 		CheckBoxHint:
 			size_hint: 0.166, 0.5
-			text: 'auto\nmove'
-			id: ai_auto
-			default_active: False
+			text: 'fast'
+			id: ai_fast
+			default_active: True
 		CheckBoxHint:
 			size_hint: 0.166, 0.5
 			text: 'balance\nscore'
 			id: ai_balance
 			default_active: False
 		CheckBoxHint:
-			size_hint: 0.166, 0.5
-			text: 'fast'
-			id: ai_fast
-			default_active: True
+			size_hint: 0.2, 0.5
+			text: 'lock\nai'
+			id: ai_lock
+			on_active: self.checkbox.disabled = hints.black.disabled = hints.white.disabled = ai_move.disabled = auto_undo.black.disabled = auto_undo.white.disabled = ai_auto.checkbox.disabled = True
 	GridLayout:
 		cols: 2
 		rows: 1

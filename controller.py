@@ -26,7 +26,6 @@ class EngineControls(GridLayout):
             [analysis_settings["pass_visits"], analysis_settings["visits"]],
             [analysis_settings["pass_visits_fast"], analysis_settings["visits_fast"]],
         ]
-        self.min_nopass_visits = analysis_settings["nopass_visits"]
         self.train_settings = Config.get("trainer")
         self.debug = Config.get("debug")["level"]
         self.board_size = Config.get("board")["size"]
@@ -78,13 +77,11 @@ class EngineControls(GridLayout):
             print(str(e))
             self.info.text = f"Illegal move: {str(e)}"
             return
-        print("PLAYED", move, self.board.stones)
         self._request_analysis(mr)
         return mr
 
     # engine action functions
     def _do_play(self, *args):
-        print("CURRENT PLAYER", self.board.current_player)
         move = Move(player=self.board.current_player, coords=args[0])
         self.play(move)
         # mr.waiting_for_analysis
@@ -93,66 +90,34 @@ class EngineControls(GridLayout):
     def update_evaluation(self):
         current_move = self.board.current_move
         if self.eval.active(current_move.player):
-            self.info.text = current_move.comment
+            self.info.text = current_move.comment(eval=self.eval.active(current_move.player), hints=self.hints.active(current_move.player))
         self.evaluation.text = ''
-        if current_move.analysis_ready:
+        if current_move.analysis_ready and self.eval.active(current_move.player):
             self.score.text = current_move.format_score().replace("-", "\u2013")
             self.temperature.text = f"{current_move.temperature_stats[2]:.1f}"
             if current_move.parent and current_move.parent.analysis_ready:
                 self.evaluation.text = f"{100 * current_move.evaluation:.1f}%"
 
-        # when to trigger auto undo?
-#      self.undo.disabled = True  # undo while waiting for this does weird things
-#      undid = False
-#       self.info.text = ""
-#        if self.auto_undo.active(1 - self.board.current_player):
-#            undid = self._auto_undo(move)
-#        if self.ai_auto.active and not undid:
-#            self._do_aimove(move, True)
-#        self.undo.disabled = False
-
-    def _auto_undo(self, move):
-        ts = self.train_settings
-        self.info.text = "Evaluating..."
-        if (
-            move.evaluation
-            and move.evaluation < ts["undo_eval_threshold"]
-            and move.points_lost >= ts["undo_point_threshold"]
-            and ts["num_undo_prompts"] > 0
-        ):
-            if move.outdated_evaluation:
-                outdated_points_lost = (1 - move.outdated_evaluation) * move.points_lost / (1 - move.evaluation)
-            # so if the move was not that far off (>undo_outdated_eval_threshold) and according to last move's analysis it was fine, don't undo.
-            if (
-                move.outdated_evaluation
-                and (
-                    move.outdated_evaluation >= ts["undo_eval_threshold"]
-                    or outdated_points_lost < ts["undo_point_threshold"]
-                )
-                and (
-                    move.evaluation > ts["undo_outdated_eval_threshold"]
-                    or outdated_points_lost < ts["undo_point_threshold"]
-                )
-            ):
-                self.info.text += f"\nBut according to my previous evaluation it was {move.outdated_evaluation*100:.1f}% effective and lost {outdated_points_lost:.1f} point(s), so let's continue anyway.\n"
-            else:
-                if len(self.board.current_move.parent.children) <= ts["num_undo_prompts"]:
-                    self.info.text += f"\nLet's try again.\n"
+        if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children:
+            # handle automatic undo
+            if self.auto_undo.active(current_move.player) and not self.ai_auto.active(current_move.player) and not current_move.auto_undid:
+                ts = self.train_settings
+                # TODO: is this overly generous wrt low visit outdated evaluations?
+                eval = max(current_move.evaluation, current_move.outdated_evaluation or 0)
+                points_lost = (current_move.parent or current_move).temperature_stats[2] * (1 - eval)
+                if eval < ts["undo_eval_threshold"] and points_lost >= ts["undo_point_threshold"]:
+                    current_move.auto_undid = True
                     self.board.undo()
-                    return True
-                else:
-                    evaled_moves = sorted(
-                        [m for m in self.board.current_move.parent.children if m.evaluation],
-                        key=lambda m: -m.evaluation,
-                    )
-                    if evaled_moves and evaled_moves[0].coords != move.coords:
-                        self.board.undo()
-                        self.board.play(evaled_moves[0])
-                    summary = "\n".join(f"{m.gtp()}: {100*m.evaluation:.1f}% effective" for m in evaled_moves)
-                    self.info.text += f"\nYour moves:\n{summary}.\nLet's continue with {evaled_moves[0].gtp()}.\n"
-        return False
+                    if len(current_move.parent.children) >= ts["num_undo_prompts"] + 1:
+                        best_move = sorted([m for m in current_move.parent.children], key=lambda m: -(m.evaluation_info[0] or 0) )[0]
+                        best_move.x_comment = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
+                        self.board.play(best_move)
+                    self.update_evaluation()
+            # ai player doesn't technically need parent ready, but don't want to override waiting for undo
+            elif self.ai_auto.active(1 - current_move.player) and not current_move.children:
+                self._do_aimove()
 
-    def _do_aimove(self, auto=False):
+    def _do_aimove(self):
         ts = self.train_settings
         while not self.board.current_move.analysis_ready:
             self.info.text = "Thinking..."
@@ -204,9 +169,9 @@ class EngineControls(GridLayout):
         sgfmoves = re.findall(r"([BW])\[([a-z]{2})\]", sgf)
         moves = [Move(player=Move.PLAYERS.index(p.upper()), sgfcoords=(mv, self.board_size)) for p, mv in sgfmoves]
         for move in moves:
-            self.board.play(move)
+            self.play(move)
         while not all(m.analysis for m in moves):
-            time.sleep(0.01)
+            time.sleep(0.05)
             self.info.text = f"{sum([1 if m.analysis else 0 for m in moves])}/{len(moves)} analyzed"
 
     # analysis thread
@@ -215,7 +180,8 @@ class EngineControls(GridLayout):
             while self.outstanding_analysis_queries:
                 self._send_analysis_query(self.outstanding_analysis_queries.pop(0))
             line = self.kata.stdout.readline()
-            print("KATA ANALYSIS RECEIVED:", line[:50])
+            if self.debug:
+                print("KATA ANALYSIS RECEIVED:", line[:50])
             self.board.store_analysis(json.loads(line))
             self.update_evaluation()
             self.redraw(include_board=False)
@@ -242,14 +208,14 @@ class EngineControls(GridLayout):
             "includeOwnership": True,
             "maxVisits": self.visits[fast][1],
         }
-        print("query", query)
+        if self.debug:
+            print("query", query)
         self._send_analysis_query(query)
         query.update(
             {"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0], "includeOwnership": False}
-        )  # TODO: merge?
+        )
         query["moves"] += [[move.bw_player(next_move=True), "pass"]]
         query["analyzeTurns"][0] += 1
-        print("pass-query", query)
         self._send_analysis_query(query)
 
 

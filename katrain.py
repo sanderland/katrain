@@ -47,6 +47,12 @@ class BadukPanWidget(Widget):
     def on_touch_up(self, touch):
         if self.ghost_stone:
             self.engine.action("play", self.ghost_stone)
+        else:
+            xd, xp = self._find_closest(touch.x)
+            yd, yp = self._find_closest(touch.y)
+            stones_here = [m for m in self.engine.board.stones if m.coords == (xp,yp)]
+            if stones_here and max(yd, xd) < self.grid_size / 2:  # load old comment
+                self.engine.info.text = stones_here[-1].comment(sgf=True)
         self.ghost_stone = None
         self.redraw() # remove ghost
 

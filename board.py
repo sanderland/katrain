@@ -17,6 +17,8 @@ class Move:
         self.analysis = None
         self.pass_analysis = None
         self.ownership = None
+        self.x_comment = ""
+        self.auto_undid = False
         self.move_number = 0
 
     def __repr__(self):
@@ -61,11 +63,13 @@ class Move:
         score = score or self.score
         return f"{'B' if score >= 0 else 'W'}+{abs(score):.1f}"
 
-    @property
-    def comment(self,sgf=False):
+    def comment(self,sgf=False, eval=False, hints=False):
         if not self.parent: # root
             return ""
-        text = f"Move {self.move_number}: {self.bw_player()} @ {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
+        text = f"Move {self.move_number}: {self.bw_player()} {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
+        text += self.x_comment
+        text += "".join(f"Auto undid move {m.gtp()} ({m.evaluation*100:.1f}% efficient)\n" for m in self.children if m.auto_undid)
+
         if self.analysis_ready:
             score, _, temperature = self.temperature_stats
             if sgf:
@@ -73,13 +77,14 @@ class Move:
                 text += f"Temperature: {temperature:.1f}\n"
             if self.parent and self.parent.analysis_ready:
                 prev_best_score, prev_worst_score, prev_temperature = self.parent.temperature_stats
-                text += f"Top move was {self.format_score(prev_best_score)} @ {self.parent.analysis[0]['move']}\n"
-                text += f"Pass score was {self.format_score(prev_worst_score)}\n"
+                if sgf or hints:
+                    text += f"Top move was {self.parent.analysis[0]['move']} ({self.format_score(prev_best_score)})\n"
+                    text += f"Pass score was {self.format_score(prev_worst_score)}\n"
                 if prev_temperature < 0.5:
                     text += f"Previous temperature ({prev_temperature}) too low for evaluation\n"
                 else:
-                    if eval:
-                        text += f"Evaluation: {100*self.evaluation:.1f}%\n"
+                    if sgf or eval:
+                        text += f"Evaluation: {100*self.evaluation:.1f}% efficient\n"
                         outdated_evaluation = self.outdated_evaluation
                         if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.01:
                             text += f"(Was considered last move as: {100 * outdated_evaluation :.1f}%)\n"
@@ -94,7 +99,7 @@ class Move:
     @property
     def evaluation_info(self):
         if self.parent and self.parent.analysis_ready and self.analysis_ready:
-            return self.evaluation,self.parent.temperature_stats[2]
+            return self.evaluation, self.parent.temperature_stats[2]
         else:
             return None,None
 
@@ -264,7 +269,7 @@ class Board:
     def moves(self) -> list:  # flat list of moves to current
         moves = []
         p = self.current_move
-        while p != self.root:
+        while p is not self.root:  # NB == is wrong here
             moves.append(p)
             p = p.parent
         return moves[::-1]
