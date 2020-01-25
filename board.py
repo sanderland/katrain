@@ -6,9 +6,11 @@ class Move:
     GTP_COORD = "ABCDEFGHJKLMNOPQRSTUVWYXYZ"
     PLAYERS = "BW"
     SGF_COORD = [chr(i) for i in range(97, 123)]
+    _move_id_counter = -1
 
     def __init__(self, player, coords=None, gtpcoords=None, sgfcoords=None, robot=False):
-        self.id = None
+        Move._move_id_counter += 1
+        self.id = Move._move_id_counter
         self.player = player
         self.coords = coords or (gtpcoords and self.gtp2ix(gtpcoords)) or self.sgf2ix(sgfcoords)
         self.children = []
@@ -30,6 +32,7 @@ class Move:
     def __hash__(self):
         return self.gtp().__hash__()
 
+    # move tree building
     def play(self, move):
         try:
             return self.children[self.children.index(move)]
@@ -38,14 +41,6 @@ class Move:
             move.move_number = self.move_number + 1
             self.children.append(move)
             return move
-
-    def temperature(self):
-        if self.analysis:
-            best_score = float(self.analysis[0]["scoreLead"])
-            worst_score = -float(self.pass_analysis[0]["scoreLead"])
-            return best_score - worst_score
-        else:
-            return 0
 
     ### various analysis functions
     def set_analysis(self, analysis_blob, is_pass):
@@ -68,7 +63,9 @@ class Move:
             return ""
         text = f"Move {self.move_number}: {self.bw_player()} {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
         text += self.x_comment
-        text += "".join(f"Auto undid move {m.gtp()} ({m.evaluation*100:.1f}% efficient)\n" for m in self.children if m.auto_undid)
+
+        if eval and not sgf:  # show undos and on previous move as well while playing
+            text += "".join(f"Auto undid move {m.gtp()} ({m.evaluation*100:.1f}% efficient)\n" for m in self.children if m.auto_undid)
 
         if self.analysis_ready:
             score, _, temperature = self.temperature_stats
@@ -81,7 +78,7 @@ class Move:
                     text += f"Top move was {self.parent.analysis[0]['move']} ({self.format_score(prev_best_score)})\n"
                     text += f"Pass score was {self.format_score(prev_worst_score)}\n"
                 if prev_temperature < 0.5:
-                    text += f"Previous temperature ({prev_temperature}) too low for evaluation\n"
+                    text += f"Previous temperature ({prev_temperature:.1f}) too low for evaluation\n"
                 else:
                     if sgf or eval:
                         text += f"Evaluation: {100*self.evaluation:.1f}% efficient\n"
@@ -91,6 +88,12 @@ class Move:
                         points_lost = self.player_sign * (prev_best_score - score)
                         if points_lost > 0.5:
                             text += f"Estimate point loss: {points_lost:.1f}\n"
+
+        if eval or sgf: # show undos on move itself in both sgf and while playing
+            undids = [m.gtp() + (f"({m.evaluation_info[0]*100:.1f}% efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m!=self]
+            if undids:
+                text += "Other attempted move(s): " + ", ".join(undids) + "\n"
+
         else:
             text = "No analysis available" if sgf else "Analyzing move..."
         return text
@@ -175,14 +178,12 @@ class Move:
 
 
 class Board:
-    _move_id_counter = 0  # used to make a map to all moves across all games
 
     def __init__(self, board_size=19):
         self.board_size = board_size
         self.root = Move(1, (None, None))  # root is 1=white so black is first
-        self.root.id = -1
         self.current_move = self.root
-        self.all_moves = {-1: self.root}
+        self.all_moves = {self.root.id: self.root}
         self._init_chains()
 
     # -- move tree functions --
@@ -253,9 +254,6 @@ class Board:
             raise
 
         move = self.current_move.play(move)  # traverse or append
-        if not move.id:
-            move.id = Board._move_id_counter
-            Board._move_id_counter += 1
         self.all_moves[move.id] = move
         self.current_move = move
         return move
@@ -296,11 +294,12 @@ class Board:
         return sum(self.chains, [])
 
     @property
+    def game_ended(self):
+        return self.current_move.parent and self.current_move.is_pass and self.current_move.parent.is_pass
+
+    @property
     def prisoner_count(self):
         return [sum([m.player==player for m in self.prisoners]) for player in [0,1]]
-
-    def sgf(self):
-        return "SGF[]"
 
     def __str__(self):
         return (

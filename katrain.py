@@ -128,14 +128,14 @@ class BadukPanWidget(Widget):
                 inner = COLORS[1 - m.player] if (m == last_move) else None
                 self.draw_stone(m.coords[0], m.coords[1], COLORS[m.player], inner, evalcol, evalsize)
 
-            # ownership
-            if self.engine.ownership.active and last_move.ownership:
-                ownership = last_move.ownership
+            # ownership - allow one move out of date for smooth animation
+            ownership = last_move.ownership or (last_move.parent and last_move.parent.ownership)
+            if self.engine.ownership.active and ownership:
                 rsz = self.grid_size * 0.2
                 ix = 0
                 for y in range(self.engine.board_size - 1, -1, -1):
                     for x in range(self.engine.board_size):
-                        ix_owner = current_player if ownership[ix] > 0 else 1 - current_player
+                        ix_owner = 0 if ownership[ix] > 0 else 1
                         if ix_owner != (has_stone.get((x, y), -1)):
                             Color(*COLORS[ix_owner], abs(ownership[ix]))
                             Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
@@ -145,9 +145,10 @@ class BadukPanWidget(Widget):
             undo_coords = set()
             alpha = Config.get("ui")["undo_alpha"]
             for m in last_move.children:
-                if m.evaluation and m.coords[0] is not None:
+                eval_info = m.evaluation_info
+                if eval_info[0] and m.coords[0] is not None:
                     undo_coords.add(m.coords)
-                    evalcol = (*self._eval_spectrum(m.evaluation), alpha)
+                    evalcol = (*self._eval_spectrum(eval_info[0]), alpha)
                     self.draw_stone(m.coords[0], m.coords[1], (*COLORS[m.player][:3], alpha), Config.get("ui")["undo_circle_col"], evalcol, self.EVAL_BOUNDS[1])
 
             # hints
@@ -165,7 +166,7 @@ class BadukPanWidget(Widget):
             # pass circle
             passed = len(moves) > 1 and last_move.is_pass
             if passed:
-                if len(moves) > 2 and moves[-2].is_pass:
+                if self.engine.board.game_ended:
                     text = "game\nend"
                 else:
                     text = "pass"

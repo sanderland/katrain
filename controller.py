@@ -87,7 +87,7 @@ class EngineControls(GridLayout):
         # mr.waiting_for_analysis
         self.redraw()
 
-    def update_evaluation(self):
+    def update_evaluation(self,undo_triggered = False):
         current_move = self.board.current_move
         if self.eval.active(current_move.player):
             self.info.text = current_move.comment(eval=self.eval.active(current_move.player), hints=self.hints.active(current_move.player))
@@ -100,6 +100,7 @@ class EngineControls(GridLayout):
 
         if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children:
             # handle automatic undo
+
             if self.auto_undo.active(current_move.player) and not self.ai_auto.active(current_move.player) and not current_move.auto_undid:
                 ts = self.train_settings
                 # TODO: is this overly generous wrt low visit outdated evaluations?
@@ -108,13 +109,14 @@ class EngineControls(GridLayout):
                 if eval < ts["undo_eval_threshold"] and points_lost >= ts["undo_point_threshold"]:
                     current_move.auto_undid = True
                     self.board.undo()
+                    undo_triggered = True
                     if len(current_move.parent.children) >= ts["num_undo_prompts"] + 1:
                         best_move = sorted([m for m in current_move.parent.children], key=lambda m: -(m.evaluation_info[0] or 0) )[0]
                         best_move.x_comment = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
                         self.board.play(best_move)
-                    self.update_evaluation()
+                    self.update_evaluation(undo_triggered=True)
             # ai player doesn't technically need parent ready, but don't want to override waiting for undo
-            elif self.ai_auto.active(1 - current_move.player) and not current_move.children:
+            elif self.ai_auto.active(1 - current_move.player) and not current_move.children and not undo_triggered and not self.board.game_ended:
                 self._do_aimove()
 
     def _do_aimove(self):
@@ -130,20 +132,20 @@ class EngineControls(GridLayout):
             for d in current_move.ai_moves
             if int(d["visits"]) >= ts["balance_play_min_visits"]
         ]
-        selmove = pos_moves[0][0]
+        sel_moves = [pos_moves[0][0]]
         # don't play suicidal to balance score - pass when it's best
         if self.ai_balance.active and pos_moves[0][0] != "pass":
-            selmoves = [
+            sel_moves = [
                 move
                 for move, score, eval in pos_moves
                 if eval > ts["balance_play_randomize_eval"]
                 or eval > ts["balance_play_min_eval"]
-                and current_move.player_sign * score > ts["balance_play_target_score"]
-            ]
-            selmove = random.choice(selmoves)  # TODO: some kind of when further ahead play worse?
-            print('SEL',selmoves)
-        print('POS',pos_moves, 'MOVE', selmove)
-        self.play(Move(player=self.board.current_player, gtpcoords=selmove, robot=True))
+                and -current_move.player_sign * score > ts["balance_play_target_score"]
+            ] or sel_moves
+        aimove = Move(player=self.board.current_player, gtpcoords=random.choice(sel_moves), robot=True)
+        if len(sel_moves) > 1:
+            aimove.x_comment = "{'AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, eval in sel_moves) + "\n"
+        self.play(aimove)
 
     def _do_undo(self):
         if self.ai_auto.active and self.board.current_move.robot:
@@ -218,22 +220,21 @@ class EngineControls(GridLayout):
         query["analyzeTurns"][0] += 1
         self._send_analysis_query(query)
 
-
     def sgf(self):
         def sgfify(mvs):
             return f"(;GM[1]FF[4]SZ[{self.board_size}]KM[{self.komi}]RU[JP];" + ";".join(mvs) + ")"
 
-        def format_move(m, pm):
-            undo_comment = "".join(f"\nUndo: {u.gtp()} was {100*u.evaluation:.1f}%" for u in pm.undos if u.evaluation)
-            undo_cr = "".join(f"MA[{u.sgfcoords(self.board_size)}]" for u in pm.undos if u.coords[0])
-            if pm.analysis and pm.analysis[0]["move"] != "pass":
-                best_sq = f"SQ[{Move(gtpcoords=pm.analysis[0]['move'], player=0).sgfcoords(self.board_size)}]"
+        def format_move(move, prev_move):
+            undos = [m for m in prev_move.children if m!=move]
+            undo_cr = "".join(f"MA[{u.sgfcoords(self.board_size)}]" for u in undos if u.coords[0])
+            if prev_move.analysis and prev_move.analysis[0]["move"] != "pass" and (move.evaluation_info[0] or 0.0) < self.train_settings['sgf_show_best_move_threshold']:
+                best_sq = f"SQ[{Move(gtpcoords=prev_move.analysis[0]['move'], player=0).sgfcoords(self.board_size)}]"
             else:
                 best_sq = ""
-            return m.sgf(self.board_size) + f"C[{m.comment}{undo_comment}]{undo_cr}{best_sq}"
-
-        sgfmoves_small = [mv.sgf(self.board_size) for mv in self.moves[1:]]
-        sgfmoves = [format_move(mv, pmv) for mv, pmv in zip(self.moves[1:], self.moves[:-1])]
+            return move.sgf(self.board_size) + f"C[{move.comment(sgf=True)}]{undo_cr}{best_sq}"
+        moves = self.board.moves
+        sgfmoves_small = [mv.sgf(self.board_size) for mv in moves]
+        sgfmoves = [format_move(mv, pmv) for mv, pmv in zip(moves, [self.board.root] + moves[:-1])]
 
         with open("out.sgf", "w") as f:
             f.write(sgfify(sgfmoves))

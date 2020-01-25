@@ -35,7 +35,8 @@
     "balance_play_min_visits": 20,
     "undo_eval_threshold": 0.875,
     "undo_point_threshold": 1,
-    "num_undo_prompts": 1
+    "num_undo_prompts": 1,
+    "sgf_show_best_move_threshold": 0.95
   },
   "debug": {
     "level": 1
