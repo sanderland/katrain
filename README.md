@@ -54,12 +54,13 @@ Play
 
 Configuration
 -------------
-`config.json` has a number of options, many of them are stylistic.
+`config.json` has a number of options, many of them are stylistic, but also including the command kata is started with (and so the kata config and model).
+You can use `python katrain.py your_config_file.json` to use another config file instead.
 
 The `trainer` block has the following options to tweak:
 
 * `balance_play_target_score`: indicates how many points the AI aims to win by when using 'balance score'.
-* `balance_play_randomize_eval`: when not needing to balance score, the AI will pick a random move which is at least this good.
+* `balance_play_randomize_eval`: when not needing to balance score, the AI will pick a random move which is at least this good as long as it stays ahead.
 * `balance_play_min_eval`: when needing to balance score, the AI will pick a move which is at least this good.
 * `balance_play_min_visits`: never pick a move with fewer playouts than this.
 * `undo_eval_threshold`, `undo_point_threshold`: prompt player to undo if move is worse than this in terms of points AND evaluation.
@@ -69,6 +70,6 @@ The cfg file has additional configuration for kata. In particular, it changes th
 
 TODO
 ----
-* Prisoner count
+* Dots scaling better by temperature
 * Better name
 * ....

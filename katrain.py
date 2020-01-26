@@ -1,13 +1,14 @@
+import math
+import signal
+
 from kivy.app import App
 from kivy.graphics import *
 from kivy.properties import NumericProperty, ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 
-import math
-
-from controller import Config
 from board import Move
+from controller import Config
 from kivyutils import *
 
 COLORS = Config.get("ui")["stones"]
@@ -189,6 +190,22 @@ class KaTrainApp(App):
 
     def on_start(self):
         self.gui.controls.restart()
+        signal.signal(signal.SIGINT, self.signal_handler)
+
+    def signal_handler(self,signal,frame):
+        import sys
+        import traceback
+        if self.gui.controls.debug:
+            code = ['TRACEBACKS']
+            for threadId, stack in sys._current_frames().items():
+                code.append("\n# ThreadID: %s" % threadId)
+                for filename, lineno, name, line in traceback.extract_stack(stack):
+                    code.append('File: "%s", line %d, in %s' % (filename,
+                                                                lineno, name))
+                    if line:
+                        code.append("  %s" % (line.strip()))
+            print("\n".join(code))
+        sys.exit(0)
 
 
 if __name__ == "__main__":

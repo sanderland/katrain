@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 class IllegalMoveException(Exception):
     pass
 
@@ -82,15 +85,18 @@ class Move:
                     text += f"Previous temperature: {prev_temperature:.1f}\n"
                 if prev_temperature < 0.5:
                     text += f"Previous temperature ({prev_temperature:.1f}) too low for evaluation\n"
-                elif not self.is_pass:
+                elif not self.is_pass and self.parent.analysis[0]['move'] != self.gtp():
                     if sgf or eval:
-                        text += f"Evaluation: {100*self.evaluation:.1f}% efficient\n"
                         outdated_evaluation = self.outdated_evaluation
-                        if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.01:
-                            text += f"(Was considered last move as: {100 * outdated_evaluation :.1f}%)\n"
-                        points_lost = self.player_sign * (prev_best_score - score)
-                        if points_lost > 0.5:
-                            text += f"Estimate point loss: {points_lost:.1f}\n"
+                        if outdated_evaluation and outdated_evaluation > self.evaluation + 0.05 and outdated_evaluation > 0.95:
+                            text += f"Was considered last move as: {100 * outdated_evaluation :.1f}% efficient.\n"
+                        else:
+                            text += f"Evaluation: {100*self.evaluation:.1f}% efficient\n"
+                            if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.01:
+                                text += f"(Was considered last move as: {100 * outdated_evaluation :.1f}%)\n"
+                            points_lost = self.player_sign * (prev_best_score - score)
+                            if points_lost > 0.5:
+                                text += f"Estimate point loss: {points_lost:.1f}\n"
 
         if eval or sgf:  # show undos on move itself in both sgf and while playing
             undids = [m.gtp() + (f"({m.evaluation_info[0]*100:.1f}% efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m != self]
@@ -179,6 +185,7 @@ class Move:
 
 class Board:
     def __init__(self, board_size=19):
+        self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
         self.board_size = board_size
         self.root = Move(1, (None, None))  # root is 1=white so black is first
         self.current_move = self.root
@@ -298,5 +305,31 @@ class Board:
     def prisoner_count(self):
         return [sum([m.player == player for m in self.prisoners]) for player in [0, 1]]
 
-    def __str__(self):
+    def __repr__(self):
         return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in l) for l in self.board) + f"\ncaptures: {self.prisoner_count}"
+
+    def write_sgf(self, komi, train_settings, file_name=None):
+        def sgfify(mvs):
+            return f"(;GM[1]FF[4]SZ[{self.board_size}]KM[{komi}]RU[JP];" + ";".join(mvs) + ")"
+
+        def format_move(move, prev_move):
+            undos = [m for m in prev_move.children if m != move]
+            undo_cr = "".join(f"MA[{u.sgfcoords(self.board_size)}]" for u in undos if u.coords[0])
+            if (
+                prev_move.analysis
+                and prev_move.analysis[0]["move"] != "pass"
+                and (move.evaluation_info[0] or 0.0) < train_settings["sgf_show_best_move_threshold"]
+                and prev_move.analysis[0]["move"] != move.gtp()
+            ):
+                best_sq = f"SQ[{Move(gtpcoords=prev_move.analysis[0]['move'], player=0).sgfcoords(self.board_size)}]"
+            else:
+                best_sq = ""
+            return move.sgf(self.board_size) + f"C[{move.comment(sgf=True)}]{undo_cr}{best_sq}"
+
+        moves = self.moves
+        sgfmoves_small = [mv.sgf(self.board_size) for mv in moves]
+        sgfmoves = [format_move(mv, pmv) for mv, pmv in zip(moves, [self.root] + moves[:-1])]
+
+        with open(file_name or f"sgfout/katrain_{self.game_id}.sgf", "w") as f:
+            f.write(sgfify(sgfmoves))
+        return sgfify(sgfmoves_small)

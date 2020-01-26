@@ -4,6 +4,7 @@ import random
 import re
 import shlex
 import subprocess
+import sys
 import threading
 import time
 from queue import Queue
@@ -13,7 +14,10 @@ from kivy.uix.gridlayout import GridLayout
 
 from board import Board, IllegalMoveException, Move
 
-Config = JsonStore("config.json")
+config_file = sys.argv[1] if len(sys.argv) >= 1 else "config.json"
+print(f"Using config file {config_file}")
+Config = JsonStore(config_file)
+
 
 
 class EngineControls(GridLayout):
@@ -42,7 +46,7 @@ class EngineControls(GridLayout):
         self.ready = False
         if not self.message_queue:
             self.message_queue = Queue()
-            self.thread = threading.Thread(target=self._engine_thread, daemon=True).start()
+            self.engine_thread = threading.Thread(target=self._engine_thread, daemon=True).start()
         else:
             with self.message_queue.mutex:
                 self.message_queue.queue.clear()
@@ -54,7 +58,7 @@ class EngineControls(GridLayout):
     # engine main loop
     def _engine_thread(self):
         self.kata = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        threading.Thread(target=self._analysis_read_thread, daemon=True).start()
+        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
 
         msg, *args = self.message_queue.get()
         while True:
@@ -207,28 +211,5 @@ class EngineControls(GridLayout):
         query["analyzeTurns"][0] += 1
         self._send_analysis_query(query)
 
-    def sgf(self):
-        def sgfify(mvs):
-            return f"(;GM[1]FF[4]SZ[{self.board_size}]KM[{self.komi}]RU[JP];" + ";".join(mvs) + ")"
-
-        def format_move(move, prev_move):
-            undos = [m for m in prev_move.children if m != move]
-            undo_cr = "".join(f"MA[{u.sgfcoords(self.board_size)}]" for u in undos if u.coords[0])
-            if (
-                prev_move.analysis
-                and prev_move.analysis[0]["move"] != "pass"
-                and (move.evaluation_info[0] or 0.0) < self.train_settings["sgf_show_best_move_threshold"]
-                and prev_move.analysis[0]["move"] != move.gtp()
-            ):
-                best_sq = f"SQ[{Move(gtpcoords=prev_move.analysis[0]['move'], player=0).sgfcoords(self.board_size)}]"
-            else:
-                best_sq = ""
-            return move.sgf(self.board_size) + f"C[{move.comment(sgf=True)}]{undo_cr}{best_sq}"
-
-        moves = self.board.moves
-        sgfmoves_small = [mv.sgf(self.board_size) for mv in moves]
-        sgfmoves = [format_move(mv, pmv) for mv, pmv in zip(moves, [self.board.root] + moves[:-1])]
-
-        with open("out.sgf", "w") as f:
-            f.write(sgfify(sgfmoves))
-        return sgfify(sgfmoves_small)
+    def output_sgf(self):
+        return self.board.write_sgf(self.komi, self.train_settings)
