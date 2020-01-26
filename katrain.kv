@@ -1,8 +1,5 @@
 #:kivy 1.11.0
 
-
-
-
 <StyledButton@Button>:
     text_color: 0.95,0.95,0.95,1
     button_color: 0.157,0.455,0.753,1
@@ -93,6 +90,58 @@
 		id: value
 		bold: True
 
+<BaseCircleWithText@DarkLabel>
+    text: ''
+    color: 0.95,0.95,0.95,1
+    font_size: min(self.height,self.width) * 0.6
+    halign: 'center'
+    valign: 'center'
+    bold: True
+
+<BlackCircleWithText@BaseCircleWithText>
+    canvas.before:
+        Color:
+            rgba: 0.05,0.05,0.05,1
+        Ellipse:
+            pos: self.pos[0] + self.width/2 - min(self.height,self.width) * 0.48, self.pos[1]  + self.height/2 - min(self.height,self.width) * 0.48
+            size: min(self.height,self.width) * 0.96, min(self.height,self.width) * 0.96
+
+<WhiteCircleWithText@BaseCircleWithText>
+    color: 0.05,0.05,0.05,1
+    canvas.after:
+        Color:
+            rgba: 0.05,0.05,0.05,1
+        Line:
+            circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, min(self.height,self.width)*0.45
+            width: 1.1
+
+
+<CensorableScoreLabel>
+	orientation: 'horizontal'
+	text: ''
+	label: ''
+	black: black
+	white: white
+	BlackCircleWithText:
+	    id: black
+		size_hint: 0.15,1
+        text: '0'
+	CheckBoxHintLabel:
+		size_hint: 0.3,1
+		text: root.label
+		font_size: self.height  * 0.6
+		on_press: value.opacity =  1 if  value.opacity==0 else 0
+	WhiteCircleWithText:
+	    id: white
+		size_hint: 0.15,1
+        text: '0'
+    DarkLabel:
+		size_hint: 0.4,1
+		text: root.text
+		font_size: self.height * 0.6
+		id: value
+		bold: True
+
 <BadukPanWidget>:
 	size: self.parent.height, self.parent.height
 	engine: self.parent.controls
@@ -124,34 +173,10 @@
 			size_hint: 0.1, 0.5
 			Label:
 			    size_hint: 1, 0.2
-			DarkLabel:
-			    pos: self.parent.pos[0] + self.width * 0.1, self.parent.pos[1]
-			    size_hint: 1, 0.4
+			BlackCircleWithText:
 			    text: 'B'
-			    color: 0.95,0.95,0.95,1
-				font_size: min(self.height,self.width) * 0.6
-                halign: 'center'
-                valign: 'center'
-                bold: True
-                canvas.before:
-                    Color:
-                        rgba: 0.05,0.05,0.05,1
-                    Ellipse:
-                        pos: self.pos[0] + self.width/2 - min(self.height,self.width) * 0.48, self.pos[1]  + self.height/2 - min(self.height,self.width) * 0.48
-                        size: min(self.height,self.width) * 0.96, min(self.height,self.width) * 0.96
-			DarkLabel:
-			    size_hint: 1, 0.4
+			WhiteCircleWithText:
 			    text: 'W'
-                halign: 'center'
-                valign: 'center'
-				font_size: min(self.height,self.width) * 0.6
-                bold: True
-                canvas.after:
-                    Color:
-                        rgba: 0.05,0.05,0.05,1
-                    Line:
-                        circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, min(self.height,self.width)*0.45
-                        width: 1.1
 		BWCheckBoxHint:
 			size_hint: 0.2, 0.5
 			id: eval
@@ -224,7 +249,7 @@
         size_hint: 1, 0.025
         label: 'Evaluation'
         text: '...'
-    CensorableLabel:
+    CensorableScoreLabel:
         id: score
         size_hint: 1, 0.025
         label: 'Score'

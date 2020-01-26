@@ -71,21 +71,16 @@ class EngineControls(GridLayout):
         try:
             mr = self.board.play(move)
         except IllegalMoveException as e:
-            print(str(e))
             self.info.text = f"Illegal move: {str(e)}"
             return
-        self._request_analysis(mr)
+        if not mr.analysis_ready:  # replayed old move
+            self._request_analysis(mr)
         return mr
 
-    # engine action functions
-    def _do_play(self, *args):
-        move = Move(player=self.board.current_player, coords=args[0])
-        self.play(move)
-        # mr.waiting_for_analysis
-        self.redraw()
-
+    # handles showing completed analysis and triggered actions like auto undo and ai move
     def update_evaluation(self, undo_triggered=False):
         current_move = self.board.current_move
+        self.score.set_prisoners(self.board.prisoner_count)
         if self.eval.active(current_move.player):
             self.info.text = current_move.comment(eval=self.eval.active(current_move.player), hints=self.hints.active(current_move.player))
         self.evaluation.text = ""
@@ -116,12 +111,16 @@ class EngineControls(GridLayout):
             elif self.ai_auto.active(1 - current_move.player) and not current_move.children and not undo_triggered and not self.board.game_ended:
                 self._do_aimove()
 
+    # engine action functions
+    def _do_play(self, *args):
+        self.play(Move(player=self.board.current_player, coords=args[0]))
+        self.redraw()
+
     def _do_aimove(self):
         ts = self.train_settings
         while not self.board.current_move.analysis_ready:
             self.info.text = "Thinking..."
             time.sleep(0.05)
-
         # select move
         current_move = self.board.current_move
         pos_moves = [(d["move"], float(d["scoreMean"]), d["evaluation"]) for d in current_move.ai_moves if int(d["visits"]) >= ts["balance_play_min_visits"]]
@@ -142,8 +141,6 @@ class EngineControls(GridLayout):
         self.play(aimove)
 
     def _do_undo(self):
-        if self.ai_auto.active and self.board.current_move.robot:
-            self.board.undo()
         if (
             self.ai_lock.active
             and self.auto_undo.active(self.board.current_move.parent.player)
@@ -203,7 +200,7 @@ class EngineControls(GridLayout):
             "maxVisits": self.visits[fast][1],
         }
         if self.debug:
-            print("query", query)
+            print(f"query for {move_id}")
         self._send_analysis_query(query)
         query.update({"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0], "includeOwnership": False})
         query["moves"] += [[move.bw_player(next_move=True), "pass"]]

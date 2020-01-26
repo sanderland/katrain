@@ -32,7 +32,6 @@ class Move:
     def __hash__(self):
         return self.gtp().__hash__()
 
-    # move tree building
     def play(self, move):
         try:
             return self.children[self.children.index(move)]
@@ -42,7 +41,11 @@ class Move:
             self.children.append(move)
             return move
 
-    ### various analysis functions
+    @property
+    def is_pass(self):
+        return self.coords[0] is None
+
+    # various analysis functions
     def set_analysis(self, analysis_blob, is_pass):
         if is_pass:
             self.pass_analysis = analysis_blob["moveInfos"]
@@ -71,15 +74,15 @@ class Move:
             score, _, temperature = self.temperature_stats
             if sgf:
                 text += f"Score: {self.format_score(score)}\n"
-                text += f"Temperature: {temperature:.1f}\n"
             if self.parent and self.parent.analysis_ready:
                 prev_best_score, prev_worst_score, prev_temperature = self.parent.temperature_stats
                 if sgf or hints:
                     text += f"Top move was {self.parent.analysis[0]['move']} ({self.format_score(prev_best_score)})\n"
                     text += f"Pass score was {self.format_score(prev_worst_score)}\n"
+                    text += f"Previous temperature: {prev_temperature:.1f}\n"
                 if prev_temperature < 0.5:
                     text += f"Previous temperature ({prev_temperature:.1f}) too low for evaluation\n"
-                else:
+                elif not self.is_pass:
                     if sgf or eval:
                         text += f"Evaluation: {100*self.evaluation:.1f}% efficient\n"
                         outdated_evaluation = self.outdated_evaluation
@@ -143,10 +146,7 @@ class Move:
             d["evaluation"] = -self.player_sign * (d["scoreLead"] - worst_score) / temperature
         return self.analysis
 
-    ### various output and conversion functions
-    @property
-    def is_pass(self):
-        return self.coords[0] is None
+    # various output and conversion functions
 
     def gtp2ix(self, gtpmove):
         if "pass" in gtpmove:
@@ -244,19 +244,19 @@ class Board:
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
     def play(self, move, ignore_ko=False):
+        played_move = self.current_move.play(move)
         try:
-            self._validate_move_and_update_chains(move, ignore_ko)
+            self._validate_move_and_update_chains(played_move, ignore_ko)
         except IllegalMoveException as e:
+            self.current_move.children = [m for m in self.current_move.children if m != played_move]
             self._init_chains()  # restore
             raise
-
-        move = self.current_move.play(move)  # traverse or append
-        self.all_moves[move.id] = move
-        self.current_move = move
-        return move
+        self.all_moves[played_move.id] = played_move
+        self.current_move = played_move
+        return played_move
 
     def undo(self):
-        if self.current_move != self.root:
+        if self.current_move is not self.root:
             self.current_move = self.current_move.parent
         self._init_chains()
 
