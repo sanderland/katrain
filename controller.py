@@ -76,6 +76,7 @@ class EngineControls(GridLayout):
         except IllegalMoveException as e:
             self.info.text = f"Illegal move: {str(e)}"
             return
+        self.update_evaluation()
         if not mr.analysis_ready:  # replayed old move
             self._request_analysis(mr)
         return mr
@@ -95,7 +96,6 @@ class EngineControls(GridLayout):
 
         if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children:
             # handle automatic undo
-
             if self.auto_undo.active(current_move.player) and not self.ai_auto.active(current_move.player) and not current_move.auto_undid:
                 ts = self.train_settings
                 # TODO: is this overly generous wrt low visit outdated evaluations?
@@ -109,15 +109,19 @@ class EngineControls(GridLayout):
                         best_move.x_comment = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
                         self.board.play(best_move)
                     self.update_evaluation()
+                    return
             # ai player doesn't technically need parent ready, but don't want to override waiting for undo
             current_move = self.board.current_move  # this effectively checks undo didn't just happen
-            if self.ai_auto.active(1 - current_move.player) and not self.board.game_ended and not current_move.children:
-                self._do_aimove()
+            if self.ai_auto.active(1 - current_move.player) and not self.board.game_ended:
+                if current_move.children:
+                    self.info.text = "AI paused since moves were undone. Press 'AI Move' or choose a move for the AI to continue playing."
+                else:
+                    self._do_aimove()
+        self.redraw(include_board=False)
 
     # engine action functions
     def _do_play(self, *args):
         self.play(Move(player=self.board.current_player, coords=args[0]))
-        self.redraw()
 
     def _do_aimove(self):
         ts = self.train_settings
@@ -178,7 +182,6 @@ class EngineControls(GridLayout):
                 print("KATA ANALYSIS RECEIVED:", line[:50])
             self.board.store_analysis(json.loads(line))
             self.update_evaluation()
-            self.redraw(include_board=False)
 
     def _send_analysis_query(self, query):
         if self.kata:
