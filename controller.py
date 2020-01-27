@@ -14,10 +14,9 @@ from kivy.uix.gridlayout import GridLayout
 
 from board import Board, IllegalMoveException, Move
 
-config_file = sys.argv[1] if len(sys.argv) >= 1 else "config.json"
+config_file = sys.argv[1] if len(sys.argv) > 1 else "config.json"
 print(f"Using config file {config_file}")
 Config = JsonStore(config_file)
-
 
 
 class EngineControls(GridLayout):

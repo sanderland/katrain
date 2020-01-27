@@ -85,7 +85,7 @@ class Move:
                     text += f"Previous temperature: {prev_temperature:.1f}\n"
                 if prev_temperature < 0.5:
                     text += f"Previous temperature ({prev_temperature:.1f}) too low for evaluation\n"
-                elif not self.is_pass and self.parent.analysis[0]['move'] != self.gtp():
+                elif not self.is_pass and self.parent.analysis[0]["move"] != self.gtp():
                     if sgf or eval:
                         outdated_evaluation = self.outdated_evaluation
                         if outdated_evaluation and outdated_evaluation > self.evaluation + 0.05 and outdated_evaluation > 0.95:

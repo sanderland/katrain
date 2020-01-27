@@ -63,13 +63,14 @@ class BadukPanWidget(Widget):
         self.redraw()
 
     def draw_stone(self, x, y, col, innercol=None, evalcol=None, evalsize=10.0, scale=1.0):
-        draw_circle((self.gridpos[x], self.gridpos[y]), self.stone_size * scale, col)
+        stone_size = self.stone_size * scale
+        draw_circle((self.gridpos[x], self.gridpos[y]), stone_size, col)
         if evalcol:
             evalsize = min(self.EVAL_BOUNDS[1], max(evalsize, self.EVAL_BOUNDS[0])) / self.EVAL_BOUNDS[1]
-            draw_circle((self.gridpos[x], self.gridpos[y]), math.sqrt(evalsize) * self.stone_size * scale * 0.5, evalcol)
+            draw_circle((self.gridpos[x], self.gridpos[y]), math.sqrt(evalsize) * stone_size * 0.5, evalcol)
         if innercol:
             Color(*innercol)
-            Line(circle=(self.gridpos[x], self.gridpos[y], self.stone_size * scale * 0.45 / 0.85), width=1.75)
+            Line(circle=(self.gridpos[x], self.gridpos[y], stone_size * 0.45 / 0.85), width=1.75)
 
     def _eval_spectrum(self, score):
         score = max(0, score)
