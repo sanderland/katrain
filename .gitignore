@@ -1,4 +1,4 @@
-# Mine
+# additions
 KataGoData
 old
 models
@@ -7,9 +7,12 @@ gtp.log
 *.zip
 log.txt
 *.sgf
+sgfout
+my
 # too big
 KataGo/b20.gz
 
+# standard python ignore
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

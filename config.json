@@ -3,12 +3,13 @@
     "pass_visits": 200,
     "pass_visits_fast": 50,
     "visits": 3500,
-    "visits_fast": 1500,
-    "nopass_visits": 10
+    "visits_fast": 1500
   },
   "board": {
     "size": 19,
-    "komi": 7.5
+    "komi_19": 6.5,
+    "komi_13": 6.5,
+    "komi_9": 6.5
   },
   "ui": {
     "size_min": 1,
@@ -27,7 +28,7 @@
     "line_color": [0,0,0]
   },
   "engine": {
-    "command": "KataGo/katago gtp -model KataGo/b10.gz -config KataGo/japanese_explore_score.cfg"
+    "command": "KataGo/katago analysis -model KataGo/b10.gz -config KataGo/analysis_config.cfg -analysis-threads 8"
   },
   "trainer": {
     "balance_play_target_score": 2,
@@ -35,10 +36,9 @@
     "balance_play_min_eval": 0.875,
     "balance_play_min_visits": 20,
     "undo_eval_threshold": 0.875,
-    "undo_outdated_eval_threshold": 0.8,
     "undo_point_threshold": 1,
     "num_undo_prompts": 1,
-    "show_ai_options": true
+    "sgf_show_best_move_threshold": 0.95
   },
   "debug": {
     "level": 1

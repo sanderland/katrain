@@ -1,25 +1,23 @@
+import math
+import signal
+
 from kivy.app import App
 from kivy.graphics import *
 from kivy.properties import NumericProperty, ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 
-import math
-
+from board import Move
 from controller import Config
-from move import Move
 from kivyutils import *
-
-# (;GM[1]SZ[9]KM[7.5]RU[JP];B[fe];W[de];B[ec];W[dc];B[eg];W[dg];B[dh];W[ed];B[fd];W[ef];B[ff];W[eb];B[fc];W[eh];B[fg];W[ch];B[ee];W[df];B[dd];W[cd];B[db];W[cc];B[cb];W[fb];B[gb];W[bb];B[ea];W[ca];B[fa];W[fh];B[gh];W[ba];B[fi];W[di];B[da];W[ed];B[bc];W[bd];B[dd];W[ei];B[gi];W[ed])
-# (;GM[1]SZ[19]KM[7.5]RU[JP];B[qd];W[pp];B[cd];W[cp];B[ec];W[od];B[oc];W[nc];B[pc];W[nd];B[qf];W[jc];B[eq];W[do];B[hq];W[jq];B[cr];W[qn];B[cj];W[cl];B[nq];W[oq];B[np];W[lp];B[cg];W[nn];B[lr];W[kq];B[mo];W[kn];B[qi];W[mn];B[hc];W[qk];B[lc];W[je];B[jb];W[kb];B[kc];W[ib];B[jd];W[ja];B[lb];W[id];B[kd];W[ic];B[oj];W[pd];B[qe];W[qc];B[qb];W[rc];B[rb];W[pb];B[ob];W[nb];B[pa];W[lf];B[la];W[ma];B[mj];W[nk];B[ge];W[hd];B[hg];W[fc];B[fb];W[gc];B[ed];W[og];B[of];W[nf];B[pg];W[fq];B[fp];W[er];B[fr];W[dq];B[gq];W[dr];B[eo];W[en];B[fn];W[fm];B[gn];W[gm];B[dn];W[em];B[co];W[dp];B[hn];W[ep];B[fq];W[fj];B[jo];W[jn];B[jr];W[kr];B[hr];W[fo];B[js];W[ks];B[iq];W[io];B[ng];W[mg];B[oh];W[ne];B[hm];W[hl];B[fg];W[ip];B[go];W[gs];B[fs];W[ok];B[mh];W[lh];B[li];W[hp];B[im];W[hs];B[il];W[ir];B[ke];W[kf];B[gp];W[bk];B[kl];W[bj];B[lo];W[ko];B[ll];W[ml];B[rj];W[rk];B[kh];W[ci];B[lg];W[if];B[hk];W[ei];B[gi];W[bg];B[bh];W[ch];B[bf];W[dg];B[cf];W[df];B[pj];W[pk];B[sk];W[sl];B[sj];W[rl];B[gb];W[hb];B[gl];W[fl];B[gj];W[de];B[bi];W[ai];B[ag];W[dd];B[dc];W[ce];B[be];W[cc];B[bd];W[qj];B[ri];W[eh];B[lm];W[ln];B[jg];W[jf];B[mf];W[me];B[ig];W[mk];B[lk];W[nj];B[ni];W[eo];B[mm];W[nm];B[fd];W[gd];B[hf];W[ga];B[ea];W[jm];B[jl];W[pe];B[fh];W[fi];B[es];W[ds];B[fk];W[ek];B[gk];W[mb];B[eg];W[oa];B[na];W[fe];B[he];W[oa];B[pb];W[ee];B[cb];W[ie];B[ff];W[dh];B[pf];W[mg];B[ej];W[dj];B[kg];W[mf];B[in];W[jp];B[na];W[aj];B[ah];W[oa];B[pq];W[or];B[na];W[ha];B[oa];W[fa];B[eb];W[];B[gr];W[is];B[oe];W[ho];B[km];W[ef])
 
 COLORS = Config.get("ui")["stones"]
 GHOST_ALPHA = Config.get("ui")["ghost_alpha"]
 
 
-class Badukpan(Widget):
+class BadukPanWidget(Widget):
     def __init__(self, **kwargs):
-        super(Badukpan, self).__init__(**kwargs)
+        super(BadukPanWidget, self).__init__(**kwargs)
         self.ghost_stone = []
         self.gridpos = []
         self.grid_size = 0
@@ -36,12 +34,16 @@ class Badukpan(Widget):
     def on_touch_down(self, touch):
         xd, xp = self._find_closest(touch.x)
         yd, yp = self._find_closest(touch.y)
-        prevghost = self.ghost_stone
-        if self.engine.ready and max(yd, xd) < self.grid_size / 2 and (xp, yp) not in [(x, y) for _, x, y in self.engine.stones]:
+        prev_ghost = self.ghost_stone
+        if (
+            self.engine.ready
+            and max(yd, xd) < self.grid_size / 2
+            and (xp, yp) not in [m.coords for m in self.engine.board.stones]
+        ):
             self.ghost_stone = (xp, yp)
         else:
             self.ghost_stone = None
-        if prevghost != self.ghost_stone:
+        if prev_ghost != self.ghost_stone:
             self.redraw()
 
     def on_touch_move(self, touch):  # on_motion on_touch_move
@@ -50,22 +52,29 @@ class Badukpan(Widget):
     def on_touch_up(self, touch):
         if self.ghost_stone:
             self.engine.action("play", self.ghost_stone)
+        else:
+            xd, xp = self._find_closest(touch.x)
+            yd, yp = self._find_closest(touch.y)
+            stones_here = [m for m in self.engine.board.stones if m.coords == (xp, yp)]
+            if stones_here and max(yd, xd) < self.grid_size / 2:  # load old comment
+                self.engine.info.text = stones_here[-1].comment(sgf=True)
         self.ghost_stone = None
-        self.redraw()
+        self.redraw()  # remove ghost
 
     # drawing functions
     def on_size(self, *args):
         self.draw_board()
         self.redraw()
 
-    def draw_stone(self, x, y, col, innercol=None, evalcol=None, evalsize=10.0):
-        draw_circle((self.gridpos[x], self.gridpos[y]), self.stone_size, col)
+    def draw_stone(self, x, y, col, innercol=None, evalcol=None, evalsize=10.0, scale=1.0):
+        stone_size = self.stone_size * scale
+        draw_circle((self.gridpos[x], self.gridpos[y]), stone_size, col)
         if evalcol:
             evalsize = min(self.EVAL_BOUNDS[1], max(evalsize, self.EVAL_BOUNDS[0])) / self.EVAL_BOUNDS[1]
-            draw_circle((self.gridpos[x], self.gridpos[y]), math.sqrt(evalsize) * self.stone_size * 0.5, evalcol)
+            draw_circle((self.gridpos[x], self.gridpos[y]), math.sqrt(evalsize) * stone_size * 0.5, evalcol)
         if innercol:
             Color(*innercol)
-            Line(circle=(self.gridpos[x], self.gridpos[y], self.stone_size * 0.45 / 0.85), width=1.75)
+            Line(circle=(self.gridpos[x], self.gridpos[y], stone_size * 0.45 / 0.85), width=0.125 * stone_size)  # 1.75
 
     def _eval_spectrum(self, score):
         score = max(0, score)
@@ -79,33 +88,33 @@ class Badukpan(Widget):
         self.canvas.before.clear()
         with self.canvas.before:
             # board
-            sz = self.height
+            sz = min(self.width, self.height)
             Color(*Config.get("ui")["board_color"])
             board = Rectangle(pos=(0, 0), size=(sz, sz))
 
             # grid lines
             margin = Config.get("ui")["board_margin"]
-            self.grid_size = board.size[0] / (self.engine.boardsize - 1 + 1.5 * margin)
+            self.grid_size = board.size[0] / (self.engine.board_size - 1 + 1.5 * margin)
             self.stone_size = self.grid_size * Config.get("ui")["stone_size"]
-            self.gridpos = [math.floor((margin + i) * self.grid_size + 0.5) for i in range(self.engine.boardsize)]
+            self.gridpos = [math.floor((margin + i) * self.grid_size + 0.5) for i in range(self.engine.board_size)]
 
             line_color = Config.get("ui")["line_color"]
             Color(*line_color)
             lo, hi = self.gridpos[0], self.gridpos[-1]
-            for i in range(self.engine.boardsize):
+            for i in range(self.engine.board_size):
                 Line(points=[(self.gridpos[i], lo), (self.gridpos[i], hi)])
                 Line(points=[(lo, self.gridpos[i]), (hi, self.gridpos[i])])
 
             # star points
-            star_point_pos = 3 if self.engine.boardsize <= 11 else 4
+            star_point_pos = 3 if self.engine.board_size <= 11 else 4
             starpt_size = self.grid_size * Config.get("ui")["starpoint_size"]
-            for x in [star_point_pos - 1, self.engine.boardsize - star_point_pos, int(self.engine.boardsize / 2)]:
-                for y in [star_point_pos - 1, self.engine.boardsize - star_point_pos, int(self.engine.boardsize / 2)]:
+            for x in [star_point_pos - 1, self.engine.board_size - star_point_pos, int(self.engine.board_size / 2)]:
+                for y in [star_point_pos - 1, self.engine.board_size - star_point_pos, int(self.engine.board_size / 2)]:
                     draw_circle((self.gridpos[x], self.gridpos[y]), starpt_size, line_color)
 
             # coordinates
             Color(0.25, 0.25, 0.25)
-            for i in range(self.engine.boardsize):
+            for i in range(self.engine.board_size):
                 draw_text(pos=(self.gridpos[i], lo / 2), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5)
                 draw_text(pos=(lo / 2, self.gridpos[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
 
@@ -113,26 +122,26 @@ class Badukpan(Widget):
         self.canvas.clear()
         with self.canvas:
             # stones
-            last_move = self.engine.moves[-1].coords
-            eval_map = {m.coords: (m.evaluation, m.previous_temperature) for m in self.engine.moves}
+            moves = self.engine.board.moves
+            last_move = moves[-1] if moves else self.engine.board.root
+            current_player = self.engine.board.current_player
             eval_on = [self.engine.eval.active(0), self.engine.eval.active(1)]
             has_stone = {}
-            for i, (ci, x, y) in enumerate(self.engine.stones):
-                has_stone[(x, y)] = ci
-                eval, evalsize = eval_map.get((x, y), (None, None))
-                evalcol = self._eval_spectrum(eval) if eval_on[ci] and eval else None
-                inner = COLORS[1 - ci] if ((x, y) == last_move) else None
-                self.draw_stone(x, y, COLORS[ci], inner, evalcol, evalsize)
+            for i, m in enumerate(self.engine.board.stones):
+                has_stone[m.coords] = m.player
+                eval, evalsize = m.evaluation_info
+                evalcol = self._eval_spectrum(eval) if eval_on[m.player] and eval else None
+                inner = COLORS[1 - m.player] if (m == last_move) else None
+                self.draw_stone(m.coords[0], m.coords[1], COLORS[m.player], inner, evalcol, evalsize)
 
-            # ownership
-            ownership = self.engine.moves[-1].ownership
+            # ownership - allow one move out of date for smooth animation
+            ownership = last_move.ownership or (last_move.parent and last_move.parent.ownership)
             if self.engine.ownership.active and ownership:
                 rsz = self.grid_size * 0.2
                 ix = 0
-                cp = self.engine.current_player
-                for y in range(self.engine.boardsize - 1, -1, -1):
-                    for x in range(self.engine.boardsize):
-                        ix_owner = cp if ownership[ix] > 0 else 1 - cp
+                for y in range(self.engine.board_size - 1, -1, -1):
+                    for x in range(self.engine.board_size):
+                        ix_owner = 0 if ownership[ix] > 0 else 1
                         if ix_owner != (has_stone.get((x, y), -1)):
                             Color(*COLORS[ix_owner], abs(ownership[ix]))
                             Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
@@ -141,39 +150,56 @@ class Badukpan(Widget):
             # undos
             undo_coords = set()
             alpha = Config.get("ui")["undo_alpha"]
-            for m in self.engine.moves[-1].undos:
-                if m.evaluation and m.coords[0] is not None:
+            for m in last_move.children:
+                eval_info = m.evaluation_info
+                if eval_info[0] and m.coords[0] is not None:
                     undo_coords.add(m.coords)
-                    evalcol = (*self._eval_spectrum(m.evaluation), alpha)
-                    self.draw_stone(m.coords[0], m.coords[1], (*COLORS[m.player][:3], alpha), Config.get("ui")["undo_circle_col"], evalcol, self.EVAL_BOUNDS[1])
+                    evalcol = (*self._eval_spectrum(eval_info[0]), alpha)
+                    self.draw_stone(
+                        m.coords[0],
+                        m.coords[1],
+                        (*COLORS[m.player][:3], alpha),
+                        Config.get("ui")["undo_circle_col"],
+                        evalcol,
+                        self.EVAL_BOUNDS[1],
+                    )
 
             # hints
-            if self.engine.moves[-1].analysis and self.engine.hints.active(self.engine.current_player):
-                for d in self.engine.moves[-1].analysis:
+            if self.engine.hints.active(current_player):
+                for i, d in enumerate(last_move.ai_moves):
                     move = Move(gtpcoords=d["move"], player=0)
                     c = [*self._eval_spectrum(d["evaluation"]), 0.5]
                     if move.coords[0] is not None and move.coords not in undo_coords:
-                        self.draw_stone(move.coords[0], move.coords[1], c)
+                        self.draw_stone(move.coords[0], move.coords[1], c, scale=1.0 if i == 0 else 0.8)
 
             # hover next move ghost stone
             if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*COLORS[self.engine.current_player], GHOST_ALPHA))
+                self.draw_stone(*self.ghost_stone, (*COLORS[current_player], GHOST_ALPHA))
 
             # pass circle
-            passed = len(self.engine.moves) > 1 and self.engine.moves[-1].gtp() == "pass"
+            passed = len(moves) > 1 and last_move.is_pass
             if passed:
-                if len(self.engine.moves) > 2 and self.engine.moves[-2].gtp() == "pass":
+                if self.engine.board.game_ended:
                     text = "game\nend"
                 else:
                     text = "pass"
                 Color(0.45, 0.05, 0.45, 0.5)
-                center = self.gridpos[int(self.engine.boardsize / 2)]
-                Ellipse(pos=(center - self.grid_size * 1.5, center - self.grid_size * 1.5), size=(self.grid_size * 3, self.grid_size * 3))
+                center = self.gridpos[int(self.engine.board_size / 2)]
+                Ellipse(
+                    pos=(center - self.grid_size * 1.5, center - self.grid_size * 1.5),
+                    size=(self.grid_size * 3, self.grid_size * 3),
+                )
                 Color(0.15, 0.15, 0.15)
-                draw_text(pos=(center, center), text=text, font_size=self.grid_size * 0.66, halign="center", outline_color=[0.95, 0.95, 0.95])
+                draw_text(
+                    pos=(center, center),
+                    text=text,
+                    font_size=self.grid_size * 0.66,
+                    halign="center",
+                    outline_color=[0.95, 0.95, 0.95],
+                )
 
 
-class KaTrainGui(FloatLayout):
+class KaTrainGui(BoxLayout):
     pass
 
 
@@ -185,6 +211,22 @@ class KaTrainApp(App):
 
     def on_start(self):
         self.gui.controls.restart()
+        signal.signal(signal.SIGINT, self.signal_handler)
+
+    def signal_handler(self, signal, frame):
+        import sys
+        import traceback
+
+        if self.gui.controls.debug:
+            code = ["TRACEBACKS"]
+            for threadId, stack in sys._current_frames().items():
+                code.append("\n# ThreadID: %s" % threadId)
+                for filename, lineno, name, line in traceback.extract_stack(stack):
+                    code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+                    if line:
+                        code.append("  %s" % (line.strip()))
+            print("\n".join(code))
+        sys.exit(0)
 
 
 if __name__ == "__main__":
