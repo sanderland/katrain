@@ -110,8 +110,9 @@ class EngineControls(GridLayout):
                         best_move.x_comment = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
                         self.board.play(best_move)
                     self.update_evaluation(undo_triggered=True)
+                    return
             # ai player doesn't technically need parent ready, but don't want to override waiting for undo
-            elif self.ai_auto.active(1 - current_move.player) and not current_move.children and not undo_triggered and not self.board.game_ended:
+            if self.ai_auto.active(1 - current_move.player) and not current_move.children and not undo_triggered and not self.board.game_ended:
                 self._do_aimove()
 
     # engine action functions
