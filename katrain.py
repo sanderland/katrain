@@ -35,11 +35,7 @@ class BadukPanWidget(Widget):
         xd, xp = self._find_closest(touch.x)
         yd, yp = self._find_closest(touch.y)
         prev_ghost = self.ghost_stone
-        if (
-            self.engine.ready
-            and max(yd, xd) < self.grid_size / 2
-            and (xp, yp) not in [m.coords for m in self.engine.board.stones]
-        ):
+        if self.engine.ready and max(yd, xd) < self.grid_size / 2 and (xp, yp) not in [m.coords for m in self.engine.board.stones]:
             self.ghost_stone = (xp, yp)
         else:
             self.ghost_stone = None
@@ -155,14 +151,7 @@ class BadukPanWidget(Widget):
                 if eval_info[0] and m.coords[0] is not None:
                     undo_coords.add(m.coords)
                     evalcol = (*self._eval_spectrum(eval_info[0]), alpha)
-                    self.draw_stone(
-                        m.coords[0],
-                        m.coords[1],
-                        (*COLORS[m.player][:3], alpha),
-                        Config.get("ui")["undo_circle_col"],
-                        evalcol,
-                        self.EVAL_BOUNDS[1],
-                    )
+                    self.draw_stone(m.coords[0], m.coords[1], (*COLORS[m.player][:3], alpha), Config.get("ui")["undo_circle_col"], evalcol, self.EVAL_BOUNDS[1])
 
             # hints
             if self.engine.hints.active(current_player):
@@ -185,18 +174,9 @@ class BadukPanWidget(Widget):
                     text = "pass"
                 Color(0.45, 0.05, 0.45, 0.5)
                 center = self.gridpos[int(self.engine.board_size / 2)]
-                Ellipse(
-                    pos=(center - self.grid_size * 1.5, center - self.grid_size * 1.5),
-                    size=(self.grid_size * 3, self.grid_size * 3),
-                )
+                Ellipse(pos=(center - self.grid_size * 1.5, center - self.grid_size * 1.5), size=(self.grid_size * 3, self.grid_size * 3))
                 Color(0.15, 0.15, 0.15)
-                draw_text(
-                    pos=(center, center),
-                    text=text,
-                    font_size=self.grid_size * 0.66,
-                    halign="center",
-                    outline_color=[0.95, 0.95, 0.95],
-                )
+                draw_text(pos=(center, center), text=text, font_size=self.grid_size * 0.66, halign="center", outline_color=[0.95, 0.95, 0.95])
 
 
 class KaTrainGui(BoxLayout):

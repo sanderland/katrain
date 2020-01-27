@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 
+
 class IllegalMoveException(Exception):
     pass
 

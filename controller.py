@@ -104,15 +104,14 @@ class EngineControls(GridLayout):
                 if eval < ts["undo_eval_threshold"] and points_lost >= ts["undo_point_threshold"]:
                     current_move.auto_undid = True
                     self.board.undo()
-                    undo_triggered = True
                     if len(current_move.parent.children) >= ts["num_undo_prompts"] + 1:
                         best_move = sorted([m for m in current_move.parent.children], key=lambda m: -(m.evaluation_info[0] or 0))[0]
                         best_move.x_comment = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
                         self.board.play(best_move)
-                    self.update_evaluation(undo_triggered=True)
-                    return
+                    self.update_evaluation()
             # ai player doesn't technically need parent ready, but don't want to override waiting for undo
-            if self.ai_auto.active(1 - current_move.player) and not current_move.children and not undo_triggered and not self.board.game_ended:
+            current_move = self.board.current_move  # this effectively checks undo didn't just happen
+            if self.ai_auto.active(1 - current_move.player) and not self.board.game_ended and not current_move.children:
                 self._do_aimove()
 
     # engine action functions
