@@ -305,9 +305,8 @@
             size: self.size	
     BadukPanWidget:
 		id: board
-        pos_hint: {"x":0, "top":0}
+        size_hint: 1 - controls.size_hint[0], 1
     EngineControls:
 		id: controls
-        pos_hint: {"right":1, "top":1}
-		size_hint: (self.parent.width - self.parent.height)/self.parent.width, 1
+		size_hint: max(0.25,(root.width - root.height)/root.width), 1
 
