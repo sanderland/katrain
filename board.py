@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import os
 
 class IllegalMoveException(Exception):
     pass
@@ -330,6 +330,11 @@ class Board:
         sgfmoves_small = [mv.sgf(self.board_size) for mv in moves]
         sgfmoves = [format_move(mv, pmv) for mv, pmv in zip(moves, [self.root] + moves[:-1])]
 
-        with open(file_name or f"sgfout/katrain_{self.game_id}.sgf", "w") as f:
+        file_name = file_name or f"sgfout/katrain_{self.game_id}.sgf"
+        try:
+            os.makedirs(os.path.dirname(file_name))
+        except:
+            pass
+        with open(file_name, "w") as f:
             f.write(sgfify(sgfmoves))
         return sgfify(sgfmoves_small)
