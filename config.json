@@ -28,7 +28,7 @@
     "line_color": [0,0,0]
   },
   "engine": {
-    "command": "KataGo/katago analysis -model KataGo/b10.gz -config KataGo/analysis_config.cfg -analysis-threads 8"
+    "command": "KataGo/katago analysis -model models/b10-1.3.gz -config KataGo/analysis_config.cfg -analysis-threads 8"
   },
   "trainer": {
     "balance_play_target_score": 2,
