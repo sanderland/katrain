@@ -130,7 +130,7 @@ class EngineControls(GridLayout):
             time.sleep(0.05)
         # select move
         current_move = self.board.current_move
-        pos_moves = [(d["move"], float(d["scoreMean"]), d["evaluation"]) for d in current_move.ai_moves if int(d["visits"]) >= ts["balance_play_min_visits"]]
+        pos_moves = [(d["move"], float(d["scoreLead"]), d["evaluation"]) for d in current_move.ai_moves if int(d["visits"]) >= ts["balance_play_min_visits"]]
         sel_moves = pos_moves[:1]
         # don't play suicidal to balance score - pass when it's best
         if self.ai_balance.active and pos_moves[0][0] != "pass":

@@ -322,7 +322,12 @@ class Board:
                 and (move.evaluation_info[0] or 0.0) < train_settings["sgf_show_best_move_threshold"]
                 and prev_move.analysis[0]["move"] != move.gtp()
             ):
-                best_sq = f"SQ[{Move(gtpcoords=prev_move.analysis[0]['move'], player=0).sgfcoords(self.board_size)}]"
+                best_sq = "".join(
+                    f"SQ[{Move(gtpcoords=mv['move'], player=0).sgfcoords(self.board_size)}]"
+                    for mv in prev_move.analysis
+                    if move.player_sign * mv["scoreLead"] >= move.player_sign * prev_move.analysis[0]["scoreLead"] - 0.5
+                    and mv["visits"] >= train_settings["balance_play_min_visits"]
+                )
             else:
                 best_sq = ""
             return move.sgf(self.board_size) + f"C[{move.comment(sgf=True)}]{undo_cr}{best_sq}"
