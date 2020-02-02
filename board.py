@@ -315,7 +315,7 @@ class Board:
 
         def format_move(move, prev_move):
             undos = [m for m in prev_move.children if m != move]
-            undo_cr = "".join(f"MA[{u.sgfcoords(self.board_size)}]" for u in undos if u.coords[0])
+            undo_cr = "".join(f"MA[{u.sgfcoords(self.board_size)}]" for u in undos if not u.is_pass)
             if (
                 prev_move.analysis
                 and prev_move.analysis[0]["move"] != "pass"
@@ -327,6 +327,7 @@ class Board:
                     for mv in prev_move.analysis
                     if move.player_sign * mv["scoreLead"] >= move.player_sign * prev_move.analysis[0]["scoreLead"] - 0.5
                     and mv["visits"] >= train_settings["balance_play_min_visits"]
+                    and mv["move"] != "pass"
                 )
             else:
                 best_sq = ""
