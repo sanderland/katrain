@@ -1,4 +1,4 @@
-KataGo v1.3.1
+KataGo v1.3.2
 https://github.com/lightvector/KataGo
 
 -----------------------------------------------------
