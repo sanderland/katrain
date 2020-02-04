@@ -179,13 +179,13 @@ class EngineControls(GridLayout):
                 self._send_analysis_query(self.outstanding_analysis_queries.pop(0))
             line = self.kata.stdout.readline()
             if self.debug:
-                print("KATA ANALYSIS RECEIVED:", line[:50])
+                print("KATA ANALYSIS RECEIVED:", line[:50], "...")
             if not line:  # occasionally happens?
                 return
             try:
                 analysis = json.loads(line)
             except json.JSONDecodeError as e:
-                print("JSON decode error", e, "on input", line)
+                print(f"JSON decode error: '{e}' encountered after receiving input '{line}'")
                 return
             self.board.store_analysis(analysis)
             self.update_evaluation()
