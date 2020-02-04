@@ -92,7 +92,7 @@ class EngineControls(GridLayout):
             self.score.text = current_move.format_score().replace("-", "\u2013")
             self.temperature.text = f"{current_move.temperature_stats[2]:.1f}"
             if current_move.parent and current_move.parent.analysis_ready:
-                self.evaluation.text = f"{100 * current_move.evaluation:.1f}%"
+                self.evaluation.text = f"{current_move.evaluation:.1%}"
 
         if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children:
             # handle automatic undo

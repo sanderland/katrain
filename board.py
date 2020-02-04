@@ -72,7 +72,7 @@ class Move:
         text += self.x_comment
 
         if eval and not sgf:  # show undos and on previous move as well while playing
-            text += "".join(f"Auto undid move {m.gtp()} ({m.evaluation*100:.1f}% efficient)\n" for m in self.children if m.auto_undid)
+            text += "".join(f"Auto undid move {m.gtp()} ({m.evaluation:.0%} efficient)\n" for m in self.children if m.auto_undid)
 
         if self.analysis_ready:
             score, _, temperature = self.temperature_stats
@@ -90,17 +90,17 @@ class Move:
                     if sgf or eval:
                         outdated_evaluation = self.outdated_evaluation
                         if outdated_evaluation and outdated_evaluation > self.evaluation + 0.05 and outdated_evaluation > 0.95:
-                            text += f"Was considered last move as: {100 * outdated_evaluation :.1f}% efficient.\n"
+                            text += f"Was considered last move as: {outdated_evaluation:.1%} efficient.\n"
                         else:
-                            text += f"Evaluation: {100*self.evaluation:.1f}% efficient\n"
+                            text += f"Evaluation: {self.evaluation:.1%} efficient\n"
                             if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.01:
-                                text += f"(Was considered last move as: {100 * outdated_evaluation :.1f}%)\n"
+                                text += f"(Was considered last move as: {outdated_evaluation:.0%})\n"
                             points_lost = self.player_sign * (prev_best_score - score)
                             if points_lost > 0.5:
                                 text += f"Estimate point loss: {points_lost:.1f}\n"
 
         if eval or sgf:  # show undos on move itself in both sgf and while playing
-            undids = [m.gtp() + (f"({m.evaluation_info[0]*100:.1f}% efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m != self]
+            undids = [m.gtp() + (f"({m.evaluation_info[0]:.1%} efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m != self]
             if undids:
                 text += "Other attempted move(s): " + ", ".join(undids) + "\n"
 
