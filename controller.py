@@ -148,11 +148,7 @@ class EngineControls(GridLayout):
         self.play(aimove)
 
     def _do_undo(self):
-        if (
-            self.ai_lock.active
-            and self.auto_undo.active(self.board.current_move.parent.player)
-            and len(self.board.current_move.parent.player.children) > self.train_settings["num_undo_prompts"]
-        ):
+        if self.ai_lock.active and self.auto_undo.active(self.board.current_move.player) and len(self.board.current_move.parent.children) > self.train_settings["num_undo_prompts"]:
             self.info.text = f"Can't undo more than {self.train_settings['num_undo_prompts']} time(s) when locked"
             return
         self.board.undo()
