@@ -68,11 +68,14 @@ class Move:
     def comment(self, sgf=False, eval=False, hints=False):
         if not self.parent:  # root
             return ""
-        text = f"Move {self.move_number}: {self.bw_player()} {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
-        text += self.x_comment
 
         if eval and not sgf:  # show undos and on previous move as well while playing
-            text += "".join(f"Auto undid move {m.gtp()} ({m.evaluation:.0%} efficient)\n" for m in self.children if m.auto_undid)
+            text = "".join(f"Auto undid move {m.gtp()} ({m.evaluation:.0%} efficient)\n" for m in self.children if m.auto_undid)
+        else:
+            text = ""
+
+        text += f"Move {self.move_number}: {self.bw_player()} {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
+        text += self.x_comment
 
         if self.analysis_ready:
             score, _, temperature = self.temperature_stats

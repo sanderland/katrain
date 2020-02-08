@@ -160,6 +160,10 @@ class EngineControls(GridLayout):
         self._request_analysis(self.board.root)
         self.redraw(include_board=True)
         self.ready = True
+        if self.ai_lock.active:
+            self.ai_lock.checkbox._do_press()
+        for el in [self.ai_lock.checkbox, self.hints.black, self.hints.white, self.ai_auto.black, self.ai_auto.white, self.auto_undo.black, self.auto_undo.white, self.ai_move]:
+            el.disabled = False
 
     def _do_analyze_sgf(self, sgf):
         self._do_init(self.board_size)
