@@ -69,8 +69,8 @@ class Move:
         if not self.parent:  # root
             return ""
 
-        if eval and not sgf:  # show undos and on previous move as well while playing
-            text = "".join(f"Auto undid move {m.gtp()} ({m.evaluation:.0%} efficient)\n" for m in self.children if m.auto_undid)
+        if eval and not sgf and self.children:  # show undos and on previous move as well while playing
+            text = "".join(f"Auto undid move {m.gtp()} ({-self.temperature_stats[2] * (1-m.evaluation):.1f} pt)\n" for m in self.children if m.auto_undid) + "\n"
         else:
             text = ""
 
@@ -96,7 +96,7 @@ class Move:
                             text += f"Was considered last move as: {outdated_evaluation:.1%} efficient.\n"
                         else:
                             text += f"Evaluation: {self.evaluation:.1%} efficient\n"
-                            if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.01:
+                            if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.025:
                                 text += f"(Was considered last move as: {outdated_evaluation:.0%})\n"
                             points_lost = self.player_sign * (prev_best_score - score)
                             if points_lost > 0.5:
