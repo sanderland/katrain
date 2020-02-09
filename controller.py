@@ -11,6 +11,7 @@ from queue import Queue
 
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.gridlayout import GridLayout
+from kivy.clock import Clock
 
 from board import Board, IllegalMoveException, Move
 
@@ -38,8 +39,8 @@ class EngineControls(GridLayout):
 
     def redraw(self, include_board=False):
         if include_board:
-            self.parent.board.draw_board()
-        self.parent.board.redraw()
+            Clock.schedule_once(self.parent.board.draw_board, -1)  # main thread needs to do this
+        Clock.schedule_once(self.parent.board.redraw, -1)
 
     def restart(self, board_size=None):
         self.ready = False

@@ -80,7 +80,7 @@ class BadukPanWidget(Widget):
                 return [a + t * (b - a) for a, b in zip(self.EVAL_COLORS[i], self.EVAL_COLORS[i + 1])]
         return self.EVAL_COLORS[-1]
 
-    def draw_board(self):
+    def draw_board(self, *args):
         self.canvas.before.clear()
         with self.canvas.before:
             # board
@@ -114,7 +114,7 @@ class BadukPanWidget(Widget):
                 draw_text(pos=(self.gridpos[i], lo / 2), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5)
                 draw_text(pos=(lo / 2, self.gridpos[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
 
-    def redraw(self):
+    def redraw(self, *args):
         self.canvas.clear()
         with self.canvas:
             # stones
