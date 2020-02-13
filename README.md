@@ -8,10 +8,10 @@ Installation for windows users
 * Execute the command 'pip install kivy'
 * Start the app by running `python katrain.py` in the directory where you downloaded the scripts.
 
-Installation for technical users
---------------------------------
+Installation for linux users
+----------------------------
 * pip install kivy
-* On linux, change the `engine.command` field in `config.json` to your kata v1.3+ installation.
+* Change the `engine.command` field in `config.json` to your kata v1.3+ binary.
 * Start the app by running `python katrain.py`
 
 Options
