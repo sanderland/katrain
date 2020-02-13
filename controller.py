@@ -171,7 +171,7 @@ class EngineControls(GridLayout):
         sgfmoves = re.findall(r"([BW])\[([a-z]{2})\]", sgf)
         moves = [Move(player=Move.PLAYERS.index(p.upper()), sgfcoords=(mv, self.board_size)) for p, mv in sgfmoves]
         for move in moves:
-            self.play(move, faster=(move != moves[-1]))
+            self.play(move, faster=(self.ai_fast.active and move != moves[-1]))
 
     # analysis thread
     def _analysis_read_thread(self):
