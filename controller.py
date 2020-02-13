@@ -71,7 +71,7 @@ class EngineControls(GridLayout):
                 raise
             msg, *args = self.message_queue.get()
 
-    def play(self, move):
+    def play(self, move, faster=False):
         try:
             mr = self.board.play(move)
         except IllegalMoveException as e:
@@ -79,7 +79,7 @@ class EngineControls(GridLayout):
             return
         self.update_evaluation()
         if not mr.analysis_ready:  # replayed old move
-            self._request_analysis(mr)
+            self._request_analysis(mr, faster=faster)
         return mr
 
     # handles showing completed analysis and triggered actions like auto undo and ai move
@@ -171,7 +171,7 @@ class EngineControls(GridLayout):
         sgfmoves = re.findall(r"([BW])\[([a-z]{2})\]", sgf)
         moves = [Move(player=Move.PLAYERS.index(p.upper()), sgfcoords=(mv, self.board_size)) for p, mv in sgfmoves]
         for move in moves:
-            self.play(move)
+            self.play(move, faster=(move != moves[-1]))
 
     # analysis thread
     def _analysis_read_thread(self):
@@ -198,7 +198,8 @@ class EngineControls(GridLayout):
         else:  # early on / root / etc
             self.outstanding_analysis_queries.append(copy.copy(query))
 
-    def _request_analysis(self, move):
+    def _request_analysis(self, move, faster=False):
+        faster_fac = 5 if faster else 1
         move_id = move.id
         moves = self.board.moves
         fast = self.ai_fast.active
@@ -211,12 +212,12 @@ class EngineControls(GridLayout):
             "boardYSize": self.board_size,
             "analyzeTurns": [len(moves)],
             "includeOwnership": True,
-            "maxVisits": self.visits[fast][1],
+            "maxVisits": self.visits[fast][1] // faster_fac,
         }
         if self.debug:
             print(f"query for {move_id}")
         self._send_analysis_query(query)
-        query.update({"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0], "includeOwnership": False})
+        query.update({"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0] // faster_fac, "includeOwnership": False})
         query["moves"] += [[move.bw_player(next_move=True), "pass"]]
         query["analyzeTurns"][0] += 1
         self._send_analysis_query(query)

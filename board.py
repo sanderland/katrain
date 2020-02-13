@@ -101,12 +101,10 @@ class Move:
                             points_lost = self.player_sign * (prev_best_score - score)
                             if points_lost > 0.5:
                                 text += f"Estimate point loss: {points_lost:.1f}\n"
-
-        if eval or sgf:  # show undos on move itself in both sgf and while playing
-            undids = [m.gtp() + (f"({m.evaluation_info[0]:.1%} efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m != self]
-            if undids:
-                text += "Other attempted move(s): " + ", ".join(undids) + "\n"
-
+            if eval or sgf:  # show undos on move itself in both sgf and while playing
+                undids = [m.gtp() + (f"({m.evaluation_info[0]:.1%} efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m != self]
+                if undids:
+                    text += "Other attempted move(s): " + ", ".join(undids) + "\n"
         else:
             text = "No analysis available" if sgf else "Analyzing move..."
         return text
