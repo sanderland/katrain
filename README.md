@@ -1,11 +1,18 @@
 Manual
 ======
 
-Installation
-------------
+Installation for windows users
+------------------------------
+* Make sure you have a python installation, I will assume Anaconda (Python 3.7) https://www.anaconda.com/distribution/#download-section
+* Open 'Anaconda prompt'
+* Execute the command 'pip install kivy'
+* Start the app by running `python katrain.py` in the directory where you downloaded the scripts.
+
+Installation for technical users
+--------------------------------
 * pip install kivy
 * On linux, change the `engine.command` field in `config.json` to your kata v1.3+ installation.
-* start the app by running `python katrain.py`
+* Start the app by running `python katrain.py`
 
 Options
 -------
