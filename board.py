@@ -100,7 +100,7 @@ class Move:
                                 text += f"(Was considered last move as: {outdated_evaluation:.0%})\n"
                             points_lost = self.player_sign * (prev_best_score - score)
                             if points_lost > 0.5:
-                                text += f"Estimate point loss: {points_lost:.1f}\n"
+                                text += f"Estimated point loss: {points_lost:.1f}\n"
             if eval or sgf:  # show undos on move itself in both sgf and while playing
                 undids = [m.gtp() + (f"({m.evaluation_info[0]:.1%} efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m != self]
                 if undids:
