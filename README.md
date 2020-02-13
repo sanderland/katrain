@@ -77,6 +77,4 @@ The cfg file has additional configuration for kata. In particular, it changes th
 
 TODO
 ----
-* Dots scaling better by temperature
-* Better name
-* ....
+* See github issues!
