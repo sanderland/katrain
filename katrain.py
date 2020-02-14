@@ -54,6 +54,9 @@ class BadukPanWidget(Widget):
             stones_here = [m for m in self.engine.board.stones if m.coords == (xp, yp)]
             if stones_here and max(yd, xd) < self.grid_size / 2:  # load old comment
                 self.engine.info.text = stones_here[-1].comment(sgf=True)
+                if self.engine.debug:
+                    print("\nAnalysis:\n", stones_here[-1].analysis)
+                    print("\nParent Analysis:\n", stones_here[-1].parent.analysis)
         self.ghost_stone = None
         self.redraw()  # remove ghost
 

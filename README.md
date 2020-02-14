@@ -10,6 +10,7 @@ Installation for windows users
 
 Installation for linux users
 ----------------------------
+* This assumed you have a working Python 3.6+ installation, use pip3/python3 etc. if your default is python 2.
 * pip install kivy
 * Change the `engine.command` field in `config.json` to your kata v1.3+ binary.
 * Start the app by running `python katrain.py`
