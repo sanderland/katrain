@@ -54,6 +54,7 @@ class BadukPanWidget(Widget):
             stones_here = [m for m in self.engine.board.stones if m.coords == (xp, yp)]
             if stones_here and max(yd, xd) < self.grid_size / 2:  # load old comment
                 self.engine.info.text = stones_here[-1].comment(sgf=True)
+                self.engine.show_evaluation_stats(stones_here[-1])
                 if self.engine.debug:
                     print("\nAnalysis:\n", stones_here[-1].analysis)
                     print("\nParent Analysis:\n", stones_here[-1].parent.analysis)
@@ -129,7 +130,7 @@ class BadukPanWidget(Widget):
             for i, m in enumerate(self.engine.board.stones):
                 has_stone[m.coords] = m.player
                 eval, evalsize = m.evaluation_info
-                evalcol = self._eval_spectrum(eval) if eval_on[m.player] and eval else None
+                evalcol = self._eval_spectrum(eval) if eval_on[m.player] and eval and evalsize > Config.get("ui").get("min_eval_temperature", 0.5) else None
                 inner = COLORS[1 - m.player] if (m == last_move) else None
                 self.draw_stone(m.coords[0], m.coords[1], COLORS[m.player], inner, evalcol, evalsize)
 

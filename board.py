@@ -56,10 +56,10 @@ class Move:
         else:
             self.analysis = analysis_blob["moveInfos"]
             self.ownership = analysis_blob["ownership"]
-        if self.parent and self.parent.analysis and self.parent.analysis[0]["move"] == self.gtp():
-            self.parent.analysis[0]["scoreLead"] = self.analysis[0]["scoreLead"]
-        if self.children and self.children[0].analysis and self.children[0].gtp() == self.analysis[0]["move"]:
-            self.analysis[0]["scoreLead"] = self.children[0].analysis[0]["scoreLead"]  # if received out of order, some edge case with undos ignored
+            if self.parent and self.parent.analysis and self.parent.analysis[0]["move"] == self.gtp():
+                self.parent.analysis[0]["scoreLead"] = self.analysis[0]["scoreLead"]
+            if self.children and self.children[0].analysis and self.children[0].gtp() == self.analysis[0]["move"]:
+                self.analysis[0]["scoreLead"] = self.children[0].analysis[0]["scoreLead"]  # if received out of order, some edge case with undos ignored
 
     @property
     def analysis_ready(self):

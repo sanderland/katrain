@@ -82,18 +82,22 @@ class EngineControls(GridLayout):
             self._request_analysis(mr, faster=faster)
         return mr
 
+    def show_evaluation_stats(self, move):
+        if move.analysis_ready:
+            self.score.text = move.format_score().replace("-", "\u2013")
+            self.temperature.text = f"{move.temperature_stats[2]:.1f}"
+            if move.parent and move.parent.analysis_ready:
+                self.evaluation.text = f"{move.evaluation:.1%}"
+
     # handles showing completed analysis and triggered actions like auto undo and ai move
     def update_evaluation(self, undo_triggered=False):
         current_move = self.board.current_move
         self.score.set_prisoners(self.board.prisoner_count)
-        if self.eval.active(current_move.player):
+        if self.eval.active(current_move.player) and current_move is not self.board.root:
             self.info.text = current_move.comment(eval=self.eval.active(current_move.player), hints=self.hints.active(current_move.player))
         self.evaluation.text = ""
-        if current_move.analysis_ready and self.eval.active(current_move.player):
-            self.score.text = current_move.format_score().replace("-", "\u2013")
-            self.temperature.text = f"{current_move.temperature_stats[2]:.1f}"
-            if current_move.parent and current_move.parent.analysis_ready:
-                self.evaluation.text = f"{current_move.evaluation:.1%}"
+        if self.eval.active(current_move.player):
+            self.show_evaluation_stats(current_move)
 
         if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children:
             # handle automatic undo
@@ -180,7 +184,7 @@ class EngineControls(GridLayout):
                 self._send_analysis_query(self.outstanding_analysis_queries.pop(0))
             line = self.kata.stdout.readline()
             if self.debug:
-                print("KATA ANALYSIS RECEIVED:", line[:50], "...")
+                print("KATA ANALYSIS RECEIVED:", line[:80], "...")
             if not line:  # occasionally happens?
                 return
             try:
@@ -215,7 +219,7 @@ class EngineControls(GridLayout):
             "maxVisits": self.visits[fast][1] // faster_fac,
         }
         if self.debug:
-            print(f"query for {move_id}")
+            print(f"sending query for move {move_id}: {str(query)[:80]}")
         self._send_analysis_query(query)
         query.update({"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0] // faster_fac, "includeOwnership": False})
         query["moves"] += [[move.bw_player(next_move=True), "pass"]]
