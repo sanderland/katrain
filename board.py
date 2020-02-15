@@ -315,8 +315,8 @@ class Board:
         return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in l) for l in self.board) + f"\ncaptures: {self.prisoner_count}"
 
     def write_sgf(self, komi, train_settings, file_name=None):
-        def sgfify(mvs):
-            return f"(;GM[1]FF[4]SZ[{self.board_size}]KM[{komi}]RU[JP];" + ";".join(mvs) + ")"
+        def sgfify(mvs, comment=""):
+            return f"(;GM[1]FF[4]SZ[{self.board_size}]KM[{komi}]RU[JP];" + ";".join(mvs) + (f"C[{comment}])" if comment else "")
 
         def format_move(move, prev_move):
             undos = [m for m in prev_move.children if m != move]
@@ -349,4 +349,4 @@ class Board:
             pass
         with open(file_name, "w") as f:
             f.write(sgfify(sgfmoves))
-        return sgfify(sgfmoves_small)
+        return sgfify(sgfmoves_small, f"SGF with analysis written to {file_name}")

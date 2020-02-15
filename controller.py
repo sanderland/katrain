@@ -36,6 +36,7 @@ class EngineControls(GridLayout):
         self.komi = 6.5  # loaded from config in init
         self.outstanding_analysis_queries = []  # allows faster interaction while kata is starting
         self.kata = None
+        self.query_time = {}
 
     def redraw(self, include_board=False):
         if include_board:
@@ -153,7 +154,12 @@ class EngineControls(GridLayout):
         self.play(aimove)
 
     def _do_undo(self):
-        if self.ai_lock.active and self.auto_undo.active(self.board.current_move.player) and len(self.board.current_move.parent.children) > self.train_settings["num_undo_prompts"]:
+        if (
+            self.ai_lock.active
+            and self.auto_undo.active(self.board.current_move.player)
+            and len(self.board.current_move.parent.children) > self.train_settings["num_undo_prompts"]
+            and not self.train_settings.get("dont_lock_undos")
+        ):
             self.info.text = f"Can't undo more than {self.train_settings['num_undo_prompts']} time(s) when locked"
             return
         self.board.undo()
@@ -183,8 +189,6 @@ class EngineControls(GridLayout):
             while self.outstanding_analysis_queries:
                 self._send_analysis_query(self.outstanding_analysis_queries.pop(0))
             line = self.kata.stdout.readline()
-            if self.debug:
-                print("KATA ANALYSIS RECEIVED:", line[:80], "...")
             if not line:  # occasionally happens?
                 return
             try:
@@ -192,10 +196,13 @@ class EngineControls(GridLayout):
             except json.JSONDecodeError as e:
                 print(f"JSON decode error: '{e}' encountered after receiving input '{line}'")
                 return
+            if self.debug:
+                print(f"[{time.time()-self.query_time.get(analysis['id'],0):.1f}] kata analysis received:", line[:80], "...")
             self.board.store_analysis(analysis)
             self.update_evaluation()
 
     def _send_analysis_query(self, query):
+        self.query_time[query["id"]] = time.time()
         if self.kata:
             self.kata.stdin.write((json.dumps(query) + "\n").encode())
             self.kata.stdin.flush()

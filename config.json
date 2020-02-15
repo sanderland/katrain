@@ -39,7 +39,8 @@
     "undo_eval_threshold": 0.875,
     "undo_point_threshold": 1,
     "num_undo_prompts": 1,
-    "sgf_show_best_move_threshold": 0.95
+    "sgf_show_best_move_threshold": 0.95,
+    "dont_lock_undos": false
   },
   "debug": {
     "level": 1

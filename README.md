@@ -1,3 +1,19 @@
+Introduction
+============
+This repository contains  tool for playing go with AI feedback aimed at kyu players.
+The idea is to give immediate feedback on the many large mistakes we make in terms of inefficient moves.
+It is based on the KataGo AI and relies heavily on score estimation rather than win rate.
+
+Some uses include:
+
+* Analyze your games to find the moves that were most costly in terms of points lost.
+* Play against AI and get immediate feedback on mistakes with option to retry.
+* Play against a stronger player and use the retry option instead of handicap stones.
+* Play a match with an evenly matched friend where both players get instant feedback.
+
+
+![screenshot](https://i.imgur.com/2T2b6qL.png)
+
 Manual
 ======
 
@@ -23,7 +39,7 @@ Options
     * Undo: automatically undo poor moves for this player and make them try again.
     * AI: let the AI control this player. Check both for self-play.
     * Show owner: show expected control of territory.    
-    * Lock AI: disallow extra undos, changing hints options, changing auto move, or AI move.
+    * Lock AI: disallow extra undos, changing hints options, changing auto move, or AI move. Also turns off the option to click on a move to see detailed comments.
     * Fast: use a lower number of max visits for evaluation/AI move.
     * Balance score: Deliberately make sub-optimal moves as the AI in an attempt to balance the score towawrds a slight win.
 
@@ -58,7 +74,7 @@ Play
     * Click `Analyze`
     
 * Save game
-    * Click save to get an sgf as `out.sgf` with comments (and a short version in the text box).
+    * Click save to get an sgf with comments saved in the sgfout/ directory (and a short version in the text box).
 
 Configuration
 -------------

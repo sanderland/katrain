@@ -53,11 +53,13 @@ class BadukPanWidget(Widget):
             yd, yp = self._find_closest(touch.y)
             stones_here = [m for m in self.engine.board.stones if m.coords == (xp, yp)]
             if stones_here and max(yd, xd) < self.grid_size / 2:  # load old comment
-                self.engine.info.text = stones_here[-1].comment(sgf=True)
-                self.engine.show_evaluation_stats(stones_here[-1])
                 if self.engine.debug:
                     print("\nAnalysis:\n", stones_here[-1].analysis)
                     print("\nParent Analysis:\n", stones_here[-1].parent.analysis)
+                if not self.engine.ai_lock.active:
+                    self.engine.info.text = stones_here[-1].comment(sgf=True)
+                    self.engine.show_evaluation_stats(stones_here[-1])
+
         self.ghost_stone = None
         self.redraw()  # remove ghost
 
