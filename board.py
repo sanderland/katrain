@@ -96,15 +96,12 @@ class Move:
                 elif not self.is_pass and self.parent.analysis[0]["move"] != self.gtp():
                     if sgf or eval:
                         outdated_evaluation = self.outdated_evaluation
-                        if outdated_evaluation and outdated_evaluation > self.evaluation + 0.05 and outdated_evaluation > 0.95:
-                            text += f"Was considered last move as: {outdated_evaluation:.1%} efficient.\n"
-                        else:
-                            text += f"Evaluation: {self.evaluation:.1%} efficient\n"
-                            if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.025:
-                                text += f"(Was considered last move as: {outdated_evaluation:.0%})\n"
-                            points_lost = self.player_sign * (prev_best_score - score)
-                            if points_lost > 0.5:
-                                text += f"Estimated point loss: {points_lost:.1f}\n"
+                        text += f"Evaluation: {self.evaluation:.1%} efficient\n"
+                        if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.05:
+                            text += f"(Was considered last move as {outdated_evaluation:.0%})\n"
+                        points_lost = self.player_sign * (prev_best_score - score)
+                        if points_lost > 0.5:
+                            text += f"Estimated point loss: {points_lost:.1f}\n"
             if eval or sgf:  # show undos on move itself in both sgf and while playing
                 undids = [m.gtp() + (f"({m.evaluation_info[0]:.1%} efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m != self]
                 if undids:
