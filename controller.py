@@ -58,7 +58,10 @@ class EngineControls(GridLayout):
 
     # engine main loop
     def _engine_thread(self):
-        self.kata = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        try:
+            self.kata = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        except FileNotFoundError:
+            self.info.text = f"Starting kata with command '{self.command[0]}' failed. If you are on Mac or Linux, please edit configuration file '{config_file}' to point to the correct KataGo executable."
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
 
         msg, *args = self.message_queue.get()
