@@ -1,5 +1,6 @@
 import copy
 import json
+import os
 import random
 import re
 import shlex
@@ -9,9 +10,11 @@ import threading
 import time
 from queue import Queue
 
-from kivy.storage.jsonstore import JsonStore
-from kivy.uix.gridlayout import GridLayout
 from kivy.clock import Clock
+from kivy.storage.jsonstore import JsonStore
+from kivy.uix.filechooser import FileChooserListView
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.popup import Popup
 
 from board import Board, IllegalMoveException, Move
 
@@ -182,8 +185,21 @@ class EngineControls(GridLayout):
     def _do_analyze_sgf(self, sgf):
         sgfprops = {k: v for k, v in re.findall(r"\b(\w+)\[(.*?)\]", sgf)}
         size = int(sgfprops.get("SZ", self.board_size))
-        self._do_init(size, sgfprops.get("KM"))
         sgfmoves = re.findall(r"\b([BW])\[([a-z]{2})\]", sgf)
+        if not sgfmoves and not sgfprops:
+            fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
+
+            def readfile(files, mouse):
+                fileselect_popup.dismiss()
+                with open(files[0]) as f:
+                    self.action("analyze-sgf", f.read())
+
+            fc = FileChooserListView(multiselect=False, path=os.path.expanduser("~"), filters=["*.sgf"])
+            fc.on_submit = readfile
+            fileselect_popup.add_widget(fc)
+            fileselect_popup.open()
+            return
+        self._do_init(size, sgfprops.get("KM"))
         moves = [Move(player=Move.PLAYERS.index(p.upper()), sgfcoords=(mv, self.board_size)) for p, mv in sgfmoves]
         handicap = int(sgfprops.get("HA", 0))
         self.board.place_handicap_stones(handicap)  # not technically correct, should parse AB/AW

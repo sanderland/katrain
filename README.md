@@ -71,7 +71,8 @@ Play
 * Analysis
     * Copy the SGF into the text box. Note that branches are not supported and will lead to strange results.
     * Choose whether or not to turn on `fast` to make the AI weaker but analyze faster.
-    * Click `Analyze`
+    * Click `Load`
+    * Alternatively click `Load` when the text box is empty to get a file chooser dialog.
     
 * Save game
     * Click save to get an sgf with comments saved in the sgfout/ directory (and a short version in the text box).
