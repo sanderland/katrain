@@ -164,9 +164,9 @@ class EngineControls(GridLayout):
             return
         self.board.undo()
 
-    def _do_init(self, board_size):
+    def _do_init(self, board_size, komi=None):
         self.board_size = board_size
-        self.komi = Config.get("board")[f"komi_{board_size}"]
+        self.komi = float(komi or Config.get("board").get(f"komi_{board_size}", 6.5))
         self.board = Board(board_size)
         self._request_analysis(self.board.root)
         self.redraw(include_board=True)
@@ -177,9 +177,15 @@ class EngineControls(GridLayout):
             el.disabled = False
 
     def _do_analyze_sgf(self, sgf):
-        self._do_init(self.board_size)
+        sgfprops = {k: v for k, v in re.findall(r"\b(\w+)\[(.*?)\]", sgf)}
+        size = int(sgfprops.get("SZ", self.board_size))
+        self._do_init(size, sgfprops.get("KM"))
         sgfmoves = re.findall(r"\b([BW])\[([a-z]{2})\]", sgf)
         moves = [Move(player=Move.PLAYERS.index(p.upper()), sgfcoords=(mv, self.board_size)) for p, mv in sgfmoves]
+        handicap = int(sgfprops.get("HA", 0))
+        self.board.place_handicap_stones(handicap)  # not technically correct, should parse AB/AW
+        if handicap > 0:
+            self._request_analysis(self.board.current_move)
         for move in moves:
             self.play(move, faster=(self.ai_fast.active and move != moves[-1]))
 
@@ -198,8 +204,12 @@ class EngineControls(GridLayout):
                 return
             if self.debug:
                 print(f"[{time.time()-self.query_time.get(analysis['id'],0):.1f}] kata analysis received:", line[:80], "...")
-            self.board.store_analysis(analysis)
-            self.update_evaluation()
+            if "error" in analysis:
+                print(analysis)
+                self.info.text = f"ERROR IN KATA ANALYSIS: {analysis['error']}"
+            else:
+                self.board.store_analysis(analysis)
+                self.update_evaluation()
 
     def _send_analysis_query(self, query):
         self.query_time[query["id"]] = time.time()

@@ -270,6 +270,17 @@ class Board:
             self.current_move = self.current_move.parent
         self._init_chains()
 
+    def place_handicap_stones(self, n_handicaps):
+        near = 3 if self.board_size >= 13 else 2
+        far = self.board_size - 1 - near
+        middle = self.board_size // 2
+        stones = [(far, far), (near, near), (far, near), (near, far)]
+        if n_handicaps % 2 == 1:
+            stones.append((middle, middle))
+        stones += [(near, middle), (far, middle), (middle, near), (middle, far)]
+        for stone in stones[:n_handicaps]:
+            self.play(Move(player=0, coords=stone))
+
     @property
     def moves(self) -> list:  # flat list of moves to current
         moves = []
