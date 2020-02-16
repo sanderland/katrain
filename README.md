@@ -17,18 +17,19 @@ Some uses include:
 Manual
 ======
 
-Installation for windows users
+Installation for Windows users
 ------------------------------
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7) https://www.anaconda.com/distribution/#download-section
 * Open 'Anaconda prompt'
 * Execute the command 'pip install kivy'
 * Start the app by running `python katrain.py` in the directory where you downloaded the scripts.
 
-Installation for linux users
-----------------------------
+Installation for linux/Mac users
+--------------------------------
 * This assumed you have a working Python 3.6+ installation, use pip3/python3 etc. if your default is python 2.
 * pip install kivy
-* Change the `engine.command` field in `config.json` to your kata v1.3+ binary.
+* Change the `engine.command` field in `config.json` to your kata v1.3+ binary. 
+  Compiled binaries and source code can be found at https://github.com/lightvector/KataGo/releases. Executables for Mac are not available, so compiling from source code is required there.
 * Start the app by running `python katrain.py`
 
 Options
@@ -93,6 +94,9 @@ The `trainer` block has the following options to tweak:
 
 The cfg file has additional configuration for kata. In particular, it changes the default to being more exploratory and score-based (and therefore nicer as an opponent, but weaker as analysis tool).
 
-TODO
-----
-* See github issues!
+Contributing
+============
+* Feedback and pull requests are both very welcome.
+* For suggestions and planned improvements, see the 'issues' tab on github.
+
+

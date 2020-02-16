@@ -1,9 +1,9 @@
 {
   "analysis": {
-    "pass_visits": 200,
+    "pass_visits": 125,
     "pass_visits_fast": 50,
-    "visits": 3500,
-    "visits_fast": 1500
+    "visits": 2500,
+    "visits_fast": 1000
   },
   "board": {
     "size": 19,
@@ -29,7 +29,7 @@
     "min_eval_temperature": 0.5
   },
   "engine": {
-    "command": "KataGo/katago analysis -model models/b10-1.3.gz -config KataGo/analysis_config.cfg -analysis-threads 8"
+    "command": "KataGo/katago analysis -model models/b15-1.3.2.gz -config KataGo/analysis_config.cfg -analysis-threads 8"
   },
   "trainer": {
     "balance_play_target_score": 2,
