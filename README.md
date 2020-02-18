@@ -22,15 +22,15 @@ Installation for Windows users
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7) https://www.anaconda.com/distribution/#download-section
 * Open 'Anaconda prompt'
 * Execute the command 'pip install kivy'
-* Start the app by running `python katrain.py` in the directory where you downloaded the scripts.
+* Start the app by running `python katrain.py` in the directory where you downloaded the scripts. Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
 
 Installation for linux/Mac users
 --------------------------------
-* This assumed you have a working Python 3.6+ installation, use pip3/python3 etc. if your default is python 2.
+* This assumed you have a working Python 3.6/3.7 installation, use pip3/python3 etc. if your default is python 2. Kivy currently does not have a release for Python 3.8.
 * pip install kivy
 * Change the `engine.command` field in `config.json` to your kata v1.3+ binary. 
   Compiled binaries and source code can be found at https://github.com/lightvector/KataGo/releases. Executables for Mac are not available, so compiling from source code is required there.
-* Start the app by running `python katrain.py`
+* Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
 
 Options
 -------
