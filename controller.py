@@ -12,8 +12,11 @@ from queue import Queue
 
 from kivy.clock import Clock
 from kivy.storage.jsonstore import JsonStore
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.checkbox import CheckBox
 from kivy.uix.filechooser import FileChooserListView
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
 from board import Board, IllegalMoveException, Move
@@ -169,6 +172,11 @@ class EngineControls(GridLayout):
             self.info.text = f"Can't undo more than {self.train_settings['num_undo_prompts']} time(s) when locked"
             return
         self.board.undo()
+        self.update_evaluation()
+
+    def _do_redo(self):
+        self.board.redo()
+        self.update_evaluation()
 
     def _do_init(self, board_size, komi=None):
         self.board_size = board_size
@@ -182,21 +190,29 @@ class EngineControls(GridLayout):
         for el in [self.ai_lock.checkbox, self.hints.black, self.hints.white, self.ai_auto.black, self.ai_auto.white, self.auto_undo.black, self.auto_undo.white, self.ai_move]:
             el.disabled = False
 
-    def _do_analyze_sgf(self, sgf):
+    def _do_analyze_sgf(self, sgf, faster=False, rewind=False):
         sgfprops = {k: v for k, v in re.findall(r"\b(\w+)\[(.*?)\]", sgf)}
         size = int(sgfprops.get("SZ", self.board_size))
         sgfmoves = re.findall(r"\b([BW])\[([a-z]{2})\]", sgf)
         if not sgfmoves and not sgfprops:
             fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
+            fc = FileChooserListView(multiselect=False, path=os.path.expanduser("~"), filters=["*.sgf"])
+            blui = BoxLayout(orientation="horizontal", size_hint=(1, 0.1))
+            cbfast = CheckBox(color=(0.95, 0.95, 0.95, 1))
+            cbrewind = CheckBox(color=(0.95, 0.95, 0.95, 1))
+            for widget in [Label(text="Analyze Extra Fast"), cbfast, Label(text="Rewind to start"), cbrewind]:
+                blui.add_widget(widget)
+            bl = BoxLayout(orientation="vertical")
+            bl.add_widget(fc)
+            bl.add_widget(blui)
+            fileselect_popup.add_widget(bl)
 
             def readfile(files, mouse):
                 fileselect_popup.dismiss()
                 with open(files[0]) as f:
-                    self.action("analyze-sgf", f.read())
+                    self.action("analyze-sgf", f.read(), cbfast.active, cbrewind.active)
 
-            fc = FileChooserListView(multiselect=False, path=os.path.expanduser("~"), filters=["*.sgf"])
             fc.on_submit = readfile
-            fileselect_popup.add_widget(fc)
             fileselect_popup.open()
             return
         self._do_init(size, sgfprops.get("KM"))
@@ -206,7 +222,9 @@ class EngineControls(GridLayout):
         if handicap > 0:
             self._request_analysis(self.board.current_move)
         for move in moves:
-            self.play(move, faster=(self.ai_fast.active and move != moves[-1]))
+            self.play(move, faster=faster and move != moves[-1])
+        if rewind:
+            self.board.rewind()
 
     # analysis thread
     def _analysis_read_thread(self):

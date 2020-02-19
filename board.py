@@ -74,7 +74,9 @@ class Move:
             return ""
 
         if eval and not sgf and self.children:  # show undos and on previous move as well while playing
-            text = "".join(f"Auto undid move {m.gtp()} ({-self.temperature_stats[2] * (1-m.evaluation):.1f} pt)\n" for m in self.children if m.auto_undid) + "\n"
+            text = "".join(f"Auto undid move {m.gtp()} ({-self.temperature_stats[2] * (1-m.evaluation):.1f} pt)\n" for m in self.children if m.auto_undid)
+            if text:
+                text += "\n"
         else:
             text = ""
 
@@ -268,6 +270,14 @@ class Board:
     def undo(self):
         if self.current_move is not self.root:
             self.current_move = self.current_move.parent
+        self._init_chains()
+
+    def redo(self):
+        if self.current_move.children:
+            self.play(self.current_move.children[-1])
+
+    def rewind(self):
+        self.current_move = self.root
         self._init_chains()
 
     def place_handicap_stones(self, n_handicaps):

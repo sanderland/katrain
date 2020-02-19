@@ -40,13 +40,14 @@
 	checkbox: checkbox
 	text: ''
 	default_active: False
+	position: (0,0)
 	CheckBoxHintLabel:
-		size_hint: 1,0.45
-		font_size: root.height * 0.2
+		size_hint: 1,0.45 if root.orientation=='vertical' else (0.8,1)
+		font_size: root.height * 0.2 if root.orientation=='vertical' else root.height
 		text: root.text
 		on_press: if not checkbox.disabled: checkbox._do_press()
 	CheckBox:
-		size_hint: 1,0.55
+		size_hint: 1,0.55 if root.orientation=='vertical' else (0.2,1)
 		id: checkbox
 		on_active: root.dispatch('on_active')
 		active: root.default_active
@@ -224,7 +225,7 @@
 			id: ai_balance
 			default_active: False
 		CheckBoxHint:
-			size_hint: 0.2, 0.5
+			size_hint: 0.167, 0.5
 			text: 'lock\nai'
 			id: ai_lock
 			on_active: self.checkbox.disabled = hints.black.disabled = hints.white.disabled = ai_auto.black.disabled = ai_auto.white.disabled = auto_undo.black.disabled = auto_undo.white.disabled = ai_move.disabled = True
@@ -269,7 +270,6 @@
 		StyledButton:
 			text: 'Load'
 			size_hint: 0.5, 1
-			margin: (0,1)
 			on_press: root.action("analyze-sgf",info.text)
 	GridLayout:
 		size_hint: 1, 0.05

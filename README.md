@@ -50,6 +50,10 @@ Options
     This can be < 0% in case of suicidal moves, or >100% when Kata did not consider the move before, or further analysis shows it to be better than the best one considered.
     * Score: How far one player is ahead.
 
+* Keyboard controls
+   * Arrow up: undo
+   * Arrow down: redo
+
 Play
 ----
 
@@ -70,10 +74,10 @@ Play
     * Play with a friend with instant feedback and/or undos for both, or see how many stones stronger you are with one undo. (But please play unranked and be honest to your opponent on what you're doing) 
 
 * Analysis
-    * Copy the SGF into the text box. Note that branches are not supported and will lead to strange results.
-    * Choose whether or not to turn on `fast` to make the AI weaker but analyze faster.
-    * Click `Load`
-    * Alternatively click `Load` when the text box is empty to get a file chooser dialog.
+    * Click 'Load' when the text box is empty-ish to get a file chooser dialog.  Note that branches are not supported and will lead to strange results.
+    * Select if you want fast analysis or rewinding to the start for reviewing. Note that the 'fast' checkbox still affects speed as well,
+      this is just an additional lowering of visits.
+    * Alternatively copy the SGF into the text box and click 'Load'. 
     
 * Save game
     * Click save to get an sgf with comments saved in the sgfout/ directory (and a short version in the text box).
@@ -93,6 +97,15 @@ The `trainer` block has the following options to tweak:
 * `num_undo_prompts`: automatically undo bad moves when `undo` is on at most this many times.
 
 The cfg file has additional configuration for kata. In particular, it changes the default to being more exploratory and score-based (and therefore nicer as an opponent, but weaker as analysis tool).
+
+FAQ
+===
+* The program is slow to start!
+  * The first startup of KataGo can be slow, after that it should be much faster.
+* The program is running too slowly!
+  *  Lower the visits count in `config.json` by half or so and try again.
+* Can I play on sizes other than 9, 13 or 19?
+  * Type in `SZ[n]HA[h]` in the text box and hit 'load' for a game on a n by n board with h handicap stones, but note that the default KataGo does not support sizes above 19x19.  
 
 Contributing
 ============

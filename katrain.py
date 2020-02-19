@@ -2,9 +2,8 @@ import math
 import signal
 
 from kivy.app import App
+from kivy.core.window import Window
 from kivy.graphics import *
-from kivy.properties import NumericProperty, ObjectProperty
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 
 from board import Move
@@ -186,7 +185,17 @@ class BadukPanWidget(Widget):
 
 
 class KaTrainGui(BoxLayout):
-    pass
+    def __init__(self, **kwargs):
+        super(KaTrainGui, self).__init__(**kwargs)
+        self._keyboard = Window.request_keyboard(None, self, "")
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        if keycode[1] == "up":
+            self.controls.action("undo")
+        elif keycode[1] == "down":
+            self.controls.action("redo")
+        return True
 
 
 class KaTrainApp(App):
