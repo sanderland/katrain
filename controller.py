@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import math
 import random
 import re
 import shlex
@@ -109,7 +110,7 @@ class EngineControls(GridLayout):
         if self.eval.active(current_move.player):
             self.show_evaluation_stats(current_move)
 
-        if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children:
+        if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children and not current_move.x_comment:
             # handle automatic undo
             if self.auto_undo.active(current_move.player) and not self.ai_auto.active(current_move.player) and not current_move.auto_undid:
                 ts = self.train_settings
@@ -117,14 +118,18 @@ class EngineControls(GridLayout):
                 eval = max(current_move.evaluation, current_move.outdated_evaluation or 0)
                 points_lost = (current_move.parent or current_move).temperature_stats[2] * (1 - eval)
                 if eval < ts["undo_eval_threshold"] and points_lost >= ts["undo_point_threshold"]:
-                    current_move.auto_undid = True
-                    self.board.undo()
-                    if len(current_move.parent.children) >= ts["num_undo_prompts"] + 1:
-                        best_move = sorted([m for m in current_move.parent.children], key=lambda m: -(m.evaluation_info[0] or 0))[0]
-                        best_move.x_comment = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
-                        self.board.play(best_move)
-                    self.update_evaluation()
-                    return
+                    if self.num_undos(current_move) == 0:
+                        current_move.x_comment = f"Move was below threshold, but no undo granted (probability is {ts['num_undo_prompts']:.0%}).\n"
+                        self.update_evaluation()
+                    else:
+                        current_move.auto_undid = True
+                        self.board.undo()
+                        if len(current_move.parent.children) >= ts["num_undo_prompts"] + 1:
+                            best_move = sorted([m for m in current_move.parent.children], key=lambda m: -(m.evaluation_info[0] or 0))[0]
+                            best_move.x_comment = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
+                            self.board.play(best_move)
+                        self.update_evaluation()
+                        return
             # ai player doesn't technically need parent ready, but don't want to override waiting for undo
             current_move = self.board.current_move  # this effectively checks undo didn't just happen
             if self.ai_auto.active(1 - current_move.player) and not self.board.game_ended:
@@ -162,14 +167,20 @@ class EngineControls(GridLayout):
             aimove.x_comment = "AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, _ in sel_moves) + "\n"
         self.play(aimove)
 
+    def num_undos(self, move):
+        if self.train_settings["num_undo_prompts"] < 1:
+            return int(move.undo_threshold < self.train_settings["num_undo_prompts"])
+        else:
+            return self.train_settings["num_undo_prompts"]
+
     def _do_undo(self):
         if (
             self.ai_lock.active
             and self.auto_undo.active(self.board.current_move.player)
-            and len(self.board.current_move.parent.children) > self.train_settings["num_undo_prompts"]
+            and len(self.board.current_move.parent.children) > self.num_undos(self.board.current_move)
             and not self.train_settings.get("dont_lock_undos")
         ):
-            self.info.text = f"Can't undo more than {self.train_settings['num_undo_prompts']} time(s) when locked"
+            self.info.text = f"Can't undo this move more than {self.num_undos(self.board.current_move)} time(s) when locked"
             return
         self.board.undo()
         self.update_evaluation()

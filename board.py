@@ -1,4 +1,5 @@
 import os
+import random
 from datetime import datetime
 
 
@@ -26,6 +27,7 @@ class Move:
         self.x_comment = ""
         self.auto_undid = False
         self.move_number = 0
+        self.undo_threshold = random.random()  # for fractional undos, store the random threshold in the move itself for consistency
 
     def __repr__(self):
         return f"{Move.PLAYERS[self.player]}{self.gtp()}"
@@ -82,6 +84,7 @@ class Move:
 
         text += f"Move {self.move_number}: {self.bw_player()} {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
         text += self.x_comment
+        print("xc = ", self.x_comment)
 
         if self.analysis_ready:
             score, _, temperature = self.temperature_stats
