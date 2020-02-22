@@ -94,7 +94,7 @@ The `trainer` block has the following options to tweak:
 * `balance_play_min_eval`: when needing to balance score, the AI will pick a move which is at least this good.
 * `balance_play_min_visits`: never pick a move with fewer playouts than this.
 * `undo_eval_threshold`, `undo_point_threshold`: prompt player to undo if move is worse than this in terms of points AND evaluation.
-* `num_undo_prompts`: automatically undo bad moves when `undo` is on at most this many times.
+* `num_undo_prompts`: automatically undo bad moves when `undo` is on at most this many times. Can be a fraction like 0.5 for 50% chance of being granted an undo on a bad move.
 
 The cfg file has additional configuration for kata. In particular, it changes the default to being more exploratory and score-based (and therefore nicer as an opponent, but weaker as analysis tool).
 

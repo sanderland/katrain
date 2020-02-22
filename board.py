@@ -259,6 +259,8 @@ class Board:
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
     def play(self, move, ignore_ko=False):
+        if not move.is_pass and not (0 <= move.coords[0] < self.board_size and 0 <= move.coords[1] < self.board_size):
+            raise IllegalMoveException(f"Move {move} outside of board coordinates")
         played_move = self.current_move.play(move)
         try:
             self._validate_move_and_update_chains(played_move, ignore_ko)

@@ -201,6 +201,17 @@ class EngineControls(GridLayout):
         for el in [self.ai_lock.checkbox, self.hints.black, self.hints.white, self.ai_auto.black, self.ai_auto.white, self.auto_undo.black, self.auto_undo.white, self.ai_move]:
             el.disabled = False
 
+    def universal_read(self, file):
+        with open(file, "rb") as f:
+            bin_c = f.read()
+        for encoding in ["utf-8", "iso-8859-1", "cp949", "GB18030"]:
+            try:
+                return bin_c.decode(encoding=encoding)
+            except:
+                pass
+        self.info.text = f"could not decode file contents of {file}"
+        return ""
+
     def _do_analyze_sgf(self, sgf, faster=False, rewind=False):
         sgfprops = {k: v for k, v in re.findall(r"\b(\w+)\[(.*?)\]", sgf)}
         size = int(sgfprops.get("SZ", self.board_size))
@@ -220,8 +231,7 @@ class EngineControls(GridLayout):
 
             def readfile(files, mouse):
                 fileselect_popup.dismiss()
-                with open(files[0]) as f:
-                    self.action("analyze-sgf", f.read(), cbfast.active, cbrewind.active)
+                self.action("analyze-sgf", self.universal_read((files[0])), cbfast.active, cbrewind.active)
 
             fc.on_submit = readfile
             fileselect_popup.open()
