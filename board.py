@@ -160,16 +160,17 @@ class Move:
         return self.analysis
 
     # various output and conversion functions
-
-    def gtp2ix(self, gtpmove):
+    @staticmethod
+    def gtp2ix(gtpmove):
         if "pass" in gtpmove:
-            return (None, None)
+            return None, None
         return Move.GTP_COORD.index(gtpmove[0]), int(gtpmove[1:]) - 1
 
-    def sgf2ix(self, sgfmove_with_board_size):
+    @staticmethod
+    def sgf2ix(sgfmove_with_board_size):
         sgfmove, board_size = sgfmove_with_board_size
-        if sgfmove == "":
-            return (None, None)
+        if sgfmove == "" or Move.SGF_COORD.index(sgfmove[0]) == board_size:  # some servers use [tt] for pass
+            return None, None
         return Move.SGF_COORD.index(sgfmove[0]), board_size - Move.SGF_COORD.index(sgfmove[1]) - 1
 
     def gtp(self):
@@ -201,7 +202,7 @@ class Board:
 
     # -- move tree functions --
     def _init_chains(self):
-        self.board = [[-1 for x in range(self.board_size)] for y in range(self.board_size)]  # board pos -> chain id
+        self.board = [[-1 for _x in range(self.board_size)] for _y in range(self.board_size)]  # board pos -> chain id
         self.chains = []  # chain id -> chain
         self.prisoners = []
         self.last_capture = []
@@ -263,7 +264,7 @@ class Board:
         played_move = self.current_move.play(move)
         try:
             self._validate_move_and_update_chains(played_move, ignore_ko)
-        except IllegalMoveException as e:
+        except IllegalMoveException:
             self.current_move.children = [m for m in self.current_move.children if m != played_move]
             self._init_chains()  # restore
             raise
@@ -317,12 +318,12 @@ class Board:
 
     def store_analysis(self, json):
         if json["id"].startswith("PASS_"):
-            id = int(json["id"].lstrip("PASS_"))
+            move_id = int(json["id"].lstrip("PASS_"))
             is_pass = True
         else:
-            id = int(json["id"])
+            move_id = int(json["id"])
             is_pass = False
-        move = self.all_moves.get(id)
+        move = self.all_moves.get(move_id)
         if move:  # else this should be old
             move.set_analysis(json, is_pass)
         else:
@@ -341,7 +342,7 @@ class Board:
         return [sum([m.player == player for m in self.prisoners]) for player in [0, 1]]
 
     def __repr__(self):
-        return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in l) for l in self.board) + f"\ncaptures: {self.prisoner_count}"
+        return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
     def write_sgf(self, komi, train_settings, file_name=None):
         def sgfify(mvs, comment=""):
@@ -374,7 +375,7 @@ class Board:
         file_name = file_name or f"sgfout/katrain_{self.game_id}.sgf"
         try:
             os.makedirs(os.path.dirname(file_name))
-        except:
+        except FileExistsError:
             pass
         with open(file_name, "w") as f:
             f.write(sgfify(sgfmoves))

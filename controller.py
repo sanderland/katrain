@@ -1,7 +1,6 @@
 import copy
 import json
 import os
-import math
 import random
 import re
 import shlex
@@ -101,7 +100,7 @@ class EngineControls(GridLayout):
                 self.evaluation.text = f"{move.evaluation:.1%}"
 
     # handles showing completed analysis and triggered actions like auto undo and ai move
-    def update_evaluation(self, undo_triggered=False):
+    def update_evaluation(self):
         current_move = self.board.current_move
         self.score.set_prisoners(self.board.prisoner_count)
         if self.eval.active(current_move.player) and current_move is not self.board.root:
@@ -115,9 +114,9 @@ class EngineControls(GridLayout):
             if self.auto_undo.active(current_move.player) and not self.ai_auto.active(current_move.player) and not current_move.auto_undid:
                 ts = self.train_settings
                 # TODO: is this overly generous wrt low visit outdated evaluations?
-                eval = max(current_move.evaluation, current_move.outdated_evaluation or 0)
-                points_lost = (current_move.parent or current_move).temperature_stats[2] * (1 - eval)
-                if eval < ts["undo_eval_threshold"] and points_lost >= ts["undo_point_threshold"]:
+                move_eval = max(current_move.evaluation, current_move.outdated_evaluation or 0)
+                points_lost = (current_move.parent or current_move).temperature_stats[2] * (1 - move_eval)
+                if move_eval < ts["undo_eval_threshold"] and points_lost >= ts["undo_point_threshold"]:
                     if self.num_undos(current_move) == 0:
                         current_move.x_comment = f"Move was below threshold, but no undo granted (probability is {ts['num_undo_prompts']:.0%}).\n"
                         self.update_evaluation()
@@ -155,11 +154,11 @@ class EngineControls(GridLayout):
         # don't play suicidal to balance score - pass when it's best
         if self.ai_balance.active and pos_moves[0][0] != "pass":
             sel_moves = [
-                (move, score, eval)
-                for move, score, eval in pos_moves
-                if eval > ts["balance_play_randomize_eval"]
+                (move, score, move_eval)
+                for move, score, move_eval in pos_moves
+                if move_eval > ts["balance_play_randomize_eval"]
                 and -current_move.player_sign * score > 0
-                or eval > ts["balance_play_min_eval"]
+                or move_eval > ts["balance_play_min_eval"]
                 and -current_move.player_sign * score > ts["balance_play_target_score"]
             ] or sel_moves
         aimove = Move(player=self.board.current_player, gtpcoords=random.choice(sel_moves)[0], robot=True)
@@ -189,8 +188,8 @@ class EngineControls(GridLayout):
         self.board.redo()
         self.update_evaluation()
 
-    def _do_redo_branch(self, dir):
-        self.board.switch_branch(dir)
+    def _do_redo_branch(self, direction):
+        self.board.switch_branch(direction)
         self.update_evaluation()
 
     def _do_init(self, board_size, komi=None):
@@ -233,7 +232,7 @@ class EngineControls(GridLayout):
             bl.add_widget(blui)
             fileselect_popup.add_widget(bl)
 
-            def readfile(files, mouse):
+            def readfile(files, _mouse):
                 fileselect_popup.dismiss()
                 self.action("analyze-sgf", self.universal_read((files[0])), cbfast.active, cbrewind.active)
 
