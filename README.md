@@ -53,6 +53,7 @@ Options
 * Keyboard controls
    * Arrow up: undo
    * Arrow down: redo
+   * Arrow left/right: alternate branch.
 
 Play
 ----
