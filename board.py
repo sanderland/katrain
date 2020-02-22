@@ -84,7 +84,6 @@ class Move:
 
         text += f"Move {self.move_number}: {self.bw_player()} {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
         text += self.x_comment
-        print("xc = ", self.x_comment)
 
         if self.analysis_ready:
             score, _, temperature = self.temperature_stats
