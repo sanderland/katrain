@@ -148,15 +148,15 @@ class BadukPanWidget(Widget):
                             Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
                         ix = ix + 1
 
-            # undos
+            # children of current moves in undo / review
             undo_coords = set()
             alpha = Config.get("ui")["undo_alpha"]
             for m in last_move.children:
                 eval_info = m.evaluation_info
-                if eval_info[0] and m.coords[0] is not None:
+                if m.coords[0] is not None:
                     undo_coords.add(m.coords)
-                    evalcol = (*self._eval_spectrum(eval_info[0]), alpha)
-                    self.draw_stone(m.coords[0], m.coords[1], (*COLORS[m.player][:3], alpha), Config.get("ui")["undo_circle_col"], evalcol, self.EVAL_BOUNDS[1])
+                    evalcol = (*self._eval_spectrum(eval_info[0]), alpha) if eval_info[0] else None
+                    self.draw_stone(m.coords[0], m.coords[1], (*COLORS[m.player][:3], alpha), None, evalcol, self.EVAL_BOUNDS[1], scale=Config.get("ui").get("undo_scale", 0.95))
 
             # hints
             if self.engine.hints.active(current_player):
