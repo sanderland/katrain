@@ -189,6 +189,10 @@ class EngineControls(GridLayout):
         self.board.redo()
         self.update_evaluation()
 
+    def _do_redo_branch(self, dir):
+        self.board.switch_branch(dir)
+        self.update_evaluation()
+
     def _do_init(self, board_size, komi=None):
         self.board_size = board_size
         self.komi = float(komi or Config.get("board").get(f"komi_{board_size}", 6.5))

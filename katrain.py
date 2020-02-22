@@ -195,6 +195,10 @@ class KaTrainGui(BoxLayout):
             self.controls.action("undo")
         elif keycode[1] == "down":
             self.controls.action("redo")
+        elif keycode[1] == "right":
+            self.controls.action("redo-branch", 1)
+        elif keycode[1] == "left":
+            self.controls.action("redo-branch", -1)
         return True
 
 

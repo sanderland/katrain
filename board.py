@@ -281,6 +281,13 @@ class Board:
         if self.current_move.children:
             self.play(self.current_move.children[-1])
 
+    def switch_branch(self, direction):
+        cm = self.current_move  # avoid race conditions
+        if cm.parent and len(cm.parent.children) > 1:
+            ix = cm.parent.children.index(cm)
+            self.current_move = cm.parent.children[(ix + direction) % len(cm.parent.children)]
+            self._init_chains()
+
     def rewind(self):
         self.current_move = self.root
         self._init_chains()
