@@ -155,7 +155,7 @@ class BadukPanWidget(Widget):
                 eval_info = m.evaluation_info
                 if m.coords[0] is not None:
                     undo_coords.add(m.coords)
-                    evalcol = (*self._eval_spectrum(eval_info[0]), alpha) if eval_info[0] else None
+                    evalcol = (*self._eval_spectrum(eval_info[0]), alpha) if eval_info[0] and eval_on[m.player] else None
                     self.draw_stone(m.coords[0], m.coords[1], (*COLORS[m.player][:3], alpha), None, evalcol, self.EVAL_BOUNDS[1], scale=Config.get("ui").get("undo_scale", 0.95))
 
             # hints
