@@ -98,18 +98,18 @@ class Move:
                 if prev_temperature < 0.5:
                     text += f"Previous temperature ({prev_temperature:.1f}) too low for evaluation\n"
                 elif not self.is_pass and self.parent.analysis[0]["move"] != self.gtp():
-                    if sgf or eval:
-                        outdated_evaluation = self.outdated_evaluation
+                    if sgf:  # shown in stats anyway
                         text += f"Evaluation: {self.evaluation:.1%} efficient\n"
-                        if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.05:
-                            text += f"(Was considered last move as {outdated_evaluation:.0%})\n"
-                        points_lost = self.player_sign * (prev_best_score - score)
-                        if points_lost > 0.5:
-                            text += f"Estimated point loss: {points_lost:.1f}\n"
-            if eval or sgf:  # show undos on move itself in both sgf and while playing
-                undids = [m.gtp() + (f"({m.evaluation_info[0]:.1%} efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m != self]
-                if undids:
-                    text += "Other attempted move(s): " + ", ".join(undids) + "\n"
+                    outdated_evaluation = self.outdated_evaluation
+                    if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.05:
+                        text += f"(Was considered last move as {outdated_evaluation:.0%})\n"
+                    points_lost = self.player_sign * (prev_best_score - score)
+                    if points_lost > 0.5:
+                        text += f"Estimated point loss: {points_lost:.1f}\n"
+                if eval or sgf:  # show undos on move itself in both sgf and while playing
+                    undids = [m.gtp() + (f"({m.evaluation_info[0]:.1%} efficient)" if m.evaluation_info[0] else "") for m in self.parent.children if m != self]
+                    if undids:
+                        text += "Other attempted move(s): " + ", ".join(undids) + "\n"
         else:
             text = "No analysis available" if sgf else "Analyzing move..."
         return text

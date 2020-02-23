@@ -126,12 +126,14 @@ class BadukPanWidget(Widget):
             moves = self.engine.board.moves
             last_move = moves[-1] if moves else self.engine.board.root
             current_player = self.engine.board.current_player
-            eval_on = [self.engine.eval.active(0), self.engine.eval.active(1)]
+            full_eval_on = [self.engine.eval.active(0), self.engine.eval.active(1)]
             has_stone = {}
+            last_few_moves = self.engine.board.moves[-Config.get("trainer").get("eval_off_show_last", 3) :]
             for i, m in enumerate(self.engine.board.stones):
                 has_stone[m.coords] = m.player
                 eval, evalsize = m.evaluation_info
-                evalcol = self._eval_spectrum(eval) if eval_on[m.player] and eval and evalsize > Config.get("ui").get("min_eval_temperature", 0.5) else None
+                move_eval_on = full_eval_on[m.player] or m in last_few_moves
+                evalcol = self._eval_spectrum(eval) if move_eval_on and eval and evalsize > Config.get("ui").get("min_eval_temperature", 0.5) else None
                 inner = COLORS[1 - m.player] if (m == last_move) else None
                 self.draw_stone(m.coords[0], m.coords[1], COLORS[m.player], inner, evalcol, evalsize)
 
@@ -155,7 +157,7 @@ class BadukPanWidget(Widget):
                 eval_info = m.evaluation_info
                 if m.coords[0] is not None:
                     undo_coords.add(m.coords)
-                    evalcol = (*self._eval_spectrum(eval_info[0]), alpha) if eval_info[0] and eval_on[m.player] else None
+                    evalcol = (*self._eval_spectrum(eval_info[0]), alpha) if eval_info[0] else None
                     self.draw_stone(m.coords[0], m.coords[1], (*COLORS[m.player][:3], alpha), None, evalcol, self.EVAL_BOUNDS[1], scale=Config.get("ui").get("undo_scale", 0.95))
 
             # hints

@@ -182,14 +182,14 @@
 		BWCheckBoxHint:
 			size_hint: 0.2, 0.5
 			id: eval
-			text: 'eval'
-			default_active: True
+			text: 'all eval'
+			default_active: False
 			on_active: root.parent.board.redraw()
 		BWCheckBoxHint:
 			size_hint: 0.2, 0.5
 			id: hints
 			text: 'hints'
-			on_active: root.parent.board.redraw()
+			on_active: root.parent.board.engine.update_evaluation()
 		BWCheckBoxHint:
 			size_hint: 0.2, 0.5
 			id: auto_undo

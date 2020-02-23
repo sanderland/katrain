@@ -103,10 +103,10 @@ class EngineControls(GridLayout):
     def update_evaluation(self):
         current_move = self.board.current_move
         self.score.set_prisoners(self.board.prisoner_count)
-        if self.eval.active(current_move.player) and current_move is not self.board.root:
-            self.info.text = current_move.comment(eval=self.eval.active(current_move.player), hints=self.hints.active(current_move.player))
+        if not self.ai_auto.active(current_move.player) and current_move is not self.board.root:
+            self.info.text = current_move.comment(eval=True, hints=self.hints.active(current_move.player))
         self.evaluation.text = ""
-        if self.eval.active(current_move.player):
+        if not self.ai_auto.active(current_move.player):
             self.show_evaluation_stats(current_move)
 
         if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children and not current_move.x_comment:

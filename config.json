@@ -1,9 +1,9 @@
 {
   "analysis": {
-    "pass_visits": 125,
-    "pass_visits_fast": 50,
-    "visits": 2500,
-    "visits_fast": 1000
+    "pass_visits": 100,
+    "pass_visits_fast": 25,
+    "visits": 2000,
+    "visits_fast": 500
   },
   "board": {
     "size": 19,
@@ -40,7 +40,8 @@
     "undo_point_threshold": 1,
     "num_undo_prompts": 1,
     "sgf_show_best_move_threshold": 0.95,
-    "dont_lock_undos": false
+    "dont_lock_undos": false,
+    "eval_off_show_last": 3
   },
   "debug": {
     "level": 1
