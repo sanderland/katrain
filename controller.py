@@ -109,7 +109,7 @@ class EngineControls(GridLayout):
         if not self.ai_auto.active(current_move.player):
             self.show_evaluation_stats(current_move)
 
-        if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children and not current_move.x_comment:
+        if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children and not current_move.x_comment.get("undo"):
             # handle automatic undo
             if self.auto_undo.active(current_move.player) and not self.ai_auto.active(current_move.player) and not current_move.auto_undid:
                 ts = self.train_settings
@@ -118,14 +118,14 @@ class EngineControls(GridLayout):
                 points_lost = (current_move.parent or current_move).temperature_stats[2] * (1 - move_eval)
                 if move_eval < ts["undo_eval_threshold"] and points_lost >= ts["undo_point_threshold"]:
                     if self.num_undos(current_move) == 0:
-                        current_move.x_comment = f"Move was below threshold, but no undo granted (probability is {ts['num_undo_prompts']:.0%}).\n"
+                        current_move.x_comment["undid"] = f"Move was below threshold, but no undo granted (probability is {ts['num_undo_prompts']:.0%}).\n"
                         self.update_evaluation()
                     else:
                         current_move.auto_undid = True
                         self.board.undo()
                         if len(current_move.parent.children) >= ts["num_undo_prompts"] + 1:
                             best_move = sorted([m for m in current_move.parent.children], key=lambda m: -(m.evaluation_info[0] or 0))[0]
-                            best_move.x_comment = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
+                            best_move.x_comment["undo_autoplay"] = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
                             self.board.play(best_move)
                         self.update_evaluation()
                         return
@@ -149,7 +149,9 @@ class EngineControls(GridLayout):
             time.sleep(0.05)
         # select move
         current_move = self.board.current_move
-        pos_moves = [(d["move"], float(d["scoreLead"]), d["evaluation"]) for d in current_move.ai_moves if int(d["visits"]) >= ts["balance_play_min_visits"]]
+        pos_moves = [
+            (d["move"], float(d["scoreLead"]), d["evaluation"]) for i, d in enumerate(current_move.ai_moves) if i == 0 or int(d["visits"]) >= ts["balance_play_min_visits"]
+        ]
         sel_moves = pos_moves[:1]
         # don't play suicidal to balance score - pass when it's best
         if self.ai_balance.active and pos_moves[0][0] != "pass":
@@ -163,7 +165,7 @@ class EngineControls(GridLayout):
             ] or sel_moves
         aimove = Move(player=self.board.current_player, gtpcoords=random.choice(sel_moves)[0], robot=True)
         if len(sel_moves) > 1:
-            aimove.x_comment = "AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, _ in sel_moves) + "\n"
+            aimove.x_comment["ai"] = "AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, _ in sel_moves) + "\n"
         self.play(aimove)
 
     def num_undos(self, move):

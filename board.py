@@ -24,7 +24,7 @@ class Move:
         self.analysis = None
         self.pass_analysis = None
         self.ownership = None
-        self.x_comment = ""
+        self.x_comment = {}
         self.auto_undid = False
         self.move_number = 0
         self.undo_threshold = random.random()  # for fractional undos, store the random threshold in the move itself for consistency
@@ -83,7 +83,7 @@ class Move:
             text = ""
 
         text += f"Move {self.move_number}: {self.bw_player()} {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
-        text += self.x_comment
+        text += "\n".join(self.x_comment.values())
 
         if self.analysis_ready:
             score, _, temperature = self.temperature_stats
