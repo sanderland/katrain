@@ -1,6 +1,5 @@
 import os
 import random
-import math
 from datetime import datetime
 
 
@@ -134,8 +133,8 @@ class Move:
     # needing own analysis ready
     @property
     def temperature_stats(self):
-        best = float(self.analysis[0]["scoreLead"])
-        worst = float(self.pass_analysis[0]["scoreLead"])
+        best = self.analysis[0]["scoreLead"]
+        worst = self.pass_analysis[0]["scoreLead"]
         return best, worst, max(-self.player_sign * (best - worst), 0)
 
     @property
@@ -150,15 +149,21 @@ class Move:
     @property
     def evaluation(self):
         best, worst, temp = self.parent.temperature_stats
-        return self.player_sign * (self.score - worst) / temp if temp > 0 else math.nan
+        return self.player_sign * (self.score - worst) / temp if temp > 0 else None
 
     @property
     def outdated_evaluation(self):
+        def outdated_score(move_dict):
+            return move_dict.get("outdatedScoreLead") or move_dict["scoreLead"]
+
         prev_analysis_current_move = [d for d in self.parent.analysis if d["move"] == self.gtp()]
         if prev_analysis_current_move:
             best_score, worst_score, prev_temp = self.parent.temperature_stats
-            score = prev_analysis_current_move[0].get("outdatedScoreLead") or prev_analysis_current_move[0]["scoreLead"]
-            return self.player_sign * (score - worst_score) / prev_temp if prev_temp > 0 else math.nan
+            best_score = outdated_score(self.parent.analysis[0])
+            worst_score = self.parent.pass_analysis[0]["scoreLead"]
+            prev_temp = max(self.player_sign * (best_score - worst_score), 0)
+            score = outdated_score(prev_analysis_current_move[0])
+            return self.player_sign * (score - worst_score) / prev_temp if prev_temp > 0 else None
 
     @property
     def ai_moves(self):
