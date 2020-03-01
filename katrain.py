@@ -55,6 +55,7 @@ class BadukPanWidget(Widget):
                 if self.engine.debug:
                     print("\nAnalysis:\n", stones_here[-1].analysis)
                     print("\nParent Analysis:\n", stones_here[-1].parent.analysis)
+                    print("\nParent Pass Analysis:\n", stones_here[-1].parent.pass_analysis[0])
                 if not self.engine.ai_lock.active:
                     self.engine.info.text = stones_here[-1].comment(sgf=True)
                     self.engine.show_evaluation_stats(stones_here[-1])

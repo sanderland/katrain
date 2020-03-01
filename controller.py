@@ -97,16 +97,20 @@ class EngineControls(GridLayout):
             self.score.text = move.format_score().replace("-", "\u2013")
             self.temperature.text = f"{move.temperature_stats[2]:.1f}"
             if move.parent and move.parent.analysis_ready:
-                self.evaluation.text = f"{move.evaluation:.1%}"
+                if move.evaluation is not None:
+                    self.evaluation.text = f"{move.evaluation:.1%}"
+                else:
+                    self.evaluation.text = f"?"
 
     # handles showing completed analysis and triggered actions like auto undo and ai move
     def update_evaluation(self):
         current_move = self.board.current_move
         self.score.set_prisoners(self.board.prisoner_count)
-        if not self.ai_auto.active(current_move.player) and current_move is not self.board.root:
+        current_player_is_human_or_both_robots = not self.ai_auto.active(current_move.player) or self.ai_auto.active(1 - current_move.player)
+        if current_player_is_human_or_both_robots and current_move is not self.board.root:
             self.info.text = current_move.comment(eval=True, hints=self.hints.active(current_move.player))
         self.evaluation.text = ""
-        if not self.ai_auto.active(current_move.player):
+        if current_player_is_human_or_both_robots:
             self.show_evaluation_stats(current_move)
 
         if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children and not current_move.x_comment.get("undo"):

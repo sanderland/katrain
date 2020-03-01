@@ -51,6 +51,15 @@ class Move:
     def is_pass(self):
         return self.coords[0] is None
 
+    def update_top_move_evaluation(self):  # a move's outdated analysis
+        if self.analysis and self.parent and self.parent.analysis:
+            for move_dict in self.parent.analysis:
+                if move_dict["move"] == self.gtp():
+                    move_dict["outdatedScoreLead"] = move_dict["scoreLead"]
+                    move_dict["scoreLead"] = self.analysis[0]["scoreLead"]
+                    self.parent.update_top_move_evaluation()
+                    return
+
     # various analysis functions
     def set_analysis(self, analysis_blob, is_pass):
         if is_pass:
@@ -58,10 +67,9 @@ class Move:
         else:
             self.analysis = analysis_blob["moveInfos"]
             self.ownership = analysis_blob["ownership"]
-            if self.parent and self.parent.analysis and self.parent.analysis[0]["move"] == self.gtp():
-                self.parent.analysis[0]["scoreLead"] = self.analysis[0]["scoreLead"]
-            if self.children and self.children[0].analysis and self.children[0].gtp() == self.analysis[0]["move"]:
-                self.analysis[0]["scoreLead"] = self.children[0].analysis[0]["scoreLead"]  # if received out of order, some edge case with undos ignored
+            if self.children:
+                self.children[0].update_top_move_evaluation()
+            self.update_top_move_evaluation()
 
     @property
     def analysis_ready(self):
@@ -125,9 +133,9 @@ class Move:
     # needing own analysis ready
     @property
     def temperature_stats(self):
-        best = float(self.analysis[0]["scoreLead"])
-        worst = float(self.pass_analysis[0]["scoreLead"])
-        return best, worst, abs(best - worst)
+        best = self.analysis[0]["scoreLead"]
+        worst = self.pass_analysis[0]["scoreLead"]
+        return best, worst, max(-self.player_sign * (best - worst), 0)
 
     @property
     def score(self):
@@ -141,14 +149,21 @@ class Move:
     @property
     def evaluation(self):
         best, worst, temp = self.parent.temperature_stats
-        return self.player_sign * (self.score - worst) / temp
+        return self.player_sign * (self.score - worst) / temp if temp > 0 else None
 
     @property
     def outdated_evaluation(self):
+        def outdated_score(move_dict):
+            return move_dict.get("outdatedScoreLead") or move_dict["scoreLead"]
+
         prev_analysis_current_move = [d for d in self.parent.analysis if d["move"] == self.gtp()]
         if prev_analysis_current_move:
             best_score, worst_score, prev_temp = self.parent.temperature_stats
-            return self.player_sign * (prev_analysis_current_move[0]["scoreLead"] - worst_score) / prev_temp
+            best_score = outdated_score(self.parent.analysis[0])
+            worst_score = self.parent.pass_analysis[0]["scoreLead"]
+            prev_temp = max(self.player_sign * (best_score - worst_score), 0)
+            score = outdated_score(prev_analysis_current_move[0])
+            return self.player_sign * (score - worst_score) / prev_temp if prev_temp > 0 else None
 
     @property
     def ai_moves(self):
@@ -156,7 +171,10 @@ class Move:
             return []
         _, worst_score, temperature = self.temperature_stats
         for d in self.analysis:
-            d["evaluation"] = -self.player_sign * (d["scoreLead"] - worst_score) / temperature
+            if temperature > 0.5:
+                d["evaluation"] = -self.player_sign * (d["scoreLead"] - worst_score) / temperature
+            else:
+                d["evaluation"] = int(-self.player_sign * d["scoreLead"] >= -self.player_sign * self.analysis[0]["scoreLead"])
         return self.analysis
 
     # various output and conversion functions
