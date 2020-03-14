@@ -28,7 +28,7 @@ Installation for Linux/Mac users
 --------------------------------
 * This assumed you have a working Python 3.6/3.7 installation, use pip3/python3 etc. if your default is python 2. Kivy currently does not have a release for Python 3.8.
 * pip install kivy
-* Change the `engine.command` field in `config.json` to your kata v1.3+ binary. 
+* Change the `engine.command` field in `config.json` to your kata v1.3+ binary (or make sure it is KataGo/katago)
   Compiled binaries and source code can be found at https://github.com/lightvector/KataGo/releases. Executables for Mac are not available, so compiling from source code is required there.
 * Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
 

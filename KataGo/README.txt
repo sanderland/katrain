@@ -1,18 +1,28 @@
-KataGo v1.3.2
+KataGo v1.3.3
 https://github.com/lightvector/KataGo
 
 -----------------------------------------------------
 USAGE:
 -----------------------------------------------------
 
-FIRST: run this to make sure KataGo is working, with a neural net file. 
-katago.exe benchmark -model <NEURALNET>.txt.gz -config gtp_example.cfg
+FIRST: 
+Run this to make sure KataGo is working, with a neural net file. 
+katago.exe benchmark -model <NEURALNET>.bin.gz -config gtp_example.cfg
 
 (download neural nets here if you don't have one: https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/index.html)
 On OpenCL, it should also cause KataGo to tune for your GPU. Then, the benchmark will report stats about speed and threads. You can configure gtp_example.cfg to use that many numSearchThreads to get good performance.
 
-Next: This command will run the KataGo engine proper. Feed this command to any program GUI program to launch KataGo's engine:
-katago.exe gtp -model <NEURALNET>.txt.gz -config gtp_example.cfg
+ALSO:
+You can also run this command to have KataGo generate a gtp config for you, and automatically tune the number of threads and other parameters
+and other settings based on your answers to various questions.
+katago.exe genconfig -model <NEURALNET>.bin.gz -output gtp_custom.cfg
+
+NEXT: 
+This command will run the KataGo engine proper. Feed this command to any program GUI program to launch KataGo's engine:
+katago.exe gtp -model <NEURALNET>.bin.gz -config gtp_example.cfg
+
+Or if you generated a config yourself:
+katago.exe gtp -model <NEURALNET>.bin.gz -config gtp_custom.cfg
 
 KataGo should be able to work with any GUI program that supports GTP, as well as any analysis program that supports Leela Zero's `lz-analyze` command, such as Lizzie (https://github.com/featurecat/lizzie) or Sabaki (https://sabaki.yichuanshen.de/).
 

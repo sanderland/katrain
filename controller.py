@@ -118,7 +118,8 @@ class EngineControls(GridLayout):
             if self.auto_undo.active(current_move.player) and not self.ai_auto.active(current_move.player) and not current_move.auto_undid:
                 ts = self.train_settings
                 # TODO: is this overly generous wrt low visit outdated evaluations?
-                move_eval = max(current_move.evaluation, current_move.outdated_evaluation or 0)
+                evaluation = current_move.evaluation if current_move.evaluation is not None else 1  # assume move is fine if temperature is negative
+                move_eval = max(evaluation, current_move.outdated_evaluation or 0)
                 points_lost = (current_move.parent or current_move).temperature_stats[2] * (1 - move_eval)
                 if move_eval < ts["undo_eval_threshold"] and points_lost >= ts["undo_point_threshold"]:
                     if self.num_undos(current_move) == 0:

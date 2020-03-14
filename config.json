@@ -29,7 +29,7 @@
     "min_eval_temperature": 0.5
   },
   "engine": {
-    "command": "KataGo/katago analysis -model models/b15-1.3.2.gz -config KataGo/analysis_config.cfg -analysis-threads 8"
+    "command": "KataGo/katago analysis -model models/b15-1.3.2.txt.gz -config KataGo/analysis_config.cfg -analysis-threads 8"
   },
   "trainer": {
     "balance_play_target_score": 2,
