@@ -21,7 +21,9 @@ from kivy.uix.popup import Popup
 
 from board import Board, IllegalMoveException, Move
 
-config_file = sys.argv[1] if len(sys.argv) > 1 else "config.json"
+BASE_PATH = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+
+config_file = sys.argv[1] if len(sys.argv) > 1 else os.path.join(BASE_PATH, "config.json")
 print(f"Using config file {config_file}")
 Config = JsonStore(config_file)
 
@@ -29,7 +31,10 @@ Config = JsonStore(config_file)
 class EngineControls(GridLayout):
     def __init__(self, **kwargs):
         super(EngineControls, self).__init__(**kwargs)
-        self.command = shlex.split(Config.get("engine")["command"])
+
+        self.command = os.path.join(BASE_PATH, Config.get("engine")["command"])
+        if "win" not in sys.platform:
+            self.command = shlex.split(self.command)
 
         analysis_settings = Config.get("analysis")
         self.visits = [[analysis_settings["pass_visits"], analysis_settings["visits"]], [analysis_settings["pass_visits_fast"], analysis_settings["visits_fast"]]]
@@ -43,6 +48,10 @@ class EngineControls(GridLayout):
         self.outstanding_analysis_queries = []  # allows faster interaction while kata is starting
         self.kata = None
         self.query_time = {}
+
+    def show_error(self, msg):
+        print(f"ERROR: {msg}")
+        self.info.text = msg
 
     def redraw(self, include_board=False):
         if include_board:
@@ -67,7 +76,9 @@ class EngineControls(GridLayout):
         try:
             self.kata = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         except FileNotFoundError:
-            self.info.text = f"Starting kata with command '{self.command[0]}' failed. If you are on Mac or Linux, please edit configuration file '{config_file}' to point to the correct KataGo executable."
+            self.show_error(
+                f"Starting kata with command '{self.command}' failed. If you are on Mac or Linux, please edit configuration file '{config_file}' to point to the correct KataGo executable."
+            )
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
 
         msg, *args = self.message_queue.get()
@@ -77,7 +88,7 @@ class EngineControls(GridLayout):
                     print("MESSAGE", msg, args)
                 getattr(self, f"_do_{msg.replace('-','_')}")(*args)
             except Exception as e:
-                self.info.text = f"Exception in Engine thread: {e}"
+                show_error(f"Exception in Engine thread: {e}")
                 raise
             msg, *args = self.message_queue.get()
 
@@ -219,7 +230,7 @@ class EngineControls(GridLayout):
                 return bin_c.decode(encoding=encoding)
             except:
                 pass
-        self.info.text = f"could not decode file contents of {file}"
+        self.show_error(f"could not decode file contents of {file}")
         return ""
 
     def _do_analyze_sgf(self, sgf, faster=False, rewind=False):
@@ -274,7 +285,7 @@ class EngineControls(GridLayout):
                 print(f"[{time.time()-self.query_time.get(analysis['id'],0):.1f}] kata analysis received:", line[:80], "...")
             if "error" in analysis:
                 print(analysis)
-                self.info.text = f"ERROR IN KATA ANALYSIS: {analysis['error']}"
+                self.show_error(f"ERROR IN KATA ANALYSIS: {analysis['error']}")
             else:
                 self.board.store_analysis(analysis)
                 self.update_evaluation()
