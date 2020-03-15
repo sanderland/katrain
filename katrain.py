@@ -10,7 +10,8 @@ from board import Move
 from controller import Config
 from kivyutils import *
 
-COLORS = Config.get("ui")["stones"]
+STONE_COLORS = Config.get("ui")["stones"]
+OUTLINE_COLORS = Config.get("ui").get("outline", [None, None])
 GHOST_ALPHA = Config.get("ui")["ghost_alpha"]
 
 
@@ -69,9 +70,13 @@ class BadukPanWidget(Widget):
         self.draw_board()
         self.redraw()
 
-    def draw_stone(self, x, y, col, innercol=None, evalcol=None, evalsize=10.0, scale=1.0):
+    def draw_stone(self, x, y, col, outline_col=None, innercol=None, evalcol=None, evalsize=10.0, scale=1.0):
         stone_size = self.stone_size * scale
         draw_circle((self.gridpos[x], self.gridpos[y]), stone_size, col)
+        if outline_col:
+            Color(*outline_col)
+            Line(circle=(self.gridpos[x], self.gridpos[y], stone_size), width=0.05 * stone_size)
+
         if evalcol:
             evalsize = min(self.EVAL_BOUNDS[1], max(evalsize, self.EVAL_BOUNDS[0])) / self.EVAL_BOUNDS[1]
             draw_circle((self.gridpos[x], self.gridpos[y]), math.sqrt(evalsize) * stone_size * 0.5, evalcol)
@@ -94,7 +99,6 @@ class BadukPanWidget(Widget):
             sz = min(self.width, self.height)
             Color(*Config.get("ui")["board_color"])
             board = Rectangle(pos=(0, 0), size=(sz, sz))
-
             # grid lines
             margin = Config.get("ui")["board_margin"]
             self.grid_size = board.size[0] / (self.engine.board_size - 1 + 1.5 * margin)
@@ -136,8 +140,8 @@ class BadukPanWidget(Widget):
                 eval, evalsize = m.evaluation_info
                 move_eval_on = full_eval_on[m.player] or m in last_few_moves
                 evalcol = self._eval_spectrum(eval) if move_eval_on and eval and evalsize > Config.get("ui").get("min_eval_temperature", 0.5) else None
-                inner = COLORS[1 - m.player] if (m == last_move) else None
-                self.draw_stone(m.coords[0], m.coords[1], COLORS[m.player], inner, evalcol, evalsize)
+                inner = STONE_COLORS[1 - m.player] if (m == last_move) else None
+                self.draw_stone(m.coords[0], m.coords[1], STONE_COLORS[m.player], OUTLINE_COLORS[m.player], inner, evalcol, evalsize)
 
             # ownership - allow one move out of date for smooth animation
             ownership = last_move.ownership or (last_move.parent and last_move.parent.ownership)
@@ -148,7 +152,7 @@ class BadukPanWidget(Widget):
                     for x in range(self.engine.board_size):
                         ix_owner = 0 if ownership[ix] > 0 else 1
                         if ix_owner != (has_stone.get((x, y), -1)):
-                            Color(*COLORS[ix_owner], abs(ownership[ix]))
+                            Color(*STONE_COLORS[ix_owner], abs(ownership[ix]))
                             Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
                         ix = ix + 1
 
@@ -160,7 +164,8 @@ class BadukPanWidget(Widget):
                 if m.coords[0] is not None:
                     undo_coords.add(m.coords)
                     evalcol = (*self._eval_spectrum(eval_info[0]), alpha) if eval_info[0] else None
-                    self.draw_stone(m.coords[0], m.coords[1], (*COLORS[m.player][:3], alpha), None, evalcol, self.EVAL_BOUNDS[1], scale=Config.get("ui").get("undo_scale", 0.95))
+                    scale = Config.get("ui").get("undo_scale", 0.95)
+                    self.draw_stone(m.coords[0], m.coords[1], (*STONE_COLORS[m.player][:3], alpha), None, None, evalcol, self.EVAL_BOUNDS[1], scale=scale)
 
             # hints
             if self.engine.hints.active(current_player):
@@ -172,7 +177,7 @@ class BadukPanWidget(Widget):
 
             # hover next move ghost stone
             if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*COLORS[current_player], GHOST_ALPHA))
+                self.draw_stone(*self.ghost_stone, (*STONE_COLORS[current_player], GHOST_ALPHA))
 
             # pass circle
             passed = len(moves) > 1 and last_move.is_pass
