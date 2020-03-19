@@ -31,7 +31,9 @@ Installation for Linux/Mac users
 * Git clone or download the repository.
 * pip install kivy
 * Put your katago binary in the `KataGo/` directory or change the `engine.command` field in `config.json` to your KataGo v1.3+ binary.
-  Compiled binaries and source code can be found [here](https://github.com/lightvector/KataGo/releases). Executables for Mac are not available, so compiling from source code is required there.
+    *  Compiled binaries and source code can be found [here](https://github.com/lightvector/KataGo/releases).
+    * You will need to `chmod +x katago` your binary if your download it.  
+    * Executables for Mac are not available, so compiling from source code is required there.
 * Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
 
 Options
