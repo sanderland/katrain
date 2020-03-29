@@ -88,7 +88,7 @@ class EngineControls(GridLayout):
                     print("MESSAGE", msg, args)
                 getattr(self, f"_do_{msg.replace('-','_')}")(*args)
             except Exception as e:
-                show_error(f"Exception in Engine thread: {e}")
+                self.show_error(f"Exception in Engine thread: {e}")
                 raise
             msg, *args = self.message_queue.get()
 
@@ -234,7 +234,7 @@ class EngineControls(GridLayout):
         return ""
 
     def _do_analyze_sgf(self, sgf, faster=False, rewind=False):
-        sgfprops = {k: v for k, v in re.findall(r"\b(\w+)\[(.*?)\]", sgf)}
+        sgfprops = {k: v.strip("[]").split("][") if k in ["AB", "AW"] else v.strip("[]") for k, v in re.findall(r"\b(\w+)((?:\[.*?\])+)", sgf)}
         size = int(sgfprops.get("SZ", self.board_size))
         sgfmoves = re.findall(r"\b([BW])\[([a-z]{2})\]", sgf)
         if not sgfmoves and not sgfprops:
@@ -258,11 +258,19 @@ class EngineControls(GridLayout):
             fileselect_popup.open()
             return
         self._do_init(size, sgfprops.get("KM"))
-        moves = [Move(player=Move.PLAYERS.index(p.upper()), sgfcoords=(mv, self.board_size)) for p, mv in sgfmoves]
         handicap = int(sgfprops.get("HA", 0))
-        self.board.place_handicap_stones(handicap)  # not technically correct, should parse AB/AW
-        if handicap > 0:
-            self._request_analysis(self.board.current_move)
+
+        if handicap and not "AB" in sgfprops:
+            self.board.place_handicap_stones(handicap)
+
+        placements = [Move(player=pl, sgfcoords=(mv, self.board_size)) for pl, player in enumerate(Move.PLAYERS) for mv in sgfprops.get("A" + player, [])]
+        for placement in placements:  # free handicaps
+            self.board.play(placement)  # bypass analysis
+
+        if handicap or placements:
+            self._request_analysis(self.board.current_move)  # ensure next move analysis works
+
+        moves = [Move(player=Move.PLAYERS.index(p.upper()), sgfcoords=(mv, self.board_size)) for p, mv in sgfmoves]
         for move in moves:
             self.play(move, faster=faster and move != moves[-1])
         if rewind:
