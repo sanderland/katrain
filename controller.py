@@ -304,7 +304,6 @@ class EngineControls(GridLayout):
 
     def _send_analysis_query(self, query):
         self.query_time[query["id"]] = time.time()
-        print(query)
         if self.kata:
             self.kata.stdin.write((json.dumps(query) + "\n").encode())
             self.kata.stdin.flush()
