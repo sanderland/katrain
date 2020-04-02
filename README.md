@@ -30,6 +30,7 @@ Installation for Linux/Mac users
 * This assumed you have a working Python 3.6/3.7 installation as a default. If your default is python 2, use pip3/python3. Kivy currently does not have a release for Python 3.8.
 * Git clone or download the repository.
 * pip install kivy
+* pip install pygame
 * Put your katago binary in the `KataGo/` directory or change the `engine.command` field in `config.json` to your KataGo v1.3+ binary.
     *  Compiled binaries and source code can be found [here](https://github.com/lightvector/KataGo/releases).
     * You will need to `chmod +x katago` your binary if your download it.  
