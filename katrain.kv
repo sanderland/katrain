@@ -38,6 +38,7 @@
 <CheckBoxHint>
 	orientation: 'vertical'
 	checkbox: checkbox
+	label: label
 	text: ''
 	default_active: False
 	position: (0,0)
@@ -46,6 +47,7 @@
 		font_size: root.height * 0.2 if root.orientation=='vertical' else root.height
 		text: root.text
 		on_press: if not checkbox.disabled: checkbox._do_press()
+		id: label
 	CheckBox:
 		size_hint: 1,0.55 if root.orientation=='vertical' else (0.2,1)
 		id: checkbox
@@ -55,11 +57,13 @@
 <BWCheckBoxHint>
     black: black
     white: white
+    label: label
 	orientation: 'vertical'
 	text: ''
 	default_active: False
 	CheckBoxHintLabel:
 		size_hint: 1,0.2
+        id: label
 		text: root.text
 		font_size: self.height
 		on_press: if not white.disabled: white._do_press(); black._do_press()

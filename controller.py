@@ -37,11 +37,15 @@ class EngineControls(GridLayout):
             self.command = shlex.split(self.command)
 
         analysis_settings = Config.get("analysis")
-        self.visits = [[analysis_settings["pass_visits"], analysis_settings["visits"]], [analysis_settings["pass_visits_fast"], analysis_settings["visits_fast"]]]
+        self.visits = [
+            [analysis_settings["pass_visits"], analysis_settings["visits"], analysis_settings["analyze_all_visits"]],
+            [analysis_settings["pass_visits_fast"], analysis_settings["visits_fast"], analysis_settings["analyze_all_visits_fast"]],
+        ]
         self.train_settings = Config.get("trainer")
         self.debug = Config.get("debug")["level"]
         self.board_size = Config.get("board")["size"]
         self.ready = False
+        self.ai_thinking = False
         self.message_queue = None
         self.board = Board(self.board_size)
         self.komi = 6.5  # loaded from config in init
@@ -162,7 +166,9 @@ class EngineControls(GridLayout):
         ts = self.train_settings
         while not self.board.current_move.analysis_ready:
             self.info.text = "Thinking..."
+            self.ai_thinking = True
             time.sleep(0.05)
+        self.ai_thinking = False
         # select move
         current_move = self.board.current_move
         pos_moves = [
@@ -233,6 +239,32 @@ class EngineControls(GridLayout):
         self.show_error(f"could not decode file contents of {file}")
         return ""
 
+    def _do_analyze_extra(self, sweep):
+        stones = {s.coords for s in self.board.stones}
+        current_move = self.board.current_move
+        if not current_move.analysis:
+            self.info.text = "Wait for initial analysis to complete before doing a board-sweep or refinement"
+            return
+        played_moves = self.board.moves
+        if sweep:
+            analyze_moves = [Move(coords=(x, y)).gtp() for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
+            visits = self.visits[self.ai_fast.active][2]
+            self.info.text = f"Refining analysis of entire board to {visits} visits"
+        else:
+            analyze_moves = [a["move"] for a in current_move.analysis]
+            visits = current_move.analysis[0]["visits"] + self.visits[1][2]
+            self.info.text = f"Refining analysis of candidate moves to {visits} visits"
+
+        for gtpcoords in analyze_moves:
+            self._send_analysis_query(
+                {
+                    "id": f"AA:{current_move.id}:{gtpcoords}",
+                    "moves": [[m.bw_player(), m.gtp()] for m in played_moves] + [[current_move.bw_player(True), gtpcoords]],
+                    "includeOwnership": False,
+                    "maxVisits": visits,
+                }
+            )
+
     def _do_analyze_sgf(self, sgf, faster=False, rewind=False):
         sgfprops = {k: v.strip("[]").split("][") if k in ["AB", "AW"] else v.strip("[]") for k, v in re.findall(r"\b(\w+)((?:\[.*?\])+)", sgf)}
         size = int(sgfprops.get("SZ", self.board_size))
@@ -292,14 +324,16 @@ class EngineControls(GridLayout):
             if self.debug:
                 print(f"[{time.time()-self.query_time.get(analysis['id'],0):.1f}] kata analysis received:", line[:80], "...")
             if "error" in analysis:
-                print(analysis)
-                self.show_error(f"ERROR IN KATA ANALYSIS: {analysis['error']}")
+                if "AA" not in analysis["id"]:  # silently drop illegal moves from analysis all
+                    print(analysis)
+                    self.show_error(f"ERROR IN KATA ANALYSIS: {analysis['error']}")
             else:
                 self.board.store_analysis(analysis)
                 self.update_evaluation()
 
     def _send_analysis_query(self, query):
         self.query_time[query["id"]] = time.time()
+        query = {"rules": "japanese", "komi": self.komi, "boardXSize": self.board_size, "boardYSize": self.board_size, "analyzeTurns": [len(query["moves"])], **query}
         if self.kata:
             self.kata.stdin.write((json.dumps(query) + "\n").encode())
             self.kata.stdin.flush()
@@ -311,23 +345,12 @@ class EngineControls(GridLayout):
         move_id = move.id
         moves = self.board.moves
         fast = self.ai_fast.active
-        query = {
-            "id": str(move_id),
-            "moves": [[m.bw_player(), m.gtp()] for m in moves],
-            "rules": "japanese",
-            "komi": self.komi,
-            "boardXSize": self.board_size,
-            "boardYSize": self.board_size,
-            "analyzeTurns": [len(moves)],
-            "includeOwnership": True,
-            "maxVisits": self.visits[fast][1] // faster_fac,
-        }
+        query = {"id": str(move_id), "moves": [[m.bw_player(), m.gtp()] for m in moves], "includeOwnership": True, "maxVisits": self.visits[fast][1] // faster_fac}
         if self.debug:
             print(f"sending query for move {move_id}: {str(query)[:80]}")
         self._send_analysis_query(query)
         query.update({"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0] // faster_fac, "includeOwnership": False})
         query["moves"] += [[move.bw_player(next_move=True), "pass"]]
-        query["analyzeTurns"][0] += 1
         self._send_analysis_query(query)
 
     def output_sgf(self):

@@ -1,6 +1,7 @@
 import os
 import random
 from datetime import datetime
+import copy
 
 
 class IllegalMoveException(Exception):
@@ -13,7 +14,7 @@ class Move:
     SGF_COORD = [chr(i) for i in range(97, 123)]
     _move_id_counter = -1
 
-    def __init__(self, player, coords=None, gtpcoords=None, sgfcoords=None, robot=False):
+    def __init__(self, player=0, coords=None, gtpcoords=None, sgfcoords=None, robot=False):
         Move._move_id_counter += 1
         self.id = Move._move_id_counter
         self.player = player
@@ -108,9 +109,12 @@ class Move:
                 elif not self.is_pass and self.parent.analysis[0]["move"] != self.gtp():
                     if sgf:  # shown in stats anyway
                         text += f"Evaluation: {self.evaluation:.1%} efficient\n"
-                    outdated_evaluation = self.outdated_evaluation
+                    outdated_evaluation, outdated_details = self.outdated_evaluation
                     if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.05:
                         text += f"(Was considered last move as {outdated_evaluation:.0%})\n"
+                        if outdated_evaluation > self.evaluation + 0.15:
+                            with open("outdated_log.txt", "a") as f:
+                                f.write(f"logs.append({repr(outdated_details)})\n")
                     points_lost = self.player_sign * (prev_best_score - score)
                     if points_lost > 0.5:
                         text += f"Estimated point loss: {points_lost:.1f}\n"
@@ -158,24 +162,26 @@ class Move:
 
         prev_analysis_current_move = [d for d in self.parent.analysis if d["move"] == self.gtp()]
         if prev_analysis_current_move:
-            best_score, worst_score, prev_temp = self.parent.temperature_stats
             best_score = outdated_score(self.parent.analysis[0])
             worst_score = self.parent.pass_analysis[0]["scoreLead"]
             prev_temp = max(self.player_sign * (best_score - worst_score), 0)
             score = outdated_score(prev_analysis_current_move[0])
-            return self.player_sign * (score - worst_score) / prev_temp if prev_temp > 0 else None
+            return (self.player_sign * (score - worst_score) / prev_temp if prev_temp > 0 else None), prev_analysis_current_move
+        else:
+            return None, None
 
     @property
     def ai_moves(self):
         if not self.analysis_ready:
             return []
         _, worst_score, temperature = self.temperature_stats
-        for d in self.analysis:
+        analysis = copy.copy(self.analysis)  # not deep, so eval is saved, but avoids race conditions
+        for d in analysis:
             if temperature > 0.5:
                 d["evaluation"] = -self.player_sign * (d["scoreLead"] - worst_score) / temperature
             else:
                 d["evaluation"] = int(-self.player_sign * d["scoreLead"] >= -self.player_sign * self.analysis[0]["scoreLead"])
-        return self.analysis
+        return analysis
 
     # various output and conversion functions
     @staticmethod
@@ -335,6 +341,21 @@ class Board:
         return 1 - self.current_move.player
 
     def store_analysis(self, json):
+        if json["id"].startswith("AA:"):  # board sweep analyze all
+            _, move_id, gtpcoords = json["id"].split(":")
+            move = self.all_moves.get(int(move_id))
+            if not move.analysis:
+                return  # should have been prevented, but better not to crash
+            cur_analysis = [d for d in move.analysis if d["move"] == gtpcoords]
+            move_analysis = {k: v for k, v in json["moveInfos"][0].items() if k not in {"move", "pv"}}
+            move_analysis["visits"] = sum(d["visits"] for d in json["moveInfos"])  # TODO: ??
+            if cur_analysis:
+                if cur_analysis[0]["visits"] < move_analysis["visits"]:
+                    cur_analysis[0].update(move_analysis)
+            else:
+                move.analysis.append({"move": gtpcoords, **move_analysis})
+            return
+
         if json["id"].startswith("PASS_"):
             move_id = int(json["id"].lstrip("PASS_"))
             is_pass = True

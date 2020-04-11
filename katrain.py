@@ -169,11 +169,18 @@ class BadukPanWidget(Widget):
 
             # hints
             if self.engine.hints.active(current_player):
-                for i, d in enumerate(last_move.ai_moves):
-                    move = Move(gtpcoords=d["move"], player=0)
+                hint_moves = last_move.ai_moves
+                for i, d in enumerate(hint_moves):
+                    move = Move(gtpcoords=d["move"])
                     c = [*self._eval_spectrum(d["evaluation"]), 0.5]
                     if move.coords[0] is not None and move.coords not in undo_coords:
-                        self.draw_stone(move.coords[0], move.coords[1], c, scale=1.0 if i == 0 else 0.8)
+                        if i == 0:
+                            scale = 1.0
+                        elif d["visits"] < 0.1 * hint_moves[0]["visits"]:  # TODO: config?
+                            scale = 0.6  # TODO: config?
+                        else:
+                            scale = 0.85
+                        self.draw_stone(move.coords[0], move.coords[1], c, scale=scale)
 
             # hover next move ghost stone
             if self.ghost_stone:
@@ -208,6 +215,27 @@ class KaTrainGui(BoxLayout):
             self.controls.action("redo-branch", 1)
         elif keycode[1] == "left":
             self.controls.action("redo-branch", -1)
+        elif keycode[1] == "s":
+            self.controls.action("analyze-extra", True)
+        elif keycode[1] == "r":
+            self.controls.action("analyze-extra", False)
+        elif keycode[1] == "a":
+            if not self.controls.ai_thinking:
+                self.controls.ai_move.trigger_action(duration=0)
+        elif keycode[1] == "p":# TODO: clean repetitive shortcuts
+            self.controls.play.trigger_action(duration=0)
+        elif keycode[1] == "f":
+            self.controls.ai_fast.label.trigger_action(duration=0)
+        elif keycode[1] == "h":
+            self.controls.hints.label.trigger_action(duration=0)
+        elif keycode[1] == "e":
+            self.controls.eval.label.trigger_action(duration=0)
+        elif keycode[1] == "u":
+            self.controls.auto_undo.label.trigger_action(duration=0)
+        elif keycode[1] == "b":
+            self.controls.ai_balance.label.trigger_action(duration=0)
+        elif keycode[1] == "o":
+            self.controls.ownership.label.trigger_action(duration=0)
         return True
 
 

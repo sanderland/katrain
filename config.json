@@ -3,7 +3,9 @@
     "pass_visits": 100,
     "pass_visits_fast": 25,
     "visits": 2000,
-    "visits_fast": 500
+    "visits_fast": 500,
+    "analyze_all_visits": 500,
+    "analyze_all_visits_fast": 100
   },
   "board": {
     "size": 19,
