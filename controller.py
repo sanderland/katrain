@@ -239,18 +239,23 @@ class EngineControls(GridLayout):
         self.show_error(f"could not decode file contents of {file}")
         return ""
 
-    def _do_analyze_extra(self, sweep):
+    def _do_analyze_extra(self, mode):
         stones = {s.coords for s in self.board.stones}
         current_move = self.board.current_move
         if not current_move.analysis:
             self.info.text = "Wait for initial analysis to complete before doing a board-sweep or refinement"
             return
         played_moves = self.board.moves
-        if sweep:
+        if mode == "extra":
+            visits = sum([d["visits"] for d in current_move.analysis]) + self.visits[0][1]
+            self.info.text = f"Performing additional analysis to {visits} visits"
+            self._request_analysis(current_move, visits=visits)
+            return
+        elif mode == "sweep":
             analyze_moves = [Move(coords=(x, y)).gtp() for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
             visits = self.visits[self.ai_fast.active][2]
             self.info.text = f"Refining analysis of entire board to {visits} visits"
-        else:
+        else:  # mode=='refine':
             analyze_moves = [a["move"] for a in current_move.analysis]
             visits = current_move.analysis[0]["visits"] + self.visits[1][2]
             self.info.text = f"Refining analysis of candidate moves to {visits} visits"
@@ -340,12 +345,12 @@ class EngineControls(GridLayout):
         else:  # early on / root / etc
             self.outstanding_analysis_queries.append(copy.copy(query))
 
-    def _request_analysis(self, move, faster=False):
+    def _request_analysis(self, move, faster=False, visits=0):
         faster_fac = 5 if faster else 1
         move_id = move.id
         moves = self.board.moves
         fast = self.ai_fast.active
-        query = {"id": str(move_id), "moves": [[m.bw_player(), m.gtp()] for m in moves], "includeOwnership": True, "maxVisits": self.visits[fast][1] // faster_fac}
+        query = {"id": str(move_id), "moves": [[m.bw_player(), m.gtp()] for m in moves], "includeOwnership": True, "maxVisits": max(visits, self.visits[fast][1] // faster_fac)}
         if self.debug:
             print(f"sending query for move {move_id}: {str(query)[:80]}")
         self._send_analysis_query(query)

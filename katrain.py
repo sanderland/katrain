@@ -216,13 +216,15 @@ class KaTrainGui(BoxLayout):
         elif keycode[1] == "left":
             self.controls.action("redo-branch", -1)
         elif keycode[1] == "s":
-            self.controls.action("analyze-extra", True)
+            self.controls.action("analyze-extra", "sweep")
+        elif keycode[1] == "x":
+            self.controls.action("analyze-extra", "extra")
         elif keycode[1] == "r":
-            self.controls.action("analyze-extra", False)
+            self.controls.action("analyze-extra", "refine")
         elif keycode[1] == "a":
             if not self.controls.ai_thinking:
                 self.controls.ai_move.trigger_action(duration=0)
-        elif keycode[1] == "p":# TODO: clean repetitive shortcuts
+        elif keycode[1] == "p":  # TODO: clean repetitive shortcuts
             self.controls.play.trigger_action(duration=0)
         elif keycode[1] == "f":
             self.controls.ai_fast.label.trigger_action(duration=0)
