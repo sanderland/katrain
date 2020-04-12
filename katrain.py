@@ -156,6 +156,20 @@ class BadukPanWidget(Widget):
                             Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
                         ix = ix + 1
 
+            policy = last_move.policy
+            if self.engine.policy.active and policy:
+                best_move_policy = max(policy)
+                print(sorted(policy))
+                rsz = self.grid_size * 0.2
+                ix = 0
+                for y in range(self.engine.board_size - 1, -1, -1):
+                    for x in range(self.engine.board_size):
+                        if policy[ix] > 0:
+                            polcol = self._eval_spectrum((policy[ix] / best_move_policy) ** 0.1)
+                            Color(*polcol)
+                            Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
+                        ix = ix + 1
+
             # children of current moves in undo / review
             undo_coords = set()
             alpha = Config.get("ui")["undo_alpha"]

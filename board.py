@@ -24,6 +24,7 @@ class Move:
         self.analysis = None
         self.pass_analysis = None
         self.ownership = None
+        self.policy = None
         self.x_comment = {}
         self.auto_undid = False
         self.move_number = 0
@@ -67,6 +68,7 @@ class Move:
         else:
             self.analysis = analysis_blob["moveInfos"]
             self.ownership = analysis_blob["ownership"]
+            self.policy = analysis_blob.get("policy")
             if self.children:
                 self.children[0].update_top_move_evaluation()
             self.update_top_move_evaluation()

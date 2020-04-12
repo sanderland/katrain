@@ -156,6 +156,7 @@
 	score: score
 	hints: hints
 	ownership: ownership
+	policy: policy
     eval: eval
 	ai_balance: ai_balance
 	ai_auto: ai_auto
@@ -165,7 +166,7 @@
 	undo: undo
 	ai_move: ai_move
 	GridLayout:
-		cols: 7
+		cols: 8
 		rows: 1
 		size_hint: 1, 0.05
         Label:
@@ -204,6 +205,11 @@
 			size_hint: 0.2, 0.5
 			id: ownership
 			text: 'show\nowner'
+			on_active: root.parent.board.redraw()
+		CheckBoxHint:
+			size_hint: 0.2, 0.5
+			id: policy
+			text: 'show\npolicy'
 			on_active: root.parent.board.redraw()
 	GridLayout:
 		cols: 4

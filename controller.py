@@ -294,7 +294,10 @@ class EngineControls(GridLayout):
                 print(f"JSON decode error: '{e}' encountered after receiving input '{line}'")
                 return
             if self.debug:
-                print(f"[{time.time()-self.query_time.get(analysis['id'],0):.1f}] kata analysis received:", line[:80], "...")
+                dline = line
+                if self.debug < 2:
+                    dline = line[:80] + "..."
+                print(f"[{time.time()-self.query_time.get(analysis['id'],0):.1f}] kata analysis received: {dline}")
             if "error" in analysis:
                 print(analysis)
                 self.show_error(f"ERROR IN KATA ANALYSIS: {analysis['error']}")
@@ -324,11 +327,15 @@ class EngineControls(GridLayout):
             "boardYSize": self.board_size,
             "analyzeTurns": [len(moves)],
             "includeOwnership": True,
+            "includePolicy": True,
             "maxVisits": self.visits[fast][1] // faster_fac,
             "priority": priority,
         }
         if self.debug:
-            print(f"sending query for move {move_id}: {str(query)[:80]}")
+            dline = str(query)
+            if self.debug < 2:
+                dline = dline[:80] + "..."
+            print(f"sending query for move {move_id}: {dline}")
         self._send_analysis_query(query)
         query.update({"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0] // faster_fac, "includeOwnership": False})
         query["moves"] += [[move.bw_player(next_move=True), "pass"]]
