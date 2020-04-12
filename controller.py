@@ -252,7 +252,7 @@ class EngineControls(GridLayout):
         if mode == "extra":
             visits = sum([d["visits"] for d in current_move.analysis]) + self.visits[0][1]
             self.info.text = f"Performing additional analysis to {visits} visits"
-            self._request_analysis(current_move, visits=visits,priority=self.game_counter - 1_000)
+            self._request_analysis(current_move, min_visits=visits, priority=self.game_counter - 1_000)
             return
         elif mode == "sweep":
             analyze_moves = [Move(coords=(x, y)).gtp() for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
@@ -353,7 +353,7 @@ class EngineControls(GridLayout):
         else:  # early on / root / etc
             self.outstanding_analysis_queries.append(copy.copy(query))
 
-    def _request_analysis(self, move, faster=False, visits=0, priority=0):
+    def _request_analysis(self, move, faster=False, min_visits=0, priority=0):
         faster_fac = 5 if faster else 1
         move_id = move.id
         moves = self.board.moves
@@ -362,7 +362,7 @@ class EngineControls(GridLayout):
             "id": str(move_id),
             "moves": [[m.bw_player(), m.gtp()] for m in moves],
             "includeOwnership": True,
-            "maxVisits": max(visits, self.visits[fast][1] // faster_fac),
+            "maxVisits": max(min_visits, self.visits[fast][1] // faster_fac),
             "priority": priority,
         }
         if self.debug:
