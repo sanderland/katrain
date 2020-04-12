@@ -112,9 +112,6 @@ class Move:
                     outdated_evaluation, outdated_details = self.outdated_evaluation
                     if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.05:
                         text += f"(Was considered last move as {outdated_evaluation:.0%})\n"
-                        if outdated_evaluation > self.evaluation + 0.15:
-                            with open("outdated_log.txt", "a") as f:
-                                f.write(f"logs.append({repr(outdated_details)})\n")
                     points_lost = self.player_sign * (prev_best_score - score)
                     if points_lost > 0.5:
                         text += f"Estimated point loss: {points_lost:.1f}\n"

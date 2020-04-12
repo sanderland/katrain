@@ -165,6 +165,8 @@
 	ai_auto: ai_auto
 	ai_fast: ai_fast
 	ai_lock: ai_lock
+	load: load
+	save: save
 	auto_undo: auto_undo
 	undo: undo
 	ai_move: ai_move
@@ -269,10 +271,12 @@
 		size_hint: 1, 0.05
 		StyledButton:
 			text: 'Save'
+			id: save
 			size_hint: 0.5, 1
 			on_press: info.text = root.output_sgf()
 		StyledButton:
 			text: 'Load'
+			id: load
 			size_hint: 0.5, 1
 			on_press: root.action("analyze-sgf",info.text)
 	GridLayout:

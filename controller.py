@@ -52,6 +52,7 @@ class EngineControls(GridLayout):
         self.outstanding_analysis_queries = []  # allows faster interaction while kata is starting
         self.kata = None
         self.query_time = {}
+        self.game_counter = 0
 
     def show_error(self, msg):
         print(f"ERROR: {msg}")
@@ -96,7 +97,7 @@ class EngineControls(GridLayout):
                 raise
             msg, *args = self.message_queue.get()
 
-    def play(self, move, faster=False):
+    def play(self, move, faster=False, analysis_priority=None):
         try:
             mr = self.board.play(move)
         except IllegalMoveException as e:
@@ -104,7 +105,7 @@ class EngineControls(GridLayout):
             return
         self.update_evaluation()
         if not mr.analysis_ready:  # replayed old move
-            self._request_analysis(mr, faster=faster)
+            self._request_analysis(mr, faster=faster, priority=self.game_counter if analysis_priority is None else analysis_priority)
         return mr
 
     def show_evaluation_stats(self, move):
@@ -217,10 +218,11 @@ class EngineControls(GridLayout):
         self.update_evaluation()
 
     def _do_init(self, board_size, komi=None):
+        self.game_counter += 1  # prioritize newer games
         self.board_size = board_size
         self.komi = float(komi or Config.get("board").get(f"komi_{board_size}", 6.5))
         self.board = Board(board_size)
-        self._request_analysis(self.board.root)
+        self._request_analysis(self.board.root, priority=self.game_counter)
         self.redraw(include_board=True)
         self.ready = True
         if self.ai_lock.active:
@@ -246,19 +248,22 @@ class EngineControls(GridLayout):
             self.info.text = "Wait for initial analysis to complete before doing a board-sweep or refinement"
             return
         played_moves = self.board.moves
+
         if mode == "extra":
             visits = sum([d["visits"] for d in current_move.analysis]) + self.visits[0][1]
             self.info.text = f"Performing additional analysis to {visits} visits"
-            self._request_analysis(current_move, visits=visits)
+            self._request_analysis(current_move, visits=visits,priority=self.game_counter - 1_000)
             return
         elif mode == "sweep":
             analyze_moves = [Move(coords=(x, y)).gtp() for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
             visits = self.visits[self.ai_fast.active][2]
             self.info.text = f"Refining analysis of entire board to {visits} visits"
+            priority = self.game_counter - 1_000_000_000
         else:  # mode=='refine':
             analyze_moves = [a["move"] for a in current_move.analysis]
             visits = current_move.analysis[0]["visits"] + self.visits[1][2]
             self.info.text = f"Refining analysis of candidate moves to {visits} visits"
+            priority = self.game_counter - 1_000
 
         for gtpcoords in analyze_moves:
             self._send_analysis_query(
@@ -267,6 +272,7 @@ class EngineControls(GridLayout):
                     "moves": [[m.bw_player(), m.gtp()] for m in played_moves] + [[current_move.bw_player(True), gtpcoords]],
                     "includeOwnership": False,
                     "maxVisits": visits,
+                    "priority": priority,
                 }
             )
 
@@ -300,16 +306,18 @@ class EngineControls(GridLayout):
         if handicap and not "AB" in sgfprops:
             self.board.place_handicap_stones(handicap)
 
+        analysis_priority = self.game_counter - 1_000_000
+
         placements = [Move(player=pl, sgfcoords=(mv, self.board_size)) for pl, player in enumerate(Move.PLAYERS) for mv in sgfprops.get("A" + player, [])]
         for placement in placements:  # free handicaps
             self.board.play(placement)  # bypass analysis
 
         if handicap or placements:
-            self._request_analysis(self.board.current_move)  # ensure next move analysis works
+            self._request_analysis(self.board.current_move, priority=analysis_priority)  # ensure next move analysis works
 
         moves = [Move(player=Move.PLAYERS.index(p.upper()), sgfcoords=(mv, self.board_size)) for p, mv in sgfmoves]
         for move in moves:
-            self.play(move, faster=faster and move != moves[-1])
+            self.play(move, faster=faster and move != moves[-1], analysis_priority=analysis_priority)
         if rewind:
             self.board.rewind()
 
@@ -345,12 +353,18 @@ class EngineControls(GridLayout):
         else:  # early on / root / etc
             self.outstanding_analysis_queries.append(copy.copy(query))
 
-    def _request_analysis(self, move, faster=False, visits=0):
+    def _request_analysis(self, move, faster=False, visits=0, priority=0):
         faster_fac = 5 if faster else 1
         move_id = move.id
         moves = self.board.moves
         fast = self.ai_fast.active
-        query = {"id": str(move_id), "moves": [[m.bw_player(), m.gtp()] for m in moves], "includeOwnership": True, "maxVisits": max(visits, self.visits[fast][1] // faster_fac)}
+        query = {
+            "id": str(move_id),
+            "moves": [[m.bw_player(), m.gtp()] for m in moves],
+            "includeOwnership": True,
+            "maxVisits": max(visits, self.visits[fast][1] // faster_fac),
+            "priority": priority,
+        }
         if self.debug:
             print(f"sending query for move {move_id}: {str(query)[:80]}")
         self._send_analysis_query(query)

@@ -9,6 +9,10 @@ log.txt
 *.sgf
 sgfout
 my
+
+# debug
+outdated_log.txt
+
 # too big
 models/b20*.gz
 

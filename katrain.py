@@ -238,6 +238,10 @@ class KaTrainGui(BoxLayout):
             self.controls.ai_balance.label.trigger_action(duration=0)
         elif keycode[1] == "o":
             self.controls.ownership.label.trigger_action(duration=0)
+        elif keycode[1] == "l":
+            self.controls.load.trigger_action(duration=0)
+        elif keycode[1] == "k":
+            self.controls.save.trigger_action(duration=0)
         return True
 
 

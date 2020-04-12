@@ -1,4 +1,4 @@
-KataGo v1.3.3
+KataGo v1.3.5
 https://github.com/lightvector/KataGo
 
 -----------------------------------------------------
@@ -7,7 +7,7 @@ USAGE:
 
 FIRST: 
 Run this to make sure KataGo is working, with a neural net file. 
-katago.exe benchmark -model <NEURALNET>.bin.gz -config gtp_example.cfg
+katago.exe benchmark -model <NEURALNET>.bin.gz
 
 (download neural nets here if you don't have one: https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/index.html)
 On OpenCL, it should also cause KataGo to tune for your GPU. Then, the benchmark will report stats about speed and threads. You can configure gtp_example.cfg to use that many numSearchThreads to get good performance.
@@ -19,7 +19,7 @@ katago.exe genconfig -model <NEURALNET>.bin.gz -output gtp_custom.cfg
 
 NEXT: 
 This command will run the KataGo engine proper. Feed this command to any program GUI program to launch KataGo's engine:
-katago.exe gtp -model <NEURALNET>.bin.gz -config gtp_example.cfg
+katago.exe gtp -model <NEURALNET>.bin.gz
 
 Or if you generated a config yourself:
 katago.exe gtp -model <NEURALNET>.bin.gz -config gtp_custom.cfg
@@ -40,6 +40,6 @@ Extensive testing across different OSs and versions and compilers has not been d
 
 -----------------------------------------------------
 TUNING FOR PERFORMANCE:
-You will very likely want to tune some of the parameters in `gtp_example.cfg` for your system for good performance, including the number of threads, fp16 usage (CUDA only), NN cache size, pondering settings, and so on. You can also adjust things like KataGo's resign threshold or utility function. Most of the relevant parameters should be be reasonably well documented directly inline in that config.
+You will very likely want to tune some of the parameters in `default_gtp.cfg` for your system for good performance, including the number of threads, fp16 usage (CUDA only), NN cache size, pondering settings, and so on. You can also adjust things like KataGo's resign threshold or utility function. Most of the relevant parameters should be be reasonably well documented directly inline in that config.
 
 There are other a few notes about usage and performance at : https://github.com/lightvector/KataGo
