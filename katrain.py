@@ -40,7 +40,7 @@ class BadukPanWidget(Widget):
         else:
             self.ghost_stone = None
         if prev_ghost != self.ghost_stone:
-            self.redraw()
+            self.draw_board_contents()
 
     def on_touch_move(self, touch):  # on_motion on_touch_move
         return self.on_touch_down(touch)
@@ -51,24 +51,25 @@ class BadukPanWidget(Widget):
         else:
             xd, xp = self._find_closest(touch.x)
             yd, yp = self._find_closest(touch.y)
-            stones_here = [m for m in self.engine.board.stones if m.coords == (xp, yp)]
-            if stones_here and max(yd, xd) < self.grid_size / 2:  # load old comment
+
+            nodes_here = [node for node in self.engine.board.current_node.nodes_from_root if node.move and node.move.coords==(xp,yp)]
+            if nodes_here and max(yd, xd) < self.grid_size / 2:  # load old comment
                 if self.engine.debug:
-                    print("\nAnalysis:\n", stones_here[-1].analysis)
-                    print("\nParent Analysis:\n", stones_here[-1].parent.analysis)
-                    if stones_here[-1].parent.pass_analysis:
-                        print("\nParent Pass Analysis:\n", stones_here[-1].parent.pass_analysis[0])
+                    print("\nAnalysis:\n", nodes_here[-1].analysis)
+                    print("\nParent Analysis:\n", nodes_here[-1].parent.analysis)
+                    if nodes_here[-1].parent.pass_analysis:
+                        print("\nParent Pass Analysis:\n", nodes_here[-1].parent.pass_analysis[0])
                 if not self.engine.ai_lock.active:
-                    self.engine.info.text = stones_here[-1].comment(sgf=True)
-                    self.engine.show_evaluation_stats(stones_here[-1])
+                    self.engine.info.text = nodes_here[-1].comment(sgf=True)
+                    self.engine.show_evaluation_stats(nodes_here[-1])
 
         self.ghost_stone = None
-        self.redraw()  # remove ghost
+        self.draw_board_contents()  # remove ghost
 
     # drawing functions
     def on_size(self, *args):
         self.draw_board()
-        self.redraw()
+        self.draw_board_contents()
 
     def draw_stone(self, x, y, col, outline_col=None, innercol=None, evalcol=None, evalsize=10.0, scale=1.0):
         stone_size = self.stone_size * scale
@@ -125,32 +126,36 @@ class BadukPanWidget(Widget):
                 draw_text(pos=(self.gridpos[i], lo / 2), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5)
                 draw_text(pos=(lo / 2, self.gridpos[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
 
-    def redraw(self, *args):
+    def draw_board_contents(self, *args):
         self.canvas.clear()
         with self.canvas:
             # stones
-            moves = self.engine.board.moves
-            last_move = moves[-1] if moves else self.engine.board.root
-            current_player = self.engine.board.next_player
-            full_eval_on = [self.engine.eval.active(0), self.engine.eval.active(1)]
+            current_node = self.engine.board.current_node
+            next_player = self.engine.board.next_player
+            full_eval_on = {p: self.engine.eval.active(p) for p in Move.PLAYERS}  # TODO: map?
             has_stone = {}
-            last_few_moves = self.engine.board.moves[-Config.get("trainer").get("eval_off_show_last", 3) :]
-            for i, m in enumerate(self.engine.board.stones):
+            for m in self.engine.board.stones:
                 has_stone[m.coords] = m.player
-                eval, evalsize = m.evaluation_info
-                move_eval_on = full_eval_on[m.player] or m in last_few_moves
-                evalcol = self._eval_spectrum(eval) if move_eval_on and eval and evalsize > Config.get("ui").get("min_eval_temperature", 0.5) else None
-                inner = STONE_COLORS[1 - m.player] if (m == last_move) else None
-                self.draw_stone(m.coords[0], m.coords[1], STONE_COLORS[m.player], OUTLINE_COLORS[m.player], inner, evalcol, evalsize)
+
+            show_n_eval = Config.get("trainer")["eval_off_show_last"]
+            nodes = self.engine.board.current_node.nodes_from_root
+            for i, node in enumerate(nodes):
+                eval, evalsize = node.evaluation_info
+                for m in node.move_with_placements:
+                    if has_stone[m.coords]:  # skip captures, draw over repeat plays
+                        move_eval_on = full_eval_on[m.player] or i >= len(nodes) - show_n_eval
+                        evalcol = self._eval_spectrum(eval) if move_eval_on and eval and evalsize > Config.get("ui").get("min_eval_temperature", 0.5) else None
+                        inner = STONE_COLORS[m.opponent] if (m is current_node) else None
+                        self.draw_stone(m.coords[0], m.coords[1], STONE_COLORS[m.player], OUTLINE_COLORS[m.player], inner, evalcol, evalsize)
 
             # ownership - allow one move out of date for smooth animation
-            ownership = last_move.ownership or (last_move.parent and last_move.parent.ownership)
+            ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
             if self.engine.ownership.active and ownership:
                 rsz = self.grid_size * 0.2
                 ix = 0
                 for y in range(self.engine.board_size - 1, -1, -1):
                     for x in range(self.engine.board_size):
-                        ix_owner = 0 if ownership[ix] > 0 else 1
+                        ix_owner = "B" if ownership[ix] > 0 else "W"
                         if ix_owner != (has_stone.get((x, y), -1)):
                             Color(*STONE_COLORS[ix_owner], abs(ownership[ix]))
                             Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
@@ -159,19 +164,20 @@ class BadukPanWidget(Widget):
             # children of current moves in undo / review
             undo_coords = set()
             alpha = Config.get("ui")["undo_alpha"]
-            for m in last_move.children:
-                eval_info = m.evaluation_info
-                if m.coords[0] is not None:
+            for child_node in current_node.children:
+                eval_info = child_node.evaluation_info
+                m = child_node.move
+                if m and m.coords[0] is not None:
                     undo_coords.add(m.coords)
                     evalcol = (*self._eval_spectrum(eval_info[0]), alpha) if eval_info[0] else None
                     scale = Config.get("ui").get("undo_scale", 0.95)
                     self.draw_stone(m.coords[0], m.coords[1], (*STONE_COLORS[m.player][:3], alpha), None, None, evalcol, self.EVAL_BOUNDS[1], scale=scale)
 
             # hints
-            if self.engine.hints.active(current_player):
-                hint_moves = last_move.ai_moves
+            if self.engine.hints.active(next_player):
+                hint_moves = current_node.ai_moves
                 for i, d in enumerate(hint_moves):
-                    move = SGFNode(gtpcoords=d["move"])
+                    move = Move.from_gtp(d["move"])
                     c = [*self._eval_spectrum(d["evaluation"]), 0.5]
                     if move.coords[0] is not None and move.coords not in undo_coords:
                         if i == 0:
@@ -184,10 +190,10 @@ class BadukPanWidget(Widget):
 
             # hover next move ghost stone
             if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*STONE_COLORS[current_player], GHOST_ALPHA))
+                self.draw_stone(*self.ghost_stone, (*STONE_COLORS[next_player], GHOST_ALPHA))
 
             # pass circle
-            passed = len(moves) > 1 and last_move.is_pass
+            passed = len(nodes) > 1 and current_node.is_pass
             if passed:
                 if self.engine.board.game_ended:
                     text = "game\nend"

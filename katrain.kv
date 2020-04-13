@@ -190,7 +190,7 @@
 			id: eval
 			text: 'all eval'
 			default_active: False
-			on_active: root.parent.board.redraw()
+			on_active: root.redraw()
 		BWCheckBoxHint:
 			size_hint: 0.2, 0.5
 			id: hints
@@ -200,7 +200,7 @@
 			size_hint: 0.2, 0.5
 			id: auto_undo
 			text: 'undo'
-			on_active: root.parent.board.redraw()
+			on_active: root.redraw()
 		BWCheckBoxHint:
 			size_hint: 0.166, 0.5
 			text: 'ai'
@@ -210,7 +210,7 @@
 			size_hint: 0.2, 0.5
 			id: ownership
 			text: 'show\nowner'
-			on_active: root.parent.board.redraw()
+			on_active: root.redraw()
 	GridLayout:
 		cols: 4
 		rows: 1

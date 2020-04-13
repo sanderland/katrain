@@ -5,6 +5,7 @@ import copy
 from sgfparser import Move, SGFNode, SGF
 from typing import List
 
+
 class IllegalMoveException(Exception):
     pass
 
@@ -12,8 +13,8 @@ class IllegalMoveException(Exception):
 class KaTrainSGFNode(SGFNode):
     _node_id_counter = -1
 
-    def __init__(self,parent=None, properties=None, move=None):
-        super().__init__(parent=parent,properties=properties,move=move)
+    def __init__(self, parent=None, properties=None, move=None):
+        super().__init__(parent=parent, properties=properties, move=move)
         KaTrainSGFNode._node_id_counter += 1
         self.id = KaTrainSGFNode._node_id_counter
 
@@ -29,9 +30,11 @@ class KaTrainSGFNode(SGFNode):
     def sgf_properties(self):
         best_sq = []
         properties = copy.copy(super().sgf_properties)
-        if 'SQ' not in properties:
-            properties['SQ'] = best_sq
-        properties['C'] += self.comment(sgf=True)
+        if best_sq and "SQ" not in properties:
+            properties["SQ"] = best_sq
+        comment = self.comment(sgf=True)
+        if comment:
+            properties["C"] = properties.get("C","") + comment
         return properties
 
     def update_top_move_evaluation(self):  # a move's outdated analysis
@@ -50,13 +53,13 @@ class KaTrainSGFNode(SGFNode):
         else:
             self.analysis = analysis_blob["moveInfos"]
             self.ownership = analysis_blob["ownership"]
-            if self.children:
-                self.children[0].update_top_move_evaluation()
-            self.update_top_move_evaluation()
+#            if self.children: # TODO: fix when rootInfos comes in
+#                self.children[0].update_top_move_evaluation()
+#            self.update_top_move_evaluation()
 
     @property
     def analysis_ready(self):
-        return self.analysis and self.pass_analysis
+        return self.analysis is not None and self.pass_analysis is not None
 
     def format_score(self, score=None):
         score = score or self.score
@@ -74,7 +77,7 @@ class KaTrainSGFNode(SGFNode):
         else:
             text = ""
 
-        text += f"Move {move.player} {move.gtp()}\n"
+        text += f"Move {self.depth}: {move.player} {move.gtp()}\n"
         text += "\n".join(self.x_comment.values())
 
         if self.analysis_ready:
@@ -95,7 +98,7 @@ class KaTrainSGFNode(SGFNode):
                     outdated_evaluation, outdated_details = self.outdated_evaluation
                     if outdated_evaluation and outdated_evaluation > self.evaluation and outdated_evaluation > self.evaluation + 0.05:
                         text += f"(Was considered last move as {outdated_evaluation:.0%})\n"
-                    points_lost = self.player_sign * (prev_best_score - score)
+                    points_lost = self.player_sign(self.parent.next_player) * (prev_best_score - score)
                     if points_lost > 0.5:
                         text += f"Estimated point loss: {points_lost:.1f}\n"
                 if eval or sgf:  # show undos on move itself in both sgf and while playing
@@ -119,34 +122,34 @@ class KaTrainSGFNode(SGFNode):
     def temperature_stats(self):
         best = self.analysis[0]["scoreLead"]
         worst = self.pass_analysis[0]["scoreLead"]
-        return best, worst, max(-self.player_sign * (best - worst), 0)
+        return best, worst, max(self.player_sign(self.next_player) * (best - worst), 0)
 
     @property
     def score(self):
         return self.temperature_stats[0]
 
-    @property
-    def player_sign(self):
-        return 1 if self.player == 0 else -1
+    @staticmethod
+    def player_sign(player):
+        return {"B": 1, "W": -1, None: 0}[player]
 
     # need parent analysis ready
     @property
     def evaluation(self):
         best, worst, temp = self.parent.temperature_stats
-        return self.player_sign * (self.score - worst) / temp if temp > 0 else None
+        return self.player_sign(self.parent.next_player) * (self.score - worst) / temp if temp > 0 else None
 
     @property
     def outdated_evaluation(self):
         def outdated_score(move_dict):
             return move_dict.get("outdatedScoreLead") or move_dict["scoreLead"]
 
-        prev_analysis_current_move = [d for d in self.parent.analysis if d["move"] == self.gtp()]
+        prev_analysis_current_move = [d for d in self.parent.analysis if d["move"] == self.move.gtp()]
         if prev_analysis_current_move:
             best_score = outdated_score(self.parent.analysis[0])
             worst_score = self.parent.pass_analysis[0]["scoreLead"]
-            prev_temp = max(self.player_sign * (best_score - worst_score), 0)
+            prev_temp = max(self.player_sign(self.parent.next_player) * (best_score - worst_score), 0)
             score = outdated_score(prev_analysis_current_move[0])
-            return (self.player_sign * (score - worst_score) / prev_temp if prev_temp > 0 else None), prev_analysis_current_move
+            return (self.player_sign(self.parent.next_player) * (score - worst_score) / prev_temp if prev_temp > 0 else None), prev_analysis_current_move
         else:
             return None, None
 
@@ -158,9 +161,9 @@ class KaTrainSGFNode(SGFNode):
         analysis = copy.copy(self.analysis)  # not deep, so eval is saved, but avoids race conditions
         for d in analysis:
             if temperature > 0.5:
-                d["evaluation"] = -self.player_sign * (d["scoreLead"] - worst_score) / temperature
+                d["evaluation"] = self.player_sign(self.next_player) * (d["scoreLead"] - worst_score) / temperature
             else:
-                d["evaluation"] = int(-self.player_sign * d["scoreLead"] >= -self.player_sign * self.analysis[0]["scoreLead"])
+                d["evaluation"] = int(self.player_sign(self.next_player) * d["scoreLead"] >= self.player_sign(self.next_player) * self.analysis[0]["scoreLead"])
         return analysis
 
 
@@ -171,20 +174,22 @@ class Board:
         if move_tree:
             self.root = move_tree
         else:
-            self.root = KaTrainSGFNode(properties={'RU':'JP','SZ':board_size}) # TODO: Komi, etc?
+            self.root = KaTrainSGFNode(properties={"RU": "JP", "SZ": board_size})  # TODO: Komi, etc?
         self.current_node = self.root
-        self._node_by_id = {m.id:m for m in self.root.nodes_in_tree}
+        self._node_by_id = {m.id: m for m in self.root.nodes_in_tree}
         self._init_chains()
 
     # -- move tree functions --
     def _init_chains(self):
         self.board = [[-1 for _x in range(self.board_size)] for _y in range(self.board_size)]  # type: List[list[int]]  #  board pos -> chain id
-        self.chains = []   # type: List[List[Move]]  #   chain id -> chain
+        self.chains = []  # type: List[List[Move]]  #   chain id -> chain
         self.prisoners = []  # type: List[Move]
         self.last_capture = []  # type: List[Move]
         try:
-            for m in self.moves:
-                self._validate_move_and_update_chains(m, True)  # ignore ko since we didn't know if it was forced
+            #            for m in self.moves:
+            for node in self.current_node.nodes_from_root:
+                for m in node.move_with_placements:
+                    self._validate_move_and_update_chains(m, True)  # ignore ko since we didn't know if it was forced
         except IllegalMoveException as e:
             raise Exception(f"Unexpected illegal move ({str(e)})")
 
@@ -234,7 +239,7 @@ class Board:
             raise IllegalMoveException("Suicide")
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
-    def play(self, move: Move, ignore_ko: bool=False):
+    def play(self, move: Move, ignore_ko: bool = False):
         if not move.is_pass and not (0 <= move.coords[0] < self.board_size and 0 <= move.coords[1] < self.board_size):
             raise IllegalMoveException(f"Move {move} outside of board coordinates")
         played_node = self.current_node.play(move)
@@ -272,11 +277,11 @@ class Board:
         if n_handicaps % 2 == 1:
             stones.append((middle, middle))
         stones += [(near, middle), (far, middle), (middle, near), (middle, far)]
-        self.root['AB'] =[Move(stone).sgf(board_size=self.board_size) for stone in stones[:n_handicaps]]
+        self.root["AB"] = [Move(stone).sgf(board_size=self.board_size) for stone in stones[:n_handicaps]]
 
-    @property
-    def moves(self) -> list:  # flat list of moves to current, including placements
-        return sum([node.move_with_placements for node in self.current_node.nodes_from_root],[])
+    #    @property
+    #    def moves(self) -> list:  # flat list of moves to current, including placements
+    #        return sum([node.move_with_placements for node in self.current_node.nodes_from_root],[])
 
     @property
     def next_player(self):
@@ -327,7 +332,7 @@ class Board:
 
     def write_sgf(self, file_name=None):
         file_name = file_name or f"sgfout/katrain_{self.game_id}.sgf"
-        os.makedirs(os.path.dirname(file_name),exist_ok=True)
+        os.makedirs(os.path.dirname(file_name), exist_ok=True)
         with open(file_name, "w") as f:
             f.write(self.root.sgf())
         return f"SGF with analysis written to {file_name}"
@@ -335,5 +340,3 @@ class Board:
 
 class KaTrainSGF(SGF):
     _MOVE_CLASS = KaTrainSGFNode
-
-

@@ -9,31 +9,32 @@ class ParseError(Exception):
 
 class Move:
     GTP_COORD = "ABCDEFGHJKLMNOPQRSTUVWYXYZ"
-    PLAYERS = 'BW'
+    PLAYERS = "BW"
     SGF_COORD = [chr(i) for i in range(97, 123)]
 
     @staticmethod
-    def from_gtp(gtp_coords, player='B'):
+    def from_gtp(gtp_coords, player="B"):
         if "pass" in gtp_coords:
             Move(coords=None, player=player)
         return Move(coords=(Move.GTP_COORD.index(gtp_coords[0]), int(gtp_coords[1:]) - 1), player=player)
 
     @staticmethod
-    def from_sgf(sgf_coords, board_size, player='B'):
+    def from_sgf(sgf_coords, board_size, player="B"):
         if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size:  # some servers use [tt] for pass
             return Move(coords=None, player=player)
-        return Move(coords = (Move.SGF_COORD.index(sgf_coords[0]), board_size - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
+        return Move(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
 
-    def __init__(self, coords: Optional[Tuple[int,int]]=None, player: str='B'):
+    def __init__(self, coords: Optional[Tuple[int, int]] = None, player: str = "B"):
         self.player = player
         self.coords = coords
 
-#    def __repr__(self):
-#        return f"{self.player}{self.gtp()}"
-#    def __hash__(self):
-#        return self.__repr__().__hash__()
-#    def __eq__(self, other):
-#        return self.coords == other.coords and self.player == other.player
+    def __repr__(self):
+        return f"Move({self.player}{self.gtp()})"
+
+    #    def __hash__(self):
+    #        return self.__repr__().__hash__()
+    #    def __eq__(self, other):
+    #        return self.coords == other.coords and self.player == other.player
 
     def gtp(self):
         if self.is_pass:
@@ -51,13 +52,13 @@ class Move:
 
     @property
     def opponent(self):
-        return 'W' if self.player=='B' else 'B'
+        return "W" if self.player == "B" else "B"
 
 
 class SGFNode:
     CAST_FIELDS = {"KM": float, "SZ": int, "HA": int}  # cast property to this type
-    LIST_FIELDS = ["AB", "AW", "TW", "TB", "MA", "SQ", "CR", "TR", "LN","AR","LB"]  # cast these properties to lists
-    # TODO: all are potential lists?
+    LIST_FIELDS = ["AB", "AW", "TW", "TB", "MA", "SQ", "CR", "TR", "LN", "AR", "LB"]  # cast these properties to lists
+    # TODO: all are potential lists? what a headache!
 
     def __init__(self, parent=None, properties=None, move=None):
         self.children = []
@@ -66,7 +67,7 @@ class SGFNode:
         if self.parent:
             self.parent.children.append(self)
         if parent and move:
-            properties[move.player] = move.sgf() # NB needs root['SZ']
+            self.properties[move.player] = move.sgf(self.board_size)
 
     @property
     def sgf_properties(self) -> Dict:
@@ -85,7 +86,7 @@ class SGFNode:
 
     def __setitem__(self, prop: str, value: Any):
         if prop in self.LIST_FIELDS and isinstance(value, str):  # lists (placements, IGS marked dead stones)
-            self.properties[prop] = self.properties.get(prop,[]) + re.split(r"\]\s*\[", value)
+            self.properties[prop] = self.properties.get(prop, []) + re.split(r"\]\s*\[", value)
         elif prop in self.CAST_FIELDS:
             self.properties[prop] = self.CAST_FIELDS[prop](value)
         else:
@@ -105,6 +106,7 @@ class SGFNode:
     def parent(self, parent_node):
         self._parent = parent_node
         self._root = None
+        self._depth = None
 
     @property
     def root(self) -> "SGFNode":  # cached root property
@@ -113,8 +115,17 @@ class SGFNode:
         return self._root
 
     @property
+    def depth(self) -> int:  # cached depth property
+        if self._depth is None:
+            if self.is_root:
+                self._depth = 0
+            else:
+                self._depth = self.parent.depth + 1
+        return self._depth
+
+    @property
     def board_size(self) -> int:
-        return self.root['SZ',19]
+        return self.root.get("SZ", 19)
 
     @property
     def move(self) -> Optional[Move]:
@@ -124,26 +135,31 @@ class SGFNode:
 
     @property
     def placements(self) -> List[Move]:
-        return [Move.from_sgf(self[pl], player=pl, board_size=self.board_size) for pl in Move.PLAYERS for sgf in self.get('A'+pl,[]) ]
+        return [Move.from_sgf(self[pl], player=pl, board_size=self.board_size) for pl in Move.PLAYERS for sgf in self.get("A" + pl, [])]
 
     @property
     def move_with_placements(self) -> List[Move]:
-        return self.placements + (self.move or [])
+        move = self.move
+        return self.placements + ([move] if move else [])
 
     @property
-    def is_root(self):
+    def is_root(self) -> bool:
         return self.parent is None
+
+    @property
+    def is_pass(self) -> bool:
+        return not self.placements and self.move and self.move.is_pass
 
     @property
     def empty(self) -> bool:
         return not self.children and not self.properties
 
     @property
-    def nodes_in_tree(self):
-        return [self] + sum([c.nodes_in_tree for c in self.children],[])
+    def nodes_in_tree(self) -> List:
+        return [self] + sum([c.nodes_in_tree for c in self.children], [])
 
     @property
-    def nodes_from_root(self):
+    def nodes_from_root(self) -> List:
         return [self] if self.is_root else self.parent.nodes_from_root + [self]
 
     def play(self, move) -> "SGFNode":
@@ -151,14 +167,14 @@ class SGFNode:
         for c in self.children:
             if c.move == move:
                 return c.move
-        return SGFNode(parent=self, move=move)
+        return self.__class__(parent=self, move=move)
 
     @property
     def next_player(self):
         m = self.move
-        if m and m.player=='B' or 'AB' in self.properties:
-            return 'W'
-        return 'B'
+        if m and m.player == "B" or "AB" in self.properties:
+            return "W"
+        return "B"
 
 
 class SGF:
@@ -190,7 +206,7 @@ class SGF:
         self.root = SGFNode()
         self._parse_branch(self.root)
 
-    def _parse_branch(self,current_move: SGFNode):
+    def _parse_branch(self, current_move: SGFNode):
         while self.ix < len(self.contents):  # https://xkcd.com/1171/
             match = re.match(r"\s*(?:\(|\)|;|(?:(\w+)((?:\[.*?(?<!\\)\]\s*)+)))", self.contents[self.ix :], re.DOTALL)
             if not match:
@@ -207,7 +223,5 @@ class SGF:
                 prop, value = match[1], match[2].strip()[1:-1]
                 current_move[prop] = value
         if self.ix < len(self.contents):
-            raise ParseError(
-                f"Parse Error: unexpected character at {self.contents[self.ix - 25:self.ix]}>{self.contents[self.ix]}<{self.contents[self.ix + 1:self.ix + 25]}"
-            )
+            raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix - 25:self.ix]}>{self.contents[self.ix]}<{self.contents[self.ix + 1:self.ix + 25]}")
         raise ParseError("Parse Error: expected ')' at end of input.")

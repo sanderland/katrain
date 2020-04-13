@@ -19,9 +19,9 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
-from board import Board, IllegalMoveException, SGFNode, KaTrainSGF
+from board import Board, IllegalMoveException, KaTrainSGFNode, KaTrainSGF, Move
 
-BASE_PATH = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__))) # for pyinstaller
+BASE_PATH = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))  # for pyinstaller
 
 config_file = sys.argv[1] if len(sys.argv) > 1 else os.path.join(BASE_PATH, "config.json")
 print(f"Using config file {config_file}")
@@ -61,7 +61,7 @@ class EngineControls(GridLayout):
     def redraw(self, include_board=False):
         if include_board:
             Clock.schedule_once(self.parent.board.draw_board, -1)  # main thread needs to do this
-        Clock.schedule_once(self.parent.board.redraw, -1)
+        Clock.schedule_once(self.parent.board.draw_board_contents, -1)
 
     def restart(self, board_size=None):
         self.ready = False
@@ -97,16 +97,16 @@ class EngineControls(GridLayout):
                 raise
             msg, *args = self.message_queue.get()
 
-    def play(self, move, faster=False, analysis_priority=None):
+    def play(self, move: Move, faster=False, analysis_priority=None):
         try:
-            mr = self.board.play(move)
+            next_node = self.board.play(move)
         except IllegalMoveException as e:
             self.info.text = f"Illegal move: {str(e)}"
             return
         self.update_evaluation()
-        if not mr.analysis_ready:  # replayed old move
-            self._request_analysis(mr, faster=faster, priority=self.game_counter if analysis_priority is None else analysis_priority)
-        return mr
+        if not next_node.analysis_ready:  # replayed old move
+            self._request_analysis(next_node, faster=faster, priority=self.game_counter if analysis_priority is None else analysis_priority)
+        return next_node
 
     def show_evaluation_stats(self, move):
         if move.analysis_ready:
@@ -120,40 +120,42 @@ class EngineControls(GridLayout):
 
     # handles showing completed analysis and triggered actions like auto undo and ai move
     def update_evaluation(self):
-        current_move = self.board.current_node
+        current_node = self.board.current_node
+        move = current_node.move
         self.score.set_prisoners(self.board.prisoner_count)
-        current_player_is_human_or_both_robots = not self.ai_auto.active(current_move.player) or self.ai_auto.active(1 - current_move.player)
-        if current_player_is_human_or_both_robots and current_move is not self.board.root:
-            self.info.text = current_move.comment(eval=True, hints=self.hints.active(current_move.player))
+        current_player_is_human_or_both_robots = True  # move not self.ai_auto.active(current_node.player) or self.ai_auto.active(1 - current_node.player) # TODO FIX
+
+        if current_player_is_human_or_both_robots and not current_node.is_root:
+            self.info.text = current_node.comment(eval=True, hints=self.hints.active(move.player))
         self.evaluation.text = ""
         if current_player_is_human_or_both_robots:
-            self.show_evaluation_stats(current_move)
+            self.show_evaluation_stats(current_node)
 
-        if current_move.analysis_ready and current_move.parent and current_move.parent.analysis_ready and not current_move.children and not current_move.x_comment.get("undo"):
+        if current_node.analysis_ready and current_node.parent and current_node.parent.analysis_ready and not current_node.children and not current_node.x_comment.get("undo"):
             # handle automatic undo
-            if self.auto_undo.active(current_move.player) and not self.ai_auto.active(current_move.player) and not current_move.auto_undid:
+            if self.auto_undo.active(move.player) and not self.ai_auto.active(move.player) and not current_node.auto_undid:
                 ts = self.train_settings
                 # TODO: is this overly generous wrt low visit outdated evaluations?
-                evaluation = current_move.evaluation if current_move.evaluation is not None else 1  # assume move is fine if temperature is negative
-                move_eval = max(evaluation, current_move.outdated_evaluation or 0)
-                points_lost = (current_move.parent or current_move).temperature_stats[2] * (1 - move_eval)
+                evaluation = current_node.evaluation if current_node.evaluation is not None else 1  # assume move is fine if temperature is negative
+                move_eval = max(evaluation, current_node.outdated_evaluation or 0)
+                points_lost = (current_node.parent or current_node).temperature_stats[2] * (1 - move_eval)
                 if move_eval < ts["undo_eval_threshold"] and points_lost >= ts["undo_point_threshold"]:
-                    if self.num_undos(current_move) == 0:
-                        current_move.x_comment["undid"] = f"Move was below threshold, but no undo granted (probability is {ts['num_undo_prompts']:.0%}).\n"
+                    if self.num_undos(current_node) == 0:
+                        current_node.x_comment["undid"] = f"Move was below threshold, but no undo granted (probability is {ts['num_undo_prompts']:.0%}).\n"
                         self.update_evaluation()
                     else:
-                        current_move.auto_undid = True
+                        current_node.auto_undid = True
                         self.board.undo()
-                        if len(current_move.parent.children) >= ts["num_undo_prompts"] + 1:
-                            best_move = sorted([m for m in current_move.parent.children], key=lambda m: -(m.evaluation_info[0] or 0))[0]
+                        if len(current_node.parent.children) >= ts["num_undo_prompts"] + 1:
+                            best_move = sorted([m for m in current_node.parent.children], key=lambda m: -(m.evaluation_info[0] or 0))[0]
                             best_move.x_comment["undo_autoplay"] = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
                             self.board.play(best_move)
                         self.update_evaluation()
                         return
             # ai player doesn't technically need parent ready, but don't want to override waiting for undo
-            current_move = self.board.current_node  # this effectively checks undo didn't just happen
-            if self.ai_auto.active(1 - current_move.player) and not self.board.game_ended:
-                if current_move.children:
+            current_node = self.board.current_node  # this effectively checks undo didn't just happen
+            if self.ai_auto.active(move.opponent) and not self.board.game_ended:
+                if current_node.children:
                     self.info.text = "AI paused since moves were undone. Press 'AI Move' or choose a move for the AI to continue playing."
                 else:
                     self._do_aimove()
@@ -161,7 +163,7 @@ class EngineControls(GridLayout):
 
     # engine action functions
     def _do_play(self, *args):
-        self.play(SGFNode(player=self.board.next_player, coords=args[0]))
+        self.play(Move(args[0], player=self.board.next_player))
 
     def _do_aimove(self):
         ts = self.train_settings
@@ -186,7 +188,7 @@ class EngineControls(GridLayout):
                 or move_eval > ts["balance_play_min_eval"]
                 and -current_move.player_sign * score > ts["balance_play_target_score"]
             ] or sel_moves
-        aimove = SGFNode(player=self.board.next_player, gtpcoords=random.choice(sel_moves)[0], robot=True)
+        aimove = Move.from_gtp(random.choice(sel_moves)[0], player=self.board.next_player)
         if len(sel_moves) > 1:
             aimove.x_comment["ai"] = "AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, _ in sel_moves) + "\n"
         self.play(aimove)
@@ -221,7 +223,7 @@ class EngineControls(GridLayout):
         self.game_counter += 1  # prioritize newer games
         self.board_size = board_size or 19
         self.komi = float(komi or Config.get("board").get(f"komi_{board_size}", 6.5))
-        self.board = Board(board_size,move_tree)
+        self.board = Board(board_size, move_tree)
         self._request_analysis(self.board.root, priority=self.game_counter)
         self.redraw(include_board=True)
         self.ready = True
@@ -266,9 +268,9 @@ class EngineControls(GridLayout):
             )
 
     def analyze_movetree(self, root, faster=False):
-        self._do_init(root['SZ'], root['KM'])
+        self._do_init(root["SZ"], root["KM"])
         self.board.root = root
-        handicap = root['HA']
+        handicap = root["HA"]
         if handicap is not None and root["AB"] is None:
             self.board.place_handicap_stones(handicap)
         analysis_priority = self.game_counter - 1_000_000
@@ -277,15 +279,15 @@ class EngineControls(GridLayout):
 
     def _do_analyze_sgf(self, sgf):
         try:
-            root = SGF.parse(sgf)
+            root = KaTrainSGF.parse(sgf)
         except:
-            root = SGFNode()
-        if root.empty():
+            root = KaTrainSGFNode()
+        if root.empty:
             fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
             fc = FileChooserListView(multiselect=False, path=os.path.expanduser(Config.get("sgf")["load"]), filters=["*.sgf"])
             blui = BoxLayout(orientation="horizontal", size_hint=(1, 0.1))
             cbfast = CheckBox(color=(0.95, 0.95, 0.95, 1))
-            cbrewind = CheckBox(color=(0.95, 0.95, 0.95, 1),active=True)
+            cbrewind = CheckBox(color=(0.95, 0.95, 0.95, 1), active=True)
             for widget in [Label(text="Analyze Extra Fast"), cbfast, Label(text="Rewind to start"), cbrewind]:
                 blui.add_widget(widget)
             bl = BoxLayout(orientation="vertical")
@@ -295,7 +297,7 @@ class EngineControls(GridLayout):
 
             def readfile(files, _mouse):
                 fileselect_popup.dismiss()
-                self.analyze_movetree(SGF.parse_file(files[0]))
+                self.analyze_movetree(KaTrainSGF.parse_file(files[0]))
 
             fc.on_submit = readfile
             fileselect_popup.open()
@@ -335,24 +337,26 @@ class EngineControls(GridLayout):
         else:  # early on / root / etc
             self.outstanding_analysis_queries.append(copy.copy(query))
 
-    def _request_analysis(self, move, faster=False, min_visits=0, priority=0):
+    def _request_analysis(self, analysis_node: KaTrainSGFNode, faster=False, min_visits=0, priority=0):
         faster_fac = 5 if faster else 1
-        move_id = move.id
-        moves = self.board.moves
+        node_id = analysis_node.id
         fast = self.ai_fast.active
         query = {
-            "id": str(move_id),
-            "moves": [[m.bw_player(), m.gtp()] for m in moves],
+            "id": str(node_id),
+            "moves": [[m.player, m.gtp()] for node in analysis_node.nodes_from_root for m in node.move_with_placements],
             "includeOwnership": True,
             "maxVisits": max(min_visits, self.visits[fast][1] // faster_fac),
             "priority": priority,
         }
         if self.debug:
-            print(f"sending query for move {move_id}: {str(query)[:80]}")
+            print(f"sending query for move {node_id}: {str(query)[:80]}")
         self._send_analysis_query(query)
-        query.update({"id": f"PASS_{move_id}", "maxVisits": self.visits[fast][0] // faster_fac, "includeOwnership": False})
-        query["moves"] += [[move.bw_player(next_move=True), "pass"]]
+        query.update({"id": f"PASS_{node_id}", "maxVisits": self.visits[fast][0] // faster_fac, "includeOwnership": False})
+        query["moves"] += [[analysis_node.next_player, "pass"]]
         self._send_analysis_query(query)
 
     def output_sgf(self):
-        return self.board.write_sgf(self.komi, self.train_settings)
+        for pl in Move.PLAYERS:
+            if self.board.root[f"P{pl}"] not in ["KaTrain","Player",None,""]:
+                self.board.root[f"P{pl}"] = "KaTrain" if self.ai_auto.active(pl) else "Player"
+        return self.board.write_sgf(self.komi)
