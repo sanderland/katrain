@@ -19,9 +19,9 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
-from board import Board, IllegalMoveException, Move
+from board import Board, IllegalMoveException, Move, SGF
 
-BASE_PATH = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+BASE_PATH = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__))) # for pyinstaller
 
 config_file = sys.argv[1] if len(sys.argv) > 1 else os.path.join(BASE_PATH, "config.json")
 print(f"Using config file {config_file}")
@@ -217,11 +217,11 @@ class EngineControls(GridLayout):
         self.board.switch_branch(direction)
         self.update_evaluation()
 
-    def _do_init(self, board_size, komi=None):
+    def _do_init(self, board_size=None, komi=None, move_tree=None):
         self.game_counter += 1  # prioritize newer games
-        self.board_size = board_size
+        self.board_size = board_size or 19
         self.komi = float(komi or Config.get("board").get(f"komi_{board_size}", 6.5))
-        self.board = Board(board_size)
+        self.board = Board(board_size,move_tree)
         self._request_analysis(self.board.root, priority=self.game_counter)
         self.redraw(include_board=True)
         self.ready = True
@@ -229,17 +229,6 @@ class EngineControls(GridLayout):
             self.ai_lock.checkbox._do_press()
         for el in [self.ai_lock.checkbox, self.hints.black, self.hints.white, self.ai_auto.black, self.ai_auto.white, self.auto_undo.black, self.auto_undo.white, self.ai_move]:
             el.disabled = False
-
-    def universal_read(self, file):
-        with open(file, "rb") as f:
-            bin_c = f.read()
-        for encoding in ["utf-8", "iso-8859-1", "cp949", "GB18030"]:
-            try:
-                return bin_c.decode(encoding=encoding)
-            except:
-                pass
-        self.show_error(f"could not decode file contents of {file}")
-        return ""
 
     def _do_analyze_extra(self, mode):
         stones = {s.coords for s in self.board.stones}
@@ -276,16 +265,27 @@ class EngineControls(GridLayout):
                 }
             )
 
-    def _do_analyze_sgf(self, sgf, faster=False, rewind=False):
-        sgfprops = {k: v.strip("[]").split("][") if k in ["AB", "AW"] else v.strip("[]") for k, v in re.findall(r"\b(\w+)((?:\[.*?\])+)", sgf)}
-        size = int(sgfprops.get("SZ", self.board_size))
-        sgfmoves = re.findall(r"\b([BW])\[([a-z]{2})\]", sgf)
-        if not sgfmoves and not sgfprops:
+    def analyze_movetree(self, root, faster=False):
+        self._do_init(root['SZ'], root['KM'])
+        self.board.root = root
+        handicap = root['HA']
+        if handicap is not None and root["AB"] is None:
+            self.board.place_handicap_stones(handicap)
+        analysis_priority = self.game_counter - 1_000_000
+        for move in self.board.root.moves_in_tree:
+            self._request_analysis(move, faster=faster, priority=analysis_priority)  # ensure next move analysis works
+
+    def _do_analyze_sgf(self, sgf):
+        try:
+            root = SGF.parse(sgf)
+        except:
+            root = Move()
+        if root.empty():
             fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
-            fc = FileChooserListView(multiselect=False, path=os.path.expanduser("~"), filters=["*.sgf"])
+            fc = FileChooserListView(multiselect=False, path=os.path.expanduser(Config.get("sgf")["load"]), filters=["*.sgf"])
             blui = BoxLayout(orientation="horizontal", size_hint=(1, 0.1))
             cbfast = CheckBox(color=(0.95, 0.95, 0.95, 1))
-            cbrewind = CheckBox(color=(0.95, 0.95, 0.95, 1))
+            cbrewind = CheckBox(color=(0.95, 0.95, 0.95, 1),active=True)
             for widget in [Label(text="Analyze Extra Fast"), cbfast, Label(text="Rewind to start"), cbrewind]:
                 blui.add_widget(widget)
             bl = BoxLayout(orientation="vertical")
@@ -295,31 +295,13 @@ class EngineControls(GridLayout):
 
             def readfile(files, _mouse):
                 fileselect_popup.dismiss()
-                self.action("analyze-sgf", self.universal_read((files[0])), cbfast.active, cbrewind.active)
+                self.analyze_movetree(SGF.parse_file(files[0]))
 
             fc.on_submit = readfile
             fileselect_popup.open()
             return
-        self._do_init(size, sgfprops.get("KM"))
-        handicap = int(sgfprops.get("HA", 0))
-
-        if handicap and not "AB" in sgfprops:
-            self.board.place_handicap_stones(handicap)
-
-        analysis_priority = self.game_counter - 1_000_000
-
-        placements = [Move(player=pl, sgfcoords=(mv, self.board_size)) for pl, player in enumerate(Move.PLAYERS) for mv in sgfprops.get("A" + player, [])]
-        for placement in placements:  # free handicaps
-            self.board.play(placement)  # bypass analysis
-
-        if handicap or placements:
-            self._request_analysis(self.board.current_move, priority=analysis_priority)  # ensure next move analysis works
-
-        moves = [Move(player=Move.PLAYERS.index(p.upper()), sgfcoords=(mv, self.board_size)) for p, mv in sgfmoves]
-        for move in moves:
-            self.play(move, faster=faster and move != moves[-1], analysis_priority=analysis_priority)
-        if rewind:
-            self.board.rewind()
+        else:
+            self.analyze_movetree(root)
 
     # analysis thread
     def _analysis_read_thread(self):

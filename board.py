@@ -2,25 +2,25 @@ import os
 import random
 from datetime import datetime
 import copy
-
+import sgfparser
 
 class IllegalMoveException(Exception):
     pass
 
+# TODO: split sgf node vs move?
 
-class Move:
+class Move(sgfparser.Move):
     GTP_COORD = "ABCDEFGHJKLMNOPQRSTUVWYXYZ"
     PLAYERS = "BW"
     SGF_COORD = [chr(i) for i in range(97, 123)]
     _move_id_counter = -1
 
     def __init__(self, player=0, coords=None, gtpcoords=None, sgfcoords=None, robot=False):
+        super().__init__()
         Move._move_id_counter += 1
         self.id = Move._move_id_counter
         self.player = player
         self.coords = coords or (gtpcoords and self.gtp2ix(gtpcoords)) or self.sgf2ix(sgfcoords)
-        self.children = []
-        self.parent = None
         self.robot = robot
         self.analysis = None
         self.pass_analysis = None
@@ -47,6 +47,10 @@ class Move:
             move.move_number = self.move_number + 1
             self.children.append(move)
             return move
+
+    @property
+    def moves_in_tree(self):
+        return [self] + sum([c.moves_in_tree for c in self.children],[])
 
     @property
     def is_pass(self):
@@ -213,12 +217,15 @@ class Move:
 
 
 class Board:
-    def __init__(self, board_size=19):
+    def __init__(self, board_size=19,move_tree=None):
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
         self.board_size = board_size
-        self.root = Move(1, (None, None))  # root is 1=white so black is first
+        if move_tree:
+            self.root = move_tree
+        else:
+            self.root = Move(1, (None, None))  # root is 1=white so black is first
         self.current_move = self.root
-        self.all_moves = {self.root.id: self.root}
+        self.all_moves = {m.id:m for m in self.root.moves_in_tree}
         self._init_chains()
 
     # -- move tree functions --
@@ -309,10 +316,6 @@ class Board:
             self.current_move = cm.parent.children[(ix + direction) % len(cm.parent.children)]
             self._init_chains()
 
-    def rewind(self):
-        self.current_move = self.root
-        self._init_chains()
-
     def place_handicap_stones(self, n_handicaps):
         near = 3 if self.board_size >= 13 else 2
         far = self.board_size - 1 - near
@@ -321,8 +324,7 @@ class Board:
         if n_handicaps % 2 == 1:
             stones.append((middle, middle))
         stones += [(near, middle), (far, middle), (middle, near), (middle, far)]
-        for stone in stones[:n_handicaps]:
-            self.play(Move(player=0, coords=stone))
+        self.root['AB'] =[ Move(player=0, coords=stone).sgf() for stone in stones[:n_handicaps] ]
 
     @property
     def moves(self) -> list:  # flat list of moves to current
@@ -416,3 +418,10 @@ class Board:
         with open(file_name, "w") as f:
             f.write(sgfify(sgfmoves))
         return sgfify(sgfmoves_small, f"SGF with analysis written to {file_name}")
+
+
+
+class SGF(sgfparser.SGF):
+    _MOVE_CLASS = Move
+
+

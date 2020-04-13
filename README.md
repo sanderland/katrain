@@ -1,5 +1,5 @@
-Introduction
-============
+# KaTrain v1.0
+
 This repository contains  tool for playing go with AI feedback.
 The idea is to give immediate feedback on the many large mistakes we make in terms of inefficient moves.
 It is based on the KataGo AI and relies heavily on score estimation rather than win rate.
@@ -11,33 +11,31 @@ Some uses include:
 * Play against a stronger player and use the retry option instead of handicap stones.
 * Play a match with an evenly matched friend where both players get instant feedback.
 
-
 ![screenshot](https://imgur.com/t3Im6Xu.png)
 
-Manual
-======
+## Manual
 
-Installation for Windows users
-------------------------------
+### Installation for Windows users
+
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/distribution/#download-section). 
 * Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file.
 * Execute the command 'pip install kivy'
 * Start the app by running `python katrain.py` in the directory where you downloaded the scripts. Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
 
-Installation for Linux/Mac users
---------------------------------
+### Installation for Linux/Mac users
+
 * This assumed you have a working Python 3.6/3.7 installation as a default. If your default is python 2, use pip3/python3. Kivy currently does not have a release for Python 3.8.
 * Git clone or download the repository.
-* pip install kivy
+* `pip install -U kivy`
 * Put your KataGo binary in the `KataGo/` directory or change the `engine.command` field in `config.json` to your KataGo v1.3.5+ binary.
     *  Compiled binaries and source code can be found [here](https://github.com/lightvector/KataGo/releases).
     * You will need to `chmod +x katago` your binary if you downloaded it.  
     * Executables for Mac are not available, so compiling from source code is required there.
 * Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to KataGo's GPU tuning.
 
-Options
--------
+### Options
+
 * Check box options
     * All Eval: show the coloured dots on all the moves for this player.
     * Hints: show suggested moves for this player and output more statistics on moves.
@@ -51,7 +49,7 @@ Options
 * Temperature/Evaluation/Score: Not that these fields can be hidden by clicking on the text.
     * Temperature is the point difference between passing and the best move.
     * Evaluation is where on this scale the last move was, from 0% (equivalent to a pass) to 100% (best move). 
-    This can be < 0% in case of suicidal moves, or >100% when Kata did not consider the move before, or further analysis shows it to be better than the best one considered.
+    This can be < 0% in case of suicidal moves, or >100% when KataGo did not consider the move before, or further analysis shows it to be better than the best one considered.
     * Score: How far one player is ahead.
 
 * Keyboard controls
@@ -59,8 +57,7 @@ Options
    * Arrow down: redo
    * Arrow left/right: alternate branch.
 
-Play
-----
+### Play
 
 * Play against the AI
     * Turn on AI for the chosen player. 
@@ -87,9 +84,9 @@ Play
 * Save game
     * Click save to get an sgf with comments saved in the sgfout/ directory (and a short version in the text box).
 
-Configuration
--------------
-`config.json` has a number of options, many of them are stylistic, but also including the command kata is started with (and so the kata config and model).
+### Configuration
+
+`config.json` has a number of options, many of them are stylistic, but also including the command KataGo is started with (and thus the KataGo config and model).
 You can use `python katrain.py your_config_file.json` to use another config file instead.
 
 The `trainer` block has the following options to tweak for engine assisted play and reviewing:
@@ -106,10 +103,10 @@ The following options are relevant for the `balance score` AI play mode.
 * `balance_play_min_eval`: when needing to balance score, the AI will pick a move which is at least this good.
 * `balance_play_min_visits`: never pick a move with fewer playouts than this.
 
-The cfg file has additional configuration for kata. In particular, it changes the default to being more exploratory and score-based (and therefore nicer as an opponent, but weaker as analysis tool).
+The cfg file has additional configuration for KataGo, which are documented there. 
 
-FAQ
-===
+## FAQ
+
 * The program is slow to start!
   * The first startup of KataGo can be slow, after that it should be much faster.
 * The program is running too slowly!
@@ -119,7 +116,7 @@ FAQ
 * Can I play on sizes other than 9, 13 or 19?
   * Type in `SZ[n]HA[h]KM[k]` in the text box and hit 'load' for a game on a n by n board with h handicap stones and k komi, but note that the default KataGo does not support sizes above 19x19.  
 
-Contributing
-============
+## Contributing
+
 * Feedback and pull requests are both very welcome.
 * For suggestions and planned improvements, see the 'issues' tab on github.

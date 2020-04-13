@@ -48,5 +48,9 @@
   },
   "debug": {
     "level": 1
+  },
+  "sgf": {
+    "load": "~/Downloads",
+    "save": "./sgfout"
   }
 }
