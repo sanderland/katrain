@@ -2,26 +2,21 @@ import os
 import random
 from datetime import datetime
 import copy
-import sgfparser
+from sgfparser import Move, SGFNode, SGF
+from typing import List
 
 class IllegalMoveException(Exception):
     pass
 
-# TODO: split sgf node vs move?
 
-class Move(sgfparser.Move):
-    GTP_COORD = "ABCDEFGHJKLMNOPQRSTUVWYXYZ"
-    PLAYERS = "BW"
-    SGF_COORD = [chr(i) for i in range(97, 123)]
-    _move_id_counter = -1
+class KaTrainSGFNode(SGFNode):
+    _node_id_counter = -1
 
-    def __init__(self, player=0, coords=None, gtpcoords=None, sgfcoords=None, robot=False):
-        super().__init__()
-        Move._move_id_counter += 1
-        self.id = Move._move_id_counter
-        self.player = player
-        self.coords = coords or (gtpcoords and self.gtp2ix(gtpcoords)) or self.sgf2ix(sgfcoords)
-        self.robot = robot
+    def __init__(self,parent=None, properties=None, move=None):
+        super().__init__(parent=parent,properties=properties,move=move)
+        KaTrainSGFNode._node_id_counter += 1
+        self.id = KaTrainSGFNode._node_id_counter
+
         self.analysis = None
         self.pass_analysis = None
         self.ownership = None
@@ -30,31 +25,14 @@ class Move(sgfparser.Move):
         self.move_number = 0
         self.undo_threshold = random.random()  # for fractional undos, store the random threshold in the move itself for consistency
 
-    def __repr__(self):
-        return f"{Move.PLAYERS[self.player]}{self.gtp()}"
-
-    def __eq__(self, other):
-        return self.coords == other.coords and self.player == other.player
-
-    def __hash__(self):
-        return self.gtp().__hash__()
-
-    def play(self, move):
-        try:
-            return self.children[self.children.index(move)]
-        except ValueError:
-            move.parent = self
-            move.move_number = self.move_number + 1
-            self.children.append(move)
-            return move
-
     @property
-    def moves_in_tree(self):
-        return [self] + sum([c.moves_in_tree for c in self.children],[])
-
-    @property
-    def is_pass(self):
-        return self.coords[0] is None
+    def sgf_properties(self):
+        best_sq = []
+        properties = copy.copy(super().sgf_properties)
+        if 'SQ' not in properties:
+            properties['SQ'] = best_sq
+        properties['C'] += self.comment(sgf=True)
+        return properties
 
     def update_top_move_evaluation(self):  # a move's outdated analysis
         if self.analysis and self.parent and self.parent.analysis:
@@ -85,7 +63,8 @@ class Move(sgfparser.Move):
         return f"{'B' if score >= 0 else 'W'}+{abs(score):.1f}"
 
     def comment(self, sgf=False, eval=False, hints=False):
-        if not self.parent:  # root
+        move = self.move
+        if not self.parent or not move:  # root
             return ""
 
         if eval and not sgf and self.children:  # show undos and on previous move as well while playing
@@ -95,7 +74,7 @@ class Move(sgfparser.Move):
         else:
             text = ""
 
-        text += f"Move {self.move_number}: {self.bw_player()} {self.gtp()}  {'(AI Move)' if self.robot else ''}\n"
+        text += f"Move {move.player} {move.gtp()}\n"
         text += "\n".join(self.x_comment.values())
 
         if self.analysis_ready:
@@ -110,7 +89,7 @@ class Move(sgfparser.Move):
                     text += f"Previous temperature: {prev_temperature:.1f}\n"
                 if prev_temperature < 0.5:
                     text += f"Previous temperature ({prev_temperature:.1f}) too low for evaluation\n"
-                elif not self.is_pass and self.parent.analysis[0]["move"] != self.gtp():
+                elif not move.is_pass and self.parent.analysis[0]["move"] != move.gtp():
                     if sgf:  # shown in stats anyway
                         text += f"Evaluation: {self.evaluation:.1%} efficient\n"
                     outdated_evaluation, outdated_details = self.outdated_evaluation
@@ -184,63 +163,32 @@ class Move(sgfparser.Move):
                 d["evaluation"] = int(-self.player_sign * d["scoreLead"] >= -self.player_sign * self.analysis[0]["scoreLead"])
         return analysis
 
-    # various output and conversion functions
-    @staticmethod
-    def gtp2ix(gtpmove):
-        if "pass" in gtpmove:
-            return None, None
-        return Move.GTP_COORD.index(gtpmove[0]), int(gtpmove[1:]) - 1
-
-    @staticmethod
-    def sgf2ix(sgfmove_with_board_size):
-        sgfmove, board_size = sgfmove_with_board_size
-        if sgfmove == "" or Move.SGF_COORD.index(sgfmove[0]) == board_size:  # some servers use [tt] for pass
-            return None, None
-        return Move.SGF_COORD.index(sgfmove[0]), board_size - Move.SGF_COORD.index(sgfmove[1]) - 1
-
-    def gtp(self):
-        if self.is_pass:
-            return "pass"
-        return Move.GTP_COORD[self.coords[0]] + str(self.coords[1] + 1)
-
-    def sgfcoords(self, board_size):
-        return f"{Move.SGF_COORD[self.coords[0]]}{Move.SGF_COORD[board_size - self.coords[1] - 1]}"
-
-    def bw_player(self, next_move=False):
-        return Move.PLAYERS[1 - self.player if next_move else self.player]
-
-    def sgf(self, board_size):
-        if self.is_pass:
-            return f"{self.bw_player()}[]"
-        else:
-            return f"{self.bw_player()}[{self.sgfcoords(board_size)}]"
-
 
 class Board:
-    def __init__(self, board_size=19,move_tree=None):
+    def __init__(self, board_size=19, move_tree=None):
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
         self.board_size = board_size
         if move_tree:
             self.root = move_tree
         else:
-            self.root = Move(1, (None, None))  # root is 1=white so black is first
-        self.current_move = self.root
-        self.all_moves = {m.id:m for m in self.root.moves_in_tree}
+            self.root = KaTrainSGFNode(properties={'RU':'JP','SZ':board_size}) # TODO: Komi, etc?
+        self.current_node = self.root
+        self._node_by_id = {m.id:m for m in self.root.nodes_in_tree}
         self._init_chains()
 
     # -- move tree functions --
     def _init_chains(self):
-        self.board = [[-1 for _x in range(self.board_size)] for _y in range(self.board_size)]  # board pos -> chain id
-        self.chains = []  # chain id -> chain
-        self.prisoners = []
-        self.last_capture = []
+        self.board = [[-1 for _x in range(self.board_size)] for _y in range(self.board_size)]  # type: List[list[int]]  #  board pos -> chain id
+        self.chains = []   # type: List[List[Move]]  #   chain id -> chain
+        self.prisoners = []  # type: List[Move]
+        self.last_capture = []  # type: List[Move]
         try:
             for m in self.moves:
                 self._validate_move_and_update_chains(m, True)  # ignore ko since we didn't know if it was forced
         except IllegalMoveException as e:
             raise Exception(f"Unexpected illegal move ({str(e)})")
 
-    def _validate_move_and_update_chains(self, move, ignore_ko):
+    def _validate_move_and_update_chains(self, move: Move, ignore_ko: bool):
         def neighbours(moves):
             return {
                 self.board[m.coords[1] + dy][m.coords[0] + dx]
@@ -286,34 +234,34 @@ class Board:
             raise IllegalMoveException("Suicide")
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
-    def play(self, move, ignore_ko=False):
+    def play(self, move: Move, ignore_ko: bool=False):
         if not move.is_pass and not (0 <= move.coords[0] < self.board_size and 0 <= move.coords[1] < self.board_size):
             raise IllegalMoveException(f"Move {move} outside of board coordinates")
-        played_move = self.current_move.play(move)
+        played_node = self.current_node.play(move)
         try:
-            self._validate_move_and_update_chains(played_move, ignore_ko)
+            self._validate_move_and_update_chains(played_node.move, ignore_ko)
         except IllegalMoveException:
-            self.current_move.children = [m for m in self.current_move.children if m != played_move]
+            self.current_node.children = [m for m in self.current_node.children if m != played_node]
             self._init_chains()  # restore
             raise
-        self.all_moves[played_move.id] = played_move
-        self.current_move = played_move
-        return played_move
+        self._node_by_id[played_node.id] = played_node
+        self.current_node = played_node
+        return played_node
 
     def undo(self):
-        if self.current_move is not self.root:
-            self.current_move = self.current_move.parent
+        if self.current_node is not self.root:
+            self.current_node = self.current_node.parent
         self._init_chains()
 
     def redo(self):
-        if self.current_move.children:
-            self.play(self.current_move.children[-1])
+        if self.current_node.children:
+            self.play(self.current_node.children[-1])
 
     def switch_branch(self, direction):
-        cm = self.current_move  # avoid race conditions
+        cm = self.current_node  # avoid race conditions
         if cm.parent and len(cm.parent.children) > 1:
             ix = cm.parent.children.index(cm)
-            self.current_move = cm.parent.children[(ix + direction) % len(cm.parent.children)]
+            self.current_node = cm.parent.children[(ix + direction) % len(cm.parent.children)]
             self._init_chains()
 
     def place_handicap_stones(self, n_handicaps):
@@ -324,25 +272,20 @@ class Board:
         if n_handicaps % 2 == 1:
             stones.append((middle, middle))
         stones += [(near, middle), (far, middle), (middle, near), (middle, far)]
-        self.root['AB'] =[ Move(player=0, coords=stone).sgf() for stone in stones[:n_handicaps] ]
+        self.root['AB'] =[Move(stone).sgf(board_size=self.board_size) for stone in stones[:n_handicaps]]
 
     @property
-    def moves(self) -> list:  # flat list of moves to current
-        moves = []
-        p = self.current_move
-        while p is not self.root:  # NB == is wrong here
-            moves.append(p)
-            p = p.parent
-        return moves[::-1]
+    def moves(self) -> list:  # flat list of moves to current, including placements
+        return sum([node.move_with_placements for node in self.current_node.nodes_from_root],[])
 
     @property
-    def current_player(self):
-        return 1 - self.current_move.player
+    def next_player(self):
+        return self.current_node.next_player
 
     def store_analysis(self, json):
         if json["id"].startswith("AA:"):  # board sweep analyze all
             _, move_id, gtpcoords = json["id"].split(":")
-            move = self.all_moves.get(int(move_id))
+            move = self._node_by_id.get(int(move_id))
             if not move.analysis:
                 return  # should have been prevented, but better not to crash
             cur_analysis = [d for d in move.analysis if d["move"] == gtpcoords]
@@ -361,7 +304,7 @@ class Board:
         else:
             move_id = int(json["id"])
             is_pass = False
-        move = self.all_moves.get(move_id)
+        move = self._node_by_id.get(move_id)
         if move:  # else this should be old
             move.set_analysis(json, is_pass)
         else:
@@ -373,55 +316,24 @@ class Board:
 
     @property
     def game_ended(self):
-        return self.current_move.parent and self.current_move.is_pass and self.current_move.parent.is_pass
+        return self.current_node.parent and self.current_node.is_pass and self.current_node.parent.is_pass
 
     @property
     def prisoner_count(self):
-        return [sum([m.player == player for m in self.prisoners]) for player in [0, 1]]
+        return [sum([m.player == player for m in self.prisoners]) for player in Move.PLAYERS]
 
     def __repr__(self):
         return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
-    def write_sgf(self, komi, train_settings, file_name=None):
-        def sgfify(mvs, comment=""):
-            return f"(;GM[1]FF[4]SZ[{self.board_size}]KM[{komi}]RU[JP];" + ";".join(mvs) + (f"C[{comment}])" if comment else "")
-
-        def format_move(move, prev_move):
-            undos = [m for m in prev_move.children if m != move]
-            undo_cr = "".join(f"MA[{u.sgfcoords(self.board_size)}]" for u in undos if not u.is_pass)
-            if (
-                prev_move.analysis
-                and prev_move.analysis[0]["move"] != "pass"
-                and (move.evaluation_info[0] or 0.0) < train_settings["sgf_show_best_move_threshold"]
-                and prev_move.analysis[0]["move"] != move.gtp()
-            ):
-                best_sq = "".join(
-                    f"SQ[{Move(gtpcoords=mv['move'], player=0).sgfcoords(self.board_size)}]"
-                    for mv in prev_move.analysis
-                    if move.player_sign * mv["scoreLead"] >= move.player_sign * prev_move.analysis[0]["scoreLead"] - 0.5
-                    and mv["visits"] >= train_settings["balance_play_min_visits"]
-                    and mv["move"] != "pass"
-                )
-            else:
-                best_sq = ""
-            return move.sgf(self.board_size) + f"C[{move.comment(sgf=True)}]{undo_cr}{best_sq}"
-
-        moves = self.moves
-        sgfmoves_small = [mv.sgf(self.board_size) for mv in moves]
-        sgfmoves = [format_move(mv, pmv) for mv, pmv in zip(moves, [self.root] + moves[:-1])]
-
+    def write_sgf(self, file_name=None):
         file_name = file_name or f"sgfout/katrain_{self.game_id}.sgf"
-        try:
-            os.makedirs(os.path.dirname(file_name))
-        except FileExistsError:
-            pass
+        os.makedirs(os.path.dirname(file_name),exist_ok=True)
         with open(file_name, "w") as f:
-            f.write(sgfify(sgfmoves))
-        return sgfify(sgfmoves_small, f"SGF with analysis written to {file_name}")
+            f.write(self.root.sgf())
+        return f"SGF with analysis written to {file_name}"
 
 
-
-class SGF(sgfparser.SGF):
-    _MOVE_CLASS = Move
+class KaTrainSGF(SGF):
+    _MOVE_CLASS = KaTrainSGFNode
 
 

@@ -131,7 +131,7 @@ class BadukPanWidget(Widget):
             # stones
             moves = self.engine.board.moves
             last_move = moves[-1] if moves else self.engine.board.root
-            current_player = self.engine.board.current_player
+            current_player = self.engine.board.next_player
             full_eval_on = [self.engine.eval.active(0), self.engine.eval.active(1)]
             has_stone = {}
             last_few_moves = self.engine.board.moves[-Config.get("trainer").get("eval_off_show_last", 3) :]
@@ -171,7 +171,7 @@ class BadukPanWidget(Widget):
             if self.engine.hints.active(current_player):
                 hint_moves = last_move.ai_moves
                 for i, d in enumerate(hint_moves):
-                    move = Move(gtpcoords=d["move"])
+                    move = SGFNode(gtpcoords=d["move"])
                     c = [*self._eval_spectrum(d["evaluation"]), 0.5]
                     if move.coords[0] is not None and move.coords not in undo_coords:
                         if i == 0:

@@ -19,7 +19,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
-from board import Board, IllegalMoveException, Move, SGF
+from board import Board, IllegalMoveException, SGFNode, KaTrainSGF
 
 BASE_PATH = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__))) # for pyinstaller
 
@@ -120,7 +120,7 @@ class EngineControls(GridLayout):
 
     # handles showing completed analysis and triggered actions like auto undo and ai move
     def update_evaluation(self):
-        current_move = self.board.current_move
+        current_move = self.board.current_node
         self.score.set_prisoners(self.board.prisoner_count)
         current_player_is_human_or_both_robots = not self.ai_auto.active(current_move.player) or self.ai_auto.active(1 - current_move.player)
         if current_player_is_human_or_both_robots and current_move is not self.board.root:
@@ -151,7 +151,7 @@ class EngineControls(GridLayout):
                         self.update_evaluation()
                         return
             # ai player doesn't technically need parent ready, but don't want to override waiting for undo
-            current_move = self.board.current_move  # this effectively checks undo didn't just happen
+            current_move = self.board.current_node  # this effectively checks undo didn't just happen
             if self.ai_auto.active(1 - current_move.player) and not self.board.game_ended:
                 if current_move.children:
                     self.info.text = "AI paused since moves were undone. Press 'AI Move' or choose a move for the AI to continue playing."
@@ -161,17 +161,17 @@ class EngineControls(GridLayout):
 
     # engine action functions
     def _do_play(self, *args):
-        self.play(Move(player=self.board.current_player, coords=args[0]))
+        self.play(SGFNode(player=self.board.next_player, coords=args[0]))
 
     def _do_aimove(self):
         ts = self.train_settings
-        while not self.board.current_move.analysis_ready:
+        while not self.board.current_node.analysis_ready:
             self.info.text = "Thinking..."
             self.ai_thinking = True
             time.sleep(0.05)
         self.ai_thinking = False
         # select move
-        current_move = self.board.current_move
+        current_move = self.board.current_node
         pos_moves = [
             (d["move"], float(d["scoreLead"]), d["evaluation"]) for i, d in enumerate(current_move.ai_moves) if i == 0 or int(d["visits"]) >= ts["balance_play_min_visits"]
         ]
@@ -186,7 +186,7 @@ class EngineControls(GridLayout):
                 or move_eval > ts["balance_play_min_eval"]
                 and -current_move.player_sign * score > ts["balance_play_target_score"]
             ] or sel_moves
-        aimove = Move(player=self.board.current_player, gtpcoords=random.choice(sel_moves)[0], robot=True)
+        aimove = SGFNode(player=self.board.next_player, gtpcoords=random.choice(sel_moves)[0], robot=True)
         if len(sel_moves) > 1:
             aimove.x_comment["ai"] = "AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, _ in sel_moves) + "\n"
         self.play(aimove)
@@ -200,11 +200,11 @@ class EngineControls(GridLayout):
     def _do_undo(self):
         if (
             self.ai_lock.active
-            and self.auto_undo.active(self.board.current_move.player)
-            and len(self.board.current_move.parent.children) > self.num_undos(self.board.current_move)
+            and self.auto_undo.active(self.board.current_node.player)
+            and len(self.board.current_node.parent.children) > self.num_undos(self.board.current_node)
             and not self.train_settings.get("dont_lock_undos")
         ):
-            self.info.text = f"Can't undo this move more than {self.num_undos(self.board.current_move)} time(s) when locked"
+            self.info.text = f"Can't undo this move more than {self.num_undos(self.board.current_node)} time(s) when locked"
             return
         self.board.undo()
         self.update_evaluation()
@@ -232,7 +232,7 @@ class EngineControls(GridLayout):
 
     def _do_analyze_extra(self, mode):
         stones = {s.coords for s in self.board.stones}
-        current_move = self.board.current_move
+        current_move = self.board.current_node
         if not current_move.analysis:
             self.info.text = "Wait for initial analysis to complete before doing a board-sweep or refinement"
             return
@@ -244,7 +244,7 @@ class EngineControls(GridLayout):
             self._request_analysis(current_move, min_visits=visits, priority=self.game_counter - 1_000)
             return
         elif mode == "sweep":
-            analyze_moves = [Move(coords=(x, y)).gtp() for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
+            analyze_moves = [SGFNode(coords=(x, y)).gtp() for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
             visits = self.visits[self.ai_fast.active][2]
             self.info.text = f"Refining analysis of entire board to {visits} visits"
             priority = self.game_counter - 1_000_000_000
@@ -279,7 +279,7 @@ class EngineControls(GridLayout):
         try:
             root = SGF.parse(sgf)
         except:
-            root = Move()
+            root = SGFNode()
         if root.empty():
             fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
             fc = FileChooserListView(multiselect=False, path=os.path.expanduser(Config.get("sgf")["load"]), filters=["*.sgf"])
