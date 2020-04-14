@@ -1,4 +1,4 @@
-import os
+import os, random
 from datetime import datetime
 
 from game_node import GameNode
@@ -9,6 +9,8 @@ from typing import List
 class IllegalMoveException(Exception):
     pass
 
+class KaTrainSGF(SGF):
+    _NODE_CLASS = GameNode
 
 class Game:
     GAME_COUNTER = 0
@@ -24,10 +26,10 @@ class Game:
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
 
         self.visits = [
-            [analysis_settings["pass_visits"], analysis_settings["visits"], analysis_settings["analyze_all_visits"]],
-            [analysis_settings["pass_visits_fast"], analysis_settings["visits_fast"], analysis_settings["analyze_all_visits_fast"]],
+            [analysis_options["pass_visits"], analysis_options["visits"], analysis_options["analyze_all_visits"]],
+            [analysis_options["pass_visits_fast"], analysis_options["visits_fast"], analysis_options["analyze_all_visits_fast"]],
         ]
-        self.train_settings = Config.get("trainer")
+        #self.train_settings = Config.get("trainer")
 
         if move_tree:
             self.root = move_tree
@@ -197,6 +199,74 @@ class Game:
             f.write(self.root.sgf())
         return f"SGF with analysis written to {file_name}"
 
+    def ai_move(self):
+        ts = self.train_settings
+        while not self.parent.game.current_node.analysis_ready:
+            self.info.text = "Thinking..."
+            self.ai_thinking = True
+            time.sleep(0.05)
+        self.ai_thinking = False
+        # select move
+        current_move = self.parent.game.current_node
+        pos_moves = [
+            (d["move"], float(d["scoreLead"]), d["evaluation"]) for i, d in enumerate(current_move.ai_moves) if i == 0 or int(d["visits"]) >= ts["balance_play_min_visits"]
+        ]
+        sel_moves = pos_moves[:1]
+        # don't play suicidal to balance score - pass when it's best
+        if self.ai_balance.active and pos_moves[0][0] != "pass":
+            sel_moves = [
+                (move, score, move_eval)
+                for move, score, move_eval in pos_moves
+                if move_eval > ts["balance_play_randomize_eval"]
+                and -current_move.player_sign * score > 0
+                or move_eval > ts["balance_play_min_eval"]
+                and -current_move.player_sign * score > ts["balance_play_target_score"]
+            ] or sel_moves
+        aimove = Move.from_gtp(random.choice(sel_moves)[0], player=self.parent.game.next_player)
+        if len(sel_moves) > 1:
+            aimove.x_comment["ai"] = "AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, _ in sel_moves) + "\n"
+        self.play(aimove)
 
-class KaTrainSGF(SGF):
-    _MOVE_CLASS = GameNode
+
+    def num_undos(self, move):
+        if self.train_settings["num_undo_prompts"] < 1:
+            return int(move.undo_threshold < self.train_settings["num_undo_prompts"])
+        else:
+            return self.train_settings["num_undo_prompts"]
+
+    def analyze_extra(self,mode):
+        stones = {s.coords for s in self.parent.game.stones}
+        current_move = self.current_node
+        if not current_move.analysis:
+            self.info.text = "Wait for initial analysis to complete before doing a board-sweep or refinement"
+            return
+        played_moves = self.parent.game.moves
+
+        if mode == "extra":
+            visits = sum([d["visits"] for d in current_move.analysis]) + self.visits[0][1]
+            self.info.text = f"Performing additional analysis to {visits} visits"
+            self._request_analysis(current_move, min_visits=visits, priority=self.game_counter - 1_000)
+            return
+        elif mode == "sweep":
+            analyze_moves = [Move(coords=(x, y)).gtp() for x in range(self.parent.game_size) for y in
+                             range(self.parent.game_size) if (x, y) not in stones]
+            visits = self.visits[self.ai_fast.active][2]
+            self.info.text = f"Refining analysis of entire board to {visits} visits"
+            priority = self.game_counter - 1_000_000_000
+        else:  # mode=='refine':
+            analyze_moves = [a["move"] for a in current_move.analysis]
+            visits = current_move.analysis[0]["visits"] + self.visits[1][2]
+            self.info.text = f"Refining analysis of candidate moves to {visits} visits"
+            priority = self.game_counter - 1_000
+
+        for gtpcoords in analyze_moves:
+            self._send_analysis_query(
+                {
+                    "id": f"AA:{current_move.id}:{gtpcoords}",
+                    "moves": [[m.bw_player(), m.gtp()] for m in played_moves] + [
+                        [current_move.bw_player(True), gtpcoords]],
+                    "includeOwnership": False,
+                    "maxVisits": visits,
+                    "priority": priority,
+                }
+            )

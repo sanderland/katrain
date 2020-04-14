@@ -178,7 +178,7 @@ class SGFNode:
 
 
 class SGF:
-    _MOVE_CLASS = SGFNode
+    _NODE_CLASS = SGFNode
 
     @staticmethod
     def parse(input_str) -> SGFNode:
@@ -218,7 +218,7 @@ class SGF:
                 self._parse_branch(SGFNode(parent=current_move))
             elif match[0] == ";":
                 if not current_move.empty:  # ignore ; that generate empty nodes
-                    current_move = self._MOVE_CLASS(parent=current_move)
+                    current_move = self._NODE_CLASS(parent=current_move)
             else:
                 prop, value = match[1], match[2].strip()[1:-1]
                 current_move[prop] = value

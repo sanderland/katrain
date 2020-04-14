@@ -9,6 +9,8 @@ from kivy.clock import Clock
 from queue import Queue
 from game import Game, IllegalMoveException, KaTrainSGF, Move
 from game_node import GameNode
+from kivy.uix.popup import Popup
+from gui.popups import LoadSGFPopup
 
 OUTPUT_ERROR = -1
 OUTPUT_INFO = 0
@@ -39,9 +41,9 @@ class KaTrainGui(BoxLayout):
             print(message)
 
     def _load_config(self):
+        base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))  # for pyinstaller
+        config_file = sys.argv[1] if len(sys.argv) > 1 else os.path.join(base_path, "config.json")
         try:
-            base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))  # for pyinstaller
-            config_file = sys.argv[1] if len(sys.argv) > 1 else os.path.join(base_path, "config.json")
             self.log(f"Using config file {config_file}",OUTPUT_INFO)
             self._config_store = JsonStore(config_file)
         except FileNotFoundError:
@@ -77,13 +79,48 @@ class KaTrainGui(BoxLayout):
                 self.log(f"Exception in Engine thread: {e}",OUTPUT_ERROR)
                 raise
 
-    def action(self, message, *args):
+    def __call__(self, message, *args):
         if self.game:
             self.message_queue.put([self.game.game_id, message, *args])
 
     def _do_new_game(self,board_size=None):
         self.game = Game(self,self.engine,self.config("analysis"),self.config("board"),board_size=board_size)
 
+    def _do_aimove(self):
+        self.game.ai_move()
+
+    def _do_undo(self):
+        if (
+            self.controls.ai_lock.active
+            and self.contols.auto_undo.active(self.game.current_node.player)
+            and len(self.game.current_node.parent.children) > self.num_undos(self.game.current_node)
+            and not self.train_settings.get("dont_lock_undos")
+        ):
+            self.info.text = f"Can't undo this move more than {self.num_undos(self.game.current_node)} time(s) when locked"
+            return
+        self.game.undo()
+        self.controls.update_evaluation()
+
+    def _do_redo(self):
+        self.game.redo()
+        self.update_evaluation()
+
+    def _do_switch_branch(self, direction):
+        self.game.switch_branch(direction)
+        self.update_evaluation()
+
+    def _do_init(self, board_size=None, komi=None, move_tree=None):
+        self.game_counter += 1  # prioritize newer games
+        self.game_size = board_size or 19
+        self.komi = float(komi or self.config.get("board").get(f"komi_{board_size}", 6.5))
+        self.game = Game(board_size, move_tree)
+        self._request_analysis(self.game.root, priority=self.game_counter)
+        self.redraw(include_board=True)
+        self.ready = True
+        if self.ai_lock.active:
+            self.ai_lock.checkbox._do_press()
+        for el in [self.ai_lock.checkbox, self.hints.black, self.hints.white, self.ai_auto.black, self.ai_auto.white, self.auto_undo.black, self.auto_undo.white, self.ai_move]:
+            el.disabled = False
 
     def play(self, move: Move, faster=False, analysis_priority=None):
         try:
@@ -99,6 +136,39 @@ class KaTrainGui(BoxLayout):
     def _do_play(self, *args):
         self.play(Move(args[0], player=self.board.next_player))
 
+    def _do_analyze_extra(self, mode):
+        self.game.analyze_extra(mode)
+
+
+    def analyze_movetree(self, root, faster=False):
+        self._do_init(root["SZ"], root["KM"])
+        self.parent.game.root = root
+        handicap = root["HA"]
+        if handicap is not None and root["AB"] is None:
+            self.parent.game.place_handicap_stones(handicap)
+        analysis_priority = self.game_counter - 1_000_000
+        for move in self.parent.game.root.moves_in_tree:
+            self._request_analysis(move, faster=faster, priority=analysis_priority)  # ensure next move analysis works
+
+    def _do_analyze_sgf(self, sgf):
+        fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
+        popup_contents = LoadSGFPopup()
+        fileselect_popup.add_widget(popup_contents)
+
+        def readfile(files, _mouse):
+            fileselect_popup.dismiss()
+            self.analyze_movetree(KaTrainSGF.parse_file(files[0]))
+
+        popup_contents.filesel.on_submit = readfile
+        fileselect_popup.open()
+
+    def output_sgf(self):
+        for pl in Move.PLAYERS:
+            if self.parent.game.root[f"P{pl}"] not in ["KaTrain","Player",None,""]:
+                self.parent.game.root[f"P{pl}"] = "KaTrain" if self.ai_auto.active(pl) else "Player"
+        return self.parent.game.write_sgf(self.komi)
+
+
     def redraw(self, include_board=False):
         if include_board:
             Clock.schedule_once(self.board.draw_board, -1)  # main thread needs to do this
@@ -107,19 +177,19 @@ class KaTrainGui(BoxLayout):
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         if keycode[1] == "up":
-            self.controls.action("undo")
+            self("undo")
         elif keycode[1] == "down":
-            self.controls.action("redo")
+            self("redo")
         elif keycode[1] == "right":
-            self.controls.action("redo-branch", 1)
+            self("switch-branch", 1)
         elif keycode[1] == "left":
-            self.controls.action("redo-branch", -1)
+            self("switch-branch", -1)
         elif keycode[1] == "s":
-            self.controls.action("analyze-extra", "sweep")
+            self("analyze-extra", "sweep")
         elif keycode[1] == "x":
-            self.controls.action("analyze-extra", "extra")
+            self("analyze-extra", "extra")
         elif keycode[1] == "r":
-            self.controls.action("analyze-extra", "refine")
+            self("analyze-extra", "refine")
         elif keycode[1] == "a":
             if not self.controls.ai_thinking:
                 self.controls.ai_move.trigger_action(duration=0)

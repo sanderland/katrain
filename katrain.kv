@@ -147,6 +147,31 @@
 		id: value
 		bold: True
 
+
+<LoadSGFPopup>:
+    fast: fast
+    rewind: rewind
+    filesel: filesel
+    orientation: 'vertical'
+    FileChooserListView:
+        id: filesel
+        multiselect: False
+        filters: ["*.sgf"]
+        path: os.path.expanduser("~")
+    BoxLayout:
+        orientation: 'horizontal'
+            Label:
+                text: "Analyze Extra Fast"
+            Checkbox:
+                id: fast
+                color: (0.95, 0.95, 0.95)
+            Label:
+                text: "Rewind to Start"
+            Checkbox:
+                id: rewind
+                active: True
+                color: (0.95, 0.95, 0.95)
+
 <BadukPanWidget>:
 	size: self.parent.height, self.parent.height
 	engine: self.parent.controls
