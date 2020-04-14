@@ -1,6 +1,6 @@
 import pytest
 
-from board import Board, IllegalMoveException
+from game import Game, IllegalMoveException
 from move import Move
 
 
@@ -9,7 +9,7 @@ class TestBoard:
         return [c for c in b.chains if c]
 
     def test_merge(self):
-        b = Board(9)
+        b = Game(9)
         b.play(Move(gtpcoords="B9", player=0))
         b.play(Move(gtpcoords="A3", player=0))
         b.play(Move(gtpcoords="A9", player=0))
@@ -18,7 +18,7 @@ class TestBoard:
         assert 0 == len(b.prisoners)
 
     def test_collide(self):
-        b = Board(9)
+        b = Game(9)
         b.play(Move(gtpcoords="B9", player=0))
         with pytest.raises(IllegalMoveException):
             b.play(Move(gtpcoords="B9", player=1))
@@ -27,7 +27,7 @@ class TestBoard:
         assert 0 == len(b.prisoners)
 
     def test_capture(self):
-        b = Board(9)
+        b = Game(9)
         b.play(Move(gtpcoords="A2", player=0))
         b.play(Move(gtpcoords="B1", player=1))
         b.play(Move(gtpcoords="A1", player=1))
@@ -48,7 +48,7 @@ class TestBoard:
         assert 2 == len(b.prisoners)
 
     def test_snapback(self):
-        b = Board(9)
+        b = Game(9)
         for move in ["C1", "D1", "E1", "C2", "D3", "E4", "F2", "F3", "F4"]:
             b.play(Move(gtpcoords=move, player=0))
         for move in ["D2", "E2", "C3", "D4", "C4"]:
@@ -66,7 +66,7 @@ class TestBoard:
         assert 4 == len(b.prisoners)
 
     def test_ko(self):
-        b = Board(9)
+        b = Game(9)
         for move in ["A2", "B1"]:
             b.play(Move(gtpcoords=move, player=0))
 

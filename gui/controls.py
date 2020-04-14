@@ -3,15 +3,10 @@ import json
 import os
 import random
 import re
-import shlex
-import subprocess
 import sys
 import threading
 import time
-from queue import Queue
 
-from kivy.clock import Clock
-from kivy.storage.jsonstore import JsonStore
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.filechooser import FileChooserListView
@@ -19,94 +14,15 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
-from board import Board, IllegalMoveException, KaTrainSGFNode, KaTrainSGF, Move
-
-BASE_PATH = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))  # for pyinstaller
-
-config_file = sys.argv[1] if len(sys.argv) > 1 else os.path.join(BASE_PATH, "config.json")
-print(f"Using config file {config_file}")
-Config = JsonStore(config_file)
 
 
-class EngineControls(GridLayout):
+
+class Controls(GridLayout):
     def __init__(self, **kwargs):
-        super(EngineControls, self).__init__(**kwargs)
+        super(Controls, self).__init__(**kwargs)
 
-        self.command = os.path.join(BASE_PATH, Config.get("engine")["command"])
-        if "win" not in sys.platform:
-            self.command = shlex.split(self.command)
-
-        analysis_settings = Config.get("analysis")
-        self.visits = [
-            [analysis_settings["pass_visits"], analysis_settings["visits"], analysis_settings["analyze_all_visits"]],
-            [analysis_settings["pass_visits_fast"], analysis_settings["visits_fast"], analysis_settings["analyze_all_visits_fast"]],
-        ]
-        self.train_settings = Config.get("trainer")
-        self.debug = Config.get("debug")["level"]
-        self.board_size = Config.get("board")["size"]
-        self.ready = False
-        self.ai_thinking = False
-        self.message_queue = None
-        self.board = Board(self.board_size)
-        self.komi = 6.5  # loaded from config in init
-        self.outstanding_analysis_queries = []  # allows faster interaction while kata is starting
-        self.kata = None
-        self.query_time = {}
-        self.game_counter = 0
-
-    def show_error(self, msg):
-        print(f"ERROR: {msg}")
+    def set_status(self, msg):
         self.info.text = msg
-
-    def redraw(self, include_board=False):
-        if include_board:
-            Clock.schedule_once(self.parent.board.draw_board, -1)  # main thread needs to do this
-        Clock.schedule_once(self.parent.board.draw_board_contents, -1)
-
-    def restart(self, board_size=None):
-        self.ready = False
-        if not self.message_queue:
-            self.message_queue = Queue()
-            self.engine_thread = threading.Thread(target=self._engine_thread, daemon=True).start()
-        else:
-            with self.message_queue.mutex:
-                self.message_queue.queue.clear()
-        self.action("init", board_size or self.board_size)
-
-    def action(self, message, *args):
-        self.message_queue.put([message, *args])
-
-    # engine main loop
-    def _engine_thread(self):
-        try:
-            self.kata = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        except FileNotFoundError:
-            self.show_error(
-                f"Starting kata with command '{self.command}' failed. If you are on Mac or Linux, please edit configuration file '{config_file}' to point to the correct KataGo executable."
-            )
-        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
-
-        msg, *args = self.message_queue.get()
-        while True:
-            try:
-                if self.debug:
-                    print("MESSAGE", msg, args)
-                getattr(self, f"_do_{msg.replace('-','_')}")(*args)
-            except Exception as e:
-                self.show_error(f"Exception in Engine thread: {e}")
-                raise
-            msg, *args = self.message_queue.get()
-
-    def play(self, move: Move, faster=False, analysis_priority=None):
-        try:
-            next_node = self.board.play(move)
-        except IllegalMoveException as e:
-            self.info.text = f"Illegal move: {str(e)}"
-            return
-        self.update_evaluation()
-        if not next_node.analysis_ready:  # replayed old move
-            self._request_analysis(next_node, faster=faster, priority=self.game_counter if analysis_priority is None else analysis_priority)
-        return next_node
 
     def show_evaluation_stats(self, move):
         if move.analysis_ready:
@@ -120,9 +36,9 @@ class EngineControls(GridLayout):
 
     # handles showing completed analysis and triggered actions like auto undo and ai move
     def update_evaluation(self):
-        current_node = self.board.current_node
+        current_node = self.parent.game.current_node
         move = current_node.move
-        self.score.set_prisoners(self.board.prisoner_count)
+        self.score.set_prisoners(self.parent.game.prisoner_count)
         current_player_is_human_or_both_robots = True  # move not self.ai_auto.active(current_node.player) or self.ai_auto.active(1 - current_node.player) # TODO FIX
 
         if current_player_is_human_or_both_robots and not current_node.is_root:
@@ -145,16 +61,16 @@ class EngineControls(GridLayout):
                         self.update_evaluation()
                     else:
                         current_node.auto_undid = True
-                        self.board.undo()
+                        self.parent.game.undo()
                         if len(current_node.parent.children) >= ts["num_undo_prompts"] + 1:
                             best_move = sorted([m for m in current_node.parent.children], key=lambda m: -(m.evaluation_info[0] or 0))[0]
                             best_move.x_comment["undo_autoplay"] = f"Automatically played as best option after max. {ts['num_undo_prompts']} undo(s).\n"
-                            self.board.play(best_move)
+                            self.parent.game.play(best_move)
                         self.update_evaluation()
                         return
             # ai player doesn't technically need parent ready, but don't want to override waiting for undo
-            current_node = self.board.current_node  # this effectively checks undo didn't just happen
-            if self.ai_auto.active(move.opponent) and not self.board.game_ended:
+            current_node = self.parent.game.current_node  # this effectively checks undo didn't just happen
+            if self.ai_auto.active(move.opponent) and not self.parent.game.game_ended:
                 if current_node.children:
                     self.info.text = "AI paused since moves were undone. Press 'AI Move' or choose a move for the AI to continue playing."
                 else:
@@ -162,18 +78,17 @@ class EngineControls(GridLayout):
         self.redraw(include_board=False)
 
     # engine action functions
-    def _do_play(self, *args):
-        self.play(Move(args[0], player=self.board.next_player))
+
 
     def _do_aimove(self):
         ts = self.train_settings
-        while not self.board.current_node.analysis_ready:
+        while not self.parent.game.current_node.analysis_ready:
             self.info.text = "Thinking..."
             self.ai_thinking = True
             time.sleep(0.05)
         self.ai_thinking = False
         # select move
-        current_move = self.board.current_node
+        current_move = self.parent.game.current_node
         pos_moves = [
             (d["move"], float(d["scoreLead"]), d["evaluation"]) for i, d in enumerate(current_move.ai_moves) if i == 0 or int(d["visits"]) >= ts["balance_play_min_visits"]
         ]
@@ -188,7 +103,7 @@ class EngineControls(GridLayout):
                 or move_eval > ts["balance_play_min_eval"]
                 and -current_move.player_sign * score > ts["balance_play_target_score"]
             ] or sel_moves
-        aimove = Move.from_gtp(random.choice(sel_moves)[0], player=self.board.next_player)
+        aimove = Move.from_gtp(random.choice(sel_moves)[0], player=self.parent.game.next_player)
         if len(sel_moves) > 1:
             aimove.x_comment["ai"] = "AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, _ in sel_moves) + "\n"
         self.play(aimove)
@@ -202,29 +117,29 @@ class EngineControls(GridLayout):
     def _do_undo(self):
         if (
             self.ai_lock.active
-            and self.auto_undo.active(self.board.current_node.player)
-            and len(self.board.current_node.parent.children) > self.num_undos(self.board.current_node)
+            and self.auto_undo.active(self.parent.game.current_node.player)
+            and len(self.parent.game.current_node.parent.children) > self.num_undos(self.parent.game.current_node)
             and not self.train_settings.get("dont_lock_undos")
         ):
-            self.info.text = f"Can't undo this move more than {self.num_undos(self.board.current_node)} time(s) when locked"
+            self.info.text = f"Can't undo this move more than {self.num_undos(self.parent.game.current_node)} time(s) when locked"
             return
-        self.board.undo()
+        self.parent.game.undo()
         self.update_evaluation()
 
     def _do_redo(self):
-        self.board.redo()
+        self.parent.game.redo()
         self.update_evaluation()
 
     def _do_redo_branch(self, direction):
-        self.board.switch_branch(direction)
+        self.parent.game.switch_branch(direction)
         self.update_evaluation()
 
     def _do_init(self, board_size=None, komi=None, move_tree=None):
         self.game_counter += 1  # prioritize newer games
-        self.board_size = board_size or 19
-        self.komi = float(komi or Config.get("board").get(f"komi_{board_size}", 6.5))
-        self.board = Board(board_size, move_tree)
-        self._request_analysis(self.board.root, priority=self.game_counter)
+        self.parent.game_size = board_size or 19
+        self.komi = float(komi or self.config.get("board").get(f"komi_{board_size}", 6.5))
+        self.parent.game = Game(board_size, move_tree)
+        self._request_analysis(self.parent.game.root, priority=self.game_counter)
         self.redraw(include_board=True)
         self.ready = True
         if self.ai_lock.active:
@@ -233,12 +148,12 @@ class EngineControls(GridLayout):
             el.disabled = False
 
     def _do_analyze_extra(self, mode):
-        stones = {s.coords for s in self.board.stones}
-        current_move = self.board.current_node
+        stones = {s.coords for s in self.parent.game.stones}
+        current_move = self.parent.game.current_node
         if not current_move.analysis:
             self.info.text = "Wait for initial analysis to complete before doing a board-sweep or refinement"
             return
-        played_moves = self.board.moves
+        played_moves = self.parent.game.moves
 
         if mode == "extra":
             visits = sum([d["visits"] for d in current_move.analysis]) + self.visits[0][1]
@@ -246,7 +161,7 @@ class EngineControls(GridLayout):
             self._request_analysis(current_move, min_visits=visits, priority=self.game_counter - 1_000)
             return
         elif mode == "sweep":
-            analyze_moves = [SGFNode(coords=(x, y)).gtp() for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
+            analyze_moves = [SGFNode(coords=(x, y)).gtp() for x in range(self.parent.game_size) for y in range(self.parent.game_size) if (x, y) not in stones]
             visits = self.visits[self.ai_fast.active][2]
             self.info.text = f"Refining analysis of entire board to {visits} visits"
             priority = self.game_counter - 1_000_000_000
@@ -269,22 +184,22 @@ class EngineControls(GridLayout):
 
     def analyze_movetree(self, root, faster=False):
         self._do_init(root["SZ"], root["KM"])
-        self.board.root = root
+        self.parent.game.root = root
         handicap = root["HA"]
         if handicap is not None and root["AB"] is None:
-            self.board.place_handicap_stones(handicap)
+            self.parent.game.place_handicap_stones(handicap)
         analysis_priority = self.game_counter - 1_000_000
-        for move in self.board.root.moves_in_tree:
+        for move in self.parent.game.root.moves_in_tree:
             self._request_analysis(move, faster=faster, priority=analysis_priority)  # ensure next move analysis works
 
     def _do_analyze_sgf(self, sgf):
         try:
             root = KaTrainSGF.parse(sgf)
         except:
-            root = KaTrainSGFNode()
+            root = GameNode()
         if root.empty:
             fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
-            fc = FileChooserListView(multiselect=False, path=os.path.expanduser(Config.get("sgf")["load"]), filters=["*.sgf"])
+            fc = FileChooserListView(multiselect=False, path=os.path.expanduser(self.config.get("sgf")["load"]), filters=["*.sgf"])
             blui = BoxLayout(orientation="horizontal", size_hint=(1, 0.1))
             cbfast = CheckBox(color=(0.95, 0.95, 0.95, 1))
             cbrewind = CheckBox(color=(0.95, 0.95, 0.95, 1), active=True)
@@ -305,58 +220,9 @@ class EngineControls(GridLayout):
         else:
             self.analyze_movetree(root)
 
-    # analysis thread
-    def _analysis_read_thread(self):
-        while True:
-            while self.outstanding_analysis_queries:
-                self._send_analysis_query(self.outstanding_analysis_queries.pop(0))
-            line = self.kata.stdout.readline()
-            if not line:  # occasionally happens?
-                return
-            try:
-                analysis = json.loads(line)
-            except json.JSONDecodeError as e:
-                print(f"JSON decode error: '{e}' encountered after receiving input '{line}'")
-                return
-            if self.debug:
-                print(f"[{time.time()-self.query_time.get(analysis['id'],0):.1f}] kata analysis received:", line[:80], "...")
-            if "error" in analysis:
-                if "AA" not in analysis["id"]:  # silently drop illegal moves from analysis all
-                    print(analysis)
-                    self.show_error(f"ERROR IN KATA ANALYSIS: {analysis['error']}")
-            else:
-                self.board.store_analysis(analysis)
-                self.update_evaluation()
-
-    def _send_analysis_query(self, query):
-        self.query_time[query["id"]] = time.time()
-        query = {"rules": "japanese", "komi": self.komi, "boardXSize": self.board_size, "boardYSize": self.board_size, "analyzeTurns": [len(query["moves"])], **query}
-        if self.kata:
-            self.kata.stdin.write((json.dumps(query) + "\n").encode())
-            self.kata.stdin.flush()
-        else:  # early on / root / etc
-            self.outstanding_analysis_queries.append(copy.copy(query))
-
-    def _request_analysis(self, analysis_node: KaTrainSGFNode, faster=False, min_visits=0, priority=0):
-        faster_fac = 5 if faster else 1
-        node_id = analysis_node.id
-        fast = self.ai_fast.active
-        query = {
-            "id": str(node_id),
-            "moves": [[m.player, m.gtp()] for node in analysis_node.nodes_from_root for m in node.move_with_placements],
-            "includeOwnership": True,
-            "maxVisits": max(min_visits, self.visits[fast][1] // faster_fac),
-            "priority": priority,
-        }
-        if self.debug:
-            print(f"sending query for move {node_id}: {str(query)[:80]}")
-        self._send_analysis_query(query)
-        query.update({"id": f"PASS_{node_id}", "maxVisits": self.visits[fast][0] // faster_fac, "includeOwnership": False})
-        query["moves"] += [[analysis_node.next_player, "pass"]]
-        self._send_analysis_query(query)
 
     def output_sgf(self):
         for pl in Move.PLAYERS:
-            if self.board.root[f"P{pl}"] not in ["KaTrain","Player",None,""]:
-                self.board.root[f"P{pl}"] = "KaTrain" if self.ai_auto.active(pl) else "Player"
-        return self.board.write_sgf(self.komi)
+            if self.parent.game.root[f"P{pl}"] not in ["KaTrain","Player",None,""]:
+                self.parent.game.root[f"P{pl}"] = "KaTrain" if self.ai_auto.active(pl) else "Player"
+        return self.parent.game.write_sgf(self.komi)
