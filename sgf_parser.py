@@ -1,5 +1,6 @@
-import re
 import copy
+import re
+from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple
 
 
@@ -22,7 +23,7 @@ class Move:
     def from_sgf(sgf_coords, board_size, player="B"):
         if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size:  # some servers use [tt] for pass
             return Move(coords=None, player=player)
-        return Move(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
+        return Move(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player,)
 
     def __init__(self, coords: Optional[Tuple[int, int]] = None, player: str = "B"):
         self.player = player
@@ -31,10 +32,8 @@ class Move:
     def __repr__(self):
         return f"Move({self.player}{self.gtp()})"
 
-    #    def __hash__(self):
-    #        return self.__repr__().__hash__()
-    #    def __eq__(self, other):
-    #        return self.coords == other.coords and self.player == other.player
+    def __eq__(self, other):
+        return self.coords == other.coords and self.player == other.player
 
     def gtp(self):
         if self.is_pass:
@@ -56,26 +55,25 @@ class Move:
 
 
 class SGFNode:
-    CAST_FIELDS = {"KM": float, "SZ": int, "HA": int}  # cast property to this type
-    LIST_FIELDS = ["AB", "AW", "TW", "TB", "MA", "SQ", "CR", "TR", "LN", "AR", "LB"]  # cast these properties to lists
-    # TODO: all are potential lists? what a headache!
-
     def __init__(self, parent=None, properties=None, move=None):
         self.children = []
-        self.properties = copy.copy(properties) if properties is not None else {}
+        self.properties = defaultdict(list)
+        if properties:
+            for k, v in properties.items():
+                self.add_property(k, v)
         self.parent = parent
         if self.parent:
             self.parent.children.append(self)
         if parent and move:
-            self.properties[move.player] = move.sgf(self.board_size)
+            self.add_property(move.player, move.sgf(self.board_size))
 
     @property
     def sgf_properties(self) -> Dict:
         """For hooking into in a subclass and overriding/formatting any additional properties to be output"""
-        return self.properties
+        return copy.deepcopy(self.properties)
 
     def sgf(self) -> str:
-        sgf_str = "".join([f"{k}[{']['.join(v) if isinstance(v,list) else v}]" for k, v in self.sgf_properties.items()])
+        sgf_str = "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in self.sgf_properties.items() if values])
         if self.children:
             children = [c.sgf() for c in self.children]
             if len(children) == 1:
@@ -84,19 +82,19 @@ class SGFNode:
                 sgf_str += "(;" + ")(;".join(children) + ")"
         return f"(;{sgf_str})" if self.is_root else sgf_str
 
-    def __setitem__(self, prop: str, value: Any):
-        if prop in self.LIST_FIELDS and isinstance(value, str):  # lists (placements, IGS marked dead stones)
-            self.properties[prop] = self.properties.get(prop, []) + re.split(r"\]\s*\[", value)
-        elif prop in self.CAST_FIELDS:
-            self.properties[prop] = self.CAST_FIELDS[prop](value)
-        else:
-            self.properties[prop] = value
+    def add_property(self, property: str, values: Any):
+        """Add some values to the property. If not a list, it will be made into a single-value list."""
+        if not isinstance(values, list):
+            values = [values]
+        self.properties[property] += values
 
-    def __getitem__(self, property) -> Any:
-        return self.properties.get(property)
-
-    def get(self, property, default) -> Any:
+    def get(self, property, default=None) -> Any:
+        """Get the list of values for a property."""
         return self.properties.get(property, default)
+
+    def get_first(self, property, default) -> Any:
+        """Get the first value of the property, typically when exactly one is expected."""
+        return self.properties.get(property, [default])[0]
 
     @property
     def parent(self) -> Optional["SGFNode"]:
@@ -125,22 +123,33 @@ class SGFNode:
 
     @property
     def board_size(self) -> int:
-        return self.root.get("SZ", 19)
+        return int(self.root.get_first("SZ", 19))
 
     @property
-    def move(self) -> Optional[Move]:
-        for pl in Move.PLAYERS:
-            if self[pl]:
-                return Move.from_sgf(self[pl], player=pl, board_size=self.board_size)
+    def komi(self) -> float:
+        return float(self.root.get_first("KM", 6.5))
+
+    @property
+    def moves(self) -> List[Move]:
+        """Returns all moves in the node."""
+        return [Move.from_sgf(move, player=pl, board_size=self.board_size) for pl in Move.PLAYERS for move in self.get(pl, [])]
 
     @property
     def placements(self) -> List[Move]:
-        return [Move.from_sgf(self[pl], player=pl, board_size=self.board_size) for pl in Move.PLAYERS for sgf in self.get("A" + pl, [])]
+        """Returns all placements (AB/AW) in the node."""
+        return [Move.from_sgf(sgf_coords, player=pl, board_size=self.board_size) for pl in Move.PLAYERS for sgf_coords in self.get("A" + pl, [])]
 
     @property
     def move_with_placements(self) -> List[Move]:
-        move = self.move
-        return self.placements + ([move] if move else [])
+        """Returns all moves (B/W) and placements (AB/AW) in the node."""
+        return self.placements + self.moves
+
+    @property
+    def single_move(self) -> Optional[Move]:
+        """Returns the single move for the node if one exists, or None if no moves (or multiple ones) exist."""
+        moves = self.moves
+        if len(moves) == 1:
+            return moves[0]
 
     @property
     def is_root(self) -> bool:
@@ -148,7 +157,7 @@ class SGFNode:
 
     @property
     def is_pass(self) -> bool:
-        return not self.placements and self.move and self.move.is_pass
+        return not self.placements and self.single_move and self.single_move.is_pass
 
     @property
     def empty(self) -> bool:
@@ -165,14 +174,13 @@ class SGFNode:
     def play(self, move) -> "SGFNode":
         """Either find an existing child or create a new one with the given move."""
         for c in self.children:
-            if c.move == move:
-                return c.move
+            if c.single_move == move:
+                return c
         return self.__class__(parent=self, move=move)
 
     @property
     def next_player(self):
-        m = self.move
-        if m and m.player == "B" or "AB" in self.properties:
+        if self.get("B") or self.get("AB"):
             return "W"
         return "B"
 
@@ -220,8 +228,9 @@ class SGF:
                 if not current_move.empty:  # ignore ; that generate empty nodes
                     current_move = self._NODE_CLASS(parent=current_move)
             else:
-                prop, value = match[1], match[2].strip()[1:-1]
-                current_move[prop] = value
+                property, value = match[1], match[2].strip()[1:-1]
+                values = re.split(r"\]\s*\[", value)
+                current_move.add_property(property, values)
         if self.ix < len(self.contents):
             raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix - 25:self.ix]}>{self.contents[self.ix]}<{self.contents[self.ix + 1:self.ix + 25]}")
         raise ParseError("Parse Error: expected ')' at end of input.")

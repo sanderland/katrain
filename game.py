@@ -1,44 +1,41 @@
-import os, random
+import os
+import random
 from datetime import datetime
+from typing import List
 
 from game_node import GameNode
-from sgf_parser import Move, SGF
-from typing import List
+from sgf_parser import SGF, Move
 
 
 class IllegalMoveException(Exception):
     pass
 
+
 class KaTrainSGF(SGF):
     _NODE_CLASS = GameNode
 
+
 class Game:
+    """Represents a game of go, including an implementation of capture rules."""
+
     GAME_COUNTER = 0
 
-    def __init__(self, katrain, engine, analysis_options, board_options, board_size=None, move_tree=None):
+    def __init__(self, katrain, engine, config, board_size=None, move_tree=None):
         Game.GAME_COUNTER += 1
         self.katrain = katrain
         self.engine = engine
-        self.analysis_options = analysis_options
-        self.board_options = board_options
-        self.board_size = board_size or self.board_options.get('size',19)
-        self.komi = self.board_options.get(f"komi_{self.board_size}",6.5)
+        self.config = config
+        self.board_size = board_size or self.config.get("size", 19)
+        self.komi = self.config.get(f"komi_{self.board_size}", 6.5)
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
-
-        self.visits = [
-            [analysis_options["pass_visits"], analysis_options["visits"], analysis_options["analyze_all_visits"]],
-            [analysis_options["pass_visits_fast"], analysis_options["visits_fast"], analysis_options["analyze_all_visits_fast"]],
-        ]
-        #self.train_settings = Config.get("trainer")
 
         if move_tree:
             self.root = move_tree
         else:
-            self.root = GameNode(properties={"RU": "JP", "SZ": self.board_size, "KM": self.komi,
-                                                   "PC": "KaTrain: https://github.com/sanderland/katrain",
-                                                   "DT": self.game_id})
+            self.root = GameNode(properties={"RU": "JP", "SZ": self.board_size, "KM": self.komi, "PC": "KaTrain: https://github.com/sanderland/katrain", "DT": self.game_id})
         self.current_node = self.root
-        self._node_by_id = {m.id: m for m in self.root.nodes_in_tree}
+        for node in self.root.nodes_in_tree:
+            node.analyze(self.engine)
         self._init_chains()
 
     # -- move tree functions --
@@ -106,13 +103,13 @@ class Game:
             raise IllegalMoveException(f"Move {move} outside of board coordinates")
         played_node = self.current_node.play(move)
         try:
-            self._validate_move_and_update_chains(played_node.move, ignore_ko)
+            self._validate_move_and_update_chains(played_node.single_move, ignore_ko)
         except IllegalMoveException:
             self.current_node.children = [m for m in self.current_node.children if m != played_node]
             self._init_chains()  # restore
             raise
-        self._node_by_id[played_node.id] = played_node
         self.current_node = played_node
+        played_node.analyze(self.engine)
         return played_node
 
     def undo(self):
@@ -139,43 +136,11 @@ class Game:
         if n_handicaps % 2 == 1:
             stones.append((middle, middle))
         stones += [(near, middle), (far, middle), (middle, near), (middle, far)]
-        self.root["AB"] = [Move(stone).sgf(board_size=self.board_size) for stone in stones[:n_handicaps]]
-
-    #    @property
-    #    def moves(self) -> list:  # flat list of moves to current, including placements
-    #        return sum([node.move_with_placements for node in self.current_node.nodes_from_root],[])
+        self.root.set_property("AB", [Move(stone).sgf(board_size=self.board_size) for stone in stones[:n_handicaps]])
 
     @property
     def next_player(self):
         return self.current_node.next_player
-
-    def store_analysis(self, json):
-        if json["id"].startswith("AA:"):  # board sweep analyze all
-            _, move_id, gtpcoords = json["id"].split(":")
-            move = self._node_by_id.get(int(move_id))
-            if not move.analysis:
-                return  # should have been prevented, but better not to crash
-            cur_analysis = [d for d in move.analysis if d["move"] == gtpcoords]
-            move_analysis = {k: v for k, v in json["moveInfos"][0].items() if k not in {"move", "pv"}}
-            move_analysis["visits"] = sum(d["visits"] for d in json["moveInfos"])  # TODO: ??
-            if cur_analysis:
-                if cur_analysis[0]["visits"] < move_analysis["visits"]:
-                    cur_analysis[0].update(move_analysis)
-            else:
-                move.analysis.append({"move": gtpcoords, **move_analysis})
-            return
-
-        if json["id"].startswith("PASS_"):
-            move_id = int(json["id"].lstrip("PASS_"))
-            is_pass = True
-        else:
-            move_id = int(json["id"])
-            is_pass = False
-        move = self._node_by_id.get(move_id)
-        if move:  # else this should be old
-            move.set_analysis(json, is_pass)
-        else:
-            print("WARNING: ORPHANED ANALYSIS FOUND - RECENT NEW GAME?")
 
     @property
     def stones(self):
@@ -200,41 +165,34 @@ class Game:
         return f"SGF with analysis written to {file_name}"
 
     def ai_move(self):
-        ts = self.train_settings
-        while not self.parent.game.current_node.analysis_ready:
-            self.info.text = "Thinking..."
-            self.ai_thinking = True
-            time.sleep(0.05)
-        self.ai_thinking = False
+        if not self.current_node.analysis_ready:
+            return  # TODO: hook/wait?
+
         # select move
-        current_move = self.parent.game.current_node
+        ai_moves = self.current_node.ai_moves
         pos_moves = [
-            (d["move"], float(d["scoreLead"]), d["evaluation"]) for i, d in enumerate(current_move.ai_moves) if i == 0 or int(d["visits"]) >= ts["balance_play_min_visits"]
-        ]
+            [d["move"], d["scoreLead"], d["pointsLost"]] for i, d in enumerate(ai_moves) if i == 0 or int(d["visits"]) >= self.config["balance_play_min_visits"]
+        ]  # TODO: lcb based ?
         sel_moves = pos_moves[:1]
         # don't play suicidal to balance score - pass when it's best
-        if self.ai_balance.active and pos_moves[0][0] != "pass":
+        if self.katrain.controls.ai_balance.active and pos_moves[0][0] != "pass":  # TODO: settings where they belong?
             sel_moves = [
-                (move, score, move_eval)
-                for move, score, move_eval in pos_moves
-                if move_eval > ts["balance_play_randomize_eval"]
-                and -current_move.player_sign * score > 0
-                or move_eval > ts["balance_play_min_eval"]
-                and -current_move.player_sign * score > ts["balance_play_target_score"]
+                (move, score, points_lost)
+                for move, score, points_lost in pos_moves
+                if points_lost < self.config["balance_play_randomize_eval"]
+                or points_lost < self.config["balance_play_min_eval"]
+                and -self.current_node.move.player_sign * score > self.config["balance_play_target_score"]
             ] or sel_moves
-        aimove = Move.from_gtp(random.choice(sel_moves)[0], player=self.parent.game.next_player)
-        if len(sel_moves) > 1:
-            aimove.x_comment["ai"] = "AI Balance on, moves considered: " + ", ".join(f"{move} ({aimove.format_score(score)})" for move, score, _ in sel_moves) + "\n"
+        aimove = Move.from_gtp(random.choice(sel_moves)[0], player=self.next_player)
         self.play(aimove)
 
-
     def num_undos(self, move):
-        if self.train_settings["num_undo_prompts"] < 1:
-            return int(move.undo_threshold < self.train_settings["num_undo_prompts"])
+        if self.config["num_undo_prompts"] < 1:
+            return int(move.undo_threshold < self.config["num_undo_prompts"])
         else:
-            return self.train_settings["num_undo_prompts"]
+            return self.config["num_undo_prompts"]
 
-    def analyze_extra(self,mode):
+    def analyze_extra(self, mode):
         stones = {s.coords for s in self.parent.game.stones}
         current_move = self.current_node
         if not current_move.analysis:
@@ -248,8 +206,7 @@ class Game:
             self._request_analysis(current_move, min_visits=visits, priority=self.game_counter - 1_000)
             return
         elif mode == "sweep":
-            analyze_moves = [Move(coords=(x, y)).gtp() for x in range(self.parent.game_size) for y in
-                             range(self.parent.game_size) if (x, y) not in stones]
+            analyze_moves = [Move(coords=(x, y)).gtp() for x in range(self.parent.game_size) for y in range(self.parent.game_size) if (x, y) not in stones]
             visits = self.visits[self.ai_fast.active][2]
             self.info.text = f"Refining analysis of entire board to {visits} visits"
             priority = self.game_counter - 1_000_000_000
@@ -263,8 +220,7 @@ class Game:
             self._send_analysis_query(
                 {
                     "id": f"AA:{current_move.id}:{gtpcoords}",
-                    "moves": [[m.bw_player(), m.gtp()] for m in played_moves] + [
-                        [current_move.bw_player(True), gtpcoords]],
+                    "moves": [[m.bw_player(), m.gtp()] for m in played_moves] + [[current_move.bw_player(True), gtpcoords]],
                     "includeOwnership": False,
                     "maxVisits": visits,
                     "priority": priority,

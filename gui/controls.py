@@ -14,8 +14,6 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 
 
-
-
 class Controls(GridLayout):
     def __init__(self, **kwargs):
         super(Controls, self).__init__(**kwargs)
@@ -36,7 +34,7 @@ class Controls(GridLayout):
     # handles showing completed analysis and triggered actions like auto undo and ai move
     def update_evaluation(self):
         current_node = self.parent.game.current_node
-        move = current_node.move
+        move = current_node.single_move
         self.score.set_prisoners(self.parent.game.prisoner_count)
         current_player_is_human_or_both_robots = True  # move not self.ai_auto.active(current_node.player) or self.ai_auto.active(1 - current_node.player) # TODO FIX
 

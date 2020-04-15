@@ -160,23 +160,23 @@
         path: os.path.expanduser("~")
     BoxLayout:
         orientation: 'horizontal'
-            Label:
-                text: "Analyze Extra Fast"
-            Checkbox:
-                id: fast
-                color: (0.95, 0.95, 0.95)
-            Label:
-                text: "Rewind to Start"
-            Checkbox:
-                id: rewind
-                active: True
-                color: (0.95, 0.95, 0.95)
+        Label:
+            text: "Analyze Extra Fast"
+        Checkbox:
+            id: fast
+            color: (0.95, 0.95, 0.95)
+        Label:
+            text: "Rewind to Start"
+        Checkbox:
+            id: rewind
+            active: True
+            color: (0.95, 0.95, 0.95)
 
 <BadukPanWidget>:
 	size: self.parent.height, self.parent.height
 	engine: self.parent.controls
 	
-<EngineControls>
+<Controls>
 	cols: 1
 	rows: 9
 	info: info
@@ -329,7 +329,7 @@
 			on_press: root.restart(19)
 
 <KaTrainGui>:
-	board: board
+	board_gui: board_gui
 	controls: controls
     canvas.before:
         Color:
@@ -338,7 +338,7 @@
             pos: self.pos
             size: root.size
     BadukPanWidget:
-		id: board
+		id: board_gui
         size_hint: 1 - controls.size_hint[0], 1
     Controls:
 		id: controls
