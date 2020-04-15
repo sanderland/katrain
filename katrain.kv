@@ -172,6 +172,10 @@
             active: True
             color: (0.95, 0.95, 0.95)
 
+<NewGamePopup>
+    Label:
+        text: "New Game"
+
 <BadukPanWidget>:
 	size: self.parent.height, self.parent.height
 	engine: self.parent.controls
@@ -180,8 +184,8 @@
 	cols: 1
 	rows: 9
 	info: info
-	temperature: temperature
-	evaluation: evaluation
+	win_rate: win_rate
+	points_lost: points_lost
 	score: score
 	hints: hints
 	ownership: ownership
@@ -215,17 +219,17 @@
 			id: eval
 			text: 'all eval'
 			default_active: False
-			on_active: root.redraw()
+			on_active: root.parent.redraw()
 		BWCheckBoxHint:
 			size_hint: 0.2, 0.5
 			id: hints
 			text: 'hints'
-			on_active: root.parent.board.engine.update_evaluation()
+			on_active: root.parent.redraw()
 		BWCheckBoxHint:
 			size_hint: 0.2, 0.5
 			id: auto_undo
 			text: 'undo'
-			on_active: root.redraw()
+			on_active: root.parent.redraw()
 		BWCheckBoxHint:
 			size_hint: 0.166, 0.5
 			text: 'ai'
@@ -235,7 +239,7 @@
 			size_hint: 0.2, 0.5
 			id: ownership
 			text: 'show\nowner'
-			on_active: root.redraw()
+			on_active: root.parent.redraw()
 	GridLayout:
 		cols: 4
 		rows: 1
@@ -244,7 +248,7 @@
 		    id: ai_move
 			size_hint: 0.5, 0.5
 			text: 'AI Move'
-			on_press: root.action("aimove")
+			on_press: root.parent("aimove")
 		CheckBoxHint:
 			size_hint: 0.166, 0.5
 			text: 'fast'
@@ -267,25 +271,25 @@
 		StyledButton:
 		    id: undo
 			text: 'Undo'
-			on_press: root.action("undo")
+			on_press: root.parent("undo")
 			default_active: True
 		StyledButton:
 			text: 'Pass'
-			on_press: root.action("play",(None,None))
+			on_press: root.parent("play",(None,None))
     CensorableLabel:
-        id: temperature
+        id: win_rate
         size_hint: 1, 0.025
-        label: 'Temperature'
-        text: '...'
-    CensorableLabel:
-        id: evaluation
-        size_hint: 1, 0.025
-        label: 'Evaluation'
+        label: 'Win rate'
         text: '...'
     CensorableScoreLabel:
         id: score
         size_hint: 1, 0.025
         label: 'Score'
+        text: '...'
+    CensorableLabel:
+        id: points_lost
+        size_hint: 1, 0.025
+        label: 'Point loss'
         text: '...'
 	TextInput:
 		id: info
@@ -303,7 +307,7 @@
 			text: 'Load'
 			id: load
 			size_hint: 0.5, 1
-			on_press: root.action("analyze-sgf",info.text)
+			on_press: root.parent("analyze-sgf",info.text)
 	GridLayout:
 		size_hint: 1, 0.05
 		cols: 4

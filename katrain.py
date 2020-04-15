@@ -140,7 +140,8 @@ class KaTrainGui(BoxLayout):
         self.game.analyze_extra(mode)
 
     def analyze_movetree(self, root, faster=False):
-        self._do_init(root["SZ"], root["KM"])
+        self.game = Game(self, self.engine, self.config("game"), move_tree=root)
+
         self.parent.game.root = root
         handicap = root["HA"]
         if handicap is not None and root["AB"] is None:
@@ -171,6 +172,7 @@ class KaTrainGui(BoxLayout):
         if include_board:
             Clock.schedule_once(self.board_gui.draw_board, -1)  # main thread needs to do this
         Clock.schedule_once(self.board_gui.draw_board_contents, -1)
+        self.controls.update_evaluation()
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         if keycode[1] == "up":

@@ -43,6 +43,12 @@ class GameNode(SGFNode):
         score = score or self.score
         return f"{'B' if score >= 0 else 'W'}+{abs(score):.1f}"
 
+    def format_win_rate(self, win_rate=None):
+        win_rate = win_rate or self.analysis[0]['winrate']
+        b_adv = win_rate-0.5
+        return f"{'B' if b_adv > 0 else 'W'}+{abs(b_adv):.1%}"
+
+
     def comment(self, sgf=False, eval=False, hints=False):
         single_move = self.single_move
         if not self.parent or not single_move:  # root

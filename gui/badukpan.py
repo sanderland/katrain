@@ -65,27 +65,30 @@ class BadukPanWidget(Widget):
         self.draw_board()
         self.draw_board_contents()
 
-    def draw_stone(self, x, y, col, outline_col=None, innercol=None, evalcol=None, evalsize=10.0, scale=1.0):
+    def draw_stone(self, x, y, col, outline_col=None, innercol=None, evalcol=None, evalscale=1.0, scale=1.0):
         stone_size = self.stone_size * scale
         draw_circle((self.gridpos[x], self.gridpos[y]), stone_size, col)
         if outline_col:
             Color(*outline_col)
             Line(circle=(self.gridpos[x], self.gridpos[y], stone_size), width=0.05 * stone_size)
-
         if evalcol:
-            evalsize = min(self.EVAL_BOUNDS[1], max(evalsize, self.EVAL_BOUNDS[0])) / self.EVAL_BOUNDS[1]
-            draw_circle((self.gridpos[x], self.gridpos[y]), math.sqrt(evalsize) * stone_size * 0.5, evalcol)
+            evalsize = self.stone_size * evalscale * self.config['eval_dot_max_size']
+            draw_circle((self.gridpos[x], self.gridpos[y]), evalsize, evalcol)
+#            highlight_col = [ ((1-c)*0.33+e)/1.33  for c,e in zip(col,evalcol) ]
+#            Color(*highlight_col[:3],0.5)
+#            Line(circle=(self.gridpos[x], self.gridpos[y], evalsize))
+
         if innercol:
             Color(*innercol)
             Line(circle=(self.gridpos[x], self.gridpos[y], stone_size * 0.45 / 0.85), width=0.125 * stone_size)  # 1.75
 
-    def _eval_spectrum(self, points_lost):
-        EVAL_COLORS = self.config["eval_colors"]
-        EVAL_THRESHOLDS = self.config["eval_thresholds"]
+    def eval_color(self, points_lost):
+        colors = self.config["eval_colors"]
+        thresholds = self.config["eval_thresholds"]
         i = 0
-        while points_lost < EVAL_THRESHOLDS[i] and i < len(EVAL_COLORS):
+        while i < len(thresholds) and points_lost < thresholds[i]:
             i += 1
-        return EVAL_COLORS[i]
+        return colors[min(i,len(colors)-1)]
 
     def draw_board(self, *args):
         if not self.config:
@@ -151,7 +154,7 @@ class BadukPanWidget(Widget):
                 for m in node.move_with_placements:
                     if has_stone[m.coords]:  # skip captures, draw over repeat plays
                         move_eval_on = full_eval_on[m.player] or i >= len(nodes) - show_n_eval
-                        evalcol = self._eval_spectrum(eval) if move_eval_on and eval and evalsize > self.config.get("min_eval_temperature", 0.5) else None
+                        evalcol = self.eval_color(eval) if move_eval_on and eval and evalsize > self.config.get("min_eval_temperature", 0.5) else None
                         inner = stone_color[m.opponent] if (m is current_node) else None
                         self.draw_stone(m.coords[0], m.coords[1], stone_color[m.player], outline_color[m.player], inner, evalcol, evalsize)
 
@@ -172,20 +175,20 @@ class BadukPanWidget(Widget):
             undo_coords = set()
             alpha = self.config["undo_alpha"]
             for child_node in current_node.children:
-                eval_info = child_node.evaluation_info
+                points_lost = node.points_lost
                 m = child_node.single_move
                 if m and m.coords[0] is not None:
                     undo_coords.add(m.coords)
-                    evalcol = (*self._eval_spectrum(eval_info[0]), alpha) if eval_info[0] else None
+                    evalcol = (*self.eval_color(points_lost), alpha) if points_lost else None
                     scale = self.config.get("undo_scale", 0.95)
-                    self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, self.EVAL_BOUNDS[1], scale=scale)
+                    self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
             # hints
             if katrain.controls.hints.active(next_player):
                 hint_moves = current_node.ai_moves
                 for i, d in enumerate(hint_moves):
                     move = Move.from_gtp(d["move"])
-                    c = [*self._eval_spectrum(d["evaluation"]), 0.5]
+                    c = [*self.eval_color(d["evaluation"]), 0.5]
                     if move.coords[0] is not None and move.coords not in undo_coords:
                         if i == 0:
                             scale = 1.0

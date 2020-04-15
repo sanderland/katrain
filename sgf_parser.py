@@ -3,6 +3,8 @@ import re
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple
 
+# TODO: handle AE ?
+# https://www.red-bean.com/sgf/properties.html
 
 class ParseError(Exception):
     pass
@@ -92,7 +94,7 @@ class SGFNode:
         """Get the list of values for a property."""
         return self.properties.get(property, default)
 
-    def get_first(self, property, default) -> Any:
+    def get_first(self, property, default=None) -> Any:
         """Get the first value of the property, typically when exactly one is expected."""
         return self.properties.get(property, [default])[0]
 
@@ -121,6 +123,7 @@ class SGFNode:
                 self._depth = self.parent.depth + 1
         return self._depth
 
+    # root properties available on any node
     @property
     def board_size(self) -> int:
         return int(self.root.get_first("SZ", 19))
@@ -128,6 +131,10 @@ class SGFNode:
     @property
     def komi(self) -> float:
         return float(self.root.get_first("KM", 6.5))
+
+    @property
+    def ruleset(self) -> str:
+        return self.root.get_first("RU")
 
     @property
     def moves(self) -> List[Move]:
@@ -201,7 +208,7 @@ class SGF:
                 if match:
                     encoding = match[1].decode("ascii")
                 else:
-                    encoding = "utf-8"  # default
+                    encoding = "ISO-8859-1"  # default
             decoded = bin_contents.decode(encoding=encoding)
             return SGF.parse(decoded)
 

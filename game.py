@@ -25,14 +25,17 @@ class Game:
         self.katrain = katrain
         self.engine = engine
         self.config = config
-        self.board_size = board_size or self.config.get("size", 19)
-        self.komi = self.config.get(f"komi_{self.board_size}", 6.5)
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
 
         if move_tree:
             self.root = move_tree
+            self.board_size = self.root.board_size
+            self.komi = self.root.komi
         else:
-            self.root = GameNode(properties={"RU": "JP", "SZ": self.board_size, "KM": self.komi, "PC": "KaTrain: https://github.com/sanderland/katrain", "DT": self.game_id})
+            self.board_size = board_size or config['size']
+            self.komi = self.config.get(f"komi_{self.board_size}",6.5)
+            self.root = GameNode(properties={"RU": "JP", "SZ":  self.board_size, "KM": self.komi, "AP": "[KaTrain:https://github.com/sanderland/katrain]", "DT": self.game_id})
+
         self.current_node = self.root
         for node in self.root.nodes_in_tree:
             node.analyze(self.engine)
