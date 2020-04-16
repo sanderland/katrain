@@ -53,8 +53,8 @@ class BadukPanWidget(Widget):
             if nodes_here and max(yd, xd) < self.grid_size / 2:  # load old comment
                 katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
                 katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_DEBUG)
-                if not katrain.ai_lock.active:
-                    katrain.info.text = nodes_here[-1].comment(sgf=True)
+                if not katrain.controls.ai_lock.active:
+                    katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
                     katrain.show_evaluation_stats(nodes_here[-1])
 
         self.ghost_stone = None
