@@ -17,8 +17,12 @@ class CheckBoxHint(BoxLayout):
 class BWCheckBoxHint(BoxLayout):
     __events__ = ("on_active",)
 
+    @property
+    def active_map(self):
+        return {"B": self.black.active, "W": self.white.active}
+
     def active(self, player):
-        return {"B": self.black, "W": self.white}[player].active
+        return self.active_map[player]
 
     def on_active(self, *args):
         pass

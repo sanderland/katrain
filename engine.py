@@ -24,12 +24,13 @@ class KataGoEngine:
         self.katrain = katrain
         if "win" not in sys.platform:
             self.command = shlex.split(self.command)
-        self.queries = {}
+        self.queries = {} # outstanding query id -> start time and callback
         self.config = config
         self.visits = [config["visits"], config["visits_fast"]]
         self.fast = True
         self.query_counter = 0
         self.katago_process = None
+        self.base_priority = 0
 
         try:
             self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -40,18 +41,30 @@ class KataGoEngine:
                 OUTPUT_ERROR,
             )
 
+    def on_new_game(self):
+        self.base_priority += 1
+        self.queries = {}
+
+    def is_idle(self):
+        return not self.queries
+
     def _analysis_read_thread(self):
         while True:
             line = self.katago_process.stdout.readline()
+            if not line:
+                continue
             analysis = json.loads(line)
             if "error" in analysis:
-                self.katrain.log(f"ERROR IN KATA ANALYSIS: {analysis['error']}")
-            else:
+                self.katrain.log(f"ERROR IN KATA ANALYSIS: {analysis['error']}",OUTPUT_ERROR)
+            elif analysis["id"] in self.queries:
                 callback, start_time = self.queries[analysis["id"]]
                 time_taken = time.time() - start_time
-                self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {line}...") # [:80]
+                self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}   {line[:80]}...", OUTPUT_DEBUG)
                 callback(analysis)
+                del self.queries[analysis["id"]]
                 self.katrain.redraw()
+            else:
+                self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
 
     def request_analysis(
         self, analysis_node: GameNode, callback: Callable, faster=False, min_visits=0, priority=0, ownership=None
@@ -70,7 +83,7 @@ class KataGoEngine:
         query = {
             "id": query_id,
             "rules": self.RULESETS.get( str(analysis_node.ruleset).lower(), "japanese"),
-            "priority": priority,
+            "priority": self.base_priority + priority,
             "analyzeTurns": [len(moves)],
             "maxVisits": max(min_visits, visits),
             "komi": analysis_node.komi,
@@ -81,6 +94,6 @@ class KataGoEngine:
         }
         self.queries[query_id] = (callback, time.time())
         if self.katago_process:
-            self.katrain.log(f"Sending query {query_id}: {str(query)}", OUTPUT_DEBUG) # [:80]
+            self.katrain.log(f"Sending query {query_id}: {str(query)[:80]}", OUTPUT_DEBUG)
             self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
             self.katago_process.stdin.flush()

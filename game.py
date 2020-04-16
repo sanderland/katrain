@@ -3,6 +3,8 @@ import random
 from datetime import datetime
 from typing import List
 
+from kivy.clock import Clock
+
 from game_node import GameNode
 from sgf_parser import SGF, Move
 
@@ -31,19 +33,26 @@ class Game:
             self.root = move_tree
             self.board_size = self.root.board_size
             self.komi = self.root.komi
+            handicap = self.root.get_first("HA")
+            if handicap is not None and not self.root.placements:
+                self.place_handicap_stones(handicap)
         else:
             self.board_size = board_size or config['size']
             self.komi = self.config.get(f"komi_{self.board_size}",6.5)
-            self.root = GameNode(properties={"RU": "JP", "SZ":  self.board_size, "KM": self.komi, "AP": "[KaTrain:https://github.com/sanderland/katrain]", "DT": self.game_id})
+            self.root = GameNode(properties={"GM":1,"FF":4,"RU": "JP", "SZ":  self.board_size, "KM": self.komi, "AP": "[KaTrain:https://github.com/sanderland/katrain]", "DT": self.game_id})
 
         self.current_node = self.root
-        for node in self.root.nodes_in_tree:
-            node.analyze(self.engine)
         self._init_chains()
+
+        def analyze_game(_dt):
+            self.engine.on_new_game()
+            for node in self.root.nodes_in_tree:
+                node.analyze(self.engine,priority=-1_000_000)
+        Clock.schedule_once(analyze_game, -1)  # return faster
 
     # -- move tree functions --
     def _init_chains(self):
-        self.board = [[-1 for _x in range(self.board_size)] for _y in range(self.board_size)]  # type: List[list[int]]  #  board pos -> chain id
+        self.board = [[-1 for _x in range(self.board_size)] for _y in range(self.board_size)]  # type: List[List[int]]  #  board pos -> chain id
         self.chains = []  # type: List[List[Move]]  #   chain id -> chain
         self.prisoners = []  # type: List[Move]
         self.last_capture = []  # type: List[Move]
@@ -97,20 +106,18 @@ class Game:
             raise IllegalMoveException("Ko")
         self.prisoners += self.last_capture
 
-        if -1 not in neighbours(self.chains[this_chain]):
+        if -1 not in neighbours(self.chains[this_chain]): # TODO: NZ?
             raise IllegalMoveException("Suicide")
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
     def play(self, move: Move, ignore_ko: bool = False):
         if not move.is_pass and not (0 <= move.coords[0] < self.board_size and 0 <= move.coords[1] < self.board_size):
             raise IllegalMoveException(f"Move {move} outside of board coordinates")
-        played_node = self.current_node.play(move)
         try:
-            self._validate_move_and_update_chains(played_node.single_move, ignore_ko)
+            self._validate_move_and_update_chains(move, ignore_ko)
         except IllegalMoveException:
-            self.current_node.children = [m for m in self.current_node.children if m != played_node]
-            self._init_chains()  # restore
             raise
+        played_node = self.current_node.play(move)
         self.current_node = played_node
         played_node.analyze(self.engine)
         return played_node
@@ -118,11 +125,13 @@ class Game:
     def undo(self):
         if self.current_node is not self.root:
             self.current_node = self.current_node.parent
-        self._init_chains()
+            self._init_chains()
 
     def redo(self):
-        if self.current_node.children:
-            self.play(self.current_node.children[-1])
+        cn = self.current_node  # avoid race conditions
+        if cn.children:
+            self.current_node = cn.children[-1]
+            self._init_chains()
 
     def switch_branch(self, direction):
         cm = self.current_node  # avoid race conditions
@@ -139,7 +148,7 @@ class Game:
         if n_handicaps % 2 == 1:
             stones.append((middle, middle))
         stones += [(near, middle), (far, middle), (middle, near), (middle, far)]
-        self.root.set_property("AB", [Move(stone).sgf(board_size=self.board_size) for stone in stones[:n_handicaps]])
+        self.root.add_property("AB", [Move(stone).sgf(board_size=self.board_size) for stone in stones[:n_handicaps]])
 
     @property
     def next_player(self):

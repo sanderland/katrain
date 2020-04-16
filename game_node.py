@@ -24,12 +24,12 @@ class GameNode(SGFNode):
             properties["SQ"] = best_sq
         comment = self.comment(sgf=True)
         if comment:
-            properties["C"] = properties.get("C", "") + comment
+            properties["C"] = [properties.get("C", "") + comment]
         return properties
 
     # various analysis functions
-    def analyze(self, engine):
-        engine.request_analysis(self, lambda result: self.set_analysis(result))
+    def analyze(self, engine, priority=0):
+        engine.request_analysis(self, lambda result: self.set_analysis(result), priority=priority)
 
     def set_analysis(self, analysis_blob):
         self.analysis = analysis_blob["moveInfos"]  # TODO: fix when rootInfos comes in

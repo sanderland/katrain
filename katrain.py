@@ -16,7 +16,6 @@ from engine import KataGoEngine
 from game import Game, GameNode, IllegalMoveException, KaTrainSGF, Move
 from gui import BadukPanWidget, BWCheckBoxHint, CensorableLabel, CensorableScoreLabel, CheckBoxHint, Controls, LoadSGFPopup
 
-
 class KaTrainGui(BoxLayout):
     """Top level class responsible for tying everything together"""
 
@@ -47,10 +46,9 @@ class KaTrainGui(BoxLayout):
         try:
             self.log(f"Using config file {config_file}", OUTPUT_INFO)
             self._config_store = JsonStore(config_file)
-        except FileNotFoundError:
-            self.log(f"Config file {config_file} not found", OUTPUT_ERROR)
         except Exception as e:
             self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
+            sys.exit(1)
 
     def config(self, setting, default=None):
         try:
@@ -87,9 +85,8 @@ class KaTrainGui(BoxLayout):
         if self.game:
             self.message_queue.put([self.game.game_id, message, *args])
 
-    def _do_new_game(self, board_size=None):
-        self.game = Game(self, self.engine, self.config("game"), board_size=board_size)
-
+    def _do_new_game(self, board_size=None, move_tree=None):
+        self.game = Game(self, self.engine, self.config("game"), board_size=board_size,move_tree=move_tree)
         # TODO controls reset -> Controls
         # if self.ai_lock.active:
         #            self.ai_lock.checkbox._do_press()
@@ -111,15 +108,15 @@ class KaTrainGui(BoxLayout):
             self.info.text = f"Can't undo this move more than {self.num_undos(self.game.current_node)} time(s) when locked"
             return
         self.game.undo()
-        self.controls.update_evaluation()
+        self.redraw()
 
     def _do_redo(self):
         self.game.redo()
-        self.update_evaluation()
+        self.redraw()
 
     def _do_switch_branch(self, direction):
         self.game.switch_branch(direction)
-        self.update_evaluation()
+        self.redraw()
 
     def play(self, move: Move, faster=False, analysis_priority=None):
         try:
@@ -139,36 +136,30 @@ class KaTrainGui(BoxLayout):
     def _do_analyze_extra(self, mode):
         self.game.analyze_extra(mode)
 
-    def analyze_movetree(self, root, faster=False):
-        self.game = Game(self, self.engine, self.config("game"), move_tree=root)
-
-        self.parent.game.root = root
-        handicap = root["HA"]
-        if handicap is not None and root["AB"] is None:
-            self.parent.game.place_handicap_stones(handicap)
-        analysis_priority = self.game_counter - 1_000_000
-        for move in self.parent.game.root.moves_in_tree:
-            self._request_analysis(move, faster=faster, priority=analysis_priority)  # ensure next move analysis works
-
     def _do_analyze_sgf(self, sgf):
         fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
         popup_contents = LoadSGFPopup()
         fileselect_popup.add_widget(popup_contents)
+        popup_contents.filesel.path = os.path.expanduser(self.config("files/sgf_load"))
 
         def readfile(files, _mouse):
             fileselect_popup.dismiss()
-            self.analyze_movetree(KaTrainSGF.parse_file(files[0]))
+            self._do_new_game(self, move_tree=KaTrainSGF.parse_file(files[0]))
 
         popup_contents.filesel.on_submit = readfile
         fileselect_popup.open()
 
     def output_sgf(self):
         for pl in Move.PLAYERS:
-            if self.parent.game.root[f"P{pl}"] not in ["KaTrain", "Player", None, ""]:
-                self.parent.game.root[f"P{pl}"] = "KaTrain" if self.ai_auto.active(pl) else "Player"
-        return self.parent.game.write_sgf(self.komi)
+            if self.game.root.get_first(f"P{pl}") not in ["KaTrain", "Player", None, ""]:
+                self.game.root.add_property(f"P{pl}", "KaTrain" if self.ai_auto.active(pl) else "Player")
+        return self.game.write_sgf()
 
-    def redraw(self, include_board=False):
+    def redraw(self, include_board=False): # TODO: rename? does more now
+        cn = self.game.current_node
+        if cn.analysis_ready and self.controls.ai_auto.active(cn.next_player) and not cn.children:
+            self._do_aimove()
+
         if include_board:
             Clock.schedule_once(self.board_gui.draw_board, -1)  # main thread needs to do this
         Clock.schedule_once(self.board_gui.draw_board_contents, -1)

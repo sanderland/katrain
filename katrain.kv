@@ -153,24 +153,42 @@
     rewind: rewind
     filesel: filesel
     orientation: 'vertical'
+    Label:
+        text: root.filesel.path
+        size_hint: 1,0.05
+        halign: 'left'
     FileChooserListView:
         id: filesel
         multiselect: False
         filters: ["*.sgf"]
-        path: os.path.expanduser("~")
+        path: "."
+        size_hint: 1,0.88
     BoxLayout:
         orientation: 'horizontal'
+        size_hint: 1,0.07
+        canvas.before:
+            Color:
+                rgb: 0.4, 0.4, 0.4
+            Rectangle:
+                pos: self.pos
+                size: self.size
         Label:
             text: "Analyze Extra Fast"
-        Checkbox:
+            size_hint: 0.45,1
+            halign: 'right'
+        CheckBox:
             id: fast
             color: (0.95, 0.95, 0.95)
+            size_hint: 0.05,1
         Label:
             text: "Rewind to Start"
-        Checkbox:
+            halign: 'right'
+            size_hint: 0.45,1
+        CheckBox:
             id: rewind
             active: True
             color: (0.95, 0.95, 0.95)
+            size_hint: 0.05,1
 
 <NewGamePopup>
     Label:
@@ -302,7 +320,7 @@
 			text: 'Save'
 			id: save
 			size_hint: 0.5, 1
-			on_press: info.text = root.output_sgf()
+			on_press: info.text = root.parent.output_sgf()
 		StyledButton:
 			text: 'Load'
 			id: load

@@ -5,6 +5,10 @@
     "visits_fast": 500,
     "enable_ownership": true
   },
+  "files": {
+    "sgf_load": "~/Downloads",
+    "sgf_save": "./sgfout"
+  },
   "game": {
     "size": 19,
     "komi_19": 6.5,
@@ -15,9 +19,7 @@
     "balance_play_min_eval": 2,
     "balance_play_min_visits": 20,
     "undo_point_threshold": 1.5,
-    "num_undo_prompts": 1,
-    "sgf_load": "~/Downloads",
-    "sgf_save": "./sgfout"
+    "num_undo_prompts": 1
   },
   "board_ui": {
     "size_min": 1,

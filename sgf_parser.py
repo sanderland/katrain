@@ -10,16 +10,18 @@ class ParseError(Exception):
     pass
 
 
+
 class Move:
-    GTP_COORD = "ABCDEFGHJKLMNOPQRSTUVWYXYZ"
+    GTP_COORD = list("ABCDEFGHJKLMNOPQRSTUVWXYZ") + ['A'+c for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"] # kata board size 29 support
     PLAYERS = "BW"
-    SGF_COORD = [chr(i) for i in range(97, 123)]
+    SGF_COORD = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ".lower()) + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
     @staticmethod
     def from_gtp(gtp_coords, player="B"):
         if "pass" in gtp_coords:
-            Move(coords=None, player=player)
-        return Move(coords=(Move.GTP_COORD.index(gtp_coords[0]), int(gtp_coords[1:]) - 1), player=player)
+            return Move(coords=None, player=player)
+        match = re.match(r"([A-Z]+)(\d+)",gtp_coords)
+        return Move(coords=(Move.GTP_COORD.index(match[1]), int(match[2]) - 1), player=player)
 
     @staticmethod
     def from_sgf(sgf_coords, board_size, player="B"):
@@ -195,12 +197,12 @@ class SGFNode:
 class SGF:
     _NODE_CLASS = SGFNode
 
-    @staticmethod
-    def parse(input_str) -> SGFNode:
-        return SGF(input_str).root
+    @classmethod
+    def parse(cls, input_str) -> SGFNode:
+        return cls(input_str).root
 
-    @staticmethod
-    def parse_file(filename, encoding=None) -> SGFNode:
+    @classmethod
+    def parse_file(cls, filename, encoding=None) -> SGFNode:
         with open(filename, "rb") as f:
             bin_contents = f.read()
             if not encoding:
@@ -210,7 +212,7 @@ class SGF:
                 else:
                     encoding = "ISO-8859-1"  # default
             decoded = bin_contents.decode(encoding=encoding)
-            return SGF.parse(decoded)
+            return cls.parse(decoded)
 
     def __init__(self, contents):
         self.contents = contents
@@ -218,7 +220,7 @@ class SGF:
             self.ix = self.contents.index("(") + 1
         except ValueError:
             raise ParseError("Parse error: Expected '('")
-        self.root = SGFNode()
+        self.root = self._NODE_CLASS()
         self._parse_branch(self.root)
 
     def _parse_branch(self, current_move: SGFNode):
@@ -230,7 +232,7 @@ class SGF:
             if match[0] == ")":
                 return
             if match[0] == "(":
-                self._parse_branch(SGFNode(parent=current_move))
+                self._parse_branch(self._NODE_CLASS(parent=current_move))
             elif match[0] == ";":
                 if not current_move.empty:  # ignore ; that generate empty nodes
                     current_move = self._NODE_CLASS(parent=current_move)
