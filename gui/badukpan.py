@@ -177,7 +177,7 @@ class BadukPanWidget(Widget):
             for child_node in current_node.children:
                 points_lost = child_node.points_lost
                 m = child_node.single_move
-                if m and m.coords[0] is not None:
+                if m and m.coords is not None:
                     undo_coords.add(m.coords)
                     evalcol = (*self.eval_color(points_lost), alpha) if points_lost is not None else None
                     scale = self.config.get("undo_scale", 0.95)
@@ -189,7 +189,7 @@ class BadukPanWidget(Widget):
                 for i, d in enumerate(hint_moves):
                     move = Move.from_gtp(d["move"])
                     c = [*self.eval_color(d["pointsLost"]), 0.5]
-                    if move.coords[0] is not None and move.coords not in undo_coords:
+                    if move.coords is not None and move.coords not in undo_coords:
                         if i == 0:
                             scale = 1.0
                         elif d["visits"] < 0.1 * hint_moves[0]["visits"]:  # TODO: config?

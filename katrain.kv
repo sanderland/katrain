@@ -338,17 +338,17 @@
 			size_hint: 0.233, 1
 			text: '9'
 			margin: (1,1)
-			on_press: root.restart(9)
+			on_press: root.parent('new-game',9)
 		StyledButton:
 			size_hint: 0.233, 1
 			text: '13'
 			margin: (0,1)
-			on_press: root.restart(13)
+			on_press: root.parent('new-game',13)
 		StyledButton:
 			size_hint: 0.233, 1
 			text: '19'
 			margin: (1,1)
-			on_press: root.restart(19)
+			on_press: root.parent('new-game',19)
 
 <KaTrainGui>:
 	board_gui: board_gui

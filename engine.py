@@ -51,6 +51,8 @@ class KataGoEngine:
     def _analysis_read_thread(self):
         while True:
             line = self.katago_process.stdout.readline()
+            if b"Uncaught exception" in line:
+                self.katrain.log(f"KataGo Engine Failed: {line.decode()}",OUTPUT_ERROR)
             if not line:
                 continue
             analysis = json.loads(line)
@@ -69,6 +71,7 @@ class KataGoEngine:
     def request_analysis(
         self, analysis_node: GameNode, callback: Callable, faster=False, min_visits=0, priority=0, ownership=None
     ):
+        self.fast = self.katrain.controls.ai_fast.active
         query_id = f"QUERY:{str(self.query_counter)}"
         self.query_counter += 1
         visits = 100  # TODO  /         fast = self.ai_fast.active

@@ -77,6 +77,8 @@ class SGFNode:
         return copy.deepcopy(self.properties)
 
     def sgf(self) -> str:
+        import sys # TODO
+        sys.setrecursionlimit(max(sys.getrecursionlimit(),3*29*29))
         sgf_str = "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in self.sgf_properties.items() if values])
         if self.children:
             children = [c.sgf() for c in self.children]

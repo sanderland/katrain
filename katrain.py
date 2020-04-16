@@ -157,7 +157,7 @@ class KaTrainGui(BoxLayout):
 
     def redraw(self, include_board=False): # TODO: rename? does more now
         cn = self.game.current_node
-        if cn.analysis_ready and self.controls.ai_auto.active(cn.next_player) and not cn.children:
+        if cn.analysis_ready and self.controls.ai_auto.active(cn.next_player) and not cn.children and not self.game.game_ended:
             self._do_aimove()
 
         if include_board:
