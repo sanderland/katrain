@@ -16,6 +16,7 @@ from engine import KataGoEngine
 from game import Game, GameNode, IllegalMoveException, KaTrainSGF, Move
 from gui import BadukPanWidget, BWCheckBoxHint, CensorableLabel, CensorableScoreLabel, CheckBoxHint, Controls, LoadSGFPopup
 
+
 class KaTrainGui(BoxLayout):
     """Top level class responsible for tying everything together"""
 
@@ -86,14 +87,14 @@ class KaTrainGui(BoxLayout):
             self.message_queue.put([self.game.game_id, message, *args])
 
     def _do_new_game(self, board_size=None, move_tree=None):
-        self.game = Game(self, self.engine, self.config("game"), board_size=board_size,move_tree=move_tree)
+        self.game = Game(self, self.engine, self.config("game"), board_size=board_size, move_tree=move_tree)
         # TODO controls reset -> Controls
         # if self.ai_lock.active:
         #            self.ai_lock.checkbox._do_press()
         #        for el in [self.ai_lock.checkbox, self.hints.black, self.hints.white, self.ai_auto.black, self.ai_auto.white, self.auto_undo.black, self.auto_undo.white, self.ai_move]:
         #            el.disabled = False
 
-        self.redraw(include_board=True)
+        self.update_state(include_board=True)
 
     def _do_aimove(self):
         self.game.ai_move()
@@ -108,15 +109,15 @@ class KaTrainGui(BoxLayout):
             self.info.text = f"Can't undo this move more than {self.num_undos(self.game.current_node)} time(s) when locked"
             return
         self.game.undo()
-        self.redraw()
+        self.update_state()
 
     def _do_redo(self):
         self.game.redo()
-        self.redraw()
+        self.update_state()
 
     def _do_switch_branch(self, direction):
         self.game.switch_branch(direction)
-        self.redraw()
+        self.update_state()
 
     def play(self, move: Move, faster=False, analysis_priority=None):
         try:
@@ -131,7 +132,7 @@ class KaTrainGui(BoxLayout):
 
     def _do_play(self, *args):
         self.game.play(Move(args[0], player=self.game.next_player))
-        self.redraw()
+        self.update_state()
 
     def _do_analyze_extra(self, mode):
         self.game.analyze_extra(mode)
@@ -151,11 +152,12 @@ class KaTrainGui(BoxLayout):
 
     def output_sgf(self):
         for pl in Move.PLAYERS:
-            if self.game.root.get_first(f"P{pl}") not in ["KaTrain", "Player", None, ""]:
-                self.game.root.add_property(f"P{pl}", "KaTrain" if self.ai_auto.active(pl) else "Player")
+            if not self.game.root.get_first(f"P{pl}"):
+                _, model_file = os.path.split(self.engine.config["model"])
+                self.game.root.properties[f"P{pl}"] = [f"KaTrain (KataGo {model_file})" if self.controls.ai_auto.active(pl) else "Player"]
         return self.game.write_sgf()
 
-    def redraw(self, include_board=False): # TODO: rename? does more now
+    def update_state(self, include_board=False):  # TODO: rename? does more now
         cn = self.game.current_node
         if cn.analysis_ready and self.controls.ai_auto.active(cn.next_player) and not cn.children and not self.game.game_ended:
             self._do_aimove()

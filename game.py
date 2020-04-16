@@ -37,10 +37,11 @@ class Game:
             if handicap is not None and not self.root.placements:
                 self.place_handicap_stones(handicap)
         else:
-            self.board_size = board_size or config['size']
-            self.komi = self.config.get(f"komi_{self.board_size}",6.5)
-            self.root = GameNode(properties={"GM":1,"FF":4,"RU": "JP", "SZ":  self.board_size, "KM": self.komi,
-                                             "AP": "KaTrain:https://github.com/sanderland/katrain", "DT": self.game_id})
+            self.board_size = board_size or config["size"]
+            self.komi = self.config.get(f"komi_{self.board_size}", 6.5)
+            self.root = GameNode(
+                properties={"GM": 1, "FF": 4, "RU": "JP", "SZ": self.board_size, "KM": self.komi, "AP": "KaTrain:https://github.com/sanderland/katrain", "DT": self.game_id}
+            )
 
         self.current_node = self.root
         self._init_chains()
@@ -48,7 +49,8 @@ class Game:
         def analyze_game(_dt):
             self.engine.on_new_game()
             for node in self.root.nodes_in_tree:
-                node.analyze(self.engine,priority=-1_000_000)
+                node.analyze(self.engine, priority=-1_000_000)
+
         Clock.schedule_once(analyze_game, -1)  # return faster
 
     # -- move tree functions --
@@ -107,7 +109,7 @@ class Game:
             raise IllegalMoveException("Ko")
         self.prisoners += self.last_capture
 
-        if -1 not in neighbours(self.chains[this_chain]): # TODO: NZ?
+        if -1 not in neighbours(self.chains[this_chain]):  # TODO: NZ?
             raise IllegalMoveException("Suicide")
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.

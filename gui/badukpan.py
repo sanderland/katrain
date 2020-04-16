@@ -6,7 +6,7 @@ from kivy.uix.widget import Widget
 
 from constants import OUTPUT_DEBUG
 from gui.kivyutils import draw_circle, draw_text
-from sgf_parser import Move
+from game import Move
 
 
 class BadukPanWidget(Widget):
@@ -72,11 +72,11 @@ class BadukPanWidget(Widget):
             Color(*outline_col)
             Line(circle=(self.gridpos[x], self.gridpos[y], stone_size), width=0.05 * stone_size)
         if evalcol:
-            evalsize = self.stone_size * evalscale * self.config['eval_dot_max_size']
+            evalsize = self.stone_size * evalscale * self.config["eval_dot_max_size"]
             draw_circle((self.gridpos[x], self.gridpos[y]), evalsize, evalcol)
-#            highlight_col = [ ((1-c)*0.33+e)/1.33  for c,e in zip(col,evalcol) ]
-#            Color(*highlight_col[:3],0.5)
-#            Line(circle=(self.gridpos[x], self.gridpos[y], evalsize))
+        #            highlight_col = [ ((1-c)*0.33+e)/1.33  for c,e in zip(col,evalcol) ]
+        #            Color(*highlight_col[:3],0.5)
+        #            Line(circle=(self.gridpos[x], self.gridpos[y], evalsize))
 
         if innercol:
             Color(*innercol)
@@ -88,7 +88,7 @@ class BadukPanWidget(Widget):
         i = 0
         while i < len(thresholds) and points_lost < thresholds[i]:
             i += 1
-        return colors[min(i,len(colors)-1)]
+        return colors[min(i, len(colors) - 1)]
 
     def draw_board(self, *args):
         if not self.config:

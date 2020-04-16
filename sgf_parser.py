@@ -6,13 +6,13 @@ from typing import Any, Dict, List, Optional, Tuple
 # TODO: handle AE ?
 # https://www.red-bean.com/sgf/properties.html
 
+
 class ParseError(Exception):
     pass
 
 
-
 class Move:
-    GTP_COORD = list("ABCDEFGHJKLMNOPQRSTUVWXYZ") + ['A'+c for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"] # kata board size 29 support
+    GTP_COORD = list("ABCDEFGHJKLMNOPQRSTUVWXYZ") + ["A" + c for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"]  # kata board size 29 support
     PLAYERS = "BW"
     SGF_COORD = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ".lower()) + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
@@ -20,14 +20,14 @@ class Move:
     def from_gtp(gtp_coords, player="B"):
         if "pass" in gtp_coords:
             return Move(coords=None, player=player)
-        match = re.match(r"([A-Z]+)(\d+)",gtp_coords)
+        match = re.match(r"([A-Z]+)(\d+)", gtp_coords)
         return Move(coords=(Move.GTP_COORD.index(match[1]), int(match[2]) - 1), player=player)
 
     @staticmethod
     def from_sgf(sgf_coords, board_size, player="B"):
         if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size:  # some servers use [tt] for pass
             return Move(coords=None, player=player)
-        return Move(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player,)
+        return Move(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
 
     def __init__(self, coords: Optional[Tuple[int, int]] = None, player: str = "B"):
         self.player = player
@@ -77,8 +77,9 @@ class SGFNode:
         return copy.deepcopy(self.properties)
 
     def sgf(self) -> str:
-        import sys # TODO
-        sys.setrecursionlimit(max(sys.getrecursionlimit(),3*29*29))
+        import sys  # TODO
+
+        sys.setrecursionlimit(max(sys.getrecursionlimit(), 3 * 29 * 29))
         sgf_str = "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in self.sgf_properties.items() if values])
         if self.children:
             children = [c.sgf() for c in self.children]

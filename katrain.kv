@@ -217,6 +217,7 @@
 	auto_undo: auto_undo
 	undo: undo
 	ai_move: ai_move
+	katrain: self.parent
 	GridLayout:
 		cols: 7
 		rows: 1
@@ -237,17 +238,17 @@
 			id: eval
 			text: 'all eval'
 			default_active: False
-			on_active: root.parent.redraw()
+			on_active: root.parent.update_state()
 		BWCheckBoxHint:
 			size_hint: 0.2, 0.5
 			id: hints
 			text: 'hints'
-			on_active: root.parent.redraw()
+			on_active: root.parent.update_state()
 		BWCheckBoxHint:
 			size_hint: 0.2, 0.5
 			id: auto_undo
 			text: 'undo'
-			on_active: root.parent.redraw()
+			on_active: root.parent.update_state()
 		BWCheckBoxHint:
 			size_hint: 0.166, 0.5
 			text: 'ai'
@@ -257,7 +258,7 @@
 			size_hint: 0.2, 0.5
 			id: ownership
 			text: 'show\nowner'
-			on_active: root.parent.redraw()
+			on_active: root.parent.update_state()
 	GridLayout:
 		cols: 4
 		rows: 1
@@ -266,7 +267,7 @@
 		    id: ai_move
 			size_hint: 0.5, 0.5
 			text: 'AI Move'
-			on_press: root.parent("aimove")
+			on_press: root.katrain("aimove")
 		CheckBoxHint:
 			size_hint: 0.166, 0.5
 			text: 'fast'
@@ -289,11 +290,11 @@
 		StyledButton:
 		    id: undo
 			text: 'Undo'
-			on_press: root.parent("undo")
+			on_press: root.katrain("undo")
 			default_active: True
 		StyledButton:
 			text: 'Pass'
-			on_press: root.parent("play",(None,None))
+			on_press: root.katrain("play",(None,None))
     CensorableLabel:
         id: win_rate
         size_hint: 1, 0.025
@@ -325,7 +326,7 @@
 			text: 'Load'
 			id: load
 			size_hint: 0.5, 1
-			on_press: root.parent("analyze-sgf",info.text)
+			on_press: root.katrain("analyze-sgf",info.text)
 	GridLayout:
 		size_hint: 1, 0.05
 		cols: 4
@@ -338,17 +339,17 @@
 			size_hint: 0.233, 1
 			text: '9'
 			margin: (1,1)
-			on_press: root.parent('new-game',9)
+			on_press: root.katrain('new-game',9)
 		StyledButton:
 			size_hint: 0.233, 1
 			text: '13'
 			margin: (0,1)
-			on_press: root.parent('new-game',13)
+			on_press: root.katrain('new-game',13)
 		StyledButton:
 			size_hint: 0.233, 1
 			text: '19'
 			margin: (1,1)
-			on_press: root.parent('new-game',19)
+			on_press: root.katrain('new-game',19)
 
 <KaTrainGui>:
 	board_gui: board_gui

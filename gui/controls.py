@@ -43,7 +43,7 @@ class Controls(GridLayout):
         if current_player_is_human_or_both_robots:
             self.show_evaluation_stats(current_node)
 
-        if False: # TODO: UNDO AND AI MOVE
+        if False:  # TODO: UNDO AND AI MOVE
             if current_node.analysis_ready and current_node.parent and current_node.parent.analysis_ready and not current_node.children and not current_node.x_comment.get("undo"):
                 # handle automatic undo
                 if self.auto_undo.active(move.player) and not self.ai_auto.active(move.player) and not current_node.auto_undid:
