@@ -1,3 +1,4 @@
+import math
 import os
 import random
 from datetime import datetime
@@ -20,10 +21,9 @@ class KaTrainSGF(SGF):
 class Game:
     """Represents a game of go, including an implementation of capture rules."""
 
-    GAME_COUNTER = 0
+    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "RU": "JP", "AP": "KaTrain:https://github.com/sanderland/katrain"}
 
     def __init__(self, katrain, engine, config, board_size=None, move_tree=None):
-        Game.GAME_COUNTER += 1
         self.katrain = katrain
         self.engine = engine
         self.config = config
@@ -39,9 +39,7 @@ class Game:
         else:
             self.board_size = board_size or config["size"]
             self.komi = self.config.get(f"komi_{self.board_size}", 6.5)
-            self.root = GameNode(
-                properties={"GM": 1, "FF": 4, "RU": "JP", "SZ": self.board_size, "KM": self.komi, "AP": "KaTrain:https://github.com/sanderland/katrain", "DT": self.game_id}
-            )
+            self.root = GameNode(properties={"SZ": self.board_size, "KM": self.komi, "DT": self.game_id, **Game.DEFAULT_PROPERTIES})
 
         self.current_node = self.root
         self._init_chains()
@@ -62,7 +60,7 @@ class Game:
         try:
             #            for m in self.moves:
             for node in self.current_node.nodes_from_root:
-                for m in node.move_with_placements:
+                for m in node.move_with_placements:  # TODO: placements are never illegal
                     self._validate_move_and_update_chains(m, True)  # ignore ko since we didn't know if it was forced
         except IllegalMoveException as e:
             raise Exception(f"Unexpected illegal move ({str(e)})")
@@ -119,38 +117,54 @@ class Game:
         try:
             self._validate_move_and_update_chains(move, ignore_ko)
         except IllegalMoveException:
+            self._init_chains()
             raise
         played_node = self.current_node.play(move)
         self.current_node = played_node
         played_node.analyze(self.engine)
         return played_node
 
-    def undo(self):
-        if self.current_node is not self.root:
-            self.current_node = self.current_node.parent
-            self._init_chains()
-
-    def redo(self):
+    def undo(self, n_times=1):
         cn = self.current_node  # avoid race conditions
-        if cn.children:
-            self.current_node = cn.children[-1]
-            self._init_chains()
+        for _ in range(n_times):
+            if not cn.is_root:
+                cn = cn.parent
+        self.current_node = cn
+        self._init_chains()
+
+    def redo(self, n_times=1):
+        cn = self.current_node  # avoid race conditions
+        for _ in range(n_times):
+            if cn.children:
+                cn = cn.children[-1]
+        self.current_node = cn
+        self._init_chains()
 
     def switch_branch(self, direction):
-        cm = self.current_node  # avoid race conditions
-        if cm.parent and len(cm.parent.children) > 1:
-            ix = cm.parent.children.index(cm)
-            self.current_node = cm.parent.children[(ix + direction) % len(cm.parent.children)]
+        cn = self.current_node  # avoid race conditions
+        if cn.parent and len(cn.parent.children) > 1:
+            ix = cn.parent.children.index(cn)
+            self.current_node = cn.parent.children[(ix + direction) % len(cn.parent.children)]
             self._init_chains()
 
     def place_handicap_stones(self, n_handicaps):
         near = 3 if self.board_size >= 13 else 2
         far = self.board_size - 1 - near
         middle = self.board_size // 2
-        stones = [(far, far), (near, near), (far, near), (near, far)]
-        if n_handicaps % 2 == 1:
-            stones.append((middle, middle))
-        stones += [(near, middle), (far, middle), (middle, near), (middle, far)]
+        if n_handicaps > 9:
+            stones_per_row = math.ceil(math.sqrt(n_handicaps))
+            spacing = (far - near) / (stones_per_row - 1)
+            if spacing < near:
+                far += 1
+                near -= 1
+                spacing = (far - near) / (stones_per_row - 1)
+            coords = [math.floor(0.5 + near + i * spacing) for i in range(stones_per_row)]
+            stones = sorted([(x, y) for x in coords for y in coords], key=lambda xy: -((xy[0] - self.board_size / 2) ** 2 + (xy[1] - self.board_size / 2) ** 2))
+        else:
+            stones = [(far, far), (near, near), (far, near), (near, far)]
+            if n_handicaps % 2 == 1:
+                stones.append((middle, middle))
+            stones += [(near, middle), (far, middle), (middle, near), (middle, far)]
         self.root.add_property("AB", [Move(stone).sgf(board_size=self.board_size) for stone in stones[:n_handicaps]])
 
     @property

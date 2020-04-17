@@ -1,6 +1,6 @@
 {
   "engine": {
-    "command": "KataGo/katago",
+    "katago": "KataGo/katago",
     "model": " models/b15-1.3.2.txt.gz",
     "config": "KataGo/analysis_config.cfg",
     "threads": 8,
@@ -16,13 +16,16 @@
     "size": 19,
     "komi_19": 6.5,
     "komi_13": 6.5,
-    "komi_9": 6.5,
+    "komi_9": 6.5
+  },
+  "trainer": {
+    "lock_undos": true,
+    "num_undo_prompts": 1,
+    "undo_point_threshold": 1.5,
     "balance_play_target_score": 2,
     "balance_play_randomize_eval": 1,
     "balance_play_min_eval": 2,
-    "balance_play_min_visits": 20,
-    "undo_point_threshold": 1.5,
-    "num_undo_prompts": 1
+    "balance_play_min_visits": 20
   },
   "board_ui": {
     "size_min": 1,
@@ -43,6 +46,6 @@
     "eval_off_show_last": 3
   },
   "debug": {
-    "level": 1
+    "level": 2
   }
 }

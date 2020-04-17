@@ -20,38 +20,38 @@ class TestBoard:
 
     def test_merge(self):
         b = Game(MockKaTrain(), MockEngine(), {}, board_size=9)
-        b.play(Move.from_gtp("B9", player=0))
-        b.play(Move.from_gtp("A3", player=0))
-        b.play(Move.from_gtp("A9", player=0))
+        b.play(Move.from_gtp("B9", player="B"))
+        b.play(Move.from_gtp("A3", player="B"))
+        b.play(Move.from_gtp("A9", player="B"))
         assert 2 == len(self.nonempty_chains(b))
         assert 3 == len(b.stones)
         assert 0 == len(b.prisoners)
 
     def test_collide(self):
         b = Game(MockKaTrain(), MockEngine(), {}, board_size=9)
-        b.play(Move.from_gtp("B9", player=0))
+        b.play(Move.from_gtp("B9", player="B"))
         with pytest.raises(IllegalMoveException):
-            b.play(Move.from_gtp("B9", player=1))
+            b.play(Move.from_gtp("B9", player="W"))
         assert 1 == len(self.nonempty_chains(b))
         assert 1 == len(b.stones)
         assert 0 == len(b.prisoners)
 
     def test_capture(self):
         b = Game(MockKaTrain(), MockEngine(), {}, board_size=9)
-        b.play(Move.from_gtp("A2", player=0))
-        b.play(Move.from_gtp("B1", player=1))
-        b.play(Move.from_gtp("A1", player=1))
-        b.play(Move.from_gtp("C1", player=0))
+        b.play(Move.from_gtp("A2", player="B"))
+        b.play(Move.from_gtp("B1", player="W"))
+        b.play(Move.from_gtp("A1", player="W"))
+        b.play(Move.from_gtp("C1", player="B"))
         assert 3 == len(self.nonempty_chains(b))
         assert 4 == len(b.stones)
         assert 0 == len(b.prisoners)
-        b.play(Move.from_gtp("B2", player=0))
+        b.play(Move.from_gtp("B2", player="B"))
         assert 2 == len(self.nonempty_chains(b))
         assert 3 == len(b.stones)
         assert 2 == len(b.prisoners)
-        b.play(Move.from_gtp("B1", player=0))
+        b.play(Move.from_gtp("B1", player="B"))
         with pytest.raises(IllegalMoveException) as exc:
-            b.play(Move.from_gtp("A1", player=1))
+            b.play(Move.from_gtp("A1", player="W"))
         assert "Suicide" in str(exc.value)
         assert 1 == len(self.nonempty_chains(b))
         assert 4 == len(b.stones)
@@ -60,17 +60,17 @@ class TestBoard:
     def test_snapback(self):
         b = Game(MockKaTrain(), MockEngine(), {}, board_size=9)
         for move in ["C1", "D1", "E1", "C2", "D3", "E4", "F2", "F3", "F4"]:
-            b.play(Move.from_gtp(move, player=0))
+            b.play(Move.from_gtp(move, player="B"))
         for move in ["D2", "E2", "C3", "D4", "C4"]:
-            b.play(Move.from_gtp(move, player=1))
+            b.play(Move.from_gtp(move, player="W"))
         assert 5 == len(self.nonempty_chains(b))
         assert 14 == len(b.stones)
         assert 0 == len(b.prisoners)
-        b.play(Move.from_gtp("E3", player=1))
+        b.play(Move.from_gtp("E3", player="W"))
         assert 4 == len(self.nonempty_chains(b))
         assert 14 == len(b.stones)
         assert 1 == len(b.prisoners)
-        b.play(Move.from_gtp("D3", player=0))
+        b.play(Move.from_gtp("D3", player="B"))
         assert 4 == len(self.nonempty_chains(b))
         assert 12 == len(b.stones)
         assert 4 == len(b.prisoners)
@@ -78,25 +78,25 @@ class TestBoard:
     def test_ko(self):
         b = Game(MockKaTrain(), MockEngine(), {}, board_size=9)
         for move in ["A2", "B1"]:
-            b.play(Move.from_gtp(move, player=0))
+            b.play(Move.from_gtp(move, player="B"))
 
         for move in ["B2", "C1"]:
-            b.play(Move.from_gtp(move, player=1))
-        b.play(Move.from_gtp("A1", player=1))
+            b.play(Move.from_gtp(move, player="W"))
+        b.play(Move.from_gtp("A1", player="W"))
         assert 4 == len(self.nonempty_chains(b))
         assert 4 == len(b.stones)
         assert 1 == len(b.prisoners)
         with pytest.raises(IllegalMoveException) as exc:
-            b.play(Move.from_gtp("B1", player=0))
+            b.play(Move.from_gtp("B1", player="B"))
         assert "Ko" in str(exc.value)
 
-        b.play(Move.from_gtp("B1", player=0), ignore_ko=True)
+        b.play(Move.from_gtp("B1", player="B"), ignore_ko=True)
         assert 2 == len(b.prisoners)
 
         with pytest.raises(IllegalMoveException) as exc:
-            b.play(Move.from_gtp("A1", player=1))
+            b.play(Move.from_gtp("A1", player="W"))
 
-        b.play(Move.from_gtp("F1", player=1))
-        b.play(Move(coords=(None, None), player=0))
-        b.play(Move.from_gtp("A1", player=1))
+        b.play(Move.from_gtp("F1", player="W"))
+        b.play(Move(coords=None, player="B"))
+        b.play(Move.from_gtp("A1", player="W"))
         assert 3 == len(b.prisoners)

@@ -1,6 +1,6 @@
 #:kivy 1.11.0
 
-<StyledButton@Button>:
+<StyledButton>:
     text_color: 0.95,0.95,0.95,1
     button_color: 0.157,0.455,0.753,1
     button_color_down: (*[c/2 for c in self.button_color[:3]],1)
@@ -30,6 +30,9 @@
 
 <CheckBox>
     color: (0.05,0.05,0.05,1)
+
+<LabelledCheckBox>
+    color: (0.95,0.95,0.95,1)
 
 <CheckBoxHintLabel@ButtonBehavior+DarkLabel>:
 	halign: 'center'
@@ -191,8 +194,47 @@
             size_hint: 0.05,1
 
 <NewGamePopup>
-    Label:
-        text: "New Game"
+    orientation: 'vertical'
+    BoxLayout:
+        size_hint: 1, 0.9
+        orientation: 'horizontal'
+        GridLayout:
+            size_hint: 0.5, 1
+            rows: 10
+            cols: 2
+            Label:
+                text: "Size"
+                size_hint: 0.5, 0.1
+            IntInput:
+                text: '19'
+                size_hint: 0.5, 0.1
+                input_property: 'SZ'
+            Label:
+                text: "Handicap"
+                size_hint: 0.5, 0.1
+            IntInput:
+                text: '0'
+                size_hint: 0.5, 0.1
+                input_property: 'HA'
+            Label:
+                text: "Komi"
+                size_hint: 0.5, 0.1
+            FloatInput:
+                text: '6.5'
+                size_hint: 0.5, 0.1
+                input_property: 'KM'
+            Label:
+                text: " "
+                size_hint: 0.5, 0.6
+        GridLayout:
+            size_hint: 0.5, 1
+            rows: 10
+            cols: 2
+    StyledButton:
+        size_hint: 0.5, 0.1
+        text: 'Start Game'
+        on_press: root.new_game()
+
 
 <BadukPanWidget>:
 	size: self.parent.height, self.parent.height
@@ -267,7 +309,7 @@
 		    id: ai_move
 			size_hint: 0.5, 0.5
 			text: 'AI Move'
-			on_press: root.katrain("aimove")
+			on_press: root.katrain("ai_move")
 		CheckBoxHint:
 			size_hint: 0.166, 0.5
 			text: 'fast'
@@ -318,38 +360,30 @@
 		orientation: 'horizontal'
 		size_hint: 1, 0.05
 		StyledButton:
-			text: 'Save'
-			id: save
-			size_hint: 0.5, 1
-			on_press: info.text = root.parent.output_sgf()
+			text: ' New\nGame'
+			id: new_game
+			size_hint: 0.33, 1
+			font_size: 0.25*self.size[1]
+			on_press: root.katrain("new-game-popup")
 		StyledButton:
 			text: 'Load'
 			id: load
-			size_hint: 0.5, 1
-			on_press: root.katrain("analyze-sgf",info.text)
-	GridLayout:
-		size_hint: 1, 0.05
-		cols: 4
-		rows: 1
-		LargeLabel:
-			size_hint: 0.3, 0.25
-			text: ' New\nGame'
-			font_size: 0.3*self.size[1]
+			size_hint: 0.33, 1
+			font_size: 0.25*self.size[1]
+			on_press: root.katrain("analyze-sgf-popup",info.text)
+			margin: 0,1
 		StyledButton:
-			size_hint: 0.233, 1
-			text: '9'
-			margin: (1,1)
-			on_press: root.katrain('new-game',9)
+			text: 'Save'
+			id: save
+			size_hint: 0.33, 1
+			font_size: 0.25*self.size[1]
+			on_press: info.text = root.parent.output_sgf()
 		StyledButton:
-			size_hint: 0.233, 1
-			text: '13'
-			margin: (0,1)
-			on_press: root.katrain('new-game',13)
-		StyledButton:
-			size_hint: 0.233, 1
-			text: '19'
-			margin: (1,1)
-			on_press: root.katrain('new-game',19)
+			text: 'C'
+			size_hint: 0.1, 1
+			font_size: 0.25*self.size[1]
+			on_press: root.katrain('config-popup')
+
 
 <KaTrainGui>:
 	board_gui: board_gui

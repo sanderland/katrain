@@ -13,8 +13,9 @@ from kivy.uix.popup import Popup
 
 from constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO
 from engine import KataGoEngine
-from game import Game, GameNode, IllegalMoveException, KaTrainSGF, Move
-from gui import BadukPanWidget, BWCheckBoxHint, CensorableLabel, CensorableScoreLabel, CheckBoxHint, Controls, LoadSGFPopup
+from game import Game, IllegalMoveException, KaTrainSGF, Move
+from gui import *
+from gui.popups import NewGamePopup, ConfigPopup
 
 
 class KaTrainGui(BoxLayout):
@@ -69,6 +70,16 @@ class KaTrainGui(BoxLayout):
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
         self._do_new_game()
 
+    def update_state(self, include_board=False):  # TODO: rename? does more now
+        cn = self.game.current_node
+        if cn.analysis_ready and self.controls.ai_auto.active(cn.next_player) and not cn.children and not self.game.game_ended:
+            self("ai-move", cn)
+
+        if include_board:
+            Clock.schedule_once(self.board_gui.draw_board, -1)  # main thread needs to do this
+        Clock.schedule_once(self.board_gui.draw_board_contents, -1)
+        self.controls.update_evaluation()
+
     def _message_loop_thread(self):
         while True:
             game, msg, *args = self.message_queue.get()
@@ -96,23 +107,19 @@ class KaTrainGui(BoxLayout):
 
         self.update_state(include_board=True)
 
-    def _do_aimove(self):
-        self.game.ai_move()
+    def _do_ai_move(self, node=None):
+        if node is None or self.game.current_node == node:
+            self.game.ai_move()
 
-    def _do_undo(self):
-        if (
-            self.controls.ai_lock.active
-            and self.contols.auto_undo.active(self.game.current_node.player)
-            and len(self.game.current_node.parent.children) > self.num_undos(self.game.current_node)
-            and not self.train_settings.get("dont_lock_undos")
-        ):
-            self.info.text = f"Can't undo this move more than {self.num_undos(self.game.current_node)} time(s) when locked"
+    def _do_undo(self, n_times=1):
+        if self.controls.ai_lock.active and self.contols.auto_undo.active(self.game.current_node.player) and self.config("trainer/lock_undos"):
+            self.controls.set_status(f"Can't undo manually when Automatic Undo and Lock AI are both set. (Change the `lock_undos` setting to false to allow this regardless)")
             return
-        self.game.undo()
+        self.game.undo(n_times)
         self.update_state()
 
-    def _do_redo(self):
-        self.game.redo()
+    def _do_redo(self, n_times=1):
+        self.game.redo(n_times)
         self.update_state()
 
     def _do_switch_branch(self, direction):
@@ -137,7 +144,7 @@ class KaTrainGui(BoxLayout):
     def _do_analyze_extra(self, mode):
         self.game.analyze_extra(mode)
 
-    def _do_analyze_sgf(self, sgf):
+    def _do_analyze_sgf_popup(self, sgf):
         fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
         popup_contents = LoadSGFPopup()
         fileselect_popup.add_widget(popup_contents)
@@ -150,6 +157,18 @@ class KaTrainGui(BoxLayout):
         popup_contents.filesel.on_submit = readfile
         fileselect_popup.open()
 
+    def _do_new_game_popup(self):
+        new_game_popup = Popup(title="New Game", size_hint=(0.9, 0.9))
+        popup_contents = NewGamePopup(self, new_game_popup, {k: v[0] for k, v in self.game.root.properties.items()})
+        new_game_popup.add_widget(popup_contents)
+        new_game_popup.open()
+
+    def _do_config_popup(self):
+        config_popup = Popup(title="Edit Settings", size_hint=(0.9, 0.9))
+        popup_contents = ConfigPopup(self, config_popup, dict(self._config_store))
+        config_popup.add_widget(popup_contents)
+        config_popup.open()
+
     def output_sgf(self):
         for pl in Move.PLAYERS:
             if not self.game.root.get_first(f"P{pl}"):
@@ -157,21 +176,14 @@ class KaTrainGui(BoxLayout):
                 self.game.root.properties[f"P{pl}"] = [f"KaTrain (KataGo {model_file})" if self.controls.ai_auto.active(pl) else "Player"]
         return self.game.write_sgf()
 
-    def update_state(self, include_board=False):  # TODO: rename? does more now
-        cn = self.game.current_node
-        if cn.analysis_ready and self.controls.ai_auto.active(cn.next_player) and not cn.children and not self.game.game_ended:
-            self._do_aimove()
-
-        if include_board:
-            Clock.schedule_once(self.board_gui.draw_board, -1)  # main thread needs to do this
-        Clock.schedule_once(self.board_gui.draw_board_contents, -1)
-        self.controls.update_evaluation()
-
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        if isinstance(App.get_running_app().root_window.children[0], Popup):
+            return  # if in new game or load, don't allow keyboard shortcuts
+
         if keycode[1] == "up":
-            self("undo")
+            self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] == "down":
-            self("redo")
+            self("redo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] == "right":
             self("switch-branch", 1)
         elif keycode[1] == "left":
@@ -210,11 +222,15 @@ class KaTrainApp(App):
     def build(self):
         self.icon = "./icon.png"
         self.gui = KaTrainGui()
+        Window.bind(on_request_close=self.on_request_close)
         return self.gui
 
     def on_start(self):
         self.gui.start()
         signal.signal(signal.SIGINT, self.signal_handler)
+
+    def on_request_close(self, *args):
+        self.gui.engine.shutdown()
 
     def signal_handler(self, signal, frame):
         import sys
@@ -228,6 +244,7 @@ class KaTrainApp(App):
                     print(f"\tFile: {filename}, line {lineno}, in {name}")
                     if line:
                         print(f"\t\t{line.strip()}")
+        self.on_request_close()
         sys.exit(0)
 
 

@@ -43,6 +43,11 @@ class KataGoEngine:
         self.base_priority += 1
         self.queries = {}
 
+    def shutdown(self):
+        process = getattr(self, "katago_process")
+        if process:
+            process.terminate()
+
     def is_idle(self):
         return not self.queries
 
@@ -55,7 +60,7 @@ class KataGoEngine:
                 continue
             analysis = json.loads(line)
             if "error" in analysis:
-                self.katrain.log(f"ERROR IN KATA ANALYSIS: {analysis['error']}", OUTPUT_ERROR)
+                self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
             elif analysis["id"] in self.queries:
                 callback, start_time = self.queries[analysis["id"]]
                 time_taken = time.time() - start_time
