@@ -1,14 +1,15 @@
 #:kivy 1.11.0
 #:import ew kivy.uix.effectwidget
 
+# margin left bottom right top
 <StyledButton>:
     text_color: 0.95,0.95,0.95,1
     button_color: 0.21, 0.28, 0.31, 1
     button_color_down: (*[c/2 for c in self.button_color[:3]],1)
-    margin: (2,1)
+    margin: (1,1,1,1)
     bold: False
     font_size: self.size[1] * 0.35
-    radius: 10
+    radius: (self.size[1]/7,)
     # dont set these
     disabled_mask: (0.5,0.5,0.5,1) if self.disabled else (1,1,1,1)
     color: self.disabled_mask if self.disabled else self.text_color
@@ -19,30 +20,14 @@
         Color:
             rgba: root.face_color or [0,0,0,0]
         RoundedRectangle:
-            size: self.size[0]-2*self.margin[0],self.size[1]-2*self.margin[1]
+            size: self.size[0]-self.margin[0]-self.margin[2],self.size[1]-self.margin[1]-self.margin[3]
             pos: (self.pos[0]+self.margin[0],self.pos[1]+self.margin[1])
-            radius: (root.radius or 0,)
+            radius: root.radius or (0.0,)
 
-<StyledToggleButton@ToggleButton>:
-    color: 1,1,1,1
-    button_color: 0.21, 0.28, 0.31, 1
-    button_color_down: (*[c/2 for c in self.button_color[:3]],1)
-    margin: (1,1)
+<StyledToggleButton@StyledButton+ToggleButtonBehavior>:
     bold: True
     font_size: self.size[1] * 0.45
-    radius: self.size[1]/3
-    # dont set these
-    disabled_mask: (0.5,0.5,0.5,1) if self.disabled else (1,1,1,1)
-    background_color: 0,0,0,0
-    background_normal: ''
-    face_color: [c*m for c,m in zip(self.button_color if root.state=='normal' else self.button_color_down,self.disabled_mask)]
-    canvas.before:
-        Color:
-            rgba: root.face_color or [0,0,0,0]
-        RoundedRectangle:
-            size: self.size[0]-2*self.margin[0],self.size[1]-2*self.margin[1]
-            pos: (self.pos[0]+self.margin[0],self.pos[1]+self.margin[1])
-            radius: (root.radius or 0,root.radius or 0,0,0)
+    radius: (self.size[1]/3,self.size[1]/3,0,0)
 
 <StyledIconButton@StyledButton>
     button_color: 0.71, 0.78, 0.81, 1
@@ -283,6 +268,8 @@
 	
 <Controls>
 	orientation: 'vertical'
+	play_tab_button: play_tab_button
+	analyze_tab_button: analyze_tab_button
     info: info
 	win_rate: win_rate
 	points_lost: points_lost
@@ -303,7 +290,7 @@
         StyledToggleButton:
             text: 'Analyze'
             id: analyze_tab_button
-            state: 'down'
+            margin: (3,0,1,3)
             group: 'tabs'
             on_press:
                 analyze_tab.size_hint[0] = 1
@@ -311,28 +298,30 @@
                 play_tab.size_hint_x = None
                 play_tab.width = 0
                 play_tab.opacity = 0
-                print(play_tab,play_tab.size_hint,analyze_tab.size_hint)
         StyledToggleButton:
             text: 'Play'
             group: 'tabs'
+            state: 'down'
+            id: play_tab_button
+            margin: (1,0,3,3)
             on_press:
                 play_tab.size_hint[0] = 1
                 play_tab.opacity = 1
                 analyze_tab.size_hint_x = None
                 analyze_tab.width = 0
                 analyze_tab.opacity = 0
-                print(play_tab.size_hint,analyze_tab.size_hint)
     BoxLayout:
         size_hint: 1,0.25
         orientation: 'horizontal'
-        BoxLayout:
-            size_hint: 1,1
+        BoxLayout: # ----------- analyze -----------
+            size_hint: 0,1
             id: analyze_tab
+            opacity: 0
             orientation: 'vertical'
             GridLayout:
-                cols: 7
+                cols: 6
                 rows: 1
-                size_hint: 1, 0.25
+                size_hint: 1, 0.35
                 Label:
                     size_hint: 0.01, 1
                 BoxLayout:
@@ -354,11 +343,6 @@
                     size_hint: 0.2, 0.5
                     id: hints
                     text: 'top move'
-                    on_active: root.parent.update_state()
-                BWCheckBoxHint:
-                    size_hint: 0.2, 0.5
-                    id: auto_undo
-                    text: 'undo'
                     on_active: root.parent.update_state()
                 CheckBoxHint:
                     size_hint: 0.2, 0.5
@@ -383,18 +367,13 @@
                 size_hint: 1, 0.15
                 label: 'Score'
                 text: '...'
-            CensorableLabel:
-                id: points_lost
-                size_hint: 1, 0.15
-                label: 'Point loss'
-                text: '...'
-        BoxLayout:
+        BoxLayout: # ----------- play -----------
             orientation: 'vertical'
-            size_hint: 0,1
-            opacity: 0
+            size_hint: 1,1
+            opacity: 1
             id: play_tab
             GridLayout:
-                cols: 4
+                cols: 5
                 rows: 1
                 size_hint: 1, 0.1
                 BoxLayout:
@@ -411,6 +390,11 @@
                     id: ai_auto
                     default_active: False
                     size_hint: 0.25, 1
+                BWCheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: auto_undo
+                    text: 'undo'
+                    on_active: root.parent.update_state()
                 CheckBoxHint:
                     size_hint: 0.25, 1
                     text: 'fast'
@@ -438,6 +422,11 @@
             LargeLabel:
                 text: 'free real estate'
                 size_hint: 1,0.5
+    CensorableLabel:
+        id: points_lost
+        size_hint: 1, 0.03
+        label: 'Point loss'
+        text: '...'
 	GridLayout:
 		cols: 2
 		rows: 1
@@ -449,7 +438,7 @@
 			default_active: True
 		StyledButton:
 			text: 'Pass'
-			on_press: root.katrain("play",(None,None))
+			on_press: root.katrain("play",None)
 	TextInput:
 		id: info
 		size_hint: 1, 0.2

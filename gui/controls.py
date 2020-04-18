@@ -20,12 +20,17 @@ class Controls(BoxLayout):
         self.status = None
         self.status_node = None
 
-    def set_status(self, msg,at_node=None):
+    def set_status(self, msg, at_node=None):
         self.status = msg
         self.status_node = at_node or self.parent.game.current_node
         self.info.text = msg
         self.update_evaluation()
 
+    def select_mode(self, mode):
+        if mode == "analyze":
+            self.analyze_tab_button.trigger_action(duration=0)
+        else:
+            self.play_tab_button.trigger_action(duration=0)
 
     def show_evaluation_stats(self, node):
         if node.analysis_ready:

@@ -79,8 +79,9 @@ class KataGoEngine:
             else:
                 self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
 
-    def request_analysis(self, analysis_node: GameNode, callback: Callable, faster: bool = False, visits: int = None, priority: int = 0, ownership: Optional[bool] = None,
-                         refine_move=None):
+    def request_analysis(
+        self, analysis_node: GameNode, callback: Callable, faster: bool = False, visits: int = None, priority: int = 0, ownership: Optional[bool] = None, refine_move=None
+    ):
         fast = self.katrain.controls.ai_fast.active
         query_id = f"QUERY:{str(self.query_counter)}"
         self.query_counter += 1

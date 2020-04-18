@@ -194,7 +194,7 @@ class Game:
             f.write(self.root.sgf())
         return f"SGF with analysis written to {file_name}"
 
-    def ai_move(self,train_settings):
+    def ai_move(self, train_settings):
         while not self.current_node.analysis_ready:
             self.katrain.set_status("Thinking...")
             time.sleep(0.05)
@@ -242,23 +242,23 @@ class Game:
         stones = {s.coords for s in self.stones}
         cn = self.current_node
         if not cn.analysis:
-            self.katrain.controls.set_status("Wait for initial analysis to complete before doing a board-sweep or refinement",self.current_node)
+            self.katrain.controls.set_status("Wait for initial analysis to complete before doing a board-sweep or refinement", self.current_node)
             return
 
         if mode == "extra":
-            visits = sum([d["visits"] for d in cn.analysis]) + self.engine.config['visits']
+            visits = sum([d["visits"] for d in cn.analysis]) + self.engine.config["visits"]
             self.katrain.controls.set_status(f"Performing additional analysis to {visits} visits")
-            cn.analyze(self.engine, visits=visits, priority=- 1_000)
+            cn.analyze(self.engine, visits=visits, priority=-1_000)
             return
         elif mode == "sweep":
-            analyze_moves = [Move(coords=(x, y),player=cn.next_player) for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
-            visits = self.engine.config['visits_fast']
+            analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
+            visits = self.engine.config["visits_fast"]
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
-            priority =- 1_000_000_000
+            priority = -1_000_000_000
         else:  # mode=='refine':
-            analyze_moves = [Move.from_gtp(a["move"],player=cn.next_player) for a in cn.analysis]
-            visits = cn.analysis[0]["visits"] +  self.engine.config['visits_fast']
+            analyze_moves = [Move.from_gtp(a["move"], player=cn.next_player) for a in cn.analysis]
+            visits = cn.analysis[0]["visits"] + self.engine.config["visits_fast"]
             self.katrain.controls.set_status(f"Refining analysis of candidate moves to {visits} visits")
-            priority = - 1_000
+            priority = -1_000
         for move in analyze_moves:
             cn.analyze(self.engine, priority, visits=visits, refine_move=move)

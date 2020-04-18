@@ -39,7 +39,7 @@ class KaTrainGui(BoxLayout):
 
     def log(self, message, level=OUTPUT_INFO):
         if level == OUTPUT_ERROR:
-            self.controls.set_status(f"ERROR: {message}",self.game.current_node)
+            self.controls.set_status(f"ERROR: {message}", self.game.current_node)
             print(f"ERROR: {message}")
         elif self.debug_level >= level:
             print(message)
@@ -108,16 +108,19 @@ class KaTrainGui(BoxLayout):
     def _do_new_game(self, board_size=None, move_tree=None):
         self.game = Game(self, self.engine, self.config("game"), board_size=board_size, move_tree=move_tree)
         self.controls.unlock()
-        self.update_state(redraw_board=True)
+        self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
+        self.update_state(redraw_board=True)  # TODO: just board here/redraw is in all anyway?
 
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
-            self.game.ai_move(self.config('trainer'))
+            self.game.ai_move(self.config("trainer"))
             self.update_state()
 
     def _do_undo(self, n_times=1):
         if self.controls.ai_lock.active and self.contols.auto_undo.active(self.game.current_node.player) and self.config("trainer/lock_undos"):
-            self.controls.set_status(f"Can't undo manually when Automatic Undo and Lock AI are both set. (Change the `lock_undos` setting to false to allow this regardless)",self.game.current_node)
+            self.controls.set_status(
+                f"Can't undo manually when Automatic Undo and Lock AI are both set. (Change the `lock_undos` setting to false to allow this regardless)", self.game.current_node
+            )
             return
         self.game.undo(n_times)
         self.update_state()
@@ -225,8 +228,8 @@ class KaTrainGui(BoxLayout):
                 self.controls.set_status(f"Failed to imported game from clipboard: {e}")
                 return
             self._do_new_game(move_tree=move_tree)
-            self('redo',999)
-            self.log("Imported game from clipboard.",OUTPUT_INFO)
+            self("redo", 999)
+            self.log("Imported game from clipboard.", OUTPUT_INFO)
         return True
 
 

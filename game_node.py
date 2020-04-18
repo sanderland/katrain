@@ -29,19 +29,18 @@ class GameNode(SGFNode):
 
     # various analysis functions
     def analyze(self, engine, priority=0, visits=None, refine_move=None):
-        engine.request_analysis(self, lambda result: self.set_analysis(result,refine_move), priority=priority,
-                                visits=visits, refine_move=refine_move)
+        engine.request_analysis(self, lambda result: self.set_analysis(result, refine_move), priority=priority, visits=visits, refine_move=refine_move)
 
     def set_analysis(self, analysis_blob, refine_move):
         if refine_move:
             gtp = refine_move.gtp()
             for d in self.analysis:
-                if d['move']==gtp:
-                    if d['visits'] < analysis_blob['rootInfo']['visits']:
-                        d.update(analysis_blob['rootInfo'])
+                if d["move"] == gtp:
+                    if d["visits"] < analysis_blob["rootInfo"]["visits"]:
+                        d.update(analysis_blob["rootInfo"])
                     return
-            self.analysis.append({'move':gtp,'order':999,**analysis_blob['rootInfo']})
-        else: # TODO root info / to dict?
+            self.analysis.append({"move": gtp, "order": 999, **analysis_blob["rootInfo"]})
+        else:  # TODO root info / to dict?
             self.analysis = analysis_blob["moveInfos"]  # TODO: fix when rootInfos comes in
             self.ownership = analysis_blob["ownership"]
 
