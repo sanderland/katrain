@@ -40,7 +40,7 @@ class Game:
         else:
             self.board_size = board_size or config["init_size"]
             self.komi = self.config.get(f"komi_{self.board_size}", 6.5)
-            self.root = GameNode(properties={"SZ": self.board_size, "KM": self.komi, "DT": self.game_id, **Game.DEFAULT_PROPERTIES})
+            self.root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **{"SZ": self.board_size, "KM": self.komi, "DT": self.game_id}})
 
         self.current_node = self.root
         self._init_chains()

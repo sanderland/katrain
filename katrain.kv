@@ -276,6 +276,7 @@
 	score: score
 	hints: hints
 	ownership: ownership
+	policy: policy
     eval: eval
 	ai_balance: ai_balance
 	ai_auto: ai_auto
@@ -283,6 +284,7 @@
 	ai_lock: ai_lock
 	ai_move: ai_move
 	auto_undo: auto_undo
+	pass_btn: pass_btn
 	katrain: self.parent
     BoxLayout:
         size_hint: 1,0.05
@@ -418,10 +420,10 @@
                     size_hint: 0.25, 1
                     text: 'lock\nAI'
                     id: ai_lock
-                    on_active: self.checkbox.disabled = analyze_tab_button.disabled = ai_auto.white.checkbox = ai_auto.black.checkbox = ai_move.disabled = True
+                    on_active: self.checkbox.disabled = analyze_tab_button.disabled = ai_auto.white = ai_auto.black = ai_move.disabled = True
             LargeLabel:
                 text: 'free real estate'
-                size_hint: 1,0.5
+                size_hint: 1,0.2
     CensorableLabel:
         id: points_lost
         size_hint: 1, 0.03
@@ -438,6 +440,7 @@
 			default_active: True
 		StyledButton:
 			text: 'Pass'
+			id: pass_btn
 			on_press: root.katrain("play",None)
 	TextInput:
 		id: info
@@ -477,6 +480,7 @@
     BadukPanWidget:
 		id: board_gui
         size_hint: 1 - controls.size_hint[0], 1
+
     Controls:
 		id: controls
 		size_hint: max(0.25,(root.width - root.height)/root.width), 1

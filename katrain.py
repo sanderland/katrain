@@ -222,8 +222,12 @@ class KaTrainGui(BoxLayout):
             Clipboard.copy(self.game.root.sgf())
             self.controls.set_status("Copied SGF to clipboard.")
         elif keycode[1] == "v" and "ctrl" in modifiers:
+            clipboard = Clipboard.paste()
+            if not clipboard:
+                self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.")
+                return
             try:
-                move_tree = KaTrainSGF.parse(Clipboard.paste())
+                move_tree = KaTrainSGF.parse(clipboard)
             except Exception as e:
                 self.controls.set_status(f"Failed to imported game from clipboard: {e}")
                 return

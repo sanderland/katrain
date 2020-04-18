@@ -1,17 +1,4 @@
-import copy
-import json
-import os
-import random
-import re
-import sys
-import threading
-import time
-
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.checkbox import CheckBox
-from kivy.uix.filechooser import FileChooserListView
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.label import Label
 
 
 class Controls(BoxLayout):
@@ -43,8 +30,8 @@ class Controls(BoxLayout):
 
     def unlock(self):
         if self.ai_lock.active:
-            self.ai_lock.checkbox._do_press()
-        for el in [self.ai_lock.checkbox, self.hints.black, self.hints.white, self.ai_auto.black, self.ai_auto.white, self.auto_undo.black, self.auto_undo.white, self.ai_move]:
+            self.ai_lock.checkbox.trigger_action(duration=0)
+        for el in [self.ai_lock.checkbox, self.analyze_tab_button, self.ai_auto.white, self.ai_auto.black, self.ai_move]:
             el.disabled = False
 
     # handles showing completed analysis and triggered actions like auto undo and ai move

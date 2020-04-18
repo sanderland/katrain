@@ -174,6 +174,25 @@ class BadukPanWidget(Widget):
                             Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
                         ix = ix + 1
 
+            policy = current_node.policy
+            if katrain.controls.policy.active and policy and not katrain.controls.ownership.active:
+                n_legal_moves = sum([p > 0 for p in policy])
+                avg_policy = 1.0 / n_legal_moves
+                best_move_policy = max(policy) # num legal moves scale?
+                rsz = self.grid_size * 0.2
+                ix = 0
+                for y in range(board_size-1,-1,-1):
+                    for x in range(board_size):
+                        if policy[ix] > 0:
+                            policy_delta = best_move_policy - policy[ix]
+                            polcol = self.eval_color(0.1 * policy_delta / avg_policy)
+                            Color(*polcol)
+                            Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
+                        else:
+                        ix = ix + 1
+                policy_delta = best_move_policy - policy[ix]
+                katrain.controls.pass_btn.face_color = (*self.eval_color(100*policy_delta),1)
+
             # children of current moves in undo / review
             undo_coords = set()
             alpha = self.ui_config["_child_alpha"]
@@ -200,6 +219,7 @@ class BadukPanWidget(Widget):
                         else:
                             scale = 0.85
                         self.draw_stone(move.coords[0], move.coords[1], c, scale=scale)
+
 
             # hover next move ghost stone
             if self.ghost_stone:

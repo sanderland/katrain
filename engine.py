@@ -106,6 +106,7 @@ class KataGoEngine:
             "boardXSize": analysis_node.board_size,
             "boardYSize": analysis_node.board_size,
             "includeOwnership": ownership,
+            "includePolicy": not refine_move,
             "moves": [[m.player, m.gtp()] for m in moves],
         }
         self.queries[query_id] = (callback, time.time())
