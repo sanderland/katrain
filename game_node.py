@@ -28,12 +28,22 @@ class GameNode(SGFNode):
         return properties
 
     # various analysis functions
-    def analyze(self, engine, priority=0):
-        engine.request_analysis(self, lambda result: self.set_analysis(result), priority=priority)
+    def analyze(self, engine, priority=0, visits=None, refine_move=None):
+        engine.request_analysis(self, lambda result: self.set_analysis(result,refine_move), priority=priority,
+                                visits=visits, refine_move=refine_move)
 
-    def set_analysis(self, analysis_blob):
-        self.analysis = analysis_blob["moveInfos"]  # TODO: fix when rootInfos comes in
-        self.ownership = analysis_blob["ownership"]
+    def set_analysis(self, analysis_blob, refine_move):
+        if refine_move:
+            gtp = refine_move.gtp()
+            for d in self.analysis:
+                if d['move']==gtp:
+                    if d['visits'] < analysis_blob['rootInfo']['visits']:
+                        d.update(analysis_blob['rootInfo'])
+                    return
+            self.analysis.append({'move':gtp,'order':999,**analysis_blob['rootInfo']})
+        else: # TODO root info / to dict?
+            self.analysis = analysis_blob["moveInfos"]  # TODO: fix when rootInfos comes in
+            self.ownership = analysis_blob["ownership"]
 
     @property
     def analysis_ready(self):
@@ -85,7 +95,7 @@ class GameNode(SGFNode):
         return {"B": 1, "W": -1, None: 0}[player]
 
     @property
-    def ai_moves(self) -> List[Dict]:
+    def candidate_moves(self) -> List[Dict]:
         if not self.analysis_ready:
             return []
         analysis = copy.copy(self.analysis)  # not deep, so eval is saved, but avoids race conditions

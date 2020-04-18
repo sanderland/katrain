@@ -79,24 +79,28 @@ class KataGoEngine:
             else:
                 self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
 
-    def request_analysis(self, analysis_node: GameNode, callback: Callable, faster: bool = False, min_visits: int = 0, priority: int = 0, ownership: Optional[bool] = None):
+    def request_analysis(self, analysis_node: GameNode, callback: Callable, faster: bool = False, visits: int = None, priority: int = 0, ownership: Optional[bool] = None,
+                         refine_move=None):
         fast = self.katrain.controls.ai_fast.active
         query_id = f"QUERY:{str(self.query_counter)}"
         self.query_counter += 1
-        visits = self.config["visits_fast" if fast else "visits"]
+        if not visits:
+            visits = self.config["visits_fast" if fast else "visits"]
         if faster:
             visits /= 5
         moves = [m for node in analysis_node.nodes_from_root for m in node.move_with_placements]
+        if refine_move:
+            moves.append(refine_move)
 
         if ownership is None:
-            ownership = self.config["enable_ownership"]
+            ownership = self.config["enable_ownership"] and not refine_move
 
         query = {
             "id": query_id,
             "rules": self.get_rules(analysis_node),
             "priority": self.base_priority + priority,
             "analyzeTurns": [len(moves)],
-            "maxVisits": max(min_visits, visits),
+            "maxVisits": visits,
             "komi": analysis_node.komi,
             "boardXSize": analysis_node.board_size,
             "boardYSize": analysis_node.board_size,

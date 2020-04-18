@@ -14,12 +14,18 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 
 
-class Controls(GridLayout):
+class Controls(BoxLayout):
     def __init__(self, **kwargs):
         super(Controls, self).__init__(**kwargs)
+        self.status = None
+        self.status_node = None
 
-    def set_status(self, msg):
+    def set_status(self, msg,at_node=None):
+        self.status = msg
+        self.status_node = at_node or self.parent.game.current_node
         self.info.text = msg
+        self.update_evaluation()
+
 
     def show_evaluation_stats(self, node):
         if node.analysis_ready:
@@ -43,11 +49,19 @@ class Controls(GridLayout):
         self.score.set_prisoners(self.parent.game.prisoner_count)
         current_player_is_human_or_both_robots = True  # move not self.ai_auto.active(current_node.player) or self.ai_auto.active(1 - current_node.player) # TODO FIX
 
+        info = ""
+        if current_node is self.status_node:
+            info += self.status + "\n"
+        else:
+            self.status_node = None
+
         if current_player_is_human_or_both_robots and not current_node.is_root and move:
-            self.info.text = current_node.comment(eval=True, hints=self.hints.active(move.player))
+            info += current_node.comment(eval=True, hints=self.hints.active(move.player))
         self.points_lost.text = ""
         if current_player_is_human_or_both_robots:
             self.show_evaluation_stats(current_node)
+
+        self.info.text = info
 
         if False:  # TODO: UNDO AND AI MOVE
             if current_node.analysis_ready and current_node.parent and current_node.parent.analysis_ready and not current_node.children and not current_node.x_comment.get("undo"):

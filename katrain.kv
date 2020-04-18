@@ -1,13 +1,14 @@
 #:kivy 1.11.0
+#:import ew kivy.uix.effectwidget
 
 <StyledButton>:
     text_color: 0.95,0.95,0.95,1
-    button_color: 0.157,0.455,0.753,1
+    button_color: 0.21, 0.28, 0.31, 1
     button_color_down: (*[c/2 for c in self.button_color[:3]],1)
     margin: (2,1)
-    bold: True
-    font_size: self.size[1] * 0.4
-    radius: int(self.size[1]/3)
+    bold: False
+    font_size: self.size[1] * 0.35
+    radius: 10
     # dont set these
     disabled_mask: (0.5,0.5,0.5,1) if self.disabled else (1,1,1,1)
     color: self.disabled_mask if self.disabled else self.text_color
@@ -21,6 +22,38 @@
             size: self.size[0]-2*self.margin[0],self.size[1]-2*self.margin[1]
             pos: (self.pos[0]+self.margin[0],self.pos[1]+self.margin[1])
             radius: (root.radius or 0,)
+
+<StyledToggleButton@ToggleButton>:
+    color: 1,1,1,1
+    button_color: 0.21, 0.28, 0.31, 1
+    button_color_down: (*[c/2 for c in self.button_color[:3]],1)
+    margin: (1,1)
+    bold: True
+    font_size: self.size[1] * 0.45
+    radius: self.size[1]/3
+    # dont set these
+    disabled_mask: (0.5,0.5,0.5,1) if self.disabled else (1,1,1,1)
+    background_color: 0,0,0,0
+    background_normal: ''
+    face_color: [c*m for c,m in zip(self.button_color if root.state=='normal' else self.button_color_down,self.disabled_mask)]
+    canvas.before:
+        Color:
+            rgba: root.face_color or [0,0,0,0]
+        RoundedRectangle:
+            size: self.size[0]-2*self.margin[0],self.size[1]-2*self.margin[1]
+            pos: (self.pos[0]+self.margin[0],self.pos[1]+self.margin[1])
+            radius: (root.radius or 0,root.radius or 0,0,0)
+
+<StyledIconButton@StyledButton>
+    button_color: 0.71, 0.78, 0.81, 1
+    icon_margin: 0.15 * self.size[0]
+    icon: 'missing.png'
+    icon_size: min(self.size[0]-2*self.margin[0]-2*self.icon_margin,self.size[1]-2*self.margin[1]-2*self.icon_margin)
+    #EffectWidget:        effects: [ew.FXAAEffect()]
+    Image:
+        size: (root.icon_size or 0,root.icon_size or 0)  # square
+        pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
+        source: root.icon
 
 <DarkLabel@Label>:
     color: (0.05,0.05,0.05,1)
@@ -81,7 +114,7 @@
 		active: root.default_active
 		on_active: root.dispatch('on_active')
 
-
+ # TODO no need for this anymore
 <CensorableLabel>
 	orientation: 'horizontal'
 	text: ''
@@ -249,9 +282,8 @@
 	engine: self.parent.controls
 	
 <Controls>
-	cols: 1
-	rows: 9
-	info: info
+	orientation: 'vertical'
+    info: info
 	win_rate: win_rate
 	points_lost: points_lost
 	score: score
@@ -262,77 +294,150 @@
 	ai_auto: ai_auto
 	ai_fast: ai_fast
 	ai_lock: ai_lock
-	load: load
-	save: save
-	auto_undo: auto_undo
-	undo: undo
 	ai_move: ai_move
+	auto_undo: auto_undo
 	katrain: self.parent
-	GridLayout:
-		cols: 7
-		rows: 1
-		size_hint: 1, 0.05
-        Label:
-            size_hint: 0.01, 1
-		BoxLayout:
-		    orientation: 'vertical'
-			size_hint: 0.1, 0.5
-			Label:
-			    size_hint: 1, 0.2
-			BlackCircleWithText:
-			    text: 'B'
-			WhiteCircleWithText:
-			    text: 'W'
-		BWCheckBoxHint:
-			size_hint: 0.2, 0.5
-			id: eval
-			text: 'all eval'
-			default_active: False
-			on_active: root.parent.update_state()
-		BWCheckBoxHint:
-			size_hint: 0.2, 0.5
-			id: hints
-			text: 'hints'
-			on_active: root.parent.update_state()
-		BWCheckBoxHint:
-			size_hint: 0.2, 0.5
-			id: auto_undo
-			text: 'undo'
-			on_active: root.parent.update_state()
-		BWCheckBoxHint:
-			size_hint: 0.166, 0.5
-			text: 'ai'
-			id: ai_auto
-			default_active: False
-		CheckBoxHint:
-			size_hint: 0.2, 0.5
-			id: ownership
-			text: 'show\nowner'
-			on_active: root.parent.update_state()
-	GridLayout:
-		cols: 4
-		rows: 1
-		size_hint: 1, 0.05
-		StyledButton:
-		    id: ai_move
-			size_hint: 0.5, 0.5
-			text: 'AI Move'
-			on_press: root.katrain("ai_move")
-		CheckBoxHint:
-			size_hint: 0.166, 0.5
-			text: 'fast'
-			id: ai_fast
-			default_active: True
-		CheckBoxHint:
-			size_hint: 0.166, 0.5
-			text: 'balance\nscore'
-			id: ai_balance
-			default_active: False
-		CheckBoxHint:
-			size_hint: 0.167, 0.5
-			text: 'lock\nai'
-			id: ai_lock
-			on_active: self.checkbox.disabled = hints.black.disabled = hints.white.disabled = ai_auto.black.disabled = ai_auto.white.disabled = auto_undo.black.disabled = auto_undo.white.disabled = ai_move.disabled = True
+    BoxLayout:
+        size_hint: 1,0.05
+        orientation: 'horizontal'
+        StyledToggleButton:
+            text: 'Analyze'
+            id: analyze_tab_button
+            state: 'down'
+            group: 'tabs'
+            on_press:
+                analyze_tab.size_hint[0] = 1
+                analyze_tab.opacity = 1
+                play_tab.size_hint_x = None
+                play_tab.width = 0
+                play_tab.opacity = 0
+                print(play_tab,play_tab.size_hint,analyze_tab.size_hint)
+        StyledToggleButton:
+            text: 'Play'
+            group: 'tabs'
+            on_press:
+                play_tab.size_hint[0] = 1
+                play_tab.opacity = 1
+                analyze_tab.size_hint_x = None
+                analyze_tab.width = 0
+                analyze_tab.opacity = 0
+                print(play_tab.size_hint,analyze_tab.size_hint)
+    BoxLayout:
+        size_hint: 1,0.25
+        orientation: 'horizontal'
+        BoxLayout:
+            size_hint: 1,1
+            id: analyze_tab
+            orientation: 'vertical'
+            GridLayout:
+                cols: 7
+                rows: 1
+                size_hint: 1, 0.25
+                Label:
+                    size_hint: 0.01, 1
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 0.1, 0.5
+                    Label:
+                        size_hint: 1, 0.2
+                    BlackCircleWithText:
+                        text: 'B'
+                    WhiteCircleWithText:
+                        text: 'W'
+                BWCheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: eval
+                    text: 'all eval'
+                    default_active: False
+                    on_active: root.parent.update_state()
+                BWCheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: hints
+                    text: 'top move'
+                    on_active: root.parent.update_state()
+                BWCheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: auto_undo
+                    text: 'undo'
+                    on_active: root.parent.update_state()
+                CheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: ownership
+                    text: 'show\nowner'
+                    on_active: root.parent.update_state()
+                CheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: policy
+                    text: 'show\npolicy'
+                    on_active: root.parent.update_state()
+            LargeLabel:
+                text: 'graph?'
+                size_hint: 1,0.75
+            CensorableLabel:
+                id: win_rate
+                size_hint: 1, 0.15
+                label: 'Win rate'
+                text: '...'
+            CensorableScoreLabel:
+                id: score
+                size_hint: 1, 0.15
+                label: 'Score'
+                text: '...'
+            CensorableLabel:
+                id: points_lost
+                size_hint: 1, 0.15
+                label: 'Point loss'
+                text: '...'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 0,1
+            opacity: 0
+            id: play_tab
+            GridLayout:
+                cols: 4
+                rows: 1
+                size_hint: 1, 0.1
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 0.1, 0.5
+                    Label:
+                        size_hint: 1, 0.2
+                    BlackCircleWithText:
+                        text: 'B'
+                    WhiteCircleWithText:
+                        text: 'W'
+                BWCheckBoxHint:
+                    text: 'ai'
+                    id: ai_auto
+                    default_active: False
+                    size_hint: 0.25, 1
+                CheckBoxHint:
+                    size_hint: 0.25, 1
+                    text: 'fast'
+                    id: ai_fast
+                    default_active: True
+                CheckBoxHint:
+                    size_hint: 0.25, 1
+                    text: 'balance\nscore'
+                    id: ai_balance
+                    default_active: False
+            GridLayout:
+                cols: 4
+                rows: 1
+                size_hint: 1, 0.1
+                StyledButton:
+                    id: ai_move
+                    size_hint: 0.5, 0.5
+                    text: ' AI\nMove'
+                    on_press: root.katrain("ai_move")
+                CheckBoxHint:
+                    size_hint: 0.25, 1
+                    text: 'lock\nAI'
+                    id: ai_lock
+                    on_active: self.checkbox.disabled = analyze_tab_button.disabled = ai_auto.white.checkbox = ai_auto.black.checkbox = ai_move.disabled = True
+            LargeLabel:
+                text: 'free real estate'
+                size_hint: 1,0.5
 	GridLayout:
 		cols: 2
 		rows: 1
@@ -345,52 +450,30 @@
 		StyledButton:
 			text: 'Pass'
 			on_press: root.katrain("play",(None,None))
-    CensorableLabel:
-        id: win_rate
-        size_hint: 1, 0.025
-        label: 'Win rate'
-        text: '...'
-    CensorableScoreLabel:
-        id: score
-        size_hint: 1, 0.025
-        label: 'Score'
-        text: '...'
-    CensorableLabel:
-        id: points_lost
-        size_hint: 1, 0.025
-        label: 'Point loss'
-        text: '...'
 	TextInput:
 		id: info
 		size_hint: 1, 0.2
 		valign: 'middle'
-	BoxLayout:
-		orientation: 'horizontal'
-		size_hint: 1, 0.05
-		StyledButton:
-			text: ' New\nGame'
-			id: new_game
-			size_hint: 0.33, 1
-			font_size: 0.25*self.size[1]
-			on_press: root.katrain("new-game-popup")
-		StyledButton:
-			text: 'Load'
-			id: load
-			size_hint: 0.33, 1
-			font_size: 0.25*self.size[1]
-			on_press: root.katrain("analyze-sgf-popup")
-			margin: 0,1
-		StyledButton:
-			text: 'Save'
-			id: save
-			size_hint: 0.33, 1
-			font_size: 0.25*self.size[1]
-			on_press: root.katrain('output-sgf')
-		StyledButton:
-			text: 'C'
-			size_hint: 0.1, 1
-			font_size: 0.25*self.size[1]
-			on_press: root.katrain('config-popup')
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1, None
+        height: self.width * 0.25
+        StyledIconButton:
+            icon: 'img/flaticon/go-game.png'
+            size_hint: 0.25, 1
+            on_press: root.katrain("new-game-popup")
+        StyledIconButton:
+            icon: 'img/flaticon/open-folder.png'
+            size_hint: 0.25, 1
+            on_press: root.katrain("analyze-sgf-popup")
+        StyledIconButton:
+            icon: 'img/flaticon/bar.png'
+            size_hint: 0.25, 1
+            on_press: root.katrain('output-sgf')
+        StyledIconButton:
+            icon: 'img/flaticon/gears.png'
+            size_hint: 0.25, 1
+            on_press: root.katrain('config-popup')
 
 
 <KaTrainGui>:

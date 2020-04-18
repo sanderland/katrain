@@ -6,6 +6,7 @@ from queue import Queue
 
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.core.clipboard import Clipboard
 from kivy.core.window import Window
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.boxlayout import BoxLayout
@@ -38,7 +39,7 @@ class KaTrainGui(BoxLayout):
 
     def log(self, message, level=OUTPUT_INFO):
         if level == OUTPUT_ERROR:
-            self.controls.set_status(f"ERROR: {message}")
+            self.controls.set_status(f"ERROR: {message}",self.game.current_node)
             print(f"ERROR: {message}")
         elif self.debug_level >= level:
             print(message)
@@ -53,6 +54,9 @@ class KaTrainGui(BoxLayout):
         except Exception as e:
             self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
             sys.exit(1)
+
+    def save_config(self, cat, **kwargs):
+        self._config_store.put(cat, **kwargs)
 
     def config(self, setting, default=None):
         try:
@@ -108,12 +112,12 @@ class KaTrainGui(BoxLayout):
 
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
-            self.game.ai_move()
+            self.game.ai_move(self.config('trainer'))
             self.update_state()
 
     def _do_undo(self, n_times=1):
         if self.controls.ai_lock.active and self.contols.auto_undo.active(self.game.current_node.player) and self.config("trainer/lock_undos"):
-            self.controls.set_status(f"Can't undo manually when Automatic Undo and Lock AI are both set. (Change the `lock_undos` setting to false to allow this regardless)")
+            self.controls.set_status(f"Can't undo manually when Automatic Undo and Lock AI are both set. (Change the `lock_undos` setting to false to allow this regardless)",self.game.current_node)
             return
         self.game.undo(n_times)
         self.update_state()
@@ -126,8 +130,11 @@ class KaTrainGui(BoxLayout):
         self.game.switch_branch(direction)
         self.update_state()
 
-    def _do_play(self, *args):
-        self.game.play(Move(args[0], player=self.game.next_player))
+    def _do_play(self, coords):
+        try:
+            self.game.play(Move(coords, player=self.game.next_player))
+        except IllegalMoveException as e:
+            self.controls.set_status(f"Illegal Move: {str(e)}")
         self.update_state()
 
     def _do_analyze_extra(self, mode):
@@ -208,12 +215,24 @@ class KaTrainGui(BoxLayout):
             self("analyze-sgf-popup")
         elif keycode[1] == "s" and "ctrl" in modifiers:
             self("output-sgf")
+        elif keycode[1] == "c" and "ctrl" in modifiers:
+            Clipboard.copy(self.game.root.sgf())
+            self.controls.set_status("Copied SGF to clipboard.")
+        elif keycode[1] == "v" and "ctrl" in modifiers:
+            try:
+                move_tree = KaTrainSGF.parse(Clipboard.paste())
+            except Exception as e:
+                self.controls.set_status(f"Failed to imported game from clipboard: {e}")
+                return
+            self._do_new_game(move_tree=move_tree)
+            self('redo',999)
+            self.log("Imported game from clipboard.",OUTPUT_INFO)
         return True
 
 
 class KaTrainApp(App):
     def build(self):
-        self.icon = "./icon.png"
+        self.icon = "./img/icon.png"
         self.gui = KaTrainGui()
         Window.bind(on_request_close=self.on_request_close)
         return self.gui

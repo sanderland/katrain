@@ -85,7 +85,7 @@ class BadukPanWidget(Widget):
 
     def eval_color(self, points_lost):
         colors = self.ui_config["eval_colors"]
-        thresholds = self.ui_config["eval_thresholds"]
+        thresholds = self.trainer_config["eval_thresholds"]
         i = 0
         while i < len(thresholds) and points_lost < thresholds[i]:
             i += 1
@@ -133,7 +133,7 @@ class BadukPanWidget(Widget):
             return
         stone_color = self.ui_config["stones"]
         outline_color = self.ui_config["outline"]
-        ghost_alpha = self.ui_config["ghost_alpha"]
+        _ghost_alpha = self.ui_config["_ghost_alpha"]
         katrain = self.parent
         board_size = katrain.game.board_size
 
@@ -144,19 +144,21 @@ class BadukPanWidget(Widget):
             next_player = katrain.game.next_player
             full_eval_on = katrain.controls.eval.active_map
             has_stone = {}
+            drawn_stone = {}
             for m in katrain.game.stones:
                 has_stone[m.coords] = m.player
 
             show_n_eval = self.trainer_config["eval_off_show_last"]
             nodes = katrain.game.current_node.nodes_from_root
-            for i, node in enumerate(nodes):
+            for i, node in enumerate(nodes[::-1]):  # reverse order!
                 points_lost = node.points_lost
                 evalsize = 1
                 for m in node.move_with_placements:
-                    if has_stone.get(m.coords):  # skip captures, draw over repeat plays
-                        move_eval_on = full_eval_on[m.player] or i >= len(nodes) - show_n_eval
+                    if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
+                        move_eval_on = full_eval_on[m.player] or i < show_n_eval
                         evalcol = self.eval_color(points_lost) if move_eval_on and points_lost is not None else None
-                        inner = stone_color[m.opponent] if (m is current_node) else None
+                        inner = stone_color[m.opponent] if i == 0 else None
+                        drawn_stone[m.coords] = m.player
                         self.draw_stone(m.coords[0], m.coords[1], stone_color[m.player], outline_color[m.player], inner, evalcol, evalsize)
 
             # ownership - allow one move out of date for smooth animation
@@ -174,19 +176,19 @@ class BadukPanWidget(Widget):
 
             # children of current moves in undo / review
             undo_coords = set()
-            alpha = self.ui_config["undo_alpha"]
+            alpha = self.ui_config["_child_alpha"]
             for child_node in current_node.children:
                 points_lost = child_node.points_lost
                 m = child_node.single_move
                 if m and m.coords is not None:
                     undo_coords.add(m.coords)
                     evalcol = (*self.eval_color(points_lost), alpha) if points_lost is not None else None
-                    scale = self.ui_config.get("undo_scale", 0.95)
+                    scale = self.ui_config.get("_child_scale", 0.95)
                     self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
             # hints
             if katrain.controls.hints.active(next_player):
-                hint_moves = current_node.ai_moves
+                hint_moves = current_node.candidate_moves
                 for i, d in enumerate(hint_moves):
                     move = Move.from_gtp(d["move"])
                     c = [*self.eval_color(d["pointsLost"]), 0.5]
@@ -201,7 +203,7 @@ class BadukPanWidget(Widget):
 
             # hover next move ghost stone
             if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*stone_color[next_player], ghost_alpha))
+                self.draw_stone(*self.ghost_stone, (*stone_color[next_player], _ghost_alpha))
 
             # pass circle
             passed = len(nodes) > 1 and current_node.is_pass

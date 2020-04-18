@@ -85,8 +85,8 @@ class ConfigPopup(QuickConfigGui):
         for k1, all_d in config.items():
             d = {k: v for k, v in all_d.items() if isinstance(v, (int, float, str, bool))}  # no complex objects
             cat = GridLayout(cols=2, rows=len(d) + 1, size_hint=(1, len(d) + 1))
-            cat.add_widget(Label(text="Settings for", bold=True))
-            cat.add_widget(Label(text=k1, bold=True))
+            cat.add_widget(Label(text=""))
+            cat.add_widget(Label(text=f"{k1} settings", bold=True))
             for k2, v in d.items():
                 cat.add_widget(Label(text=f"{k2}:"))
                 cat.add_widget(self.type_to_widget_class(v)(text=str(v), input_property=f"{k1}/{k2}"))
@@ -101,7 +101,8 @@ class ConfigPopup(QuickConfigGui):
         col_container.add_widget(cols[0])
         col_container.add_widget(cols[1])
         self.add_widget(col_container)
-        self.save_button = StyledButton(text="Apply Settings", on_press=lambda _: self.update_config(), size_hint=(1, 0.05))  # apply & save?
+        self.save_button = StyledButton(text="Apply Settings", on_press=lambda _: self.update_config(), size_hint=(1, 0.05))
+        self.save_button = StyledButton(text="Apply and Save Settings", on_press=lambda _: self.update_config(save_to_file=True), size_hint=(1, 0.05))
         self.add_widget(self.save_button)
 
     def update_config(self, save_to_file=False):
@@ -113,13 +114,15 @@ class ConfigPopup(QuickConfigGui):
                     self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
                     updated_cat.append(k1)
                     self.config[k1][k2] = v
-                    # if save_to_file: # TODO
-                    #    self.katrain._config_store.put()
             self.popup.dismiss()
         except InputParseError as e:
             self.save_button.text = str(e)  # TODO: nicer error
             self.katrain.log(e, OUTPUT_ERROR)
             return
+
+        if save_to_file:
+            for cat in updated_cat:
+                self.katrain.save_config(cat, **self.config[cat])
 
         if "engine" in updated_cat:
             self.katrain.log("Restarting Engine after settings change")

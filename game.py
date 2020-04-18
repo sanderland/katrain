@@ -1,6 +1,7 @@
 import math
 import os
 import random
+import time
 from datetime import datetime
 from typing import List
 
@@ -193,12 +194,13 @@ class Game:
             f.write(self.root.sgf())
         return f"SGF with analysis written to {file_name}"
 
-    def ai_move(self):
-        if not self.current_node.analysis_ready:
-            return  # TODO: hook/wait?
+    def ai_move(self,train_settings):
+        while not self.current_node.analysis_ready:
+            self.katrain.set_status("Thinking...")
+            time.sleep(0.05)
 
         # select move
-        ai_moves = self.current_node.ai_moves
+        ai_moves = self.current_node.candidate_moves
         pos_moves = [
             [d["move"], d["scoreLead"], d["pointsLost"]] for i, d in enumerate(ai_moves) if i == 0 or int(d["visits"]) >= self.config["balance_play_min_visits"]
         ]  # TODO: lcb based ?
@@ -208,55 +210,55 @@ class Game:
             sel_moves = [
                 (move, score, points_lost)
                 for move, score, points_lost in pos_moves
-                if points_lost < self.config["balance_play_randomize_eval"]
-                or points_lost < self.config["balance_play_min_eval"]
+                if points_lost < train_settings["balance_play_randomize_score"]
+                or points_lost < train_settings["balance_play_min_eval"]
                 and -self.current_node.move.player_sign * score > self.config["balance_play_target_score"]
             ] or sel_moves
         aimove = Move.from_gtp(random.choice(sel_moves)[0], player=self.next_player)
         self.play(aimove)
 
     def analyze_undo(self, node, train_config):
-        if node != self.current_node or node.auto_undo is not None:
+        if node != self.current_node or node.auto_undo is not None or not node.analysis_ready or not node.single_move:
             return
-        node.points_lost
-
-    def num_undos(self, move):
-        if self.config["num_undo_prompts"] < 1:
-            return int(move.undo_threshold < self.config["num_undo_prompts"])
+        points_lost = node.points_lost
+        thresholds = train_config["eval_thresholds"]
+        num_undo_prompts = train_config["num_undo_prompts"]
+        i = 0
+        while i < len(thresholds) and points_lost < thresholds[i]:
+            i += 1
+        num_undos = num_undo_prompts[i] if i < len(num_undo_prompts) else 0
+        if num_undos == 0:
+            undo = False
+        elif num_undos < 1:  # probability
+            undo = int(node.undo_threshold < num_undos) and len(node.parent.children) == 1
         else:
-            return self.config["num_undo_prompts"]
+            undo = len(node.parent.children) <= num_undos
+        node.auto_undo = undo
+        if undo:
+            self.undo(1)
+            self.katrain.update_state()
 
     def analyze_extra(self, mode):
-        stones = {s.coords for s in self.parent.game.stones}
-        current_move = self.current_node
-        if not current_move.analysis:
-            self.info.text = "Wait for initial analysis to complete before doing a board-sweep or refinement"
+        stones = {s.coords for s in self.stones}
+        cn = self.current_node
+        if not cn.analysis:
+            self.katrain.controls.set_status("Wait for initial analysis to complete before doing a board-sweep or refinement",self.current_node)
             return
-        played_moves = self.parent.game.moves
 
         if mode == "extra":
-            visits = sum([d["visits"] for d in current_move.analysis]) + self.visits[0][1]
-            self.info.text = f"Performing additional analysis to {visits} visits"
-            self._request_analysis(current_move, min_visits=visits, priority=self.game_counter - 1_000)
+            visits = sum([d["visits"] for d in cn.analysis]) + self.engine.config['visits']
+            self.katrain.controls.set_status(f"Performing additional analysis to {visits} visits")
+            cn.analyze(self.engine, visits=visits, priority=- 1_000)
             return
         elif mode == "sweep":
-            analyze_moves = [Move(coords=(x, y)).gtp() for x in range(self.parent.game_size) for y in range(self.parent.game_size) if (x, y) not in stones]
-            visits = self.visits[self.ai_fast.active][2]
-            self.info.text = f"Refining analysis of entire board to {visits} visits"
-            priority = self.game_counter - 1_000_000_000
+            analyze_moves = [Move(coords=(x, y),player=cn.next_player) for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
+            visits = self.engine.config['visits_fast']
+            self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
+            priority =- 1_000_000_000
         else:  # mode=='refine':
-            analyze_moves = [a["move"] for a in current_move.analysis]
-            visits = current_move.analysis[0]["visits"] + self.visits[1][2]
-            self.info.text = f"Refining analysis of candidate moves to {visits} visits"
-            priority = self.game_counter - 1_000
-
-        for gtpcoords in analyze_moves:
-            self._send_analysis_query(
-                {
-                    "id": f"AA:{current_move.id}:{gtpcoords}",
-                    "moves": [[m.bw_player(), m.gtp()] for m in played_moves] + [[current_move.bw_player(True), gtpcoords]],
-                    "includeOwnership": False,
-                    "maxVisits": visits,
-                    "priority": priority,
-                }
-            )
+            analyze_moves = [Move.from_gtp(a["move"],player=cn.next_player) for a in cn.analysis]
+            visits = cn.analysis[0]["visits"] +  self.engine.config['visits_fast']
+            self.katrain.controls.set_status(f"Refining analysis of candidate moves to {visits} visits")
+            priority = - 1_000
+        for move in analyze_moves:
+            cn.analyze(self.engine, priority, visits=visits, refine_move=move)
