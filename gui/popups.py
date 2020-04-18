@@ -8,8 +8,7 @@ from kivy.uix.textinput import TextInput
 
 from engine import KataGoEngine
 from game import Game, GameNode
-from gui.kivyutils import LabelledFloatInput, LabelledIntInput, LabelledTextInput, StyledButton, LabelledCheckBox, \
-    LabelledSpinner
+from gui.kivyutils import LabelledFloatInput, LabelledIntInput, LabelledTextInput, StyledButton, LabelledCheckBox, LabelledSpinner
 
 
 class InputParseError(Exception):
@@ -128,3 +127,4 @@ class ConfigPopup(QuickConfigGui):
             self.katrain.engine = KataGoEngine(self.katrain, self.config["engine"])
             self.katrain.game.engine = self.katrain.engine
             old_engine.shutdown(finish=True)
+        self.katrain.update_state(redraw_board=True)

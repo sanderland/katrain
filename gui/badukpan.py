@@ -12,7 +12,8 @@ from game import Move
 class BadukPanWidget(Widget):
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
-        self.config = {}
+        self.ui_config = {}
+        self.trainer_config = {}
         self.ghost_stone = []
         self.gridpos = []
         self.grid_size = 0
@@ -72,7 +73,7 @@ class BadukPanWidget(Widget):
             Color(*outline_col)
             Line(circle=(self.gridpos[x], self.gridpos[y], stone_size), width=0.05 * stone_size)
         if evalcol:
-            evalsize = self.stone_size * evalscale * self.config["eval_dot_max_size"]
+            evalsize = self.stone_size * evalscale * self.ui_config["eval_dot_max_size"]
             draw_circle((self.gridpos[x], self.gridpos[y]), evalsize, evalcol)
         #            highlight_col = [ ((1-c)*0.33+e)/1.33  for c,e in zip(col,evalcol) ]
         #            Color(*highlight_col[:3],0.5)
@@ -83,15 +84,15 @@ class BadukPanWidget(Widget):
             Line(circle=(self.gridpos[x], self.gridpos[y], stone_size * 0.45 / 0.85), width=0.125 * stone_size)  # 1.75
 
     def eval_color(self, points_lost):
-        colors = self.config["eval_colors"]
-        thresholds = self.config["eval_thresholds"]
+        colors = self.ui_config["eval_colors"]
+        thresholds = self.ui_config["eval_thresholds"]
         i = 0
         while i < len(thresholds) and points_lost < thresholds[i]:
             i += 1
         return colors[min(i, len(colors) - 1)]
 
     def draw_board(self, *args):
-        if not self.config:
+        if not self.ui_config:
             return
         katrain = self.parent
         board_size = katrain.game.board_size
@@ -99,15 +100,15 @@ class BadukPanWidget(Widget):
         with self.canvas.before:
             # board
             sz = min(self.width, self.height)
-            Color(*self.config["board_color"])
+            Color(*self.ui_config["board_color"])
             board_rectangle = Rectangle(pos=(0, 0), size=(sz, sz))
             # grid lines
-            margin = self.config["board_margin"]
+            margin = self.ui_config["board_margin"]
             self.grid_size = board_rectangle.size[0] / (board_size - 1 + 1.5 * margin)
-            self.stone_size = self.grid_size * self.config["stone_size"]
+            self.stone_size = self.grid_size * self.ui_config["stone_size"]
             self.gridpos = [math.floor((margin + i) * self.grid_size + 0.5) for i in range(board_size)]
 
-            line_color = self.config["line_color"]
+            line_color = self.ui_config["line_color"]
             Color(*line_color)
             lo, hi = self.gridpos[0], self.gridpos[-1]
             for i in range(board_size):
@@ -116,7 +117,7 @@ class BadukPanWidget(Widget):
 
             # star points
             star_point_pos = 3 if board_size <= 11 else 4
-            starpt_size = self.grid_size * self.config["starpoint_size"]
+            starpt_size = self.grid_size * self.ui_config["starpoint_size"]
             for x in [star_point_pos - 1, board_size - star_point_pos, int(board_size / 2)]:
                 for y in [star_point_pos - 1, board_size - star_point_pos, int(board_size / 2)]:
                     draw_circle((self.gridpos[x], self.gridpos[y]), starpt_size, line_color)
@@ -128,11 +129,11 @@ class BadukPanWidget(Widget):
                 draw_text(pos=(lo / 2, self.gridpos[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
 
     def draw_board_contents(self, *args):
-        if not self.config:
+        if not self.ui_config:
             return
-        stone_color = self.config["stones"]
-        outline_color = self.config["outline"]
-        ghost_alpha = self.config["ghost_alpha"]
+        stone_color = self.ui_config["stones"]
+        outline_color = self.ui_config["outline"]
+        ghost_alpha = self.ui_config["ghost_alpha"]
         katrain = self.parent
         board_size = katrain.game.board_size
 
@@ -146,7 +147,7 @@ class BadukPanWidget(Widget):
             for m in katrain.game.stones:
                 has_stone[m.coords] = m.player
 
-            show_n_eval = self.config["eval_off_show_last"]
+            show_n_eval = self.trainer_config["eval_off_show_last"]
             nodes = katrain.game.current_node.nodes_from_root
             for i, node in enumerate(nodes):
                 points_lost = node.points_lost
@@ -173,14 +174,14 @@ class BadukPanWidget(Widget):
 
             # children of current moves in undo / review
             undo_coords = set()
-            alpha = self.config["undo_alpha"]
+            alpha = self.ui_config["undo_alpha"]
             for child_node in current_node.children:
                 points_lost = child_node.points_lost
                 m = child_node.single_move
                 if m and m.coords is not None:
                     undo_coords.add(m.coords)
                     evalcol = (*self.eval_color(points_lost), alpha) if points_lost is not None else None
-                    scale = self.config.get("undo_scale", 0.95)
+                    scale = self.ui_config.get("undo_scale", 0.95)
                     self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
             # hints

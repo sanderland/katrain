@@ -30,6 +30,12 @@ class Controls(GridLayout):
             else:
                 self.points_lost.text = f"?"
 
+    def unlock(self):
+        if self.ai_lock.active:
+            self.ai_lock.checkbox._do_press()
+        for el in [self.ai_lock.checkbox, self.hints.black, self.hints.white, self.ai_auto.black, self.ai_auto.white, self.auto_undo.black, self.auto_undo.white, self.ai_move]:
+            el.disabled = False
+
     # handles showing completed analysis and triggered actions like auto undo and ai move
     def update_evaluation(self):
         current_node = self.parent.game.current_node
@@ -37,7 +43,7 @@ class Controls(GridLayout):
         self.score.set_prisoners(self.parent.game.prisoner_count)
         current_player_is_human_or_both_robots = True  # move not self.ai_auto.active(current_node.player) or self.ai_auto.active(1 - current_node.player) # TODO FIX
 
-        if current_player_is_human_or_both_robots and not current_node.is_root:
+        if current_player_is_human_or_both_robots and not current_node.is_root and move:
             self.info.text = current_node.comment(eval=True, hints=self.hints.active(move.player))
         self.points_lost.text = ""
         if current_player_is_human_or_both_robots:

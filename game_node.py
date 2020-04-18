@@ -12,7 +12,7 @@ class GameNode(SGFNode):
         super().__init__(parent=parent, properties=properties, move=move)
         self.analysis = None
         self.ownership = None
-        self.auto_undid = False
+        self.auto_undo = None  # None = not analyzed. False: not undone (good move). True: undone (bad move)
         self.move_number = 0
         self.undo_threshold = random.random()  # for fractional undos, store the random threshold in the move itself for consistency
 

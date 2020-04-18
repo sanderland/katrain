@@ -378,14 +378,14 @@
 			id: load
 			size_hint: 0.33, 1
 			font_size: 0.25*self.size[1]
-			on_press: root.katrain("analyze-sgf-popup",info.text)
+			on_press: root.katrain("analyze-sgf-popup")
 			margin: 0,1
 		StyledButton:
 			text: 'Save'
 			id: save
 			size_hint: 0.33, 1
 			font_size: 0.25*self.size[1]
-			on_press: info.text = root.parent.output_sgf()
+			on_press: root.katrain('output-sgf')
 		StyledButton:
 			text: 'C'
 			size_hint: 0.1, 1

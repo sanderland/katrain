@@ -37,7 +37,7 @@ class Game:
             if handicap is not None and not self.root.placements:
                 self.place_handicap_stones(handicap)
         else:
-            self.board_size = board_size or config["size"]
+            self.board_size = board_size or config["init_size"]
             self.komi = self.config.get(f"komi_{self.board_size}", 6.5)
             self.root = GameNode(properties={"SZ": self.board_size, "KM": self.komi, "DT": self.game_id, **Game.DEFAULT_PROPERTIES})
 
@@ -186,8 +186,8 @@ class Game:
     def __repr__(self):
         return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
-    def write_sgf(self, file_name=None):
-        file_name = file_name or f"sgfout/katrain_{self.game_id}.sgf"
+    def write_sgf(self, path=None):
+        file_name = os.path.join(path, f"katrain_{self.game_id}.sgf")
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
         with open(file_name, "w") as f:
             f.write(self.root.sgf())
@@ -214,6 +214,11 @@ class Game:
             ] or sel_moves
         aimove = Move.from_gtp(random.choice(sel_moves)[0], player=self.next_player)
         self.play(aimove)
+
+    def analyze_undo(self, node, train_config):
+        if node != self.current_node or node.auto_undo is not None:
+            return
+        node.points_lost
 
     def num_undos(self, move):
         if self.config["num_undo_prompts"] < 1:
