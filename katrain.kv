@@ -195,6 +195,7 @@
 
 <NewGamePopup>
     orientation: 'vertical'
+    rules_spinner: rules_spinner
     BoxLayout:
         size_hint: 1, 0.9
         orientation: 'horizontal'
@@ -205,24 +206,31 @@
             Label:
                 text: "Size"
                 size_hint: 0.5, 0.1
-            IntInput:
+            LabelledIntInput:
                 text: '19'
                 size_hint: 0.5, 0.1
                 input_property: 'SZ'
             Label:
                 text: "Handicap"
                 size_hint: 0.5, 0.1
-            IntInput:
+            LabelledIntInput:
                 text: '0'
                 size_hint: 0.5, 0.1
                 input_property: 'HA'
             Label:
                 text: "Komi"
                 size_hint: 0.5, 0.1
-            FloatInput:
+            LabelledFloatInput:
                 text: '6.5'
                 size_hint: 0.5, 0.1
                 input_property: 'KM'
+            Label:
+                text: "Ruleset"
+                size_hint: 0.5, 0.1
+            LabelledSpinner:
+                size_hint: 0.5, 0.1
+                input_property: 'RU'
+                id: rules_spinner
             Label:
                 text: " "
                 size_hint: 0.5, 0.6

@@ -17,6 +17,10 @@ class KataGoEngine:
     RULESETS = {"jp": "japanese", "cn": "chinese", "ko": "korean", "aga": "aga"}
     RULESETS.update({v: v for v in RULESETS.values()})
 
+    @staticmethod
+    def get_rules(node):
+        return KataGoEngine.RULESETS.get(str(node.ruleset).lower(), "japanese")
+
     def __init__(self, katrain, config):
         self.katrain = katrain
         self.command = f"{config['katago']} analysis -model {config['model']} -config {config['config']} -analysis-threads {config['threads']}"
@@ -43,10 +47,14 @@ class KataGoEngine:
         self.base_priority += 1
         self.queries = {}
 
-    def shutdown(self):
+    def shutdown(self, finish=False):
+        if finish:
+            while self.queries:
+                time.sleep(0.1)
         process = getattr(self, "katago_process")
         if process:
             process.terminate()
+            self.katago_process = None
 
     def is_idle(self):
         return not self.queries
@@ -85,7 +93,7 @@ class KataGoEngine:
 
         query = {
             "id": query_id,
-            "rules": self.RULESETS.get(str(analysis_node.ruleset).lower(), "japanese"),
+            "rules": self.get_rules(analysis_node),
             "priority": self.base_priority + priority,
             "analyzeTurns": [len(moves)],
             "maxVisits": max(min_visits, visits),
@@ -97,6 +105,6 @@ class KataGoEngine:
         }
         self.queries[query_id] = (callback, time.time())
         if self.katago_process:
-            self.katrain.log(f"Sending query {query_id}: {str(query)[:80]}", OUTPUT_DEBUG)
+            self.katrain.log(f"Sending query {query_id}: {str(query)}", OUTPUT_DEBUG)
             self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
             self.katago_process.stdin.flush()

@@ -15,6 +15,7 @@ from constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INF
 from engine import KataGoEngine
 from game import Game, IllegalMoveException, KaTrainSGF, Move
 from gui import *
+from gui import LabelledSpinner
 from gui.popups import NewGamePopup, ConfigPopup
 
 
@@ -48,6 +49,7 @@ class KaTrainGui(BoxLayout):
         try:
             self.log(f"Using config file {config_file}", OUTPUT_INFO)
             self._config_store = JsonStore(config_file)
+            self._config = dict(self._config_store)
         except Exception as e:
             self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
             sys.exit(1)
@@ -56,10 +58,10 @@ class KaTrainGui(BoxLayout):
         try:
             if "/" in setting:
                 cat, key = setting.split("/")
-                return self._config_store.get(cat).get(key, default)
+                return self._config[cat].get(key, default)
             else:
-                return self._config_store.get(setting)
-        except Exception:
+                return self._config[setting]
+        except KeyError:
             self.log(f"Missing configuration option {setting}", OUTPUT_ERROR)
 
     def start(self):
@@ -165,7 +167,7 @@ class KaTrainGui(BoxLayout):
 
     def _do_config_popup(self):
         config_popup = Popup(title="Edit Settings", size_hint=(0.9, 0.9))
-        popup_contents = ConfigPopup(self, config_popup, dict(self._config_store))
+        popup_contents = ConfigPopup(self, config_popup, dict(self._config))
         config_popup.add_widget(popup_contents)
         config_popup.open()
 

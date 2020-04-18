@@ -6,6 +6,7 @@ import re
 
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
+from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
 
 
@@ -43,6 +44,14 @@ class LabelledCheckBox(CheckBox):
     @property
     def input_value(self):
         return bool(self.active)
+
+
+class LabelledSpinner(Spinner):
+    input_property = StringProperty("")
+
+    @property
+    def input_value(self):
+        return self.text
 
 
 class LabelledFloatInput(LabelledTextInput):

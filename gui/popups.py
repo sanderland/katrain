@@ -1,13 +1,15 @@
 from kivy.uix.boxlayout import BoxLayout
 import os
-
+from constants import OUTPUT_DEBUG, OUTPUT_ERROR
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 
+from engine import KataGoEngine
 from game import Game, GameNode
-from gui.kivyutils import LabelledFloatInput, LabelledIntInput, LabelledTextInput, StyledButton, LabelledCheckBox
+from gui.kivyutils import LabelledFloatInput, LabelledIntInput, LabelledTextInput, StyledButton, LabelledCheckBox, \
+    LabelledSpinner
 
 
 class InputParseError(Exception):
@@ -23,7 +25,7 @@ class QuickConfigGui(BoxLayout):
             self.set_properties(self, initial_values)
 
     def collect_properties(self, widget):
-        if isinstance(widget, LabelledTextInput):
+        if isinstance(widget, (LabelledTextInput, LabelledSpinner)):
             try:
                 ret = {widget.input_property: widget.input_value}
             except Exception as e:
@@ -36,7 +38,7 @@ class QuickConfigGui(BoxLayout):
         return ret
 
     def set_properties(self, widget, properties):
-        if isinstance(widget, LabelledTextInput):
+        if isinstance(widget, (LabelledTextInput, LabelledSpinner)):
             key = widget.input_property
             if key in properties:
                 widget.text = str(properties[key])
@@ -49,8 +51,16 @@ class LoadSGFPopup(BoxLayout):
 
 
 class NewGamePopup(QuickConfigGui):
+    def __init__(self, katrain, popup, properties, **kwargs):
+        properties["RU"] = KataGoEngine.get_rules(katrain.game.root)
+        super().__init__(katrain, popup, properties)
+        self.rules_spinner.values = list(set(self.katrain.engine.RULESETS.values()))
+        self.rules_spinner.text = properties["RU"]
+
     def new_game(self):
-        new_root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **self.collect_properties(self)})
+        properties = self.collect_properties(self)
+        self.katrain.log(f"New game settings: {properties}", OUTPUT_DEBUG)
+        new_root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **properties})
         self.katrain("new-game", None, new_root)
         self.popup.dismiss()
 
@@ -80,7 +90,6 @@ class ConfigPopup(QuickConfigGui):
             cat.add_widget(Label(text=k1, bold=True))
             for k2, v in d.items():
                 cat.add_widget(Label(text=f"{k2}:"))
-                print(v, v.__class__, self.type_to_widget_class(v))
                 cat.add_widget(self.type_to_widget_class(v)(text=str(v), input_property=f"{k1}/{k2}"))
             if props_in_col[0] <= props_in_col[1]:
                 cols[0].add_widget(cat)
@@ -93,13 +102,29 @@ class ConfigPopup(QuickConfigGui):
         col_container.add_widget(cols[0])
         col_container.add_widget(cols[1])
         self.add_widget(col_container)
-        self.save_button = StyledButton(text="Update Settings", on_press=lambda _: self.update_config(), size_hint=(1, 0.05))
+        self.save_button = StyledButton(text="Apply Settings", on_press=lambda _: self.update_config(), size_hint=(1, 0.05))  # apply & save?
         self.add_widget(self.save_button)
 
-    def update_config(self):
+    def update_config(self, save_to_file=False):
+        updated_cat = []
         try:
-            print(self.collect_properties(self))
+            for k, v in self.collect_properties(self).items():
+                k1, k2 = k.split("/")
+                if self.config[k1][k2] != v:
+                    self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
+                    updated_cat.append(k1)
+                    self.config[k1][k2] = v
+                    # if save_to_file: # TODO
+                    #    self.katrain._config_store.put()
             self.popup.dismiss()
         except InputParseError as e:
-            self.save_button.text = str(e)
-            print(e)
+            self.save_button.text = str(e)  # TODO: nicer error
+            self.katrain.log(e, OUTPUT_ERROR)
+            return
+
+        if "engine" in updated_cat:
+            self.katrain.log("Restarting Engine after settings change")
+            old_engine = self.katrain.engine
+            self.katrain.engine = KataGoEngine(self.katrain, self.config["engine"])
+            self.katrain.game.engine = self.katrain.engine
+            old_engine.shutdown(finish=True)
