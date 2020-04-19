@@ -80,16 +80,25 @@ class KaTrainGui(BoxLayout):
         self._do_new_game()
 
     def update_state(self, redraw_board=False):
+        # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
         if cn.analysis_ready and self.controls.ai_auto.active(cn.next_player) and not cn.children and not self.game.game_ended:
             self("ai-move", cn)
         if cn.analysis_ready and self.controls.auto_undo.active(cn.next_player):
             self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
 
+        # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
+        top,bot = self.board_controls.black_prisoners,self.board_controls.white_prisoners
+        if self.game.next_player == 'W':
+            top, bot = bot,top
+        self.board_controls.mid_circles_container.clear_widgets()
+        self.board_controls.mid_circles_container.add_widget(bot)
+        self.board_controls.mid_circles_container.add_widget(top)
         self.board_controls.black_prisoners.text = str(prisoners[1])
         self.board_controls.white_prisoners.text = str(prisoners[0])
 
+        # Update board and status
         if redraw_board:
             Clock.schedule_once(self.board_gui.draw_board, -1)  # main thread needs to do this
         Clock.schedule_once(self.board_gui.draw_board_contents, -1)

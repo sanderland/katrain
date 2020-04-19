@@ -1,11 +1,12 @@
 from kivy.core.text import Label as CoreLabel
 from kivy.graphics import *
-from kivy.properties import BooleanProperty, StringProperty
+from kivy.properties import BooleanProperty, StringProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 import re
 
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
+from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
 
@@ -24,6 +25,11 @@ class CheckBoxHint(BoxLayout):
     def on_active(self, *args):
         pass
 
+class DarkLabel(Label):
+    pass
+
+class BaseCircleWithText(DarkLabel):
+    radius = NumericProperty(0.48)
 
 class LabelledTextInput(TextInput):
     input_property = StringProperty("")
