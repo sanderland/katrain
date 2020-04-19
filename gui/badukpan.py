@@ -2,6 +2,7 @@ import math
 
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
+from kivy.properties import ListProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 
@@ -11,6 +12,8 @@ from game import Move
 
 
 class BadukPanWidget(Widget):
+    board_color = ListProperty( [0.85, 0.68, 0.40] )
+
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
         self.ui_config = {}
@@ -102,7 +105,7 @@ class BadukPanWidget(Widget):
         with self.canvas.before:
             # board
             board_px_size = min(self.width, self.height)
-            Color(*self.ui_config["board_color"])
+            self.board_color = self.ui_config["board_color"]
             Rectangle(pos=self.pos, size=(self.width, self.height))
             # grid lines
             margin = 1.5
@@ -177,8 +180,10 @@ class BadukPanWidget(Widget):
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
                         ix = ix + 1
 
-            # likewise for policy, although it makes slightly less sense here
-            policy = current_node.policy or (current_node.parent and current_node.parent.policy)
+
+            policy = current_node.policy
+            if not policy and current_node.parent and current_node.parent.policy and set(katrain.controls.ai_auto.active_map.values())=={True}:
+                policy = current_node.parent.policy # in the case of AI self-play we allow the policy to be one step out of date
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
             if katrain.controls.policy.active and policy and not katrain.controls.ownership.active:

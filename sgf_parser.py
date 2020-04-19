@@ -1,7 +1,8 @@
 import copy
 import re
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 
 # TODO: handle AE ?
 # https://www.red-bean.com/sgf/properties.html
@@ -130,8 +131,18 @@ class SGFNode:
 
     # root properties available on any node
     @property
-    def board_size(self) -> int:
-        return int(self.root.get_first("SZ", 19))
+    def board_size(self) -> Union[int,Tuple]:
+        size = str(self.root.get_first("SZ", '19'))
+        if ':' in size:
+            return tuple(map(size.split(':'),int))
+        return int(size)
+
+    @property
+    def board_size_xy(self) -> Tuple[int,int]:
+        x, y = self.board_size
+        if not y:
+            y=x
+        return x,y
 
     @property
     def komi(self) -> float:
@@ -195,6 +206,14 @@ class SGFNode:
         if self.get("B") or self.get("AB"):
             return "W"
         return "B"
+
+    @property
+    def player(self):
+        if not self.placements:
+            if self.get("W"):
+                return "W"
+            if self.get("B"):
+                return "B"
 
 
 class SGF:

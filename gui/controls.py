@@ -25,10 +25,18 @@ class Controls(BoxLayout):
         if node.analysis_ready:
             self.score.text = node.format_score().replace("-", "\u2013")
             self.win_rate.text = node.format_win_rate()
+            move = node.single_move
+            if move:
+                self.points_lost.label = f"Point loss {move.player}{move.gtp()}"
+            else:
+                self.points_lost.label = f"Point loss"
+                self.points_lost.text = ""
+                return
+
             if node.points_lost is not None:
                 self.points_lost.text = f"{node.points_lost:.1f}"
             else:
-                self.points_lost.text = f"?"
+                self.points_lost.text = f"..."
 
     def unlock(self):
         if self.ai_lock.active:
@@ -44,7 +52,7 @@ class Controls(BoxLayout):
         katrain = self.parent
         current_node = katrain.game.current_node
         move = current_node.single_move
-        current_player_is_human_or_both_robots = True  # move not self.ai_auto.active(current_node.player) or self.ai_auto.active(1 - current_node.player) # TODO FIX
+        current_player_is_human_or_both_robots = not current_node.player or not self.ai_auto.active(current_node.player) or self.ai_auto.active(current_node.next_player)
 
         info = ""
         if current_node is self.status_node:
@@ -54,7 +62,6 @@ class Controls(BoxLayout):
 
         if current_player_is_human_or_both_robots and not current_node.is_root and move:
             info += current_node.comment(eval=True, hints=self.hints.active(move.player))
-        self.points_lost.text = ""
         if current_player_is_human_or_both_robots:
             self.show_evaluation_stats(current_node)
 

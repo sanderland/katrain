@@ -81,10 +81,11 @@ class KaTrainGui(BoxLayout):
     def update_state(self, redraw_board=False):
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
-        if cn.analysis_ready and self.controls.ai_auto.active(cn.next_player) and not cn.children and not self.game.game_ended:
-            self("ai-move", cn)
-        if cn.analysis_ready and self.controls.auto_undo.active(cn.next_player):
+        auto_undo = cn.player and self.controls.auto_undo.active(cn.player)
+        if  auto_undo and cn.analysis_ready:
             self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
+        if cn.analysis_ready and self.controls.ai_auto.active(cn.next_player) and not cn.children and not self.game.game_ended and not (auto_undo and cn.auto_undo is None):
+            self("ai-move", cn)  # cn mismatch stops this if undo fired
 
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
@@ -214,7 +215,7 @@ class KaTrainGui(BoxLayout):
             if not self.controls.ai_thinking:
                 self.controls.ai_move.trigger_action(duration=0)
         elif keycode[1] == "p":  # TODO: clean repetitive shortcuts
-            self.controls.play.trigger_action(duration=0)
+            self.controls.policy.label.trigger_action(duration=0)
         elif keycode[1] == "f":
             self.controls.ai_fast.label.trigger_action(duration=0)
         elif keycode[1] == "h":
@@ -263,7 +264,8 @@ class KaTrainApp(App):
         self.gui.start()
 
     def on_request_close(self, *args):
-        self.gui.engine.shutdown()
+        if getattr(self,'gui',None) and self.gui.engine:
+            self.gui.engine.shutdown()
 
     def signal_handler(self, signal, frame):
         import sys

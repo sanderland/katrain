@@ -220,6 +220,7 @@ class Game:
     def analyze_undo(self, node, train_config):
         if node != self.current_node or node.auto_undo is not None or not node.analysis_ready or not node.single_move:
             return
+        move = node.single_move
         points_lost = node.points_lost
         thresholds = train_config["eval_thresholds"]
         num_undo_prompts = train_config["num_undo_prompts"]
@@ -227,15 +228,20 @@ class Game:
         while i < len(thresholds) and points_lost < thresholds[i]:
             i += 1
         num_undos = num_undo_prompts[i] if i < len(num_undo_prompts) else 0
+        xmsg = ". Please try again."
         if num_undos == 0:
             undo = False
         elif num_undos < 1:  # probability
             undo = int(node.undo_threshold < num_undos) and len(node.parent.children) == 1
+            xmsg = " (with {num_undos:.0%} probability at this level of mistake)" + xmsg
         else:
             undo = len(node.parent.children) <= num_undos
+            if len(node.parent.children) == num_undos:
+                xmsg = xmsg[:-1] + ", but note that this is your last try at this level of mistake."
         node.auto_undo = undo
         if undo:
             self.undo(1)
+            self.katrain.controls.set_status(f"Undid move {move.gtp()} as it lost {points_lost:.1f} points{xmsg}")
             self.katrain.update_state()
 
     def analyze_extra(self, mode):
@@ -246,7 +252,7 @@ class Game:
             return
 
         if mode == "extra":
-            visits = sum([d["visits"] for d in cn.analysis]) + self.engine.config["visits"]
+            visits = cn.analysis['root']['visits'] + self.engine.config["visits"]
             self.katrain.controls.set_status(f"Performing additional analysis to {visits} visits")
             cn.analyze(self.engine, visits=visits, priority=-1_000)
             return
@@ -256,8 +262,8 @@ class Game:
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
             priority = -1_000_000_000
         else:  # mode=='refine':
-            analyze_moves = [Move.from_gtp(a["move"], player=cn.next_player) for a in cn.analysis]
-            visits = cn.analysis[0]["visits"] + self.engine.config["visits_fast"]
+            analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp,_ in cn.analysis['moves'].items()]
+            visits = max(d['visits'] for d in cn.analysis['moves'].values()) + self.engine.config["visits_fast"]
             self.katrain.controls.set_status(f"Refining analysis of candidate moves to {visits} visits")
             priority = -1_000
         for move in analyze_moves:

@@ -25,9 +25,12 @@
             radius: root.radius or (0.0,)
 
 <StyledToggleButton@StyledButton+ToggleButtonBehavior>:
+
+<StyledTabButton@StyledToggleButton>:
     bold: True
     font_size: self.size[1] * 0.45
     radius: (self.size[1]/3,self.size[1]/3,0,0)
+
 
 <StyledIconButton@StyledButton>
     button_color: 0.71, 0.78, 0.81, 1
@@ -143,7 +146,7 @@
             pos: self.pos[0] + self.width/2 - min(self.height,self.width) * root.radius, self.pos[1]  + self.height/2 - min(self.height,self.width)  * root.radius
             size: min(self.height,self.width) * 2 * root.radius, min(self.height,self.width)  * 2* root.radius
 
-<WhiteCircleWithText@BaseCircleWithText+ButtonBehavior>
+<WhiteCircleWithText@BaseCircleWithText>
     color: 0.05,0.05,0.05,1
     outline: True
     canvas.before:
@@ -170,12 +173,6 @@
     white_prisoners: white_prisoners
     mid_circles_container: mid_circles_container
     pass_btn: pass_btn
-    canvas.before:
-        Color:
-            rgb: 0.85, 0.68, 0.40
-        Rectangle:
-            pos: root.pos
-            size: root.size
     Label:
         size_hint: 0.05, 1
     StyledButton:
@@ -251,10 +248,16 @@
 	auto_undo: auto_undo
 	graph: graph
 	katrain: self.parent
+    canvas.before:
+        Color:
+            rgba: 0.95, 0.95, 0.95, 1
+        Rectangle:
+            pos: self.pos
+            size: root.size
     BoxLayout:
         size_hint: 1,0.05
         orientation: 'horizontal'
-        StyledToggleButton:
+        StyledTabButton:
             text: 'Analyze'
             id: analyze_tab_button
             margin: (3,0,1,3)
@@ -266,7 +269,7 @@
                 play_tab.width = 0
                 play_tab.opacity = 0
                 self.state = 'down'
-        StyledToggleButton:
+        StyledTabButton:
             text: 'Play'
             group: 'tabs'
             state: 'down'
@@ -331,12 +334,12 @@
                 id: win_rate
                 size_hint: 1, 0.15
                 label: 'Win rate'
-                text: '...'
+                text: ''
             CensorableLabel:
                 id: score
                 size_hint: 1, 0.15
                 label: 'Score'
-                text: '...'
+                text: ''
         BoxLayout: # ----------- play -----------
             orientation: 'vertical'
             size_hint: 1,1
@@ -389,14 +392,66 @@
                     text: 'lock\nAI'
                     id: ai_lock
                     on_active: self.checkbox.disabled = analyze_tab_button.disabled = ai_auto.white = ai_auto.black = ai_move.disabled = True
+            GridLayout:
+                cols: 6
+                rows: 2
+                size_hint: 1,0.1
+                BlackCircleWithText:
+                    text: 'B'
+                    size_hint: 0.4, 1
+                StyledToggleButton:
+                    group: 'black'
+                    text: 'Human'
+                    state: 'down'
+                    size_hint: 1, 1
+                StyledToggleButton:
+                    group: 'black'
+                    text: '    AI\nAssist'
+                    size_hint: 1, 1
+                StyledToggleButton:
+                    group: 'black'
+                    text: 'AI'
+                    size_hint: 0.5, 1
+                StyledToggleButton:
+                    group: 'black'
+                    text: '     AI\nBalance'
+                    size_hint: 1, 1
+                StyledToggleButton:
+                    group: 'black'
+                    text: '   AI\nPolicy'
+                    size_hint: 1, 1
+                WhiteCircleWithText:
+                    text: 'W'
+                    size_hint: 0.4, 1
+                StyledToggleButton:
+                    group: 'white'
+                    text: 'Human'
+                    state: 'down'
+                    size_hint: 1, 1
+                StyledToggleButton:
+                    group: 'white'
+                    text: '    AI\nAssist'
+                    size_hint: 1, 1
+                StyledToggleButton:
+                    group: 'white'
+                    text: 'AI'
+                    size_hint: 0.5, 1
+                StyledToggleButton:
+                    group: 'white'
+                    text: '     AI\nBalance'
+                    size_hint: 1, 1
+                StyledToggleButton:
+                    group: 'white'
+                    text: '   AI\nPolicy'
+                    size_hint: 1, 1
             LargeLabel:
                 text: 'free real estate'
-                size_hint: 1,0.2
+                size_hint: 1,0.1
     CensorableLabel:
         id: points_lost
         size_hint: 1, 0.03
         label: 'Point loss'
-        text: '...'
+        text: ''
 	TextInput:
 		id: info
 		size_hint: 1, 0.25
@@ -427,13 +482,13 @@
 	controls: controls
 	board_controls: board_controls
 	board_aspect_ratio: 1.075
-    canvas.before:
-        Color:
-            rgba: 0.95, 0.95, 0.95, 1
-        Rectangle:
-            pos: self.pos
-            size: root.size
     BoxLayout:
+        canvas.before:
+            Color:
+                rgb: root.board_gui.board_color if root.board_gui else (0,0,0)
+            Rectangle:
+                pos: root.pos
+                size: root.size
         orientation: 'vertical'
         size_hint: 1 - controls.size_hint[0], 1
         BadukPanWidget:
