@@ -33,12 +33,24 @@
     button_color: 0.71, 0.78, 0.81, 1
     icon_margin: 0.15 * self.size[0]
     icon: 'missing.png'
-    icon_size: min(self.size[0]-2*self.margin[0]-2*self.icon_margin,self.size[1]-2*self.margin[1]-2*self.icon_margin)
+    icon_size: min(self.size[0]-self.margin[0]-self.margin[2]-2*self.icon_margin,self.size[1]-self.margin[1]-self.margin[3]-2*self.icon_margin)
     #EffectWidget:        effects: [ew.FXAAEffect()]
     Image:
         size: (root.icon_size or 0,root.icon_size or 0)  # square
         pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
         source: root.icon
+
+<TransparentIconButton@Button>
+    background_normal: ''
+    background_color: (0,0,0,0)
+    margin: (1,1,1,1)
+    icon_size: min(self.size[0]-self.margin[0]-self.margin[2],self.size[1]-self.margin[1]-self.margin[3])
+    icon: 'missing.png'
+    Image:
+        size: (root.icon_size or 0,root.icon_size or 0)  # square
+        pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
+        source: root.icon
+
 
 <DarkLabel@Label>:
     color: (0.05,0.05,0.05,1)
@@ -99,7 +111,6 @@
 		active: root.default_active
 		on_active: root.dispatch('on_active')
 
- # TODO no need for this anymore
 <CensorableLabel>
 	orientation: 'horizontal'
 	text: ''
@@ -134,39 +145,308 @@
 
 <WhiteCircleWithText@BaseCircleWithText>
     color: 0.05,0.05,0.05,1
+    outline: True
+    canvas.before:
+        Color:
+            rgba: 0.95,0.95,0.95,1
+        Ellipse:
+            pos: self.pos[0] + self.width/2 - min(self.height,self.width) * 0.48, self.pos[1]  + self.height/2 - min(self.height,self.width) * 0.48
+            size: min(self.height,self.width) * 0.96, min(self.height,self.width) * 0.96
     canvas.after:
         Color:
             rgba: 0.05,0.05,0.05,1
         Line:
-            circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, min(self.height,self.width)*0.45
-            width: 1.1
+            circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, min(self.height,self.width)*0.47
+            width: 1.1 if root.outline else 0.0001
+
+<BadukPanWidget>:
+	size: self.parent.height, self.parent.height
+	katrain: self.parent.parent
 
 
-<CensorableScoreLabel>
-	orientation: 'horizontal'
-	text: ''
-	label: ''
-	black: black
-	white: white
-	BlackCircleWithText:
-	    id: black
-		size_hint: 0.15,1
-        text: '0'
-	CheckBoxHintLabel:
-		size_hint: 0.3,1
-		text: root.label
-		font_size: self.height  * 0.6
-		on_press: value.opacity =  1 if  value.opacity==0 else 0
-	WhiteCircleWithText:
-	    id: white
-		size_hint: 0.15,1
-        text: '0'
-    DarkLabel:
-		size_hint: 0.4,1
-		text: root.text
-		font_size: self.height * 0.6
-		id: value
-		bold: True
+<BadukPanControls>:
+    katrain: self.parent.parent
+    black_prisoners: black_prisoners
+    white_prisoners: white_prisoners
+    pass_btn: pass_btn
+    canvas.before:
+        Color:
+            rgb: 0.85, 0.68, 0.40
+        Rectangle:
+            pos: root.pos
+            size: root.size
+    Label:
+        size_hint: 0.05, 1
+    StyledButton:
+        text: 'Pass'
+        id: pass_btn
+        on_press: root.katrain("play",None)
+        size_hint: 0.1, 1
+        margin: (0, self.size[1]/5, 0, self.size[1]/5)
+    Label:
+        size_hint: 0.1, 1
+    TransparentIconButton:
+        icon: 'img/flaticon/previous999.png'
+        margin: (3, self.size[1]/3, 3, self.size[1]/3)
+        size_hint: 0.1, 1
+        on_press: root.katrain('undo',999)
+    TransparentIconButton:
+        icon: 'img/flaticon/previous5.png'
+        margin: (3, self.size[1]/3, 3, self.size[1]/3)
+        size_hint: 0.1, 1
+        on_press: root.katrain('undo',5)
+    TransparentIconButton:
+        icon: 'img/flaticon/previous.png'
+        margin: (3, self.size[1]/3, 3, self.size[1]/3)
+        size_hint: 0.1, 1
+        on_press: root.katrain('undo')
+    BoxLayout:
+        size_hint: 0.25, 1
+        BlackCircleWithText:
+            id: black_prisoners
+            size_hint: 0.3,1
+            text: '0'
+        WhiteCircleWithText:
+            id: white_prisoners
+            size_hint: 0.3,1
+            text: '0'
+            outline: False
+    TransparentIconButton:
+        icon: 'img/flaticon/next.png'
+        margin: (3, self.size[1]/3, 3, self.size[1]/3)
+        size_hint: 0.1, 1
+        on_press: root.katrain('redo')
+    TransparentIconButton:
+        icon: 'img/flaticon/next5.png'
+        margin: (3, self.size[1]/3, 3, self.size[1]/3)
+        size_hint: 0.1, 1
+        on_press: root.katrain('redo',5)
+    TransparentIconButton:
+        icon: 'img/flaticon/next999.png'
+        margin: (3, self.size[1]/3, 3, self.size[1]/3)
+        size_hint: 0.1, 1
+        on_press: root.katrain('redo',999)
+    Label:
+        size_hint: 0.25, 1
+
+
+<Controls>
+	orientation: 'vertical'
+	play_tab_button: play_tab_button
+	analyze_tab_button: analyze_tab_button
+    info: info
+	win_rate: win_rate
+	points_lost: points_lost
+	score: score
+	hints: hints
+	ownership: ownership
+	policy: policy
+    eval: eval
+	ai_balance: ai_balance
+	ai_auto: ai_auto
+	ai_fast: ai_fast
+	ai_lock: ai_lock
+	ai_move: ai_move
+	auto_undo: auto_undo
+	katrain: self.parent
+    BoxLayout:
+        size_hint: 1,0.05
+        orientation: 'horizontal'
+        StyledToggleButton:
+            text: 'Analyze'
+            id: analyze_tab_button
+            margin: (3,0,1,3)
+            group: 'tabs'
+            on_press:
+                analyze_tab.size_hint[0] = 1
+                analyze_tab.opacity = 1
+                play_tab.size_hint_x = None
+                play_tab.width = 0
+                play_tab.opacity = 0
+                self.state = 'down'
+        StyledToggleButton:
+            text: 'Play'
+            group: 'tabs'
+            state: 'down'
+            id: play_tab_button
+            margin: (1,0,3,3)
+            on_press:
+                play_tab.size_hint[0] = 1
+                play_tab.opacity = 1
+                analyze_tab.size_hint_x = None
+                analyze_tab.width = 0
+                analyze_tab.opacity = 0
+                self.state = 'down'
+    BoxLayout:
+        size_hint: 1,0.25
+        orientation: 'horizontal'
+        BoxLayout: # ----------- analyze -----------
+            size_hint: 0,1
+            id: analyze_tab
+            opacity: 0
+            orientation: 'vertical'
+            GridLayout:
+                cols: 6
+                rows: 1
+                size_hint: 1, 0.35
+                Label:
+                    size_hint: 0.01, 1
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 0.1, 0.5
+                    Label:
+                        size_hint: 1, 0.2
+                    BlackCircleWithText:
+                        text: 'B'
+                    WhiteCircleWithText:
+                        text: 'W'
+                BWCheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: eval
+                    text: 'all eval'
+                    default_active: False
+                    on_active: root.katrain.update_state()
+                BWCheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: hints
+                    text: 'top move'
+                    on_active: root.katrain.update_state()
+                CheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: ownership
+                    text: 'show\nowner'
+                    on_active: root.katrain.update_state()
+                CheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: policy
+                    text: 'show\npolicy'
+                    on_active: root.katrain.update_state()
+            LargeLabel:
+                text: 'graph?'
+                size_hint: 1,0.75
+            CensorableLabel:
+                id: win_rate
+                size_hint: 1, 0.15
+                label: 'Win rate'
+                text: '...'
+            CensorableLabel:
+                id: score
+                size_hint: 1, 0.15
+                label: 'Score'
+                text: '...'
+        BoxLayout: # ----------- play -----------
+            orientation: 'vertical'
+            size_hint: 1,1
+            opacity: 1
+            id: play_tab
+            GridLayout:
+                cols: 5
+                rows: 1
+                size_hint: 1, 0.1
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 0.1, 0.5
+                    Label:
+                        size_hint: 1, 0.2
+                    BlackCircleWithText:
+                        text: 'B'
+                    WhiteCircleWithText:
+                        text: 'W'
+                BWCheckBoxHint:
+                    text: 'ai'
+                    id: ai_auto
+                    default_active: False
+                    size_hint: 0.25, 1
+                BWCheckBoxHint:
+                    size_hint: 0.2, 0.5
+                    id: auto_undo
+                    text: 'undo'
+                    on_active: root.katrain.update_state()
+                CheckBoxHint:
+                    size_hint: 0.25, 1
+                    text: 'fast'
+                    id: ai_fast
+                    default_active: True
+                CheckBoxHint:
+                    size_hint: 0.25, 1
+                    text: 'balance\nscore'
+                    id: ai_balance
+                    default_active: False
+            GridLayout:
+                cols: 4
+                rows: 1
+                size_hint: 1, 0.1
+                StyledButton:
+                    id: ai_move
+                    size_hint: 0.5, 0.5
+                    text: ' AI\nMove'
+                    on_press: root.katrain("ai_move")
+                CheckBoxHint:
+                    size_hint: 0.25, 1
+                    text: 'lock\nAI'
+                    id: ai_lock
+                    on_active: self.checkbox.disabled = analyze_tab_button.disabled = ai_auto.white = ai_auto.black = ai_move.disabled = True
+            LargeLabel:
+                text: 'free real estate'
+                size_hint: 1,0.2
+    CensorableLabel:
+        id: points_lost
+        size_hint: 1, 0.03
+        label: 'Point loss'
+        text: '...'
+	GridLayout:
+		cols: 2
+		rows: 1
+		size_hint: 1, 0.05
+	TextInput:
+		id: info
+		size_hint: 1, 0.2
+		valign: 'middle'
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1, None
+        height: self.width * 0.25
+        StyledIconButton:
+            icon: 'img/flaticon/go-game.png'
+            size_hint: 0.25, 1
+            on_press: root.katrain("new-game-popup")
+        StyledIconButton:
+            icon: 'img/flaticon/open-folder.png'
+            size_hint: 0.25, 1
+            on_press: root.katrain("analyze-sgf-popup")
+        StyledIconButton:
+            icon: 'img/flaticon/bar.png'
+            size_hint: 0.25, 1
+            on_press: root.katrain('output-sgf')
+        StyledIconButton:
+            icon: 'img/flaticon/gears.png'
+            size_hint: 0.25, 1
+            on_press: root.katrain('config-popup')
+
+<KaTrainGui>:
+	board_gui: board_gui
+	controls: controls
+	board_controls: board_controls
+	board_aspect_ratio: 1.075
+    canvas.before:
+        Color:
+            rgba: 0.95, 0.95, 0.95, 1
+        Rectangle:
+            pos: self.pos
+            size: root.size
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: 1 - controls.size_hint[0], 1
+        BadukPanWidget:
+    		id: board_gui
+            size_hint: (1,1)
+        BadukPanControls:
+            id: board_controls
+            size_hint: (1,root.board_aspect_ratio-1)
+    Controls:
+		id: controls
+		size_hint: max(0.25,(root.width - root.height/root.board_aspect_ratio)/root.width), 1
+
 
 
 <LoadSGFPopup>:
@@ -260,241 +540,3 @@
         size_hint: 0.5, 0.1
         text: 'Start Game'
         on_press: root.new_game()
-
-
-<BadukPanWidget>:
-	size: self.parent.height, self.parent.height
-	katrain: self.parent.parent
-
-<Controls>
-	orientation: 'vertical'
-	play_tab_button: play_tab_button
-	analyze_tab_button: analyze_tab_button
-    info: info
-	win_rate: win_rate
-	points_lost: points_lost
-	score: score
-	hints: hints
-	ownership: ownership
-	policy: policy
-    eval: eval
-	ai_balance: ai_balance
-	ai_auto: ai_auto
-	ai_fast: ai_fast
-	ai_lock: ai_lock
-	ai_move: ai_move
-	auto_undo: auto_undo
-	pass_btn: pass_btn
-	katrain: self.parent
-    BoxLayout:
-        size_hint: 1,0.05
-        orientation: 'horizontal'
-        StyledToggleButton:
-            text: 'Analyze'
-            id: analyze_tab_button
-            margin: (3,0,1,3)
-            group: 'tabs'
-            on_press:
-                analyze_tab.size_hint[0] = 1
-                analyze_tab.opacity = 1
-                play_tab.size_hint_x = None
-                play_tab.width = 0
-                play_tab.opacity = 0
-                self.state = 'down'
-        StyledToggleButton:
-            text: 'Play'
-            group: 'tabs'
-            state: 'down'
-            id: play_tab_button
-            margin: (1,0,3,3)
-            on_press:
-                play_tab.size_hint[0] = 1
-                play_tab.opacity = 1
-                analyze_tab.size_hint_x = None
-                analyze_tab.width = 0
-                analyze_tab.opacity = 0
-                self.state = 'down'
-    BoxLayout:
-        size_hint: 1,0.25
-        orientation: 'horizontal'
-        BoxLayout: # ----------- analyze -----------
-            size_hint: 0,1
-            id: analyze_tab
-            opacity: 0
-            orientation: 'vertical'
-            GridLayout:
-                cols: 6
-                rows: 1
-                size_hint: 1, 0.35
-                Label:
-                    size_hint: 0.01, 1
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint: 0.1, 0.5
-                    Label:
-                        size_hint: 1, 0.2
-                    BlackCircleWithText:
-                        text: 'B'
-                    WhiteCircleWithText:
-                        text: 'W'
-                BWCheckBoxHint:
-                    size_hint: 0.2, 0.5
-                    id: eval
-                    text: 'all eval'
-                    default_active: False
-                    on_active: root.parent.update_state()
-                BWCheckBoxHint:
-                    size_hint: 0.2, 0.5
-                    id: hints
-                    text: 'top move'
-                    on_active: root.parent.update_state()
-                CheckBoxHint:
-                    size_hint: 0.2, 0.5
-                    id: ownership
-                    text: 'show\nowner'
-                    on_active: root.parent.update_state()
-                CheckBoxHint:
-                    size_hint: 0.2, 0.5
-                    id: policy
-                    text: 'show\npolicy'
-                    on_active: root.parent.update_state()
-            LargeLabel:
-                text: 'graph?'
-                size_hint: 1,0.75
-            CensorableLabel:
-                id: win_rate
-                size_hint: 1, 0.15
-                label: 'Win rate'
-                text: '...'
-            CensorableScoreLabel:
-                id: score
-                size_hint: 1, 0.15
-                label: 'Score'
-                text: '...'
-        BoxLayout: # ----------- play -----------
-            orientation: 'vertical'
-            size_hint: 1,1
-            opacity: 1
-            id: play_tab
-            GridLayout:
-                cols: 5
-                rows: 1
-                size_hint: 1, 0.1
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint: 0.1, 0.5
-                    Label:
-                        size_hint: 1, 0.2
-                    BlackCircleWithText:
-                        text: 'B'
-                    WhiteCircleWithText:
-                        text: 'W'
-                BWCheckBoxHint:
-                    text: 'ai'
-                    id: ai_auto
-                    default_active: False
-                    size_hint: 0.25, 1
-                BWCheckBoxHint:
-                    size_hint: 0.2, 0.5
-                    id: auto_undo
-                    text: 'undo'
-                    on_active: root.parent.update_state()
-                CheckBoxHint:
-                    size_hint: 0.25, 1
-                    text: 'fast'
-                    id: ai_fast
-                    default_active: True
-                CheckBoxHint:
-                    size_hint: 0.25, 1
-                    text: 'balance\nscore'
-                    id: ai_balance
-                    default_active: False
-            GridLayout:
-                cols: 4
-                rows: 1
-                size_hint: 1, 0.1
-                StyledButton:
-                    id: ai_move
-                    size_hint: 0.5, 0.5
-                    text: ' AI\nMove'
-                    on_press: root.katrain("ai_move")
-                CheckBoxHint:
-                    size_hint: 0.25, 1
-                    text: 'lock\nAI'
-                    id: ai_lock
-                    on_active: self.checkbox.disabled = analyze_tab_button.disabled = ai_auto.white = ai_auto.black = ai_move.disabled = True
-            LargeLabel:
-                text: 'free real estate'
-                size_hint: 1,0.2
-    CensorableLabel:
-        id: points_lost
-        size_hint: 1, 0.03
-        label: 'Point loss'
-        text: '...'
-	GridLayout:
-		cols: 2
-		rows: 1
-		size_hint: 1, 0.05
-		StyledButton:
-		    id: undo
-			text: 'Undo'
-			on_press: root.katrain("undo")
-			default_active: True
-		StyledButton:
-			text: 'Pass'
-			id: pass_btn
-			on_press: root.katrain("play",None)
-	TextInput:
-		id: info
-		size_hint: 1, 0.2
-		valign: 'middle'
-    BoxLayout:
-        orientation: 'horizontal'
-        size_hint: 1, None
-        height: self.width * 0.25
-        StyledIconButton:
-            icon: 'img/flaticon/go-game.png'
-            size_hint: 0.25, 1
-            on_press: root.katrain("new-game-popup")
-        StyledIconButton:
-            icon: 'img/flaticon/open-folder.png'
-            size_hint: 0.25, 1
-            on_press: root.katrain("analyze-sgf-popup")
-        StyledIconButton:
-            icon: 'img/flaticon/bar.png'
-            size_hint: 0.25, 1
-            on_press: root.katrain('output-sgf')
-        StyledIconButton:
-            icon: 'img/flaticon/gears.png'
-            size_hint: 0.25, 1
-            on_press: root.katrain('config-popup')
-
-<BadukPanControls>:
-    StyledIconButton:
-        icon: 'img/flaticon/go-game.png'
-        size_hint: 0.25, 1
-        on_press: root.katrain("new-game-popup")
-
-<KaTrainGui>:
-	board_gui: board_gui
-	controls: controls
-	board_aspect_ratio: 1.1
-    canvas.before:
-        Color:
-            rgba: 0.95, 0.95, 0.95, 1
-        Rectangle:
-            pos: self.pos
-            size: root.size
-    BoxLayout:
-        orientation: 'vertical'
-        size_hint: 1 - controls.size_hint[0], 1
-        BadukPanWidget:
-    		id: board_gui
-            size_hint: (1,1)
-        BadukPanControls:
-            id: board_controls
-            size_hint: (1,root.board_aspect_ratio-1)
-    Controls:
-		id: controls
-		size_hint: max(0.25,(root.width - root.height/root.board_aspect_ratio)/root.width), 1
-

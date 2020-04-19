@@ -29,8 +29,8 @@ class BadukPanWidget(Widget):
     def on_touch_down(self, touch):
         if not self.gridpos_x:
             return
-        xd, xp = self._find_closest(touch.x,self.gridpos_x)
-        yd, yp = self._find_closest(touch.y,self.gridpos_y)
+        xd, xp = self._find_closest(touch.x, self.gridpos_x)
+        yd, yp = self._find_closest(touch.y, self.gridpos_y)
         prev_ghost = self.ghost_stone
         if max(yd, xd) < self.grid_size / 2 and (xp, yp) not in [m.coords for m in self.katrain.game.stones]:
             self.ghost_stone = (xp, yp)
@@ -49,8 +49,8 @@ class BadukPanWidget(Widget):
         if self.ghost_stone:
             katrain("play", self.ghost_stone)
         else:
-            xd, xp = self._find_closest(touch.x,self.gridpos_x)
-            yd, yp = self._find_closest(touch.y,self.gridpos_y)
+            xd, xp = self._find_closest(touch.x, self.gridpos_x)
+            yd, yp = self._find_closest(touch.y, self.gridpos_y)
 
             nodes_here = [node for node in katrain.game.current_node.nodes_from_root if node.single_move and node.single_move.coords == (xp, yp)]
             if nodes_here and max(yd, xd) < self.grid_size / 2:  # load old comment
@@ -101,12 +101,12 @@ class BadukPanWidget(Widget):
         self.canvas.before.clear()
         with self.canvas.before:
             # board
-            sz = min(self.width, self.height)
+            board_px_size = min(self.width, self.height)
             Color(*self.ui_config["board_color"])
-            board_rectangle = Rectangle(pos=self.pos, size=(sz, sz))
+            Rectangle(pos=self.pos, size=(self.width, self.height))
             # grid lines
             margin = 1.5
-            self.grid_size = board_rectangle.size[0] / (board_size - 1 + 1.5 * margin)
+            self.grid_size = board_px_size / (board_size - 1 + 1.5 * margin)
             self.stone_size = self.grid_size * self.ui_config["stone_size"]
             self.gridpos_x = [self.pos[0] + math.floor((margin + i) * self.grid_size + 0.5) for i in range(board_size)]
             self.gridpos_y = [self.pos[1] + math.floor((margin + i) * self.grid_size + 0.5) for i in range(board_size)]
@@ -114,8 +114,8 @@ class BadukPanWidget(Widget):
             line_color = self.ui_config["line_color"]
             Color(*line_color)
             for i in range(board_size):
-                Line(points=[(self.gridpos_x[i],  self.gridpos_y[0]), (self.gridpos_x[i],  self.gridpos_y[-1])])
-                Line(points=[( self.gridpos_x[0], self.gridpos_y[i]), ( self.gridpos_x[-1], self.gridpos_y[i])])
+                Line(points=[(self.gridpos_x[i], self.gridpos_y[0]), (self.gridpos_x[i], self.gridpos_y[-1])])
+                Line(points=[(self.gridpos_x[0], self.gridpos_y[i]), (self.gridpos_x[-1], self.gridpos_y[i])])
 
             # star points
             star_point_pos = 3 if board_size <= 11 else 4
@@ -128,7 +128,7 @@ class BadukPanWidget(Widget):
             Color(0.25, 0.25, 0.25)
             coord_offset = self.grid_size * margin / 2
             for i in range(board_size):
-                draw_text(pos=(self.gridpos_x[i],  self.gridpos_y[0] -coord_offset), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5)
+                draw_text(pos=(self.gridpos_x[i], self.gridpos_y[0] - coord_offset), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5)
                 draw_text(pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
 
     def draw_board_contents(self, *args):
@@ -177,14 +177,15 @@ class BadukPanWidget(Widget):
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
                         ix = ix + 1
 
-            policy = current_node.policy
+            # likewise for policy, although it makes slightly less sense here
+            policy = current_node.policy or (current_node.parent and current_node.parent.policy)
             if katrain.controls.policy.active and policy and not katrain.controls.ownership.active:
                 n_legal_moves = sum([p > 0 for p in policy])
                 avg_policy = 1.0 / n_legal_moves
-                best_move_policy = max(policy) # num legal moves scale?
+                best_move_policy = max(policy)  # num legal moves scale?
                 rsz = self.grid_size * 0.2
                 ix = 0
-                for y in range(board_size-1,-1,-1):
+                for y in range(board_size - 1, -1, -1):
                     for x in range(board_size):
                         if policy[ix] > 0:
                             policy_delta = best_move_policy - policy[ix]
@@ -193,7 +194,7 @@ class BadukPanWidget(Widget):
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
                         ix = ix + 1
                 policy_delta = best_move_policy - policy[ix]
-                katrain.controls.pass_btn.face_color = (*self.eval_color(100*policy_delta),1)
+                katrain.board_controls.pass_btn.face_color = (*self.eval_color(100 * policy_delta), 1)
 
             # children of current moves in undo / review
             undo_coords = set()
@@ -234,11 +235,12 @@ class BadukPanWidget(Widget):
                 else:
                     text = "pass"
                 Color(0.45, 0.05, 0.45, 0.5)
-                center = (self.pos[0] + self.width/2,self.pos[1]+self.height/2)
+                center = (self.pos[0] + self.width / 2, self.pos[1] + self.height / 2)
                 size = min(self.width, self.height) * 0.22
-                Ellipse(pos=(center[0] - size/2, center[1] - size/2), size=(size,size))
+                Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
                 Color(0.15, 0.15, 0.15)
-                draw_text(pos=center, text=text, font_size=size*0.25, halign="center", outline_color=[0.95, 0.95, 0.95])
+                draw_text(pos=center, text=text, font_size=size * 0.25, halign="center", outline_color=[0.95, 0.95, 0.95])
+
 
 class BadukPanControls(BoxLayout):
     pass

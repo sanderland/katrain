@@ -3,7 +3,6 @@ from gui.controls import Controls
 from gui.kivyutils import (
     BWCheckBoxHint,
     CensorableLabel,
-    CensorableScoreLabel,
     CheckBoxHint,
     LabelledFloatInput,
     LabelledIntInput,

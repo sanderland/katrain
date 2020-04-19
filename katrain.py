@@ -16,8 +16,10 @@ from constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INF
 from engine import KataGoEngine
 from game import Game, IllegalMoveException, KaTrainSGF, Move
 from gui import *
-from gui import LabelledSpinner
 from gui.popups import NewGamePopup, ConfigPopup
+
+from kivy.lang import Builder
+
 
 
 class KaTrainGui(BoxLayout):
@@ -83,6 +85,11 @@ class KaTrainGui(BoxLayout):
             self("ai-move", cn)
         if cn.analysis_ready and self.controls.auto_undo.active(cn.next_player):
             self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
+
+        prisoners = self.game.prisoner_count
+        self.board_controls.black_prisoners.text = str(prisoners[1])
+        self.board_controls.white_prisoners.text = str(prisoners[0])
+
         if redraw_board:
             Clock.schedule_once(self.board_gui.draw_board, -1)  # main thread needs to do this
         Clock.schedule_once(self.board_gui.draw_board_contents, -1)
@@ -246,7 +253,6 @@ class KaTrainApp(App):
 
     def on_start(self):
         self.gui.start()
-        signal.signal(signal.SIGINT, self.signal_handler)
 
     def on_request_close(self, *args):
         self.gui.engine.shutdown()
@@ -268,4 +274,12 @@ class KaTrainApp(App):
 
 
 if __name__ == "__main__":
-    KaTrainApp().run()
+    with open("gui.kv", encoding='utf-8') as f:  # avoid windows using another encoding
+        Builder.load_string(f.read())
+    app = KaTrainApp()
+    signal.signal(signal.SIGINT, app.signal_handler)
+    try:
+        app.run()
+    except Exception:
+        app.on_request_close()
+        raise

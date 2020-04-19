@@ -107,15 +107,6 @@ class CensorableLabel(BoxLayout):
         return self.value.text
 
 
-class CensorableScoreLabel(BoxLayout):
-    @property
-    def text(self):
-        return self.value.text
-
-    def set_prisoners(self, bw):
-        self.black.text = str(bw[1])
-        self.white.text = str(bw[0])
-
 
 def draw_text(pos, text, **kw):
     label = CoreLabel(text=text, bold=True, **kw)

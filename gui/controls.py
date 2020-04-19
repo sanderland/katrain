@@ -38,7 +38,6 @@ class Controls(BoxLayout):
     def update_evaluation(self):
         current_node = self.parent.game.current_node
         move = current_node.single_move
-        self.score.set_prisoners(self.parent.game.prisoner_count)
         current_player_is_human_or_both_robots = True  # move not self.ai_auto.active(current_node.player) or self.ai_auto.active(1 - current_node.player) # TODO FIX
 
         info = ""

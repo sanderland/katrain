@@ -202,7 +202,7 @@ class Game:
         # select move
         ai_moves = self.current_node.candidate_moves
         pos_moves = [
-            [d["move"], d["scoreLead"], d["pointsLost"]] for i, d in enumerate(ai_moves) if i == 0 or int(d["visits"]) >= self.config["balance_play_min_visits"]
+            [d["move"], d["scoreLead"], d["pointsLost"]] for i, d in enumerate(ai_moves) if i == 0 or int(d["visits"]) >= train_settings["balance_play_min_visits"]
         ]  # TODO: lcb based ?
         sel_moves = pos_moves[:1]
         # don't play suicidal to balance score - pass when it's best
