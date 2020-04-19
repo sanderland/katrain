@@ -160,7 +160,7 @@ class SGFNode:
     def single_move(self) -> Optional[Move]:
         """Returns the single move for the node if one exists, or None if no moves (or multiple ones) exist."""
         moves = self.moves
-        if len(moves) == 1:
+        if len(moves) == 1: # TODO: and not placements?
             return moves[0]
 
     @property

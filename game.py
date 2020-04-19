@@ -196,7 +196,7 @@ class Game:
 
     def ai_move(self, train_settings):
         while not self.current_node.analysis_ready:
-            self.katrain.set_status("Thinking...")
+            self.katrain.controls.set_status("Thinking...")
             time.sleep(0.05)
 
         # select move

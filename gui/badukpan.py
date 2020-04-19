@@ -2,6 +2,7 @@ import math
 
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 
 from constants import OUTPUT_DEBUG
@@ -15,22 +16,23 @@ class BadukPanWidget(Widget):
         self.ui_config = {}
         self.trainer_config = {}
         self.ghost_stone = []
-        self.gridpos = []
+        self.gridpos_x = []
+        self.gridpos_y = []
         self.grid_size = 0
         self.stone_size = 0
         self.last_eval = 0
 
     # stone placement functions
-    def _find_closest(self, pos):
-        return sorted([(abs(p - pos), i) for i, p in enumerate(self.gridpos)])[0]
+    def _find_closest(self, pos, gridpos):
+        return sorted([(abs(p - pos), i) for i, p in enumerate(gridpos)])[0]
 
     def on_touch_down(self, touch):
-        if not self.gridpos:
+        if not self.gridpos_x:
             return
-        xd, xp = self._find_closest(touch.x)
-        yd, yp = self._find_closest(touch.y)
+        xd, xp = self._find_closest(touch.x,self.gridpos_x)
+        yd, yp = self._find_closest(touch.y,self.gridpos_y)
         prev_ghost = self.ghost_stone
-        if max(yd, xd) < self.grid_size / 2 and (xp, yp) not in [m.coords for m in self.parent.game.stones]:
+        if max(yd, xd) < self.grid_size / 2 and (xp, yp) not in [m.coords for m in self.katrain.game.stones]:
             self.ghost_stone = (xp, yp)
         else:
             self.ghost_stone = None
@@ -41,14 +43,14 @@ class BadukPanWidget(Widget):
         return self.on_touch_down(touch)
 
     def on_touch_up(self, touch):
-        if not self.gridpos:
+        if not self.gridpos_x:
             return
-        katrain = self.parent
+        katrain = self.katrain
         if self.ghost_stone:
             katrain("play", self.ghost_stone)
         else:
-            xd, xp = self._find_closest(touch.x)
-            yd, yp = self._find_closest(touch.y)
+            xd, xp = self._find_closest(touch.x,self.gridpos_x)
+            yd, yp = self._find_closest(touch.y,self.gridpos_y)
 
             nodes_here = [node for node in katrain.game.current_node.nodes_from_root if node.single_move and node.single_move.coords == (xp, yp)]
             if nodes_here and max(yd, xd) < self.grid_size / 2:  # load old comment
@@ -68,20 +70,20 @@ class BadukPanWidget(Widget):
 
     def draw_stone(self, x, y, col, outline_col=None, innercol=None, evalcol=None, evalscale=1.0, scale=1.0):
         stone_size = self.stone_size * scale
-        draw_circle((self.gridpos[x], self.gridpos[y]), stone_size, col)
+        draw_circle((self.gridpos_x[x], self.gridpos_y[y]), stone_size, col)
         if outline_col:
             Color(*outline_col)
-            Line(circle=(self.gridpos[x], self.gridpos[y], stone_size), width=0.05 * stone_size)
+            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size), width=0.05 * stone_size)
         if evalcol:
             evalsize = self.stone_size * evalscale * self.ui_config["eval_dot_max_size"]
-            draw_circle((self.gridpos[x], self.gridpos[y]), evalsize, evalcol)
+            draw_circle((self.gridpos_x[x], self.gridpos_y[y]), evalsize, evalcol)
         #            highlight_col = [ ((1-c)*0.33+e)/1.33  for c,e in zip(col,evalcol) ]
         #            Color(*highlight_col[:3],0.5)
         #            Line(circle=(self.gridpos[x], self.gridpos[y], evalsize))
 
         if innercol:
             Color(*innercol)
-            Line(circle=(self.gridpos[x], self.gridpos[y], stone_size * 0.45 / 0.85), width=0.125 * stone_size)  # 1.75
+            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size * 0.45 / 0.85), width=0.125 * stone_size)  # 1.75
 
     def eval_color(self, points_lost):
         colors = self.ui_config["eval_colors"]
@@ -94,39 +96,40 @@ class BadukPanWidget(Widget):
     def draw_board(self, *args):
         if not self.ui_config:
             return
-        katrain = self.parent
+        katrain = self.katrain
         board_size = katrain.game.board_size
         self.canvas.before.clear()
         with self.canvas.before:
             # board
             sz = min(self.width, self.height)
             Color(*self.ui_config["board_color"])
-            board_rectangle = Rectangle(pos=(0, 0), size=(sz, sz))
+            board_rectangle = Rectangle(pos=self.pos, size=(sz, sz))
             # grid lines
-            margin = self.ui_config["board_margin"]
+            margin = 1.5
             self.grid_size = board_rectangle.size[0] / (board_size - 1 + 1.5 * margin)
             self.stone_size = self.grid_size * self.ui_config["stone_size"]
-            self.gridpos = [math.floor((margin + i) * self.grid_size + 0.5) for i in range(board_size)]
+            self.gridpos_x = [self.pos[0] + math.floor((margin + i) * self.grid_size + 0.5) for i in range(board_size)]
+            self.gridpos_y = [self.pos[1] + math.floor((margin + i) * self.grid_size + 0.5) for i in range(board_size)]
 
             line_color = self.ui_config["line_color"]
             Color(*line_color)
-            lo, hi = self.gridpos[0], self.gridpos[-1]
             for i in range(board_size):
-                Line(points=[(self.gridpos[i], lo), (self.gridpos[i], hi)])
-                Line(points=[(lo, self.gridpos[i]), (hi, self.gridpos[i])])
+                Line(points=[(self.gridpos_x[i],  self.gridpos_y[0]), (self.gridpos_x[i],  self.gridpos_y[-1])])
+                Line(points=[( self.gridpos_x[0], self.gridpos_y[i]), ( self.gridpos_x[-1], self.gridpos_y[i])])
 
             # star points
             star_point_pos = 3 if board_size <= 11 else 4
             starpt_size = self.grid_size * self.ui_config["starpoint_size"]
             for x in [star_point_pos - 1, board_size - star_point_pos, int(board_size / 2)]:
                 for y in [star_point_pos - 1, board_size - star_point_pos, int(board_size / 2)]:
-                    draw_circle((self.gridpos[x], self.gridpos[y]), starpt_size, line_color)
+                    draw_circle((self.gridpos_x[x], self.gridpos_y[y]), starpt_size, line_color)
 
             # coordinates
             Color(0.25, 0.25, 0.25)
+            coord_offset = self.grid_size * margin / 2
             for i in range(board_size):
-                draw_text(pos=(self.gridpos[i], lo / 2), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5)
-                draw_text(pos=(lo / 2, self.gridpos[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
+                draw_text(pos=(self.gridpos_x[i],  self.gridpos_y[0] -coord_offset), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5)
+                draw_text(pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
 
     def draw_board_contents(self, *args):
         if not self.ui_config:
@@ -134,7 +137,7 @@ class BadukPanWidget(Widget):
         stone_color = self.ui_config["stones"]
         outline_color = self.ui_config["outline"]
         _ghost_alpha = self.ui_config["_ghost_alpha"]
-        katrain = self.parent
+        katrain = self.katrain
         board_size = katrain.game.board_size
 
         self.canvas.clear()
@@ -171,7 +174,7 @@ class BadukPanWidget(Widget):
                         ix_owner = "B" if ownership[ix] > 0 else "W"
                         if ix_owner != (has_stone.get((x, y), -1)):
                             Color(*stone_color[ix_owner], abs(ownership[ix]))
-                            Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
+                            Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
                         ix = ix + 1
 
             policy = current_node.policy
@@ -187,8 +190,7 @@ class BadukPanWidget(Widget):
                             policy_delta = best_move_policy - policy[ix]
                             polcol = self.eval_color(0.1 * policy_delta / avg_policy)
                             Color(*polcol)
-                            Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
-                        else:
+                            Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
                         ix = ix + 1
                 policy_delta = best_move_policy - policy[ix]
                 katrain.controls.pass_btn.face_color = (*self.eval_color(100*policy_delta),1)
@@ -220,7 +222,6 @@ class BadukPanWidget(Widget):
                             scale = 0.85
                         self.draw_stone(move.coords[0], move.coords[1], c, scale=scale)
 
-
             # hover next move ghost stone
             if self.ghost_stone:
                 self.draw_stone(*self.ghost_stone, (*stone_color[next_player], _ghost_alpha))
@@ -233,7 +234,11 @@ class BadukPanWidget(Widget):
                 else:
                     text = "pass"
                 Color(0.45, 0.05, 0.45, 0.5)
-                center = self.gridpos[int(board_size / 2)]
-                Ellipse(pos=(center - self.grid_size * 1.5, center - self.grid_size * 1.5), size=(self.grid_size * 3, self.grid_size * 3))
+                center = (self.pos[0] + self.width/2,self.pos[1]+self.height/2)
+                size = min(self.width, self.height) * 0.22
+                Ellipse(pos=(center[0] - size/2, center[1] - size/2), size=(size,size))
                 Color(0.15, 0.15, 0.15)
-                draw_text(pos=(center, center), text=text, font_size=self.grid_size * 0.66, halign="center", outline_color=[0.95, 0.95, 0.95])
+                draw_text(pos=center, text=text, font_size=size*0.25, halign="center", outline_color=[0.95, 0.95, 0.95])
+
+class BadukPanControls(BoxLayout):
+    pass

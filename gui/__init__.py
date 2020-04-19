@@ -1,4 +1,4 @@
-from gui.badukpan import BadukPanWidget
+from gui.badukpan import BadukPanWidget, BadukPanControls
 from gui.controls import Controls
 from gui.kivyutils import (
     BWCheckBoxHint,

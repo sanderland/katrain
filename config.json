@@ -28,7 +28,6 @@
     "eval_off_show_last": 3
   },
   "board_ui": {
-    "board_margin": 1.5,
     "starpoint_size": 0.1,
     "stone_size": 0.475,
     "eval_dot_max_size": 0.5,

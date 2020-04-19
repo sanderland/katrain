@@ -264,8 +264,8 @@
 
 <BadukPanWidget>:
 	size: self.parent.height, self.parent.height
-	engine: self.parent.controls
-	
+	katrain: self.parent.parent
+
 <Controls>
 	orientation: 'vertical'
 	play_tab_button: play_tab_button
@@ -300,6 +300,7 @@
                 play_tab.size_hint_x = None
                 play_tab.width = 0
                 play_tab.opacity = 0
+                self.state = 'down'
         StyledToggleButton:
             text: 'Play'
             group: 'tabs'
@@ -312,6 +313,7 @@
                 analyze_tab.size_hint_x = None
                 analyze_tab.width = 0
                 analyze_tab.opacity = 0
+                self.state = 'down'
     BoxLayout:
         size_hint: 1,0.25
         orientation: 'horizontal'
@@ -467,21 +469,32 @@
             size_hint: 0.25, 1
             on_press: root.katrain('config-popup')
 
+<BadukPanControls>:
+    StyledIconButton:
+        icon: 'img/flaticon/go-game.png'
+        size_hint: 0.25, 1
+        on_press: root.katrain("new-game-popup")
 
 <KaTrainGui>:
 	board_gui: board_gui
 	controls: controls
+	board_aspect_ratio: 1.1
     canvas.before:
         Color:
             rgba: 0.95, 0.95, 0.95, 1
         Rectangle:
             pos: self.pos
             size: root.size
-    BadukPanWidget:
-		id: board_gui
+    BoxLayout:
+        orientation: 'vertical'
         size_hint: 1 - controls.size_hint[0], 1
-
+        BadukPanWidget:
+    		id: board_gui
+            size_hint: (1,1)
+        BadukPanControls:
+            id: board_controls
+            size_hint: (1,root.board_aspect_ratio-1)
     Controls:
 		id: controls
-		size_hint: max(0.25,(root.width - root.height)/root.width), 1
+		size_hint: max(0.25,(root.width - root.height/root.board_aspect_ratio)/root.width), 1
 
