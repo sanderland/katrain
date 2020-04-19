@@ -60,7 +60,7 @@ class KataGoEngine:
         return not self.queries
 
     def _analysis_read_thread(self):
-        while True:
+        while self.katago_process is not None:
             line = self.katago_process.stdout.readline()
             if b"Uncaught exception" in line:
                 self.katrain.log(f"KataGo Engine Failed: {line.decode()}", OUTPUT_ERROR)

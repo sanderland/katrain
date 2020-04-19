@@ -94,8 +94,9 @@ class GameNode(SGFNode):
             return self.player_sign(single_move.player) * (parent_score - score)
 
     @property
-    def score(self):
-        return self.analysis["root"]["scoreLead"]  # TODO: update for rootInfo
+    def score(self) -> Optional[float]:
+        if self.analysis_ready:
+            return self.analysis["root"]["scoreLead"]
 
     @staticmethod
     def player_sign(player):

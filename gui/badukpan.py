@@ -179,22 +179,19 @@ class BadukPanWidget(Widget):
 
             # likewise for policy, although it makes slightly less sense here
             policy = current_node.policy or (current_node.parent and current_node.parent.policy)
+            pass_btn = katrain.board_controls.pass_btn
+            pass_btn.canvas.after.clear()
             if katrain.controls.policy.active and policy and not katrain.controls.ownership.active:
-                n_legal_moves = sum([p > 0 for p in policy])
-                avg_policy = 1.0 / n_legal_moves
-                best_move_policy = max(policy)  # num legal moves scale?
-                rsz = self.grid_size * 0.2
                 ix = 0
                 for y in range(board_size - 1, -1, -1):
                     for x in range(board_size):
                         if policy[ix] > 0:
-                            policy_delta = best_move_policy - policy[ix]
-                            polcol = self.eval_color(0.1 * policy_delta / avg_policy)
-                            Color(*polcol)
-                            Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
+                            polsize = math.sqrt(policy[ix])
+                            self.draw_stone(x, y, (1, 0, 0, 0.5), scale=polsize)  # TODO: config?
                         ix = ix + 1
-                policy_delta = best_move_policy - policy[ix]
-                katrain.board_controls.pass_btn.face_color = (*self.eval_color(100 * policy_delta), 1)
+                polsize = math.sqrt(policy[ix])
+                with pass_btn.canvas.after:
+                    draw_circle((pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2), polsize * pass_btn.height / 2, (1, 0, 0, 0.5))
 
             # children of current moves in undo / review
             undo_coords = set()
@@ -217,10 +214,11 @@ class BadukPanWidget(Widget):
                     if move.coords is not None and move.coords not in undo_coords:
                         if i == 0:
                             scale = 1.0
+                            c[3] = 0.8
                         elif d["visits"] < 0.1 * hint_moves[0]["visits"]:  # TODO: config?
-                            scale = 0.6  # TODO: config?
+                            scale = 0.8
                         else:
-                            scale = 0.85
+                            scale = 1.0
                         self.draw_stone(move.coords[0], move.coords[1], c, scale=scale)
 
             # hover next move ghost stone

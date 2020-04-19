@@ -21,7 +21,6 @@ from gui.popups import NewGamePopup, ConfigPopup
 from kivy.lang import Builder
 
 
-
 class KaTrainGui(BoxLayout):
     """Top level class responsible for tying everything together"""
 
@@ -89,9 +88,9 @@ class KaTrainGui(BoxLayout):
 
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
-        top,bot = self.board_controls.black_prisoners,self.board_controls.white_prisoners
-        if self.game.next_player == 'W':
-            top, bot = bot,top
+        top, bot = self.board_controls.black_prisoners, self.board_controls.white_prisoners
+        if self.game.next_player == "W":
+            top, bot = bot, top
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
@@ -283,7 +282,7 @@ class KaTrainApp(App):
 
 
 if __name__ == "__main__":
-    with open("gui.kv", encoding='utf-8') as f:  # avoid windows using another encoding
+    with open("gui.kv", encoding="utf-8") as f:  # avoid windows using another encoding
         Builder.load_string(f.read())
     app = KaTrainApp()
     signal.signal(signal.SIGINT, app.signal_handler)

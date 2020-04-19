@@ -1,4 +1,6 @@
+from kivy.graphics.vertex_instructions import SmoothLine, Line
 from kivy.uix.boxlayout import BoxLayout
+from kivy.graphics.context_instructions import Color
 
 
 class Controls(BoxLayout):
@@ -34,9 +36,13 @@ class Controls(BoxLayout):
         for el in [self.ai_lock.checkbox, self.analyze_tab_button, self.ai_auto.white, self.ai_auto.black, self.ai_move]:
             el.disabled = False
 
-    # handles showing completed analysis and triggered actions like auto undo and ai move
+    def on_size(self, *args):
+        self.update_evaluation()
+
+    # handles showing completed analysis and score graph
     def update_evaluation(self):
-        current_node = self.parent.game.current_node
+        katrain = self.parent
+        current_node = katrain.game.current_node
         move = current_node.single_move
         current_player_is_human_or_both_robots = True  # move not self.ai_auto.active(current_node.player) or self.ai_auto.active(1 - current_node.player) # TODO FIX
 
@@ -53,6 +59,22 @@ class Controls(BoxLayout):
             self.show_evaluation_stats(current_node)
 
         self.info.text = info
+
+        game_node = katrain.game.current_node
+        scores = [n.score for n in game_node.nodes_from_root]
+        # TODO: like redo, what is the node to redo / should we append? cache?
+        self.graph.canvas.clear()
+        with self.graph.canvas:
+            pt = []
+            nnscores = [s for s in scores if s is not None] + [-5, 5]
+            scale = max(max(*nnscores), -min(*nnscores)) * 1.05
+            xscale = self.graph.width * 0.9 / max(len(scores), 20)
+            ls = 0
+            for i, s in enumerate(scores):
+                ls = s or ls
+                pt.extend([self.graph.pos[0] + 0.05 * self.graph.width + i * xscale, self.graph.pos[1] + self.graph.height / 2 * (1 + ls / scale)])
+            Color(0, 0, 0)
+            Line(points=pt, width=1.0)  # just set points?
 
         if False:  # TODO: UNDO AND AI MOVE
             if current_node.analysis_ready and current_node.parent and current_node.parent.analysis_ready and not current_node.children and not current_node.x_comment.get("undo"):

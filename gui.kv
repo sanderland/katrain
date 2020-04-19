@@ -249,6 +249,7 @@
 	ai_lock: ai_lock
 	ai_move: ai_move
 	auto_undo: auto_undo
+	graph: graph
 	katrain: self.parent
     BoxLayout:
         size_hint: 1,0.05
@@ -323,6 +324,7 @@
                     text: 'show\npolicy'
                     on_active: root.katrain.update_state()
             LargeLabel:
+                id: graph
                 text: 'graph?'
                 size_hint: 1,0.75
             CensorableLabel:

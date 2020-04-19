@@ -25,11 +25,14 @@ class CheckBoxHint(BoxLayout):
     def on_active(self, *args):
         pass
 
+
 class DarkLabel(Label):
     pass
 
+
 class BaseCircleWithText(DarkLabel):
     radius = NumericProperty(0.48)
+
 
 class LabelledTextInput(TextInput):
     input_property = StringProperty("")
@@ -111,7 +114,6 @@ class CensorableLabel(BoxLayout):
     @property
     def text(self):
         return self.value.text
-
 
 
 def draw_text(pos, text, **kw):
