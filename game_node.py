@@ -2,7 +2,7 @@ import copy
 import random
 from typing import Dict, List, Optional
 
-from sgf_parser import SGFNode
+from sgf_parser import SGFNode, Move
 
 
 class GameNode(SGFNode):
@@ -110,3 +110,15 @@ class GameNode(SGFNode):
             [{"pointsLost": self.player_sign(self.next_player) * (self.analysis["root"]["scoreLead"] - d["scoreLead"]), **d} for d in self.analysis["moves"].values()],
             key=lambda d: (d["order"], d["pointsLost"]),
         )
+
+    @property
+    def policy_ranking(self) -> Optional[List]:  # return moves from highest policy value to lowest
+        if self.policy:
+            ix = 0
+            moves = []
+            for y in range(self.board_size - 1, -1, -1):
+                for x in range(self.board_size):
+                    moves.append((Move((x, y)), self.policy[ix]))
+                    ix += 1
+            moves.append((Move(None), self.policy[ix]))
+            return sorted(moves, key=lambda mp: -mp[1])

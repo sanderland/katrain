@@ -131,18 +131,18 @@ class SGFNode:
 
     # root properties available on any node
     @property
-    def board_size(self) -> Union[int,Tuple]:
-        size = str(self.root.get_first("SZ", '19'))
-        if ':' in size:
-            return tuple(map(size.split(':'),int))
+    def board_size(self) -> Union[int, Tuple]:
+        size = str(self.root.get_first("SZ", "19"))
+        if ":" in size:
+            return tuple(map(size.split(":"), int))
         return int(size)
 
     @property
-    def board_size_xy(self) -> Tuple[int,int]:
+    def board_size_xy(self) -> Tuple[int, int]:
         x, y = self.board_size
         if not y:
-            y=x
-        return x,y
+            y = x
+        return x, y
 
     @property
     def komi(self) -> float:

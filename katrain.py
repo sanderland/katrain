@@ -40,7 +40,7 @@ class KaTrainGui(BoxLayout):
 
     def log(self, message, level=OUTPUT_INFO):
         if level == OUTPUT_ERROR:
-            self.controls.set_status(f"ERROR: {message}", self.game.current_node)
+            self.controls.set_status(f"ERROR: {message}")
             print(f"ERROR: {message}")
         elif self.debug_level >= level:
             print(message)
@@ -81,10 +81,11 @@ class KaTrainGui(BoxLayout):
     def update_state(self, redraw_board=False):
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
-        auto_undo = cn.player and self.controls.auto_undo.active(cn.player)
-        if  auto_undo and cn.analysis_ready:
+        auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
+        if auto_undo and cn.analysis_ready:
             self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
-        if cn.analysis_ready and self.controls.ai_auto.active(cn.next_player) and not cn.children and not self.game.game_ended and not (auto_undo and cn.auto_undo is None):
+
+        if cn.analysis_ready and "ai" in self.controls.player_mode(cn.next_player) and not cn.children and not self.game.game_ended and not (auto_undo and cn.auto_undo is None):
             self("ai-move", cn)  # cn mismatch stops this if undo fired
 
         # Handle prisoners and next player display
@@ -264,7 +265,7 @@ class KaTrainApp(App):
         self.gui.start()
 
     def on_request_close(self, *args):
-        if getattr(self,'gui',None) and self.gui.engine:
+        if getattr(self, "gui", None) and self.gui.engine:
             self.gui.engine.shutdown()
 
     def signal_handler(self, signal, frame):
@@ -284,8 +285,8 @@ class KaTrainApp(App):
 
 
 if __name__ == "__main__":
-    with open("gui.kv", encoding="utf-8") as f:  # avoid windows using another encoding
-        Builder.load_string(f.read())
+    #    with open("katrain.kv", encoding="utf-8") as f:  # avoid windows using another encoding
+    #        Builder.load_string(f.read())
     app = KaTrainApp()
     signal.signal(signal.SIGINT, app.signal_handler)
     try:

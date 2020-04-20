@@ -12,7 +12,7 @@ from game import Move
 
 
 class BadukPanWidget(Widget):
-    board_color = ListProperty( [0.85, 0.68, 0.40] )
+    board_color = ListProperty([0.85, 0.68, 0.40])
 
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
@@ -180,10 +180,9 @@ class BadukPanWidget(Widget):
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
                         ix = ix + 1
 
-
             policy = current_node.policy
-            if not policy and current_node.parent and current_node.parent.policy and set(katrain.controls.ai_auto.active_map.values())=={True}:
-                policy = current_node.parent.policy # in the case of AI self-play we allow the policy to be one step out of date
+            if not policy and current_node.parent and current_node.parent.policy and set(katrain.controls.ai_auto.active_map.values()) == {True}:
+                policy = current_node.parent.policy  # in the case of AI self-play we allow the policy to be one step out of date
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
             if katrain.controls.policy.active and policy and not katrain.controls.ownership.active:

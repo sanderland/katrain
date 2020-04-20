@@ -1,18 +1,19 @@
+import random
+
+from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
 from kivy.graphics import *
-from kivy.properties import BooleanProperty, StringProperty, NumericProperty
+from kivy.properties import BooleanProperty, StringProperty, NumericProperty, ListProperty, ObjectProperty
+from kivy.uix.behaviors import ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 import re
 
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
-
-
-class StyledButton(Button):
-    pass
 
 
 class CheckBoxHint(BoxLayout):
@@ -28,6 +29,65 @@ class CheckBoxHint(BoxLayout):
 
 class DarkLabel(Label):
     pass
+
+
+class StyledButton(Button):
+    pass
+
+
+class StyledToggleButton(StyledButton, ToggleButtonBehavior):
+    value = StringProperty("")
+
+
+class ToggleButtonContainer(GridLayout):
+    __events__ = ("on_selection",)
+
+    options = ListProperty([])
+    labels = ListProperty([])
+    selected = StringProperty("")
+    group = StringProperty(None)
+    autosize = BooleanProperty(True)
+    button_class = ObjectProperty(StyledToggleButton)
+    margin = ListProperty([1, 1, 0, 0])
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Clock.schedule_once(self._build, 0)
+
+    def on_selection(self, *args):
+        pass
+
+    def _build(self, _dt):
+        self.rows = 1
+        self.cols = len(self.options)
+        self.group = self.group or str(random.random())
+        if not self.selected and self.options:
+            self.selected = self.options[0]
+        if len(self.labels) < len(self.options):
+            self.labels += self.options[len(self.labels) + 1 :]
+
+        def state_handler(btn,*args):
+            self.dispatch("on_selection")
+            btn.state = 'down' # no toggle
+
+        for i, opt in enumerate(self.options):
+            state = "down" if opt == self.selected else "normal"
+            self.add_widget(self.button_class(group=self.group, text=self.labels[i], value=opt, state=state,
+                                              margin=self.margin,on_press=state_handler))
+        Clock.schedule_once(self._size, 0)
+
+    def _size(self, _dt):
+        if self.autosize:
+            for tb in self.children:
+                tb.size_hint = (tb.texture_size[0] + 3, 1)
+
+    @property
+    def value(self):
+        for tb in self.children:
+            if tb.state == "down":
+                return tb.value
+        if self.options:
+            return self.options[0]
 
 
 class BaseCircleWithText(DarkLabel):

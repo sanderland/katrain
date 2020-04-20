@@ -7,6 +7,7 @@ from typing import List
 
 from kivy.clock import Clock
 
+from constants import OUTPUT_DEBUG
 from game_node import GameNode
 from sgf_parser import SGF, Move
 
@@ -195,26 +196,34 @@ class Game:
         return f"SGF with analysis written to {file_name}"
 
     def ai_move(self, train_settings):
-        while not self.current_node.analysis_ready:
-            self.katrain.controls.set_status("Thinking...")
+        cn = self.current_node
+        while not cn.analysis_ready:
+            self.katrain.controls.set_status("Thinking...")  # TODO: non blocking somehow?
             time.sleep(0.05)
-
         # select move
-        ai_moves = self.current_node.candidate_moves
-        pos_moves = [
-            [d["move"], d["scoreLead"], d["pointsLost"]] for i, d in enumerate(ai_moves) if i == 0 or int(d["visits"]) >= train_settings["balance_play_min_visits"]
-        ]  # TODO: lcb based ?
-        sel_moves = pos_moves[:1]
-        # don't play suicidal to balance score - pass when it's best
-        if self.katrain.controls.ai_balance.active and pos_moves[0][0] != "pass":  # TODO: settings where they belong?
-            sel_moves = [
-                (move, score, points_lost)
-                for move, score, points_lost in pos_moves
-                if points_lost < train_settings["balance_play_randomize_score"]
-                or points_lost < train_settings["balance_play_min_eval"]
-                and -self.current_node.move.player_sign * score > self.config["balance_play_target_score"]
-            ] or sel_moves
-        aimove = Move.from_gtp(random.choice(sel_moves)[0], player=self.next_player)
+        ai_moves = cn.candidate_moves
+        mode = self.katrain.controls.player_mode(cn.next_player)
+
+        if "policy" in mode and cn.policy:
+            policy_moves = cn.policy_ranking
+            self.katrain.log(f"Top 5 policy moves are: {policy_moves[:5]}", OUTPUT_DEBUG)
+            aimove = policy_moves[0][0]
+        elif "balance" in mode and ai_moves[0]['move'] != "pass":  # don't play suicidal to balance score - pass when it's best
+            sign = cn.player_sign(cn.next_player) # TODO check
+            sel_moves = [ # top move, or anything not too bad, or anything that makes you still ahead
+                move
+                for i, move in enumerate(ai_moves)
+                if i == 0
+                or move["visits"] >= train_settings["balance_play_min_visits"]
+                and (
+                    move["pointsLost"] < train_settings["balance_play_randomize_score"]
+                    or move["pointsLost"] < train_settings["balance_play_min_eval"]
+                    and sign * move["scoreLead"] > train_settings["balance_play_target_score"]
+                )
+            ]
+            aimove = Move.from_gtp(random.choice(sel_moves)["move"], player=cn.next_player) # TODO: could be weighted towards worse
+        else:
+            aimove = Move.from_gtp(ai_moves[0]["move"], player=cn.next_player)
         self.play(aimove)
 
     def analyze_undo(self, node, train_config):
@@ -252,7 +261,7 @@ class Game:
             return
 
         if mode == "extra":
-            visits = cn.analysis['root']['visits'] + self.engine.config["visits"]
+            visits = cn.analysis["root"]["visits"] + self.engine.config["visits"]
             self.katrain.controls.set_status(f"Performing additional analysis to {visits} visits")
             cn.analyze(self.engine, visits=visits, priority=-1_000)
             return
@@ -262,8 +271,8 @@ class Game:
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
             priority = -1_000_000_000
         else:  # mode=='refine':
-            analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp,_ in cn.analysis['moves'].items()]
-            visits = max(d['visits'] for d in cn.analysis['moves'].values()) + self.engine.config["visits_fast"]
+            analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
+            visits = max(d["visits"] for d in cn.analysis["moves"].values()) + self.engine.config["visits_fast"]
             self.katrain.controls.set_status(f"Refining analysis of candidate moves to {visits} visits")
             priority = -1_000
         for move in analyze_moves:
