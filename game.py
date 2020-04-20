@@ -201,29 +201,29 @@ class Game:
             self.katrain.controls.set_status("Thinking...")  # TODO: non blocking somehow?
             time.sleep(0.05)
         # select move
-        ai_moves = cn.candidate_moves
-        mode = self.katrain.controls.player_mode(cn.next_player)
+        candidate_ai_moves = cn.candidate_moves
+        ai_mode = self.katrain.controls.player_mode(cn.next_player)
 
-        if "policy" in mode and cn.policy:
+        if "policy" in ai_mode and cn.policy:
             policy_moves = cn.policy_ranking
             self.katrain.log(f"Top 5 policy moves are: {policy_moves[:5]}", OUTPUT_DEBUG)
             aimove = policy_moves[0][0]
-        elif "balance" in mode and ai_moves[0]['move'] != "pass":  # don't play suicidal to balance score - pass when it's best
+        elif "balance" in ai_mode and candidate_ai_moves[0]['move'] != "pass":  # don't play suicidal to balance score - pass when it's best
             sign = cn.player_sign(cn.next_player) # TODO check
             sel_moves = [ # top move, or anything not too bad, or anything that makes you still ahead
                 move
-                for i, move in enumerate(ai_moves)
+                for i, move in enumerate(candidate_ai_moves)
                 if i == 0
                 or move["visits"] >= train_settings["balance_play_min_visits"]
                 and (
                     move["pointsLost"] < train_settings["balance_play_randomize_score"]
-                    or move["pointsLost"] < train_settings["balance_play_min_eval"]
+                    or move["pointsLost"] < train_settings["balance_play_max_lost"]
                     and sign * move["scoreLead"] > train_settings["balance_play_target_score"]
                 )
             ]
             aimove = Move.from_gtp(random.choice(sel_moves)["move"], player=cn.next_player) # TODO: could be weighted towards worse
         else:
-            aimove = Move.from_gtp(ai_moves[0]["move"], player=cn.next_player)
+            aimove = Move.from_gtp(candidate_ai_moves[0]["move"], player=cn.next_player)
         self.play(aimove)
 
     def analyze_undo(self, node, train_config):

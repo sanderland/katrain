@@ -139,7 +139,7 @@ class BadukPanWidget(Widget):
             return
         stone_color = self.ui_config["stones"]
         outline_color = self.ui_config["outline"]
-        _ghost_alpha = self.ui_config["_ghost_alpha"]
+        ghost_alpha = self.ui_config["ghost_alpha"]
         katrain = self.katrain
         board_size = katrain.game.board_size
 
@@ -181,17 +181,19 @@ class BadukPanWidget(Widget):
                         ix = ix + 1
 
             policy = current_node.policy
-            if not policy and current_node.parent and current_node.parent.policy and set(katrain.controls.ai_auto.active_map.values()) == {True}:
+            if not policy and current_node.parent and current_node.parent.policy and 'ai' in katrain.controls.player_mode('B') and 'ai' in katrain.controls.player_mode('W'):
                 policy = current_node.parent.policy  # in the case of AI self-play we allow the policy to be one step out of date
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
             if katrain.controls.policy.active and policy and not katrain.controls.ownership.active:
                 ix = 0
+                best_move_policy = max(*policy)
                 for y in range(board_size - 1, -1, -1):
                     for x in range(board_size):
                         if policy[ix] > 0:
                             polsize = math.sqrt(policy[ix])
-                            self.draw_stone(x, y, (1, 0, 0, 0.5), scale=polsize)  # TODO: config?
+                            policy_circle_color = (*self.ui_config["policy_color"], self.ui_config["ghost_alpha"] + self.ui_config["top_move_x_alpha"] * (policy[ix] == best_move_policy))
+                            self.draw_stone(x, y, policy_circle_color, scale=polsize)
                         ix = ix + 1
                 polsize = math.sqrt(policy[ix])
                 with pass_btn.canvas.after:
@@ -214,20 +216,17 @@ class BadukPanWidget(Widget):
                 hint_moves = current_node.candidate_moves
                 for i, d in enumerate(hint_moves):
                     move = Move.from_gtp(d["move"])
-                    c = [*self.eval_color(d["pointsLost"]), 0.5]
                     if move.coords is not None and move.coords not in undo_coords:
+                        alpha, scale =  self.ui_config["ghost_alpha"], 1.0
                         if i == 0:
-                            scale = 1.0
-                            c[3] = 0.8
-                        elif d["visits"] < 0.1 * hint_moves[0]["visits"]:  # TODO: config?
+                            c[3] += self.ui_config["top_move_x_alpha"]
+                        elif d["visits"] < 0.1 * hint_moves[0]["visits"]: # TODO: config?
                             scale = 0.8
-                        else:
-                            scale = 1.0
-                        self.draw_stone(move.coords[0], move.coords[1], c, scale=scale)
+                        self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(d["pointsLost"]),alpha], scale=scale)
 
             # hover next move ghost stone
             if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*stone_color[next_player], _ghost_alpha))
+                self.draw_stone(*self.ghost_stone, (*stone_color[next_player], ghost_alpha))
 
             # pass circle
             passed = len(nodes) > 1 and current_node.is_pass

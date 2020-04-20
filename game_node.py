@@ -79,6 +79,8 @@ class GameNode(SGFNode):
                     points_lost = self.points_lost
                     if sgf and points_lost > 0.5:
                         text += f"Estimated point loss: {points_lost:.1f}\n"
+                if sgf or hints:
+                    text += f"Top policy move was {self.parent.policy_ranking[0][0].gtp()}\n"
             if self.auto_undo:
                 text += "Move was automatically undone."
         else:
@@ -118,7 +120,7 @@ class GameNode(SGFNode):
             moves = []
             for y in range(self.board_size - 1, -1, -1):
                 for x in range(self.board_size):
-                    moves.append((Move((x, y)), self.policy[ix]))
+                    moves.append((Move((x, y),player=self.next_player), self.policy[ix]))
                     ix += 1
-            moves.append((Move(None), self.policy[ix]))
+            moves.append((Move(None,player=self.next_player), self.policy[ix]))
             return sorted(moves, key=lambda mp: -mp[1])
