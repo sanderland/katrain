@@ -210,7 +210,7 @@ class Game:
         cn = self.current_node
         while not cn.analysis_ready:
             self.katrain.controls.set_status("Thinking...")  # TODO: non blocking somehow?
-            time.sleep(0.05)
+            time.sleep(0.01)
         # select move
         candidate_ai_moves = cn.candidate_moves
         ai_mode = self.katrain.controls.ai_mode(cn.next_player)

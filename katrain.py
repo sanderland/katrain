@@ -125,6 +125,7 @@ class KaTrainGui(BoxLayout):
     def _do_new_game(self, move_tree=None):
         self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree)
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
+        self.controls.graph.clear()
         self.update_state(redraw_board=True)  # TODO: just board here/redraw is in all anyway?
 
     def _do_ai_move(self, node=None):
@@ -193,10 +194,10 @@ class KaTrainGui(BoxLayout):
             return  # if in new game or load, don't allow keyboard shortcuts
 
         shortcuts = {
-            "u": self.controls.eval,
-            "i": self.controls.hints,
-            "p": self.controls.policy,
-            "o": self.controls.ownership,
+            "u": self.controls.eval.checkbox,
+            "i": self.controls.hints.checkbox,
+            "p": self.controls.policy.checkbox,
+            "o": self.controls.ownership.checkbox,
             "a": ("ai-move",),
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),

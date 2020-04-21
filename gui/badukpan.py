@@ -196,7 +196,7 @@ class BadukPanWidget(Widget):
                 policy = current_node.parent.policy  # in the case of AI self-play we allow the policy to be one step out of date
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
-            if katrain.controls.policy.active and policy and not katrain.controls.ownership.active:
+            if katrain.controls.policy.active and policy:
                 ix = 0
                 best_move_policy = max(*policy)
                 for y in range(board_size_y - 1, -1, -1):
@@ -211,7 +211,7 @@ class BadukPanWidget(Widget):
                         ix = ix + 1
                 polsize = math.sqrt(policy[ix])
                 with pass_btn.canvas.after:
-                    draw_circle((pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2), polsize * pass_btn.height / 2, (1, 0, 0, 0.5))
+                    draw_circle((pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2), polsize * pass_btn.height / 2, self.ui_config["policy_color"])
 
             # children of current moves in undo / review
             undo_coords = set()

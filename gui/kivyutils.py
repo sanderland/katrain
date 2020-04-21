@@ -1,3 +1,4 @@
+import math
 import random
 
 from kivy.clock import Clock
@@ -11,6 +12,7 @@ import re
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.dropdown import DropDown
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
@@ -80,7 +82,7 @@ class ToggleButtonContainer(GridLayout):
 
         for i, opt in enumerate(self.options):
             state = "down" if opt == self.selected else "normal"
-            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, margin=self.margin, on_press=state_handler,))
+            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, margin=self.margin, on_press=state_handler))
         Clock.schedule_once(self._size, 0)
 
     def _size(self, _dt):
@@ -173,30 +175,32 @@ class CensorableLabel(BoxLayout):
 class ScoreGraph(Label):
     values = ListProperty([])
     line_points = ListProperty([])
-    line = ObjectProperty(None)
-    dot = ObjectProperty(None)
-    highlighted_index = NumericProperty(0)
+    dot_pos = ListProperty([0, 0])
+    highlighted_index = NumericProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        with self.canvas:
-            Color(0, 0, 0)
-            self.line = Line(points=self.line_points, width=1.0)
-            Color(0.21, 0.28, 0.31)
-            self.dot = Ellipse(pos=self.pos, size=(2, 2))
+        Clock.schedule_once(self.on_size, 0)
 
-    def clear_values(self):
+    def clear(self):
         self.values = []
 
     def on_size(self, *args):
-        if self.values:
-            val_range = min(self.values), max(self.values)
-            scale = max(5, max(-val_range[0], val_range[1]) * 1.05)
-            xscale = self.width * 0.9 / max(len(self.values), 20)
-            self.line_points = [[self.pos[0] + 0.05 * self.width + i * xscale, self.pos[1] + self.height / 2 * (1 + val / scale)] for i, val in enumerate(self.values)]
-            self.line.points = sum(self.line_points, [])
-        if self.highlighted_index:
-            self.dot.pos = [c - 1 for c in self.line_points[self.highlighted_index]]
+        values = self.values
+        if values:
+            val_range = min(values or [0]), max(values or [0])
+            scale = math.ceil(max(3, max(-val_range[0], val_range[1]) * 1.05))
+
+            xscale = self.width * 0.9 / max(len(values), 20)
+            available_height = self.height * (1 - 2 * self.marginy)
+            line_points = [[self.pos[0] + self.marginx * self.width + i * xscale, self.pos[1] + available_height / 2 * (1 + val / scale)] for i, val in enumerate(values)]
+            self.line_points = sum(line_points, [])
+            self.range_label_top.text = f"B+{scale:.0f}"
+            self.range_label_bottom.text = f"W+{scale:.0f}"
+
+            if self.highlighted_index is not None:
+                self.highlighted_index = min(self.highlighted_index, len(values) - 1)
+                self.dot_pos = [c - self.highlight_size / 2 for c in line_points[self.highlighted_index]]
 
     def update_value(self, index, value):
         self.values.extend([0] * max(0, index - (len(self.values) - 1)))
@@ -208,9 +212,7 @@ class ScoreGraph(Label):
 def draw_text(pos, text, **kw):
     label = CoreLabel(text=text, bold=True, **kw)
     label.refresh()
-    Rectangle(
-        texture=label.texture, pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2), size=label.texture.size,
-    )
+    Rectangle(texture=label.texture, pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2), size=label.texture.size)
 
 
 def draw_circle(pos, r, col):

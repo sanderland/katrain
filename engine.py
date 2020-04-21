@@ -87,7 +87,7 @@ class KataGoEngine:
 
         if ownership is None:
             ownership = self.config["enable_ownership"] and not next_move
-
+        size_x, size_y = analysis_node.board_size
         query = {
             "id": query_id,
             "rules": self.get_rules(analysis_node),
@@ -95,8 +95,8 @@ class KataGoEngine:
             "analyzeTurns": [len(moves)],
             "maxVisits": visits or self.config["visits"],
             "komi": analysis_node.komi,
-            "boardXSize": analysis_node.board_size,
-            "boardYSize": analysis_node.board_size,
+            "boardXSize": size_x,
+            "boardYSize": size_y,
             "includeOwnership": ownership,
             "includePolicy": not next_move,
             "moves": [[m.player, m.gtp()] for m in moves],

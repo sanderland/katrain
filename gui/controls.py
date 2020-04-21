@@ -68,6 +68,7 @@ class Controls(BoxLayout):
             if current_player_is_human_or_both_robots:
                 self.show_evaluation_stats(current_node)
 
-            self.graph.update_value(current_node.depth, current_node.score)
+            if current_node.score:
+                self.graph.update_value(current_node.depth, current_node.score)
 
         self.info.text = info

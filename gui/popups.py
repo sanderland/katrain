@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 import os
 from constants import OUTPUT_DEBUG, OUTPUT_ERROR
@@ -84,12 +85,16 @@ class ConfigPopup(QuickConfigGui):
 
     def __init__(self, katrain, popup, config, ignore_cats):
         self.config = config
+        self.ignore_cats = ignore_cats
         self.orientation = "vertical"
         super().__init__(katrain, popup)
+        Clock.schedule_once(self._build, 0)
+
+    def _build(self, _):
         cols = [BoxLayout(orientation="vertical"), BoxLayout(orientation="vertical")]
         props_in_col = [0, 0]
-        for k1, all_d in config.items():
-            if k1 in ignore_cats:
+        for k1, all_d in self.config.items():
+            if k1 in self.ignore_cats:
                 continue
             d = {k: v for k, v in all_d.items() if isinstance(v, (int, float, str, bool))}  # no complex objects
             cat = GridLayout(cols=2, rows=len(d) + 1, size_hint=(1, len(d) + 1))
@@ -105,14 +110,14 @@ class ConfigPopup(QuickConfigGui):
                 cols[1].add_widget(cat)
                 props_in_col[1] += len(d)
 
-        col_container = BoxLayout(size_hint=(1, 0.95))
+        col_container = BoxLayout(size_hint=(1, 0.9))
         col_container.add_widget(cols[0])
         col_container.add_widget(cols[1])
         self.add_widget(col_container)
         self.info_label = Label()
-        self.apply_button = StyledButton(text="Apply Settings", on_press=lambda _: self.update_config())
-        self.save_button = StyledButton(text="Apply and Save Settings", on_press=lambda _: self.update_config(save_to_file=True))
-        btn_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.05))
+        self.apply_button = StyledButton(text="Apply", on_press=lambda _: self.update_config())
+        self.save_button = StyledButton(text="Apply and Save", on_press=lambda _: self.update_config(save_to_file=True))
+        btn_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.1))
         btn_container.add_widget(self.info_label)
         btn_container.add_widget(self.apply_button)
         btn_container.add_widget(self.save_button)
