@@ -17,18 +17,18 @@ class Move:
     PLAYERS = "BW"
     SGF_COORD = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ".lower()) + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
-    @staticmethod
-    def from_gtp(gtp_coords, player="B"):
+    @classmethod
+    def from_gtp(cls, gtp_coords, player="B"):
         if "pass" in gtp_coords:
-            return Move(coords=None, player=player)
+            return cls(coords=None, player=player)
         match = re.match(r"([A-Z]+)(\d+)", gtp_coords)
-        return Move(coords=(Move.GTP_COORD.index(match[1]), int(match[2]) - 1), player=player)
+        return cls(coords=(Move.GTP_COORD.index(match[1]), int(match[2]) - 1), player=player)
 
-    @staticmethod
-    def from_sgf(sgf_coords, board_size, player="B"):
+    @classmethod
+    def from_sgf(cls, sgf_coords, board_size, player="B"):
         if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size:  # some servers use [tt] for pass
-            return Move(coords=None, player=player)
-        return Move(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
+            return cls(coords=None, player=player)
+        return cls(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
 
     def __init__(self, coords: Optional[Tuple[int, int]] = None, player: str = "B"):
         self.player = player

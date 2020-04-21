@@ -1,6 +1,6 @@
-from kivy.graphics.vertex_instructions import SmoothLine, Line
-from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics.context_instructions import Color
+from kivy.graphics.vertex_instructions import Line, SmoothLine
+from kivy.uix.boxlayout import BoxLayout
 
 
 class Controls(BoxLayout):
@@ -41,11 +41,8 @@ class Controls(BoxLayout):
     def player_mode(self, player):
         return self.player_mode_groups[player].value
 
-    def unlock(self):
-        if self.ai_lock.active:
-            self.ai_lock.checkbox.trigger_action(duration=0)
-        for el in [self.ai_lock.checkbox, self.analyze_tab_button, self.ai_auto.white, self.ai_auto.black, self.ai_move]:
-            el.disabled = False
+    def ai_mode(self, player):
+        return self.ai_mode_groups[player].text.lower()
 
     def on_size(self, *args):
         self.update_evaluation()
@@ -63,26 +60,14 @@ class Controls(BoxLayout):
 
         if current_node:
             move = current_node.single_move
-            current_player_is_human_or_both_robots = not current_node.player or not self.ai_auto.active(current_node.player) or self.ai_auto.active(current_node.next_player)
+            current_player_is_human_or_both_robots = (
+                not current_node.player or "ai" not in self.player_mode(current_node.player) or "ai" in self.player_mode(current_node.next_player)
+            )
             if current_player_is_human_or_both_robots and not current_node.is_root and move:
-                info += current_node.comment(eval=True, hints=self.hints.active(move.player))
+                info += current_node.comment(eval=True, hints=self.hints.active)
             if current_player_is_human_or_both_robots:
                 self.show_evaluation_stats(current_node)
 
-            game_node = katrain.game.current_node
-            scores = [n.score for n in game_node.nodes_from_root]
-            # TODO: like redo, what is the node to redo / should we append? cache?
-            self.graph.canvas.clear()
-            with self.graph.canvas:
-                pt = []
-                nnscores = [s for s in scores if s is not None] + [-5, 5]
-                scale = max(max(*nnscores), -min(*nnscores)) * 1.05
-                xscale = self.graph.width * 0.9 / max(len(scores), 20)
-                ls = 0
-                for i, s in enumerate(scores):
-                    ls = s or ls
-                    pt.extend([self.graph.pos[0] + 0.05 * self.graph.width + i * xscale, self.graph.pos[1] + self.graph.height / 2 * (1 + ls / scale)])
-                Color(0, 0, 0)
-                Line(points=pt, width=1.0)  # just set points?
+            self.graph.update_value(current_node.depth, current_node.score)
 
         self.info.text = info

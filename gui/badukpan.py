@@ -59,9 +59,8 @@ class BadukPanWidget(Widget):
             if nodes_here and max(yd, xd) < self.grid_size / 2:  # load old comment
                 katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
                 katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_DEBUG)
-                if not katrain.controls.ai_lock.active:
-                    katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
-                    katrain.controls.show_evaluation_stats(nodes_here[-1])
+                katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
+                katrain.controls.show_evaluation_stats(nodes_here[-1])
 
         self.ghost_stone = None
         self.draw_board_contents()  # remove ghost
@@ -148,7 +147,8 @@ class BadukPanWidget(Widget):
             # stones
             current_node = katrain.game.current_node
             next_player = katrain.game.next_player
-            full_eval_on = katrain.controls.eval.active_map
+            game_ended = katrain.game.game_ended
+            full_eval_on = katrain.controls.eval.active
             has_stone = {}
             drawn_stone = {}
             for m in katrain.game.stones:
@@ -161,7 +161,7 @@ class BadukPanWidget(Widget):
                 evalsize = 1
                 for m in node.move_with_placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
-                        move_eval_on = full_eval_on[m.player] or i < show_n_eval
+                        move_eval_on = full_eval_on or i < show_n_eval
                         evalcol = self.eval_color(points_lost) if move_eval_on and points_lost is not None else None
                         inner = stone_color[m.opponent] if i == 0 else None
                         drawn_stone[m.coords] = m.player
@@ -181,7 +181,7 @@ class BadukPanWidget(Widget):
                         ix = ix + 1
 
             policy = current_node.policy
-            if not policy and current_node.parent and current_node.parent.policy and 'ai' in katrain.controls.player_mode('B') and 'ai' in katrain.controls.player_mode('W'):
+            if not policy and current_node.parent and current_node.parent.policy and "ai" in katrain.controls.player_mode("B") and "ai" in katrain.controls.player_mode("W"):
                 policy = current_node.parent.policy  # in the case of AI self-play we allow the policy to be one step out of date
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
@@ -192,7 +192,10 @@ class BadukPanWidget(Widget):
                     for x in range(board_size):
                         if policy[ix] > 0:
                             polsize = math.sqrt(policy[ix])
-                            policy_circle_color = (*self.ui_config["policy_color"], self.ui_config["ghost_alpha"] + self.ui_config["top_move_x_alpha"] * (policy[ix] == best_move_policy))
+                            policy_circle_color = (
+                                *self.ui_config["policy_color"],
+                                self.ui_config["ghost_alpha"] + self.ui_config["top_move_x_alpha"] * (policy[ix] == best_move_policy),
+                            )
                             self.draw_stone(x, y, policy_circle_color, scale=polsize)
                         ix = ix + 1
                 polsize = math.sqrt(policy[ix])
@@ -212,17 +215,17 @@ class BadukPanWidget(Widget):
                     self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
             # hints
-            if katrain.controls.hints.active(next_player):
+            if katrain.controls.hints.active and not game_ended:
                 hint_moves = current_node.candidate_moves
                 for i, d in enumerate(hint_moves):
                     move = Move.from_gtp(d["move"])
                     if move.coords is not None and move.coords not in undo_coords:
-                        alpha, scale =  self.ui_config["ghost_alpha"], 1.0
+                        alpha, scale = self.ui_config["ghost_alpha"], 1.0
                         if i == 0:
-                            c[3] += self.ui_config["top_move_x_alpha"]
-                        elif d["visits"] < 0.1 * hint_moves[0]["visits"]: # TODO: config?
+                            alpha += self.ui_config["top_move_x_alpha"]
+                        elif d["visits"] < 0.1 * hint_moves[0]["visits"]:  # TODO: config?
                             scale = 0.8
-                        self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(d["pointsLost"]),alpha], scale=scale)
+                        self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(d["pointsLost"]), alpha], scale=scale)
 
             # hover next move ghost stone
             if self.ghost_stone:
@@ -231,7 +234,7 @@ class BadukPanWidget(Widget):
             # pass circle
             passed = len(nodes) > 1 and current_node.is_pass
             if passed:
-                if katrain.game.game_ended:
+                if game_ended:
                     text = "game\nend"
                 else:
                     text = "pass"

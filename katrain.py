@@ -8,17 +8,17 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.clipboard import Clipboard
 from kivy.core.window import Window
+from kivy.lang import Builder
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
+from kivy.uix.widget import Widget
 
 from constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO
 from engine import KataGoEngine
 from game import Game, IllegalMoveException, KaTrainSGF, Move
 from gui import *
-from gui.popups import NewGamePopup, ConfigPopup
-
-from kivy.lang import Builder
+from gui.popups import ConfigPopup, NewGamePopup
 
 
 class KaTrainGui(BoxLayout):
@@ -27,12 +27,12 @@ class KaTrainGui(BoxLayout):
     def __init__(self, **kwargs):
         super(KaTrainGui, self).__init__(**kwargs)
         self.debug_level = 0
-        self._load_config()
-        self.debug_level = self.config("debug/level", OUTPUT_INFO)
-        self.logger = lambda message, level=OUTPUT_INFO: self.log(message, level)
-
         self.engine = None
         self.game = None
+        self.logger = lambda message, level=OUTPUT_INFO: self.log(message, level)
+
+        self._load_config()
+        self.debug_level = self.config("debug/level", OUTPUT_INFO)
         self.message_queue = Queue()
 
         self._keyboard = Window.request_keyboard(None, self, "")
@@ -124,7 +124,6 @@ class KaTrainGui(BoxLayout):
 
     def _do_new_game(self, board_size=None, move_tree=None):
         self.game = Game(self, self.engine, self.config("game"), board_size=board_size, move_tree=move_tree)
-        self.controls.unlock()
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
         self.update_state(redraw_board=True)  # TODO: just board here/redraw is in all anyway?
 
@@ -134,11 +133,6 @@ class KaTrainGui(BoxLayout):
             self.update_state()
 
     def _do_undo(self, n_times=1):
-        if self.controls.ai_lock.active and self.contols.auto_undo.active(self.game.current_node.player) and self.config("trainer/lock_undos"):
-            self.controls.set_status(
-                f"Can't undo manually when Automatic Undo and Lock AI are both set. (Change the `lock_undos` setting to false to allow this regardless)", self.game.current_node
-            )
-            return
         self.game.undo(n_times)
         self.update_state()
 
@@ -181,7 +175,7 @@ class KaTrainGui(BoxLayout):
 
     def _do_config_popup(self):
         config_popup = Popup(title="Edit Settings", size_hint=(0.9, 0.9))
-        popup_contents = ConfigPopup(self, config_popup, dict(self._config))
+        popup_contents = ConfigPopup(self, config_popup, dict(self._config), ignore_cats=("board_ui"))
         config_popup.add_widget(popup_contents)
         config_popup.open()
 
@@ -198,37 +192,28 @@ class KaTrainGui(BoxLayout):
         if isinstance(App.get_running_app().root_window.children[0], Popup):
             return  # if in new game or load, don't allow keyboard shortcuts
 
-        if keycode[1] == "up":
+        shortcuts = {
+            "u": self.controls.eval,
+            "i": self.controls.hints,
+            "p": self.controls.policy,
+            "o": self.controls.ownership,
+            "a": ("ai-move",),
+            "right": ("switch-branch", 1),
+            "left": ("switch-branch", -1),
+            "z": ("analyze-extra", "sweep"),
+            "x": ("analyze-extra", "extra"),
+            "c": ("analyze-extra", "refine"),
+        }
+        if keycode[1] in shortcuts.keys():
+            shortcut = shortcuts[keycode[1]]
+            if isinstance(shortcut, Widget):
+                shortcut.trigger_action(duration=0)
+            else:
+                self(*shortcut)
+        elif keycode[1] == "up":
             self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] == "down":
             self("redo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
-        elif keycode[1] == "right":
-            self("switch-branch", 1)
-        elif keycode[1] == "left":
-            self("switch-branch", -1)
-        elif keycode[1] == "s":
-            self("analyze-extra", "sweep")
-        elif keycode[1] == "x":
-            self("analyze-extra", "extra")
-        elif keycode[1] == "r":
-            self("analyze-extra", "refine")
-        elif keycode[1] == "a":
-            if not self.controls.ai_thinking:
-                self.controls.ai_move.trigger_action(duration=0)
-        elif keycode[1] == "p":  # TODO: clean repetitive shortcuts
-            self.controls.policy.label.trigger_action(duration=0)
-        elif keycode[1] == "f":
-            self.controls.ai_fast.label.trigger_action(duration=0)
-        elif keycode[1] == "h":
-            self.controls.hints.label.trigger_action(duration=0)
-        elif keycode[1] == "e":
-            self.controls.eval.label.trigger_action(duration=0)
-        elif keycode[1] == "u":
-            self.controls.auto_undo.label.trigger_action(duration=0)
-        elif keycode[1] == "b":
-            self.controls.ai_balance.label.trigger_action(duration=0)
-        elif keycode[1] == "o":
-            self.controls.ownership.label.trigger_action(duration=0)
         elif keycode[1] == "n" and "ctrl" in modifiers:
             self("new-game-popup")
         elif keycode[1] == "l" and "ctrl" in modifiers:
@@ -238,7 +223,7 @@ class KaTrainGui(BoxLayout):
         elif keycode[1] == "c" and "ctrl" in modifiers:
             Clipboard.copy(self.game.root.sgf())
             self.controls.set_status("Copied SGF to clipboard.")
-        elif keycode[1] == "v" and "ctrl" in modifiers:
+        elif keycode[1] == "v" and "ctrl" in modifiers:  # TODO: refactor
             clipboard = Clipboard.paste()
             if not clipboard:
                 self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.")

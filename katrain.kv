@@ -1,16 +1,14 @@
 #:kivy 1.11.0
 #:import ew kivy.uix.effectwidget
 
-# import utils?
 
-# margin left bottom right top
+#:set AI_MODES ['Default','Balance','Policy']
+#:set PLAYER_MODES ['Human', 'Teach','AI:']
+#:set BUTTON_COLOR [0.21, 0.28, 0.31, 1]
+#:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
+
 <StyledButton>:
-    text_color: 0.95,0.95,0.95,1
-    button_color: 0.21, 0.28, 0.31, 1
-    button_color_down: (*[c/2 for c in self.button_color[:3]],1)
-    margin: (1,1,1,1)
-    bold: False
-    font_size: self.size[1] * 0.35
+    font_size: self.size[1] * 0.45
     radius: (self.size[1]/7,)
     # dont set these
     disabled_mask: (0.5,0.5,0.5,1) if self.disabled else (1,1,1,1)
@@ -26,26 +24,34 @@
             pos: (self.pos[0]+self.margin[0],self.pos[1]+self.margin[1])
             radius: root.radius or (0.0,)
 
+<StyledSpinnerOption@SpinnerOption>:
+    font_size: self.size[1] * 0.45
+    background_color: BUTTON_COLOR
+    background_normal: ''
+    color: (1,1,1,1)
+
+<StyledSpinner>:
+    text: self.values[0] if self.values else ''
+    font_size: self.size[1] * 0.45
+    sync_height: True
+    background_color: [*[c*255/88 for c in BUTTON_COLOR[:3]], 1] # compensate for texture
+    option_cls: 'StyledSpinnerOption'
 
 <StyledToggleButton>:
 
-<ToggleButtonContainer>:
-
 <StyledTabButton@StyledToggleButton>:
     bold: True
-    font_size: self.size[1] * 0.45
     radius: (self.size[1]/3,self.size[1]/3,0,0)
 
-
-
+<ToggleButtonContainer>:
 
 
 <StyledIconButton@StyledButton>:
-    button_color: 0.71, 0.78, 0.81, 1
+    button_color: ICON_BUTTON_COLOR
     icon_margin: 0.15 * self.size[0]
-    icon: 'missing.png'
+    icon: ''
     icon_size: min(self.size[0]-self.margin[0]-self.margin[2]-2*self.icon_margin,self.size[1]-self.margin[1]-self.margin[3]-2*self.icon_margin)
-    #EffectWidget:        effects: [ew.FXAAEffect()]
+    #EffectWidget:         effects: [ew.FXAAEffect()]
     Image:
         size: (root.icon_size or 0,root.icon_size or 0)  # square
         pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
@@ -56,7 +62,7 @@
     background_color: (0,0,0,0)
     margin: (1,1,1,1)
     icon_size: min(self.size[0]-self.margin[0]-self.margin[2],self.size[1]-self.margin[1]-self.margin[3])
-    icon: 'missing.png'
+    icon: ''
     Image:
         size: (root.icon_size or 0,root.icon_size or 0)  # square
         pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
@@ -97,30 +103,6 @@
 		id: checkbox
 		on_active: root.dispatch('on_active')
 		active: root.default_active
-
-<BWCheckBoxHint>:
-    black: black
-    white: white
-    label: label
-	orientation: 'vertical'
-	text: ''
-	default_active: False
-	CheckBoxHintLabel:
-		size_hint: 1,0.2
-        id: label
-		text: root.text
-		font_size: self.height
-		on_press: if not white.disabled: white._do_press(); black._do_press()
-	CheckBox:
-		size_hint: 1,0.4
-		id: black
-		active: root.default_active
-		on_active: root.dispatch('on_active')
-	CheckBox:
-		size_hint: 1,0.4
-		id: white
-		active: root.default_active
-		on_active: root.dispatch('on_active')
 
 <CensorableLabel>:
 	orientation: 'horizontal'
@@ -185,6 +167,7 @@
         size_hint: 0.05, 1
     StyledButton:
         text: 'Pass'
+        font_size: 0.35*self.size[1]
         id: pass_btn
         on_press: root.katrain("play",None)
         size_hint: 0.1, 1
@@ -233,7 +216,16 @@
         size_hint: 0.1, 1
         on_press: root.katrain('redo',999)
     Label:
-        size_hint: 0.25, 1
+        size_hint: 0.07, 1
+    StyledButton:
+        text: 'AI Move'
+        font_size: 0.35*self.size[1]
+        id: pass_btn
+        on_press: root.katrain("ai-move",None)
+        size_hint: 0.14, 1
+        margin: (0, self.size[1]/5, 0, self.size[1]/5)
+    Label:
+        size_hint: 0.04, 1
 
 
 <Controls>:
@@ -248,13 +240,8 @@
 	ownership: ownership
 	policy: policy
     eval: eval
-	ai_balance: ai_balance
-	ai_auto: ai_auto
-	ai_fast: ai_fast
-	ai_lock: ai_lock
-	ai_move: ai_move
-	auto_undo: auto_undo
 	player_mode_groups: {'B':B_player_mode,'W':W_player_mode}
+	ai_mode_groups: {'B':B_AI_mode,'W':W_AI_mode}
 	graph: graph
 	katrain: self.parent
     canvas.before:
@@ -299,31 +286,24 @@
             id: analyze_tab
             opacity: 0
             orientation: 'vertical'
+            Label:
+                size_hint: 1,0.02
             GridLayout:
                 cols: 6
                 rows: 1
-                size_hint: 1, 0.35
+                size_hint: 1, 0.5
                 Label:
-                    size_hint: 0.01, 1
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint: 0.1, 0.5
-                    Label:
-                        size_hint: 1, 0.2
-                    BlackCircleWithText:
-                        text: 'B'
-                    WhiteCircleWithText:
-                        text: 'W'
-                BWCheckBoxHint:
+                    size_hint: 0.05, 1
+                CheckBoxHint:
                     size_hint: 0.2, 0.5
                     id: eval
-                    text: 'all eval'
+                    text: 'show\nall dots'
                     default_active: False
                     on_active: root.katrain.update_state()
-                BWCheckBoxHint:
+                CheckBoxHint:
                     size_hint: 0.2, 0.5
                     id: hints
-                    text: 'top move'
+                    text: 'show\ntop move'
                     on_active: root.katrain.update_state()
                 CheckBoxHint:
                     size_hint: 0.2, 0.5
@@ -335,10 +315,11 @@
                     id: policy
                     text: 'show\npolicy'
                     on_active: root.katrain.update_state()
-            LargeLabel:
+                Label:
+                    size_hint: 0.05, 1
+            ScoreGraph:
                 id: graph
-                text: 'graph?'
-                size_hint: 1,0.75
+                size_hint: 1,0.5
             CensorableLabel:
                 id: win_rate
                 size_hint: 1, 0.15
@@ -354,45 +335,47 @@
             size_hint: 1,1
             opacity: 1
             id: play_tab
+            Label:
+                size_hint: 1,0.02
             GridLayout:
                 cols: 4
-                rows: 1
-                size_hint: 1, 0.1
-                StyledButton:
-                    id: ai_move
-                    size_hint: 0.5, 0.5
-                    text: ' AI\nMove'
-                    on_press: root.katrain("ai_move")
-                CheckBoxHint:
-                    size_hint: 0.25, 1
-                    text: 'lock\nAI'
-                    id: ai_lock
-                    on_active: self.checkbox.disabled = analyze_tab_button.disabled = ai_auto.white = ai_auto.black = ai_move.disabled = True
-            GridLayout:
-                cols: 2
                 rows: 2
                 size_hint: 1,0.125
                 BlackCircleWithText:
                     text: 'B'
                     size_hint: 0.1, 1
                 ToggleButtonContainer:
-                    size_hint: 0.9, 1
+                    size_hint: 0.6, 1
                     id: B_player_mode
-                    options: ['human','human+undo','ai','ai+balance','ai+policy']
-                    labels: ['Human', '    AI\nAssist','AI','     AI\nBalance','   AI\nPolicy']
+                    options: ['human','human+undo','ai']
+                    labels: PLAYER_MODES
                     on_selection: root.katrain.update_state()
+                StyledSpinner:
+                    id: B_AI_mode
+                    size_hint: 0.3, 1
+                    values: AI_MODES
+                Label:
+                    size_hint: None,1
+                    width: 3
                 WhiteCircleWithText:
                     text: 'W'
                     size_hint: 0.1, 1
                 ToggleButtonContainer:
-                    size_hint: 0.9, 1
+                    size_hint: 0.6, 1
                     id: W_player_mode
-                    options: ['human','human+undo','ai','ai+balance','ai+policy']
-                    labels: ['Human', '    AI\nAssist','AI','     AI\nBalance','   AI\nPolicy']
+                    options: ['human','human+undo','ai']
+                    labels: PLAYER_MODES
                     on_selection: root.katrain.update_state()
+                StyledSpinner:
+                    id: W_AI_mode
+                    size_hint: 0.3, 1
+                    values: AI_MODES
+                Label:
+                    size_hint: None,1
+                    width: 3
             LargeLabel:
                 text: 'free real estate'
-                size_hint: 1,0.2
+                size_hint: 1,0.25
     CensorableLabel:
         id: points_lost
         size_hint: 1, 0.03
@@ -402,39 +385,6 @@
 		id: info
 		size_hint: 1, 0.25
 		valign: 'middle'
-    GridLayout:
-        cols: 5
-        rows: 1
-        size_hint: 1, 0.1
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint: 0.1, 0.5
-            Label:
-                size_hint: 1, 0.2
-            BlackCircleWithText:
-                text: 'B'
-            WhiteCircleWithText:
-                text: 'W'
-        BWCheckBoxHint:
-            text: 'ai'
-            id: ai_auto
-            default_active: False
-            size_hint: 0.25, 1
-        BWCheckBoxHint:
-            size_hint: 0.2, 0.5
-            id: auto_undo
-            text: 'undo'
-            on_active: root.katrain.update_state()
-        CheckBoxHint:
-            size_hint: 0.25, 1
-            text: 'balance\nscore'
-            id: ai_balance
-            default_active: False
-        CheckBoxHint:
-            size_hint: 0.25, 1
-            text: 'fast'
-            id: ai_fast
-            default_active: True
     BoxLayout:
         orientation: 'horizontal'
         size_hint: 1, None

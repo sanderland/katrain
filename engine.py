@@ -28,7 +28,6 @@ class KataGoEngine:
             self.command = shlex.split(self.command)
         self.queries = {}  # outstanding query id -> start time and callback
         self.config = config
-        self.visits = [config["visits"], config["visits_fast"]]
         self.query_counter = 0
         self.katago_process = None
         self.base_priority = 0
@@ -79,34 +78,27 @@ class KataGoEngine:
             else:
                 self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
 
-    def request_analysis(
-        self, analysis_node: GameNode, callback: Callable, faster: bool = False, visits: int = None, priority: int = 0, ownership: Optional[bool] = None, refine_move=None
-    ):
-        fast = self.katrain.controls.ai_fast.active
+    def request_analysis(self, analysis_node: GameNode, callback: Callable, visits: int = None, priority: int = 0, ownership: Optional[bool] = None, next_move=None):
         query_id = f"QUERY:{str(self.query_counter)}"
         self.query_counter += 1
-        if not visits:
-            visits = self.config["visits_fast" if fast else "visits"]
-        if faster:
-            visits /= 5
         moves = [m for node in analysis_node.nodes_from_root for m in node.move_with_placements]
-        if refine_move:
-            moves.append(refine_move)
+        if next_move:
+            moves.append(next_move)
 
         if ownership is None:
-            ownership = self.config["enable_ownership"] and not refine_move
+            ownership = self.config["enable_ownership"] and not next_move
 
         query = {
             "id": query_id,
             "rules": self.get_rules(analysis_node),
             "priority": self.base_priority + priority,
             "analyzeTurns": [len(moves)],
-            "maxVisits": visits,
+            "maxVisits": visits or self.config["visits"],
             "komi": analysis_node.komi,
             "boardXSize": analysis_node.board_size,
             "boardYSize": analysis_node.board_size,
             "includeOwnership": ownership,
-            "includePolicy": not refine_move,
+            "includePolicy": not next_move,
             "moves": [[m.player, m.gtp()] for m in moves],
         }
         self.queries[query_id] = (callback, time.time())

@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from kivy.uix.boxlayout import BoxLayout
 import os
 from constants import OUTPUT_DEBUG, OUTPUT_ERROR
@@ -76,13 +78,15 @@ class ConfigPopup(QuickConfigGui):
         else:
             return LabelledTextInput
 
-    def __init__(self, katrain, popup, config):
+    def __init__(self, katrain, popup, config, ignore_cats):
         self.config = config
         self.orientation = "vertical"
         super().__init__(katrain, popup)
         cols = [BoxLayout(orientation="vertical"), BoxLayout(orientation="vertical")]
         props_in_col = [0, 0]
         for k1, all_d in config.items():
+            if k1 in ignore_cats:
+                continue
             d = {k: v for k, v in all_d.items() if isinstance(v, (int, float, str, bool))}  # no complex objects
             cat = GridLayout(cols=2, rows=len(d) + 1, size_hint=(1, len(d) + 1))
             cat.add_widget(Label(text=""))
@@ -101,22 +105,27 @@ class ConfigPopup(QuickConfigGui):
         col_container.add_widget(cols[0])
         col_container.add_widget(cols[1])
         self.add_widget(col_container)
-        self.save_button = StyledButton(text="Apply Settings", on_press=lambda _: self.update_config(), size_hint=(1, 0.05))
-        self.save_button = StyledButton(text="Apply and Save Settings", on_press=lambda _: self.update_config(save_to_file=True), size_hint=(1, 0.05))
-        self.add_widget(self.save_button)
+        self.info_label = Label()
+        self.apply_button = StyledButton(text="Apply Settings", on_press=lambda _: self.update_config())
+        self.save_button = StyledButton(text="Apply and Save Settings", on_press=lambda _: self.update_config(save_to_file=True))
+        btn_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.05))
+        btn_container.add_widget(self.info_label)
+        btn_container.add_widget(self.apply_button)
+        btn_container.add_widget(self.save_button)
+        self.add_widget(btn_container)
 
     def update_config(self, save_to_file=False):
-        updated_cat = []
+        updated_cat = defaultdict(list)
         try:
             for k, v in self.collect_properties(self).items():
                 k1, k2 = k.split("/")
                 if self.config[k1][k2] != v:
                     self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
-                    updated_cat.append(k1)
+                    updated_cat[k1].append(k2)
                     self.config[k1][k2] = v
             self.popup.dismiss()
         except InputParseError as e:
-            self.save_button.text = str(e)  # TODO: nicer error
+            self.info_label.text = str(e)
             self.katrain.log(e, OUTPUT_ERROR)
             return
 
@@ -124,10 +133,18 @@ class ConfigPopup(QuickConfigGui):
             for cat in updated_cat:
                 self.katrain.save_config(cat, **self.config[cat])
 
-        if "engine" in updated_cat:
-            self.katrain.log("Restarting Engine after settings change")
-            old_engine = self.katrain.engine
-            self.katrain.engine = KataGoEngine(self.katrain, self.config["engine"])
-            self.katrain.game.engine = self.katrain.engine
-            old_engine.shutdown(finish=True)
-        self.katrain.update_state(redraw_board=True)
+        engine_restart = False
+        for cat, updates in updated_cat.items():
+            if "engine" in cat:  # TODO: multi engine support
+                if "visits" in updates:
+                    self.katrain.engine.visits = self.config[cat]["visits"]
+                if set(updates) != {"visits"}:
+                    self.katrain.log(f"Restarting Engine {cat} after {updates} settings change")
+                    old_engine = self.katrain.engine
+                    self.katrain.engine = KataGoEngine(self.katrain, self.config[cat])
+                    self.katrain.game.engine = self.katrain.engine
+                    old_engine.shutdown(finish=True)
+                    engine_restart = True
+
+        if engine_restart:
+            self.katrain.update_state(redraw_board=True)

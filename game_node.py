@@ -30,7 +30,7 @@ class GameNode(SGFNode):
 
     # various analysis functions
     def analyze(self, engine, priority=0, visits=None, refine_move=None):
-        engine.request_analysis(self, lambda result: self.set_analysis(result, refine_move), priority=priority, visits=visits, refine_move=refine_move)
+        engine.request_analysis(self, lambda result: self.set_analysis(result, refine_move), priority=priority, visits=visits, next_move=refine_move)
 
     def update_move_analysis(self, move_analysis, move_gtp):
         cur = self.analysis["moves"].get(move_gtp)
@@ -120,7 +120,7 @@ class GameNode(SGFNode):
             moves = []
             for y in range(self.board_size - 1, -1, -1):
                 for x in range(self.board_size):
-                    moves.append((Move((x, y),player=self.next_player), self.policy[ix]))
+                    moves.append((Move((x, y), player=self.next_player), self.policy[ix]))
                     ix += 1
-            moves.append((Move(None,player=self.next_player), self.policy[ix]))
+            moves.append((Move(None, player=self.next_player), self.policy[ix]))
             return sorted(moves, key=lambda mp: -mp[1])
