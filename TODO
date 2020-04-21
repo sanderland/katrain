@@ -1,14 +1,18 @@
 [x] Player button to black/white with AI style spinner
-[] Multi engine (detect all req. analysis in analysis[engine] fn)
-[] Non square boards
-[] Polish graph
+[x Non square boards
 [x] remove fast -> in settings?
+[x] Polish graph
+
+[] Multi engine (detect all req. analysis in analysis[engine] fn)
+[] Graph is awkward when reviewing. Should we store nodes rather than values? & populate on new game.
+
+[] Score instead of game end
+[] Self-play tournaments?
 [] List edit settings/object edit settings?
 [] README
 [] Release notes
-[] remove button disable code?
 
 
-
+[] BoxLayout padding/spacing use instead of fiddling?
 
 

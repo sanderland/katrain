@@ -19,17 +19,6 @@ from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
 
 
-class CheckBoxHint(BoxLayout):
-    __events__ = ("on_active",)
-
-    @property
-    def active(self):
-        return self.checkbox.active
-
-    def on_active(self, *args):
-        pass
-
-
 class DarkLabel(Label):
     pass
 
@@ -173,7 +162,7 @@ class CensorableLabel(BoxLayout):
 
 
 class ScoreGraph(Label):
-    values = ListProperty([])
+    nodes = ListProperty([])
     line_points = ListProperty([])
     dot_pos = ListProperty([0, 0])
     highlighted_index = NumericProperty(None)
@@ -182,12 +171,18 @@ class ScoreGraph(Label):
         super().__init__(**kwargs)
         Clock.schedule_once(self.on_size, 0)
 
-    def clear(self):
-        self.values = []
+    def initialize_from_game(self, root):
+        self.nodes = [root]
+        node = root
+        while node.children:
+            node = node.children[0]
+            self.nodes.append(node)
+        self.highlighted_index = 0
 
     def on_size(self, *args):
-        values = self.values
-        if values:
+        nodes = self.nodes
+        if nodes:
+            values = [n.score if n and n.score else 0 for n in nodes]
             val_range = min(values or [0]), max(values or [0])
             scale = math.ceil(max(3, max(-val_range[0], val_range[1]) * 1.05))
 
@@ -202,9 +197,10 @@ class ScoreGraph(Label):
                 self.highlighted_index = min(self.highlighted_index, len(values) - 1)
                 self.dot_pos = [c - self.highlight_size / 2 for c in line_points[self.highlighted_index]]
 
-    def update_value(self, index, value):
-        self.values.extend([0] * max(0, index - (len(self.values) - 1)))
-        self.values[index] = value or 0
+    def update_value(self, node):
+        index = node.depth
+        self.nodes.extend([None] * max(0, index - (len(self.nodes) - 1)))
+        self.nodes[index] = node
         self.highlighted_index = index
         self.on_size()
 

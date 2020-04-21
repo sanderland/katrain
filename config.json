@@ -15,7 +15,8 @@
     "init_size": 19,
     "komi_19": 6.5,
     "komi_13": 6.5,
-    "komi_9": 6.5
+    "komi_9": 6.5,
+    "sweep_visits_frac": 0.2
   },
   "trainer": {
     "num_undo_prompts": [1,1,1,0.5,0],

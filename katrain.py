@@ -19,6 +19,7 @@ from engine import KataGoEngine
 from game import Game, IllegalMoveException, KaTrainSGF, Move
 from gui import *
 from gui.popups import ConfigPopup, NewGamePopup
+from sgf_parser import ParseError
 
 
 class KaTrainGui(BoxLayout):
@@ -50,7 +51,7 @@ class KaTrainGui(BoxLayout):
         config_file = sys.argv[1] if len(sys.argv) > 1 else os.path.join(base_path, "config.json")
         try:
             self.log(f"Using config file {config_file}", OUTPUT_INFO)
-            self._config_store = JsonStore(config_file)
+            self._config_store = JsonStore(config_file,indent=4)
             self._config = dict(self._config_store)
         except Exception as e:
             self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
@@ -125,7 +126,7 @@ class KaTrainGui(BoxLayout):
     def _do_new_game(self, move_tree=None):
         self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree)
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
-        self.controls.graph.clear()
+        self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)  # TODO: just board here/redraw is in all anyway?
 
     def _do_ai_move(self, node=None):
@@ -163,7 +164,12 @@ class KaTrainGui(BoxLayout):
 
         def readfile(files, _mouse):
             fileselect_popup.dismiss()
-            self._do_new_game(self, move_tree=KaTrainSGF.parse_file(files[0]))
+            try:
+                move_tree = KaTrainSGF.parse_file(files[0])
+            except ParseError as e:
+                self.log(f"Failed to load SGF. Parse Error: {e}", OUTPUT_ERROR)
+                return
+            self._do_new_game(move_tree=move_tree)
 
         popup_contents.filesel.on_submit = readfile
         fileselect_popup.open()
@@ -184,7 +190,7 @@ class KaTrainGui(BoxLayout):
         for pl in Move.PLAYERS:
             if not self.game.root.get_first(f"P{pl}"):
                 _, model_file = os.path.split(self.engine.config["model"])
-                self.game.root.properties[f"P{pl}"] = [f"KaTrain (KataGo {model_file})" if self.controls.ai_auto.active(pl) else "Player"]
+                self.game.root.properties[f"P{pl}"] = [f"KaTrain (KataGo {model_file})" if 'ai' in self.controls.player_mode(pl) else "Player"]
         msg = self.game.write_sgf(self.config("files/sgf_save"))
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)
@@ -194,10 +200,10 @@ class KaTrainGui(BoxLayout):
             return  # if in new game or load, don't allow keyboard shortcuts
 
         shortcuts = {
-            "u": self.controls.eval.checkbox,
-            "i": self.controls.hints.checkbox,
-            "p": self.controls.policy.checkbox,
-            "o": self.controls.ownership.checkbox,
+            "u": self.controls.eval,
+            "i": self.controls.hints,
+            "p": self.controls.policy,
+            "o": self.controls.ownership,
             "a": ("ai-move",),
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),

@@ -75,12 +75,17 @@ class GameNode(SGFNode):
             if self.parent and self.parent.analysis_ready:
                 previous_top_move = self.parent.candidate_moves[0]
                 if sgf or hints and previous_top_move["move"] != single_move.gtp():  # TODO: when to include?
-                    text += f"Top move was {previous_top_move['move']} ({self.format_score(previous_top_move['scoreLead'])})\n"
+                    text += f"Predicted top move was {previous_top_move['move']} ({self.format_score(previous_top_move['scoreLead'])})\n"
                     points_lost = self.points_lost
                     if sgf and points_lost > 0.5:
                         text += f"Estimated point loss: {points_lost:.1f}\n"
                 if sgf or hints:
-                    text += f"Top policy move was {self.parent.policy_ranking[0][0].gtp()}\n"
+                    policy_ranking = self.parent.policy_ranking
+                    policy_ix = [ix+1 for (m,p),ix in zip(policy_ranking,range(len(policy_ranking))) if m==single_move]
+                    if not policy_ix or policy_ix[0]!=1:
+                        text += f"Top policy move was {policy_ranking[0][0].gtp()}\n"
+                    if policy_ix:
+                        text += f"Your move was #{policy_ix} according to NN policy\n"
             if self.auto_undo:
                 text += "Move was automatically undone."
         else:

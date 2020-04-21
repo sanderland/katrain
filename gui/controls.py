@@ -69,6 +69,6 @@ class Controls(BoxLayout):
                 self.show_evaluation_stats(current_node)
 
             if current_node.score:
-                self.graph.update_value(current_node.depth, current_node.score)
+                self.graph.update_value(current_node)
 
         self.info.text = info

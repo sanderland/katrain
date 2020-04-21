@@ -78,18 +78,24 @@ class KataGoEngine:
             else:
                 self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
 
-    def request_analysis(self, analysis_node: GameNode, callback: Callable, visits: int = None, priority: int = 0, ownership: Optional[bool] = None, next_move=None):
-        query_id = f"QUERY:{str(self.query_counter)}"
+    def send_query(self, query, callback):
         self.query_counter += 1
+        if "id" not in query:
+            query["id"] = f"QUERY:{str(self.query_counter)}"
+        self.queries[query["id"]] = (callback, time.time())
+        if self.katago_process:
+            self.katrain.log(f"Sending query {query['id']}: {str(query)}", OUTPUT_DEBUG)
+            self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
+            self.katago_process.stdin.flush()
+
+    def request_analysis(self, analysis_node: GameNode, callback: Callable, visits: int = None, priority: int = 0, ownership: Optional[bool] = None, next_move=None):
         moves = [m for node in analysis_node.nodes_from_root for m in node.move_with_placements]
         if next_move:
             moves.append(next_move)
-
         if ownership is None:
             ownership = self.config["enable_ownership"] and not next_move
         size_x, size_y = analysis_node.board_size
         query = {
-            "id": query_id,
             "rules": self.get_rules(analysis_node),
             "priority": self.base_priority + priority,
             "analyzeTurns": [len(moves)],
@@ -101,8 +107,4 @@ class KataGoEngine:
             "includePolicy": not next_move,
             "moves": [[m.player, m.gtp()] for m in moves],
         }
-        self.queries[query_id] = (callback, time.time())
-        if self.katago_process:
-            self.katrain.log(f"Sending query {query_id}: {str(query)}", OUTPUT_DEBUG)
-            self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
-            self.katago_process.stdin.flush()
+        self.send_query(query, callback)

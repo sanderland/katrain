@@ -1,7 +1,7 @@
 # additions
 KataGoData
 KataGo/KataGoData
-old
+experiments
 .idea
 gtp.log
 *.zip
@@ -14,7 +14,7 @@ my
 outdated_log.txt
 
 # too big
-models/b20*.gz
+models/*.bin.gz
 
 # standard python ignore
 # Byte-compiled / optimized / DLL files
