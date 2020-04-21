@@ -62,7 +62,11 @@ class NewGamePopup(QuickConfigGui):
         properties = self.collect_properties(self)
         self.katrain.log(f"New game settings: {properties}", OUTPUT_DEBUG)
         new_root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **properties})
-        self.katrain("new-game", None, new_root)
+        x, y = new_root.board_size
+        if x > 52 or y > 52:
+            self.info.text = "Board size too big, should be at most 52"
+            return
+        self.katrain("new-game", new_root)
         self.popup.dismiss()
 
 

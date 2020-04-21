@@ -25,7 +25,7 @@ class Game:
 
     DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "RU": "JP", "AP": "KaTrain:https://github.com/sanderland/katrain"}
 
-    def __init__(self, katrain, engine, config, board_size=None, move_tree=None):
+    def __init__(self, katrain, engine, config, move_tree=None):
         self.katrain = katrain
         self.engine = engine
         self.config = config
@@ -33,15 +33,14 @@ class Game:
 
         if move_tree:
             self.root = move_tree
-            self.board_size = self.root.board_size
             self.komi = self.root.komi
             handicap = self.root.get_first("HA")
-            if handicap is not None and not self.root.placements:
+            if handicap and not self.root.placements:
                 self.place_handicap_stones(handicap)
         else:
-            self.board_size = board_size or config["init_size"]
-            self.komi = self.config.get(f"komi_{self.board_size}", 6.5)
-            self.root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **{"SZ": self.board_size, "KM": self.komi, "DT": self.game_id}})
+            board_size = config["init_size"]
+            self.komi = self.config.get(f"komi_{board_size}", 6.5)
+            self.root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}})
 
         self.current_node = self.root
         self._init_chains()
@@ -55,7 +54,8 @@ class Game:
 
     # -- move tree functions --
     def _init_chains(self):
-        self.board = [[-1 for _x in range(self.board_size)] for _y in range(self.board_size)]  # type: List[List[int]]  #  board pos -> chain id
+        board_size_x, board_size_y = self.board_size
+        self.board = [[-1 for _x in range(board_size_x)] for _y in range(board_size_y)]  # type: List[List[int]]  #  board pos -> chain id
         self.chains = []  # type: List[List[Move]]  #   chain id -> chain
         self.prisoners = []  # type: List[Move]
         self.last_capture = []  # type: List[Move]
@@ -68,12 +68,14 @@ class Game:
             raise Exception(f"Unexpected illegal move ({str(e)})")
 
     def _validate_move_and_update_chains(self, move: Move, ignore_ko: bool):
+        board_size_x, board_size_y = self.board_size
+
         def neighbours(moves):
             return {
                 self.board[m.coords[1] + dy][m.coords[0] + dx]
                 for m in moves
                 for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]
-                if 0 <= m.coords[0] + dx < self.board_size and 0 <= m.coords[1] + dy < self.board_size
+                if 0 <= m.coords[0] + dx < board_size_x and 0 <= m.coords[1] + dy < board_size_y
             }
 
         ko_or_snapback = len(self.last_capture) == 1 and self.last_capture[0] == move
@@ -114,7 +116,8 @@ class Game:
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
     def play(self, move: Move, ignore_ko: bool = False):
-        if not move.is_pass and not (0 <= move.coords[0] < self.board_size and 0 <= move.coords[1] < self.board_size):
+        board_size_x, board_size_y = self.board_size
+        if not move.is_pass and not (0 <= move.coords[0] < board_size_x and 0 <= move.coords[1] < board_size_y):
             raise IllegalMoveException(f"Move {move} outside of board coordinates")
         try:
             self._validate_move_and_update_chains(move, ignore_ko)
@@ -150,24 +153,32 @@ class Game:
             self._init_chains()
 
     def place_handicap_stones(self, n_handicaps):
-        near = 3 if self.board_size >= 13 else 2
-        far = self.board_size - 1 - near
-        middle = self.board_size // 2
-        if n_handicaps > 9:
+        board_size_x, board_size_y = self.board_size
+        near_x = 3 if board_size_x >= 13 else 2
+        near_y = 3 if board_size_y >= 13 else 2
+        far_x = board_size_x - 1 - near_x
+        far_y = board_size_x - 1 - near_x
+        middle_x = board_size_x // 2  # what for even sizes?
+        middle_y = board_size_y // 2
+        if n_handicaps > 9 and board_size_x == board_size_y:
             stones_per_row = math.ceil(math.sqrt(n_handicaps))
-            spacing = (far - near) / (stones_per_row - 1)
-            if spacing < near:
-                far += 1
-                near -= 1
-                spacing = (far - near) / (stones_per_row - 1)
-            coords = [math.floor(0.5 + near + i * spacing) for i in range(stones_per_row)]
-            stones = sorted([(x, y) for x in coords for y in coords], key=lambda xy: -((xy[0] - self.board_size / 2) ** 2 + (xy[1] - self.board_size / 2) ** 2))
-        else:
-            stones = [(far, far), (near, near), (far, near), (near, far)]
+            spacing = (far_x - near_x) / (stones_per_row - 1)
+            if spacing < near_x:
+                far_x += 1
+                near_x -= 1
+                spacing = (far_x - near_x) / (stones_per_row - 1)
+            coords = [math.floor(0.5 + near_x + i * spacing) for i in range(stones_per_row)]
+            stones = sorted([(x, y) for x in coords for y in coords], key=lambda xy: -((xy[0] - board_size_x / 2) ** 2 + (xy[1] - board_size_y / 2) ** 2))
+        else:  # max 9
+            stones = [(far_x, far_y), (near_x, near_y), (far_x, near_y), (near_x, far_y)]
             if n_handicaps % 2 == 1:
-                stones.append((middle, middle))
-            stones += [(near, middle), (far, middle), (middle, near), (middle, far)]
-        self.root.add_property("AB", [Move(stone).sgf(board_size=self.board_size) for stone in stones[:n_handicaps]])
+                stones.append((middle_x, middle_y))
+            stones += [(near_x, middle_y), (far_x, middle_y), (middle_x, near_y), (middle_x, far_y)]
+        self.root.add_property("AB", [Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]])
+
+    @property
+    def board_size(self):
+        return self.root.board_size
 
     @property
     def next_player(self):
@@ -268,7 +279,8 @@ class Game:
             cn.analyze(self.engine, visits=visits, priority=-1_000)
             return
         elif mode == "sweep":
-            analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(self.board_size) for y in range(self.board_size) if (x, y) not in stones]
+            board_size_x, board_size_y = self.board_size
+            analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(board_size_x) for y in range(board_size_y) if (x, y) not in stones]
             visits = self.engine.config["visits_fast"]
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
             priority = -1_000_000_000

@@ -26,9 +26,9 @@ class Move:
 
     @classmethod
     def from_sgf(cls, sgf_coords, board_size, player="B"):
-        if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size:  # some servers use [tt] for pass
+        if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size[0]:  # some servers use [tt] for pass
             return cls(coords=None, player=player)
-        return cls(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
+        return cls(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[0] - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
 
     def __init__(self, coords: Optional[Tuple[int, int]] = None, player: str = "B"):
         self.player = player
@@ -48,7 +48,7 @@ class Move:
     def sgf(self, board_size):
         if self.is_pass:
             return ""
-        return f"{Move.SGF_COORD[self.coords[0]]}{Move.SGF_COORD[board_size - self.coords[1] - 1]}"
+        return f"{Move.SGF_COORD[self.coords[0]]}{Move.SGF_COORD[board_size[0] - self.coords[1] - 1]}"
 
     @property
     def is_pass(self):
@@ -129,18 +129,14 @@ class SGFNode:
                 self._depth = self.parent.depth + 1
         return self._depth
 
-    # root properties available on any node
+    # some root properties are available on any node
     @property
-    def board_size(self) -> Union[int, Tuple]:
+    def board_size(self) -> Tuple[int, int]:
         size = str(self.root.get_first("SZ", "19"))
         if ":" in size:
-            return tuple(map(size.split(":"), int))
-        return int(size)
-
-    @property
-    def board_size_xy(self) -> Tuple[int, int]:
-        x, y = self.board_size
-        if not y:
+            x, y = map(int, size.split(":"))
+        else:
+            x = int(size)
             y = x
         return x, y
 

@@ -99,7 +99,8 @@ class BadukPanWidget(Widget):
         if not self.ui_config:
             return
         katrain = self.katrain
-        board_size = katrain.game.board_size
+        board_size_x, board_size_y = katrain.game.board_size
+        max_board_size = max(board_size_x, board_size_y)
         self.canvas.before.clear()
         with self.canvas.before:
             # board
@@ -108,29 +109,39 @@ class BadukPanWidget(Widget):
             Rectangle(pos=self.pos, size=(self.width, self.height))
             # grid lines
             margin = 1.5
-            self.grid_size = board_px_size / (board_size - 1 + 1.5 * margin)
+            margin_x = margin + (max_board_size - board_size_x) / 2
+            margin_y = margin + (max_board_size - board_size_y) / 2
+
+            self.grid_size = board_px_size / (max_board_size - 1 + 1.5 * margin)
             self.stone_size = self.grid_size * self.ui_config["stone_size"]
-            self.gridpos_x = [self.pos[0] + math.floor((margin + i) * self.grid_size + 0.5) for i in range(board_size)]
-            self.gridpos_y = [self.pos[1] + math.floor((margin + i) * self.grid_size + 0.5) for i in range(board_size)]
+            self.gridpos_x = [self.pos[0] + math.floor((margin_x + i) * self.grid_size + 0.5) for i in range(board_size_x)]  #
+            self.gridpos_y = [self.pos[1] + math.floor((margin_y + i) * self.grid_size + 0.5) for i in range(board_size_y)]
 
             line_color = self.ui_config["line_color"]
             Color(*line_color)
-            for i in range(board_size):
+            for i in range(board_size_x):
                 Line(points=[(self.gridpos_x[i], self.gridpos_y[0]), (self.gridpos_x[i], self.gridpos_y[-1])])
+            for i in range(board_size_y):
                 Line(points=[(self.gridpos_x[0], self.gridpos_y[i]), (self.gridpos_x[-1], self.gridpos_y[i])])
 
             # star points
-            star_point_pos = 3 if board_size <= 11 else 4
+            def star_point_coords(size):
+                star_point_pos = 3 if size <= 11 else 4
+                if size < 7:
+                    return []
+                return [star_point_pos - 1, size - star_point_pos] + ([int(size / 2)] if size % 2 == 1 and size > 7 else [])
+
             starpt_size = self.grid_size * self.ui_config["starpoint_size"]
-            for x in [star_point_pos - 1, board_size - star_point_pos, int(board_size / 2)]:
-                for y in [star_point_pos - 1, board_size - star_point_pos, int(board_size / 2)]:
+            for x in star_point_coords(board_size_x):
+                for y in star_point_coords(board_size_y):
                     draw_circle((self.gridpos_x[x], self.gridpos_y[y]), starpt_size, line_color)
 
             # coordinates
             Color(0.25, 0.25, 0.25)
             coord_offset = self.grid_size * margin / 2
-            for i in range(board_size):
+            for i in range(board_size_x):
                 draw_text(pos=(self.gridpos_x[i], self.gridpos_y[0] - coord_offset), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5)
+            for i in range(board_size_y):
                 draw_text(pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
 
     def draw_board_contents(self, *args):
@@ -140,7 +151,7 @@ class BadukPanWidget(Widget):
         outline_color = self.ui_config["outline"]
         ghost_alpha = self.ui_config["ghost_alpha"]
         katrain = self.katrain
-        board_size = katrain.game.board_size
+        board_size_x, board_size_y = katrain.game.board_size
 
         self.canvas.clear()
         with self.canvas:
@@ -172,8 +183,8 @@ class BadukPanWidget(Widget):
             if katrain.controls.ownership.active and ownership:
                 rsz = self.grid_size * 0.2
                 ix = 0
-                for y in range(board_size - 1, -1, -1):
-                    for x in range(board_size):
+                for y in range(board_size_y - 1, -1, -1):
+                    for x in range(board_size_x):
                         ix_owner = "B" if ownership[ix] > 0 else "W"
                         if ix_owner != (has_stone.get((x, y), -1)):
                             Color(*stone_color[ix_owner], abs(ownership[ix]))
@@ -188,8 +199,8 @@ class BadukPanWidget(Widget):
             if katrain.controls.policy.active and policy and not katrain.controls.ownership.active:
                 ix = 0
                 best_move_policy = max(*policy)
-                for y in range(board_size - 1, -1, -1):
-                    for x in range(board_size):
+                for y in range(board_size_y - 1, -1, -1):
+                    for x in range(board_size_x):
                         if policy[ix] > 0:
                             polsize = math.sqrt(policy[ix])
                             policy_circle_color = (

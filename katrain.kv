@@ -374,7 +374,7 @@
                     size_hint: None,1
                     width: 3
             LargeLabel:
-                text: 'free real estate'
+                text: ''
                 size_hint: 1,0.25
     CensorableLabel:
         id: points_lost
@@ -477,49 +477,40 @@
 <NewGamePopup>:
     orientation: 'vertical'
     rules_spinner: rules_spinner
-    BoxLayout:
-        size_hint: 1, 0.9
-        orientation: 'horizontal'
-        GridLayout:
-            size_hint: 0.5, 1
-            rows: 10
-            cols: 2
-            Label:
-                text: "Size"
-                size_hint: 0.5, 0.1
-            LabelledIntInput:
-                text: '19'
-                size_hint: 0.5, 0.1
-                input_property: 'SZ'
-            Label:
-                text: "Handicap"
-                size_hint: 0.5, 0.1
-            LabelledIntInput:
-                text: '0'
-                size_hint: 0.5, 0.1
-                input_property: 'HA'
-            Label:
-                text: "Komi"
-                size_hint: 0.5, 0.1
-            LabelledFloatInput:
-                text: '6.5'
-                size_hint: 0.5, 0.1
-                input_property: 'KM'
-            Label:
-                text: "Ruleset"
-                size_hint: 0.5, 0.1
-            LabelledSpinner:
-                size_hint: 0.5, 0.1
-                input_property: 'RU'
-                id: rules_spinner
-            Label:
-                text: " "
-                size_hint: 0.5, 0.6
-        GridLayout:
-            size_hint: 0.5, 1
-            rows: 10
-            cols: 2
-    StyledButton:
-        size_hint: 0.5, 0.1
-        text: 'Start Game'
-        on_press: root.new_game()
+    info: info
+    GridLayout:
+        size_hint: 1, 0.8
+        rows: 5
+        cols: 2
+        Label:
+            text: "Size"
+        LabelledTextInput:
+            text: '19'
+            input_property: 'SZ'
+        Label:
+            text: "Handicap"
+        LabelledIntInput:
+            text: '0'
+            input_property: 'HA'
+        Label:
+            text: "Komi"
+        LabelledFloatInput:
+            text: '6.5'
+            input_property: 'KM'
+        Label:
+            text: "Ruleset"
+        LabelledSpinner:
+            input_property: 'RU'
+            id: rules_spinner
+        Label:
+            text: "Use x:y (e.g. 19:9) to play on a non-square board, but note that handicaps above 9 are not supported."
+            size_hint: 1,3
+            halign: 'center'
+            valign: 'center'
+            multiline: True
+            text_size: self.size
+            id: info
+        StyledButton:
+            text: 'Start\nGame'
+            font_size: 0.3 * self.size[1]
+            on_press: root.new_game()

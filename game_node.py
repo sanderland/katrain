@@ -118,8 +118,9 @@ class GameNode(SGFNode):
         if self.policy:
             ix = 0
             moves = []
-            for y in range(self.board_size - 1, -1, -1):
-                for x in range(self.board_size):
+            szx, szy = self.board_size
+            for y in range(szy - 1, -1, -1):
+                for x in range(szx):
                     moves.append((Move((x, y), player=self.next_player), self.policy[ix]))
                     ix += 1
             moves.append((Move(None, player=self.next_player), self.policy[ix]))

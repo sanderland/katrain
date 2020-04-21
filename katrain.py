@@ -122,8 +122,8 @@ class KaTrainGui(BoxLayout):
         if self.game:
             self.message_queue.put([self.game.game_id, message, *args])
 
-    def _do_new_game(self, board_size=None, move_tree=None):
-        self.game = Game(self, self.engine, self.config("game"), board_size=board_size, move_tree=move_tree)
+    def _do_new_game(self, move_tree=None):
+        self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree)
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
         self.update_state(redraw_board=True)  # TODO: just board here/redraw is in all anyway?
 
@@ -168,8 +168,8 @@ class KaTrainGui(BoxLayout):
         fileselect_popup.open()
 
     def _do_new_game_popup(self):
-        new_game_popup = Popup(title="New Game", size_hint=(0.9, 0.9))
-        popup_contents = NewGamePopup(self, new_game_popup, {k: v[0] for k, v in self.game.root.properties.items()})
+        new_game_popup = Popup(title="New Game", size_hint=(0.5, 0.6))
+        popup_contents = NewGamePopup(self, new_game_popup, {k: v[0] for k, v in self.game.root.properties.items() if len(v) == 1})
         new_game_popup.add_widget(popup_contents)
         new_game_popup.open()
 
