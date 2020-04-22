@@ -47,7 +47,7 @@ class ToggleButtonContainer(GridLayout):
     selected = StringProperty("")
     group = StringProperty(None)
     autosize = BooleanProperty(True)
-    margin = ListProperty([0, 0, 1, 1])  # TODO outer vs inner margin?
+    spacing = ListProperty((1, 1))
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -71,7 +71,7 @@ class ToggleButtonContainer(GridLayout):
 
         for i, opt in enumerate(self.options):
             state = "down" if opt == self.selected else "normal"
-            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, margin=self.margin, on_press=state_handler))
+            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, on_press=state_handler))
         Clock.schedule_once(self._size, 0)
 
     def _size(self, _dt):
@@ -166,6 +166,7 @@ class ScoreGraph(Label):
     line_points = ListProperty([])
     dot_pos = ListProperty([0, 0])
     highlighted_index = NumericProperty(None)
+    min_scale = NumericProperty(1)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -184,7 +185,7 @@ class ScoreGraph(Label):
         if nodes:
             values = [n.score if n and n.score else 0 for n in nodes]
             val_range = min(values or [0]), max(values or [0])
-            scale = math.ceil(max(3, max(-val_range[0], val_range[1]) * 1.05))
+            scale = math.ceil(max(self.min_scale, max(-val_range[0], val_range[1]) * 1.05))
 
             xscale = self.width * 0.9 / max(len(values), 20)
             available_height = self.height * (1 - 2 * self.marginy)

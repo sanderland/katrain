@@ -81,8 +81,8 @@ class GameNode(SGFNode):
                         text += f"Estimated point loss: {points_lost:.1f}\n"
                 if sgf or hints:
                     policy_ranking = self.parent.policy_ranking
-                    policy_ix = [ix+1 for (m,p),ix in zip(policy_ranking,range(len(policy_ranking))) if m==single_move]
-                    if not policy_ix or policy_ix[0]!=1:
+                    policy_ix = [ix + 1 for (m, p), ix in zip(policy_ranking, range(len(policy_ranking))) if m == single_move]
+                    if not policy_ix or policy_ix[0] != 1:
                         text += f"Top policy move was {policy_ranking[0][0].gtp()}\n"
                     if policy_ix:
                         text += f"Your move was #{policy_ix} according to NN policy\n"

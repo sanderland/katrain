@@ -23,9 +23,9 @@
         Color:
             rgba: root.face_color or [0,0,0,0]
         RoundedRectangle:
-            size: self.size[0]-self.margin[0]-self.margin[2],self.size[1]-self.margin[1]-self.margin[3]
-            pos: (self.pos[0]+self.margin[0],self.pos[1]+self.margin[1])
-            radius: root.radius or (0.0,)
+            size: self.size[0],self.size[1]
+            pos: (self.pos[0],self.pos[1])
+            radius: root.radius
 
 <StyledSpinnerOption@SpinnerOption>:
     font_size: self.size[1] * 0.45
@@ -42,6 +42,7 @@
 
 <StyledToggleButton>:
     max_lines: 1
+
 
 <StyledTabButton@StyledToggleButton>:
     bold: True
@@ -60,6 +61,7 @@
         size: (root.icon_size or 0,root.icon_size or 0)  # square
         pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
         source: root.icon
+        mipmap: True
 
 <TransparentIconButton@Button>:
     background_normal: ''
@@ -71,6 +73,7 @@
         size: (root.icon_size or 0,root.icon_size or 0)  # square
         pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
         source: root.icon
+        mipmap: True
 
 
 <DarkLabel>:
@@ -100,6 +103,7 @@
     color: WHITE
 
 <CheckBoxHintLabel@Label+ButtonBehavior>:
+    font_size: dp(12)
     color: BLACK
 	halign: 'center'
 	valign: 'center'
@@ -110,14 +114,16 @@
 	text: ''
 	label: ''
 	CheckBoxHintLabel:
-		size_hint: 0.6,1
+		size_hint: 0.6,None
+		height: self.font_size * 1.5
+		id: desc
 		text: root.label
-		font_size: self.height  * 0.6
+		font_size: dp(20)
 		on_press: value.opacity =  1 if  value.opacity==0 else 0
 	DarkLabel:
-		size_hint: 0.4,1
+		size_hint: 0.4,None
 		text: root.text
-		font_size: self.height * 0.6
+		font_size: desc.font_size
 		id: value
 		bold: True
 
@@ -182,16 +188,16 @@
             size: self.highlight_size,self.highlight_size
     CheckBoxHintLabel:
         id: range_label_top
-        font_size: 0.15 * root.height
-        pos: root.pos[0] + root.marginx * root.width + 3, root.pos[1] + root.height * (1 - 2 * root.marginy) - 0.15 * root.height - 1
+        font_size: 0.12 * root.height
+        pos: root.pos[0] + root.marginx * root.width + 3, root.pos[1] + root.height * (1 - 2 * root.marginy) - self.font_size - 1
         valign: 'bottom'
         halign: 'left'
         text: 'B+0'
         color:  GREY
     CheckBoxHintLabel:
         id: range_label_bottom
-        font_size: 0.15 * root.height
-        pos: root.pos[0] + root.marginx * root.width + 3, root.pos[1]
+        font_size: 0.12 * root.height
+        pos: root.pos[0] + root.marginx * root.width + 3, root.pos[1] + 1
         valign: 'bottom'
         halign: 'left'
         text: 'W+0'
@@ -212,30 +218,32 @@
     pass_btn: pass_btn
     Label:
         size_hint: 0.05, 1
-    StyledButton:
-        text: 'Pass'
-        font_size: 0.35*self.size[1]
-        id: pass_btn
-        on_press: root.katrain("play",None)
-        size_hint: 0.1, 1
-        margin: (0, self.size[1]/5, 0, self.size[1]/5)
+    BoxLayout:
+        size_hint: 0.15, 1
+        padding: self.size[1]/5
+        StyledButton:
+            text: 'Pass'
+            font_size: 0.6*self.size[1]
+            id: pass_btn
+            on_press: root.katrain("play",None)
     Label:
-        size_hint: 0.1, 1
-    TransparentIconButton:
-        icon: 'img/flaticon/previous999.png'
-        margin: (3, self.size[1]/3, 3, self.size[1]/3)
-        size_hint: 0.1, 1
-        on_press: root.katrain('undo',999)
-    TransparentIconButton:
-        icon: 'img/flaticon/previous5.png'
-        margin: (3, self.size[1]/3, 3, self.size[1]/3)
-        size_hint: 0.1, 1
-        on_press: root.katrain('undo',5)
-    TransparentIconButton:
-        icon: 'img/flaticon/previous.png'
-        margin: (3, self.size[1]/3, 3, self.size[1]/3)
-        size_hint: 0.1, 1
-        on_press: root.katrain('undo')
+        size_hint: 0.05, 1
+    BoxLayout:
+        size_hint: 0.3, 1
+        padding: [0, self.size[1]*0.3]
+        spacing: 0
+        TransparentIconButton:
+            icon: 'img/flaticon/previous999.png'
+            size_hint: 0.1, 1
+            on_press: root.katrain('undo',999)
+        TransparentIconButton:
+            icon: 'img/flaticon/previous5.png'
+            size_hint: 0.1, 1
+            on_press: root.katrain('undo',5)
+        TransparentIconButton:
+            icon: 'img/flaticon/previous.png'
+            size_hint: 0.1, 1
+            on_press: root.katrain('undo')
     FloatLayout:
         size_hint: 0.2, 1
         id: mid_circles_container
@@ -247,32 +255,32 @@
             id: white_prisoners
             pos: (self.parent.pos[0]+self.height/3,self.parent.pos[1]) if self.parent else (0,0)
             radius: 0.4
-    TransparentIconButton:
-        icon: 'img/flaticon/next.png'
-        margin: (3, self.size[1]/3, 3, self.size[1]/3)
-        size_hint: 0.1, 1
-        on_press: root.katrain('redo')
-    TransparentIconButton:
-        icon: 'img/flaticon/next5.png'
-        margin: (3, self.size[1]/3, 3, self.size[1]/3)
-        size_hint: 0.1, 1
-        on_press: root.katrain('redo',5)
-    TransparentIconButton:
-        icon: 'img/flaticon/next999.png'
-        margin: (3, self.size[1]/3, 3, self.size[1]/3)
-        size_hint: 0.1, 1
-        on_press: root.katrain('redo',999)
+    BoxLayout:
+        size_hint: 0.3, 1
+        padding: [0, self.size[1]*0.3]
+        TransparentIconButton:
+            icon: 'img/flaticon/next.png'
+            size_hint: 0.1, 1
+            on_press: root.katrain('redo')
+        TransparentIconButton:
+            icon: 'img/flaticon/next5.png'
+            size_hint: 0.1, 1
+            on_press: root.katrain('redo',5)
+        TransparentIconButton:
+            icon: 'img/flaticon/next999.png'
+            size_hint: 0.1, 1
+            on_press: root.katrain('redo',999)
     Label:
         size_hint: 0.07, 1
-    StyledButton:
-        text: 'AI Move'
-        font_size: 0.35*self.size[1]
-        on_press: root.katrain("ai-move",None)
-        size_hint: 0.14, 1
-        margin: (0, self.size[1]/5, 0, self.size[1]/5)
+    BoxLayout:
+        size_hint: 0.2, 1
+        padding: self.size[1]/5
+        StyledButton:
+            text: 'AI Move'
+            font_size: 0.6*self.size[1]
+            on_press: root.katrain("ai-move",None)
     Label:
-        size_hint: 0.04, 1
-
+        size_hint: 0.05, 1
 
 <Controls>:
 	orientation: 'vertical'
@@ -282,6 +290,7 @@
 	win_rate: win_rate
 	points_lost: points_lost
 	score: score
+	show_children: show_children
 	hints: hints
 	ownership: ownership
 	policy: policy
@@ -289,22 +298,17 @@
 	player_mode_groups: {'B':B_player_mode,'W':W_player_mode}
 	ai_mode_groups: {'B':B_AI_mode,'W':W_AI_mode}
 	graph: graph
-	katrain: self.parent
-    canvas.before:
-        Color:
-            rgba: 0.95, 0.95, 0.95, 1
-        Rectangle:
-            pos: self.pos
-            size: root.size
+	katrain: self.parent.parent
     BoxLayout:
         size_hint: 1,0.05
         orientation: 'horizontal'
+        padding: 5,1,5,0
+        spacing: 2
         StyledTabButton:
             text: 'Play'
             group: 'tabs'
             state: 'down'
             id: play_tab_button
-            margin: (2,0,1,3)
             on_press:
                 play_tab.size_hint[0] = 1
                 play_tab.opacity = 1
@@ -315,7 +319,6 @@
         StyledTabButton:
             text: 'Analyze'
             id: analyze_tab_button
-            margin: (1,0,2,3)
             group: 'tabs'
             on_press:
                 analyze_tab.size_hint[0] = 1
@@ -330,42 +333,57 @@
         BoxLayout: # ----------- analyze -----------
             size_hint: 0,1
             id: analyze_tab
+            padding: [3,3]
             opacity: 0
             orientation: 'vertical'
-            Label:
-                size_hint: 1,0.02
             GridLayout:
-                cols: 4
+                cols: 5
                 rows: 2
-                size_hint: 1, 0.5
+                size_hint: 1, 0.3
                 CheckBoxHintLabel:
-                    text: 'show\nall dots'
+                    text: 'next\nmoves'
                 CheckBoxHintLabel:
-                    text: 'show\ntop move'
+                    text: 'all\ndots'
                 CheckBoxHintLabel:
-                    text: 'show\nowner'
+                    text: 'top\nmoves'
                 CheckBoxHintLabel:
-                    text: 'show\npolicy'
+                    text: 'owner'
+                CheckBoxHintLabel:
+                    text: 'NN\npolicy'
+                CheckBox:
+                    id: show_children
+                    active: True
+                    on_active: root.katrain.update_state()
                 CheckBox:
                     id: eval
-                    default_active: False
                     on_active: root.katrain.update_state()
                 CheckBox:
                     id: hints
-                    default_active: False
                     on_active: root.katrain.update_state()
-
                 CheckBox:
                     id: ownership
-                    default_active: False
                     on_active: root.katrain.update_state()
                 CheckBox:
                     id: policy
-                    default_active: False
                     on_active: root.katrain.update_state()
+            BoxLayout:
+                spacing:1
+                padding: 1,2,1,2
+                size_hint: 1,0.2
+                DarkLabel:
+                    text: 'Analysis'
+                StyledButton:
+                    text: 'Extra'
+                    size_hint: 1, 1
+                StyledButton:
+                    text: 'Equalize'
+                    size_hint: 1, 1
+                StyledButton:
+                    text: 'Sweep'
+                    size_hint: 1, 1
             ScoreGraph:
                 id: graph
-                size_hint: 1,0.5
+                size_hint: 1,0.7
             CensorableLabel:
                 id: win_rate
                 size_hint: 1, 0.15
@@ -386,6 +404,7 @@
             GridLayout:
                 cols: 4
                 rows: 2
+                spacing: 1
                 size_hint: 1,0.125
                 BlackCircleWithText:
                     text: 'B'
@@ -433,6 +452,8 @@
     BoxLayout:
         orientation: 'horizontal'
         size_hint: 1, None
+        spacing: 2
+        padding: 2
         height: self.width * 0.25
         StyledIconButton:
             icon: 'img/flaticon/go-game.png'
@@ -457,25 +478,37 @@
 	board_controls: board_controls
 	board_aspect_ratio: 1.075
     BoxLayout:
+        size_hint: 1,1
         canvas.before:
             Color:
                 rgb: root.board_gui.board_color if root.board_gui else (0,0,0)
             Rectangle:
-                pos: root.pos
-                size: root.size
+                pos: self.pos
+                size: self.size
         orientation: 'vertical'
-        size_hint: 1 - controls.size_hint[0], 1
+        size_hint: 1 - controls_box.size_hint[0], 1
         BadukPanWidget:
     		id: board_gui
-            size_hint: (1,1)
+            size_hint: 1,1
         BadukPanControls:
             id: board_controls
             size_hint: (1,root.board_aspect_ratio-1)
-    Controls:
-		id: controls
-		size_hint: max(0.25,(root.width - root.height/root.board_aspect_ratio)/root.width), 1
-
-
+    BoxLayout:
+        orientation: 'vertical'
+        id: controls_box
+        size_hint: max(0.25,(root.width - root.height/root.board_aspect_ratio)/root.width), 1
+        canvas.before:
+            Color:
+                rgba: 0.95, 0.95, 0.95, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Controls:
+            id: controls
+            size_hint: 1, 1 - filler.size_hint[1]
+        Label:
+            id: filler
+            size_hint: 1, max(0.0001, ((controls_box.height / controls_box.width) - 3)/(controls_box.height / controls_box.width))  # limits aspect ratio
 
 <LoadSGFPopup>:
     fast: fast

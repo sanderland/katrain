@@ -51,7 +51,7 @@ class KaTrainGui(BoxLayout):
         config_file = sys.argv[1] if len(sys.argv) > 1 else os.path.join(base_path, "config.json")
         try:
             self.log(f"Using config file {config_file}", OUTPUT_INFO)
-            self._config_store = JsonStore(config_file,indent=4)
+            self._config_store = JsonStore(config_file, indent=4)
             self._config = dict(self._config_store)
         except Exception as e:
             self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
@@ -190,7 +190,7 @@ class KaTrainGui(BoxLayout):
         for pl in Move.PLAYERS:
             if not self.game.root.get_first(f"P{pl}"):
                 _, model_file = os.path.split(self.engine.config["model"])
-                self.game.root.properties[f"P{pl}"] = [f"KaTrain (KataGo {model_file})" if 'ai' in self.controls.player_mode(pl) else "Player"]
+                self.game.root.properties[f"P{pl}"] = [f"KaTrain (KataGo {model_file})" if "ai" in self.controls.player_mode(pl) else "Player"]
         msg = self.game.write_sgf(self.config("files/sgf_save"))
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)
@@ -200,16 +200,17 @@ class KaTrainGui(BoxLayout):
             return  # if in new game or load, don't allow keyboard shortcuts
 
         shortcuts = {
-            "u": self.controls.eval,
-            "i": self.controls.hints,
-            "p": self.controls.policy,
-            "o": self.controls.ownership,
+            "q": self.controls.show_children,
+            "w": self.controls.eval,
+            "e": self.controls.hints,
+            "r": self.controls.policy,
+            "t": self.controls.ownership,
             "a": ("ai-move",),
+            "s": ("analyze-extra", "extra"),
+            "f": ("analyze-extra", "refine"),
+            "d": ("analyze-extra", "sweep"),
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),
-            "z": ("analyze-extra", "sweep"),
-            "x": ("analyze-extra", "extra"),
-            "c": ("analyze-extra", "refine"),
         }
         if keycode[1] in shortcuts.keys():
             shortcut = shortcuts[keycode[1]]
@@ -217,9 +218,11 @@ class KaTrainGui(BoxLayout):
                 shortcut.trigger_action(duration=0)
             else:
                 self(*shortcut)
-        elif keycode[1] == "up":
+        elif keycode[1] == "tab":
+            self.controls.switch_mode()
+        elif keycode[1] in ["up", "z"]:
             self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
-        elif keycode[1] == "down":
+        elif keycode[1] in ["down", "x"]:
             self("redo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] == "n" and "ctrl" in modifiers:
             self("new-game-popup")

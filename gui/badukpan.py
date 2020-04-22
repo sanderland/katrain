@@ -110,7 +110,7 @@ class BadukPanWidget(Widget):
             # grid lines
             margin = 1.5
             margin_x = margin + (max_board_size - board_size_x) / 2
-            margin_y = margin + (max_board_size - board_size_y) / 2
+            margin_y = margin - 0.125 + (max_board_size - board_size_y) / 2
 
             self.grid_size = board_px_size / (max_board_size - 1 + 1.5 * margin)
             self.stone_size = self.grid_size * self.ui_config["stone_size"]
@@ -215,15 +215,16 @@ class BadukPanWidget(Widget):
 
             # children of current moves in undo / review
             undo_coords = set()
-            alpha = self.ui_config["_child_alpha"]
-            for child_node in current_node.children:
-                points_lost = child_node.points_lost
-                m = child_node.single_move
-                if m and m.coords is not None:
-                    undo_coords.add(m.coords)
-                    evalcol = (*self.eval_color(points_lost), alpha) if points_lost is not None else None
-                    scale = self.ui_config.get("_child_scale", 0.95)
-                    self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
+            if katrain.controls.show_children.active:
+                alpha = self.ui_config["ghost_alpha"]
+                for child_node in current_node.children:
+                    points_lost = child_node.points_lost
+                    m = child_node.single_move
+                    if m and m.coords is not None:
+                        undo_coords.add(m.coords)
+                        evalcol = (*self.eval_color(points_lost), alpha) if points_lost is not None else None
+                        scale = self.ui_config.get("_child_scale", 0.95)
+                        self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
             # hints
             if katrain.controls.hints.active and not game_ended:

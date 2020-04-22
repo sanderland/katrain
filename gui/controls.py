@@ -11,7 +11,7 @@ class Controls(BoxLayout):
 
     def set_status(self, msg, at_node=None):
         self.status = msg
-        self.status_node = at_node or self.parent.game and self.parent.game.current_node
+        self.status_node = at_node or self.katrain.game and self.parent.game.current_node
         self.info.text = msg
         self.update_evaluation()
 
@@ -20,6 +20,12 @@ class Controls(BoxLayout):
             self.analyze_tab_button.trigger_action(duration=0)
         else:
             self.play_tab_button.trigger_action(duration=0)
+
+    def switch_mode(self):
+        if self.play_tab_button.state == "down":
+            self.select_mode("analyze")
+        else:
+            self.select_mode("play")
 
     def show_evaluation_stats(self, node):
         if node.analysis_ready:
@@ -49,7 +55,7 @@ class Controls(BoxLayout):
 
     # handles showing completed analysis and score graph
     def update_evaluation(self):
-        katrain = self.parent
+        katrain = self.katrain
         current_node = katrain.game and katrain.game.current_node
 
         info = ""
