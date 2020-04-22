@@ -212,6 +212,7 @@ class KaTrainGui(BoxLayout):
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),
         }
+        print(keycode)
         if keycode[1] in shortcuts.keys():
             shortcut = shortcuts[keycode[1]]
             if isinstance(shortcut, Widget):
@@ -220,6 +221,8 @@ class KaTrainGui(BoxLayout):
                 self(*shortcut)
         elif keycode[1] == "tab":
             self.controls.switch_mode()
+        elif keycode[1] == "spacebar":
+            self("play", None)  # pass
         elif keycode[1] in ["`", "~", "p"]:
             self.controls_box.hidden = not self.controls_box.hidden
         elif keycode[1] in ["up", "z"]:

@@ -117,7 +117,7 @@ class ConfigPopup(QuickConfigGui):
         self.info_label = Label()
         self.apply_button = StyledButton(text="Apply", on_press=lambda _: self.update_config())
         self.save_button = StyledButton(text="Apply and Save", on_press=lambda _: self.update_config(save_to_file=True))
-        btn_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.1))
+        btn_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.1), spacing=1, padding=1)
         btn_container.add_widget(self.info_label)
         btn_container.add_widget(self.apply_button)
         btn_container.add_widget(self.save_button)

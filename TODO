@@ -12,10 +12,11 @@
 [] more AI modes (noisy policy? heavy balance? jigo?)
 [] split feedback in box vs top moves
 [] box to label ? split in status and comment?
-
+[] limit below board buttons somehow to not be too big
 
 wont do
 [] Self-play tournaments?
 [] Multi engine (detect all req. analysis in analysis[engine] fn)
 
+[] graph wonky on branch switch -> check in children &c.
 

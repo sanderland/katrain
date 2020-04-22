@@ -27,23 +27,6 @@ class Controls(BoxLayout):
         else:
             self.select_mode("play")
 
-    def show_evaluation_stats(self, node):
-        if node.analysis_ready:
-            self.score.text = node.format_score().replace("-", "\u2013")
-            self.win_rate.text = node.format_win_rate()
-            move = node.single_move
-            if move:
-                self.points_lost.label = f"Point loss {move.player}{move.gtp()}"
-            else:
-                self.points_lost.label = f"Point loss"
-                self.points_lost.text = ""
-                return
-
-            if node.points_lost is not None:
-                self.points_lost.text = f"{node.points_lost:.1f}"
-            else:
-                self.points_lost.text = f"..."
-
     def player_mode(self, player):
         return self.player_mode_groups[player].value
 
@@ -71,8 +54,17 @@ class Controls(BoxLayout):
             )
             if current_player_is_human_or_both_robots and not current_node.is_root and move:
                 info += current_node.comment(eval=True, hints=self.hints.active)
-            if current_player_is_human_or_both_robots:
-                self.show_evaluation_stats(current_node)
+
+            if current_node.analysis_ready:
+                self.score.text = current_node.format_score()
+                self.win_rate.text = current_node.format_win_rate()
+                if move and current_player_is_human_or_both_robots: # don't immediately hide this when an ai moves comes in
+                    self.points_lost.label = f"Point loss {move.player}{move.gtp()}"
+                    points_lost = current_node.points_lost
+                    self.points_lost.text = f"{current_node.points_lost:.1f}" if points_lost else "..."
+            else:
+                self.points_lost.label = f"Point loss"
+                self.points_lost.text = ""
 
             self.graph.update_value(current_node)
 

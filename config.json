@@ -25,6 +25,7 @@
     "balance_randomize_score": 1,
     "balance_max_lost": 5,
     "balance_min_visits": 20,
+    "noise_strength": 0.05,
     "eval_off_show_last": 3
   },
   "board_ui": {

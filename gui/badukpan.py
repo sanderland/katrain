@@ -12,8 +12,6 @@ from game import Move
 
 
 class BadukPanWidget(Widget):
-    board_color = ListProperty([0.85, 0.68, 0.40])
-
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
         self.ui_config = {}
@@ -60,7 +58,6 @@ class BadukPanWidget(Widget):
                 katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
                 katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_DEBUG)
                 katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
-                katrain.controls.show_evaluation_stats(nodes_here[-1])
 
         self.ghost_stone = None
         self.draw_board_contents()  # remove ghost
@@ -82,7 +79,7 @@ class BadukPanWidget(Widget):
 
         if innercol:
             Color(*innercol)
-            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size * 0.45 / 0.85), width=0.125 * stone_size)  # 1.75
+            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size * 0.475 / 0.85), width=0.1 * stone_size)
 
     def eval_color(self, points_lost):
         colors = self.ui_config["eval_colors"]

@@ -2,10 +2,12 @@
 #:import ew kivy.uix.effectwidget
 
 
-#:set AI_MODES ['Default','Balance','Policy']
+#:set AI_MODES ['Default','Balance','Jigo','Policy','P+Noise']
 #:set PLAYER_MODES ['Human', 'Teach','AI:']
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
+#:set BOARD_COLOR [0.85, 0.68, 0.40,1]
+#:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 #:set BLACK [0.05,0.05,0.05,1]
 #:set WHITE [0.95,0.95,0.95,1]
 #:set GREY  [0.5,0.5,0.5,1]
@@ -180,7 +182,7 @@
             points: root.line_points
             width: 1.1
         Color:
-            rgba: BUTTON_COLOR
+            rgba: GRAPH_DOT_COLOR
         Ellipse:
             id: dot
             pos: root.dot_pos
@@ -218,8 +220,8 @@
     Label:
         size_hint: 0.05, 1
     BoxLayout:
-        size_hint: 0.15, 1
-        padding: self.size[1]/5
+        size_hint: 0.2, 1
+        padding: [0.325*self.size[1],0.2*self.size[1]]
         StyledButton:
             text: 'Pass'
             font_size: 0.6*self.size[1]
@@ -270,10 +272,10 @@
             size_hint: 0.1, 1
             on_press: root.katrain('redo',999)
     Label:
-        size_hint: 0.07, 1
+        size_hint: 0.05, 1
     BoxLayout:
         size_hint: 0.2, 1
-        padding: self.size[1]/5
+        padding: 0.2 * self.size[1]
         StyledButton:
             text: 'AI Move'
             font_size: 0.6*self.size[1]
@@ -493,7 +495,7 @@
         size_hint: 1,1
         canvas.before:
             Color:
-                rgb: root.board_gui.board_color if root.board_gui else (0,0,0)
+                rgb: BOARD_COLOR
             Rectangle:
                 pos: self.pos
                 size: self.size

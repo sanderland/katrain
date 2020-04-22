@@ -219,6 +219,10 @@ class Game:
             policy_moves = cn.policy_ranking
             self.katrain.log(f"Top 5 policy moves are: {policy_moves[:5]}", OUTPUT_DEBUG)
             aimove = policy_moves[0][0]
+        elif "noise" in ai_mode and cn.policy:
+            noise = train_settings["noise_strength"]
+            policy_moves = [(mv, pol + random.gauss(0, noise)) for mv, pol in cn.policy_ranking]
+            aimove = max(policy_moves, key=lambda mp: mp[1])[0]
         elif "balance" in ai_mode and candidate_ai_moves[0]["move"] != "pass":  # don't play suicidal to balance score - pass when it's best
             sign = cn.player_sign(cn.next_player)  # TODO check
             sel_moves = [  # top move, or anything not too bad, or anything that makes you still ahead
@@ -233,9 +237,14 @@ class Game:
                 )
             ]
             aimove = Move.from_gtp(random.choice(sel_moves)["move"], player=cn.next_player)  # TODO: could be weighted towards worse
+        elif "jigo" in ai_mode and candidate_ai_moves[0]["move"] != "pass":
+            sign = cn.player_sign(cn.next_player)  # TODO check
+            jigo_move = min(candidate_ai_moves, key=lambda move: abs(sign * move["scoreLead"] - 0.5))
+            print("NP sign",sign,"JIGO MOVE",jigo_move)
+            aimove = Move.from_gtp(jigo_move["move"], player=cn.next_player)
         else:
             if "default" not in ai_mode:
-                self.katrain.log(f"Unknown AI mode {ai_mode}, using default.", OUTPUT_INFO)
+                self.katrain.log(f"Unknown AI mode {ai_mode} or policy missing, using default.", OUTPUT_INFO)
             aimove = Move.from_gtp(candidate_ai_moves[0]["move"], player=cn.next_player)
         self.play(aimove)
 
