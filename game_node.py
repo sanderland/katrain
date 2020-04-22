@@ -74,18 +74,21 @@ class GameNode(SGFNode):
                 text += f"Score: {self.format_score(score)}\n"
             if self.parent and self.parent.analysis_ready:
                 previous_top_move = self.parent.candidate_moves[0]
-                if sgf or hints and previous_top_move["move"] != single_move.gtp():  # TODO: when to include?
-                    text += f"Predicted top move was {previous_top_move['move']} ({self.format_score(previous_top_move['scoreLead'])})\n"
-                    points_lost = self.points_lost
-                    if sgf and points_lost > 0.5:
-                        text += f"Estimated point loss: {points_lost:.1f}\n"
+                if sgf or hints:
+                    if previous_top_move["move"] != single_move.gtp():
+                        text += f"Predicted top move was {previous_top_move['move']} ({self.format_score(previous_top_move['scoreLead'])}).\n"
+                        points_lost = self.points_lost
+                        if sgf and points_lost > 0.5:
+                            text += f"Estimated point loss: {points_lost:.1f}\n"
+                    else:
+                        text += f"Move was predicted best move.\n"
                 if sgf or hints:
                     policy_ranking = self.parent.policy_ranking
                     policy_ix = [ix + 1 for (m, p), ix in zip(policy_ranking, range(len(policy_ranking))) if m == single_move]
-                    if not policy_ix or policy_ix[0] != 1:
-                        text += f"Top policy move was {policy_ranking[0][0].gtp()}\n"
                     if policy_ix:
-                        text += f"Your move was #{policy_ix} according to NN policy\n"
+                        text += f"Move was #{policy_ix[0]} according to policy.\n"
+                    if not policy_ix or policy_ix[0] != 1:
+                        text += f"Top policy move was {policy_ranking[0][0].gtp()}.\n"
             if self.auto_undo:
                 text += "Move was automatically undone."
         else:
@@ -113,6 +116,11 @@ class GameNode(SGFNode):
     def candidate_moves(self) -> List[Dict]:
         if not self.analysis_ready:
             return []
+        if not self.analysis["moves"]:
+            polmoves = self.policy_ranking
+            top_polmove = polmoves[0][0] if polmoves else Move(None)  # if no info at all, pass
+            return [{**self.analysis["root"], "pointsLost": 0, "order": 0, "move": top_polmove.gtp()}]  # single visit -> go by policy/root
+
         return sorted(
             [{"pointsLost": self.player_sign(self.next_player) * (self.analysis["root"]["scoreLead"] - d["scoreLead"]), **d} for d in self.analysis["moves"].values()],
             key=lambda d: (d["order"], d["pointsLost"]),

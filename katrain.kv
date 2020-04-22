@@ -4,24 +4,24 @@
 
 #:set AI_MODES ['Default','Balance','Policy']
 #:set PLAYER_MODES ['Human', 'Teach','AI:']
-#:set BUTTON_COLOR [0.21, 0.28, 0.31, 1]
+#:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
 #:set BLACK [0.05,0.05,0.05,1]
 #:set WHITE [0.95,0.95,0.95,1]
 #:set GREY  [0.5,0.5,0.5,1]
 
 <StyledButton>:
+    color: WHITE
     font_size: self.size[1] * 0.45
     radius: (self.size[1]/7,)
-    # dont set these
-    disabled_mask: (0.5,0.5,0.5,1) if self.disabled else (1,1,1,1)
-    color: self.disabled_mask if self.disabled else self.text_color
+    button_color: BUTTON_COLOR
+    button_color_down: [0.105, 0.14, 0.155, 1]
+    button_color_highlight: [(a+b)/2 for a,b in zip(self.button_color,self.button_color_down)]
     background_color: 0,0,0,0
     background_normal: ''
-    face_color: [c*m for c,m in zip(self.button_color if root.state=='normal' else self.button_color_down,self.disabled_mask)]
     canvas.before:
         Color:
-            rgba: root.face_color or [0,0,0,0]
+            rgba: self.button_color if root.state=='normal' else self.button_color_down
         RoundedRectangle:
             size: self.size[0],self.size[1]
             pos: (self.pos[0],self.pos[1])
@@ -31,7 +31,7 @@
     font_size: self.size[1] * 0.45
     background_color: BUTTON_COLOR
     background_normal: ''
-    color: (1,1,1,1)
+    color: WHITE
 
 <StyledSpinner>:
     text: self.values[0] if self.values else ''
@@ -55,8 +55,7 @@
     button_color: ICON_BUTTON_COLOR
     icon_margin: 0.15 * self.size[0]
     icon: ''
-    icon_size: min(self.size[0]-self.margin[0]-self.margin[2]-2*self.icon_margin,self.size[1]-self.margin[1]-self.margin[3]-2*self.icon_margin)
-    #EffectWidget:         effects: [ew.FXAAEffect()]
+    icon_size: min(self.size[0]-2*self.icon_margin,self.size[1]-2*self.icon_margin)
     Image:
         size: (root.icon_size or 0,root.icon_size or 0)  # square
         pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
@@ -66,8 +65,7 @@
 <TransparentIconButton@Button>:
     background_normal: ''
     background_color: (0,0,0,0)
-    margin: (1,1,1,1)
-    icon_size: min(self.size[0]-self.margin[0]-self.margin[2],self.size[1]-self.margin[1]-self.margin[3])
+    icon_size: min(self.size[0],self.size[1])
     icon: ''
     Image:
         size: (root.icon_size or 0,root.icon_size or 0)  # square
@@ -123,6 +121,7 @@
 	DarkLabel:
 		size_hint: 0.4,None
 		text: root.text
+		height: desc.height
 		font_size: desc.font_size
 		id: value
 		bold: True
@@ -169,7 +168,7 @@
         Color:
             rgba: GREY
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.pos[1]+self.height*0.5,root.pos[0]+self.width*0.95,root.pos[1]+self.height*0.5]
+            points: [root.pos[0]+self.width*root.marginx,root.pos[1]+self.height*0.5*(1 - 2 * root.marginy),root.pos[0]+self.width*0.95,root.pos[1]+self.height*0.5]
             width: 1.0
             dashes: [2,2]
         Line:
@@ -179,7 +178,7 @@
             rgba: BLACK
         Line:
             points: root.line_points
-            width: 1.0
+            width: 1.1
         Color:
             rgba: BUTTON_COLOR
         Ellipse:
@@ -207,11 +206,11 @@
 
 <BadukPanWidget>:
 	size: self.parent.height, self.parent.height
-	katrain: self.parent.parent
+	katrain: app.gui
 
 
 <BadukPanControls>:
-    katrain: self.parent.parent
+    katrain: app.gui
     black_prisoners: black_prisoners
     white_prisoners: white_prisoners
     mid_circles_container: mid_circles_container
@@ -295,14 +294,17 @@
 	ownership: ownership
 	policy: policy
     eval: eval
+    analyze_extra: analyze_extra
+    analyze_equalize: analyze_equalize
+    analyze_sweep: analyze_sweep
 	player_mode_groups: {'B':B_player_mode,'W':W_player_mode}
 	ai_mode_groups: {'B':B_AI_mode,'W':W_AI_mode}
 	graph: graph
-	katrain: self.parent.parent
+	katrain: app.gui
     BoxLayout:
         size_hint: 1,0.05
         orientation: 'horizontal'
-        padding: 5,1,5,0
+        padding: 3,1,3,0
         spacing: 2
         StyledTabButton:
             text: 'Play'
@@ -372,15 +374,24 @@
                 size_hint: 1,0.2
                 DarkLabel:
                     text: 'Analysis'
+                    size_hint: 1, 1
+                    multiline: False
+                    font_size: 0.45*self.size[1]
                 StyledButton:
+                    id: analyze_extra
                     text: 'Extra'
                     size_hint: 1, 1
+                    on_press: root.katrain("analyze-extra","extra")
                 StyledButton:
+                    id: analyze_equalize
                     text: 'Equalize'
                     size_hint: 1, 1
+                    on_press: root.katrain("analyze-extra","equalize")
                 StyledButton:
+                    id: analyze_sweep
                     text: 'Sweep'
                     size_hint: 1, 1
+                    on_press: root.katrain("analyze-extra","sweep")
             ScoreGraph:
                 id: graph
                 size_hint: 1,0.7
@@ -443,7 +454,7 @@
                 size_hint: 1,0.3
     CensorableLabel:
         id: points_lost
-        size_hint: 1, 0.03
+        size_hint: 1, 0.0225
         label: 'Point loss'
         text: ''
 	TextInput:
@@ -474,6 +485,7 @@
 
 <KaTrainGui>:
 	board_gui: board_gui
+	controls_box: controls_box
 	controls: controls
 	board_controls: board_controls
 	board_aspect_ratio: 1.075
@@ -486,17 +498,19 @@
                 pos: self.pos
                 size: self.size
         orientation: 'vertical'
-        size_hint: 1 - controls_box.size_hint[0], 1
         BadukPanWidget:
     		id: board_gui
-            size_hint: 1,1
         BadukPanControls:
             id: board_controls
-            size_hint: (1,root.board_aspect_ratio-1)
-    BoxLayout:
-        orientation: 'vertical'
+            size_hint_y: None
+            height: self.width / 13.5
+    BoxLayout: # avoids a weird syntax error in builder .. somehow
+        size_hint_x: None
+        size_hint_y: 1
+        hidden: False
+        width: 0 if self.hidden else self.height * 0.4
+        opacity: 0 if self.hidden else 1
         id: controls_box
-        size_hint: max(0.25,(root.width - root.height/root.board_aspect_ratio)/root.width), 1
         canvas.before:
             Color:
                 rgba: 0.95, 0.95, 0.95, 1
@@ -505,10 +519,6 @@
                 size: self.size
         Controls:
             id: controls
-            size_hint: 1, 1 - filler.size_hint[1]
-        Label:
-            id: filler
-            size_hint: 1, max(0.0001, ((controls_box.height / controls_box.width) - 3)/(controls_box.height / controls_box.width))  # limits aspect ratio
 
 <LoadSGFPopup>:
     fast: fast
@@ -586,9 +596,12 @@
             halign: 'center'
             valign: 'center'
             multiline: True
-            text_size: self.size
+            text_size: self.width-6, None
             id: info
         StyledButton:
             text: 'Start\nGame'
             font_size: 0.3 * self.size[1]
             on_press: root.new_game()
+
+#EffectWidget:         effects: [ew.FXAAEffect()]
+

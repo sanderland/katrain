@@ -2,17 +2,20 @@
 [x Non square boards
 [x] remove fast -> in settings?
 [x] Polish graph
-
-[] Multi engine (detect all req. analysis in analysis[engine] fn)
-[] Graph is awkward when reviewing. Should we store nodes rather than values? & populate on new game.
+[x] BoxLayout padding/spacing use instead of fiddling?
 
 [] Score instead of game end
-[] Self-play tournaments?
 [] List edit settings/object edit settings?
 [] README
 [] Release notes
+[] more teaching / groups in danger?
+[] more AI modes (noisy policy? heavy balance? jigo?)
+[] split feedback in box vs top moves
+[] box to label ? split in status and comment?
 
 
-[] BoxLayout padding/spacing use instead of fiddling?
+wont do
+[] Self-play tournaments?
+[] Multi engine (detect all req. analysis in analysis[engine] fn)
 
 

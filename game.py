@@ -281,10 +281,10 @@ class Game:
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
             analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(board_size_x) for y in range(board_size_y) if (x, y) not in stones]
-            visits = self.engine.config["visits"] * self.config["sweep_visits_frac"]
+            visits = int(self.engine.config["visits"] * self.config["sweep_visits_frac"] + 0.5)
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
             priority = -1_000_000_000
-        else:  # mode=='refine':
+        else:  # mode=='equalize':
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
             visits = max(d["visits"] for d in cn.analysis["moves"].values())
             self.katrain.controls.set_status(f"Equalizing analysis of candidate moves to {visits} visits")

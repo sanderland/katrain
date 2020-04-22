@@ -78,9 +78,9 @@ class SGFNode:
         return copy.deepcopy(self.properties)
 
     def sgf(self) -> str:
-        import sys  # TODO
+        import sys
 
-        sys.setrecursionlimit(max(sys.getrecursionlimit(), 3 * 29 * 29))
+        sys.setrecursionlimit(max(sys.getrecursionlimit(), 3 * 29 * 29))  # thanks to lightvector for causing stack overflows
         sgf_str = "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in self.sgf_properties.items() if values])
         if self.children:
             children = [c.sgf() for c in self.children]
@@ -259,5 +259,5 @@ class SGF:
                 values = re.split(r"\]\s*\[", value)
                 current_move.add_property(property, values)
         if self.ix < len(self.contents):
-            raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix - 25:self.ix]}>{self.contents[self.ix]}<{self.contents[self.ix + 1:self.ix + 25]}")
+            raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix:self.ix+25]}")
         raise ParseError("Parse Error: expected ')' at end of input.")

@@ -153,7 +153,5 @@ class ConfigPopup(QuickConfigGui):
                     self.katrain.engine = KataGoEngine(self.katrain, self.config[cat])
                     self.katrain.game.engine = self.katrain.engine
                     old_engine.shutdown(finish=True)
-                    engine_restart = True
 
-        if engine_restart:
-            self.katrain.update_state(redraw_board=True)
+        self.katrain.update_state(redraw_board=True)

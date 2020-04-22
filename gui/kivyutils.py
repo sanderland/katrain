@@ -24,10 +24,8 @@ class DarkLabel(Label):
 
 
 class StyledButton(Button):
-    text_color = ListProperty([0.95, 0.95, 0.95, 1])  # TODO defaults as in ..
-    button_color = ListProperty([0.21, 0.28, 0.31, 1])
-    button_color_down = ListProperty([0.105, 0.14, 0.155, 1])
-    margin = ListProperty([1, 1, 1, 1])  # margin left bottom right top
+    button_color = ListProperty([])
+    button_color_down = ListProperty([])
     radius = ListProperty((0,))
 
 
@@ -183,11 +181,12 @@ class ScoreGraph(Label):
     def on_size(self, *args):
         nodes = self.nodes
         if nodes:
-            values = [n.score if n and n.score else 0 for n in nodes]
-            val_range = min(values or [0]), max(values or [0])
+            values = [n.score if n and n.score else math.nan for n in nodes]
+            nn_values = [n.score for n in nodes if n and n.score]
+            val_range = min(nn_values or [0]), max(nn_values or [0])
             scale = math.ceil(max(self.min_scale, max(-val_range[0], val_range[1]) * 1.05))
 
-            xscale = self.width * 0.9 / max(len(values), 20)
+            xscale = self.width * 0.9 / max(len(values) - 1, 15)
             available_height = self.height * (1 - 2 * self.marginy)
             line_points = [[self.pos[0] + self.marginx * self.width + i * xscale, self.pos[1] + available_height / 2 * (1 + val / scale)] for i, val in enumerate(values)]
             self.line_points = sum(line_points, [])
@@ -196,7 +195,10 @@ class ScoreGraph(Label):
 
             if self.highlighted_index is not None:
                 self.highlighted_index = min(self.highlighted_index, len(values) - 1)
-                self.dot_pos = [c - self.highlight_size / 2 for c in line_points[self.highlighted_index]]
+                dot_point = line_points[self.highlighted_index]
+                if math.isnan(dot_point[1]):
+                    dot_point[1] = self.pos[1] + available_height / 2 * (1 + (nn_values or [0])[-1] / scale)
+                self.dot_pos = [c - self.highlight_size / 2 for c in dot_point]
 
     def update_value(self, node):
         index = node.depth

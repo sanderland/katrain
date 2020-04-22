@@ -203,12 +203,12 @@ class KaTrainGui(BoxLayout):
             "q": self.controls.show_children,
             "w": self.controls.eval,
             "e": self.controls.hints,
-            "r": self.controls.policy,
-            "t": self.controls.ownership,
-            "a": ("ai-move",),
-            "s": ("analyze-extra", "extra"),
-            "f": ("analyze-extra", "refine"),
-            "d": ("analyze-extra", "sweep"),
+            "r": self.controls.ownership,
+            "t": self.controls.policy,
+            "enter": ("ai-move",),
+            "a": self.controls.analyze_extra,
+            "s": self.controls.analyze_equalize,
+            "d": self.controls.analyze_sweep,
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),
         }
@@ -220,6 +220,8 @@ class KaTrainGui(BoxLayout):
                 self(*shortcut)
         elif keycode[1] == "tab":
             self.controls.switch_mode()
+        elif keycode[1] in ["`", "~", "p"]:
+            self.controls_box.hidden = not self.controls_box.hidden
         elif keycode[1] in ["up", "z"]:
             self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] in ["down", "x"]:
@@ -241,8 +243,9 @@ class KaTrainGui(BoxLayout):
             try:
                 move_tree = KaTrainSGF.parse(clipboard)
             except Exception as e:
-                self.controls.set_status(f"Failed to imported game from clipboard: {e}")
+                self.controls.set_status(f"Failed to imported game from clipboard: {e}\nClipboard contents: {clipboard[:50]}...")
                 return
+            move_tree.nodes_from_root[-1].analyze(self.engine)  # speed up result for looking at end of game
             self._do_new_game(move_tree=move_tree)
             self("redo", 999)
             self.log("Imported game from clipboard.", OUTPUT_INFO)
@@ -250,6 +253,8 @@ class KaTrainGui(BoxLayout):
 
 
 class KaTrainApp(App):
+    gui = ObjectProperty(None)
+
     def build(self):
         self.icon = "./img/icon.png"
         self.gui = KaTrainGui()

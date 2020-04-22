@@ -11,7 +11,7 @@ class Controls(BoxLayout):
 
     def set_status(self, msg, at_node=None):
         self.status = msg
-        self.status_node = at_node or self.katrain.game and self.parent.game.current_node
+        self.status_node = at_node or self.katrain.game and self.katrain.game.current_node
         self.info.text = msg
         self.update_evaluation()
 
@@ -74,7 +74,6 @@ class Controls(BoxLayout):
             if current_player_is_human_or_both_robots:
                 self.show_evaluation_stats(current_node)
 
-            if current_node.score:
-                self.graph.update_value(current_node)
+            self.graph.update_value(current_node)
 
         self.info.text = info
