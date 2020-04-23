@@ -1,6 +1,6 @@
 {
     "engine": {
-        "katago": "../KataGo/cpp/katago",
+        "katago": "KataGo/katago-bs",
         "model": " models/b15-1.3.2.txt.gz",
         "config": "KataGo/analysis_config.cfg",
         "threads": 8,
@@ -38,7 +38,7 @@
         "balance_random_loss": 1,
         "balance_max_loss": 5,
         "balance_min_visits": 20,
-        "noise_strength": 0.1,
+        "noise_strength": 0.07,
         "eval_off_show_last": 3
     },
     "board_ui": {

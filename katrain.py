@@ -57,8 +57,9 @@ class KaTrainGui(BoxLayout):
             self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
             sys.exit(1)
 
-    def save_config(self, cat, **kwargs):
-        self._config_store.put(cat, **kwargs)
+    def save_config(self):
+        for k,v in self._config.items():
+            self._config_store.put(k,**v)
 
     def config(self, setting, default=None):
         try:

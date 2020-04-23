@@ -147,8 +147,7 @@ class ConfigPopup(QuickConfigGui):
             return
 
         if save_to_file:
-            for cat in updated_cat:
-                self.katrain.save_config(cat, **self.config[cat])
+            self.katrain.save_config()
 
         engine_updates = updated_cat["engine"]
         if "visits" in engine_updates:
