@@ -45,12 +45,12 @@ class Game:
         self.current_node = self.root
         self._init_chains()
 
-        def analyze_game(_dt):
-            self.engine.on_new_game()
-            for node in self.root.nodes_in_tree:
-                node.analyze(self.engine, priority=-1_000_000)
+        Clock.schedule_once(lambda _dt: self.analyze_all_nodes(-1_000_000), -1)  # return faster
 
-        Clock.schedule_once(analyze_game, -1)  # return faster
+    def analyze_all_nodes(self, priority=0):
+        self.engine.on_new_game()
+        for node in self.root.nodes_in_tree:
+            node.analyze(self.engine, priority=priority)
 
     # -- move tree functions --
     def _init_chains(self):
@@ -215,14 +215,13 @@ class Game:
         candidate_ai_moves = cn.candidate_moves
         ai_mode = self.katrain.controls.ai_mode(cn.next_player)
 
-        if "policy" in ai_mode and cn.policy:
+        if ("policy" in ai_mode or "noise" in ai_mode) and cn.policy:
             policy_moves = cn.policy_ranking
-            self.katrain.log(f"Top 5 policy moves are: {policy_moves[:5]}", OUTPUT_DEBUG)
             aimove = policy_moves[0][0]
-        elif "noise" in ai_mode and cn.policy:
-            noise = train_settings["noise_strength"]
-            policy_moves = [(mv, pol + random.gauss(0, noise)) for mv, pol in cn.policy_ranking]
-            aimove = max(policy_moves, key=lambda mp: mp[1])[0]
+            if not aimove.is_pass and "noise" in ai_mode:
+                noise = train_settings["noise_strength"]
+                policy_moves = [(mv, pol + random.gauss(0, noise)) for mv, pol in policy_moves if not mv.is_pass]
+                aimove = max(policy_moves, key=lambda mp: mp[1])[0]
         elif "balance" in ai_mode and candidate_ai_moves[0]["move"] != "pass":  # don't play suicidal to balance score - pass when it's best
             sign = cn.player_sign(cn.next_player)  # TODO check
             sel_moves = [  # top move, or anything not too bad, or anything that makes you still ahead
@@ -231,8 +230,8 @@ class Game:
                 if i == 0
                 or move["visits"] >= train_settings["balance_min_visits"]
                 and (
-                    move["pointsLost"] < train_settings["balance_randomize_score"]
-                    or move["pointsLost"] < train_settings["balance_max_lost"]
+                    move["pointsLost"] < train_settings["balance_random_loss"]
+                    or move["pointsLost"] < train_settings["balance_max_loss"]
                     and sign * move["scoreLead"] > train_settings["balance_target_score"]
                 )
             ]
@@ -240,7 +239,6 @@ class Game:
         elif "jigo" in ai_mode and candidate_ai_moves[0]["move"] != "pass":
             sign = cn.player_sign(cn.next_player)  # TODO check
             jigo_move = min(candidate_ai_moves, key=lambda move: abs(sign * move["scoreLead"] - 0.5))
-            print("NP sign", sign, "JIGO MOVE", jigo_move)
             aimove = Move.from_gtp(jigo_move["move"], player=cn.next_player)
         else:
             if "default" not in ai_mode:
@@ -249,9 +247,9 @@ class Game:
         self.play(aimove)
 
     def analyze_undo(self, node, train_config):
-        if node != self.current_node or node.auto_undo is not None or not node.analysis_ready or not node.single_move:
-            return
         move = node.single_move
+        if node != self.current_node or node.auto_undo is not None or not node.analysis_ready or not move:
+            return
         points_lost = node.points_lost
         thresholds = train_config["eval_thresholds"]
         num_undo_prompts = train_config["num_undo_prompts"]
@@ -264,7 +262,7 @@ class Game:
             undo = False
         elif num_undos < 1:  # probability
             undo = int(node.undo_threshold < num_undos) and len(node.parent.children) == 1
-            xmsg = " (with {num_undos:.0%} probability at this level of mistake)" + xmsg
+            xmsg = f" (with {num_undos:.0%} probability at this level of mistake)" + xmsg
         else:
             undo = len(node.parent.children) <= num_undos
             if len(node.parent.children) == num_undos:
@@ -283,14 +281,14 @@ class Game:
             return
 
         if mode == "extra":
-            visits = cn.analysis["root"]["visits"] + self.engine.config["visits"]
+            visits = cn.analysis["root"]["visits"] + self.engine.config["max_visits"]
             self.katrain.controls.set_status(f"Performing additional analysis to {visits} visits")
-            cn.analyze(self.engine, visits=visits, priority=-1_000)
+            cn.analyze(self.engine, visits=visits, priority=-1_000, time_limit=False)
             return
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
             analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(board_size_x) for y in range(board_size_y) if (x, y) not in stones]
-            visits = int(self.engine.config["visits"] * self.config["sweep_visits_frac"] + 0.5)
+            visits = int(self.engine.config["max_visits"] * self.config["sweep_visits_frac"] + 0.5)
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
             priority = -1_000_000_000
         else:  # mode=='equalize':
@@ -299,4 +297,4 @@ class Game:
             self.katrain.controls.set_status(f"Equalizing analysis of candidate moves to {visits} visits")
             priority = -1_000
         for move in analyze_moves:
-            cn.analyze(self.engine, priority, visits=visits, refine_move=move)
+            cn.analyze(self.engine, priority, visits=visits, refine_move=move, time_limit=False)  # explicitly requested so take as long as you need

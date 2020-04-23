@@ -8,16 +8,17 @@
 [] engine status
 [] README
 [] Release notes
-[] List edit settings/object edit settings?
 [] more AI modes?
+[] P+noise pass not noisy
 
 [] show PV on hint hover?
+
 
 lo prio
 [] more teaching / groups in danger? hard
 [] limit below board buttons somehow to not be too big
 [] box to label ? split in status and comment?
-
+[] List edit settings/object edit settings?
 
 wont do
 [] Self-play tournaments?

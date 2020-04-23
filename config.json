@@ -1,45 +1,123 @@
 {
-  "engine": {
-    "katago": "KataGo/katago-bs",
-    "model": " models/b15-1.3.2.txt.gz",
-    "config": "KataGo/analysis_config.cfg",
-    "threads": 8,
-    "visits": 500,
-    "enable_ownership": true
-  },
-  "files": {
-    "sgf_load": "~/Downloads",
-    "sgf_save": "./sgfout"
-  },
-  "game": {
-    "init_size": 19,
-    "init_komi": {"19": 6.5},
-    "sweep_visits_frac": 0.05
-  },
-  "trainer": {
-    "num_undo_prompts": [1,1,1,0.5,0],
-    "eval_thresholds": [12,6,3,1.5,0.5],
-    "balance_target_score": 2,
-    "balance_randomize_score": 1,
-    "balance_max_lost": 5,
-    "balance_min_visits": 20,
-    "noise_strength": 0.05,
-    "eval_off_show_last": 3
-  },
-  "board_ui": {
-    "starpoint_size": 0.1,
-    "stone_size": 0.475,
-    "eval_dot_max_size": 0.5,
-    "stones": {"B":  [0.05, 0.05, 0.05], "W": [0.95, 0.95, 0.95] },
-    "outline": {"B":  [0.3,0.3,0.3,0.5], "W": [0.7, 0.7, 0.7,0.5] },
-    "ghost_alpha": 0.5,
-    "top_move_x_alpha": 0.3,
-    "_child_scale": 0.95,
-    "eval_colors": [[0.447, 0.129, 0.42], [0.8, 0, 0], [0.9,0.4,0.1], [0.85, 0.89, 0.30], [0.67, 0.9, 0.18], [0.117, 0.588, 0]],
-    "line_color": [0,0,0],
-    "policy_color": [0,0.2,0.8]
-  },
-  "debug": {
-    "level": 2
-  }
+    "engine": {
+        "katago": "../KataGo/cpp/katago",
+        "model": " models/b15-1.3.2.txt.gz",
+        "config": "KataGo/analysis_config.cfg",
+        "threads": 8,
+        "max_visits": 500,
+        "max_time": 3.0,
+        "enable_ownership": true
+    },
+    "files": {
+        "sgf_load": "~/Downloads",
+        "sgf_save": "./sgfout"
+    },
+    "game": {
+        "init_size": 19,
+        "init_komi": {
+            "19": 6.5
+        },
+        "sweep_visits_frac": 0.05
+    },
+    "trainer": {
+        "num_undo_prompts": [
+            1,
+            1,
+            1,
+            0.5,
+            0
+        ],
+        "eval_thresholds": [
+            12,
+            6,
+            3,
+            1.5,
+            0.5
+        ],
+        "balance_target_score": 2,
+        "balance_random_loss": 1,
+        "balance_max_loss": 5,
+        "balance_min_visits": 20,
+        "noise_strength": 0.1,
+        "eval_off_show_last": 3
+    },
+    "board_ui": {
+        "starpoint_size": 0.1,
+        "stone_size": 0.475,
+        "eval_dot_max_size": 0.5,
+        "stones": {
+            "B": [
+                0.05,
+                0.05,
+                0.05
+            ],
+            "W": [
+                0.95,
+                0.95,
+                0.95
+            ]
+        },
+        "outline": {
+            "B": [
+                0.3,
+                0.3,
+                0.3,
+                0.5
+            ],
+            "W": [
+                0.7,
+                0.7,
+                0.7,
+                0.5
+            ]
+        },
+        "ghost_alpha": 0.5,
+        "top_move_x_alpha": 0.3,
+        "_child_scale": 0.95,
+        "eval_colors": [
+            [
+                0.447,
+                0.129,
+                0.42
+            ],
+            [
+                0.8,
+                0,
+                0
+            ],
+            [
+                0.9,
+                0.4,
+                0.1
+            ],
+            [
+                0.85,
+                0.89,
+                0.3
+            ],
+            [
+                0.67,
+                0.9,
+                0.18
+            ],
+            [
+                0.117,
+                0.588,
+                0
+            ]
+        ],
+        "line_color": [
+            0,
+            0,
+            0
+        ],
+        "policy_color": [
+            0,
+            0.2,
+            0.8
+        ]
+    },
+    "debug": {
+        "level": 2
+    }
 }

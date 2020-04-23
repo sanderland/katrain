@@ -49,22 +49,23 @@ class Controls(BoxLayout):
 
         if current_node:
             move = current_node.single_move
-            current_player_is_human_or_both_robots = (
-                not current_node.player or "ai" not in self.player_mode(current_node.player) or "ai" in self.player_mode(current_node.next_player)
-            )
-            if current_player_is_human_or_both_robots and not current_node.is_root and move:
-                info += current_node.comment(eval=True, hints=self.hints.active)
+            next_player_is_human_or_both_robots = current_node.player and ("ai" not in self.player_mode(current_node.player) or "ai" in self.player_mode(current_node.next_player))
+            current_player_is_ai_playing_human = current_node.player and "ai" in self.player_mode(current_node.player) and "ai" not in self.player_mode(current_node.next_player)
+            if next_player_is_human_or_both_robots and not current_node.is_root and move:
+                info += current_node.comment(teach="undo" in self.player_mode(current_node.player), hints=self.hints.active)
+            elif current_player_is_ai_playing_human:
+                info += current_node.parent.comment(teach="undo" in self.player_mode(current_node.next_player), hints=self.hints.active)
 
             if current_node.analysis_ready:
                 self.score.text = current_node.format_score()
                 self.win_rate.text = current_node.format_win_rate()
-                if move and current_player_is_human_or_both_robots:  # don't immediately hide this when an ai moves comes in
-                    self.points_lost.label = f"Point loss {move.player}{move.gtp()}"
+                if move and next_player_is_human_or_both_robots:  # don't immediately hide this when an ai moves comes in
+                    self.score_change.label = f"Score change"
                     points_lost = current_node.points_lost
-                    self.points_lost.text = f"{current_node.points_lost:.1f}" if points_lost else "..."
-            else:
-                self.points_lost.label = f"Point loss"
-                self.points_lost.text = ""
+                    self.score_change.text = f"{move.player}{-current_node.points_lost:+.1f}" if points_lost else "..."
+                elif not current_player_is_ai_playing_human:
+                    self.score_change.label = f"Score change"
+                    self.score_change.text = ""
 
             self.graph.update_value(current_node)
 

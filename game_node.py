@@ -29,8 +29,8 @@ class GameNode(SGFNode):
         return properties
 
     # various analysis functions
-    def analyze(self, engine, priority=0, visits=None, refine_move=None):
-        engine.request_analysis(self, lambda result: self.set_analysis(result, refine_move), priority=priority, visits=visits, next_move=refine_move)
+    def analyze(self, engine, priority=0, visits=None, time_limit=True, refine_move=None):
+        engine.request_analysis(self, lambda result: self.set_analysis(result, refine_move), priority=priority, visits=visits, time_limit=time_limit, next_move=refine_move)
 
     def update_move_analysis(self, move_analysis, move_gtp):
         cur = self.analysis["moves"].get(move_gtp)
@@ -61,13 +61,12 @@ class GameNode(SGFNode):
         win_rate = win_rate or self.analysis["root"]["winrate"]
         return f"{'B' if win_rate > 0.5 else 'W'} {max(win_rate,1-win_rate):.1%}"
 
-    def comment(self, sgf=False, eval=False, hints=False):
+    def comment(self, sgf=False, teach=False, hints=False):
         single_move = self.single_move
         if not self.parent or not single_move:  # root
             return ""
 
         text = f"Move {self.depth}: {single_move.player} {single_move.gtp()}\n"
-
         if self.analysis_ready:
             score = self.score
             if sgf:
@@ -82,15 +81,15 @@ class GameNode(SGFNode):
                             text += f"Estimated point loss: {points_lost:.1f}\n"
                     else:
                         text += f"Move was predicted best move.\n"
-                if sgf or hints:
+                if sgf or hints or teach:
                     policy_ranking = self.parent.policy_ranking
                     policy_ix = [ix + 1 for (m, p), ix in zip(policy_ranking, range(len(policy_ranking))) if m == single_move]
                     if policy_ix:
                         text += f"Move was #{policy_ix[0]} according to policy.\n"
-                    if not policy_ix or policy_ix[0] != 1:
+                    if not policy_ix or policy_ix[0] != 1 and (sgf or hints):
                         text += f"Top policy move was {policy_ranking[0][0].gtp()}.\n"
-            if self.auto_undo:
-                text += "Move was automatically undone."
+            if self.auto_undo and sgf:
+                text += "Move was automatically undone in teaching mode."
         else:
             text = "No analysis available" if sgf else "Analyzing move..."
         return text

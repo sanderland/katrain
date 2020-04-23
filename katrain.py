@@ -79,11 +79,11 @@ class KaTrainGui(BoxLayout):
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
         self._do_new_game()
 
-    def update_state(self, redraw_board=False):
+    def update_state(self, redraw_board=False):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
         auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
-        if auto_undo and cn.analysis_ready:
+        if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready:
             self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
 
         if cn.analysis_ready and "ai" in self.controls.player_mode(cn.next_player) and not cn.children and not self.game.game_ended and not (auto_undo and cn.auto_undo is None):
@@ -91,7 +91,7 @@ class KaTrainGui(BoxLayout):
 
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
-        top, bot = self.board_controls.black_prisoners, self.board_controls.white_prisoners
+        top, bot = self.board_controls.black_prisoners.__self__, self.board_controls.white_prisoners.__self__  # no weakref
         if self.game.next_player == "W":
             top, bot = bot, top
         self.board_controls.mid_circles_container.clear_widgets()
@@ -99,8 +99,6 @@ class KaTrainGui(BoxLayout):
         self.board_controls.mid_circles_container.add_widget(top)
         self.board_controls.black_prisoners.text = str(prisoners[1])
         self.board_controls.white_prisoners.text = str(prisoners[0])
-
-        # Update board and status
         if redraw_board:
             Clock.schedule_once(self.board_gui.draw_board, -1)  # main thread needs to do this
         Clock.schedule_once(self.board_gui.draw_board_contents, -1)
@@ -114,10 +112,10 @@ class KaTrainGui(BoxLayout):
                 if game != self.game.game_id:
                     self.log(f"Message skipped as it is outdated (current game is {self.game.game_id}", OUTPUT_EXTRA_DEBUG)
                     continue
-                getattr(self, f"_do_{msg.replace('-','_')}")(*args)  # TODO update state?
+                getattr(self, f"_do_{msg.replace('-','_')}")(*args)
+                self.update_state()
             except Exception as e:
-                self.log(f"Exception in Engine thread: {e}", OUTPUT_ERROR)
-                raise
+                self.log(f"Exception in processing message {msg} {args}: {e}", OUTPUT_ERROR)
 
     def __call__(self, message, *args):
         if self.game:
@@ -127,31 +125,26 @@ class KaTrainGui(BoxLayout):
         self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree)
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
         self.controls.graph.initialize_from_game(self.game.root)
-        self.update_state(redraw_board=True)  # TODO: just board here/redraw is in all anyway?
+        self.update_state(redraw_board=True)
 
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
             self.game.ai_move(self.config("trainer"))
-            self.update_state()
 
     def _do_undo(self, n_times=1):
         self.game.undo(n_times)
-        self.update_state()
 
     def _do_redo(self, n_times=1):
         self.game.redo(n_times)
-        self.update_state()
 
     def _do_switch_branch(self, direction):
         self.game.switch_branch(direction)
-        self.update_state()
 
     def _do_play(self, coords):
         try:
             self.game.play(Move(coords, player=self.game.next_player))
         except IllegalMoveException as e:
             self.controls.set_status(f"Illegal Move: {str(e)}")
-        self.update_state()
 
     def _do_analyze_extra(self, mode):
         self.game.analyze_extra(mode)
@@ -190,7 +183,7 @@ class KaTrainGui(BoxLayout):
         for pl in Move.PLAYERS:
             if not self.game.root.get_first(f"P{pl}"):
                 _, model_file = os.path.split(self.engine.config["model"])
-                self.game.root.properties[f"P{pl}"] = [f"KaTrain (KataGo {model_file})" if "ai" in self.controls.player_mode(pl) else "Player"]
+                self.game.root.properties[f"P{pl}"] = [f"KaTrain (KataGo {model_file})" if "ai" in self.controls.player_mode(pl) else "Player"]  # TODO: more dynamic?
         msg = self.game.write_sgf(self.config("files/sgf_save"))
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)

@@ -91,7 +91,7 @@ class KataGoEngine:
             self.katago_process.stdin.flush()
 
     def request_analysis(
-        self, analysis_node: GameNode, callback: Callable, visits: int = None, priority: int = 0, ownership: Optional[bool] = None, next_move=None,
+        self, analysis_node: GameNode, callback: Callable, visits: int = None, time_limit=True, priority: int = 0, ownership: Optional[bool] = None, next_move=None,
     ):
         moves = [m for node in analysis_node.nodes_from_root for m in node.move_with_placements]
         if next_move:
@@ -103,13 +103,14 @@ class KataGoEngine:
             "rules": self.get_rules(analysis_node),
             "priority": self.base_priority + priority,
             "analyzeTurns": [len(moves)],
-            "maxVisits": visits or self.config["visits"],
+            "maxVisits": visits or self.config["max_visits"],
             "komi": analysis_node.komi,
             "boardXSize": size_x,
             "boardYSize": size_y,
             "includeOwnership": ownership,
             "includePolicy": not next_move,
             "moves": [[m.player, m.gtp()] for m in moves],
+            "overrideSettings": {"maxTime": self.config["max_time"] if time_limit else 1000.0}
             # "overrideSettings": {"playoutDoublingAdvantage": 3.0, "playoutDoublingAdvantagePla":  'BLACK' if not moves or moves[-1].player == 'W' else "WHITE"}
         }
         self.send_query(query, callback)

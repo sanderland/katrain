@@ -153,12 +153,15 @@ class ConfigPopup(QuickConfigGui):
         engine_updates = updated_cat["engine"]
         if "visits" in engine_updates:
             self.katrain.engine.visits = engine_updates["visits"]
-        if set(engine_updates) != {"visits"}:
+        if {key for key in engine_updates if key not in {"max_visits", "max_time"}}:
             self.katrain.log(f"Restarting Engine after {engine_updates} settings change")
             self.katrain.controls.set_status(f"Restarting Engine after {engine_updates} settings change")
             old_engine = self.katrain.engine
             self.katrain.engine = KataGoEngine(self.katrain, self.config["engine"])
             self.katrain.game.engine = self.katrain.engine
-            old_engine.shutdown(finish=True)
+            if getattr(old_engine, "katago_process"):
+                old_engine.shutdown(finish=True)
+            else:
+                self.katrain.game.analyze_all_nodes()  # old engine was broken, so make sure we redo any failures
 
         self.katrain.update_state(redraw_board=True)
