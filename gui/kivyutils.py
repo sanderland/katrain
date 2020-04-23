@@ -1,18 +1,16 @@
+import json
 import math
 import random
+import re
 
 from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
 from kivy.graphics import *
-from kivy.properties import BooleanProperty, StringProperty, NumericProperty, ListProperty, ObjectProperty
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.behaviors import ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
-import re
-
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
-from kivy.uix.dropdown import DropDown
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
@@ -20,6 +18,10 @@ from kivy.uix.textinput import TextInput
 
 
 class DarkLabel(Label):
+    pass
+
+
+class ScaledLightLabel(DarkLabel):
     pass
 
 
@@ -97,6 +99,14 @@ class LabelledTextInput(TextInput):
     @property
     def input_value(self):
         return self.text
+
+
+class LabelledObjectInputArea(LabelledTextInput):
+    multiline = BooleanProperty(True)
+
+    @property
+    def input_value(self):
+        return json.loads(self.text.replace("'", '"').replace("True", "true").replace("False", "false"))
 
 
 class LabelledCheckBox(CheckBox):
@@ -201,10 +211,14 @@ class ScoreGraph(Label):
                 self.dot_pos = [c - self.highlight_size / 2 for c in dot_point]
 
     def update_value(self, node):
-        index = node.depth
+        self.highlighted_index = index = node.depth
         self.nodes.extend([None] * max(0, index - (len(self.nodes) - 1)))
         self.nodes[index] = node
-        self.highlighted_index = index
+        if index + 1 < len(self.nodes) and (node is None or self.nodes[index + 1] not in node.children):
+            self.nodes = self.nodes[:index]  # on branch switching, don't show history from other branch
+            while node.children:  # but from this one if it exists
+                node = node.children[0]
+                self.nodes.append(node)
         self.on_size()
 
 

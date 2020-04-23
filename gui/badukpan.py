@@ -6,9 +6,9 @@ from kivy.properties import ListProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 
-from constants import OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG
-from gui.kivyutils import draw_circle, draw_text
+from constants import OUTPUT_DEBUG
 from game import Move
+from gui.kivyutils import draw_circle, draw_text
 
 
 class BadukPanWidget(Widget):
@@ -172,7 +172,7 @@ class BadukPanWidget(Widget):
                         drawn_stone[m.coords] = m.player
                         self.draw_stone(m.coords[0], m.coords[1], stone_color[m.player], outline_color[m.player], inner, evalcol, evalsize)
 
-            if katrain.game.current_node.is_root and katrain.config("debug/level") >= OUTPUT_EXTRA_DEBUG:
+            if katrain.game.current_node.is_root and katrain.config("debug/level") >= 3: # secret ;)
                 for s in range(0, 19):
                     c = s
                     evalcol = self.eval_color(s)

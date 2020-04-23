@@ -2,16 +2,22 @@ from collections import defaultdict
 
 from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
-import os
-from constants import OUTPUT_DEBUG, OUTPUT_ERROR
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
 
+from constants import OUTPUT_DEBUG, OUTPUT_ERROR
 from engine import KataGoEngine
 from game import Game, GameNode
-from gui.kivyutils import LabelledFloatInput, LabelledIntInput, LabelledTextInput, StyledButton, LabelledCheckBox, LabelledSpinner
+from gui.kivyutils import (
+    LabelledCheckBox,
+    LabelledFloatInput,
+    LabelledIntInput,
+    LabelledObjectInputArea,
+    LabelledSpinner,
+    LabelledTextInput,
+    ScaledLightLabel,
+    StyledButton,
+)
 
 
 class InputParseError(Exception):
@@ -80,6 +86,8 @@ class ConfigPopup(QuickConfigGui):
             return LabelledCheckBox
         elif isinstance(value, int):
             return LabelledIntInput
+        if isinstance(value, dict):
+            return LabelledObjectInputArea
         else:
             return LabelledTextInput
 
@@ -93,15 +101,15 @@ class ConfigPopup(QuickConfigGui):
     def _build(self, _):
         cols = [BoxLayout(orientation="vertical"), BoxLayout(orientation="vertical")]
         props_in_col = [0, 0]
-        for k1, all_d in self.config.items():
+        for k1, all_d in sorted(self.config.items(), key=lambda tup: -len(tup[1])):  # sort to make greedy bin packing work better
             if k1 in self.ignore_cats:
                 continue
-            d = {k: v for k, v in all_d.items() if isinstance(v, (int, float, str, bool))}  # no complex objects
+            d = {k: v for k, v in all_d.items() if isinstance(v, (int, float, str, bool))}  # no lists . dict could be supported but hard to scale
             cat = GridLayout(cols=2, rows=len(d) + 1, size_hint=(1, len(d) + 1))
             cat.add_widget(Label(text=""))
-            cat.add_widget(Label(text=f"{k1} settings", bold=True))
+            cat.add_widget(ScaledLightLabel(text=f"{k1} settings", bold=True))
             for k2, v in d.items():
-                cat.add_widget(Label(text=f"{k2}:"))
+                cat.add_widget(ScaledLightLabel(text=f"{k2}:"))
                 cat.add_widget(self.type_to_widget_class(v)(text=str(v), input_property=f"{k1}/{k2}"))
             if props_in_col[0] <= props_in_col[1]:
                 cols[0].add_widget(cat)
@@ -142,16 +150,15 @@ class ConfigPopup(QuickConfigGui):
             for cat in updated_cat:
                 self.katrain.save_config(cat, **self.config[cat])
 
-        engine_restart = False
-        for cat, updates in updated_cat.items():
-            if "engine" in cat:  # TODO: multi engine support
-                if "visits" in updates:
-                    self.katrain.engine.visits = self.config[cat]["visits"]
-                if set(updates) != {"visits"}:
-                    self.katrain.log(f"Restarting Engine {cat} after {updates} settings change")
-                    old_engine = self.katrain.engine
-                    self.katrain.engine = KataGoEngine(self.katrain, self.config[cat])
-                    self.katrain.game.engine = self.katrain.engine
-                    old_engine.shutdown(finish=True)
+        engine_updates = updated_cat["engine"]
+        if "visits" in engine_updates:
+            self.katrain.engine.visits = engine_updates["visits"]
+        if set(engine_updates) != {"visits"}:
+            self.katrain.log(f"Restarting Engine after {engine_updates} settings change")
+            self.katrain.controls.set_status(f"Restarting Engine after {engine_updates} settings change")
+            old_engine = self.katrain.engine
+            self.katrain.engine = KataGoEngine(self.katrain, self.config["engine"])
+            self.katrain.game.engine = self.katrain.engine
+            old_engine.shutdown(finish=True)
 
         self.katrain.update_state(redraw_board=True)

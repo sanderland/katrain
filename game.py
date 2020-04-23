@@ -39,7 +39,7 @@ class Game:
                 self.place_handicap_stones(handicap)
         else:
             board_size = config["init_size"]
-            self.komi = self.config.get(f"komi_{board_size}", 6.5)
+            self.komi = self.config["init_komi"].get(str(board_size), 6.5)
             self.root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}})
 
         self.current_node = self.root
@@ -240,7 +240,7 @@ class Game:
         elif "jigo" in ai_mode and candidate_ai_moves[0]["move"] != "pass":
             sign = cn.player_sign(cn.next_player)  # TODO check
             jigo_move = min(candidate_ai_moves, key=lambda move: abs(sign * move["scoreLead"] - 0.5))
-            print("NP sign",sign,"JIGO MOVE",jigo_move)
+            print("NP sign", sign, "JIGO MOVE", jigo_move)
             aimove = Move.from_gtp(jigo_move["move"], player=cn.next_player)
         else:
             if "default" not in ai_mode:

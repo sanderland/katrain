@@ -13,9 +13,7 @@
   },
   "game": {
     "init_size": 19,
-    "komi_19": 6.5,
-    "komi_13": 6.5,
-    "komi_9": 6.5,
+    "init_komi": {"19": 6.5},
     "sweep_visits_frac": 0.05
   },
   "trainer": {

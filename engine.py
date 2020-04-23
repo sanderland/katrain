@@ -38,7 +38,7 @@ class KataGoEngine:
             self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
         except FileNotFoundError:
             self.katrain.log(
-                f"Starting kata with command '{self.command}' failed. If you are on Mac or Linux, please edit configuration file (config.json) to point to the correct KataGo executable.",
+                f"Starting kata with command '{self.command}' failed. If you are on Mac or Linux, please change the settings or configuration file (config.json) to point to the correct KataGo executable.",
                 OUTPUT_ERROR,
             )
 
@@ -47,10 +47,10 @@ class KataGoEngine:
         self.queries = {}
 
     def shutdown(self, finish=False):
-        if finish:
-            while self.queries:
-                time.sleep(0.1)
         process = getattr(self, "katago_process")
+        if finish and process:
+            while self.queries and process.poll() is None:
+                time.sleep(0.1)
         if process:
             process.terminate()
             self.katago_process = None
@@ -71,7 +71,9 @@ class KataGoEngine:
             elif analysis["id"] in self.queries:
                 callback, start_time = self.queries[analysis["id"]]
                 time_taken = time.time() - start_time
-                self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}   {line[:80]}...", OUTPUT_DEBUG)
+                self.katrain.log(
+                    f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}   {line[:80]}...", OUTPUT_DEBUG,
+                )
                 callback(analysis)
                 del self.queries[analysis["id"]]
                 self.katrain.update_state()
@@ -88,7 +90,9 @@ class KataGoEngine:
             self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
             self.katago_process.stdin.flush()
 
-    def request_analysis(self, analysis_node: GameNode, callback: Callable, visits: int = None, priority: int = 0, ownership: Optional[bool] = None, next_move=None):
+    def request_analysis(
+        self, analysis_node: GameNode, callback: Callable, visits: int = None, priority: int = 0, ownership: Optional[bool] = None, next_move=None,
+    ):
         moves = [m for node in analysis_node.nodes_from_root for m in node.move_with_placements]
         if next_move:
             moves.append(next_move)
@@ -106,5 +110,6 @@ class KataGoEngine:
             "includeOwnership": ownership,
             "includePolicy": not next_move,
             "moves": [[m.player, m.gtp()] for m in moves],
+            # "overrideSettings": {"playoutDoublingAdvantage": 3.0, "playoutDoublingAdvantagePla":  'BLACK' if not moves or moves[-1].player == 'W' else "WHITE"}
         }
         self.send_query(query, callback)

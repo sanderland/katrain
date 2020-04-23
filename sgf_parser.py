@@ -3,7 +3,6 @@ import re
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-
 # TODO: handle AE ?
 # https://www.red-bean.com/sgf/properties.html
 

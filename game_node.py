@@ -2,7 +2,7 @@ import copy
 import random
 from typing import Dict, List, Optional
 
-from sgf_parser import SGFNode, Move
+from sgf_parser import Move, SGFNode
 
 
 class GameNode(SGFNode):

@@ -212,7 +212,6 @@ class KaTrainGui(BoxLayout):
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),
         }
-        print(keycode)
         if keycode[1] in shortcuts.keys():
             shortcut = shortcuts[keycode[1]]
             if isinstance(shortcut, Widget):
