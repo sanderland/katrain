@@ -1,15 +1,16 @@
 # KaTrain v1.0
 
-This repository contains  tool for analyzing and playing go with AI feedback.
-The idea is to give immediate feedback on the many large mistakes we make in terms of inefficient moves.
-It is based on the KataGo AI and relies heavily on score estimation rather than win rate.
+This repository contains  tool for analyzing and playing go with AI feedback from KataGo.
+
+The original idea was to give immediate feedback on the many large mistakes we make in terms of inefficient moves,
+but has since grown to include a wide range of features.
 
 Some uses include:
 
 * Review your games to find the moves that were most costly in terms of points lost.
 * Play against AI and get immediate feedback on mistakes with option to retry.
+* Play against weakened versions of AI.
 * Play against a stronger player and use the retry option instead of handicap stones.
-* Play a match with an evenly matched friend where both players get instant feedback.
 
 ![screenshot](https://imgur.com/t3Im6Xu.png)
 
@@ -19,8 +20,8 @@ Some uses include:
 
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/distribution/#download-section). 
-* Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file.
-* Execute the command 'pip install kivy'
+* Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
+* Execute the command `pip install kivy_deps.glew kivy_deps.sdl2 kivy_deps.gstreamer kivy`
 * Start the app by running `python katrain.py` in the directory where you downloaded the scripts. Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
 
 ### Installation for Linux/Mac users
