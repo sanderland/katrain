@@ -115,6 +115,7 @@ class LabelledCheckBox(CheckBox):
     def __init__(self, text=None, **kwargs):
         if text is not None:
             kwargs["active"] = bool(text)
+        print("CB", text, kwargs)
         super().__init__(**kwargs)
 
     @property
@@ -209,6 +210,7 @@ class ScoreGraph(Label):
                 if math.isnan(dot_point[1]):
                     dot_point[1] = self.pos[1] + available_height / 2 * (1 + (nn_values or [0])[-1] / scale)
                 self.dot_pos = [c - self.highlight_size / 2 for c in dot_point]
+            print("Graph updated to ", len(line_points), "points, hl=", self.highlighted_index, self.dot_pos)
 
     def update_value(self, node):
         self.highlighted_index = index = node.depth

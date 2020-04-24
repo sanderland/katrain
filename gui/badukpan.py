@@ -6,9 +6,10 @@ from kivy.properties import ListProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 
-from constants import OUTPUT_DEBUG
+from common import OUTPUT_DEBUG
 from game import Move
 from gui.kivyutils import draw_circle, draw_text
+from common import var_to_grid
 
 
 class BadukPanWidget(Widget):
@@ -28,6 +29,9 @@ class BadukPanWidget(Widget):
         return sorted([(abs(p - pos), i) for i, p in enumerate(gridpos)])[0]
 
     def on_touch_down(self, touch):
+        if touch.button != "left":
+            return
+
         if not self.gridpos_x:
             return
         xd, xp = self._find_closest(touch.x, self.gridpos_x)
@@ -44,6 +48,9 @@ class BadukPanWidget(Widget):
         return self.on_touch_down(touch)
 
     def on_touch_up(self, touch):
+        if touch.button != "left":
+            return
+
         if not self.gridpos_x:
             return
         katrain = self.katrain
@@ -199,22 +206,22 @@ class BadukPanWidget(Widget):
             policy = current_node.policy
             if not policy and current_node.parent and current_node.parent.policy and "ai" in katrain.controls.player_mode("B") and "ai" in katrain.controls.player_mode("W"):
                 policy = current_node.parent.policy  # in the case of AI self-play we allow the policy to be one step out of date
+
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
             if katrain.controls.policy.active and policy:
-                ix = 0
+                policy_grid = var_to_grid(policy, [board_size_x, board_size_y])
                 best_move_policy = max(*policy)
                 for y in range(board_size_y - 1, -1, -1):
                     for x in range(board_size_x):
-                        if policy[ix] > 0:
-                            polsize = math.sqrt(policy[ix])
+                        if policy_grid[y][x] > 0:
+                            polsize = math.sqrt(policy_grid[y][x])
                             policy_circle_color = (
                                 *self.ui_config["policy_color"],
-                                self.ui_config["ghost_alpha"] + self.ui_config["top_move_x_alpha"] * (policy[ix] == best_move_policy),
+                                self.ui_config["ghost_alpha"] + self.ui_config["top_move_x_alpha"] * (policy_grid[y][x] == best_move_policy),
                             )
                             self.draw_stone(x, y, policy_circle_color, scale=polsize)
-                        ix = ix + 1
-                polsize = math.sqrt(policy[ix])
+                polsize = math.sqrt(policy[-1])
                 with pass_btn.canvas.after:
                     draw_circle((pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2), polsize * pass_btn.height / 2, self.ui_config["policy_color"])
 

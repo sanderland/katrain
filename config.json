@@ -1,10 +1,10 @@
 {
     "engine": {
-        "katago": "KataGo/katago-bs",
+        "katago": "../KataGo/cpp/katago",
         "model": " models/b15-1.3.2.txt.gz",
         "config": "KataGo/analysis_config.cfg",
         "threads": 8,
-        "max_visits": 500,
+        "max_visits": 5,
         "max_time": 3.0,
         "enable_ownership": true
     },
@@ -34,12 +34,17 @@
             1.5,
             0.5
         ],
+        "eval_off_show_last": 3
+    },
+    "ai": {
         "balance_target_score": 2,
         "balance_random_loss": 1,
         "balance_max_loss": 5,
         "balance_min_visits": 20,
-        "noise_strength": 0.07,
-        "eval_off_show_last": 3
+        "noise_strength": 0.8,
+        "pick_n": 10,
+        "pick_frac": 0.2,
+        "local_stddev": 10
     },
     "board_ui": {
         "starpoint_size": 0.1,
@@ -112,7 +117,7 @@
             0
         ],
         "policy_color": [
-            0,
+            0.9,
             0.2,
             0.8
         ]

@@ -5,7 +5,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 
-from constants import OUTPUT_DEBUG, OUTPUT_ERROR
+from common import OUTPUT_DEBUG, OUTPUT_ERROR
 from engine import KataGoEngine
 from game import Game, GameNode
 from gui.kivyutils import (

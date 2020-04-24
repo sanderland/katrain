@@ -6,7 +6,7 @@ import threading
 import time
 from typing import Callable, Optional
 
-from constants import OUTPUT_DEBUG, OUTPUT_ERROR
+from common import OUTPUT_DEBUG, OUTPUT_ERROR
 from game_node import GameNode
 
 
@@ -66,10 +66,17 @@ class KataGoEngine:
             if not line:
                 continue
             analysis = json.loads(line)
+            if analysis["id"] in self.queries:
+                callback, start_time, next_move = self.queries[analysis["id"]]
+            else:
+                self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
+                continue
             if "error" in analysis:
-                self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
-            elif analysis["id"] in self.queries:
-                callback, start_time = self.queries[analysis["id"]]
+                if not (next_move is None and "Illegal move" in analysis["error"]):  # sweep
+                    self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
+                continue
+            else:
+                callback, start_time, next_move = self.queries[analysis["id"]]
                 time_taken = time.time() - start_time
                 self.katrain.log(
                     f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}   {line[:80]}...", OUTPUT_DEBUG,
@@ -77,14 +84,12 @@ class KataGoEngine:
                 callback(analysis)
                 del self.queries[analysis["id"]]
                 self.katrain.update_state()
-            else:
-                self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
 
-    def send_query(self, query, callback):
+    def send_query(self, query, callback, next_move):
         self.query_counter += 1
         if "id" not in query:
             query["id"] = f"QUERY:{str(self.query_counter)}"
-        self.queries[query["id"]] = (callback, time.time())
+        self.queries[query["id"]] = (callback, time.time(), next_move)
         if self.katago_process:
             self.katrain.log(f"Sending query {query['id']}: {str(query)}", OUTPUT_DEBUG)
             self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
@@ -113,4 +118,4 @@ class KataGoEngine:
             "overrideSettings": {"maxTime": self.config["max_time"] if time_limit else 1000.0}
             # "overrideSettings": {"playoutDoublingAdvantage": 3.0, "playoutDoublingAdvantagePla":  'BLACK' if not moves or moves[-1].player == 'W' else "WHITE"}
         }
-        self.send_query(query, callback)
+        self.send_query(query, callback, next_move)

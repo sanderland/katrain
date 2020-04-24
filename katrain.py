@@ -1,20 +1,23 @@
+from kivy.config import Config  # isort:skip
+
+Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
+
 import os
 import signal
 import sys
 import threading
+import traceback
 from queue import Queue
 
 from kivy.app import App
-from kivy.clock import Clock
 from kivy.core.clipboard import Clipboard
 from kivy.core.window import Window
-from kivy.lang import Builder
 from kivy.storage.jsonstore import JsonStore
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 
-from constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO
+from ai import ai_move
+from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO
 from engine import KataGoEngine
 from game import Game, IllegalMoveException, KaTrainSGF, Move
 from gui import *
@@ -58,8 +61,8 @@ class KaTrainGui(BoxLayout):
             sys.exit(1)
 
     def save_config(self):
-        for k,v in self._config.items():
-            self._config_store.put(k,**v)
+        for k, v in self._config.items():
+            self._config_store.put(k, **v)
 
     def config(self, setting, default=None):
         try:
@@ -117,6 +120,7 @@ class KaTrainGui(BoxLayout):
                 self.update_state()
             except Exception as e:
                 self.log(f"Exception in processing message {msg} {args}: {e}", OUTPUT_ERROR)
+                traceback.print_exc()
 
     def __call__(self, message, *args):
         if self.game:
@@ -130,7 +134,7 @@ class KaTrainGui(BoxLayout):
 
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
-            self.game.ai_move(self.config("trainer"))
+            ai_move(self.game, self.config("ai"))
 
     def _do_undo(self, n_times=1):
         self.game.undo(n_times)
@@ -184,7 +188,9 @@ class KaTrainGui(BoxLayout):
         for pl in Move.PLAYERS:
             if not self.game.root.get_first(f"P{pl}"):
                 _, model_file = os.path.split(self.engine.config["model"])
-                self.game.root.properties[f"P{pl}"] = [f"KaTrain (KataGo {model_file})" if "ai" in self.controls.player_mode(pl) else "Player"]  # TODO: more dynamic?
+                self.game.root.properties[f"P{pl}"] = [
+                    f"AI {self.controls.ai_mode(pl)} (KataGo { os.path.splitext(model_file)[0]})" if "ai" in self.controls.player_mode(pl) else "Player"
+                ]  # TODO: more dynamic?
         msg = self.game.write_sgf(self.config("files/sgf_save"))
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)

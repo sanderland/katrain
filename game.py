@@ -1,13 +1,14 @@
 import math
 import os
 import random
+import re
 import time
 from datetime import datetime
 from typing import List
 
 from kivy.clock import Clock
 
-from constants import OUTPUT_DEBUG, OUTPUT_INFO
+from common import OUTPUT_DEBUG, OUTPUT_INFO
 from game_node import GameNode
 from sgf_parser import SGF, Move
 
@@ -200,51 +201,41 @@ class Game:
         return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
     def write_sgf(self, path=None):
-        file_name = os.path.join(path, f"katrain_{self.game_id}.sgf")
+        black = re.sub(r"['<>:\"/\\|?*]", "", self.root.get_first("PB"))
+        white = re.sub(r"['<>:\"/\\|?*]", "", self.root.get_first("PW"))
+        white = self.root.get_first("PW")
+        game_name = f"katrain_{black} vs {white} {self.game_id}"
+        file_name = os.path.join(path, f"{game_name}.sgf")
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
         with open(file_name, "w") as f:
             f.write(self.root.sgf())
         return f"SGF with analysis written to {file_name}"
 
-    def ai_move(self, train_settings):
+    def analyze_extra(self, mode):
+        stones = {s.coords for s in self.stones}
         cn = self.current_node
-        while not cn.analysis_ready:
-            self.katrain.controls.set_status("Thinking...")  # TODO: non blocking somehow?
-            time.sleep(0.01)
-        # select move
-        candidate_ai_moves = cn.candidate_moves
-        ai_mode = self.katrain.controls.ai_mode(cn.next_player)
+        if not cn.analysis:
+            self.katrain.controls.set_status("Wait for initial analysis to complete before doing a board-sweep or refinement", self.current_node)
+            return
 
-        if ("policy" in ai_mode or "noise" in ai_mode) and cn.policy:
-            policy_moves = cn.policy_ranking
-            aimove = policy_moves[0][0]
-            if not aimove.is_pass and "noise" in ai_mode:
-                noise = train_settings["noise_strength"]
-                policy_moves = [(mv, pol + random.gauss(0, noise)) for mv, pol in policy_moves if not mv.is_pass]
-                aimove = max(policy_moves, key=lambda mp: mp[1])[0]
-        elif "balance" in ai_mode and candidate_ai_moves[0]["move"] != "pass":  # don't play suicidal to balance score - pass when it's best
-            sign = cn.player_sign(cn.next_player)  # TODO check
-            sel_moves = [  # top move, or anything not too bad, or anything that makes you still ahead
-                move
-                for i, move in enumerate(candidate_ai_moves)
-                if i == 0
-                or move["visits"] >= train_settings["balance_min_visits"]
-                and (
-                    move["pointsLost"] < train_settings["balance_random_loss"]
-                    or move["pointsLost"] < train_settings["balance_max_loss"]
-                    and sign * move["scoreLead"] > train_settings["balance_target_score"]
-                )
-            ]
-            aimove = Move.from_gtp(random.choice(sel_moves)["move"], player=cn.next_player)  # TODO: could be weighted towards worse
-        elif "jigo" in ai_mode and candidate_ai_moves[0]["move"] != "pass":
-            sign = cn.player_sign(cn.next_player)  # TODO check
-            jigo_move = min(candidate_ai_moves, key=lambda move: abs(sign * move["scoreLead"] - 0.5))
-            aimove = Move.from_gtp(jigo_move["move"], player=cn.next_player)
-        else:
-            if "default" not in ai_mode:
-                self.katrain.log(f"Unknown AI mode {ai_mode} or policy missing, using default.", OUTPUT_INFO)
-            aimove = Move.from_gtp(candidate_ai_moves[0]["move"], player=cn.next_player)
-        self.play(aimove)
+        if mode == "extra":
+            visits = cn.analysis["root"]["visits"] + self.engine.config["max_visits"]
+            self.katrain.controls.set_status(f"Performing additional analysis to {visits} visits")
+            cn.analyze(self.engine, visits=visits, priority=-1_000, time_limit=False)
+            return
+        elif mode == "sweep":
+            board_size_x, board_size_y = self.board_size
+            analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(board_size_x) for y in range(board_size_y) if (x, y) not in stones]
+            visits = int(self.engine.config["max_visits"] * self.config["sweep_visits_frac"] + 0.5)
+            self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
+            priority = -1_000_000_000
+        else:  # mode=='equalize':
+            analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
+            visits = max(d["visits"] for d in cn.analysis["moves"].values())
+            self.katrain.controls.set_status(f"Equalizing analysis of candidate moves to {visits} visits")
+            priority = -1_000
+        for move in analyze_moves:
+            cn.analyze(self.engine, priority, visits=visits, refine_move=move, time_limit=False)  # explicitly requested so take as long as you need
 
     def analyze_undo(self, node, train_config):
         move = node.single_move
@@ -272,29 +263,3 @@ class Game:
             self.undo(1)
             self.katrain.controls.set_status(f"Undid move {move.gtp()} as it lost {points_lost:.1f} points{xmsg}")
             self.katrain.update_state()
-
-    def analyze_extra(self, mode):
-        stones = {s.coords for s in self.stones}
-        cn = self.current_node
-        if not cn.analysis:
-            self.katrain.controls.set_status("Wait for initial analysis to complete before doing a board-sweep or refinement", self.current_node)
-            return
-
-        if mode == "extra":
-            visits = cn.analysis["root"]["visits"] + self.engine.config["max_visits"]
-            self.katrain.controls.set_status(f"Performing additional analysis to {visits} visits")
-            cn.analyze(self.engine, visits=visits, priority=-1_000, time_limit=False)
-            return
-        elif mode == "sweep":
-            board_size_x, board_size_y = self.board_size
-            analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(board_size_x) for y in range(board_size_y) if (x, y) not in stones]
-            visits = int(self.engine.config["max_visits"] * self.config["sweep_visits_frac"] + 0.5)
-            self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
-            priority = -1_000_000_000
-        else:  # mode=='equalize':
-            analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
-            visits = max(d["visits"] for d in cn.analysis["moves"].values())
-            self.katrain.controls.set_status(f"Equalizing analysis of candidate moves to {visits} visits")
-            priority = -1_000
-        for move in analyze_moves:
-            cn.analyze(self.engine, priority, visits=visits, refine_move=move, time_limit=False)  # explicitly requested so take as long as you need
