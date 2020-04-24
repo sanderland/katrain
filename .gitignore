@@ -8,6 +8,8 @@ gtp.log
 log.txt
 *.sgf
 sgfout
+sgf_selfplay
+log*
 my
 
 # debug

@@ -8,16 +8,7 @@ from kivy.uix.label import Label
 from common import OUTPUT_DEBUG, OUTPUT_ERROR
 from engine import KataGoEngine
 from game import Game, GameNode
-from gui.kivyutils import (
-    LabelledCheckBox,
-    LabelledFloatInput,
-    LabelledIntInput,
-    LabelledObjectInputArea,
-    LabelledSpinner,
-    LabelledTextInput,
-    ScaledLightLabel,
-    StyledButton,
-)
+from gui.kivyutils import LabelledCheckBox, LabelledFloatInput, LabelledIntInput, LabelledObjectInputArea, LabelledSpinner, LabelledTextInput, ScaledLightLabel, StyledButton
 
 
 class InputParseError(Exception):
@@ -156,8 +147,9 @@ class ConfigPopup(QuickConfigGui):
             self.katrain.log(f"Restarting Engine after {engine_updates} settings change")
             self.katrain.controls.set_status(f"Restarting Engine after {engine_updates} settings change")
             old_engine = self.katrain.engine
-            self.katrain.engine = KataGoEngine(self.katrain, self.config["engine"])
-            self.katrain.game.engine = self.katrain.engine
+            new_engine = KataGoEngine(self.katrain, self.config["engine"])
+            self.katrain.engine = {"B": new_engine, "W": new_engine}
+            self.katrain.game.engine = new_engine
             if getattr(old_engine, "katago_process"):
                 old_engine.shutdown(finish=True)
             else:

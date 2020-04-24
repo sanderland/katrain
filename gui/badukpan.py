@@ -159,7 +159,7 @@ class BadukPanWidget(Widget):
             # stones
             current_node = katrain.game.current_node
             next_player = katrain.game.next_player
-            game_ended = katrain.game.game_ended
+            game_ended = katrain.game.ended
             full_eval_on = katrain.controls.eval.active
             has_stone = {}
             drawn_stone = {}

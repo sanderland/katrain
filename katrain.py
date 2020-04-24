@@ -90,7 +90,7 @@ class KaTrainGui(BoxLayout):
         if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready:
             self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
 
-        if cn.analysis_ready and "ai" in self.controls.player_mode(cn.next_player) and not cn.children and not self.game.game_ended and not (auto_undo and cn.auto_undo is None):
+        if cn.analysis_ready and "ai" in self.controls.player_mode(cn.next_player) and not cn.children and not self.game.ended and not (auto_undo and cn.auto_undo is None):
             self("ai-move", cn)  # cn mismatch stops this if undo fired
 
         # Handle prisoners and next player display
@@ -127,6 +127,7 @@ class KaTrainGui(BoxLayout):
             self.message_queue.put([self.game.game_id, message, *args])
 
     def _do_new_game(self, move_tree=None):
+        self.engine.on_new_game()  # clear queries
         self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree)
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
         self.controls.graph.initialize_from_game(self.game.root)
@@ -134,7 +135,7 @@ class KaTrainGui(BoxLayout):
 
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
-            ai_move(self.game, self.config("ai"))
+            ai_move(self.game, self.controls.ai_mode(self.game.current_node.next_player), self.config("ai"))
 
     def _do_undo(self, n_times=1):
         self.game.undo(n_times)

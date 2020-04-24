@@ -1,14 +1,11 @@
 import math
 import os
-import random
 import re
-import time
 from datetime import datetime
-from typing import List
+from typing import List, Union, Dict
+import threading
 
-from kivy.clock import Clock
-
-from common import OUTPUT_DEBUG, OUTPUT_INFO
+from engine import KataGoEngine
 from game_node import GameNode
 from sgf_parser import SGF, Move
 
@@ -26,9 +23,11 @@ class Game:
 
     DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "RU": "JP", "AP": "KaTrain:https://github.com/sanderland/katrain"}
 
-    def __init__(self, katrain, engine, config, move_tree=None):
+    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], config: Dict, move_tree: GameNode = None):
         self.katrain = katrain
-        self.engine = engine
+        if isinstance(engine, KataGoEngine):
+            engine = {"B": engine, "W": engine}
+        self.engines = engine
         self.config = config
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
 
@@ -39,19 +38,17 @@ class Game:
             if handicap and not self.root.placements:
                 self.place_handicap_stones(handicap)
         else:
-            board_size = config["init_size"]
-            self.komi = self.config["init_komi"].get(str(board_size), 6.5)
+            board_size = config.get("init_size", 19)
+            self.komi = self.config.get("init_komi", {}).get(str(board_size), 6.5)
             self.root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}})
 
         self.current_node = self.root
         self._init_chains()
-
-        Clock.schedule_once(lambda _dt: self.analyze_all_nodes(-1_000_000), -1)  # return faster
+        threading.Thread(target=lambda: self.analyze_all_nodes(-1_000_000), daemon=True).start()  # return faster, but bypass Kivy Clock
 
     def analyze_all_nodes(self, priority=0):
-        self.engine.on_new_game()
         for node in self.root.nodes_in_tree:
-            node.analyze(self.engine, priority=priority)
+            node.analyze(self.engines[node.next_player], priority=priority)
 
     # -- move tree functions --
     def _init_chains(self):
@@ -127,7 +124,7 @@ class Game:
             raise
         played_node = self.current_node.play(move)
         self.current_node = played_node
-        played_node.analyze(self.engine)
+        played_node.analyze(self.engines[played_node.next_player])
         return played_node
 
     def undo(self, n_times=1):
@@ -190,7 +187,7 @@ class Game:
         return sum(self.chains, [])
 
     @property
-    def game_ended(self):
+    def ended(self):
         return self.current_node.parent and self.current_node.is_pass and self.current_node.parent.is_pass
 
     @property
@@ -201,9 +198,9 @@ class Game:
         return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
     def write_sgf(self, path=None):
-        black = re.sub(r"['<>:\"/\\|?*]", "", self.root.get_first("PB"))
-        white = re.sub(r"['<>:\"/\\|?*]", "", self.root.get_first("PW"))
-        white = self.root.get_first("PW")
+        black, white = self.root.get_first("PB"), self.root.get_first("PW")
+        black = re.sub(r"['<>:\"/\\|?*]", "", black or "Black")
+        white = re.sub(r"['<>:\"/\\|?*]", "", white or "White")
         game_name = f"katrain_{black} vs {white} {self.game_id}"
         file_name = os.path.join(path, f"{game_name}.sgf")
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
@@ -218,15 +215,16 @@ class Game:
             self.katrain.controls.set_status("Wait for initial analysis to complete before doing a board-sweep or refinement", self.current_node)
             return
 
+        engine = self.engines[cn.next_player]
         if mode == "extra":
-            visits = cn.analysis["root"]["visits"] + self.engine.config["max_visits"]
+            visits = cn.analysis["root"]["visits"] + engine.config["max_visits"]
             self.katrain.controls.set_status(f"Performing additional analysis to {visits} visits")
-            cn.analyze(self.engine, visits=visits, priority=-1_000, time_limit=False)
+            cn.analyze(engine, visits=visits, priority=-1_000, time_limit=False)
             return
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
             analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(board_size_x) for y in range(board_size_y) if (x, y) not in stones]
-            visits = int(self.engine.config["max_visits"] * self.config["sweep_visits_frac"] + 0.5)
+            visits = int(engine.config["max_visits"] * self.config["sweep_visits_frac"] + 0.5)
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
             priority = -1_000_000_000
         else:  # mode=='equalize':
@@ -235,7 +233,7 @@ class Game:
             self.katrain.controls.set_status(f"Equalizing analysis of candidate moves to {visits} visits")
             priority = -1_000
         for move in analyze_moves:
-            cn.analyze(self.engine, priority, visits=visits, refine_move=move, time_limit=False)  # explicitly requested so take as long as you need
+            cn.analyze(engine, priority, visits=visits, refine_move=move, time_limit=False)  # explicitly requested so take as long as you need
 
     def analyze_undo(self, node, train_config):
         move = node.single_move

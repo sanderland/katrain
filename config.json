@@ -1,10 +1,10 @@
 {
     "engine": {
-        "katago": "../KataGo/cpp/katago",
+        "katago": "KataGo/katago-bs",
         "model": " models/b15-1.3.2.txt.gz",
         "config": "KataGo/analysis_config.cfg",
         "threads": 8,
-        "max_visits": 5,
+        "max_visits": 50,
         "max_time": 3.0,
         "enable_ownership": true
     },

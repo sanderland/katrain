@@ -6,7 +6,7 @@ import threading
 import time
 from typing import Callable, Optional
 
-from common import OUTPUT_DEBUG, OUTPUT_ERROR
+from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG
 from game_node import GameNode
 
 
@@ -31,6 +31,7 @@ class KataGoEngine:
         self.query_counter = 0
         self.katago_process = None
         self.base_priority = 0
+        self._lock = threading.Lock()
 
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
@@ -47,7 +48,7 @@ class KataGoEngine:
         self.queries = {}
 
     def shutdown(self, finish=False):
-        process = getattr(self, "katago_process")
+        process = getattr(self, "katago_process", None)
         if finish and process:
             while self.queries and process.poll() is None:
                 time.sleep(0.1)
@@ -78,25 +79,25 @@ class KataGoEngine:
             else:
                 callback, start_time, next_move = self.queries[analysis["id"]]
                 time_taken = time.time() - start_time
-                self.katrain.log(
-                    f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}   {line[:80]}...", OUTPUT_DEBUG,
-                )
+                self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}   {line[:80]}...", OUTPUT_EXTRA_DEBUG)
                 callback(analysis)
                 del self.queries[analysis["id"]]
-                self.katrain.update_state()
+                if getattr(self.katrain, "update_state", None):  # easier mocking etc
+                    self.katrain.update_state()
 
     def send_query(self, query, callback, next_move):
-        self.query_counter += 1
-        if "id" not in query:
-            query["id"] = f"QUERY:{str(self.query_counter)}"
-        self.queries[query["id"]] = (callback, time.time(), next_move)
+        with self._lock:
+            self.query_counter += 1
+            if "id" not in query:
+                query["id"] = f"QUERY:{str(self.query_counter)}"
+            self.queries[query["id"]] = (callback, time.time(), next_move)
         if self.katago_process:
-            self.katrain.log(f"Sending query {query['id']}: {str(query)}", OUTPUT_DEBUG)
+            self.katrain.log(f"Sending query {query['id']}: {str(query)}", OUTPUT_EXTRA_DEBUG)
             self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
             self.katago_process.stdin.flush()
 
     def request_analysis(
-        self, analysis_node: GameNode, callback: Callable, visits: int = None, time_limit=True, priority: int = 0, ownership: Optional[bool] = None, next_move=None,
+        self, analysis_node: GameNode, callback: Callable, visits: int = None, time_limit=True, priority: int = 0, ownership: Optional[bool] = None, next_move=None
     ):
         moves = [m for node in analysis_node.nodes_from_root for m in node.move_with_placements]
         if next_move:
