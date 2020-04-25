@@ -1,6 +1,6 @@
+# This is a script I use to test the performance of AIs
 import threading
 import time, sys
-import random
 import traceback
 from collections import defaultdict
 import pickle
@@ -13,6 +13,7 @@ from common import OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_DEBUG
 from elote import EloCompetitor
 
 DB_FILENAME = "ai_performance.pickle"
+
 
 class Logger:
     def log(self, msg, level):
@@ -30,12 +31,11 @@ class AI:
         "katago": "KataGo/katago-bs",
         "model": " models/b15-1.3.2.txt.gz",
         "config": "KataGo/analysis_config.cfg",
-        "threads": 8,
         "max_visits": 1,
         "max_time": 300.0,
         "enable_ownership": False,
     }
-
+    NUM_THREADS = 8
     DEFAULT_SETTINGS = {
         "balance_target_score": 2,
         "balance_random_loss": 1,
@@ -45,17 +45,25 @@ class AI:
         "pick_n": 10,
         "pick_frac": 0.2,
         "local_stddev": 10,
+        "influence_weight": 0.01,
     }
+    IGNORE_SETTINGS_IN_TAG = {"threads", "enable_ownership", "katago"}  # katago for switching from/to bs version
     ENGINES = []
     LOCK = threading.Lock()
 
     def __init__(self, strategy, ai_settings, engine_settings={}):
         self.elo_comp = EloCompetitor(initial_rating=1000)
         self.strategy = strategy
-        self.ai_settings = {**AI.DEFAULT_SETTINGS, **ai_settings}
-        self.engine_settings = {**AI.DEFAULT_ENGINE_SETTINGS, **engine_settings}
-        fmt_settings = [f"{k}={v}" for k, v in {**ai_settings, **engine_settings}.items()]
+        self.ai_settings = ai_settings
+        self.engine_settings = engine_settings
+        fmt_settings = [f"{k}={v}" for k, v in {**ai_settings, **engine_settings}.items() if k not in AI.IGNORE_SETTINGS_IN_TAG]
         self.name = f"{strategy}({ ','.join(fmt_settings) })"
+        self.fix_settings()
+
+    def fix_settings(self):
+        self.ai_settings = {**AI.DEFAULT_SETTINGS, **self.ai_settings}
+        self.engine_settings = {**AI.DEFAULT_ENGINE_SETTINGS, **self.engine_settings}
+        self.engine_settings["threads"] = AI.NUM_THREADS
 
     def get_engine(self):  # factory
         with AI.LOCK:
@@ -68,16 +76,17 @@ class AI:
             return engine
 
     def __eq__(self, other):
-        return self.strategy == other.strategy and self.ai_settings == other.ai_settings and self.engine_settings == other.engine_settings
+        return self.name == other.name  # should capture all relevant setting differences
 
 
 try:
     with open(DB_FILENAME, "rb") as f:
         ai_database, all_results = pickle.load(f)
+        for ai in ai_database:
+            ai.fix_settings()  # update as required
 except FileNotFoundError:
     ai_database = []
     all_results = []
-
 
 
 def add_ai(ai):
@@ -92,75 +101,78 @@ def retrieve_ais(selected_ais):
     return [ai for ai in ai_database if ai in selected_ais]
 
 
-add_ai(AI("KataGo", {}, {"max_visits": 50}))
-add_ai(AI("Jigo", {}, {"max_visits": 50}))
-add_ai(AI("P+Noise", {"noise_strength": 0.9}))
-add_ai(AI("P+Noise", {"noise_strength": 0.8}))
-add_ai(AI("P+Noise", {"noise_strength": 0.7}))
-add_ai(AI("Policy",{}))
-add_ai(AI("P+Local", {'local_stddev':1}))
-add_ai(AI("P+Local", {'local_stddev':5}))
-add_ai(AI("P+Local", {'local_stddev':10}))
-add_ai(AI("P+Pick", {'pick_frac':0.2,'pick_n':10}))
-add_ai(AI("P+Pick", {'pick_frac':0.3,'pick_n':10}))
+test_ais = [
+    AI("P+Local", {"local_stddev": 1, "pick_frac": 0.1}),
+    AI("P+Local", {"local_stddev": 1, "pick_frac": 0.05}),
+    AI("P+Local", {"local_stddev": 5}),
+    AI("P+Pick", {"pick_frac": 0.4, "pick_n": 20}),
+    AI("P+Noise", {"noise_strength": 0.8}),
+    AI("P+Noise", {"noise_strength": 0.9}),
+    AI("P+Tenuki", {"local_stddev": 1}),
+    AI("P+Tenuki", {"local_stddev": 5}),
+    AI("P+Tenuki", {"local_stddev": 10}),
+    AI("P+Pick", {"pick_frac": 0.2, "pick_n": 10}),
+    AI("P+Pick", {"pick_frac": 0.3, "pick_n": 10}),
+    AI("P+Local", {"local_stddev": 10}),
+    AI("P+Local", {"local_stddev": 5}),
+    AI("P+Pick", {"pick_frac": 0.0, "pick_n": 1}),
+]
 
-new_ais1 = [AI("P+Pick", {'pick_frac':0.3,'pick_n':20}),
-           AI("P+Pick", {'pick_frac':0.4,'pick_n':20}),
-           AI("P+Local", {'local_stddev':1}),
-           AI("KataGo", {}, {"max_visits": 50}),
-           AI("Jigo", {}, {"max_visits": 50})]
+test_ais += [
+    AI("Policy", {}),
+    AI("Jigo", {}, {"max_visits": 50})
+    #   AI("Policy", {},{'model':'models/g170-b40c256x2-s2990766336-d830712531.bin.gz'}),
+    #     AI("KataGo", {}, {"max_visits": 50}),
+]
 
-new_ais = [    AI("P+Pick", {'pick_frac':0.4,'pick_n':20}),
-           AI("P+Local", {'local_stddev':10}),
-            AI("P+Local", {'local_stddev':5}),
-           AI("Policy", {})]
+test_ais = [
+    AI("Policy", {}),
+    AI("P+Noise", {"noise_strength": 0.6}),
+    AI("P+Noise", {"noise_strength": 0.7}),
+    AI("P+Noise", {"noise_strength": 0.8}),
+    AI("P+Noise", {"noise_strength": 0.9}),
+    AI("P+Pick", {}),
+    AI("P+Pick", {"pick_frac": 0.3, "pick_n": 20}),
+    AI("P+Influence", {"pick_frac": 0.2, "pick_n": 20}),
+    AI("P+Territory", {"pick_frac": 0.2, "pick_n": 20}),
+    AI("P+Influence", {"pick_frac": 0.33, "influence_weight": 0.05}),
+    AI("P+Territory", {"pick_frac": 0.33, "influence_weight": 0.05}),
+    AI("P+Local", {"local_stddev": 5}),
+    AI("P+Tenuki", {"local_stddev": 10}),
+    AI("P+Pick", {"pick_frac": 0.0, "pick_n": 1}),
+]
 
-new_ais = [ AI("P+Local", {'local_stddev':1,'pick_frac':0.1}),
-            AI("P+Local", {'local_stddev':1,'pick_frac':0.05}),
-            AI("P+Pick", {'pick_frac': 0.4, 'pick_n': 20}),
-            AI("P+Noise", {"noise_strength": 0.8}),
-            AI("P+Tenuki", {'local_stddev':1}),
-            AI("P+Tenuki", {'local_stddev':5}),
-            AI("P+Tenuki", {'local_stddev':10})
-            ]
-
-new_ais1 = [AI("Policy", {}),
-            AI("Policy", {},{'model':'b10-1.3.txt.gz'}),
-            AI("Policy", {},{'model':'g170-b30c320x2-s2846858752-d829865719.bin.gz'}),
-            AI("Policy", {},{'model':'g170-b40c256x2-s2990766336-d830712531.bin.gz'}),
-            AI("Policy", {}, {'model': 'g170e-b20c256x2-s3761649408-d809581368.bin.gz'}),
-            ]
-#           AI("KataGo", {}, {"max_visits": 50})]
-
-
-for ai in new_ais:
+# ai_database = [ai for ai in ai_database if "Territory" not in ai.name and "Influence" not in ai.name]
+for ai in test_ais:
     add_ai(ai)
 
-N_GAMES = 2
+N_GAMES = 10
 
-ais_to_test = retrieve_ais(new_ais)
-#ais_to_test = ai_database
-#ais_to_test = [ai for ai in ai_database if 'visits' not in ai.name]
+ais_to_test = retrieve_ais(test_ais)
+# ais_to_test = ai_database
+# ais_to_test = [ai for ai in ai_database if 'visits' not in ai.name]
+# ais_to_test = [ai for ai in ai_database if 'visits' not in ai.name and (not 'model' in ai.name or 'b40' in ai.name)]
+
 
 results = defaultdict(list)
 
 
-def play_games(black: AI, white: AI, n: int=N_GAMES):
+def play_games(black: AI, white: AI, n: int = N_GAMES):
     players = {"B": black, "W": white}
     engines = {"B": black.get_engine(), "W": white.get_engine()}
     tag = f"{black.name} vs {white.name}"
     try:
         for i in range(n):
-            game = Game(logger, engines, {})
+            game = Game(Logger(), engines, {})
             game.root.add_property("PW", [white.name])
             game.root.add_property("PB", [black.name])
-            game.game_id += f"_{int(random.random()*1e6)}"
             start_time = time.time()
             while not game.ended:
                 p = game.current_node.next_player
                 move = ai_move(game, players[p].strategy, players[p].ai_settings)
             while not game.current_node.analysis_ready:
                 time.sleep(0.001)
+            game.game_id += f"_{game.current_node.format_score()}"
             print(f"{tag}\tGame {i+1} finished in {time.time()-start_time:.1f}s  {game.current_node.format_score()} -> {game.write_sgf('sgf_selfplay/')}", file=sys.stderr)
             score = game.current_node.score
             if score > 0.3:
@@ -171,14 +183,17 @@ def play_games(black: AI, white: AI, n: int=N_GAMES):
             results[tag].append(score)
             all_results.append((black.name, white.name, score))
     except Exception as e:
-        print(e,file=sys.stderr)
+        print(f"Exception in playing {tag}: {e}", file=sys.stderr)
         traceback.print_tb(file=sys.stderr)
 
 
 def fmt_score(score):
     return f"{'B' if score >= 0 else 'W'}+{abs(score):.1f}"
 
-print(len(ais_to_test),"ais to test")
+
+print(len(ais_to_test), "ais to test")
+global_start = time.time()
+
 with ThreadPoolExecutor(max_workers=16) as threadpool:
     for b in ais_to_test:
         for w in ais_to_test:
@@ -195,10 +210,16 @@ for k, v in results.items():
 
 print("---- ELO ----")
 for ai in sorted(ai_database, key=lambda a: -a.elo_comp.rating):
-    print(f"{'*' if ai in ais_to_test else ' '} {ai.name}: ELO {ai.elo_comp.rating:.1f}")
-    print(f"{'*' if ai in ais_to_test else ' '} {ai.name}: ELO {ai.elo_comp.rating:.1f}", file=sys.stderr)
+    wins = [(b, w, s) for (b, w, s) in all_results if s > 0.3 and b == ai.name or w == ai.name and s < -0.3]
+    losses = [(b, w, s) for (b, w, s) in all_results if s < -0.3 and b == ai.name or w == ai.name and s > -0.3]
+    draws = [(b, w, s) for (b, w, s) in all_results if -0.3 <= s <= 0.3 and (b == ai.name or w == ai.name)]
+    out = f"{'*' if ai in ais_to_test else ' '} {ai.name}: ELO {ai.elo_comp.rating:.1f} WINS {len(wins)} LOSSES {len(losses)} DRAWS {len(draws)}"
+    #    print("Wins:",wins)
+    print(out)
+    print(out, file=sys.stderr)
 
 with open(DB_FILENAME, "wb") as f:
     pickle.dump((ai_database, all_results), f)
 
-print(f"Done! saving {len(all_results)} to pickle")
+print(f"Done! saving {len(all_results)} to pickle", file=sys.stderr)
+print(f"Time taken {time.time()-global_start:.1f}s", file=sys.stderr)

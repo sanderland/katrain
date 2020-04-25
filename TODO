@@ -6,39 +6,39 @@
 [x] P+noise pass not noisy
 [x] graph wonky on branch switch -> check in children &c.
 [x] Scrolling add a move on the board instead of navigating through the game. This was already the case in the 0.9 version and it's quite annoying as scrolling seemed only natural and I kept forgetting not to do it :p
+[x] show PV on hint hover?  Although Katrain wasn't meant to be like Lizzie to begin with, it would be really neat if we could visualize the expected variations when hovering over the top moves.
+[x Self-play tournaments in separate script.
 
 [] Score instead of game end
 [] engine status
 [] README
 [] Release notes
 [] more AI modes?
-[] show PV on hint hover?  Although Katrain wasn't meant to be like Lizzie to begin with, it would be really neat if we could visualize the expected variations when hovering over the top moves.
 [] sgf review improvements
  --  Likewise, in the 0.9 version, better alternatives to the played move were shown with squares, which was also pretty useful when using the sgf outside of Katrain. I mean, having the top move mentioned is all and good, but when you see multiple squares shown on the board as better alternatives to the move played in the game, it makes obvious how far from perfect that move actually was :D
-
+[] ai thoughts in sgf
+[] pol value override > 0.9 ?
 
 - dots: SPINNER! off last few / white black / >x pt  (multi select?)
 
 
-
-lo prio
+Low priority
 [] more teaching / groups in danger? hard
-[] limit below board buttons somehow to not be too big
 [] box to label ? split in status and comment?
+[] dual engine support -- easily possible but has weird effects on win rate etc
+[] When creating a new game, the 9 buttons on the right side aren't all that useful. Maybe the 9, 13 and 19 ones make sense since these three board sizes are the traditionally used ones, but why 2, 4 and 9 stones buttons? Why 0.5, 6.5 and -40pts komi buttons?
 
-wont do
+Wont do for now
 [] List edit settings/object edit settings?
-[] Self-play tournaments?
-[] Multi engine (detect all req. analysis in analysis[engine] fn)
 [] Currently, when saving an SGF after analyzing a game, Katrain stores data for every move by default. Like for dots, it would be great if it was possible to only store data for moves that we were interested in (e.g. only from this or that player, and/or only the most inefficient moves/most costly mistakes, etc.)
-[]- Typing something in the comments window freezes Katrain -> probably keyboard shortcuts / solved by label
-
+[] Typing something in the comments window freezes Katrain -> probably keyboard shortcuts / solved by label
+[] Plus, you wouldn't need "B" and "W" beside these numbers if the top part of the window was black with the graph being white on top of it (and the bottom White with the graph being black as they are currently).
 
 bug/suggestion reports
 - The territory span B+something W+something was confusing: it looked like the last move was both of them and it took me a while to figure out what it was about. It would be maybe clearer if these numbers appeared as dynamic graduations on the left outside of the winrate window, like graduations on a ruler.
 --- Like, say if Black was 13pts ahead at some point in the game, the ruler would be:  15 / 10 / 5 / 0 / ... -15
--- Plus, you wouldn't need "B" and "W" beside these numbers if the top part of the window was black with the graph being white on top of it (and the bottom White with the graph being black as they are currently).
-_ When creating a new game, the 9 buttons on the right side aren't all that useful. Maybe the 9, 13 and 19 ones make sense since these three board sizes are the traditionally used ones, but why 2, 4 and 9 stones buttons? Why 0.5, 6.5 and -40pts komi buttons?
+
+
 -- The UI would be directly understood if there were bubbles with a short explanation popping up when hovering above buttons and labels, e.g "Performing additional analysis to 1502 visits" which appears currently in the comments window after pushing the Extra button would also make a perfect explanatory bubble when hovering over said button too.
 -- Plus, explanatory bubbles would help to clarify labels like "Debug" (are there bugs in the matrix? :p), "enable_ownership" (which didn't seem to prevent or allow visualizing territory ownership on the board, as that was already covered by the "owner" checkbox anyway... so I guess I missed something), etc.
 -- That would also prevent the need to go through the official documentation for every little thing, making Katrain more user friendly, IMO.

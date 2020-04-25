@@ -2,7 +2,7 @@
 #:import ew kivy.uix.effectwidget
 
 
-#:set AI_MODES ['Default','Balance','Jigo','Policy','P+Local','P+Tenuki','P+Pick','P+Noise']
+#:set AI_MODES ['Default','Balance','Jigo','Policy','P+Pick','P+Local','P+Tenuki','P+Territory','P+Influence','P+Noise','<Pause>']
 #:set PLAYER_MODES ['Human', 'Teach','AI:']
 #:set PLAYER_MODE_VALUES ['human','human+undo','ai']
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
@@ -31,14 +31,14 @@
             radius: root.radius
 
 <StyledSpinnerOption@SpinnerOption>:
-    font_size: self.size[1] * 0.45
+    font_size: self.size[1] * 0.4
     background_color: BUTTON_COLOR
     background_normal: ''
     color: WHITE
 
 <StyledSpinner>:
     text: self.values[0] if self.values else ''
-    font_size: self.size[1] * 0.45
+    font_size: self.size[1] * 0.4
     sync_height: True
     background_color: [*[c*255/88 for c in BUTTON_COLOR[:3]], 1] # compensate for texture
     option_cls: 'StyledSpinnerOption'
@@ -620,23 +620,27 @@
             spacing: 1
             QuickInputButton:
                 text: '2'
+                on_press: km.text='0.5'
             QuickInputButton:
                 text: '4'
+                on_press: km.text='0.5'
             QuickInputButton:
                 text: '9'
+                on_press: km.text='0.5'
         ScaledLightLabel:
             text: "Komi"
         LabelledFloatInput:
             text: '6.5'
+            id: km
             input_property: 'KM'
         BoxLayout:
             spacing: 1
             QuickInputButton:
                 text: '0.5'
             QuickInputButton:
-                text: '6.5'
+                text: '5.5'
             QuickInputButton:
-                text: '-40'
+                text: '6.5'
         ScaledLightLabel:
             text: "Ruleset"
         LabelledSpinner:
@@ -653,7 +657,7 @@
             text_size: self.width-6, None
             id: info
         ScaledLightLabel:
-            text: "Note that handicaps above 9 are not supported."
+            text: "Note that handicaps above 9 are not supported on non-square boards."
             font_size: self.size[1]/8
             halign: 'center'
             valign: 'center'

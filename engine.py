@@ -10,6 +10,10 @@ from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG
 from game_node import GameNode
 
 
+class EngineDiedException(Exception):
+    pass
+
+
 class KataGoEngine:
     """Starts and communicates with the KataGO analysis engine"""
 
@@ -61,7 +65,10 @@ class KataGoEngine:
 
     def _analysis_read_thread(self):
         while self.katago_process is not None:
-            line = self.katago_process.stdout.readline()
+            try:
+                line = self.katago_process.stdout.readline()
+            except OSError as e:
+                raise EngineDiedException(f"Engine died unexpectedly without sending output, possibly due to out of memory: {e}")
             if b"Uncaught exception" in line:
                 self.katrain.log(f"KataGo Engine Failed: {line.decode()}", OUTPUT_ERROR)
             if not line:
@@ -93,8 +100,12 @@ class KataGoEngine:
             self.queries[query["id"]] = (callback, time.time(), next_move)
         if self.katago_process:
             self.katrain.log(f"Sending query {query['id']}: {str(query)}", OUTPUT_EXTRA_DEBUG)
-            self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
-            self.katago_process.stdin.flush()
+            try:
+                self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
+                self.katago_process.stdin.flush()
+            except OSError as e:
+                self.katrain.log(f"Engine died unexpectedly, possibly due to out of memory: {e}", OUTPUT_ERROR)
+                return  # do not raise, since
 
     def request_analysis(
         self, analysis_node: GameNode, callback: Callable, visits: int = None, time_limit=True, priority: int = 0, ownership: Optional[bool] = None, next_move=None

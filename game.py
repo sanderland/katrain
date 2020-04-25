@@ -165,8 +165,8 @@ class Game:
                 far_x += 1
                 near_x -= 1
                 spacing = (far_x - near_x) / (stones_per_row - 1)
-            coords = [math.floor(0.5 + near_x + i * spacing) for i in range(stones_per_row)]
-            stones = sorted([(x, y) for x in coords for y in coords], key=lambda xy: -((xy[0] - board_size_x / 2) ** 2 + (xy[1] - board_size_y / 2) ** 2))
+            coords = list({math.floor(0.5 + near_x + i * spacing) for i in range(stones_per_row)})
+            stones = sorted([(x, y) for x in coords for y in coords], key=lambda xy: -((xy[0] - (board_size_x - 1) / 2) ** 2 + (xy[1] - (board_size_y - 1) / 2) ** 2))
         else:  # max 9
             stones = [(far_x, far_y), (near_x, near_y), (far_x, near_y), (near_x, far_y)]
             if n_handicaps % 2 == 1:

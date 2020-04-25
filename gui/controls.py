@@ -53,7 +53,7 @@ class Controls(BoxLayout):
             current_player_is_ai_playing_human = current_node.player and "ai" in self.player_mode(current_node.player) and "ai" not in self.player_mode(current_node.next_player)
             if next_player_is_human_or_both_robots and not current_node.is_root and move:
                 info += current_node.comment(teach="undo" in self.player_mode(current_node.player), hints=self.hints.active)
-            elif current_player_is_ai_playing_human:
+            elif current_player_is_ai_playing_human and current_node.parent:
                 info += current_node.parent.comment(teach="undo" in self.player_mode(current_node.next_player), hints=self.hints.active)
 
             if current_node.analysis_ready:

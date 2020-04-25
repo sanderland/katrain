@@ -4,7 +4,7 @@
         "model": " models/b15-1.3.2.txt.gz",
         "config": "KataGo/analysis_config.cfg",
         "threads": 8,
-        "max_visits": 50,
+        "max_visits": 500,
         "max_time": 3.0,
         "enable_ownership": true
     },
@@ -34,7 +34,8 @@
             1.5,
             0.5
         ],
-        "eval_off_show_last": 3
+        "eval_off_show_last": 3,
+        "eval_show_ai": false
     },
     "ai": {
         "balance_target_score": 2,
@@ -44,7 +45,8 @@
         "noise_strength": 0.8,
         "pick_n": 10,
         "pick_frac": 0.2,
-        "local_stddev": 10
+        "local_stddev": 5,
+        "influence_weight": 0.1
     },
     "board_ui": {
         "starpoint_size": 0.1,

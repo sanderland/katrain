@@ -89,8 +89,14 @@ class KaTrainGui(BoxLayout):
         auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
         if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready:
             self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
-
-        if cn.analysis_ready and "ai" in self.controls.player_mode(cn.next_player) and not cn.children and not self.game.ended and not (auto_undo and cn.auto_undo is None):
+        if (
+            cn.analysis_ready
+            and "ai" in self.controls.player_mode(cn.next_player)
+            and not "pause" in self.controls.ai_mode(cn.next_player)
+            and not cn.children
+            and not self.game.ended
+            and not (auto_undo and cn.auto_undo is None)
+        ):
             self("ai-move", cn)  # cn mismatch stops this if undo fired
 
         # Handle prisoners and next player display

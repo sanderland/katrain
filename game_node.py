@@ -1,6 +1,6 @@
 import copy
 import random
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from sgf_parser import Move, SGFNode
 
@@ -71,6 +71,7 @@ class GameNode(SGFNode):
             score = self.score
             if sgf:
                 text += f"Score: {self.format_score(score)}\n"
+                text += f"Win Rate: {self.format_win_rate()}\n"
             if self.parent and self.parent.analysis_ready:
                 previous_top_move = self.parent.candidate_moves[0]
                 if sgf or hints:
@@ -126,7 +127,7 @@ class GameNode(SGFNode):
         )
 
     @property
-    def policy_ranking(self) -> Optional[List]:  # return moves from highest policy value to lowest
+    def policy_ranking(self) -> Optional[List[Tuple[Move, float]]]:  # return moves from highest policy value to lowest
         if self.policy:
             ix = 0
             moves = []

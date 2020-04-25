@@ -10,6 +10,7 @@ from common import OUTPUT_DEBUG
 from game import Move
 from gui.kivyutils import draw_circle, draw_text
 from common import var_to_grid
+from kivy.core.window import Window
 
 
 class BadukPanWidget(Widget):
@@ -23,6 +24,9 @@ class BadukPanWidget(Widget):
         self.grid_size = 0
         self.stone_size = 0
         self.last_eval = 0
+        self.active_hints = []
+        self.show_pv_for = None
+        Window.bind(mouse_pos=self.on_mouse_pos)
 
     # stone placement functions
     def _find_closest(self, pos, gridpos):
@@ -42,10 +46,28 @@ class BadukPanWidget(Widget):
         else:
             self.ghost_stone = None
         if prev_ghost != self.ghost_stone:
-            self.draw_board_contents()
+            self.draw_hover_contents()
 
     def on_touch_move(self, touch):  # on_motion on_touch_move
         return self.on_touch_down(touch)
+
+    def on_mouse_pos(self, *args):  # https://gist.github.com/opqopq/15c707dc4cffc2b6455f
+        last_show_pv = self.show_pv_for
+        self.show_pv_for = None
+        if self.get_root_window():  # do proceed if I'm not displayed <=> If have no parent
+            pos = args[1]
+            rel_pos = self.to_widget(*pos)  # compensate for relative layout
+            inside = self.collide_point(*rel_pos)
+            if inside and self.active_hints:
+                near_move = [
+                    move
+                    for move in self.active_hints
+                    if abs(rel_pos[0] - self.gridpos_x[move[0]]) < self.grid_size / 2 and abs(rel_pos[1] - self.gridpos_y[move[1]]) < self.grid_size / 2
+                ]
+                if near_move:
+                    self.show_pv_for = near_move[0]
+        if self.show_pv_for != last_show_pv:
+            self.draw_hover_contents()
 
     def on_touch_up(self, touch):
         if touch.button != "left":
@@ -67,7 +89,7 @@ class BadukPanWidget(Widget):
                 katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
 
         self.ghost_stone = None
-        self.draw_board_contents()  # remove ghost
+        self.draw_hover_contents()  # remove ghost
 
     # drawing functions
     def on_size(self, *args):
@@ -150,7 +172,6 @@ class BadukPanWidget(Widget):
             return
         stone_color = self.ui_config["stones"]
         outline_color = self.ui_config["outline"]
-        ghost_alpha = self.ui_config["ghost_alpha"]
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
 
@@ -158,7 +179,6 @@ class BadukPanWidget(Widget):
         with self.canvas:
             # stones
             current_node = katrain.game.current_node
-            next_player = katrain.game.next_player
             game_ended = katrain.game.ended
             full_eval_on = katrain.controls.eval.active
             has_stone = {}
@@ -167,6 +187,7 @@ class BadukPanWidget(Widget):
                 has_stone[m.coords] = m.player
 
             show_n_eval = self.trainer_config["eval_off_show_last"]
+            show_dots_for = {p: self.trainer_config["eval_show_ai"] or "ai" not in katrain.controls.player_mode(p) for p in Move.PLAYERS}
             nodes = katrain.game.current_node.nodes_from_root
             for i, node in enumerate(nodes[::-1]):  # reverse order!
                 points_lost = node.points_lost
@@ -174,7 +195,10 @@ class BadukPanWidget(Widget):
                 for m in node.move_with_placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
                         move_eval_on = full_eval_on or i < show_n_eval
-                        evalcol = self.eval_color(points_lost) if move_eval_on and points_lost is not None else None
+                        if move_eval_on and points_lost is not None and show_dots_for.get(m.player):
+                            evalcol = self.eval_color(points_lost)
+                        else:
+                            evalcol = None
                         inner = stone_color[m.opponent] if i == 0 else None
                         drawn_stone[m.coords] = m.player
                         self.draw_stone(m.coords[0], m.coords[1], stone_color[m.player], outline_color[m.player], inner, evalcol, evalsize)
@@ -238,23 +262,6 @@ class BadukPanWidget(Widget):
                         scale = self.ui_config.get("_child_scale", 0.95)
                         self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
-            # hints
-            if katrain.controls.hints.active and not game_ended:
-                hint_moves = current_node.candidate_moves
-                for i, d in enumerate(hint_moves):
-                    move = Move.from_gtp(d["move"])
-                    if move.coords is not None and move.coords not in undo_coords:
-                        alpha, scale = self.ui_config["ghost_alpha"], 1.0
-                        if i == 0:
-                            alpha += self.ui_config["top_move_x_alpha"]
-                        elif d["visits"] < 0.1 * hint_moves[0]["visits"]:  # TODO: config?
-                            scale = 0.8
-                        self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(d["pointsLost"]), alpha], scale=scale)
-
-            # hover next move ghost stone
-            if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*stone_color[next_player], ghost_alpha))
-
             # pass circle
             passed = len(nodes) > 1 and current_node.is_pass
             if passed:
@@ -268,6 +275,58 @@ class BadukPanWidget(Widget):
                 Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
                 Color(0.15, 0.15, 0.15)
                 draw_text(pos=center, text=text, font_size=size * 0.25, halign="center", outline_color=[0.95, 0.95, 0.95])
+
+        self.draw_hover_contents()
+
+    def draw_hover_contents(self, *args):
+        ghost_alpha = self.ui_config["ghost_alpha"]
+        katrain = self.katrain
+        game_ended = katrain.game.ended
+        current_node = katrain.game.current_node
+        player, next_player = current_node.player, current_node.next_player
+        stone_color = self.ui_config["stones"]
+
+        self.canvas.after.clear()
+        with self.canvas.after:
+
+            # hints or PV
+            self.active_hints = []
+            if katrain.controls.hints.active and not game_ended:
+                hint_moves = current_node.candidate_moves
+                for i, d in enumerate(hint_moves):
+                    move = Move.from_gtp(d["move"])
+                    if move.coords is not None:  # and move.coords not in undo_coords:
+                        alpha, scale = self.ui_config["ghost_alpha"], 1.0
+                        if i == 0:
+                            alpha += self.ui_config["top_move_x_alpha"]
+                        elif d["visits"] < 0.1 * hint_moves[0]["visits"]:  # TODO: config?
+                            scale = 0.8
+                        self.active_hints.append(move.coords)
+
+                        if move.coords == self.show_pv_for:
+                            pv = d.get("pv", [move.gtp()])  # if empty, show current move at least
+                            for i, gtpmove in enumerate(pv):
+                                move_player = [next_player, player][i % 2]
+                                opp_player = [next_player, player][1 - i % 2]
+                                coords = Move.from_gtp(gtpmove).coords
+                                if coords is None:  # tee-hee
+                                    sizefac = katrain.board_controls.pass_btn.size[1] / 2 / self.stone_size
+                                    board_coords = [
+                                        katrain.board_controls.pass_btn.pos[0] + katrain.board_controls.pass_btn.size[0] + self.stone_size * sizefac,
+                                        katrain.board_controls.pass_btn.pos[1] + katrain.board_controls.pass_btn.size[1] / 2,
+                                    ]
+                                else:
+                                    board_coords = (self.gridpos_x[coords[0]], self.gridpos_y[coords[1]])
+                                    sizefac = 0.95
+                                draw_circle(board_coords, self.stone_size * sizefac, stone_color[move_player])
+                                Color(*stone_color[opp_player])
+                                draw_text(pos=board_coords, text=str(i + 1), font_size=sizefac * self.grid_size / 1.45)
+                        elif not self.show_pv_for:
+                            self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(d["pointsLost"]), alpha], scale=scale)
+
+            # hover next move ghost stone
+            if self.ghost_stone:
+                self.draw_stone(*self.ghost_stone, (*stone_color[next_player], ghost_alpha))
 
 
 class BadukPanControls(BoxLayout):

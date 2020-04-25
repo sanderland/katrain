@@ -204,11 +204,9 @@ class SGFNode:
 
     @property
     def player(self):
-        if not self.placements:
-            if self.get("W"):
-                return "W"
-            if self.get("B"):
-                return "B"
+        if self.get("B") or self.get("AB"):
+            return "B"
+        return "W"
 
 
 class SGF:
