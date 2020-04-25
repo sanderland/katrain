@@ -45,7 +45,8 @@ class AI:
         "pick_n": 10,
         "pick_frac": 0.2,
         "local_stddev": 10,
-        "influence_weight": 0.01,
+        "influence_weight": 0.1,
+        "pick_override": 0.95,
     }
     IGNORE_SETTINGS_IN_TAG = {"threads", "enable_ownership", "katago"}  # katago for switching from/to bs version
     ENGINES = []
@@ -116,13 +117,9 @@ test_ais = [
     AI("P+Local", {"local_stddev": 10}),
     AI("P+Local", {"local_stddev": 5}),
     AI("P+Pick", {"pick_frac": 0.0, "pick_n": 1}),
-]
-
-test_ais += [
+    AI("Jigo", {}, {"max_visits": 50}),
     AI("Policy", {}),
-    AI("Jigo", {}, {"max_visits": 50})
     #   AI("Policy", {},{'model':'models/g170-b40c256x2-s2990766336-d830712531.bin.gz'}),
-    #     AI("KataGo", {}, {"max_visits": 50}),
 ]
 
 test_ais = [
@@ -133,20 +130,35 @@ test_ais = [
     AI("P+Noise", {"noise_strength": 0.9}),
     AI("P+Pick", {}),
     AI("P+Pick", {"pick_frac": 0.3, "pick_n": 20}),
+    AI("P+Pick", {"pick_frac": 0.5, "pick_n": 0}),
     AI("P+Influence", {"pick_frac": 0.2, "pick_n": 20}),
     AI("P+Territory", {"pick_frac": 0.2, "pick_n": 20}),
     AI("P+Influence", {"pick_frac": 0.33, "influence_weight": 0.05}),
     AI("P+Territory", {"pick_frac": 0.33, "influence_weight": 0.05}),
-    AI("P+Local", {"local_stddev": 5}),
-    AI("P+Tenuki", {"local_stddev": 10}),
     AI("P+Pick", {"pick_frac": 0.0, "pick_n": 1}),
+    AI("P+Tenuki", {"local_stddev": 20}),
+    AI("P+Tenuki", {"local_stddev": 10}),
+    AI("P+Tenuki", {"local_stddev": 5}),
+    AI("P+Local", {"local_stddev": 10}),
+    AI("P+Local", {"local_stddev": 5}),
+    AI("P+Local", {"local_stddev": 1}),
+    AI("P+Local", {"local_stddev": 1,"pick_frac": 0.0, "pick_n": 20}),
 ]
+
+#test_ais = [
+#    AI("Policy", {}),
+#    AI("P+Noise", {"noise_strength": 0.4}),
+#    AI("P+Noise", {"noise_strength": 0.5}),
+#    AI("P+Noise", {"noise_strength": 0.6}),
+#    AI("P+Noise", {"noise_strength": 0.7}),
+#    AI("P+Noise", {"noise_strength": 0.8}),
+#]
 
 # ai_database = [ai for ai in ai_database if "Territory" not in ai.name and "Influence" not in ai.name]
 for ai in test_ais:
     add_ai(ai)
 
-N_GAMES = 10
+N_GAMES = 5
 
 ais_to_test = retrieve_ais(test_ais)
 # ais_to_test = ai_database
@@ -182,9 +194,14 @@ def play_games(black: AI, white: AI, n: int = N_GAMES):
 
             results[tag].append(score)
             all_results.append((black.name, white.name, score))
+
+        with open('tmp.pickle', "wb") as f:
+            pickle.dump((ai_database, all_results), f)
     except Exception as e:
+        print(f"Exception in playing {tag}: {e}")
         print(f"Exception in playing {tag}: {e}", file=sys.stderr)
-        traceback.print_tb(file=sys.stderr)
+        traceback.print_exc()
+        traceback.print_exc(file=sys.stderr)
 
 
 def fmt_score(score):

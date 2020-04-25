@@ -194,8 +194,8 @@ class BadukPanWidget(Widget):
                 evalsize = 1
                 for m in node.move_with_placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
-                        move_eval_on = full_eval_on or i < show_n_eval
-                        if move_eval_on and points_lost is not None and show_dots_for.get(m.player):
+                        move_eval_on = full_eval_on or (i < show_n_eval and show_dots_for.get(m.player))
+                        if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost)
                         else:
                             evalcol = None

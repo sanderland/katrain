@@ -2,6 +2,7 @@ import copy
 import random
 from typing import Dict, List, Optional, Tuple
 
+from common import var_to_grid
 from sgf_parser import Move, SGFNode
 
 
@@ -14,6 +15,7 @@ class GameNode(SGFNode):
         self.ownership = None
         self.policy = None
         self.auto_undo = None  # None = not analyzed. False: not undone (good move). True: undone (bad move)
+        self.ai_thoughts = ""
         self.move_number = 0
         self.undo_threshold = random.random()  # for fractional undos, store the random threshold in the move itself for consistency
 
@@ -84,13 +86,15 @@ class GameNode(SGFNode):
                         text += f"Move was predicted best move.\n"
                 if sgf or hints or teach:
                     policy_ranking = self.parent.policy_ranking
-                    policy_ix = [ix + 1 for (m, p), ix in zip(policy_ranking, range(len(policy_ranking))) if m == single_move]
+                    policy_ix = [ix + 1 for (p, m), ix in zip(policy_ranking, range(len(policy_ranking))) if m == single_move]
                     if policy_ix:
                         text += f"Move was #{policy_ix[0]} according to policy.\n"
                     if not policy_ix or policy_ix[0] != 1 and (sgf or hints):
-                        text += f"Top policy move was {policy_ranking[0][0].gtp()}.\n"
+                        text += f"Top policy move was {policy_ranking[0][1].gtp()} ({policy_ranking[0][0]:.1%}).\n"
             if self.auto_undo and sgf:
                 text += "Move was automatically undone in teaching mode."
+            if self.ai_thoughts:
+                text += f"\nAI thought process: {self.ai_thoughts}"
         else:
             text = "No analysis available" if sgf else "Analyzing move..."
         return text
@@ -118,7 +122,7 @@ class GameNode(SGFNode):
             return []
         if not self.analysis["moves"]:
             polmoves = self.policy_ranking
-            top_polmove = polmoves[0][0] if polmoves else Move(None)  # if no info at all, pass
+            top_polmove = polmoves[0][1] if polmoves else Move(None)  # if no info at all, pass
             return [{**self.analysis["root"], "pointsLost": 0, "order": 0, "move": top_polmove.gtp()}]  # single visit -> go by policy/root
 
         return sorted(
@@ -127,14 +131,10 @@ class GameNode(SGFNode):
         )
 
     @property
-    def policy_ranking(self) -> Optional[List[Tuple[Move, float]]]:  # return moves from highest policy value to lowest
+    def policy_ranking(self) -> Optional[List[Tuple[float, Move]]]:  # return moves from highest policy value to lowest
         if self.policy:
-            ix = 0
-            moves = []
             szx, szy = self.board_size
-            for y in range(szy - 1, -1, -1):
-                for x in range(szx):
-                    moves.append((Move((x, y), player=self.next_player), self.policy[ix]))
-                    ix += 1
-            moves.append((Move(None, player=self.next_player), self.policy[ix]))
-            return sorted(moves, key=lambda mp: -mp[1])
+            policy_grid = var_to_grid(self.policy, size=[szx, szy])
+            moves = [(policy_grid[y][x], Move((x, y), player=self.next_player)) for x in range(szx) for y in range(szy)]
+            moves.append((self.policy[-1],Move(None, player=self.next_player)))
+            return sorted(moves, key=lambda mp: -mp[0])

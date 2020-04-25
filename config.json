@@ -43,6 +43,7 @@
         "balance_max_loss": 5,
         "balance_min_visits": 20,
         "noise_strength": 0.8,
+        "pick_override": 0.95,
         "pick_n": 10,
         "pick_frac": 0.2,
         "local_stddev": 5,

@@ -526,7 +526,7 @@
         BadukPanControls:
             id: board_controls
             size_hint_y: None
-            height: self.width / 13.5
+            height: min(100,self.width / 13.5)
     BoxLayout: # avoids a weird syntax error in builder .. somehow
         size_hint_x: None
         size_hint_y: 1

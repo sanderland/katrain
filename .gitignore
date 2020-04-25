@@ -10,6 +10,7 @@ log.txt
 sgfout
 sgf_selfplay
 log*
+tmp.pickle
 my
 
 # debug

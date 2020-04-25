@@ -8,16 +8,19 @@
 [x] Scrolling add a move on the board instead of navigating through the game. This was already the case in the 0.9 version and it's quite annoying as scrolling seemed only natural and I kept forgetting not to do it :p
 [x] show PV on hint hover?  Although Katrain wasn't meant to be like Lizzie to begin with, it would be really neat if we could visualize the expected variations when hovering over the top moves.
 [x Self-play tournaments in separate script.
+[x] ai thoughts in sgf
+[x] more AI modes?
 
-[] Score instead of game end
+[/] README
 [] engine status
-[] README
-[] Release notes
-[] more AI modes?
+[] policy threshold override p+pick?
 [] sgf review improvements
+[] Release notes
  --  Likewise, in the 0.9 version, better alternatives to the played move were shown with squares, which was also pretty useful when using the sgf outside of Katrain. I mean, having the top move mentioned is all and good, but when you see multiple squares shown on the board as better alternatives to the move played in the game, it makes obvious how far from perfect that move actually was :D
-[] ai thoughts in sgf
+
 [] pol value override > 0.9 ?
+[] clarify score change vs score
+[] pv with overlap?
 
 - dots: SPINNER! off last few / white black / >x pt  (multi select?)
 
@@ -27,6 +30,7 @@ Low priority
 [] box to label ? split in status and comment?
 [] dual engine support -- easily possible but has weird effects on win rate etc
 [] When creating a new game, the 9 buttons on the right side aren't all that useful. Maybe the 9, 13 and 19 ones make sense since these three board sizes are the traditionally used ones, but why 2, 4 and 9 stones buttons? Why 0.5, 6.5 and -40pts komi buttons?
+[] Score instead of game end
 
 Wont do for now
 [] List edit settings/object edit settings?
