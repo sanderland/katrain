@@ -28,15 +28,11 @@ ENGINE_SETTINGS = {
     "threads": 1,
 }
 ai_settings = {
-    "balance_target_score": 2,
-    "balance_random_loss": 1,
-    "balance_max_loss": 5,
-    "balance_min_visits": 20,
     "noise_strength": 0.8,
     "pick_n": 10,
     "pick_frac": 0.2,
     "stddev": 10,
-    "line_weight": 0.1,
+    "line_weight": 10,
     "pick_override": 0.95,
 }
 
@@ -54,6 +50,10 @@ ai_settings["stddev"] = 1.5
 ai_strategy = "P+Pick"
 ai_settings["pick_frac"] = 0.33  # dropping below 7k
 ai_settings["pick_n"] = 5  # dropping below 7k at 5/0.33
+
+
+ai_strategy = "P+Weighted"
+ai_settings  = {"pick_override": 0.95}
 
 logger.log(f"STARTED ENGINE", OUTPUT_ERROR)
 
