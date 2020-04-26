@@ -10,15 +10,14 @@
 [x] Self-play tournaments in separate script.
 [x] ai thoughts in sgf
 [x] more AI modes?
+[x] pol value override > 0.95 ?  policy threshold override p+pick?
+
 
 [/] README
 [] engine status
-[] policy threshold override p+pick?
-[] sgf review improvements
+[] sgf review improvements  --  Likewise, in the 0.9 version, better alternatives to the played move were shown with squares, which was also pretty useful when using the sgf outside of Katrain. I mean, having the top move mentioned is all and good, but when you see multiple squares shown on the board as better alternatives to the move played in the game, it makes obvious how far from perfect that move actually was :D
 [] Release notes
- --  Likewise, in the 0.9 version, better alternatives to the played move were shown with squares, which was also pretty useful when using the sgf outside of Katrain. I mean, having the top move mentioned is all and good, but when you see multiple squares shown on the board as better alternatives to the move played in the game, it makes obvious how far from perfect that move actually was :D
 
-[] pol value override > 0.9 ?
 [] clarify score change vs score
 [] pv with overlap?
 [] config player to sep. row/popups?

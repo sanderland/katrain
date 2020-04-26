@@ -34,7 +34,7 @@ class Game:
         if move_tree:
             self.root = move_tree
             self.komi = self.root.komi
-            handicap = int(self.root.get_first("HA",0))
+            handicap = int(self.root.get_first("HA", 0))
             if handicap and not self.root.placements:
                 self.place_handicap_stones(handicap)
         else:

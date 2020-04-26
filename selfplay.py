@@ -37,15 +37,15 @@ class AI:
     }
     NUM_THREADS = 8
     DEFAULT_SETTINGS = {
-        "balance_target_score": 2,
-        "balance_random_loss": 1,
-        "balance_max_loss": 5,
-        "balance_min_visits": 20,
+        "target_score": 2,
+        "random_loss": 1,
+        "max_loss": 5,
+        "min_visits": 20,
         "noise_strength": 0.8,
         "pick_n": 10,
         "pick_frac": 0.2,
         "local_stddev": 10,
-        "influence_weight": 0.1,
+        "line_weight": 0.1,
         "pick_override": 0.95,
     }
     IGNORE_SETTINGS_IN_TAG = {"threads", "enable_ownership", "katago"}  # katago for switching from/to bs version
@@ -133,8 +133,8 @@ test_ais = [
     AI("P+Pick", {"pick_frac": 0.5, "pick_n": 0}),
     AI("P+Influence", {"pick_frac": 0.2, "pick_n": 20}),
     AI("P+Territory", {"pick_frac": 0.2, "pick_n": 20}),
-    AI("P+Influence", {"pick_frac": 0.33, "influence_weight": 0.05}),
-    AI("P+Territory", {"pick_frac": 0.33, "influence_weight": 0.05}),
+    AI("P+Influence", {"pick_frac": 0.33, "line_weight": 0.05}),
+    AI("P+Territory", {"pick_frac": 0.33, "line_weight": 0.05}),
     AI("P+Pick", {"pick_frac": 0.0, "pick_n": 1}),
     AI("P+Tenuki", {"local_stddev": 20}),
     AI("P+Tenuki", {"local_stddev": 10}),

@@ -38,16 +38,14 @@
         "eval_show_ai": false
     },
     "ai": {
-        "balance_target_score": 2,
-        "balance_random_loss": 1,
-        "balance_max_loss": 5,
-        "balance_min_visits": 20,
-        "noise_strength": 0.8,
-        "pick_override": 0.95,
-        "pick_n": 10,
-        "pick_frac": 0.2,
-        "local_stddev": 5,
-        "influence_weight": 0.1
+        "Default": {},
+        "Balance": {"target_score":2, "random_loss": 1, "max_loss": 5, "min_visits": 20},
+        "P+Noise" : {"noise_strength": 0.8},
+        "P+Pick": {"pick_override": 0.95, "pick_n":5, "pick_frac": 0.33},
+        "P+Local": {"pick_override": 0.95, "stddev": 1.5, "pick_n":15, "pick_frac": 0.0},
+        "P+Tenuki": {"pick_override": 0.95, "stddev": 10, "pick_n":5, "pick_frac": 0.33},
+        "P+Influence": {"pick_override": 0.95, "pick_n":5, "pick_frac": 0.5,"line_weight": 0.1},
+        "P+Territory": {"pick_override": 0.95, "pick_n":5, "pick_frac": 0.5,"line_weight": 0.1}
     },
     "board_ui": {
         "starpoint_size": 0.1,

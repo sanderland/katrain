@@ -35,22 +35,25 @@ ai_settings = {
     "noise_strength": 0.8,
     "pick_n": 10,
     "pick_frac": 0.2,
-    "local_stddev": 10,
-    "influence_weight": 0.1,
+    "stddev": 10,
+    "line_weight": 0.1,
     "pick_override": 0.95,
 }
 
 engine = KataGoEngine(logger, ENGINE_SETTINGS)
-ai_strategy = "P+Pick"
-ai_strategy = "P+Local"
-ai_settings["pick_frac"] = 0.0
-ai_settings["pick_n"] = 10
-ai_settings["local_stddev"] = 1.0
 
 ai_strategy = "P+Influence"
 ai_settings["pick_frac"] = 0.5
-ai_settings["influence_weight"] = 0.1
+ai_settings["line_weight"] = 0.1
 
+ai_strategy = "P+Local"
+ai_settings["pick_frac"] = 0.0
+ai_settings["pick_n"] = 25
+ai_settings["stddev"] = 1.5
+
+ai_strategy = "P+Pick"
+ai_settings["pick_frac"] = 0.33  # dropping below 7k
+ai_settings["pick_n"] = 5  # dropping below 7k at 5/0.33
 
 logger.log(f"STARTED ENGINE", OUTPUT_ERROR)
 
@@ -70,6 +73,7 @@ while not game.ended:
         logger.log(f"Setting komi {game.root.properties}", OUTPUT_ERROR)
     elif "genmove" in line:
         game.current_node.analyze(engine)
+        game.root.add_property(f"P{game.current_node.next_player}", f"KaTrain {ai_strategy}")
         move, node = ai_move(game, ai_strategy, ai_settings)
         logger.log(f"SENT TO GTP: = {move.gtp()}", OUTPUT_ERROR)
         print(f"= {move.gtp()}\n")
@@ -81,11 +85,10 @@ while not game.ended:
         moves = sorted(list(cn.analysis["moves"].values()), key=lambda d: d["order"])
         if moves:
             pv = " ".join(moves[0]["pv"])
-        # print(cn.analysis,cn.analysis.get('root'),file=sys.stderr)
         print(
             f"CHAT:Visits {cn.ai_thoughts} Winrate {cn.analysis['root']['winrate']:.2%} ScoreLead {cn.analysis['root']['scoreLead']:.1f} ScoreStdev 0.0 PV {move.gtp()} {pv}",
             file=sys.stderr,
-        )  #
+        )
         continue
     elif "play" in line:
         _, player, move = line.split(" ")

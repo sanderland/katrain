@@ -23,6 +23,19 @@ class QuickConfigGui(BoxLayout):
         if initial_values:
             self.set_properties(self, initial_values)
 
+    @staticmethod
+    def type_to_widget_class(value):
+        if isinstance(value, float):
+            return LabelledFloatInput
+        elif isinstance(value, bool):
+            return LabelledCheckBox
+        elif isinstance(value, int):
+            return LabelledIntInput
+        if isinstance(value, dict):
+            return LabelledObjectInputArea
+        else:
+            return LabelledTextInput
+
     def collect_properties(self, widget):
         if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)):
             try:
@@ -69,19 +82,6 @@ class NewGamePopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
-    @staticmethod
-    def type_to_widget_class(value):
-        if isinstance(value, float):
-            return LabelledFloatInput
-        elif isinstance(value, bool):
-            return LabelledCheckBox
-        elif isinstance(value, int):
-            return LabelledIntInput
-        if isinstance(value, dict):
-            return LabelledObjectInputArea
-        else:
-            return LabelledTextInput
-
     def __init__(self, katrain, popup, config, ignore_cats):
         self.config = config
         self.ignore_cats = ignore_cats
@@ -157,3 +157,27 @@ class ConfigPopup(QuickConfigGui):
 
         self.katrain.debug_level = self.config["debug"]["level"]
         self.katrain.update_state(redraw_board=True)
+
+
+class ConfigAIPopup(QuickConfigGui):
+    def __init__(self, katrain, popup, ai_modes, **kwargs):
+        self.settings = self.katrain.ai_settings
+        super().__init__(katrain, popup, self.settings, **kwargs)
+        self.ai_modes = ai_modes
+        Clock.schedule_once(self._build, 0)
+
+    def _build(self):
+        for mode in self.ai_modes:
+            mode_settings = self.settings[mode]
+            column = GridLayout(rows=2 + len(mode_settings), columns=2, size_hint=(0.5, 1))
+            column.add_widget(ScaledLightLabel(text=f"Settings for AI {mode}", bold=True))
+            for k, v in mode_settings.items():
+                column.add_widget(ScaledLightLabel(text=f"{k}"))
+                column.add_widget(ConfigPopup.type_to_widget_class(v)(text=str(v), input_property=f"{mode}/{k}"))
+
+                column.add_widget(Label(text=f"Settings for AI {mode}", bold=True))
+
+            self.add_widget(column)
+
+    def on_submit(self):
+        self.popup.dismiss()

@@ -31,14 +31,14 @@
             radius: root.radius
 
 <StyledSpinnerOption@SpinnerOption>:
-    font_size: self.size[1] * 0.4
+    font_size: self.size[1] * 0.33
     background_color: BUTTON_COLOR
     background_normal: ''
     color: WHITE
 
 <StyledSpinner>:
     text: self.values[0] if self.values else ''
-    font_size: self.size[1] * 0.4
+    font_size: self.size[1] * 0.35
     sync_height: True
     background_color: [*[c*255/88 for c in BUTTON_COLOR[:3]], 1] # compensate for texture
     option_cls: 'StyledSpinnerOption'
@@ -449,9 +449,9 @@
                     on_selection: root.katrain.update_state()
                 StyledSpinner:
                     id: B_AI_mode
+                    values: ['Default']
                     size_hint: 0.3, 1
-                    values: AI_MODES
-                    on_text: B_player_mode.children[0].trigger_action(duration=0)
+                    on_text: if B_player_mode.children: B_player_mode.children[0].trigger_action(duration=0)
                 Label:
                     size_hint: None,1
                     width: 3
@@ -467,14 +467,24 @@
                 StyledSpinner:
                     id: W_AI_mode
                     size_hint: 0.3, 1
-                    values: AI_MODES
-                    on_text: W_player_mode.children[0].trigger_action(duration=0)
+                    values: ['Default']
+                    on_text: if W_player_mode.children: W_player_mode.children[0].trigger_action(duration=0)
+            BoxLayout:
+                size_hint: 1,0.05
+                padding: 1
+                spacing: 1
+                Label:
+                    size_hint: 0.55,1
+                StyledButton:
+                    text: 'Configure AIs'
+                    on_press: root.configure_ais()
+                    size_hint: 0.45,1
                 Label:
                     size_hint: None,1
                     width: 3
             LargeLabel:
                 text: ''
-                size_hint: 1,0.3
+                size_hint: 1,0.2
     CensorableLabel:
         id: score_change
         size_hint: 1, 0.0225

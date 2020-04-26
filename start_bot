@@ -1,3 +1,6 @@
 GREETING="Hello, welcome to an experimental version of KaTrain AIs - These are based on weakened policy nets of KataGo. Current mode is: Play an influential style."
-MAXGAMES=3
-gtp2ogs --apikey $(cat my/apikey) --username katrain-dev --greeting "$GREETING" --debug --ogspv katago --noclock --maxconnectedgames $MAXGAMES --persist --minrank 15k --noautohandicap --maxhandicap 0 --fakerank 3k --boardsizes 9,13,19 --komis automatic,6.5 -- python ai2gtp.py
+GREETING="Hello, welcome to an experimental version of KaTrain AIs - These are based on weakened policy nets of KataGo. Current mode is: Attach to ALL the things."
+GREETING="Hello, welcome to an experimental version of KaTrain AIs - These are based on weakened policy nets of KataGo. Current mode is: Balanced style."
+BYEMSG="Thank you for playing. If you have any feedback, please message my admin!"
+MAXGAMES=5
+gtp2ogs --apikey $(cat my/apikey) --username katrain-dev --greeting "$GREETING" --rankedonly --farewell "$BYEMSG" --debug --ogspv katago --noclock --speeds blitz,live --maxconnectedgames $MAXGAMES --persist --minrank 15k --noautohandicap --maxhandicap 0 --fakerank 3k --boardsizes 9,13,19 --komis automatic,6.5 -- python ai2gtp.py

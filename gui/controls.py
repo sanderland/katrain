@@ -1,6 +1,9 @@
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Line, SmoothLine
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.popup import Popup
+
+from gui.popups import ConfigAIPopup
 
 
 class Controls(BoxLayout):
@@ -31,7 +34,7 @@ class Controls(BoxLayout):
         return self.player_mode_groups[player].value
 
     def ai_mode(self, player):
-        return self.ai_mode_groups[player].text.lower()
+        return self.ai_mode_groups[player].text
 
     def on_size(self, *args):
         self.update_evaluation()
@@ -60,13 +63,19 @@ class Controls(BoxLayout):
                 self.score.text = current_node.format_score()
                 self.win_rate.text = current_node.format_win_rate()
                 if move and next_player_is_human_or_both_robots:  # don't immediately hide this when an ai moves comes in
-                    self.score_change.label = f"Score change"
                     points_lost = current_node.points_lost
-                    self.score_change.text = f"{move.player}{-current_node.points_lost:+.1f}" if points_lost else "..."
+                    self.score_change.label = f"Points lost for {move.player}" if points_lost and points_lost > 0 else f"Points gained for {move.player}"
+                    self.score_change.text = f"{abs(points_lost):.1f}" if points_lost else "..."
                 elif not current_player_is_ai_playing_human:
-                    self.score_change.label = f"Score change"
+                    self.score_change.label = f"Points lost"
                     self.score_change.text = ""
 
             self.graph.update_value(current_node)
 
         self.info.text = info
+
+    def configure_ais(self):
+        config_popup = Popup(title="Edit AI Settings", size_hint=(0.9, 0.9))
+        popup_contents = ConfigAIPopup(self.katrain, config_popup, {self.ai_mode("B"), self.ai_mode("W")})
+        config_popup.add_widget(popup_contents)
+        config_popup.open()
