@@ -114,8 +114,7 @@ class LabelledCheckBox(CheckBox):
 
     def __init__(self, text=None, **kwargs):
         if text is not None:
-            kwargs["active"] = bool(text)
-        print("CB", text, kwargs)
+            kwargs["active"] = text.lower() == "true"
         super().__init__(**kwargs)
 
     @property

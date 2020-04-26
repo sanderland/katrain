@@ -86,7 +86,8 @@ class KataGoEngine:
             else:
                 callback, start_time, next_move = self.queries[analysis["id"]]
                 time_taken = time.time() - start_time
-                self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}   {line[:80]}...", OUTPUT_EXTRA_DEBUG)
+                self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG)
+                self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                 callback(analysis)
                 del self.queries[analysis["id"]]
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
@@ -99,7 +100,7 @@ class KataGoEngine:
                 query["id"] = f"QUERY:{str(self.query_counter)}"
             self.queries[query["id"]] = (callback, time.time(), next_move)
         if self.katago_process:
-            self.katrain.log(f"Sending query {query['id']}: {str(query)}", OUTPUT_EXTRA_DEBUG)
+            self.katrain.log(f"Sending query {query['id']}: {str(query)}", OUTPUT_DEBUG)
             try:
                 self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
                 self.katago_process.stdin.flush()

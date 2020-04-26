@@ -34,7 +34,7 @@ class Game:
         if move_tree:
             self.root = move_tree
             self.komi = self.root.komi
-            handicap = self.root.get_first("HA")
+            handicap = int(self.root.get_first("HA",0))
             if handicap and not self.root.placements:
                 self.place_handicap_stones(handicap)
         else:
@@ -113,7 +113,7 @@ class Game:
             raise IllegalMoveException("Suicide")
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
-    def play(self, move: Move, ignore_ko: bool = False):
+    def play(self, move: Move, ignore_ko: bool = False, analyze=True):
         board_size_x, board_size_y = self.board_size
         if not move.is_pass and not (0 <= move.coords[0] < board_size_x and 0 <= move.coords[1] < board_size_y):
             raise IllegalMoveException(f"Move {move} outside of board coordinates")
@@ -124,7 +124,8 @@ class Game:
             raise
         played_node = self.current_node.play(move)
         self.current_node = played_node
-        played_node.analyze(self.engines[played_node.next_player])
+        if analyze:
+            played_node.analyze(self.engines[played_node.next_player])
         return played_node
 
     def undo(self, n_times=1):

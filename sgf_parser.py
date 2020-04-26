@@ -18,7 +18,7 @@ class Move:
 
     @classmethod
     def from_gtp(cls, gtp_coords, player="B"):
-        if "pass" in gtp_coords:
+        if "pass" in gtp_coords.lower():
             return cls(coords=None, player=player)
         match = re.match(r"([A-Z]+)(\d+)", gtp_coords)
         return cls(coords=(Move.GTP_COORD.index(match[1]), int(match[2]) - 1), player=player)

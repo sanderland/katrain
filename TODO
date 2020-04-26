@@ -7,7 +7,7 @@
 [x] graph wonky on branch switch -> check in children &c.
 [x] Scrolling add a move on the board instead of navigating through the game. This was already the case in the 0.9 version and it's quite annoying as scrolling seemed only natural and I kept forgetting not to do it :p
 [x] show PV on hint hover?  Although Katrain wasn't meant to be like Lizzie to begin with, it would be really neat if we could visualize the expected variations when hovering over the top moves.
-[x Self-play tournaments in separate script.
+[x] Self-play tournaments in separate script.
 [x] ai thoughts in sgf
 [x] more AI modes?
 
@@ -21,9 +21,9 @@
 [] pol value override > 0.9 ?
 [] clarify score change vs score
 [] pv with overlap?
-
-- dots: SPINNER! off last few / white black / >x pt  (multi select?)
-
+[] config player to sep. row/popups?
+[] dots: SPINNER! off last few / white black / >x pt  (multi select?)
+[] ogs bot connector
 
 Low priority
 [] more teaching / groups in danger? hard

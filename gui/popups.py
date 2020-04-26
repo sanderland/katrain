@@ -24,7 +24,7 @@ class QuickConfigGui(BoxLayout):
             self.set_properties(self, initial_values)
 
     def collect_properties(self, widget):
-        if isinstance(widget, (LabelledTextInput, LabelledSpinner)):
+        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)):
             try:
                 ret = {widget.input_property: widget.input_value}
             except Exception as e:
@@ -143,7 +143,7 @@ class ConfigPopup(QuickConfigGui):
         engine_updates = updated_cat["engine"]
         if "visits" in engine_updates:
             self.katrain.engine.visits = engine_updates["visits"]
-        if {key for key in engine_updates if key not in {"max_visits", "max_time"}}:
+        if {key for key in engine_updates if key not in {"max_visits", "max_time", "enable_ownership"}}:
             self.katrain.log(f"Restarting Engine after {engine_updates} settings change")
             self.katrain.controls.set_status(f"Restarting Engine after {engine_updates} settings change")
             old_engine = self.katrain.engine
@@ -155,4 +155,5 @@ class ConfigPopup(QuickConfigGui):
             else:
                 self.katrain.game.analyze_all_nodes()  # old engine was broken, so make sure we redo any failures
 
+        self.katrain.debug_level = self.config["debug"]["level"]
         self.katrain.update_state(redraw_board=True)

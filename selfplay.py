@@ -142,17 +142,17 @@ test_ais = [
     AI("P+Local", {"local_stddev": 10}),
     AI("P+Local", {"local_stddev": 5}),
     AI("P+Local", {"local_stddev": 1}),
-    AI("P+Local", {"local_stddev": 1,"pick_frac": 0.0, "pick_n": 20}),
+    AI("P+Local", {"local_stddev": 1, "pick_frac": 0.0, "pick_n": 20}),
 ]
 
-#test_ais = [
+# test_ais = [
 #    AI("Policy", {}),
 #    AI("P+Noise", {"noise_strength": 0.4}),
 #    AI("P+Noise", {"noise_strength": 0.5}),
 #    AI("P+Noise", {"noise_strength": 0.6}),
 #    AI("P+Noise", {"noise_strength": 0.7}),
 #    AI("P+Noise", {"noise_strength": 0.8}),
-#]
+# ]
 
 # ai_database = [ai for ai in ai_database if "Territory" not in ai.name and "Influence" not in ai.name]
 for ai in test_ais:
@@ -195,7 +195,7 @@ def play_games(black: AI, white: AI, n: int = N_GAMES):
             results[tag].append(score)
             all_results.append((black.name, white.name, score))
 
-        with open('tmp.pickle', "wb") as f:
+        with open("tmp.pickle", "wb") as f:
             pickle.dump((ai_database, all_results), f)
     except Exception as e:
         print(f"Exception in playing {tag}: {e}")
