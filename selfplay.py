@@ -143,17 +143,8 @@ test_ais = [
     AI("P+Local", {"local_stddev": 5}),
     AI("P+Local", {"local_stddev": 1}),
     AI("P+Local", {"local_stddev": 1, "pick_frac": 0.0, "pick_n": 20}),
+    AI("P+Weighted", {"pick_override": 1.0}),
 ]
-
-test_ais = [
-    AI("Policy", {}),
-    AI("P+Weighted", {'pick_override':1.0}),
-    AI("P+Noise", {"noise_strength": 0.6}),
-    AI("P+Noise", {"noise_strength": 0.7}),
-    AI("P+Noise", {"noise_strength": 0.8}),
-    AI("P+Noise", {"noise_strength": 0.9}),
-]
-
 
 
 # test_ais = [

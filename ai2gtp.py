@@ -27,14 +27,7 @@ ENGINE_SETTINGS = {
     "enable_ownership": False,
     "threads": 1,
 }
-ai_settings = {
-    "noise_strength": 0.8,
-    "pick_n": 10,
-    "pick_frac": 0.2,
-    "stddev": 10,
-    "line_weight": 10,
-    "pick_override": 0.95,
-}
+ai_settings = {"noise_strength": 0.8, "pick_n": 10, "pick_frac": 0.2, "stddev": 10, "line_weight": 10, "pick_override": 0.95}
 
 engine = KataGoEngine(logger, ENGINE_SETTINGS)
 
@@ -53,7 +46,7 @@ ai_settings["pick_n"] = 5  # dropping below 7k at 5/0.33
 
 
 ai_strategy = "P+Weighted"
-ai_settings  = {"pick_override": 0.95}
+ai_settings = {"pick_override": 0.95}
 
 ai_strategy = "P+Local"
 ai_settings["pick_frac"] = 0.0

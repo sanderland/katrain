@@ -9,6 +9,7 @@ log.txt
 *.sgf
 sgfout
 sgf_selfplay
+sgf_ogs
 log*
 tmp.pickle
 my

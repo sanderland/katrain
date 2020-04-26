@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import List, Union, Dict
 import threading
 
+from common import var_to_grid
 from engine import KataGoEngine
 from game_node import GameNode
 from sgf_parser import SGF, Move
@@ -224,7 +225,13 @@ class Game:
             return
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
-            analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(board_size_x) for y in range(board_size_y) if (x, y) not in stones]
+            policy_grid = var_to_grid(self.current_node.policy, size=(board_size_x, board_size_y)) if self.current_node.policy else None
+            analyze_moves = [
+                Move(coords=(x, y), player=cn.next_player)
+                for x in range(board_size_x)
+                for y in range(board_size_y)
+                if (policy_grid is None and (x, y) not in stones) or policy_grid[y][x] >= 0
+            ]
             visits = int(engine.config["max_visits"] * self.config["sweep_visits_frac"] + 0.5)
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
             priority = -1_000_000_000

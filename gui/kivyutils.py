@@ -24,8 +24,10 @@ class DarkLabel(Label):
 class ScaledLightLabel(DarkLabel):
     pass
 
+
 class LightHelpLabel(ScaledLightLabel):
     pass
+
 
 class StyledButton(Button):
     button_color = ListProperty([])
@@ -79,7 +81,7 @@ class ToggleButtonContainer(GridLayout):
     def _size(self, _dt):
         if self.autosize:
             for tb in self.children:
-                tb.size_hint = (tb.texture_size[0] + 25, 1)
+                tb.size_hint = (tb.texture_size[0] + 10, 1)
 
     @property
     def value(self):

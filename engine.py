@@ -80,7 +80,7 @@ class KataGoEngine:
                 self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
                 continue
             if "error" in analysis:
-                if not (next_move is None and "Illegal move" in analysis["error"]):  # sweep
+                if not (next_move and "Illegal move" in analysis["error"]):  # sweep
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
                 continue
             else:

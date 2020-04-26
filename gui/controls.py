@@ -64,7 +64,7 @@ class Controls(BoxLayout):
                 self.win_rate.text = current_node.format_win_rate()
                 if move and next_player_is_human_or_both_robots:  # don't immediately hide this when an ai moves comes in
                     points_lost = current_node.points_lost
-                    self.score_change.label = f"Points lost for {move.player}" if points_lost and points_lost > 0 else f"Points gained for {move.player}"
+                    self.score_change.label = f"Points lost ({move.player})" if points_lost and points_lost > 0 else f"Points gained ({move.player})"
                     self.score_change.text = f"{abs(points_lost):.1f}" if points_lost else "..."
                 elif not current_player_is_ai_playing_human:
                     self.score_change.label = f"Points lost"
