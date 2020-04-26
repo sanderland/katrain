@@ -193,7 +193,7 @@ class KaTrainGui(BoxLayout):
 
     def _do_config_popup(self):
         config_popup = Popup(title="Edit Settings", size_hint=(0.9, 0.9))
-        popup_contents = ConfigPopup(self, config_popup, dict(self._config), ignore_cats=("board_ui","ai"))
+        popup_contents = ConfigPopup(self, config_popup, dict(self._config), ignore_cats=("board_ui", "ai"))
         config_popup.add_widget(popup_contents)
         config_popup.open()
 

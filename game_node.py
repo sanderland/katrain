@@ -43,7 +43,8 @@ class GameNode(SGFNode):
 
     def set_analysis(self, analysis_json, refine_move):
         if refine_move:
-            self.update_move_analysis(analysis_json["rootInfo"], refine_move.gtp())
+            pvtail = analysis_json["moveInfos"][0]["pv"] if analysis_json["moveInfos"] else []
+            self.update_move_analysis({"pv": [refine_move.gtp()] + pvtail, **analysis_json["rootInfo"]}, refine_move.gtp())
         else:
             for move_analysis in analysis_json["moveInfos"]:
                 self.update_move_analysis(move_analysis, move_analysis["move"])
@@ -134,7 +135,7 @@ class GameNode(SGFNode):
     def policy_ranking(self) -> Optional[List[Tuple[float, Move]]]:  # return moves from highest policy value to lowest
         if self.policy:
             szx, szy = self.board_size
-            policy_grid = var_to_grid(self.policy, size=[szx, szy])
+            policy_grid = var_to_grid(self.policy, size=(szx, szy))
             moves = [(policy_grid[y][x], Move((x, y), player=self.next_player)) for x in range(szx) for y in range(szy)]
             moves.append((self.policy[-1], Move(None, player=self.next_player)))
             return sorted(moves, key=lambda mp: -mp[0])
