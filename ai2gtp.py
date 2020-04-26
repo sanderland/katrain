@@ -55,6 +55,12 @@ ai_settings["pick_n"] = 5  # dropping below 7k at 5/0.33
 ai_strategy = "P+Weighted"
 ai_settings  = {"pick_override": 0.95}
 
+ai_strategy = "P+Local"
+ai_settings["pick_frac"] = 0.0
+ai_settings["pick_n"] = 20
+ai_settings["stddev"] = 1.0
+
+
 logger.log(f"STARTED ENGINE", OUTPUT_ERROR)
 
 game = Game(Logger(), engine, {})
