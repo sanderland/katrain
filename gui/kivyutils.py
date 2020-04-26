@@ -24,6 +24,8 @@ class DarkLabel(Label):
 class ScaledLightLabel(DarkLabel):
     pass
 
+class LightHelpLabel(ScaledLightLabel):
+    pass
 
 class StyledButton(Button):
     button_color = ListProperty([])

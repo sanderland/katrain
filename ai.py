@@ -54,10 +54,10 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         elif policy_moves[0][0] > ai_settings["pick_override"]:
             aimove = top_policy_move
             ai_thoughts += f"Top policy move has weight > {ai_settings['pick_override']:.1%}, so overriding other strategies."
-        elif top_5_pass:
+        elif top_5_pass or "weighted" in ai_mode:
             weighted_coords = [(policy_grid[y][x], policy_grid[y][x], x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
             aimove = Move(weighted_selection_without_replacement(weighted_coords, 1)[0][2:], player=cn.next_player)  # just take a random move by policy w/o noise
-            ai_thoughts += f"Playing policy-weighted random move {aimove.gtp()} because one of them is pass."
+            ai_thoughts += f"Playing policy-weighted random move {aimove.gtp()}" + (" because one of them is pass." if top_5_pass else " because strategy is weighted.")
         elif "noise" in ai_mode:
             noise_str = ai_settings["noise_strength"]
             d_noise = dirichlet_noise(len(legal_policy_moves))
@@ -65,13 +65,13 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             new_top = heapq.nlargest(5, noisy_policy_moves)
             aimove = new_top[0][1]
             ai_thoughts += f"Noisy policy strategy (strength={noise_str:.2f}) generated 5 moves {fmt_moves(new_top)} so picked {aimove.gtp()}. "
-        elif any(keyword in ai_mode for keyword in ["influence", "territory", "local", "tenuki", "pick"]):
+        elif "p+" in ai_mode:
             n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])
             if "influence" in ai_mode or "territory" in ai_mode:
                 if "influence" in ai_mode:
-                    weight = lambda x, y: ai_settings["line_weight"] ** max(0, 3 - min(size[0] - 1 - x, x, y, size[1] - 1 - y))
+                    weight = lambda x, y: (1/ai_settings["line_weight"]) ** max(0, 3 - min(size[0] - 1 - x, x, y, size[1] - 1 - y))
                 else:
-                    weight = lambda x, y: ai_settings["line_weight"] ** max(0, min(size[0] - 1 - x, x, y, size[1] - 1 - y) - 2)
+                    weight = lambda x, y:(1/ai_settings["line_weight"]) ** max(0, min(size[0] - 1 - x, x, y, size[1] - 1 - y) - 2)
                 weighted_coords = [(policy_grid[y][x] * weight(x, y), weight(x, y), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
                 ai_thoughts += f"Generated weights for {ai_mode} according to weight factor {ai_settings['line_weight']} and distance from 4th line. "
             elif "local" in ai_mode or "tenuki" in ai_mode:
@@ -120,7 +120,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         ai_thoughts += f"Balance strategy selected moves {sel_moves} based on target score and max points lost, and randomly chose {aimove.gtp()}."
     elif "jigo" in ai_mode and candidate_ai_moves[0]["move"] != "pass":
         sign = cn.player_sign(cn.next_player)  # TODO check
-        jigo_move = min(candidate_ai_moves, key=lambda move: abs(sign * move["scoreLead"] - 0.5))
+        jigo_move = min(candidate_ai_moves, key=lambda move: abs(sign * move["scoreLead"] - ai_settings['target_score']))
         aimove = Move.from_gtp(jigo_move["move"], player=cn.next_player)
         ai_thoughts += f"Jigo strategy found candidate moves {candidate_ai_moves} moves and chose {aimove.gtp()} as closest to 0.5 point win"
     else:

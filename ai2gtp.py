@@ -44,7 +44,7 @@ engine = KataGoEngine(logger, ENGINE_SETTINGS)
 
 ai_strategy = "P+Influence"
 ai_settings["pick_frac"] = 0.5
-ai_settings["line_weight"] = 0.1
+ai_settings["line_weight"] = 10
 
 ai_strategy = "P+Local"
 ai_settings["pick_frac"] = 0.0

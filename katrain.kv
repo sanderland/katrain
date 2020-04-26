@@ -1,8 +1,6 @@
 #:kivy 1.11.0
 #:import ew kivy.uix.effectwidget
 
-
-#:set AI_MODES ['Default','Balance','Jigo','Policy','P+Pick','P+Local','P+Tenuki','P+Territory','P+Influence','P+Noise','<Pause>']
 #:set PLAYER_MODES ['Human', 'Teach','AI:']
 #:set PLAYER_MODE_VALUES ['human','human+undo','ai']
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
@@ -90,6 +88,12 @@
 <ScaledLightLabel>: # popups
     color: WHITE
     font_size: 0.45*self.size[1]
+
+<LightHelpLabel>:
+    font_size: self.size[1]/10
+    halign: 'center'
+    valign: 'center'
+    multiline: True
 
 
 <LabelledTextArea>
@@ -478,7 +482,7 @@
                 StyledButton:
                     text: 'Configure AIs'
                     on_press: root.configure_ais()
-                    size_hint: 0.45,1
+                    size_hint: 0.44,1
                 Label:
                     size_hint: None,1
                     width: 3
@@ -657,21 +661,13 @@
             input_property: 'RU'
             id: rules_spinner
         Label:
-        ScaledLightLabel:
-            font_size: self.size[1]/8
+        LightHelpLabel:
             text: "Use x:y (e.g. 19:9) to play on a non-square board."
             size_hint: 1,2
-            halign: 'center'
-            valign: 'center'
-            multiline: True
             text_size: self.width-6, None
             id: info
-        ScaledLightLabel:
+        LightHelpLabel:
             text: "Note that handicaps above 9 are not supported on non-square boards."
-            font_size: self.size[1]/8
-            halign: 'center'
-            valign: 'center'
-            multiline: True
             text_size: self.width-6, None
             id: info
         StyledButton:

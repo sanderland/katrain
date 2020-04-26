@@ -8,7 +8,7 @@ from kivy.uix.label import Label
 from common import OUTPUT_DEBUG, OUTPUT_ERROR
 from engine import KataGoEngine
 from game import Game, GameNode
-from gui.kivyutils import LabelledCheckBox, LabelledFloatInput, LabelledIntInput, LabelledObjectInputArea, LabelledSpinner, LabelledTextInput, ScaledLightLabel, StyledButton
+from gui.kivyutils import LabelledCheckBox, LabelledFloatInput, LabelledIntInput, LabelledObjectInputArea, LabelledSpinner, LabelledTextInput, ScaledLightLabel, StyledButton, LightHelpLabel
 
 
 class InputParseError(Exception):
@@ -16,8 +16,8 @@ class InputParseError(Exception):
 
 
 class QuickConfigGui(BoxLayout):
-    def __init__(self, katrain, popup, initial_values=None):
-        super().__init__()
+    def __init__(self, katrain, popup, initial_values=None,**kwargs):
+        super().__init__(**kwargs)
         self.katrain = katrain
         self.popup = popup
         if initial_values:
@@ -65,7 +65,7 @@ class LoadSGFPopup(BoxLayout):
 class NewGamePopup(QuickConfigGui):
     def __init__(self, katrain, popup, properties, **kwargs):
         properties["RU"] = KataGoEngine.get_rules(katrain.game.root)
-        super().__init__(katrain, popup, properties)
+        super().__init__(katrain, popup, properties,**kwargs)
         self.rules_spinner.values = list(set(self.katrain.engine.RULESETS.values()))
         self.rules_spinner.text = properties["RU"]
 
@@ -82,11 +82,11 @@ class NewGamePopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
-    def __init__(self, katrain, popup, config, ignore_cats):
+    def __init__(self, katrain, popup, config, ignore_cats,**kwargs):
         self.config = config
         self.ignore_cats = ignore_cats
         self.orientation = "vertical"
-        super().__init__(katrain, popup)
+        super().__init__(katrain, popup,**kwargs)
         Clock.schedule_once(self._build, 0)
 
     def _build(self, _):
@@ -161,23 +161,50 @@ class ConfigPopup(QuickConfigGui):
 
 class ConfigAIPopup(QuickConfigGui):
     def __init__(self, katrain, popup, ai_modes, **kwargs):
+        super().__init__(katrain, popup,  katrain.ai_settings, **kwargs)
         self.settings = self.katrain.ai_settings
-        super().__init__(katrain, popup, self.settings, **kwargs)
         self.ai_modes = ai_modes
         Clock.schedule_once(self._build, 0)
+        self.orientation ='vertical'
 
-    def _build(self):
+    def _build(self,_dt):
+        colbox = BoxLayout(spacing=5)
         for mode in self.ai_modes:
             mode_settings = self.settings[mode]
-            column = GridLayout(rows=2 + len(mode_settings), columns=2, size_hint=(0.5, 1))
-            column.add_widget(ScaledLightLabel(text=f"Settings for AI {mode}", bold=True))
+            num_rows = len(mode_settings) - 2
+            column = GridLayout(cols=2, rows=max(num_rows,4) + 3,spacing=1,padding=3)
+            column.add_widget(ScaledLightLabel(text=f"Settings for AI"))
+            column.add_widget(ScaledLightLabel(text=f"{mode}", bold=True))
+            column.add_widget(LightHelpLabel(size_hint=(1,3),text=mode_settings.get('_help_left','')))
+            column.add_widget(LightHelpLabel(size_hint=(1,3),text=mode_settings.get('_help_right', '')))
             for k, v in mode_settings.items():
-                column.add_widget(ScaledLightLabel(text=f"{k}"))
-                column.add_widget(ConfigPopup.type_to_widget_class(v)(text=str(v), input_property=f"{mode}/{k}"))
+                if not k.startswith("_"):
+                    column.add_widget(ScaledLightLabel(text=f"{k}"))
+                    column.add_widget(ConfigPopup.type_to_widget_class(v)(text=str(v), input_property=f"{mode}/{k}"))
+            for _ in range(4 - num_rows):
+                column.add_widget(ScaledLightLabel(text=f""))
+                column.add_widget(ScaledLightLabel(text=f""))
+            colbox.add_widget(column)
+        if len(self.ai_modes)==1:
+            colbox.add_widget(ScaledLightLabel(text=f""))
+        bl = BoxLayout(size_hint=(1,0.2),spacing=2)
+        bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
+        bl.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
+        self.add_widget(colbox)
+        self.add_widget(bl)
 
-                column.add_widget(Label(text=f"Settings for AI {mode}", bold=True))
+    def update_config(self, save_to_file=False):
+        try:
+            for k, v in self.collect_properties(self).items():
+                k1, k2 = k.split("/")
+                print(k1,k2,v,self.settings[k1][k2])
+                if self.settings[k1][k2] != v:
+                    self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
 
-            self.add_widget(column)
+            self.popup.dismiss()
+        except InputParseError as e:
+            self.info_label.text = str(e)
+            self.katrain.log(e, OUTPUT_ERROR)
+            return
 
-    def on_submit(self):
         self.popup.dismiss()
