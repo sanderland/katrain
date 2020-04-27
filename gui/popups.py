@@ -244,13 +244,13 @@ class ConfigTeacherPopup(QuickConfigGui):
         thrbox.add_widget(ScaledLightLabel(text="Point loss greater than", bold=True))
         thrbox.add_widget(ScaledLightLabel(text="Gives this many undos", bold=True))
         thrbox.add_widget(ScaledLightLabel(text="Color (fixed)", bold=True))
-        thrbox.add_widget(ScaledLightLabel(text="Visibility (0=hidden)", bold=True))
+        thrbox.add_widget(ScaledLightLabel(text="Show dots", bold=True))
 
         for i, (thr, undos, color) in enumerate(zip(thresholds, undos, colors)):
             thrbox.add_widget(LabelledFloatInput(text=str(thr), input_property=f"eval_thresholds::{i}"))
             thrbox.add_widget(LabelledFloatInput(text=str(undos), input_property=f"num_undo_prompts::{i}"))
             thrbox.add_widget(BackgroundLabel(background=color[:3]))
-            thrbox.add_widget(LabelledFloatInput(text=str(color[3]), input_property=f"alpha::{i}"))
+            thrbox.add_widget(LabelledCheckBox(text=str(color[3]==1), input_property=f"alpha::{i}"))
 
         self.add_widget(thrbox)
 
@@ -281,6 +281,7 @@ class ConfigTeacherPopup(QuickConfigGui):
                             self.settings[k1][i] = v
                             self.katrain.log(f"Updating setting {k1}[{i}] = {v}", OUTPUT_DEBUG)
                     else:
+                        v = 1.0 if v else 0.0
                         if self.ui_settings["eval_colors"][i][3] != v:
                             self.katrain.log(f"Updating alpha {i} = {v}", OUTPUT_DEBUG)
                             self.ui_settings["eval_colors"][i][3] = v
