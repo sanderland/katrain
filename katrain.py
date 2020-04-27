@@ -38,8 +38,7 @@ class KaTrainGui(BoxLayout):
         self._load_config()
 
         self.debug_level = self.config("debug/level", OUTPUT_INFO)
-        self.ai_settings = self.config("ai")
-        self.controls.ai_mode_groups["W"].values = self.controls.ai_mode_groups["B"].values = self.ai_settings.keys()
+        self.controls.ai_mode_groups["W"].values = self.controls.ai_mode_groups["B"].values = self.config("ai").keys()
         self.message_queue = Queue()
 
         self._keyboard = Window.request_keyboard(None, self, "")
@@ -145,7 +144,7 @@ class KaTrainGui(BoxLayout):
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
             mode = self.controls.ai_mode(self.game.current_node.next_player)
-            settings = self.ai_settings[mode]
+            settings = self.config("ai/mode")
             if settings:
                 ai_move(self.game, mode, settings)
 
@@ -193,7 +192,7 @@ class KaTrainGui(BoxLayout):
 
     def _do_config_popup(self):
         config_popup = Popup(title="Edit Settings", size_hint=(0.9, 0.9))
-        popup_contents = ConfigPopup(self, config_popup, dict(self._config), ignore_cats=("board_ui", "ai"))
+        popup_contents = ConfigPopup(self, config_popup, dict(self._config), ignore_cats=("trainer", "ai"))
         config_popup.add_widget(popup_contents)
         config_popup.open()
 

@@ -15,6 +15,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
+from kivy.uix.widget import Widget
 
 
 class DarkLabel(Label):
@@ -26,6 +27,14 @@ class ScaledLightLabel(DarkLabel):
 
 
 class LightHelpLabel(ScaledLightLabel):
+    pass
+
+
+class BackgroundColor(Widget):
+    background = ListProperty([1, 1, 1, 0])
+
+
+class BackgroundLabel(Label, BackgroundColor):
     pass
 
 

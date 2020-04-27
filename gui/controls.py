@@ -3,7 +3,7 @@ from kivy.graphics.vertex_instructions import Line, SmoothLine
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 
-from gui.popups import ConfigAIPopup
+from gui.popups import ConfigAIPopup, ConfigTeacherPopup
 
 
 class Controls(BoxLayout):
@@ -77,5 +77,11 @@ class Controls(BoxLayout):
     def configure_ais(self):
         config_popup = Popup(title="Edit AI Settings", size_hint=(0.9, 0.9))
         popup_contents = ConfigAIPopup(self.katrain, config_popup, {self.ai_mode("B"), self.ai_mode("W")})
+        config_popup.add_widget(popup_contents)
+        config_popup.open()
+
+    def configure_teacher(self):
+        config_popup = Popup(title="Edit Teacher Settings", size_hint=(0.6, 0.8))
+        popup_contents = ConfigTeacherPopup(self.katrain, config_popup)
         config_popup.add_widget(popup_contents)
         config_popup.open()

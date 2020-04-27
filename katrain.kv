@@ -11,6 +11,16 @@
 #:set WHITE [0.95,0.95,0.95,1]
 #:set GREY  [0.5,0.5,0.5,1]
 
+
+<BackgroundColor>:
+    canvas.before:
+        Color:
+            rgb: root.background
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
 <StyledButton>:
     color: WHITE
     font_size: self.size[1] * 0.45
@@ -475,17 +485,15 @@
                     on_text: if W_player_mode.children: W_player_mode.children[0].trigger_action(duration=0)
             BoxLayout:
                 size_hint: 1,0.05
-                padding: 1
+                padding: 5,0
                 spacing: 1
-                Label:
-                    size_hint: 0.55,1
+                StyledButton:
+                    text: 'Configure Teacher'
+                    on_press: root.configure_teacher()
+                    size_hint: 1.33, 1
                 StyledButton:
                     text: 'Configure AIs'
                     on_press: root.configure_ais()
-                    size_hint: 0.44,1
-                Label:
-                    size_hint: None,1
-                    width: 3
             LargeLabel:
                 text: ''
                 size_hint: 1,0.2

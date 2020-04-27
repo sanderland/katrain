@@ -66,7 +66,7 @@ while not game.ended:
         logger.log(f"Setting komi {game.root.properties}", OUTPUT_ERROR)
     elif "genmove" in line:
         game.current_node.analyze(engine)
-        game.root.add_property(f"P{game.current_node.next_player}", f"KaTrain {ai_strategy}")
+        game.root.properties[f"P{game.current_node.next_player}"] = [f"KaTrain {ai_strategy}"]
         move, node = ai_move(game, ai_strategy, ai_settings)
         logger.log(f"SENT TO GTP: = {move.gtp()}", OUTPUT_ERROR)
         print(f"= {move.gtp()}\n")

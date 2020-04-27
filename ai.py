@@ -58,7 +58,9 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             weighted_coords = [(policy_grid[y][x], policy_grid[y][x], x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
             best = weighted_selection_without_replacement(weighted_coords, 1)[0]
             aimove = Move(best[2:], player=cn.next_player)  # just take a random move by policy w/o noise
-            ai_thoughts += f"Playing policy-weighted random move {aimove.gtp()} ({best[0]:.1%})" + (" because one of them is pass." if top_5_pass else " because strategy is weighted.")
+            ai_thoughts += f"Playing policy-weighted random move {aimove.gtp()} ({best[0]:.1%})" + (
+                " because one of them is pass." if top_5_pass else " because strategy is weighted."
+            )
         elif "noise" in ai_mode:
             noise_str = ai_settings["noise_strength"]
             d_noise = dirichlet_noise(len(legal_policy_moves))

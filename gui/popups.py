@@ -9,15 +9,16 @@ from common import OUTPUT_DEBUG, OUTPUT_ERROR
 from engine import KataGoEngine
 from game import Game, GameNode
 from gui.kivyutils import (
+    BackgroundLabel,
     LabelledCheckBox,
     LabelledFloatInput,
     LabelledIntInput,
     LabelledObjectInputArea,
     LabelledSpinner,
     LabelledTextInput,
+    LightHelpLabel,
     ScaledLightLabel,
     StyledButton,
-    LightHelpLabel,
 )
 
 
@@ -171,15 +172,15 @@ class ConfigPopup(QuickConfigGui):
 
 class ConfigAIPopup(QuickConfigGui):
     def __init__(self, katrain, popup, ai_modes, **kwargs):
-        super().__init__(katrain, popup, katrain.ai_settings, **kwargs)
-        self.settings = self.katrain.ai_settings
+        self.settings = self.katrain.config("ai")
+        super().__init__(katrain, popup, self.settings, **kwargs)
         self.ai_modes = ai_modes
         Clock.schedule_once(self._build, 0)
         self.orientation = "vertical"
 
     def _build(self, _dt):
         colbox = BoxLayout(spacing=5)
-        for mode in self.ai_modes:
+        for i, mode in enumerate(self.ai_modes):
             mode_settings = self.settings[mode]
             num_rows = len(mode_settings) - 2
             column = GridLayout(cols=2, rows=max(num_rows, 4) + 3, spacing=1, padding=3)
@@ -195,9 +196,14 @@ class ConfigAIPopup(QuickConfigGui):
                 column.add_widget(ScaledLightLabel(text=f""))
                 column.add_widget(ScaledLightLabel(text=f""))
             colbox.add_widget(column)
+            if i == 0:
+                colbox.add_widget(BackgroundLabel(text=f"", size_hint=(0.02, 1), background=(1, 1, 1, 1)))
+
         if len(self.ai_modes) == 1:
             colbox.add_widget(ScaledLightLabel(text=f""))
+        self.info_label = Label()
         bl = BoxLayout(size_hint=(1, 0.2), spacing=2)
+        bl.add_widget(self.info_label)
         bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
         bl.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
         self.add_widget(colbox)
@@ -207,10 +213,81 @@ class ConfigAIPopup(QuickConfigGui):
         try:
             for k, v in self.collect_properties(self).items():
                 k1, k2 = k.split("/")
-                print(k1, k2, v, self.settings[k1][k2])
+                self.settings[k1][k2] = v
                 if self.settings[k1][k2] != v:
                     self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
+                if save_to_file:
+                    self.katrain.save_config()
+            self.popup.dismiss()
+        except InputParseError as e:
+            self.info_label.text = str(e)
+            self.katrain.log(e, OUTPUT_ERROR)
+            return
 
+        self.popup.dismiss()
+
+
+class ConfigTeacherPopup(QuickConfigGui):
+    def __init__(self, katrain, popup, **kwargs):
+        self.settings = katrain.config("trainer")
+        self.ui_settings = katrain.config("board_ui")
+        super().__init__(katrain, popup, self.settings, **kwargs)
+        Clock.schedule_once(self._build, 0)
+        self.orientation = "vertical"
+        self.spacing = 2
+
+    def _build(self, _dt):
+        thresholds = self.settings["eval_thresholds"]
+        undos = self.settings["num_undo_prompts"]
+        colors = self.ui_settings["eval_colors"]
+        thrbox = GridLayout(spacing=1, padding=2, cols=4, rows=len(thresholds) + 1)
+        thrbox.add_widget(ScaledLightLabel(text="Point loss greater than", bold=True))
+        thrbox.add_widget(ScaledLightLabel(text="Gives this many undos", bold=True))
+        thrbox.add_widget(ScaledLightLabel(text="Color (fixed)", bold=True))
+        thrbox.add_widget(ScaledLightLabel(text="Visibility (0=hidden)", bold=True))
+
+        for i, (thr, undos, color) in enumerate(zip(thresholds, undos, colors)):
+            thrbox.add_widget(LabelledFloatInput(text=str(thr), input_property=f"threshold::{i}"))
+            thrbox.add_widget(LabelledFloatInput(text=str(undos), input_property=f"undo::{i}"))
+            thrbox.add_widget(BackgroundLabel(background=color[:3]))
+            thrbox.add_widget(LabelledFloatInput(text=str(color[3]), input_property=f"alpha::{i}"))
+
+        self.add_widget(thrbox)
+
+        xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
+        xsettings.add_widget(ScaledLightLabel(text="Show last <n> dots"))
+        xsettings.add_widget(LabelledIntInput(size_hint=(0.5,1), text=str(self.settings['eval_off_show_last']),input_property = "eval_off_show_last" ))
+        self.add_widget(xsettings)
+        xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
+        xsettings.add_widget(ScaledLightLabel(text="Show dots for AI players"))
+        xsettings.add_widget(LabelledCheckBox(size_hint=(0.5,1), text=str(self.settings['eval_show_ai']),input_property = "eval_show_ai" ))
+        self.add_widget(xsettings)
+
+        bl = BoxLayout(size_hint=(1, 0.2), spacing=2)
+        bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
+        bl.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
+        self.add_widget(bl)
+
+    def update_config(self, save_to_file=False):
+        try:
+            for k, v in self.collect_properties(self).items():
+                if '::' in k:
+                    k1, i = k.split("::")
+                    i=int(i)
+                    if 'alpha' not in k1:
+                        if self.settings[k1][i] != v:
+                            self.settings[k1][i] = v
+                            self.katrain.log(f"Updating setting {k1}[{i}] = {v}", OUTPUT_DEBUG)
+                    else:
+                        if self.ui_settings['eval_colors'][i][3] != v:
+                            self.katrain.log(f"Updating alpha {i} = {v}", OUTPUT_DEBUG)
+                            self.ui_settings['eval_colors'][i][3] = v
+                else:
+                    if self.settings[k] != v:
+                        self.settings[k] = v
+                        self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
+            if save_to_file:
+                pass
             self.popup.dismiss()
         except InputParseError as e:
             self.info_label.text = str(e)
