@@ -7,14 +7,14 @@ OUTPUT_EXTRA_DEBUG = 2
 
 
 bot_strategy_names = {
-    "dev": "P+Noise",
+    "dev": "P:Noise",
     "strong": "Policy",
-    "influence": "P+Influence",
-    "territory": "P+Territory",
-    "balanced": "P+Pick",
-    "weighted": "P+Weighted",
-    "local": "P+Local",
-    "tenuki": "P+Tenuki",
+    "influence": "P:Influence",
+    "territory": "P:Territory",
+    "balanced": "P:Pick",
+    "weighted": "P:Weighted",
+    "local": "P:Local",
+    "tenuki": "P:Tenuki",
 }
 
 

@@ -49,7 +49,26 @@ class StyledToggleButton(StyledButton, ToggleButtonBehavior):
 
 
 class StyledSpinner(Spinner):
-    pass
+    sync_height_frac = NumericProperty(1.0)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.fbind("size", self._update_dropdown_size_frac)
+
+    def _update_dropdown_size_frac(self, *largs):
+        if not self.sync_height_frac:
+            return
+        dp = self._dropdown
+        if not dp:
+            return
+        container = dp.container
+        if not container:
+            return
+        h = self.height
+        fsz = self.font_size
+        for item in container.children[:]:
+            item.height = h * self.sync_height_frac
+            item.font_size = fsz
 
 
 class ToggleButtonContainer(GridLayout):
@@ -187,7 +206,7 @@ class ScoreGraph(Label):
     line_points = ListProperty([])
     dot_pos = ListProperty([0, 0])
     highlighted_index = NumericProperty(None)
-    min_scale = NumericProperty(1)
+    y_scale = NumericProperty(4)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -207,22 +226,22 @@ class ScoreGraph(Label):
             values = [n.score if n and n.score else math.nan for n in nodes]
             nn_values = [n.score for n in nodes if n and n.score]
             val_range = min(nn_values or [0]), max(nn_values or [0])
-            scale = math.ceil(max(self.min_scale, max(-val_range[0], val_range[1]) * 1.05))
+
+            self.y_scale = math.ceil(max(4, max(-val_range[0], val_range[1])) / 2) * 2
 
             xscale = self.width * 0.9 / max(len(values) - 1, 15)
             available_height = self.height * (1 - 2 * self.marginy)
-            line_points = [[self.pos[0] + self.marginx * self.width + i * xscale, self.pos[1] + available_height / 2 * (1 + val / scale)] for i, val in enumerate(values)]
+            line_points = [[self.pos[0] + self.marginx * self.width + i * xscale, self.pos[1] + available_height / 2 * (1 + val / self.y_scale)] for i, val in enumerate(values)]
             self.line_points = sum(line_points, [])
-            self.range_label_top.text = f"B+{scale:.0f}"
-            self.range_label_bottom.text = f"W+{scale:.0f}"
 
             if self.highlighted_index is not None:
                 self.highlighted_index = min(self.highlighted_index, len(values) - 1)
                 dot_point = line_points[self.highlighted_index]
                 if math.isnan(dot_point[1]):
-                    dot_point[1] = self.pos[1] + available_height / 2 * (1 + (nn_values or [0])[-1] / scale)
+                    dot_point[1] = self.pos[1] + available_height / 2 * (1 + (nn_values or [0])[-1] / self.y_scale)
                 self.dot_pos = [c - self.highlight_size / 2 for c in dot_point]
-            print("Graph updated to ", len(line_points), "points, hl=", self.highlighted_index, self.dot_pos)
+
+    #            print("Graph updated to ", len(line_points), "points, hl=", self.highlighted_index, self.dot_pos)
 
     def update_value(self, node):
         self.highlighted_index = index = node.depth

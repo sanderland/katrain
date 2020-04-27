@@ -64,12 +64,12 @@ class SGFNode:
         self.properties = defaultdict(list)
         if properties:
             for k, v in properties.items():
-                self.add_property(k, v)
+                self.set_property(k, v)
         self.parent = parent
         if self.parent:
             self.parent.children.append(self)
         if parent and move:
-            self.add_property(move.player, move.sgf(self.board_size))
+            self.set_property(move.player, move.sgf(self.board_size))
 
     @property
     def sgf_properties(self) -> Dict:
@@ -89,17 +89,22 @@ class SGFNode:
                 sgf_str += "(;" + ")(;".join(children) + ")"
         return f"(;{sgf_str})" if self.is_root else sgf_str
 
-    def add_property(self, property: str, values: Any):
-        """Add some values to the property. If not a list, it will be made into a single-value list."""
-        if not isinstance(values, list):
-            values = [values]
+    def add_list_property(self, property: str, values: List):
+        """Add some values to the property list."""
         self.properties[property] += values
 
-    def get(self, property, default=None) -> Any:
+    def get_list_property(self, property, default=None) -> Any:
         """Get the list of values for a property."""
         return self.properties.get(property, default)
 
-    def get_first(self, property, default=None) -> Any:
+    def set_property(self, property: str, value: Any):
+        """Add some values to the property. If not a list, it will be made into a single-value list."""
+        if isinstance(value, list):
+            self.properties[property] = value
+        else:
+            self.properties[property] = [value]
+
+    def get_property(self, property, default=None) -> Any:
         """Get the first value of the property, typically when exactly one is expected."""
         return self.properties.get(property, [default])[0]
 
@@ -131,7 +136,7 @@ class SGFNode:
     # some root properties are available on any node
     @property
     def board_size(self) -> Tuple[int, int]:
-        size = str(self.root.get_first("SZ", "19"))
+        size = str(self.root.get_property("SZ", "19"))
         if ":" in size:
             x, y = map(int, size.split(":"))
         else:
@@ -141,21 +146,21 @@ class SGFNode:
 
     @property
     def komi(self) -> float:
-        return float(self.root.get_first("KM", 6.5))
+        return float(self.root.get_property("KM", 6.5))
 
     @property
     def ruleset(self) -> str:
-        return self.root.get_first("RU")
+        return self.root.get_property("RU")
 
     @property
     def moves(self) -> List[Move]:
         """Returns all moves in the node."""
-        return [Move.from_sgf(move, player=pl, board_size=self.board_size) for pl in Move.PLAYERS for move in self.get(pl, [])]
+        return [Move.from_sgf(move, player=pl, board_size=self.board_size) for pl in Move.PLAYERS for move in self.get_list_property(pl, [])]
 
     @property
     def placements(self) -> List[Move]:
         """Returns all placements (AB/AW) in the node."""
-        return [Move.from_sgf(sgf_coords, player=pl, board_size=self.board_size) for pl in Move.PLAYERS for sgf_coords in self.get("A" + pl, [])]
+        return [Move.from_sgf(sgf_coords, player=pl, board_size=self.board_size) for pl in Move.PLAYERS for sgf_coords in self.get_list_property("A" + pl, [])]
 
     @property
     def move_with_placements(self) -> List[Move]:
@@ -198,13 +203,13 @@ class SGFNode:
 
     @property
     def next_player(self):
-        if self.get("B") or self.get("AB"):
+        if self.get_list_property("B") or self.get_list_property("AB"):
             return "W"
         return "B"
 
     @property
     def player(self):
-        if self.get("B") or self.get("AB"):
+        if self.get_list_property("B") or self.get_list_property("AB"):
             return "B"
         return "W"
 
@@ -254,7 +259,7 @@ class SGF:
             else:
                 property, value = match[1], match[2].strip()[1:-1]
                 values = re.split(r"\]\s*\[", value)
-                current_move.add_property(property, values)
+                current_move.add_list_property(property, values)
         if self.ix < len(self.contents):
             raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix:self.ix+25]}")
         raise ParseError("Parse Error: expected ')' at end of input.")

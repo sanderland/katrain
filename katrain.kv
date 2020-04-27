@@ -1,7 +1,7 @@
 #:kivy 1.11.0
 #:import ew kivy.uix.effectwidget
 
-#:set PLAYER_MODES ['Human', 'Teach','AI:']
+#:set PLAYER_MODES ['Human', 'Teach','AI']
 #:set PLAYER_MODE_VALUES ['human','human+undo','ai']
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
@@ -39,15 +39,20 @@
             radius: root.radius
 
 <StyledSpinnerOption@SpinnerOption>:
-    font_size: self.size[1] * 0.33
     background_color: BUTTON_COLOR
     background_normal: ''
     color: WHITE
+    canvas.after:
+        Color:
+            rgba: WHITE
+        Line
+            points: self.pos[0],self.pos[1],self.pos[0]+self.width,self.pos[1]
+            width: 1
 
 <StyledSpinner>:
     text: self.values[0] if self.values else ''
     font_size: self.size[1] * 0.33
-    sync_height: True
+    sync_height_frac: 1.0
     background_color: [*[c*255/88 for c in BUTTON_COLOR[:3]], 1] # compensate for texture
     option_cls: 'StyledSpinnerOption'
 
@@ -211,21 +216,31 @@
     size: self.texture_size
 
 <ScoreGraph>:
-    range_label_bottom: range_label_bottom
-    range_label_top: range_label_top
     highlight_size: 5
     marginx: 0.05
     marginy: 0.01
+    whalf: root.pos[1]+self.height*0.25*(1 + 2 * root.marginy)
+    bhalf: root.pos[1]+self.height*0.75*(1 - 2/3 * root.marginy)
+    mid: root.pos[1]+self.height*0.5
+    right_edge: root.pos[0] + root.width * (1 - root.marginx)
     canvas.before:
         Color:
             rgba: GREY
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.pos[1]+self.height*0.5*(1 - 2 * root.marginy),root.pos[0]+self.width*0.95,root.pos[1]+self.height*0.5]
+            points: [root.pos[0]+self.width*root.marginx,root.whalf,root.pos[0]+self.width*0.95,root.whalf]
             width: 1.0
-            dashes: [2,2]
+            dashes: [1,2]
+        Line:
+            points: [root.pos[0]+self.width*root.marginx,root.mid,root.pos[0]+self.width*0.95,root.mid]
+            width: 1.0
+            dashes: [4,4]
+        Line:
+            points: [root.pos[0]+self.width*root.marginx,root.bhalf,root.pos[0]+self.width*0.95,root.bhalf]
+            width: 1.0
+            dashes: [1,2]
         Line:
             rectangle: [root.pos[0] + root.marginx * self.width, root.pos[1] + root.marginy*self.height, root.width*0.9, root.height*(1-2*root.marginy)]
-    canvas:
+    canvas.after:
         Color:
             rgba: BLACK
         Line:
@@ -238,14 +253,26 @@
             pos: root.dot_pos
             size: self.highlight_size,self.highlight_size
     GraphMarkerLabel:
-        font_size: 0.12 * root.height
+        font_size: 0.1 * root.height
         id: range_label_top
-        pos: root.pos[0] + root.marginx * root.width + 3, root.pos[1] + root.height * (1 - 2 * root.marginy) - self.font_size - 1
+        pos: root.right_edge - self.width-1, root.pos[1]+root.height*(1-root.marginy) - self.font_size
+        text: 'B+' + str(int(root.y_scale))
+#    GraphMarkerLabel:
+#       font_size: 0.1 * root.height
+#       pos: root.right_edge - self.width-1, root.bhalf - self.font_size + 1
+#        text: 'B+' + str(int(root.y_scale/2))
     GraphMarkerLabel:
-        id: range_label_bottom
-        font_size: 0.12 * root.height
-        pos: root.pos[0] + root.marginx * root.width + 3, root.pos[1] + 1
-
+        font_size: 0.1 * root.height
+        pos: root.right_edge - self.width-1, root.mid - self.height/2 + 2
+        text: 'Jigo'
+#    GraphMarkerLabel:
+#        font_size: 0.1 * root.height
+#        pos: root.right_edge - self.width-1, root.whalf - 1
+#        text: 'W+' + str(int(root.y_scale/2))
+    GraphMarkerLabel:
+        font_size: 0.1 * root.height
+        pos: root.right_edge - self.width-1, root.pos[1]
+        text: 'W+' + str(int(root.y_scale))
 
 <BadukPanWidget>:
 	size: self.parent.height, self.parent.height
@@ -258,6 +285,7 @@
     white_prisoners: white_prisoners
     mid_circles_container: mid_circles_container
     pass_btn: pass_btn
+    engine_status_col: 0.8,0,0,1
     Label:
         size_hint: 0.05, 1
     BoxLayout:
@@ -322,7 +350,15 @@
             font_size: 0.6*self.size[1]
             on_press: root.katrain("ai-move",None)
     Label:
-        size_hint: 0.05, 1
+        size_hint: 0.025, 1
+        canvas:
+            Color:
+                rgba: root.engine_status_col
+            Ellipse:
+                pos: self.pos[0] + self.width/2 - self.height/5, self.pos[1]  + self.height/2 - self.height/5
+                size: self.height/2.5,self.height/2.5
+    Label:
+        size_hint: 0.025, 1
 
 <Controls>:
 	orientation: 'vertical'
@@ -388,7 +424,7 @@
                 CheckBoxHintLabel:
                     text: 'next\nmoves'
                 CheckBoxHintLabel:
-                    text: 'all\ndots'
+                    text: 'more\ndots'
                 CheckBoxHintLabel:
                     text: 'top\nmoves'
                 CheckBoxHintLabel:
@@ -473,6 +509,7 @@
                 StyledSpinner:
                     id: B_AI_mode
                     values: ['Default']
+                    sync_height_frac: 0.66
                     size_hint: 0.3, 1
                     on_text: if B_player_mode.children: B_player_mode.children[0].trigger_action(duration=0)
                 Label:
@@ -490,6 +527,7 @@
                 StyledSpinner:
                     id: W_AI_mode
                     size_hint: 0.3, 1
+                    sync_height_frac: 0.66
                     values: ['Default']
                     on_text: if W_player_mode.children: W_player_mode.children[0].trigger_action(duration=0)
             BoxLayout:

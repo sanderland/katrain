@@ -103,20 +103,20 @@ def retrieve_ais(selected_ais):
 
 
 test_ais = [
-    AI("P+Local", {"local_stddev": 1, "pick_frac": 0.1}),
-    AI("P+Local", {"local_stddev": 1, "pick_frac": 0.05}),
-    AI("P+Local", {"local_stddev": 5}),
-    AI("P+Pick", {"pick_frac": 0.4, "pick_n": 20}),
-    AI("P+Noise", {"noise_strength": 0.8}),
-    AI("P+Noise", {"noise_strength": 0.9}),
-    AI("P+Tenuki", {"local_stddev": 1}),
-    AI("P+Tenuki", {"local_stddev": 5}),
-    AI("P+Tenuki", {"local_stddev": 10}),
-    AI("P+Pick", {"pick_frac": 0.2, "pick_n": 10}),
-    AI("P+Pick", {"pick_frac": 0.3, "pick_n": 10}),
-    AI("P+Local", {"local_stddev": 10}),
-    AI("P+Local", {"local_stddev": 5}),
-    AI("P+Pick", {"pick_frac": 0.0, "pick_n": 1}),
+    AI("P:Local", {"local_stddev": 1, "pick_frac": 0.1}),
+    AI("P:Local", {"local_stddev": 1, "pick_frac": 0.05}),
+    AI("P:Local", {"local_stddev": 5}),
+    AI("P:Pick", {"pick_frac": 0.4, "pick_n": 20}),
+    AI("P:Noise", {"noise_strength": 0.8}),
+    AI("P:Noise", {"noise_strength": 0.9}),
+    AI("P:Tenuki", {"local_stddev": 1}),
+    AI("P:Tenuki", {"local_stddev": 5}),
+    AI("P:Tenuki", {"local_stddev": 10}),
+    AI("P:Pick", {"pick_frac": 0.2, "pick_n": 10}),
+    AI("P:Pick", {"pick_frac": 0.3, "pick_n": 10}),
+    AI("P:Local", {"local_stddev": 10}),
+    AI("P:Local", {"local_stddev": 5}),
+    AI("P:Pick", {"pick_frac": 0.0, "pick_n": 1}),
     AI("Jigo", {}, {"max_visits": 50}),
     AI("Policy", {}),
     #   AI("Policy", {},{'model':'models/g170-b40c256x2-s2990766336-d830712531.bin.gz'}),
@@ -124,36 +124,36 @@ test_ais = [
 
 test_ais = [
     AI("Policy", {}),
-    AI("P+Noise", {"noise_strength": 0.6}),
-    AI("P+Noise", {"noise_strength": 0.7}),
-    AI("P+Noise", {"noise_strength": 0.8}),
-    AI("P+Noise", {"noise_strength": 0.9}),
-    AI("P+Pick", {}),
-    AI("P+Pick", {"pick_frac": 0.3, "pick_n": 20}),
-    AI("P+Pick", {"pick_frac": 0.5, "pick_n": 0}),
-    AI("P+Influence", {"pick_frac": 0.2, "pick_n": 20}),
-    AI("P+Territory", {"pick_frac": 0.2, "pick_n": 20}),
-    AI("P+Influence", {"pick_frac": 0.33, "line_weight": 20}),
-    AI("P+Territory", {"pick_frac": 0.33, "line_weight": 20}),
-    AI("P+Pick", {"pick_frac": 0.0, "pick_n": 1}),
-    AI("P+Tenuki", {"local_stddev": 20}),
-    AI("P+Tenuki", {"local_stddev": 10}),
-    AI("P+Tenuki", {"local_stddev": 5}),
-    AI("P+Local", {"local_stddev": 10}),
-    AI("P+Local", {"local_stddev": 5}),
-    AI("P+Local", {"local_stddev": 1}),
-    AI("P+Local", {"local_stddev": 1, "pick_frac": 0.0, "pick_n": 20}),
-    AI("P+Weighted", {"pick_override": 1.0}),
+    AI("P:Noise", {"noise_strength": 0.6}),
+    AI("P:Noise", {"noise_strength": 0.7}),
+    AI("P:Noise", {"noise_strength": 0.8}),
+    AI("P:Noise", {"noise_strength": 0.9}),
+    AI("P:Pick", {}),
+    AI("P:Pick", {"pick_frac": 0.3, "pick_n": 20}),
+    AI("P:Pick", {"pick_frac": 0.5, "pick_n": 0}),
+    AI("P:Influence", {"pick_frac": 0.2, "pick_n": 20}),
+    AI("P:Territory", {"pick_frac": 0.2, "pick_n": 20}),
+    AI("P:Influence", {"pick_frac": 0.33, "line_weight": 20}),
+    AI("P:Territory", {"pick_frac": 0.33, "line_weight": 20}),
+    AI("P:Pick", {"pick_frac": 0.0, "pick_n": 1}),
+    AI("P:Tenuki", {"local_stddev": 20}),
+    AI("P:Tenuki", {"local_stddev": 10}),
+    AI("P:Tenuki", {"local_stddev": 5}),
+    AI("P:Local", {"local_stddev": 10}),
+    AI("P:Local", {"local_stddev": 5}),
+    AI("P:Local", {"local_stddev": 1}),
+    AI("P:Local", {"local_stddev": 1, "pick_frac": 0.0, "pick_n": 20}),
+    AI("P:Weighted", {"pick_override": 1.0}),
 ]
 
 
 # test_ais = [
 #    AI("Policy", {}),
-#    AI("P+Noise", {"noise_strength": 0.4}),
-#    AI("P+Noise", {"noise_strength": 0.5}),
-#    AI("P+Noise", {"noise_strength": 0.6}),
-#    AI("P+Noise", {"noise_strength": 0.7}),
-#    AI("P+Noise", {"noise_strength": 0.8}),
+#    AI("P:Noise", {"noise_strength": 0.4}),
+#    AI("P:Noise", {"noise_strength": 0.5}),
+#    AI("P:Noise", {"noise_strength": 0.6}),
+#    AI("P:Noise", {"noise_strength": 0.7}),
+#    AI("P:Noise", {"noise_strength": 0.8}),
 # ]
 
 # ai_database = [ai for ai in ai_database if "Territory" not in ai.name and "Influence" not in ai.name]
@@ -178,8 +178,8 @@ def play_games(black: AI, white: AI, n: int = N_GAMES):
     try:
         for i in range(n):
             game = Game(Logger(), engines, {})
-            game.root.add_property("PW", [white.name])
-            game.root.add_property("PB", [black.name])
+            game.root.add_list_property("PW", [white.name])
+            game.root.add_list_property("PB", [black.name])
             start_time = time.time()
             while not game.ended:
                 p = game.current_node.next_player

@@ -3,14 +3,14 @@
 [x] remove fast -> in settings?
 [x] Polish graph
 [x] BoxLayout padding/spacing use instead of fiddling?
-[x] P+noise pass not noisy
+[x] P:noise pass not noisy
 [x] graph wonky on branch switch -> check in children &c.
 [x] Scrolling add a move on the board instead of navigating through the game. This was already the case in the 0.9 version and it's quite annoying as scrolling seemed only natural and I kept forgetting not to do it :p
 [x] show PV on hint hover?  Although Katrain wasn't meant to be like Lizzie to begin with, it would be really neat if we could visualize the expected variations when hovering over the top moves.
 [x] Self-play tournaments in separate script.
 [x] ai thoughts in sgf
 [x] more AI modes?
-[x] pol value override > 0.95 ?  policy threshold override p+pick?
+[x] pol value override > 0.95 ?  policy threshold override P:pick?
 [x] config player to sep. row/popups?
 [x] dots: teacher settings fixes
 [x] ogs bot connector

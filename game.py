@@ -35,7 +35,7 @@ class Game:
         if move_tree:
             self.root = move_tree
             self.komi = self.root.komi
-            handicap = int(self.root.get_first("HA", 0))
+            handicap = int(self.root.get_property("HA", 0))
             if handicap and not self.root.placements:
                 self.place_handicap_stones(handicap)
         else:
@@ -174,7 +174,7 @@ class Game:
             if n_handicaps % 2 == 1:
                 stones.append((middle_x, middle_y))
             stones += [(near_x, middle_y), (far_x, middle_y), (middle_x, near_y), (middle_x, far_y)]
-        self.root.add_property("AB", [Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]])
+        self.root.set_property("AB", [Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]])
 
     @property
     def board_size(self):
@@ -200,7 +200,7 @@ class Game:
         return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
     def write_sgf(self, path=None):
-        black, white = self.root.get_first("PB"), self.root.get_first("PW")
+        black, white = self.root.get_property("PB"), self.root.get_property("PW")
         black = re.sub(r"['<>:\"/\\|?*]", "", black or "Black")
         white = re.sub(r"['<>:\"/\\|?*]", "", white or "White")
         game_name = f"katrain_{black} vs {white} {self.game_id}"

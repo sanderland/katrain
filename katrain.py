@@ -1,3 +1,5 @@
+import inspect
+
 from kivy.config import Config  # isort:skip
 
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
@@ -38,7 +40,7 @@ class KaTrainGui(BoxLayout):
         self._load_config()
 
         self.debug_level = self.config("debug/level", OUTPUT_INFO)
-        self.controls.ai_mode_groups["W"].values = self.controls.ai_mode_groups["B"].values = self.config("ai").keys()
+        self.controls.ai_mode_groups["W"].values = self.controls.ai_mode_groups["B"].values = list(self.config("ai").keys()) + ["<Pause>"]
         self.message_queue = Queue()
 
         self._keyboard = Window.request_keyboard(None, self, "")
@@ -94,12 +96,12 @@ class KaTrainGui(BoxLayout):
         if (
             cn.analysis_ready
             and "ai" in self.controls.player_mode(cn.next_player).lower()
-            and not "pause" in self.controls.ai_mode(cn.next_player).lower()
+            and "pause" not in self.controls.ai_mode(cn.next_player).lower()
             and not cn.children
             and not self.game.ended
             and not (auto_undo and cn.auto_undo is None)
         ):
-            self("ai-move", cn)  # cn mismatch stops this if undo fired
+            self._do_ai_move(cn)  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
 
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
@@ -131,6 +133,9 @@ class KaTrainGui(BoxLayout):
                 traceback.print_exc()
 
     def __call__(self, message, *args):
+        # curframe = inspect.currentframe() # TODO remove
+        # calframe = inspect.getouterframes(curframe, 2)
+        # print('caller name:', calframe[1])
         if self.game:
             self.message_queue.put([self.game.game_id, message, *args])
 
@@ -144,7 +149,8 @@ class KaTrainGui(BoxLayout):
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
             mode = self.controls.ai_mode(self.game.current_node.next_player)
-            settings = self.config("ai/mode")
+            settings = self.config(f"ai/{mode}")
+            print(mode, settings)
             if settings:
                 ai_move(self.game, mode, settings)
 
@@ -198,11 +204,11 @@ class KaTrainGui(BoxLayout):
 
     def _do_output_sgf(self):
         for pl in Move.PLAYERS:
-            if not self.game.root.get_first(f"P{pl}"):
+            if not self.game.root.get_property(f"P{pl}"):
                 _, model_file = os.path.split(self.engine.config["model"])
-                self.game.root.properties[f"P{pl}"] = [
-                    f"AI {self.controls.ai_mode(pl)} (KataGo { os.path.splitext(model_file)[0]})" if "ai" in self.controls.player_mode(pl) else "Player"
-                ]  # TODO: more dynamic?
+                self.game.root.set_property(
+                    f"P{pl}", f"AI {self.controls.ai_mode(pl)} (KataGo { os.path.splitext(model_file)[0]})" if "ai" in self.controls.player_mode(pl) else "Player"
+                )
         msg = self.game.write_sgf(self.config("files/sgf_save"))
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)

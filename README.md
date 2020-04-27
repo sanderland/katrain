@@ -51,14 +51,14 @@ Available AIs are:
 * Balance is KataGo occasionally making weaker moves, attempting to win by ~2 points. 
 * Jigo is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
 * Policy is the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used.
-* P+Pick will pick a `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
+* P:Pick will pick a `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
    The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
    This is probably the best choice for kyu players who want a chance of winning. Variants of this strategy include:
-    * P+Local will pick such moves biased towards the last move with probability related to `local_stddev`.
-    * P+Tenuki is biased in the opposite way as P+Local, using the same setting.
-    * P+Influence is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight. 
-    * P+Territory is biased in the opposite way, towards 1-3rd line moves, using the same setting. 
-* P+Noise mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. Regardless, mistakes are typically strange can include senseless first-line moves. 
+    * P:Local will pick such moves biased towards the last move with probability related to `local_stddev`.
+    * P:Tenuki is biased in the opposite way as P:Local, using the same setting.
+    * P:Influence is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight. 
+    * P:Territory is biased in the opposite way, towards 1-3rd line moves, using the same setting. 
+* P:Noise mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. Regardless, mistakes are typically strange can include senseless first-line moves. 
 * `<Pause>` pauses AI moves, in case you want to do analysis without triggering moves, or simply hide the evaluation dots for this player.
 
 Selecting the AI as either white or black opens up the option to configure it under 'Configure AI'.

@@ -42,7 +42,7 @@ with open("config.json") as f:
     settings = json.load(f)
     all_ai_settings = settings["ai"]
 
-all_ai_settings["dev"] = all_ai_settings["P+Noise"]
+all_ai_settings["dev"] = all_ai_settings["P:Noise"]
 
 ai_strategy = bot_strategy_names[bot]
 ai_settings = all_ai_settings[ai_strategy]
@@ -62,7 +62,7 @@ while not game.ended:
         logger.log(f"Init game {game.root.properties}", OUTPUT_ERROR)
     if "komi" in line:
         _, komi = line.split(" ")
-        game.root.properties["KM"] = [komi.strip()]
+        game.root.set_property("KM", komi.strip())
         logger.log(f"Setting komi {game.root.properties}", OUTPUT_ERROR)
     elif "genmove" in line:
         logger.log(f"{ai_strategy} generating move", OUTPUT_ERROR)

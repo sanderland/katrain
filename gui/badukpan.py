@@ -239,7 +239,7 @@ class BadukPanWidget(Widget):
                 for y in range(board_size_y - 1, -1, -1):
                     for x in range(board_size_x):
                         if policy_grid[y][x] > 0:
-                            polsize = math.sqrt(policy_grid[y][x])
+                            polsize = 1.1 * math.sqrt(policy_grid[y][x])
                             policy_circle_color = (
                                 *self.ui_config["policy_color"],
                                 self.ui_config["ghost_alpha"] + self.ui_config["top_move_x_alpha"] * (policy_grid[y][x] == best_move_policy),

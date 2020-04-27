@@ -35,7 +35,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
     ai_mode = ai_mode.lower()
     ai_thoughts = ""
     candidate_ai_moves = cn.candidate_moves
-    if ("policy" in ai_mode or "p+" in ai_mode) and cn.policy:
+    if ("policy" in ai_mode or "p:" in ai_mode) and cn.policy:
         policy_moves = cn.policy_ranking
         pass_policy = cn.policy[-1]
         top_5_pass = any([polmove[1].is_pass for polmove in policy_moves[:5]])  # dont make it jump around for the last few sensible non pass moves
@@ -68,7 +68,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             new_top = heapq.nlargest(5, noisy_policy_moves)
             aimove = new_top[0][1]
             ai_thoughts += f"Noisy policy strategy (strength={noise_str:.2f}) generated 5 moves {fmt_moves(new_top)} so picked {aimove.gtp()}. "
-        elif "p+" in ai_mode:
+        elif "p:" in ai_mode:
             n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])
             if "influence" in ai_mode or "territory" in ai_mode:
                 if "influence" in ai_mode:

@@ -250,7 +250,7 @@ class ConfigTeacherPopup(QuickConfigGui):
             thrbox.add_widget(LabelledFloatInput(text=str(thr), input_property=f"eval_thresholds::{i}"))
             thrbox.add_widget(LabelledFloatInput(text=str(undos), input_property=f"num_undo_prompts::{i}"))
             thrbox.add_widget(BackgroundLabel(background=color[:3]))
-            thrbox.add_widget(LabelledCheckBox(text=str(color[3]==1), input_property=f"alpha::{i}"))
+            thrbox.add_widget(LabelledCheckBox(text=str(color[3] == 1), input_property=f"alpha::{i}"))
 
         self.add_widget(thrbox)
 
