@@ -11,7 +11,9 @@
 [x] ai thoughts in sgf
 [x] more AI modes?
 [x] pol value override > 0.95 ?  policy threshold override p+pick?
-
+[x] config player to sep. row/popups?
+[x] dots: teacher settings fixes
+[x] ogs bot connector
 
 [/] README
 [] engine status
@@ -20,9 +22,7 @@
 
 [] clarify score change vs score
 [] pv with overlap?
-[] config player to sep. row/popups?
-[] dots: SPINNER! off last few / white black / >x pt  (multi select?)
-[] ogs bot connector
+
 
 Low priority
 [] more teaching / groups in danger? hard

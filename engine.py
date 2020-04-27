@@ -75,30 +75,33 @@ class KataGoEngine:
                 continue
             analysis = json.loads(line)
             if analysis["id"] in self.queries:
-                callback, start_time, next_move = self.queries[analysis["id"]]
+                id = analysis["id"]
+                callback, error_callback, start_time, next_move = self.queries[id]
             else:
                 self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
                 continue
             if "error" in analysis:
-                if not (next_move and "Illegal move" in analysis["error"]):  # sweep
+                if error_callback:
+                    error_callback(analysis)
+                elif not (next_move and "Illegal move" in analysis["error"]):  # sweep
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
                 continue
             else:
-                callback, start_time, next_move = self.queries[analysis["id"]]
+                callback, error_callback, start_time, next_move = self.queries[id]
                 time_taken = time.time() - start_time
                 self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG)
                 self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                 callback(analysis)
-                del self.queries[analysis["id"]]
+                del self.queries[id]
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
                     self.katrain.update_state()
 
-    def send_query(self, query, callback, next_move):
+    def send_query(self, query, callback, error_callback, next_move=None):
         with self._lock:
             self.query_counter += 1
             if "id" not in query:
                 query["id"] = f"QUERY:{str(self.query_counter)}"
-            self.queries[query["id"]] = (callback, time.time(), next_move)
+            self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
         if self.katago_process:
             self.katrain.log(f"Sending query {query['id']}: {str(query)}", OUTPUT_DEBUG)
             try:
@@ -109,7 +112,15 @@ class KataGoEngine:
                 return  # do not raise, since
 
     def request_analysis(
-        self, analysis_node: GameNode, callback: Callable, visits: int = None, time_limit=True, priority: int = 0, ownership: Optional[bool] = None, next_move=None
+        self,
+        analysis_node: GameNode,
+        callback: Callable,
+        error_callback: Optional[Callable] = None,
+        visits: int = None,
+        time_limit=True,
+        priority: int = 0,
+        ownership: Optional[bool] = None,
+        next_move=None,
     ):
         moves = [m for node in analysis_node.nodes_from_root for m in node.move_with_placements]
         if next_move:
@@ -131,4 +142,4 @@ class KataGoEngine:
             "overrideSettings": {"maxTime": self.config["max_time"] if time_limit else 1000.0}
             # "overrideSettings": {"playoutDoublingAdvantage": 3.0, "playoutDoublingAdvantagePla":  'BLACK' if not moves or moves[-1].player == 'W' else "WHITE"}
         }
-        self.send_query(query, callback, next_move)
+        self.send_query(query, callback, error_callback, next_move)

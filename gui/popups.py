@@ -128,8 +128,8 @@ class ConfigPopup(QuickConfigGui):
         self.apply_button = StyledButton(text="Apply", on_press=lambda _: self.update_config())
         self.save_button = StyledButton(text="Apply and Save", on_press=lambda _: self.update_config(save_to_file=True))
         btn_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.1), spacing=1, padding=1)
-        btn_container.add_widget(self.info_label)
         btn_container.add_widget(self.apply_button)
+        btn_container.add_widget(self.info_label)
         btn_container.add_widget(self.save_button)
         self.add_widget(btn_container)
 
@@ -172,7 +172,7 @@ class ConfigPopup(QuickConfigGui):
 
 class ConfigAIPopup(QuickConfigGui):
     def __init__(self, katrain, popup, ai_modes, **kwargs):
-        self.settings = self.katrain.config("ai")
+        self.settings = katrain.config("ai")
         super().__init__(katrain, popup, self.settings, **kwargs)
         self.ai_modes = ai_modes
         Clock.schedule_once(self._build, 0)
@@ -202,9 +202,9 @@ class ConfigAIPopup(QuickConfigGui):
         if len(self.ai_modes) == 1:
             colbox.add_widget(ScaledLightLabel(text=f""))
         self.info_label = Label()
-        bl = BoxLayout(size_hint=(1, 0.2), spacing=2)
-        bl.add_widget(self.info_label)
+        bl = BoxLayout(size_hint=(1, 0.15), spacing=2)
         bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
+        bl.add_widget(self.info_label)
         bl.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
         self.add_widget(colbox)
         self.add_widget(bl)
@@ -247,8 +247,8 @@ class ConfigTeacherPopup(QuickConfigGui):
         thrbox.add_widget(ScaledLightLabel(text="Visibility (0=hidden)", bold=True))
 
         for i, (thr, undos, color) in enumerate(zip(thresholds, undos, colors)):
-            thrbox.add_widget(LabelledFloatInput(text=str(thr), input_property=f"threshold::{i}"))
-            thrbox.add_widget(LabelledFloatInput(text=str(undos), input_property=f"undo::{i}"))
+            thrbox.add_widget(LabelledFloatInput(text=str(thr), input_property=f"eval_thresholds::{i}"))
+            thrbox.add_widget(LabelledFloatInput(text=str(undos), input_property=f"num_undo_prompts::{i}"))
             thrbox.add_widget(BackgroundLabel(background=color[:3]))
             thrbox.add_widget(LabelledFloatInput(text=str(color[3]), input_property=f"alpha::{i}"))
 
@@ -256,42 +256,44 @@ class ConfigTeacherPopup(QuickConfigGui):
 
         xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
         xsettings.add_widget(ScaledLightLabel(text="Show last <n> dots"))
-        xsettings.add_widget(LabelledIntInput(size_hint=(0.5,1), text=str(self.settings['eval_off_show_last']),input_property = "eval_off_show_last" ))
+        xsettings.add_widget(LabelledIntInput(size_hint=(0.5, 1), text=str(self.settings["eval_off_show_last"]), input_property="eval_off_show_last"))
         self.add_widget(xsettings)
         xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
         xsettings.add_widget(ScaledLightLabel(text="Show dots for AI players"))
-        xsettings.add_widget(LabelledCheckBox(size_hint=(0.5,1), text=str(self.settings['eval_show_ai']),input_property = "eval_show_ai" ))
+        xsettings.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.settings["eval_show_ai"]), input_property="eval_show_ai"))
         self.add_widget(xsettings)
 
-        bl = BoxLayout(size_hint=(1, 0.2), spacing=2)
+        bl = BoxLayout(size_hint=(1, 0.15), spacing=2)
         bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
+        self.info_label = Label()
+        bl.add_widget(self.info_label)
         bl.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
         self.add_widget(bl)
 
     def update_config(self, save_to_file=False):
         try:
             for k, v in self.collect_properties(self).items():
-                if '::' in k:
+                if "::" in k:
                     k1, i = k.split("::")
-                    i=int(i)
-                    if 'alpha' not in k1:
+                    i = int(i)
+                    if "alpha" not in k1:
                         if self.settings[k1][i] != v:
                             self.settings[k1][i] = v
                             self.katrain.log(f"Updating setting {k1}[{i}] = {v}", OUTPUT_DEBUG)
                     else:
-                        if self.ui_settings['eval_colors'][i][3] != v:
+                        if self.ui_settings["eval_colors"][i][3] != v:
                             self.katrain.log(f"Updating alpha {i} = {v}", OUTPUT_DEBUG)
-                            self.ui_settings['eval_colors'][i][3] = v
+                            self.ui_settings["eval_colors"][i][3] = v
                 else:
                     if self.settings[k] != v:
                         self.settings[k] = v
                         self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
             if save_to_file:
-                pass
+                self.katrain.save_config()
             self.popup.dismiss()
         except InputParseError as e:
             self.info_label.text = str(e)
             self.katrain.log(e, OUTPUT_ERROR)
             return
-
+        self.katrain.update_state()
         self.popup.dismiss()

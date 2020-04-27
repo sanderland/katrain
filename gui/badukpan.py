@@ -259,7 +259,7 @@ class BadukPanWidget(Widget):
                     if m and m.coords is not None:
                         undo_coords.add(m.coords)
                         evalcol = (*self.eval_color(points_lost), alpha) if points_lost is not None else None
-                        scale = self.ui_config.get("_child_scale", 0.95)
+                        scale = self.ui_config["child_scale"]
                         self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
             # pass circle
@@ -303,7 +303,7 @@ class BadukPanWidget(Widget):
                             scale = 0.8
                         self.active_hints.append(move.coords)
 
-                        if move.coords == self.show_pv_for:
+                        if move.coords == self.show_pv_for:  # TODO: overlapping moves
                             pv = d.get("pv", [move.gtp()])  # if empty, show current move at least
                             for i, gtpmove in enumerate(pv):
                                 move_player = [next_player, player][i % 2]

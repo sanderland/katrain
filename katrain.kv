@@ -62,8 +62,25 @@
 <ToggleButtonContainer>:
 
 <LabelledTextInput>:
-    padding: 7, 0.1*self.size[1]
+    padding: 3, 0.3*self.size[1]
+    font_size: 0.33*self.size[1]
+
+<LabelledIntInput>:
     font_size: 0.5*self.size[1]
+    padding: 7, 0.1*self.size[1]
+
+<LabelledFloatInput>:
+    font_size: 0.5*self.size[1]
+    padding: 7, 0.1*self.size[1]
+
+<LabelledTextArea>
+    font_size: 0.2*self.size[1]
+
+<CheckBox>:
+    color: BLACK
+
+<LabelledCheckBox>:
+    color: WHITE
 
 
 <StyledIconButton@StyledButton>:
@@ -95,6 +112,9 @@
     halign: 'center'
     valign: 'center'
 
+<LargeLabel@DarkLabel>:
+	bold: True
+
 <ScaledLightLabel>: # popups
     color: WHITE
     font_size: 0.45*self.size[1]
@@ -104,10 +124,6 @@
     halign: 'center'
     valign: 'center'
     multiline: True
-
-
-<LabelledTextArea>
-    font_size: 0.2*self.size[1]
 
 <BoxedDarkLabel@Label>:
     halign: 'left'
@@ -120,14 +136,7 @@
             width:1.5
 
 
-<LargeLabel@DarkLabel>:
-	bold: True
 
-<CheckBox>:
-    color: BLACK
-
-<LabelledCheckBox>:
-    color: WHITE
 
 <CheckBoxHintLabel@Label>:
     font_size: 0.4*self.size[1]

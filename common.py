@@ -6,6 +6,18 @@ OUTPUT_DEBUG = 1
 OUTPUT_EXTRA_DEBUG = 2
 
 
+bot_strategy_names = {
+    "dev": "P+Noise",
+    "strong": "Policy",
+    "influence": "P+Influence",
+    "territory": "P+Territory",
+    "balanced": "P+Pick",
+    "weighted": "P+Weighted",
+    "local": "P+Local",
+    "tenuki": "P+Tenuki",
+}
+
+
 def var_to_grid(array_var: List[Any], size: Tuple[int, int]) -> List[List[Any]]:
     """convert ownership/policy to grid format such that grid[y][x] is for move with coords x,y"""
     ix = 0
