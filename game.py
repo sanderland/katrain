@@ -24,7 +24,7 @@ class Game:
 
     DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "RU": "JP", "AP": "KaTrain:https://github.com/sanderland/katrain"}
 
-    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], config: Dict, move_tree: GameNode = None):
+    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], config: Dict, move_tree: GameNode = None, analyze_fast=False):
         self.katrain = katrain
         if isinstance(engine, KataGoEngine):
             engine = {"B": engine, "W": engine}
@@ -45,11 +45,11 @@ class Game:
 
         self.current_node = self.root
         self._init_chains()
-        threading.Thread(target=lambda: self.analyze_all_nodes(-1_000_000), daemon=True).start()  # return faster, but bypass Kivy Clock
+        threading.Thread(target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast), daemon=True).start()  # return faster, but bypass Kivy Clock
 
-    def analyze_all_nodes(self, priority=0):
+    def analyze_all_nodes(self, priority=0, analyze_fast=False):
         for node in self.root.nodes_in_tree:
-            node.analyze(self.engines[node.next_player], priority=priority)
+            node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast)
 
     # -- move tree functions --
     def _init_chains(self):
@@ -199,7 +199,7 @@ class Game:
     def __repr__(self):
         return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
-    def write_sgf(self, path=None, trainer_config={}, save_feedback=(True, True, True, True, True, True)):
+    def write_sgf(self, path=None, trainer_config={}, save_feedback=(True,), eval_thresholds=(0,)):
         black, white = self.root.get_property("PB"), self.root.get_property("PW")
         black = re.sub(r"['<>:\"/\\|?*]", "", black or "Black")
         white = re.sub(r"['<>:\"/\\|?*]", "", white or "White")
@@ -208,8 +208,7 @@ class Game:
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
         show_dots_for = {p: trainer_config.get("eval_show_ai", True) or "ai" not in self.katrain.controls.player_mode(p) for p in Move.PLAYERS}
-        thresholds = self.katrain.config("trainer/eval_thresholds")
-        sgf = self.root.sgf(save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=thresholds)
+        sgf = self.root.sgf(save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=eval_thresholds)
         with open(file_name, "w") as f:
             f.write(sgf)
         return f"SGF with analysis written to {file_name}"

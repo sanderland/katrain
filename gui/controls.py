@@ -12,7 +12,7 @@ class Controls(BoxLayout):
 
     def set_status(self, msg, at_node=None):
         self.status = msg
-        self.status_node = at_node or self.katrain.game and self.katrain.game.current_node
+        self.status_node = at_node or self.katrain and self.katrain.game and self.katrain.game.current_node
         self.status_label.text = msg
         self.update_evaluation()
 
@@ -40,7 +40,7 @@ class Controls(BoxLayout):
     # handles showing completed analysis and score graph
     def update_evaluation(self):
         katrain = self.katrain
-        current_node = katrain.game and katrain.game.current_node
+        current_node = katrain and katrain.game and katrain.game.current_node
 
         if current_node is not self.status_node and not (self.status is not None and self.status_node is None and current_node.is_root):  # startup errors on root
             self.status_label.text = ""
@@ -79,7 +79,7 @@ class Controls(BoxLayout):
         config_popup.open()
 
     def configure_teacher(self):
-        config_popup = Popup(title="Edit Teacher Settings", size_hint=(0.6, 0.8))
+        config_popup = Popup(title="Edit Teacher Settings", size_hint=(0.7, 0.8))
         popup_contents = ConfigTeacherPopup(self.katrain, config_popup)
         config_popup.add_widget(popup_contents)
         config_popup.open()

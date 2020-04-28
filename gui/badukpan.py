@@ -255,7 +255,11 @@ class BadukPanWidget(Widget):
                     m = child_node.single_move
                     if m and m.coords is not None:
                         undo_coords.add(m.coords)
-                        evalcol = (*self.eval_color(points_lost), alpha) if points_lost is not None else None
+                        if points_lost is None:
+                            evalcol = None
+                        else:
+                            evalcol = self.eval_color(points_lost)
+                            evalcol[3] = alpha
                         scale = self.ui_config["child_scale"]
                         self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 

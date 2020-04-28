@@ -213,6 +213,9 @@ class ScoreGraph(Label):
     dot_pos = ListProperty([0, 0])
     highlighted_index = NumericProperty(None)
     y_scale = NumericProperty(4)
+    marginx = NumericProperty(0.015)
+    marginy = NumericProperty(0.01)
+    highlight_size = NumericProperty(5)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -235,19 +238,21 @@ class ScoreGraph(Label):
 
             self.y_scale = math.ceil(max(4, max(-val_range[0], val_range[1])) / 2) * 2
 
-            xscale = self.width * 0.9 / max(len(values) - 1, 15)
+            xscale = self.width * (1 - 2 * self.marginx) / max(len(values) - 1, 15)
             available_height = self.height * (1 - 2 * self.marginy)
-            line_points = [[self.pos[0] + self.marginx * self.width + i * xscale, self.pos[1] + available_height / 2 * (1 + val / self.y_scale)] for i, val in enumerate(values)]
+            line_points = [
+                [self.pos[0] + self.marginx * self.width + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.y_scale)] for i, val in enumerate(values)
+            ]
             self.line_points = sum(line_points, [])
 
             if self.highlighted_index is not None:
                 self.highlighted_index = min(self.highlighted_index, len(values) - 1)
                 dot_point = line_points[self.highlighted_index]
                 if math.isnan(dot_point[1]):
-                    dot_point[1] = self.pos[1] + available_height / 2 * (1 + (nn_values or [0])[-1] / self.y_scale)
+                    dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((nn_values or [0])[-1] / self.y_scale)
                 self.dot_pos = [c - self.highlight_size / 2 for c in dot_point]
 
-    #            print("Graph updated to ", len(line_points), "points, hl=", self.highlighted_index, self.dot_pos)
+    #                print("Graph updated to ", len(line_points), "points, hl=", self.highlighted_index, self.dot_pos)
 
     def update_value(self, node):
         self.highlighted_index = index = node.depth

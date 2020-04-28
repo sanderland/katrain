@@ -169,7 +169,8 @@ class ConfigPopup(QuickConfigGui):
                     old_engine.shutdown(finish=True)
                 else:
                     self.katrain.game.analyze_all_nodes()  # old engine was broken, so make sure we redo any failures
-                Clock.schedule_once(restart_engine, 0)
+
+            Clock.schedule_once(restart_engine, 0)
 
         self.katrain.debug_level = self.config["debug"]["level"]
         self.katrain.update_state(redraw_board=True)
@@ -235,6 +236,8 @@ class ConfigAIPopup(QuickConfigGui):
 class ConfigTeacherPopup(QuickConfigGui):
     def __init__(self, katrain, popup, **kwargs):
         self.settings = katrain.config("trainer")
+        self.sgf_settings = katrain.config("sgf")
+        print(self.sgf_settings, katrain.config("sgf"))
         self.ui_settings = katrain.config("board_ui")
         super().__init__(katrain, popup, self.settings, **kwargs)
         Clock.schedule_once(self._build, 0)
@@ -245,18 +248,18 @@ class ConfigTeacherPopup(QuickConfigGui):
         thresholds = self.settings["eval_thresholds"]
         undos = self.settings["num_undo_prompts"]
         colors = self.ui_settings["eval_colors"]
-        thrbox = GridLayout(spacing=1, padding=2, cols=4, rows=len(thresholds) + 1)
+        thrbox = GridLayout(spacing=1, padding=2, cols=5, rows=len(thresholds) + 1)
         thrbox.add_widget(ScaledLightLabel(text="Point loss greater than", bold=True))
         thrbox.add_widget(ScaledLightLabel(text="Gives this many undos", bold=True))
         thrbox.add_widget(ScaledLightLabel(text="Color (fixed)", bold=True))
         thrbox.add_widget(ScaledLightLabel(text="Show dots", bold=True))
-
+        thrbox.add_widget(ScaledLightLabel(text="Save in SGF", bold=True))
         for i, (thr, undos, color) in enumerate(zip(thresholds, undos, colors)):
             thrbox.add_widget(LabelledFloatInput(text=str(thr), input_property=f"eval_thresholds::{i}"))
             thrbox.add_widget(LabelledFloatInput(text=str(undos), input_property=f"num_undo_prompts::{i}"))
             thrbox.add_widget(BackgroundLabel(background=color[:3]))
             thrbox.add_widget(LabelledCheckBox(text=str(color[3] == 1), input_property=f"alpha::{i}"))
-
+            thrbox.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.sgf_settings["save_feedback"][i]), input_property=f"save_feedback::{i}"))
         self.add_widget(thrbox)
 
         xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
@@ -264,7 +267,7 @@ class ConfigTeacherPopup(QuickConfigGui):
         xsettings.add_widget(LabelledIntInput(size_hint=(0.5, 1), text=str(self.settings["eval_off_show_last"]), input_property="eval_off_show_last"))
         self.add_widget(xsettings)
         xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
-        xsettings.add_widget(ScaledLightLabel(text="Show dots for AI players"))
+        xsettings.add_widget(ScaledLightLabel(text="Show dots/SGF comments for AI players"))
         xsettings.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.settings["eval_show_ai"]), input_property="eval_show_ai"))
         self.add_widget(xsettings)
 
@@ -281,15 +284,20 @@ class ConfigTeacherPopup(QuickConfigGui):
                 if "::" in k:
                     k1, i = k.split("::")
                     i = int(i)
-                    if "alpha" not in k1:
-                        if self.settings[k1][i] != v:
-                            self.settings[k1][i] = v
-                            self.katrain.log(f"Updating setting {k1}[{i}] = {v}", OUTPUT_DEBUG)
-                    else:
+                    if "alpha" in k1:
                         v = 1.0 if v else 0.0
                         if self.ui_settings["eval_colors"][i][3] != v:
                             self.katrain.log(f"Updating alpha {i} = {v}", OUTPUT_DEBUG)
                             self.ui_settings["eval_colors"][i][3] = v
+                    elif "save_feedback" in k1:
+                        if self.sgf_settings[k1][i] != v:
+                            self.sgf_settings[k1][i] = v
+                            self.katrain.log(f"Updating setting sgf/{k1}[{i}] = {v}", OUTPUT_DEBUG)
+
+                    else:
+                        if self.settings[k1][i] != v:
+                            self.settings[k1][i] = v
+                            self.katrain.log(f"Updating setting trainer/{k1}[{i}] = {v}", OUTPUT_DEBUG)
                 else:
                     if self.settings[k] != v:
                         self.settings[k] = v

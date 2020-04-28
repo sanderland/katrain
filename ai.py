@@ -55,11 +55,26 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             aimove = top_policy_move
             ai_thoughts += f"Top policy move has weight > {ai_settings['pick_override']:.1%}, so overriding other strategies."
         elif top_5_pass or "weighted" in ai_mode:
-            weighted_coords = [(policy_grid[y][x], policy_grid[y][x], x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
-            best = weighted_selection_without_replacement(weighted_coords, 1)[0]
-            aimove = Move(best[2:], player=cn.next_player)  # just take a random move by policy w/o noise
-            ai_thoughts += f"Playing policy-weighted random move {aimove.gtp()} ({best[0]:.1%})" + (
-                " because one of them is pass." if top_5_pass else " because strategy is weighted."
+            if top_5_pass:
+                lower_bound = 0.05
+                weaken_fac = 1
+            else:
+                lower_bound = max(0, ai_settings["lower_bound"])
+                weaken_fac = max(0.01, ai_settings["weaken_fac"])
+            weighted_coords = [(policy_grid[y][x], policy_grid[y][x] ** (1 / weaken_fac), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > lower_bound]
+            if top_5_pass or pass_policy > lower_bound:
+                weighted_coords.append([pass_policy, pass_policy ** (1 / weaken_fac), None, None])
+            top = weighted_selection_without_replacement(weighted_coords, 1)
+            if top and top[0][2]:
+                best = top[0]
+                policy_value = best[0]
+                coords = best[2:]
+            else:
+                policy_value = pass_policy
+                coords = None
+            aimove = Move(coords, player=cn.next_player)  # just take a random move by policy w/o noise
+            ai_thoughts += f"Playing policy-weighted random move {aimove.gtp()} ({policy_value:.1%})" + (
+                " because one of them is pass." if top_5_pass else f" because strategy is weighted (lower bound={lower_bound:.2%}, num moves > lb={len(weighted_coords)})."
             )
         elif "noise" in ai_mode:
             noise_str = ai_settings["noise_strength"]

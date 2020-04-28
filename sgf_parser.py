@@ -82,7 +82,7 @@ class SGFNode:
         sys.setrecursionlimit(max(sys.getrecursionlimit(), 3 * 29 * 29))  # thanks to lightvector for causing stack overflows
         sgf_str = "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in self.sgf_properties(**xargs).items() if values])
         if self.children:
-            children = [c.sgf() for c in self.children]
+            children = [c.sgf(**xargs) for c in self.children]
             if len(children) == 1:
                 sgf_str += ";" + children[0]
             else:

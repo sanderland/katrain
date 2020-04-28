@@ -111,6 +111,19 @@ class KaTrainGui(BoxLayout):
         self.board_controls.mid_circles_container.add_widget(top)
         self.board_controls.black_prisoners.text = str(prisoners[1])
         self.board_controls.white_prisoners.text = str(prisoners[0])
+
+        # update engine status dot
+        if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
+            self.board_controls.engine_status_col = self.config("board_ui/engine_down_col")
+        elif len(self.engine.queries) >= 4:
+            self.board_controls.engine_status_col = self.config("board_ui/engine_busy_col")
+        elif len(self.engine.queries) >= 2:
+            self.board_controls.engine_status_col = self.config("board_ui/engine_little_busy_col")
+        elif len(self.engine.queries) == 0:
+            self.board_controls.engine_status_col = self.config("board_ui/engine_ready_col")
+        else:
+            self.board_controls.engine_status_col = self.config("board_ui/engine_almost_done_col")
+        # redraw
         if redraw_board:
             Clock.schedule_once(self.board_gui.draw_board, -1)  # main thread needs to do this
         Clock.schedule_once(self.board_gui.draw_board_contents, -1)
@@ -137,9 +150,9 @@ class KaTrainGui(BoxLayout):
         if self.game:
             self.message_queue.put([self.game.game_id, message, *args])
 
-    def _do_new_game(self, move_tree=None):
+    def _do_new_game(self, move_tree=None, analyze_fast=False):
         self.engine.on_new_game()  # clear queries
-        self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree)
+        self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree, analyze_fast=analyze_fast)
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
         self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
@@ -148,7 +161,6 @@ class KaTrainGui(BoxLayout):
         if node is None or self.game.current_node == node:
             mode = self.controls.ai_mode(self.game.current_node.next_player)
             settings = self.config(f"ai/{mode}")
-            print(mode, settings)
             if settings:
                 ai_move(self.game, mode, settings)
 
@@ -174,7 +186,7 @@ class KaTrainGui(BoxLayout):
         fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
         popup_contents = LoadSGFPopup()
         fileselect_popup.add_widget(popup_contents)
-        popup_contents.filesel.path = os.path.expanduser(self.config("files/sgf_load"))
+        popup_contents.filesel.path = os.path.expanduser(self.config("sgf/sgf_load"))
 
         def readfile(files, _mouse):
             fileselect_popup.dismiss()
@@ -183,7 +195,7 @@ class KaTrainGui(BoxLayout):
             except ParseError as e:
                 self.log(f"Failed to load SGF. Parse Error: {e}", OUTPUT_ERROR)
                 return
-            self._do_new_game(move_tree=move_tree)
+            self._do_new_game(move_tree=move_tree, analyze_fast=fileselect_popup.fast.active)
 
         popup_contents.filesel.on_submit = readfile
         fileselect_popup.open()
@@ -207,7 +219,12 @@ class KaTrainGui(BoxLayout):
                 self.game.root.set_property(
                     f"P{pl}", f"AI {self.controls.ai_mode(pl)} (KataGo { os.path.splitext(model_file)[0]})" if "ai" in self.controls.player_mode(pl) else "Player"
                 )
-        msg = self.game.write_sgf(self.config("files/sgf_save"), trainer_config=self.config("trainer"), save_feedback=self.config("sgf/save_feedback"))
+        msg = self.game.write_sgf(
+            self.config("sgf/sgf_save"),
+            trainer_config=self.config("trainer"),
+            save_feedback=self.config("sgf/save_feedback"),
+            eval_thresholds=self.config("trainer/eval_thresholds"),
+        )
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)
 
@@ -264,7 +281,7 @@ class KaTrainGui(BoxLayout):
                 self.controls.set_status(f"Failed to imported game from clipboard: {e}\nClipboard contents: {clipboard[:50]}...")
                 return
             move_tree.nodes_from_root[-1].analyze(self.engine)  # speed up result for looking at end of game
-            self._do_new_game(move_tree=move_tree)
+            self._do_new_game(move_tree=move_tree, analyze_fast=True)
             self("redo", 999)
             self.log("Imported game from clipboard.", OUTPUT_INFO)
         return True

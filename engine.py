@@ -52,7 +52,7 @@ class KataGoEngine:
         self.queries = {}
 
     def shutdown(self, finish=False):
-        process = getattr(self, "katago_process", None)
+        process = self.katago_process
         if finish and process:
             while self.queries and process.poll() is None:
                 time.sleep(0.1)
@@ -120,6 +120,7 @@ class KataGoEngine:
         callback: Callable,
         error_callback: Optional[Callable] = None,
         visits: int = None,
+        analyze_fast: bool = False,
         time_limit=True,
         priority: int = 0,
         ownership: Optional[bool] = None,
@@ -130,12 +131,17 @@ class KataGoEngine:
             moves.append(next_move)
         if ownership is None:
             ownership = self.config["enable_ownership"] and not next_move
+        if visits is None:
+            visits = self.config["max_visits"]
+            if analyze_fast and self.config.get("fast_visits"):
+                visits = self.config["fast_visits"]
+
         size_x, size_y = analysis_node.board_size
         query = {
             "rules": self.get_rules(analysis_node),
             "priority": self.base_priority + priority,
             "analyzeTurns": [len(moves)],
-            "maxVisits": visits or self.config["max_visits"],
+            "maxVisits": visits,
             "komi": analysis_node.komi,
             "boardXSize": size_x,
             "boardYSize": size_y,

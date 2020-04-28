@@ -67,8 +67,8 @@
 <ToggleButtonContainer>:
 
 <LabelledTextInput>:
-    padding: 3, 0.3*self.size[1]
-    font_size: 0.33*self.size[1]
+    padding: 3, 0.27*self.size[1]
+    font_size: 0.4*self.size[1]
 
 <LabelledIntInput>:
     font_size: 0.5*self.size[1]
@@ -151,7 +151,6 @@
 	size: self.texture_size
 
 <ClickableLabel@DarkLabel+ButtonBehavior>:
-    font_size: dp(12)
     color: BLACK
 	halign: 'center'
 	valign: 'center'
@@ -161,20 +160,21 @@
 	orientation: 'horizontal'
 	text: ''
 	label: ''
-	ClickableLabel:
-		size_hint: 0.6,None
-		height: self.font_size * 1.5
+    ClickableLabel:
+		size_hint: 0.6,1
 		id: desc
 		text: root.label
-		font_size: dp(20)
-		on_press: value.opacity =  1 if  value.opacity==0 else 0
+		font_size: self.size[1] * 0.8
+		on_press:
+		    value.opacity =  1 if  value.opacity==0 else 0
 	DarkLabel:
-		size_hint: 0.4,None
+		size_hint: 0.4,1
 		text: root.text
-		height: desc.height
 		font_size: desc.font_size
 		id: value
 		bold: True
+
+
 
 <BaseCircleWithText>:
     text: ''
@@ -216,9 +216,6 @@
     size: self.texture_size
 
 <ScoreGraph>:
-    highlight_size: 5
-    marginx: 0.05
-    marginy: 0.01
     whalf: root.pos[1]+self.height*0.25*(1 + 2 * root.marginy)
     bhalf: root.pos[1]+self.height*0.75*(1 - 2/3 * root.marginy)
     mid: root.pos[1]+self.height*0.5
@@ -227,19 +224,19 @@
         Color:
             rgba: GREY
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.whalf,root.pos[0]+self.width*0.95,root.whalf]
+            points: [root.pos[0]+self.width*root.marginx,root.whalf,root.pos[0]+self.width*(1-root.marginx),root.whalf]
             width: 1.0
             dashes: [1,2]
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.mid,root.pos[0]+self.width*0.95,root.mid]
+            points: [root.pos[0]+self.width*root.marginx,root.mid,root.pos[0]+self.width*(1-root.marginx),root.mid]
             width: 1.0
             dashes: [4,4]
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.bhalf,root.pos[0]+self.width*0.95,root.bhalf]
+            points: [root.pos[0]+self.width*root.marginx,root.bhalf,root.pos[0]+self.width*(1-root.marginx),root.bhalf]
             width: 1.0
             dashes: [1,2]
         Line:
-            rectangle: [root.pos[0] + root.marginx * self.width, root.pos[1] + root.marginy*self.height, root.width*0.9, root.height*(1-2*root.marginy)]
+            rectangle: [root.pos[0] + root.marginx * self.width, root.pos[1] + root.marginy*self.height, self.width*(1-2*root.marginx), root.height*(1-2*root.marginy)]
     canvas.after:
         Color:
             rgba: BLACK
@@ -357,6 +354,11 @@
             Ellipse:
                 pos: self.pos[0] + self.width/2 - self.height/5, self.pos[1]  + self.height/2 - self.height/5
                 size: self.height/2.5,self.height/2.5
+            Color:
+                rgba: BLACK
+            Line:
+                circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.height/5 - 1
+                width: 1.1
     Label:
         size_hint: 0.025, 1
 
@@ -374,11 +376,11 @@
         Color:
             rgba: [*[(c+1)/2 for c in root.border_color[:3]], root.border_color[3]]
         Line:
-            rectangle: [self.pos[0]+1,self.pos[1]+2,self.width-3,self.height-4]
+            rectangle: [self.pos[0]+1,self.pos[1]+2,self.width-3,self.height-3]
             width:1
     Label:
         padding: 5, 5
-        font_size: dp(20)
+        font_size: dp(18)
         color: BLACK
         size_hint_y: None
         height: self.texture_size[1]
@@ -500,16 +502,20 @@
             ScoreGraph:
                 id: graph
                 size_hint: 1,0.7
-            CensorableLabel:
-                id: win_rate
-                size_hint: 1, 0.15
-                label: 'Win rate'
-                text: ''
-            CensorableLabel:
-                id: score
-                size_hint: 1, 0.15
-                label: 'Score'
-                text: ''
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: 1,0.3
+                spacing: 3
+                CensorableLabel:
+                    id: win_rate
+                    size_hint: 1, 0.5
+                    label: 'Win rate'
+                    text: ''
+                CensorableLabel:
+                    id: score
+                    size_hint: 1, 0.5
+                    label: 'Score'
+                    text: ''
         BoxLayout: # ----------- play -----------
             orientation: 'vertical'
             size_hint: 1,1
@@ -563,7 +569,7 @@
                 StyledButton:
                     text: 'Configure Teacher'
                     on_press: root.configure_teacher()
-                    size_hint: 1.33, 1
+                    size_hint: 1.425, 1
                 StyledButton:
                     text: 'Configure AIs'
                     on_press: root.configure_ais()
@@ -572,7 +578,7 @@
                 size_hint: 1,0.2
     CensorableLabel:
         id: score_change
-        size_hint: 1, 0.0225
+        size_hint: 1, 0.025
         label: 'Score change'
         text: ''
     BoxLayout:

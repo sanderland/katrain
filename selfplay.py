@@ -18,7 +18,7 @@ DB_FILENAME = "ai_performance.pickle"
 
 class Logger:
     def log(self, msg, level):
-        if level <= OUTPUT_DEBUG:
+        if level <= OUTPUT_INFO:
             print(msg)
         if level <= OUTPUT_ERROR:
             print(msg, file=sys.stderr)
@@ -147,6 +147,31 @@ test_ais = [
     AI("P:Weighted", {"pick_override": 1.0}),
 ]
 
+test_ais = [
+    AI("Policy", {}),
+    AI("P:Noise", {"noise_strength": 0.8}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.0, "weaken_fac": 1}),
+    AI("P:Weighted", {"pick_override": 0.95, "lower_bound": 0.0, "weaken_fac": 1}),
+    AI("P:Weighted", {"pick_override": 0.9, "lower_bound": 0.0, "weaken_fac": 1}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.0, "weaken_fac": 0.5}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.0, "weaken_fac": 1}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.0, "weaken_fac": 1.5}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.0, "weaken_fac": 2}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.01, "weaken_fac": 0.5}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.01, "weaken_fac": 1}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.01, "weaken_fac": 1.5}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.01, "weaken_fac": 2}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.001, "weaken_fac": 0.5}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.001, "weaken_fac": 1}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.001, "weaken_fac": 1.5}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.001, "weaken_fac": 2}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.005, "weaken_fac": 0.5}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.005, "weaken_fac": 1}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.005, "weaken_fac": 1.5}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.005, "weaken_fac": 2}),
+    AI("P:Pick", {"pick_frac": 0.5, "pick_n": 0}),
+]
+
 
 # test_ais = [
 #    AI("Policy", {}),
@@ -161,7 +186,7 @@ test_ais = [
 for ai in test_ais:
     add_ai(ai)
 
-N_GAMES = 5
+N_GAMES = 3
 
 ais_to_test = retrieve_ais(test_ais)
 # ais_to_test = ai_database

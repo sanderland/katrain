@@ -5,12 +5,21 @@
         "config": "KataGo/analysis_config.cfg",
         "threads": 8,
         "max_visits": 500,
+        "fast_visits": 50,
         "max_time": 3.0,
         "enable_ownership": true
     },
-    "files": {
+    "sgf": {
         "sgf_load": "~/Downloads",
-        "sgf_save": "./sgfout"
+        "sgf_save": "./sgfout",
+        "save_feedback": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+        ]
     },
     "game": {
         "init_size": 19,
@@ -37,7 +46,7 @@
             0
         ],
         "eval_off_show_last": 3,
-        "eval_show_ai": false
+        "eval_show_ai": true
     },
     "ai": {
         "Default": {
@@ -62,9 +71,11 @@
             "_help_left": ""
         },
         "P:Weighted": {
-            "_help_right": "Strength is mainly affected by `model` in engine settings.",
-            "_help_left": "`pick_override` determines when top move is chosen without randomness, and is effectively disabled by default (1.0).",
-            "pick_override": 1.0
+            "_help_right": "`lower_bound` determines the lower bound policy value that is allowed. `weaken_fac` influences how much more likely weaker moves are picked.",
+            "_help_left": "pick_override` determines when top move is chosen without randomness, and is effectively disabled by default (1.0).",
+            "pick_override": 1.0,
+            "lower_bound": 0.001,
+            "weaken_fac": 1
         },
         "P:Noise": {
             "pick_override": 0.95,
@@ -112,14 +123,49 @@
             "line_weight": 5,
             "_help_right": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to below the `threshold` line.",
             "_help_left": "Increase `line_weight` to penalize moves closer to the center more."
+        },
+        "<Pause>": {
+                        "_help_right": "",
+            "_help_left": ""
+
         }
     },
     "board_ui": {
+        "engine_down_col": [
+            0.8,
+            0,
+            0,
+            1
+        ],
+        "engine_busy_col": [
+            0.9,
+            0.4,
+            0.1,
+            1
+        ],
+        "engine_little_busy_col": [
+            0.85,
+            0.89,
+            0.3,
+            1
+        ],
+        "engine_almost_done_col": [
+            0.67,
+            0.9,
+            0.18,
+            1
+        ],
+        "engine_ready_col": [
+            0.117,
+            0.588,
+            0,
+            1
+        ],
         "starpoint_size": 0.1,
         "stone_size": 0.475,
         "eval_dot_max_size": 0.5,
-      "eval_dot_min_size": 0.25,
-      "visit_frac_small": 0.1,
+        "eval_dot_min_size": 0.25,
+        "visit_frac_small": 0.1,
         "stones": {
             "B": [
                 0.05,
@@ -178,13 +224,13 @@
                 0.67,
                 0.9,
                 0.18,
-                0.0
+                1.0
             ],
             [
                 0.117,
                 0.588,
                 0,
-                0.0
+                1.0
             ]
         ],
         "line_color": [
