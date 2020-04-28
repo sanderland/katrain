@@ -19,10 +19,10 @@ class GameNode(SGFNode):
         self.move_number = 0
         self.undo_threshold = random.random()  # for fractional undos, store the random threshold in the move itself for consistency
 
-    def sgf_properties(self, save_comments_player, save_comments_player_class, eval_thresholds):
+    def sgf_properties(self, save_comments_player, save_comments_class, eval_thresholds):
         properties = copy.copy(super().sgf_properties())
         if self.points_lost:
-            show_class = save_comments_player_class[evaluation_class(self.points_lost, eval_thresholds)]
+            show_class = save_comments_class[evaluation_class(self.points_lost, eval_thresholds)]
         else:
             show_class = False
         if save_comments_player.get(self.player, False) and show_class:

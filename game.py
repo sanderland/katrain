@@ -199,7 +199,7 @@ class Game:
     def __repr__(self):
         return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
-    def write_sgf(self, path=None):
+    def write_sgf(self, path=None, trainer_config={}, save_feedback=(True, True, True, True, True, True)):
         black, white = self.root.get_property("PB"), self.root.get_property("PW")
         black = re.sub(r"['<>:\"/\\|?*]", "", black or "Black")
         white = re.sub(r"['<>:\"/\\|?*]", "", white or "White")
@@ -207,9 +207,9 @@ class Game:
         file_name = os.path.join(path, f"{game_name}.sgf")
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
-        show_dots_for = {p: self.katrain.config("trainer/eval_show_ai") or "ai" not in self.katrain.controls.player_mode(p) for p in Move.PLAYERS}
+        show_dots_for = {p: trainer_config.get("eval_show_ai", True) or "ai" not in self.katrain.controls.player_mode(p) for p in Move.PLAYERS}
         thresholds = self.katrain.config("trainer/eval_thresholds")
-        sgf = self.root.sgf(save_comments_player=show_dots_for, save_comments_class=self.katrain.config("sgf/save_feedback"), eval_thresholds=thresholds)
+        sgf = self.root.sgf(save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=thresholds)
         with open(file_name, "w") as f:
             f.write(sgf)
         return f"SGF with analysis written to {file_name}"

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, List, DefaultDict
+from typing import Dict, List, DefaultDict, Tuple, Set
 
 from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
@@ -29,7 +29,7 @@ class InputParseError(Exception):
 
 
 class QuickConfigGui(BoxLayout):
-    def __init__(self, katrain: "KaTrainGui", popup: Popup, initial_values: Dict = None, **kwargs):
+    def __init__(self, katrain, popup: Popup, initial_values: Dict = None, **kwargs):
         super().__init__(**kwargs)
         self.katrain = katrain
         self.popup = popup
@@ -76,7 +76,7 @@ class LoadSGFPopup(BoxLayout):
 
 
 class NewGamePopup(QuickConfigGui):
-    def __init__(self, katrain: "KaTrainGui", popup: Popup, properties: Dict, **kwargs):
+    def __init__(self, katrain, popup: Popup, properties: Dict, **kwargs):
         properties["RU"] = KataGoEngine.get_rules(katrain.game.root)
         super().__init__(katrain, popup, properties, **kwargs)
         self.rules_spinner.values = list(set(self.katrain.engine.RULESETS.values()))
@@ -95,7 +95,7 @@ class NewGamePopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
-    def __init__(self, katrain: "KaTrainGui", popup: Popup, config: Dict, ignore_cats: List, **kwargs):
+    def __init__(self, katrain, popup: Popup, config: Dict, ignore_cats: Tuple = (), **kwargs):
         self.config = config
         self.ignore_cats = ignore_cats
         self.orientation = "vertical"
@@ -163,8 +163,8 @@ class ConfigPopup(QuickConfigGui):
             def restart_engine(_dt):
                 old_engine = self.katrain.engine  # type: KataGoEngine
                 new_engine = KataGoEngine(self.katrain, self.config["engine"])
-                self.katrain.engine = {"B": new_engine, "W": new_engine}
-                self.katrain.game.engine = new_engine
+                self.katrain.engine = new_engine
+                self.katrain.game.engine = {"B": new_engine, "W": new_engine}
                 if getattr(old_engine, "katago_process"):
                     old_engine.shutdown(finish=True)
                 else:
@@ -176,7 +176,7 @@ class ConfigPopup(QuickConfigGui):
 
 
 class ConfigAIPopup(QuickConfigGui):
-    def __init__(self, katrain, popup, ai_modes, **kwargs):
+    def __init__(self, katrain, popup: Popup, ai_modes: Set, **kwargs):
         self.settings = katrain.config("ai")
         super().__init__(katrain, popup, self.settings, **kwargs)
         self.ai_modes = ai_modes

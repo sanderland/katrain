@@ -207,7 +207,7 @@ class KaTrainGui(BoxLayout):
                 self.game.root.set_property(
                     f"P{pl}", f"AI {self.controls.ai_mode(pl)} (KataGo { os.path.splitext(model_file)[0]})" if "ai" in self.controls.player_mode(pl) else "Player"
                 )
-        msg = self.game.write_sgf(self.config("files/sgf_save"))
+        msg = self.game.write_sgf(self.config("files/sgf_save"), trainer_config=self.config("trainer"), save_feedback=self.config("sgf/save_feedback"))
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)
 

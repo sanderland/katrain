@@ -113,7 +113,6 @@ class BadukPanWidget(Widget):
     def eval_color(self, points_lost):
         colors = self.ui_config["eval_colors"]
         i = evaluation_class(points_lost, self.trainer_config["eval_thresholds"])
-        print(i, colors)
         return colors[i]
 
     def draw_board(self, *_args):
