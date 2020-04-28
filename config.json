@@ -75,7 +75,7 @@
             "_help_left": "pick_override` determines when top move is chosen without randomness, and is effectively disabled by default (1.0).",
             "pick_override": 1.0,
             "lower_bound": 0.001,
-            "weaken_fac": 1
+            "weaken_fac": 1.5
         },
         "P:Noise": {
             "pick_override": 0.95,

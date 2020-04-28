@@ -173,6 +173,15 @@ test_ais = [
 ]
 
 
+test_ais = [
+    AI("Policy", {}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.0, "weaken_fac": 1}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.01, "weaken_fac": 1}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.001, "weaken_fac": 1}),
+    AI("P:Weighted", {"pick_override": 1.0, "lower_bound": 0.005, "weaken_fac": 1}),
+]
+
+
 # test_ais = [
 #    AI("Policy", {}),
 #    AI("P:Noise", {"noise_strength": 0.4}),
@@ -186,7 +195,7 @@ test_ais = [
 for ai in test_ais:
     add_ai(ai)
 
-N_GAMES = 3
+N_GAMES = 20
 
 ais_to_test = retrieve_ais(test_ais)
 # ais_to_test = ai_database
