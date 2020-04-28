@@ -2,7 +2,7 @@ import copy
 import random
 from typing import Dict, List, Optional, Tuple
 
-from common import var_to_grid
+from common import evaluation_class, var_to_grid
 from sgf_parser import Move, SGFNode
 
 
@@ -19,15 +19,19 @@ class GameNode(SGFNode):
         self.move_number = 0
         self.undo_threshold = random.random()  # for fractional undos, store the random threshold in the move itself for consistency
 
-    @property
-    def sgf_properties(self):
-        best_sq = []
-        properties = copy.copy(super().sgf_properties)
-        if best_sq and "SQ" not in properties:
-            properties["SQ"] = best_sq
-        comment = self.comment(sgf=True)
-        if comment:
-            properties["C"] = [properties.get("C", "") + comment]
+    def sgf_properties(self, save_comments_player, save_comments_player_class, eval_thresholds):
+        properties = copy.copy(super().sgf_properties())
+        if self.points_lost:
+            show_class = save_comments_player_class[evaluation_class(self.points_lost, eval_thresholds)]
+        else:
+            show_class = False
+        if save_comments_player.get(self.player, False) and show_class:
+            best_sq = []
+            if best_sq and "SQ" not in properties:
+                properties["SQ"] = best_sq
+            comment = self.comment(sgf=True)
+            if comment:
+                properties["C"] = [properties.get("C", "") + comment]
         return properties
 
     # various analysis functions

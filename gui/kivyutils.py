@@ -13,6 +13,7 @@ from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
+from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
@@ -36,6 +37,11 @@ class BackgroundColor(Widget):
 
 class BackgroundLabel(Label, BackgroundColor):
     pass
+
+
+class ScrollableLabel(ScrollView):
+    text = StringProperty("")
+    border_color = ListProperty([0, 0, 0, 1])
 
 
 class StyledButton(Button):

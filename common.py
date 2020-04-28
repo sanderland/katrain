@@ -1,4 +1,4 @@
-from typing import List, Any, Tuple
+from typing import Any, List, Tuple
 
 OUTPUT_ERROR = -1
 OUTPUT_INFO = 0
@@ -26,3 +26,10 @@ def var_to_grid(array_var: List[Any], size: Tuple[int, int]) -> List[List[Any]]:
         grid[y] = array_var[ix : ix + size[0]]
         ix += size[0]
     return grid
+
+
+def evaluation_class(points_lost, eval_thresholds):
+    i = 0
+    while i < len(eval_thresholds) - 1 and points_lost < eval_thresholds[i]:
+        i += 1
+    return i

@@ -1,16 +1,17 @@
 # This is a script I use to test the performance of AIs
+import pickle
+import sys
 import threading
-import time, sys
+import time
 import traceback
 from collections import defaultdict
-import pickle
 from concurrent.futures.thread import ThreadPoolExecutor
 
-from game import Game
 from ai import ai_move
-from engine import KataGoEngine
-from common import OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_DEBUG
+from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO
 from elote import EloCompetitor
+from engine import KataGoEngine
+from game import Game
 
 DB_FILENAME = "ai_performance.pickle"
 

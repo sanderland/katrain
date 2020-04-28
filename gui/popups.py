@@ -1,9 +1,11 @@
 from collections import defaultdict
+from typing import Dict, List, DefaultDict
 
 from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 
 from common import OUTPUT_DEBUG, OUTPUT_ERROR
 from engine import KataGoEngine
@@ -27,7 +29,7 @@ class InputParseError(Exception):
 
 
 class QuickConfigGui(BoxLayout):
-    def __init__(self, katrain, popup, initial_values=None, **kwargs):
+    def __init__(self, katrain: "KaTrainGui", popup: Popup, initial_values: Dict = None, **kwargs):
         super().__init__(**kwargs)
         self.katrain = katrain
         self.popup = popup
@@ -74,7 +76,7 @@ class LoadSGFPopup(BoxLayout):
 
 
 class NewGamePopup(QuickConfigGui):
-    def __init__(self, katrain, popup, properties, **kwargs):
+    def __init__(self, katrain: "KaTrainGui", popup: Popup, properties: Dict, **kwargs):
         properties["RU"] = KataGoEngine.get_rules(katrain.game.root)
         super().__init__(katrain, popup, properties, **kwargs)
         self.rules_spinner.values = list(set(self.katrain.engine.RULESETS.values()))
@@ -93,7 +95,7 @@ class NewGamePopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
-    def __init__(self, katrain, popup, config, ignore_cats, **kwargs):
+    def __init__(self, katrain: "KaTrainGui", popup: Popup, config: Dict, ignore_cats: List, **kwargs):
         self.config = config
         self.ignore_cats = ignore_cats
         self.orientation = "vertical"
@@ -134,7 +136,7 @@ class ConfigPopup(QuickConfigGui):
         self.add_widget(btn_container)
 
     def update_config(self, save_to_file=False):
-        updated_cat = defaultdict(list)
+        updated_cat = defaultdict(list)  # type: DefaultDict[List[str]]
         try:
             for k, v in self.collect_properties(self).items():
                 k1, k2 = k.split("/")
@@ -157,14 +159,17 @@ class ConfigPopup(QuickConfigGui):
         if {key for key in engine_updates if key not in {"max_visits", "max_time", "enable_ownership"}}:
             self.katrain.log(f"Restarting Engine after {engine_updates} settings change")
             self.katrain.controls.set_status(f"Restarting Engine after {engine_updates} settings change")
-            old_engine = self.katrain.engine
-            new_engine = KataGoEngine(self.katrain, self.config["engine"])
-            self.katrain.engine = {"B": new_engine, "W": new_engine}
-            self.katrain.game.engine = new_engine
-            if getattr(old_engine, "katago_process"):
-                old_engine.shutdown(finish=True)
-            else:
-                self.katrain.game.analyze_all_nodes()  # old engine was broken, so make sure we redo any failures
+
+            def restart_engine(_dt):
+                old_engine = self.katrain.engine  # type: KataGoEngine
+                new_engine = KataGoEngine(self.katrain, self.config["engine"])
+                self.katrain.engine = {"B": new_engine, "W": new_engine}
+                self.katrain.game.engine = new_engine
+                if getattr(old_engine, "katago_process"):
+                    old_engine.shutdown(finish=True)
+                else:
+                    self.katrain.game.analyze_all_nodes()  # old engine was broken, so make sure we redo any failures
+                Clock.schedule_once(restart_engine, 0)
 
         self.katrain.debug_level = self.config["debug"]["level"]
         self.katrain.update_state(redraw_board=True)

@@ -1,11 +1,13 @@
 # This is a script that turns a KaTrain AI into a sort-of GTP compatible bot
 import json
-import time, sys
+import sys
+import time
 import traceback
-from game import Game, Move
+
 from ai import ai_move
-from engine import KataGoEngine, EngineDiedException
-from common import OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_DEBUG, bot_strategy_names
+from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, bot_strategy_names
+from engine import EngineDiedException, KataGoEngine
+from game import Game, Move
 from sgf_parser import Move
 
 DB_FILENAME = "ai_performance.pickle"
@@ -14,6 +16,7 @@ if len(sys.argv) < 2:
     bot = "dev"
 else:
     bot = sys.argv[1].strip()
+port = int(sys.argv[2]) if len(sys.argv) > 2 else 8587
 
 
 class Logger:
@@ -24,9 +27,10 @@ class Logger:
 
 logger = Logger()
 
+
 ENGINE_SETTINGS = {
     #    "katago": "../KataGo/cpp/katago",
-    "katago": "python engine_connector.py 2222",  # actual engine settings in engine_server.py
+    "katago": f"python engine_connector.py {port}",  # actual engine settings in engine_server.py
     "model": "models/b15-1.3.2.txt.gz",
     "config": "KataGo/analysis_config.cfg",
     "max_visits": 5,
@@ -34,7 +38,7 @@ ENGINE_SETTINGS = {
     "enable_ownership": False,
     "threads": 1,
 }
-ai_settings = {"noise_strength": 0.8, "pick_n": 10, "pick_frac": 0.2, "stddev": 10, "line_weight": 10, "pick_override": 0.95}
+
 
 engine = KataGoEngine(logger, ENGINE_SETTINGS)
 
@@ -47,6 +51,9 @@ all_ai_settings["dev"] = all_ai_settings["P:Noise"]
 ai_strategy = bot_strategy_names[bot]
 ai_settings = all_ai_settings[ai_strategy]
 
+print(f"starting bot {bot} using server port {port}", file=sys.stderr)
+print(ENGINE_SETTINGS, file=sys.stderr)
+print(ai_strategy, ai_settings, file=sys.stderr)
 
 logger.log(f"STARTED ENGINE", OUTPUT_ERROR)
 

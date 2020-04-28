@@ -2,13 +2,13 @@ import heapq
 import math
 import random
 import time
-from typing import Dict, List, Tuple, Any
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 
-from common import OUTPUT_INFO, var_to_grid, OUTPUT_DEBUG, OUTPUT_ERROR
+from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, var_to_grid
 from engine import EngineDiedException
-from game import Move, Game, IllegalMoveException, GameNode
+from game import Game, GameNode, IllegalMoveException, Move
 
 
 def weighted_selection_without_replacement(items: List[Tuple[float, float, int, int]], pick_n: int) -> List[Tuple[float, float, int, int]]:
@@ -71,10 +71,11 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         elif "p:" in ai_mode:
             n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])
             if "influence" in ai_mode or "territory" in ai_mode:
+                thr_line = ai_settings["threshold"] - 1  # zero-based
                 if "influence" in ai_mode:
-                    weight = lambda x, y: (1 / ai_settings["line_weight"]) ** max(0, 3 - min(size[0] - 1 - x, x, y, size[1] - 1 - y))
+                    weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (max(0, thr_line - min(size[0] - 1 - x, x)) + max(0, thr_line - min(size[1] - 1 - y, y)))
                 else:
-                    weight = lambda x, y: (1 / ai_settings["line_weight"]) ** max(0, min(size[0] - 1 - x, x, y, size[1] - 1 - y) - 2)
+                    weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (max(0, min(size[0] - 1 - x, x, size[1] - 1 - y, y) - thr_line))
                 weighted_coords = [(policy_grid[y][x] * weight(x, y), weight(x, y), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
                 ai_thoughts += f"Generated weights for {ai_mode} according to weight factor {ai_settings['line_weight']} and distance from 4th line. "
             elif "local" in ai_mode or "tenuki" in ai_mode:

@@ -1,10 +1,13 @@
 # used to scale bots
-import socket, threading
-import traceback, sys, json
+import json
 import random
+import socket
+import sys
+import threading
+import traceback
 
+from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO
 from engine import KataGoEngine
-from common import OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_DEBUG
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8587
 

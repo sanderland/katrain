@@ -1,5 +1,3 @@
-from kivy.graphics.context_instructions import Color
-from kivy.graphics.vertex_instructions import Line, SmoothLine
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 
@@ -15,7 +13,7 @@ class Controls(BoxLayout):
     def set_status(self, msg, at_node=None):
         self.status = msg
         self.status_node = at_node or self.katrain.game and self.katrain.game.current_node
-        self.info.text = msg
+        self.status_label.text = msg
         self.update_evaluation()
 
     def select_mode(self, mode):
@@ -44,11 +42,11 @@ class Controls(BoxLayout):
         katrain = self.katrain
         current_node = katrain.game and katrain.game.current_node
 
-        info = ""
-        if current_node is self.status_node or (self.status is not None and self.status_node is None and current_node.is_root):  # startup errors on root
-            info += self.status + "\n"
-        else:
+        if current_node is not self.status_node and not (self.status is not None and self.status_node is None and current_node.is_root):  # startup errors on root
+            self.status_label.text = ""
             self.status_node = None
+
+        info = ""
 
         if current_node:
             move = current_node.single_move

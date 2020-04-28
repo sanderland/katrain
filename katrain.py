@@ -1,5 +1,3 @@
-import inspect
-
 from kivy.config import Config  # isort:skip
 
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
@@ -10,13 +8,13 @@ import sys
 import threading
 import traceback
 from queue import Queue
+from typing import Optional
 
 from kivy.app import App
 from kivy.core.clipboard import Clipboard
 from kivy.core.window import Window
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
-from kivy.uix.widget import Widget
 
 from ai import ai_move
 from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO
@@ -33,14 +31,14 @@ class KaTrainGui(BoxLayout):
     def __init__(self, **kwargs):
         super(KaTrainGui, self).__init__(**kwargs)
         self.debug_level = 0
-        self.engine = None
+        self.engine = None  # type: Optional[KataGoEngine]
         self.game = None
         self.logger = lambda message, level=OUTPUT_INFO: self.log(message, level)
 
         self._load_config()
 
         self.debug_level = self.config("debug/level", OUTPUT_INFO)
-        self.controls.ai_mode_groups["W"].values = self.controls.ai_mode_groups["B"].values = list(self.config("ai").keys()) + ["<Pause>"]
+        self.controls.ai_mode_groups["W"].values = self.controls.ai_mode_groups["B"].values = list(self.config("ai").keys())
         self.message_queue = Queue()
 
         self._keyboard = Window.request_keyboard(None, self, "")

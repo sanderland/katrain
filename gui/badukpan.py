@@ -6,7 +6,7 @@ from kivy.properties import ListProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 
-from common import OUTPUT_DEBUG
+from common import OUTPUT_DEBUG, evaluation_class
 from game import Move
 from gui.kivyutils import draw_circle, draw_text
 from common import var_to_grid
@@ -92,7 +92,7 @@ class BadukPanWidget(Widget):
         self.draw_hover_contents()  # remove ghost
 
     # drawing functions
-    def on_size(self, *args):
+    def on_size(self, *_args):
         self.draw_board()
         self.draw_board_contents()
 
@@ -112,13 +112,11 @@ class BadukPanWidget(Widget):
 
     def eval_color(self, points_lost):
         colors = self.ui_config["eval_colors"]
-        thresholds = self.trainer_config["eval_thresholds"]
-        i = 0
-        while i < len(thresholds) and points_lost < thresholds[i]:
-            i += 1
-        return colors[min(i, len(colors) - 1)]
+        i = evaluation_class(points_lost, self.trainer_config["eval_thresholds"])
+        print(i, colors)
+        return colors[i]
 
-    def draw_board(self, *args):
+    def draw_board(self, *_args):
         if not self.ui_config:
             return
         katrain = self.katrain
@@ -167,7 +165,7 @@ class BadukPanWidget(Widget):
             for i in range(board_size_y):
                 draw_text(pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
 
-    def draw_board_contents(self, *args):
+    def draw_board_contents(self, *_args):
         if not self.ui_config:
             return
         stone_color = self.ui_config["stones"]
@@ -194,7 +192,7 @@ class BadukPanWidget(Widget):
                 evalsize = 1
                 for m in node.move_with_placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
-                        move_eval_on = full_eval_on or (i < show_n_eval and show_dots_for.get(m.player))
+                        move_eval_on = show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
                         if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost)
                         else:
@@ -212,7 +210,7 @@ class BadukPanWidget(Widget):
                     self.draw_stone(6, c, stone_color["B"], outline_color["B"], stone_color["W"], evalcol, evalsize)
                     self.draw_stone(7, c, stone_color["W"], outline_color["W"], None, evalcol, evalsize)
                     self.draw_stone(8, c, stone_color["W"], outline_color["W"], stone_color["B"], evalcol, evalsize)
-                    self.draw_stone(9, c, [*evalcol, 0.5], scale=0.8)
+                    self.draw_stone(9, c, [*evalcol[:3], 0.5], scale=0.8)
 
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
@@ -234,7 +232,7 @@ class BadukPanWidget(Widget):
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
             if katrain.controls.policy.active and policy:
-                policy_grid = var_to_grid(policy, [board_size_x, board_size_y])
+                policy_grid = var_to_grid(policy, (board_size_x, board_size_y))
                 best_move_policy = max(*policy)
                 for y in range(board_size_y - 1, -1, -1):
                     for x in range(board_size_x):
@@ -278,7 +276,7 @@ class BadukPanWidget(Widget):
 
         self.draw_hover_contents()
 
-    def draw_hover_contents(self, *args):
+    def draw_hover_contents(self, *_args):
         ghost_alpha = self.ui_config["ghost_alpha"]
         katrain = self.katrain
         game_ended = katrain.game.ended
@@ -299,7 +297,7 @@ class BadukPanWidget(Widget):
                         alpha, scale = self.ui_config["ghost_alpha"], 1.0
                         if i == 0:
                             alpha += self.ui_config["top_move_x_alpha"]
-                        elif d["visits"] < 0.1 * hint_moves[0]["visits"]:  # TODO: config?
+                        elif d["visits"] < self.ui_config["visit_frac_small"] * hint_moves[0]["visits"]:
                             scale = 0.8
                         self.active_hints.append(move.coords)
 
@@ -322,7 +320,7 @@ class BadukPanWidget(Widget):
                                 Color(*stone_color[opp_player])
                                 draw_text(pos=board_coords, text=str(i + 1), font_size=sizefac * self.grid_size / 1.45)
                         elif not self.show_pv_for:
-                            self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(d["pointsLost"]), alpha], scale=scale)
+                            self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(d["pointsLost"])[:3], alpha], scale=scale)
 
             # hover next move ghost stone
             if self.ghost_stone:

@@ -75,8 +75,8 @@ class KataGoEngine:
                 continue
             analysis = json.loads(line)
             if analysis["id"] in self.queries:
-                id = analysis["id"]
-                callback, error_callback, start_time, next_move = self.queries[id]
+                query_id = analysis["id"]
+                callback, error_callback, start_time, next_move = self.queries[query_id]
             else:
                 self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
                 continue
@@ -87,12 +87,15 @@ class KataGoEngine:
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
                 continue
             else:
-                callback, error_callback, start_time, next_move = self.queries[id]
+                callback, error_callback, start_time, next_move = self.queries[query_id]
                 time_taken = time.time() - start_time
                 self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG)
                 self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
-                callback(analysis)
-                del self.queries[id]
+                del self.queries[query_id]
+                try:
+                    callback(analysis)
+                except Exception as e:
+                    self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
                     self.katrain.update_state()
 

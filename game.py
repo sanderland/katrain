@@ -1,9 +1,9 @@
 import math
 import os
 import re
-from datetime import datetime
-from typing import List, Union, Dict
 import threading
+from datetime import datetime
+from typing import Dict, List, Union
 
 from common import var_to_grid
 from engine import KataGoEngine
@@ -206,8 +206,12 @@ class Game:
         game_name = f"katrain_{black} vs {white} {self.game_id}"
         file_name = os.path.join(path, f"{game_name}.sgf")
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
+
+        show_dots_for = {p: self.katrain.config("trainer/eval_show_ai") or "ai" not in self.katrain.controls.player_mode(p) for p in Move.PLAYERS}
+        thresholds = self.katrain.config("trainer/eval_thresholds")
+        sgf = self.root.sgf(save_comments_player=show_dots_for, save_comments_class=self.katrain.config("sgf/save_feedback"), eval_thresholds=thresholds)
         with open(file_name, "w") as f:
-            f.write(self.root.sgf())
+            f.write(sgf)
         return f"SGF with analysis written to {file_name}"
 
     def analyze_extra(self, mode):

@@ -71,16 +71,16 @@ class SGFNode:
         if parent and move:
             self.set_property(move.player, move.sgf(self.board_size))
 
-    @property
-    def sgf_properties(self) -> Dict:
+    def sgf_properties(self, **xargs) -> Dict:
         """For hooking into in a subclass and overriding/formatting any additional properties to be output"""
         return copy.deepcopy(self.properties)
 
-    def sgf(self) -> str:
+    def sgf(self, **xargs) -> str:
+        """Generates an SGF, calling sgf_properties on each node with the given xargs, so it can filter relevant properties if needed."""
         import sys
 
         sys.setrecursionlimit(max(sys.getrecursionlimit(), 3 * 29 * 29))  # thanks to lightvector for causing stack overflows
-        sgf_str = "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in self.sgf_properties.items() if values])
+        sgf_str = "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in self.sgf_properties(**xargs).items() if values])
         if self.children:
             children = [c.sgf() for c in self.children]
             if len(children) == 1:

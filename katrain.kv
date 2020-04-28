@@ -360,11 +360,37 @@
     Label:
         size_hint: 0.025, 1
 
+<ScrollableLabel>:
+    do_scroll_x: False
+    scroll_type: ['bars']
+    bar_width: 5
+    bar_color: BUTTON_COLOR
+    canvas.before:
+        Color:
+            rgba: root.border_color
+        Line:
+            rectangle: [self.pos[0],self.pos[1]+1,self.width-1,self.height-2]
+            width:1
+        Color:
+            rgba: [*[(c+1)/2 for c in root.border_color[:3]], root.border_color[3]]
+        Line:
+            rectangle: [self.pos[0]+1,self.pos[1]+2,self.width-3,self.height-4]
+            width:1
+    Label:
+        padding: 5, 5
+        font_size: dp(20)
+        color: BLACK
+        size_hint_y: None
+        height: self.texture_size[1]
+        text_size: self.width, None
+        text: root.text
+
 <Controls>:
 	orientation: 'vertical'
 	play_tab_button: play_tab_button
 	analyze_tab_button: analyze_tab_button
     info: info
+    status_label: status_label
 	win_rate: win_rate
 	score_change: score_change
 	score: score
@@ -509,7 +535,7 @@
                 StyledSpinner:
                     id: B_AI_mode
                     values: ['Default']
-                    sync_height_frac: 0.66
+                    sync_height_frac: 0.7
                     size_hint: 0.3, 1
                     on_text: if B_player_mode.children: B_player_mode.children[0].trigger_action(duration=0)
                 Label:
@@ -527,7 +553,7 @@
                 StyledSpinner:
                     id: W_AI_mode
                     size_hint: 0.3, 1
-                    sync_height_frac: 0.66
+                    sync_height_frac: 0.7
                     values: ['Default']
                     on_text: if W_player_mode.children: W_player_mode.children[0].trigger_action(duration=0)
             BoxLayout:
@@ -549,9 +575,18 @@
         size_hint: 1, 0.0225
         label: 'Score change'
         text: ''
-	TextInput:
-		id: info
-		size_hint: 1, 0.2
+    BoxLayout:
+        size_hint: 1,0.2
+        orientation: 'vertical'
+        ScrollableLabel:
+            id: status_label
+            border_color: 0.5,0.1,0.1,1
+            opacity: 1 if self.text else 0
+            text: ''
+            size_hint_y: 0.00001 if not self.text else 0.66
+        ScrollableLabel:
+            id: info
+            size_hint: 1, 1 - status_label.size_hint_y
     BoxLayout:
         orientation: 'horizontal'
         size_hint: 1, None

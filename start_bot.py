@@ -8,7 +8,10 @@ if len(sys.argv) < 2:
     exit(0)
 
 bot = sys.argv[1].strip()
+port = int(sys.argv[2]) if len(sys.argv) > 2 else 8587
+
 username = f"katrain-{bot}"
+
 greetings = {
     "dev": "Experimental!",
     "strong": "Play top policy move.",
@@ -40,6 +43,8 @@ GREETING = (
 )
 BYEMSG = "Thank you for playing. If you have any feedback, please message my admin!"
 MAXGAMES = 10
-os.system(
-    f'gtp2ogs --apikey {APIKEY} --username {username} --greeting "{GREETING}" --rankedonly  --farewell "{BYEMSG}" --ogspv katago --noclock --speeds blitz,live --maxconnectedgames {MAXGAMES} --persist --minrank 20k --noautohandicap --maxhandicap 0 --boardsizes 9,13,19 --komis automatic,6.5 -- python ai2gtp.py {bot}'
-)
+# --rankedonly
+
+cmd = f'gtp2ogs --apikey {APIKEY} --username {username} --greeting "{GREETING}"   --farewell "{BYEMSG}" --ogspv katago --noclock --nopause --speeds blitz,live --maxconnectedgames {MAXGAMES} --persist --minrank 20k --noautohandicap --maxhandicap 0 --boardsizes 19 --komis automatic,6.5 -- python ai2gtp.py {bot} {port}'
+print(f"starting bot {username} using server port {port} --> {cmd}")
+os.system(cmd)

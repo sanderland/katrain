@@ -14,25 +14,24 @@
 [x] config player to sep. row/popups?
 [x] dots: teacher settings fixes
 [x] ogs bot connector
+[x] clarify score change vs score
+[x] List edit settings/object edit settings? -> Mostly superseded by popups.
 
 [/] README
 [] engine status
 [] sgf review improvements  --  Likewise, in the 0.9 version, better alternatives to the played move were shown with squares, which was also pretty useful when using the sgf outside of Katrain. I mean, having the top move mentioned is all and good, but when you see multiple squares shown on the board as better alternatives to the move played in the game, it makes obvious how far from perfect that move actually was :D
+[] selective save dots / config
 [] Release notes
-
-[] clarify score change vs score
+[] box to label ? split in status and comment?
 [] pv with overlap?
-
 
 Low priority
 [] more teaching / groups in danger? hard
-[] box to label ? split in status and comment?
-[] dual engine support -- easily possible but has weird effects on win rate etc
 [] When creating a new game, the 9 buttons on the right side aren't all that useful. Maybe the 9, 13 and 19 ones make sense since these three board sizes are the traditionally used ones, but why 2, 4 and 9 stones buttons? Why 0.5, 6.5 and -40pts komi buttons?
 [] Score instead of game end
 
 Wont do for now
-[] List edit settings/object edit settings?
+[] dual engine support -- easily possible but has weird effects on win rate etc
 [] Currently, when saving an SGF after analyzing a game, Katrain stores data for every move by default. Like for dots, it would be great if it was possible to only store data for moves that we were interested in (e.g. only from this or that player, and/or only the most inefficient moves/most costly mistakes, etc.)
 [] Typing something in the comments window freezes Katrain -> probably keyboard shortcuts / solved by label
 [] Plus, you wouldn't need "B" and "W" beside these numbers if the top part of the window was black with the graph being white on top of it (and the bottom White with the graph being black as they are currently).
