@@ -50,7 +50,8 @@ class Controls(BoxLayout):
 
         if current_node:
             move = current_node.single_move
-            next_player_is_human_or_both_robots = current_node.player and ("ai" not in self.player_mode(current_node.player) or "ai" in self.player_mode(current_node.next_player))
+            both_players_are_robots = "ai" in self.player_mode(current_node.player) and "ai" in self.player_mode(current_node.next_player)
+            next_player_is_human_or_both_robots = current_node.player and ("ai" not in self.player_mode(current_node.player) or both_players_are_robots)
             current_player_is_ai_playing_human = current_node.player and "ai" in self.player_mode(current_node.player) and "ai" not in self.player_mode(current_node.next_player)
             if next_player_is_human_or_both_robots and not current_node.is_root and move:
                 info += current_node.comment(teach="undo" in self.player_mode(current_node.player), hints=self.hints.active)
@@ -67,6 +68,9 @@ class Controls(BoxLayout):
                 elif not current_player_is_ai_playing_human:
                     self.score_change.label = f"Points lost"
                     self.score_change.text = ""
+            elif both_players_are_robots and current_node.parent and current_node.parent.analysis_ready:
+                self.score.text = current_node.parent.format_score()
+                self.win_rate.text = current_node.parent.format_win_rate()
 
             self.graph.update_value(current_node)
 

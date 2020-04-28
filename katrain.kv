@@ -150,23 +150,21 @@
 	valign: 'center'
 	size: self.texture_size
 
-<ClickableLabel@DarkLabel+ButtonBehavior>:
+<ClickableLabel@ButtonBehavior+DarkLabel>:
     color: BLACK
 	halign: 'center'
 	valign: 'center'
 	size: self.texture_size
 
 <CensorableLabel>:
+    value : value
 	orientation: 'horizontal'
-	text: ''
-	label: ''
     ClickableLabel:
 		size_hint: 0.6,1
 		id: desc
 		text: root.label
 		font_size: self.size[1] * 0.8
-		on_press:
-		    value.opacity =  1 if  value.opacity==0 else 0
+		on_press: value.opacity =  1 if  value.opacity==0 else 0
 	DarkLabel:
 		size_hint: 0.4,1
 		text: root.text
@@ -578,8 +576,8 @@
                 size_hint: 1,0.2
     CensorableLabel:
         id: score_change
-        size_hint: 1, 0.025
-        label: 'Score change'
+        size_hint: 1, 0.024
+        label: 'Points Lost'
         text: ''
     BoxLayout:
         size_hint: 1,0.2

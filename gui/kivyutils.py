@@ -202,9 +202,8 @@ class LabelledIntInput(LabelledTextInput):
 
 
 class CensorableLabel(BoxLayout):
-    @property
-    def text(self):
-        return self.value.text
+    text = StringProperty("")
+    label = StringProperty("")
 
 
 class ScoreGraph(Label):
