@@ -194,6 +194,7 @@ class BadukPanWidget(Widget):
                         move_eval_on = show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
                         if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost)
+                            print(evalcol)
                         else:
                             evalcol = None
                         inner = stone_color[m.opponent] if i == 0 else None

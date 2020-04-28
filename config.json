@@ -125,8 +125,8 @@
             "_help_left": "Increase `line_weight` to penalize moves closer to the center more."
         },
         "<Pause>": {
-                        "_help_right": "",
-            "_help_left": ""
+            "_help_right": "--Edward Lasker",
+            "_help_left": "The rules of go are so elegant, organic, and rigorously logical that if intelligent life forms exist elsewhere in the universe, they almost certainly play go."
 
         }
     },

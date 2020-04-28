@@ -62,10 +62,10 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                 lower_bound = max(0, ai_settings["lower_bound"])
                 weaken_fac = max(0.01, ai_settings["weaken_fac"])
             weighted_coords = [(policy_grid[y][x], policy_grid[y][x] ** (1 / weaken_fac), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > lower_bound]
-            if top_5_pass or pass_policy > lower_bound:
+            if top_5_pass:
                 weighted_coords.append([pass_policy, pass_policy ** (1 / weaken_fac), None, None])
             top = weighted_selection_without_replacement(weighted_coords, 1)
-            if top and top[0][2]:
+            if top and top[0][2] is not None:
                 best = top[0]
                 policy_value = best[0]
                 coords = best[2:]
