@@ -117,10 +117,10 @@ In addition to shortcuts mentioned above, there are:
 * **[Tab]**: to switch between analysis and play modes. (NB. keyboard shortcuts function regardless)
 * **[~]** or **[`]** or **[p]**: Hide side panel UI and only show the board.
 * **[enter]**: AI Move
-* **[arrow up]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to thte start.
-* **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to thte start.
-* **[scroll up]**: Undo move. Only works with the mouse pointer on the board.
-* **[scroll down]**: Redo move.
+* **[arrow up]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
+* **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
 * **[click on a move]**: See detailed statistics for a previous move.
 * **[double-click on a move]**: Navigate directly to that point in the game.
 * **[Ctrl-v]**: Load SGF from clipboard and do a 'fast' analysis.
