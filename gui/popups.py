@@ -237,7 +237,6 @@ class ConfigTeacherPopup(QuickConfigGui):
     def __init__(self, katrain, popup, **kwargs):
         self.settings = katrain.config("trainer")
         self.sgf_settings = katrain.config("sgf")
-        print(self.sgf_settings, katrain.config("sgf"))
         self.ui_settings = katrain.config("board_ui")
         super().__init__(katrain, popup, self.settings, **kwargs)
         Clock.schedule_once(self._build, 0)

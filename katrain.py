@@ -91,14 +91,7 @@ class KaTrainGui(BoxLayout):
         auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
         if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready:
             self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
-        if (
-            cn.analysis_ready
-            and "ai" in self.controls.player_mode(cn.next_player).lower()
-            and "pause" not in self.controls.ai_mode(cn.next_player).lower()
-            and not cn.children
-            and not self.game.ended
-            and not (auto_undo and cn.auto_undo is None)
-        ):
+        if cn.analysis_ready and "ai" in self.controls.player_mode(cn.next_player).lower() and not cn.children and not self.game.ended and not (auto_undo and cn.auto_undo is None):
             self._do_ai_move(cn)  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
 
         # Handle prisoners and next player display
@@ -195,7 +188,7 @@ class KaTrainGui(BoxLayout):
             except ParseError as e:
                 self.log(f"Failed to load SGF. Parse Error: {e}", OUTPUT_ERROR)
                 return
-            self._do_new_game(move_tree=move_tree, analyze_fast=fileselect_popup.fast.active)
+            self._do_new_game(move_tree=move_tree, analyze_fast=popup_contents.fast.active)
 
         popup_contents.filesel.on_submit = readfile
         fileselect_popup.open()
@@ -229,10 +222,11 @@ class KaTrainGui(BoxLayout):
         self.controls.set_status(msg)
 
     def on_touch_up(self, touch):
-        if touch.button == "scrollup":
-            self("redo")
-        elif touch.button == "scrolldown":
-            self("undo")
+        if self.board_gui.collide_point(*touch.pos) or self.board_controls.collide_point(*touch.pos):
+            if touch.button == "scrollup":
+                self("redo")
+            elif touch.button == "scrolldown":
+                self("undo")
         return super().on_touch_up(touch)
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):

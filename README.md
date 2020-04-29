@@ -10,8 +10,20 @@ but has since grown to include a wide range of features, including:
 * Play against a wide range of weakened versions of AI with various styles.
 * Play against a stronger player and use the retry option instead of handicap stones.
 
-![screenshot](https://imgur.com/t3Im6Xu.png)
+## Screenshots
 
+
+| Analyze games  | Play against an AI Teacher |
+| ------------- | ------------- |
+| ![screenshot](img/screenshot_analyze.png)  | ![screenshot](img/screenshot_play.png)  |
+
+## Quickstart
+* Right-click any button you don't understand for help.
+* To analyze a game, load it using the button in the top right, or press `ctrl-L`
+* To play against AI, pick an AI from the drop down a color and either 'human' or 'teach' for yourself and start playing.
+    * For different board sizes, use the button with the little goban in the bottom right for a new game.
+      
+       
 ## Installation
 
 ### Quick Installation for Windows users
@@ -35,70 +47,80 @@ but has since grown to include a wide range of features, including:
     * Executables for Mac are not available, so compiling from source code is required there.
 * Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to KataGo's GPU tuning.
 
-## Quickstart
-* To analyze a game, load it using the button in the top right, or press `ctrl-L`
-* To play against AI, pick an AI from the drop down a color and either 'human' or 'teach' for yourself and start playing.
-    * For different board sizes, use the button with the little goban in the bottom right for a new game.
-            
+     
 ## Manual
 
-[Screenshot]
 
 ### Play
-
+Under the 'play' tab you can select who is playing black and white.
 * Human is simple play with potential feedback, but without auto-undo.
 * Teach will give you instant feedback, and auto-undo bad moves to give you a second chance. 
-    * Settings for this mode can be found under 'Configure teacher'
+    * Settings for this mode can be found under 'Configure Teacher'
 * AI will activate the AI in the dropdown next to the buttons.
-    * Settings for the selected AI(s) can be found under 'Configure AI'
+    * Settings for the selected AI(s) can be found under 'Configure AIs'
+ 
+If you do not want to see 'Points lost' or other feedback for your moves,
+ set 'show last n dots' to 0 under 'Configure Teacher', and click on the words 'Points lost' to hide its value.
  
 #### AIs
 Available AIs, with strength indicating an estimate for the default settings, are:
 
-* **9p**: **Default** is full KataGo, above professional level. 
+* **[9p+]** **Default** is full KataGo, above professional level. 
 * **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points. 
 * **Jigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
-* **~4d**: **Policy** is the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used.
-* **~1d**: **P:Weighted** will pick a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses policy^(1/weaken_fac), increasing the chance for weaker moves.
-* **~5k**: **P:Pick** will pick a `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
+* **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used.
+* **[~3k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
+* **[~5k]**: **P:Pick** picks `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
    The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
-   This is probably the best choice for kyu players who want a chance of winning. Variants of this strategy include:
-    * **~3k**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
-    * **~10k**: **~P:Tenuki** is biased in the opposite way as P:Local, using the same setting.
-    * **~7k**: P:Influence is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight. 
-    * **~7k**: P:Territory is biased in the opposite way, towards 1-3rd line moves, using the same setting. 
-* * **~7k**: P:Noise mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. Regardless, mistakes are typically strange can include senseless first-line moves. 
-* `<Pause>` pauses AI moves, in case you want to do analysis without triggering moves, or simply hide the evaluation dots for this player.
+   This, along with 'Weighted' are probably the best choice for kyu players who want a chance of winning without playing the sillier bots below. Variants of this strategy include:
+    * **[~3k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
+    * **[~7k]**: **~P:Tenuki** is biased in the opposite way as P:Local, using the same setting.
+    * **[~7k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight. 
+    * **[~7k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting. 
+* * **[~7k]**: **P:Noise** mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. A threshold setting is included to avoid senseless first-line moves. 
+* **<Pause>**: pauses AI moves, in case you want to do analysis without triggering moves, or simply hide the evaluation dots for this player.
 
 Selecting the AI as either white or black opens up the option to configure it under 'Configure AI'.
 
 ### Analysis
 
-* The checkboxes have the following keyboard shortscuts, and they configure:
+* The checkboxes have the following keyboard shortcuts, and they configure:
     * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when wanting to guess the next move.
-    * **[w]**: All dots: Show all evaluation dots instead of the last few. You can configure how many are shown with thsi setting off under 'Configure Teacher'.
-    * **[e]**:
+    * **[w]**: All dots: Show all evaluation dots instead of the last few. 
+        * You can configure how many are shown with this setting off, and whether they are shown for AIs under 'Play/Configure Teacher'.
+    * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. Small dots indicate high uncertainty. Hover over any of them to see the principal variation.
+    * **[r]**: Show owner: Show expected ownership of each square.
+    * **[t]**: NN Policy: Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, and in the absence of any 'reading'.
+
+* The analysis buttons have the following keyboard shortcuts, and they do:
+    * **[a]**: Extra: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
+    * **[s]**: Equalize: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
+    * **[d]**: Sweep: Evaluate all possible next moves. This can take a bit of time, but the result is nothing if not colourful.
+
     
-
-
 ### Keyboard shortcuts
 
+In addition to shortcuts mentioned above, there are:
 
-In addition to these, there are:
-
-* Tab to switch between analysis and play modes. (NB. keyboard shortcuts function regardless)
-* ~ or ` or p : Hide side panel UI and only show the board.
-* Ctrl-v : Load SGF from clipboard
-* Ctrl-c : Save SGF to clipboard
-* Ctrl-l : Load SGF from file
-* Ctrl-s : Load SGF to file
-* Ctrl-n : Load SGF from clipboard
+* **[Tab]**: to switch between analysis and play modes. (NB. keyboard shortcuts function regardless)
+* **[~]** or **[`]** or **[p]**: Hide side panel UI and only show the board.
+* **[enter]**: AI Move
+* **[arrow up]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to thte start.
+* **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to thte start.
+* **[scroll up]**: Undo move. Only works with the mouse pointer on the board.
+* **[scroll down]**: Redo move.
+* **[Ctrl-v]**: Load SGF from clipboard
+* **[Ctrl-c]**: Save SGF to clipboard
+* **[Ctrl-l]**: Load SGF from file
+* **[Ctrl-s]**: Load SGF to file
+* **[Ctrl-n]**: Load SGF from clipboard
+* **[space]**: Pass
 
 
 ### Configuration
 
 Configuration is stored in `config.json`. Most settings are now available to edit in the program, but
- some cosmetic options are now.
+ some cosmetic options are not.
 You can use `python katrain.py your_config_file.json` to use another config file instead.
 
 If you ever need to reset to the original settings, simply re-download the `config.json` file in this repository.
@@ -108,7 +130,7 @@ If you ever need to reset to the original settings, simply re-download the `conf
 * The program is slow to start!
   * The first startup of KataGo can be slow, after that it should be much faster.
 * The program is running too slowly!
-  *  Lower the visits count in the `max_visits` block of `config.json` by half or so and try again.
+  *  Adjust the number of visits or maximum time allowed in the settings.
  
 
 ## Contributing

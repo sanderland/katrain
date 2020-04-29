@@ -366,6 +366,7 @@
     scroll_type: ['bars']
     bar_width: 5
     bar_color: BUTTON_COLOR
+    label: label
     canvas.before:
         Color:
             rgba: root.border_color
@@ -378,6 +379,7 @@
             rectangle: [self.pos[0]+1,self.pos[1]+2,self.width-3,self.height-3]
             width:1
     Label:
+        id: label
         padding: 5, 5
         font_size: dp(18)
         color: BLACK
@@ -588,10 +590,12 @@
             border_color: 0.5,0.1,0.1,1
             opacity: 1 if self.text else 0
             text: ''
-            size_hint_y: 0.00001 if not self.text else 0.66
+            size_hint_y: None
+            height: 0.00001 if not self.text else min(0.66*self.parent.height,self.label.texture_size[1])
         ScrollableLabel:
             id: info
-            size_hint: 1, 1 - status_label.size_hint_y
+            size_hint: 1, None
+            height: self.parent.height - status_label.height - 1
     BoxLayout:
         orientation: 'horizontal'
         size_hint: 1, None

@@ -65,9 +65,15 @@ class Controls(BoxLayout):
                     points_lost = current_node.points_lost
                     self.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
                     self.score_change.text = f"{move.player}: {abs(points_lost):.1f}" if points_lost else "..."
+                    print(current_player_is_ai_playing_human, move, next_player_is_human_or_both_robots)
                 elif not current_player_is_ai_playing_human:
+                    print(current_player_is_ai_playing_human, move, next_player_is_human_or_both_robots)
                     self.score_change.label = f"Points lost"
                     self.score_change.text = ""
+            elif current_player_is_ai_playing_human and current_node.parent and current_node.parent.single_move:
+                points_lost = current_node.parent.points_lost
+                self.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
+                self.score_change.text = f"{current_node.parent.single_move.player}: {abs(points_lost):.1f}" if points_lost else "..."
             elif both_players_are_robots and current_node.parent and current_node.parent.analysis_ready:
                 self.score.text = current_node.parent.format_score()
                 self.win_rate.text = current_node.parent.format_win_rate()

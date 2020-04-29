@@ -124,11 +124,6 @@
             "line_weight": 5,
             "_help_right": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to below the `threshold` line.",
             "_help_left": "Increase `line_weight` to penalize moves closer to the center more."
-        },
-        "<Pause>": {
-            "_help_right": "--Edward Lasker",
-            "_help_left": "The rules of go are so elegant, organic, and rigorously logical that if intelligent life forms exist elsewhere in the universe, they almost certainly play go."
-
         }
     },
     "board_ui": {
