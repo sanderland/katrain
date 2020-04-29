@@ -94,8 +94,9 @@ Available AIs, with strength indicating an estimate for the default settings, ar
 Selecting the AI as either white or black opens up the option to configure it under 'Configure AI'.
 
 ### Analysis
+Keyboard shortcuts are shown with **[key]**.
 
-* The checkboxes have the following keyboard shortcuts, and they configure:
+* The checkboxes configure:
     * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when wanting to guess the next move.
     * **[w]**: All dots: Show all evaluation dots instead of the last few. 
         * You can configure how many are shown with this setting off, and whether they are shown for AIs under 'Play/Configure Teacher'.
@@ -103,7 +104,7 @@ Selecting the AI as either white or black opens up the option to configure it un
     * **[r]**: Show owner: Show expected ownership of each square.
     * **[t]**: NN Policy: Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, and in the absence of any 'reading'.
 
-* The analysis buttons have the following keyboard shortcuts, and they do:
+* The analysis buttons are used for:
     * **[a]**: Extra: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
     * **[s]**: Equalize: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
     * **[d]**: Sweep: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but the result is nothing if not colourful.
