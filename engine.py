@@ -130,7 +130,7 @@ class KataGoEngine:
         if next_move:
             moves.append(next_move)
         if ownership is None:
-            ownership = self.config["enable_ownership"] and not next_move
+            ownership = self.config["_enable_ownership"] and not next_move
         if visits is None:
             visits = self.config["max_visits"]
             if analyze_fast and self.config.get("fast_visits"):

@@ -101,7 +101,7 @@ Keyboard shortcuts are shown with **[key]**.
     * **[w]**: All dots: Show all evaluation dots instead of the last few. 
         * You can configure how many are shown with this setting off, and whether they are shown for AIs under 'Play/Configure Teacher'.
     * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. Small dots indicate high uncertainty. Hover over any of them to see the principal variation.
-    * **[r]**: Show owner: Show expected ownership of each square.
+    * **[r]**: Show owner: Show expected ownership of each intersection.
     * **[t]**: NN Policy: Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, and in the absence of any 'reading'.
 
 * The analysis buttons are used for:
@@ -147,7 +147,6 @@ If you ever need to reset to the original settings, simply re-download the `conf
     * model: path to your KataGo model file.
     * config: path to your KataGo config file.    
     * threads: number of threads to use in the KataGo analysis engine.
-    * enable_ownership: calculate predicted ownership (slightly slower and more memory intensive).     
 * game settings
     * init_size: the initial size of the board, on start-up.
     * init_komi: likewise, for komi.
