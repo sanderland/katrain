@@ -105,7 +105,7 @@ class GameNode(SGFNode):
                         text += f"Move was predicted best move.\n"
                     if sgf:
                         if previous_top_move.get("pv") and (sgf or hints):
-                            text += f"PV: {' '.join(previous_top_move['pv'])}"
+                            text += f"PV: {single_move.player}{' '.join(previous_top_move['pv'])}\n"
 
                 if sgf or hints or teach:
                     policy_ranking = self.parent.policy_ranking

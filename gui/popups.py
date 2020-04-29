@@ -108,7 +108,7 @@ class ConfigPopup(QuickConfigGui):
         for k1, all_d in sorted(self.config.items(), key=lambda tup: -len(tup[1])):  # sort to make greedy bin packing work better
             if k1 in self.ignore_cats:
                 continue
-            d = {k: v for k, v in all_d.items() if isinstance(v, (int, float, str, bool)) and not k.startswith('_')}  # no lists . dict could be supported but hard to scale
+            d = {k: v for k, v in all_d.items() if isinstance(v, (int, float, str, bool)) and not k.startswith("_")}  # no lists . dict could be supported but hard to scale
             cat = GridLayout(cols=2, rows=len(d) + 1, size_hint=(1, len(d) + 1))
             cat.add_widget(Label(text=""))
             cat.add_widget(ScaledLightLabel(text=f"{k1} settings", bold=True))
