@@ -23,10 +23,7 @@
     },
     "game": {
         "init_size": 19,
-        "init_komi": {
-            "19": 6.5
-        },
-        "sweep_visits_frac": 0.05
+        "init_komi": 6.5
     },
     "trainer": {
         "num_undo_prompts": [

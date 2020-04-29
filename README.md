@@ -62,6 +62,18 @@ Under the 'play' tab you can select who is playing black and white.
 If you do not want to see 'Points lost' or other feedback for your moves,
  set 'show last n dots' to 0 under 'Configure Teacher', and click on the words 'Points lost' to hide its value.
  
+#### What are all these coloured dots?
+The dots indicate how many points were lost by that move.
+
+* The colour indicates the size of the mistake according to kata
+* The size indicates if the mistake was actually punished. Going from fully punished at maximal size,
+  to no actual effect on the score at minimal size. 
+
+In short, if you are a weaker player you should mostly on large dots that are red or purple,
+while stronger players can pay more attention to smaller mistakes.
+
+
+
 #### AIs
 Available AIs, with strength indicating an estimate for the default settings, are:
 
@@ -78,7 +90,6 @@ Available AIs, with strength indicating an estimate for the default settings, ar
     * **[~7k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight. 
     * **[~7k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting. 
 * * **[~7k]**: **P:Noise** mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. A threshold setting is included to avoid senseless first-line moves. 
-* **<Pause>**: pauses AI moves, in case you want to do analysis without triggering moves, or simply hide the evaluation dots for this player.
 
 Selecting the AI as either white or black opens up the option to configure it under 'Configure AI'.
 
@@ -95,10 +106,10 @@ Selecting the AI as either white or black opens up the option to configure it un
 * The analysis buttons have the following keyboard shortcuts, and they do:
     * **[a]**: Extra: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
     * **[s]**: Equalize: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
-    * **[d]**: Sweep: Evaluate all possible next moves. This can take a bit of time, but the result is nothing if not colourful.
+    * **[d]**: Sweep: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but the result is nothing if not colourful.
 
     
-### Keyboard shortcuts
+## Keyboard and mouse shortcuts
 
 In addition to shortcuts mentioned above, there are:
 
@@ -109,21 +120,46 @@ In addition to shortcuts mentioned above, there are:
 * **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to thte start.
 * **[scroll up]**: Undo move. Only works with the mouse pointer on the board.
 * **[scroll down]**: Redo move.
-* **[Ctrl-v]**: Load SGF from clipboard
+* **[click on a move]**: See detailed statistics for a previous move.
+* **[double-click on a move]**: Navigate directly to that point in the game.
+* **[Ctrl-v]**: Load SGF from clipboard and do a 'fast' analysis.
 * **[Ctrl-c]**: Save SGF to clipboard
-* **[Ctrl-l]**: Load SGF from file
+* **[Ctrl-l]**: Load SGF from file and do a normal analysis.
 * **[Ctrl-s]**: Load SGF to file
 * **[Ctrl-n]**: Load SGF from clipboard
 * **[space]**: Pass
 
 
-### Configuration
+## Configuration
 
-Configuration is stored in `config.json`. Most settings are now available to edit in the program, but
- some cosmetic options are not.
+Configuration is stored in `config.json`. Most settings are now available to edit in the program, but some cosmetic options are not.
 You can use `python katrain.py your_config_file.json` to use another config file instead.
 
 If you ever need to reset to the original settings, simply re-download the `config.json` file in this repository.
+
+### Settings Panel
+* engine settings
+    * max_visits: the number of visits used in analyses and AI moves, higher is more accurate but slower.
+    * max_time: maximal time in seconds for analyses, even when the target number of visits has not been reached.    
+    * fast_visits: the number of visits used for certain operations with fewer visits.
+    * katago: path to your KataGo executable.
+    * model: path to your KataGo model file.
+    * config: path to your KataGo config file.    
+    * threads: number of threads to use in the KataGo analysis engine.
+    * enable_ownership: calculate predicted ownership (slightly slower and more memory intensive).     
+* game settings
+    * init_size: the initial size of the board, on start-up.
+    * init_komi: likewise, for komi.
+* sgf settings
+    * sgf_load: default path where the load SGF dialog opens.
+    * sgf_save: path where SGF files are saved.    
+* board_ui settings
+    * eval_dot_max_size: size of coloured dots when point size is maximal, relative to stone size.
+    * eval_dot_min_size: size of coloured dots when point size is minimmal 
+    * ... various other minor cosmetic options.
+* debug settings
+    * level: determines the level of output in the console, where 0 shows no debug output, 1 shows some and 2 shows a lot.
+
 
 ## FAQ
 

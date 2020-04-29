@@ -40,7 +40,7 @@ class Game:
                 self.place_handicap_stones(handicap)
         else:
             board_size = config.get("init_size", 19)
-            self.komi = self.config.get("init_komi", {}).get(str(board_size), 6.5)
+            self.komi = self.config.get("init_komi", 6.5)
             self.root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}})
 
         self.set_current_node(self.root)
@@ -235,7 +235,7 @@ class Game:
                 for y in range(board_size_y)
                 if (policy_grid is None and (x, y) not in stones) or policy_grid[y][x] >= 0
             ]
-            visits = int(engine.config["max_visits"] * self.config["sweep_visits_frac"] + 0.5)
+            visits = engine.config["fast_visits"]
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
             priority = -1_000_000_000
         else:  # mode=='equalize':
