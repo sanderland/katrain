@@ -1,6 +1,6 @@
 # KaTrain v1.0
 
-This repository contains  tool for analyzing and playing go with AI feedback from KataGo.
+This repository contains a tool for analyzing and playing go with AI feedback from KataGo.
 
 The original idea was to give immediate feedback on the many large mistakes we make in terms of inefficient moves,
 but has since grown to include a wide range of features, including:
@@ -19,7 +19,7 @@ but has since grown to include a wide range of features, including:
 
 ## Quickstart
 * Right-click any button you don't understand for help.
-* To analyze a game, load it using the button in the top right, or press `ctrl-L`
+* To analyze a game, load it using the button in the bottom right, or press `ctrl-L`
 * To play against AI, pick an AI from the drop down a color and either 'human' or 'teach' for yourself and start playing.
     * For different board sizes, use the button with the little goban in the bottom right for a new game.
       
@@ -124,16 +124,16 @@ In addition to shortcuts mentioned above, there are:
 * **[click on a move]**: See detailed statistics for a previous move.
 * **[double-click on a move]**: Navigate directly to that point in the game.
 * **[Ctrl-v]**: Load SGF from clipboard and do a 'fast' analysis.
-* **[Ctrl-c]**: Save SGF to clipboard
+* **[Ctrl-c]**: Save SGF to clipboard.
 * **[Ctrl-l]**: Load SGF from file and do a normal analysis.
-* **[Ctrl-s]**: Load SGF to file
+* **[Ctrl-s]**: Save SGF with automated review to file.
 * **[Ctrl-n]**: Load SGF from clipboard
 * **[space]**: Pass
 
 
 ## Configuration
 
-Configuration is stored in `config.json`. Most settings are now available to edit in the program, but some cosmetic options are not.
+Configuration is stored in `config.json`. Most settings are now available to edit in the program, but some advanced options are not.
 You can use `python katrain.py your_config_file.json` to use another config file instead.
 
 If you ever need to reset to the original settings, simply re-download the `config.json` file in this repository.
@@ -155,10 +155,10 @@ If you ever need to reset to the original settings, simply re-download the `conf
     * sgf_save: path where SGF files are saved.    
 * board_ui settings
     * eval_dot_max_size: size of coloured dots when point size is maximal, relative to stone size.
-    * eval_dot_min_size: size of coloured dots when point size is minimmal 
+    * eval_dot_min_size: size of coloured dots when point size is minimal 
     * ... various other minor cosmetic options.
 * debug settings
-    * level: determines the level of output in the console, where 0 shows no debug output, 1 shows some and 2 shows a lot.
+    * level: determines the level of output in the console, where 0 shows no debug output, 1 shows some and 2 shows a lot. This is mainly used for reporting bugs.
 
 
 ## FAQ
