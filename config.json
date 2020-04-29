@@ -75,12 +75,13 @@
             "_help_left": "pick_override` determines when top move is chosen without randomness, and is effectively disabled by default (1.0).",
             "pick_override": 1.0,
             "lower_bound": 0.001,
-            "weaken_fac": 1.5
+            "weaken_fac": 1.25
         },
         "P:Noise": {
             "pick_override": 0.95,
-            "noise_strength": 0.8,
-            "_help_right": "Adds `noise_strength` noise to the policy and plays the top move.",
+            "noise_strength": 0.6,
+            "lower_bound": 0.001,
+            "_help_right": "Adds `noise_strength` noise to the policy of all moved > 'lower_bound' and plays the top move.",
             "_help_left": "Plays top move if policy value is above `pick_override` to avoid obvious mistakes. Noise above 0.9 is near random, below 0.7 is fairly strong."
         },
         "P:Pick": {
@@ -101,8 +102,8 @@
         "P:Tenuki": {
             "pick_override": 0.9,
             "stddev": 7.5,
-            "pick_n": 20,
-            "pick_frac": 0.4,
+            "pick_n": 5,
+            "pick_frac": 0.7,
             "_help_right": "Samples `pick_n + pick_frac * <number of legal moves>` away from the last move and plays the best one.",
             "_help_left": "Increase `stddev` makes it prefer moves further away."
         },

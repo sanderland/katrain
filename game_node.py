@@ -127,6 +127,14 @@ class GameNode(SGFNode):
             return self.player_sign(single_move.player) * (parent_score - score)
 
     @property
+    def parent_realized_points_lost(self) -> Optional[float]:
+        single_move = self.single_move
+        if single_move and self.parent and self.parent.parent and self.analysis_ready and self.parent.parent.analysis_ready:
+            parent_parent_score = self.parent.parent.score
+            score = self.score
+            return self.player_sign(single_move.player) * (score - parent_parent_score)
+
+    @property
     def score(self) -> Optional[float]:
         if self.analysis_ready:
             return self.analysis["root"]["scoreLead"]

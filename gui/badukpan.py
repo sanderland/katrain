@@ -1,3 +1,4 @@
+import copy
 import math
 
 from kivy.graphics.context_instructions import Color
@@ -103,7 +104,8 @@ class BadukPanWidget(Widget):
             Color(*outline_col)
             Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size), width=0.05 * stone_size)
         if evalcol:
-            evalsize = self.stone_size * evalscale * self.ui_config["eval_dot_max_size"]
+            eval_radius = math.sqrt(evalscale)  # scale area by evalscale
+            evalsize = self.stone_size * (self.ui_config["eval_dot_min_size"] + eval_radius * (self.ui_config["eval_dot_max_size"] - self.ui_config["eval_dot_min_size"]))
             draw_circle((self.gridpos_x[x], self.gridpos_y[y]), evalsize, evalcol)
 
         if innercol:
@@ -186,20 +188,28 @@ class BadukPanWidget(Widget):
             show_n_eval = self.trainer_config["eval_off_show_last"]
             show_dots_for = {p: self.trainer_config["eval_show_ai"] or "ai" not in katrain.controls.player_mode(p) for p in Move.PLAYERS}
             nodes = katrain.game.current_node.nodes_from_root
+            realized_points_lost = None
             for i, node in enumerate(nodes[::-1]):  # reverse order!
                 points_lost = node.points_lost
+                print("node", node.single_move, "pl", points_lost, "rpl", realized_points_lost)
                 evalsize = 1
+                if points_lost and realized_points_lost:
+                    if points_lost <= 0.5 and realized_points_lost <= 1.5:
+                        evalsize = 0
+                    else:
+                        evalsize = min(1, max(0, realized_points_lost / points_lost))
+                    print(node.single_move, realized_points_lost, points_lost, evalsize)
                 for m in node.move_with_placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
                         move_eval_on = show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
                         if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost)
-                            print(evalcol)
                         else:
                             evalcol = None
                         inner = stone_color[m.opponent] if i == 0 else None
                         drawn_stone[m.coords] = m.player
                         self.draw_stone(m.coords[0], m.coords[1], stone_color[m.player], outline_color[m.player], inner, evalcol, evalsize)
+                realized_points_lost = node.parent_realized_points_lost
 
             if katrain.game.current_node.is_root and katrain.config("debug/level") >= 3:  # secret ;)
                 for s in range(0, 19):
@@ -259,7 +269,7 @@ class BadukPanWidget(Widget):
                         if points_lost is None:
                             evalcol = None
                         else:
-                            evalcol = self.eval_color(points_lost)
+                            evalcol = copy.copy(self.eval_color(points_lost))
                             evalcol[3] = alpha
                         scale = self.ui_config["child_scale"]
                         self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)

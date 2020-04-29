@@ -42,30 +42,23 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
 
         size = game.board_size
         policy_grid = var_to_grid(cn.policy, size)  # type: List[List[float]]
-        legal_policy_moves = [(pol, mv) for pol, mv in policy_moves if not mv.is_pass if pol > 0]
         top_policy_move = policy_moves[0][1]
         ai_thoughts += f"Using policy based strategy, base top 5 moves are {fmt_moves(policy_moves[:5])}. "
-        if top_policy_move.is_pass:
+        if top_5_pass:
             aimove = top_policy_move
-            ai_thoughts += "Playing top one because it is pass."
+            ai_thoughts += "Playing top one because one of them is pass."
         elif "policy" in ai_mode:
             aimove = top_policy_move
             ai_thoughts += f"Playing top policy move {aimove.gtp()} due to mode chosen."
         elif policy_moves[0][0] > ai_settings["pick_override"]:
             aimove = top_policy_move
             ai_thoughts += f"Top policy move has weight > {ai_settings['pick_override']:.1%}, so overriding other strategies."
-        elif top_5_pass or "weighted" in ai_mode:
-            if top_5_pass:
-                lower_bound = 0.05
-                weaken_fac = 1
-            else:
-                lower_bound = max(0, ai_settings["lower_bound"])
-                weaken_fac = max(0.01, ai_settings["weaken_fac"])
+        elif "weighted" in ai_mode:
+            lower_bound = max(0, ai_settings["lower_bound"])
+            weaken_fac = max(0.01, ai_settings["weaken_fac"])
             weighted_coords = [(policy_grid[y][x], policy_grid[y][x] ** (1 / weaken_fac), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > lower_bound]
-            if top_5_pass:
-                weighted_coords.append([pass_policy, pass_policy ** (1 / weaken_fac), None, None])
             top = weighted_selection_without_replacement(weighted_coords, 1)
-            if top and top[0][2] is not None:
+            if top:
                 best = top[0]
                 policy_value = best[0]
                 coords = best[2:]
@@ -74,16 +67,19 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                 coords = None
             aimove = Move(coords, player=cn.next_player)  # just take a random move by policy w/o noise
             ai_thoughts += f"Playing policy-weighted random move {aimove.gtp()} ({policy_value:.1%})" + (
-                " because one of them is pass." if top_5_pass else f" because strategy is weighted (lower bound={lower_bound:.2%}, num moves > lb={len(weighted_coords)})."
+                " because no other moves were found." if not top else f" because strategy is weighted (lower bound={lower_bound:.2%}, num moves > lb={len(weighted_coords)})."
             )
         elif "noise" in ai_mode:
             noise_str = ai_settings["noise_strength"]
-            d_noise = dirichlet_noise(len(legal_policy_moves))
-            noisy_policy_moves = [(((1 - noise_str) * pol + noise_str * noise), mv) for ((pol, mv), noise) in zip(legal_policy_moves, d_noise)]
+            lower_bound = max(0, ai_settings["lower_bound"])
+            selected_policy_moves = [(pol, mv) for pol, mv in policy_moves if not mv.is_pass if pol > lower_bound]
+            d_noise = dirichlet_noise(len(selected_policy_moves))
+            noisy_policy_moves = [(((1 - noise_str) * pol + noise_str * noise), mv) for ((pol, mv), noise) in zip(selected_policy_moves, d_noise)]
             new_top = heapq.nlargest(5, noisy_policy_moves)
             aimove = new_top[0][1]
-            ai_thoughts += f"Noisy policy strategy (strength={noise_str:.2f}) generated 5 moves {fmt_moves(new_top)} so picked {aimove.gtp()}. "
+            ai_thoughts += f"Noisy policy strategy (strength={noise_str:.2f}) generated 5 moves {fmt_moves(new_top)} so picked {aimove.gtp()} ({policy_grid[aimove.coords[1]][aimove.coords[0]]:.2%}). "
         elif "p:" in ai_mode:
+            legal_policy_moves = [(pol, mv) for pol, mv in policy_moves if not mv.is_pass if pol > 0]
             n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])
             if "influence" in ai_mode or "territory" in ai_mode:
                 thr_line = ai_settings["threshold"] - 1  # zero-based

@@ -344,7 +344,7 @@
             text: 'AI Move'
             font_size: 0.6*self.size[1]
             on_press: root.katrain("ai-move",None)
-    Label:
+    ClickableLabel:
         size_hint: 0.025, 1
         canvas:
             Color:
@@ -357,6 +357,7 @@
             Line:
                 circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.height/5 - 1
                 width: 1.1
+        on_press: root.katrain.controls.set_status("This simply indicates the Engine status, going from green (idle) to orange (processing many queries). It turns red when the engine has crashed or fails to start.")
     Label:
         size_hint: 0.025, 1
 
@@ -450,7 +451,7 @@
                 CheckBoxHintLabel:
                     text: 'next\nmoves'
                 CheckBoxHintLabel:
-                    text: 'more\ndots'
+                    text: 'all\ndots'
                 CheckBoxHintLabel:
                     text: 'top\nmoves'
                 CheckBoxHintLabel:
