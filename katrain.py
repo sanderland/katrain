@@ -228,6 +228,13 @@ class KaTrainGui(BoxLayout):
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)
 
+    def on_touch_up(self, touch):
+        if touch.button == "scrollup":
+            self("redo")
+        elif touch.button == "scrolldown":
+            self("undo")
+        return super().on_touch_up(touch)
+
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         if isinstance(App.get_running_app().root_window.children[0], Popup):
             return  # if in new game or load, don't allow keyboard shortcuts

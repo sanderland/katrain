@@ -97,30 +97,11 @@ In addition to these, there are:
 
 ### Configuration
 
-Configuration is stored in `config.json`. Most settings are available to edit in the program, but some are not.
+Configuration is stored in `config.json`. Most settings are now available to edit in the program, but
+ some cosmetic options are now.
 You can use `python katrain.py your_config_file.json` to use another config file instead.
 
-#### The settings panel
-
-
-
-The `trainer` block has the following options to tweak for engine assisted play and reviewing:
-
-* `eval_off_show_last`: when the `eval` checkbox is off for a player, show coloured dots on the last this many moves regardless. 
-* `undo_eval_threshold`, `undo_point_threshold`: prompt player to undo if move is worse than this in terms of points AND evaluation.
-
-The following options are relevant for the `balance score` AI play mode. 
-
-* `balance_play_target_score`: indicates how many points the AI aims to win by when using 'balance score'.
-* `balance_play_randomize_eval`: when not needing to balance score, the AI will pick a random move which is at least this good as long as it stays ahead.
-* `balance_play_min_eval`: when needing to balance score, the AI will pick a move which is at least this good.
-* `balance_play_min_visits`: never pick a move with fewer playouts than this.
-
-The cfg file has additional configuration for KataGo, which are documented there. 
-
-#### Configuring feedback
-
-* `num_undo_prompts`: automatically undo bad moves when `undo` is on at most this many times. Can be a fraction like 0.5 for 50% chance of being granted an undo on a bad move. 
+If you ever need to reset to the original settings, simply re-download the `config.json` file in this repository.
 
 ## FAQ
 

@@ -43,8 +43,7 @@ class Game:
             self.komi = self.config.get("init_komi", {}).get(str(board_size), 6.5)
             self.root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}})
 
-        self.current_node = self.root
-        self._init_chains()
+        self.set_current_node(self.root)
         threading.Thread(target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast), daemon=True).start()  # return faster, but bypass Kivy Clock
 
     def analyze_all_nodes(self, priority=0, analyze_fast=False):
@@ -52,7 +51,7 @@ class Game:
             node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast)
 
     # -- move tree functions --
-    def _init_chains(self):
+    def _calculate_groups(self):
         board_size_x, board_size_y = self.board_size
         self.board = [[-1 for _x in range(board_size_x)] for _y in range(board_size_y)]  # type: List[List[int]]  #  board pos -> chain id
         self.chains = []  # type: List[List[Move]]  #   chain id -> chain
@@ -121,7 +120,7 @@ class Game:
         try:
             self._validate_move_and_update_chains(move, ignore_ko)
         except IllegalMoveException:
-            self._init_chains()
+            self._calculate_groups()
             raise
         played_node = self.current_node.play(move)
         self.current_node = played_node
@@ -129,28 +128,29 @@ class Game:
             played_node.analyze(self.engines[played_node.next_player])
         return played_node
 
+    def set_current_node(self, node):
+        self.current_node = node
+        self._calculate_groups()
+
     def undo(self, n_times=1):
         cn = self.current_node  # avoid race conditions
         for _ in range(n_times):
             if not cn.is_root:
                 cn = cn.parent
-        self.current_node = cn
-        self._init_chains()
+        self.set_current_node(cn)
 
     def redo(self, n_times=1):
         cn = self.current_node  # avoid race conditions
         for _ in range(n_times):
             if cn.children:
                 cn = cn.children[-1]
-        self.current_node = cn
-        self._init_chains()
+        self.set_current_node(cn)
 
     def switch_branch(self, direction):
         cn = self.current_node  # avoid race conditions
         if cn.parent and len(cn.parent.children) > 1:
             ix = cn.parent.children.index(cn)
-            self.current_node = cn.parent.children[(ix + direction) % len(cn.parent.children)]
-            self._init_chains()
+            self.set_current_node(cn.parent.children[(ix + direction) % len(cn.parent.children)])
 
     def place_handicap_stones(self, n_handicaps):
         board_size_x, board_size_y = self.board_size

@@ -33,12 +33,13 @@ Low priority
 [] more teaching / groups in danger? hard
 [] When creating a new game, the 9 buttons on the right side aren't all that useful. Maybe the 9, 13 and 19 ones make sense since these three board sizes are the traditionally used ones, but why 2, 4 and 9 stones buttons? Why 0.5, 6.5 and -40pts komi buttons?
 [] Score instead of game end
+[] Plus, explanatory bubbles would help to clarify labels like "Debug" (are there bugs in the matrix? :p), "enable_ownership" (which didn't seem to prevent or allow visualizing territory ownership on the board, as that was already covered by the "owner" checkbox anyway... so I guess I missed something), etc.
+-- possible right-click?
 
 Wont do for now
 [] dual engine support -- easily possible but has weird effects on win rate etc
 [/] The UI would be directly understood if there were bubbles with a short explanation popping up when hovering above buttons and labels, e.g "Performing additional analysis to 1502 visits" which appears currently in the comments window after pushing the Extra button would also make a perfect explanatory bubble when hovering over said button too.
+
 --- partially solved by config with help for some
 
-bug/suggestion reports
--- Plus, explanatory bubbles would help to clarify labels like "Debug" (are there bugs in the matrix? :p), "enable_ownership" (which didn't seem to prevent or allow visualizing territory ownership on the board, as that was already covered by the "owner" checkbox anyway... so I guess I missed something), etc.
 

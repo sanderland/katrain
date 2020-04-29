@@ -71,23 +71,25 @@ class BadukPanWidget(Widget):
             self.draw_hover_contents()
 
     def on_touch_up(self, touch):
-        if touch.button != "left":
-            return
-
-        if not self.gridpos_x:
+        if touch.button != "left" or not self.gridpos_x:
             return
         katrain = self.katrain
-        if self.ghost_stone:
+        if self.ghost_stone and touch.button == "left":
             katrain("play", self.ghost_stone)
-        else:
+        elif not self.ghost_stone:
             xd, xp = self._find_closest(touch.x, self.gridpos_x)
             yd, yp = self._find_closest(touch.y, self.gridpos_y)
 
             nodes_here = [node for node in katrain.game.current_node.nodes_from_root if node.single_move and node.single_move.coords == (xp, yp)]
             if nodes_here and max(yd, xd) < self.grid_size / 2:  # load old comment
-                katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
-                katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_DEBUG)
-                katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
+                if touch.is_double_tap:  # navigate to move
+                    katrain.game.set_current_node(nodes_here[-1])
+                    self.draw_board_contents()
+                else:  # load comments
+                    katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
+                    katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_DEBUG)
+                    katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
+                    katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
 
         self.ghost_stone = None
         self.draw_hover_contents()  # remove ghost
@@ -191,7 +193,6 @@ class BadukPanWidget(Widget):
             realized_points_lost = None
             for i, node in enumerate(nodes[::-1]):  # reverse order!
                 points_lost = node.points_lost
-                print("node", node.single_move, "pl", points_lost, "rpl", realized_points_lost)
                 evalsize = 1
                 if points_lost and realized_points_lost:
                     if points_lost <= 0.5 and realized_points_lost <= 1.5:
