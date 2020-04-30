@@ -92,6 +92,9 @@ class NewGamePopup(QuickConfigGui):
         if x > 52 or y > 52:
             self.info.text = "Board size too big, should be at most 52"
             return
+        if self.restart.active:
+            self.katrain.log("Restarting Engine")
+            self.katrain.engine.restart()
         self.katrain("new-game", new_root)
         self.popup.dismiss()
 

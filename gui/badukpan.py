@@ -223,15 +223,14 @@ class BadukPanWidget(Widget):
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
             if katrain.controls.ownership.active and ownership:
+                ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
                 rsz = self.grid_size * 0.2
-                ix = 0
                 for y in range(board_size_y - 1, -1, -1):
                     for x in range(board_size_x):
-                        ix_owner = "B" if ownership[ix] > 0 else "W"
+                        ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
                         if ix_owner != (has_stone.get((x, y), -1)):
-                            Color(*stone_color[ix_owner], abs(ownership[ix]))
+                            Color(*stone_color[ix_owner], abs(ownership_grid[y][x]))
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
-                        ix = ix + 1
 
             policy = current_node.policy
             if not policy and current_node.parent and current_node.parent.policy and "ai" in katrain.controls.player_mode("B") and "ai" in katrain.controls.player_mode("W"):
@@ -276,14 +275,14 @@ class BadukPanWidget(Widget):
             passed = len(nodes) > 1 and current_node.is_pass
             if passed:
                 if game_ended:
-                    text = "game\nend"
+                    text = katrain.game.manual_score or 'game\nend'
                 else:
                     text = "pass"
-                Color(0.45, 0.05, 0.45, 0.5)
-                center = (self.pos[0] + self.width / 2, self.pos[1] + self.height / 2)
+                Color(0.45, 0.05, 0.45, 0.7)
+                center = (self.gridpos_x[int(board_size_x/2)], self.gridpos_y[int(board_size_y/2)])
                 size = min(self.width, self.height) * 0.22
                 Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
-                Color(0.15, 0.15, 0.15)
+                Color(0.85, 0.85, 0.85)
                 draw_text(pos=center, text=text, font_size=size * 0.25, halign="center", outline_color=[0.95, 0.95, 0.95])
 
         self.draw_hover_contents()

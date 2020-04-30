@@ -89,13 +89,14 @@ class ToggleButtonContainer(GridLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.rows = 1
+        self.cols = len(self.options)
         Clock.schedule_once(self._build, 0)
 
     def on_selection(self, *args):
         pass
 
     def _build(self, _dt):
-        self.rows = 1
         self.cols = len(self.options)
         self.group = self.group or str(random.random())
         if not self.selected and self.options:

@@ -702,9 +702,10 @@
     orientation: 'vertical'
     rules_spinner: rules_spinner
     info: info
+    restart: restart
     GridLayout:
         size_hint: 1, 0.8
-        rows: 5
+        rows: 6
         cols: 3
         spacing: 2
         padding: 2
@@ -757,13 +758,23 @@
             input_property: 'RU'
             id: rules_spinner
         Label:
+        ScaledLightLabel:
+            text: 'Clear cache'
+        CheckBox:
+            color: WHITE
+            id: restart
+        ScaledLightLabel:
+            font_size: 0.35*self.size[1]
+            text: 'avoids replaying\nidentical games'
         LightHelpLabel:
             text: "Use x:y (e.g. 19:9) to play on a non-square board."
             size_hint: 1,2
             text_size: self.width-6, None
+            font_size: self.size[1]/6
             id: info
         LightHelpLabel:
             text: "Note that handicaps above 9 are not supported on non-square boards."
+            font_size: self.size[1]/6
             text_size: self.width-6, None
             id: info
         StyledButton:
@@ -771,6 +782,3 @@
             text: 'Start\nGame'
             font_size: 0.3 * self.size[1]
             on_press: root.new_game()
-
-#EffectWidget:         effects: [ew.FXAAEffect()]
-

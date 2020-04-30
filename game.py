@@ -5,7 +5,7 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Union
 
-from common import var_to_grid
+from common import var_to_grid, OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG
 from engine import KataGoEngine
 from game_node import GameNode
 from sgf_parser import SGF, Move
@@ -193,8 +193,43 @@ class Game:
         return self.current_node.parent and self.current_node.is_pass and self.current_node.parent.is_pass
 
     @property
-    def prisoner_count(self):
-        return [sum([m.player == player for m in self.prisoners]) for player in Move.PLAYERS]
+    def prisoner_count(self) -> Dict:  # returns prisoners that are of a certain colour as {B: black stones captures, W: white stones captures}
+        return {player: sum([m.player == player for m in self.prisoners]) for player in Move.PLAYERS}
+
+    @property
+    def manual_score(self):
+        rules = self.engines["B"].get_rules(self.root)
+        if not self.current_node.ownership or rules != "japanese":
+            if not self.current_node.score:
+                return None
+            self.katrain.log(f"rules '{rules}' are not japanese, or no ownership available ({not self.current_node.ownership}) -> no manual score available", OUTPUT_DEBUG)
+            return self.current_node.format_score(round(2 * self.current_node.score) / 2) + "?"
+        board_size_x, board_size_y = self.board_size
+        ownership_grid = var_to_grid(self.current_node.ownership, (board_size_x, board_size_y))
+        stones = {m.coords: m.player for m in self.stones}
+        lo_threshold = 0.15
+        hi_threshold = 0.85
+        max_unknown = 10
+        max_dame = 4*(board_size_x+board_size_y)
+        def japanese_score_square(square, owner):
+            player = stones.get(square, None)
+            if (player == "B" and owner > hi_threshold) or (player == "W" and owner < -hi_threshold) or abs(owner) < lo_threshold:
+                return 0  # dame or own stones
+            if player is None and abs(owner) >= hi_threshold:
+                return round(owner)  # surrounded empty intersection
+            if (player == "B" and owner < -hi_threshold) or (player == "W" and owner > hi_threshold):
+                return 2 * round(owner)  # captured stone
+            return math.nan  # unknown!
+
+        scored_squares = [japanese_score_square((x, y), ownership_grid[y][x]) for y in range(board_size_y) for x in range(board_size_x)]
+        num_sq = {t: sum([s == t for s in scored_squares]) for t in [-2, -1, 0, 1, 2]}
+        num_unkn = sum(math.isnan(s) for s in scored_squares)
+        prisoners = self.prisoner_count
+        score = sum([t * n for t, n in num_sq.items()]) + prisoners["W"] - prisoners["B"] - self.komi
+        self.katrain.log(f"Manual Scoring: {num_sq} score by square with {num_unkn} unknown, {prisoners} captures, and {self.komi} komi -> score = {score}", OUTPUT_INFO)
+        if num_unkn > max_unknown or num_sq[0] > max_dame:
+            return None
+        return self.current_node.format_score(score)
 
     def __repr__(self):
         return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"

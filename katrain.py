@@ -104,8 +104,8 @@ class KaTrainGui(BoxLayout):
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
-        self.board_controls.black_prisoners.text = str(prisoners[1])
-        self.board_controls.white_prisoners.text = str(prisoners[0])
+        self.board_controls.black_prisoners.text = str(prisoners["W"])
+        self.board_controls.white_prisoners.text = str(prisoners["B"])
 
         # update engine status dot
         if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
@@ -190,7 +190,7 @@ class KaTrainGui(BoxLayout):
                     move_tree = KaTrainSGF.parse_file(files[0])
                 except ParseError as e:
                     self.log(f"Failed to load SGF. Parse Error: {e}", OUTPUT_ERROR)
-                return
+                    return
                 self._do_new_game(move_tree=move_tree, analyze_fast=popup_contents.fast.active)
 
             popup_contents.filesel.on_submit = readfile

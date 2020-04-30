@@ -36,11 +36,13 @@ class KataGoEngine:
         self.katago_process = None
         self.base_priority = 0
         self._lock = threading.Lock()
+        self.start()
+        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
 
+    def start(self):
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
             self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-            self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
         except FileNotFoundError:
             self.katrain.log(
                 f"Starting kata with command '{self.command}' failed. If you are on Mac or Linux, please change the settings or configuration file (config.json) to point to the correct KataGo executable.",
@@ -50,6 +52,11 @@ class KataGoEngine:
     def on_new_game(self):
         self.base_priority += 1
         self.queries = {}
+
+    def restart(self):
+        self.queries = {}
+        self.shutdown(finish=False)
+        self.start()
 
     def shutdown(self, finish=False):
         process = self.katago_process
