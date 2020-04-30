@@ -9,6 +9,8 @@ class Controls(BoxLayout):
         super(Controls, self).__init__(**kwargs)
         self.status = None
         self.status_node = None
+        self.ai_settings_popup = None
+        self.teacher_settings_popup = None
 
     def set_status(self, msg, at_node=None):
         self.status = msg
@@ -65,9 +67,7 @@ class Controls(BoxLayout):
                     points_lost = current_node.points_lost
                     self.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
                     self.score_change.text = f"{move.player}: {abs(points_lost):.1f}" if points_lost else "..."
-                    print(current_player_is_ai_playing_human, move, next_player_is_human_or_both_robots)
                 elif not current_player_is_ai_playing_human:
-                    print(current_player_is_ai_playing_human, move, next_player_is_human_or_both_robots)
                     self.score_change.label = f"Points lost"
                     self.score_change.text = ""
             elif current_player_is_ai_playing_human and current_node.parent and current_node.parent.single_move:
@@ -83,13 +83,13 @@ class Controls(BoxLayout):
         self.info.text = info
 
     def configure_ais(self):
-        config_popup = Popup(title="Edit AI Settings", size_hint=(0.9, 0.9))
-        popup_contents = ConfigAIPopup(self.katrain, config_popup, {self.ai_mode("B"), self.ai_mode("W")})
-        config_popup.add_widget(popup_contents)
-        config_popup.open()
+        if not self.ai_settings_popup:  # persist state of popup etc
+            self.ai_settings_popup = Popup(title="Edit AI Settings", size_hint=(0.7, 0.8)).__self__
+            self.ai_settings_popup.add_widget(ConfigAIPopup(self.katrain, self.ai_settings_popup, self.katrain.config("ai")))
+        self.ai_settings_popup.open()
 
     def configure_teacher(self):
-        config_popup = Popup(title="Edit Teacher Settings", size_hint=(0.7, 0.8))
-        popup_contents = ConfigTeacherPopup(self.katrain, config_popup)
-        config_popup.add_widget(popup_contents)
-        config_popup.open()
+        if not self.teacher_settings_popup:
+            self.teacher_settings_popup = Popup(title="Edit Teacher Settings", size_hint=(0.7, 0.8)).__self__
+            self.teacher_settings_popup.add_widget(ConfigTeacherPopup(self.katrain, self.teacher_settings_popup))
+        self.teacher_settings_popup.open()

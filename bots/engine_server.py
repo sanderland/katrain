@@ -1,4 +1,4 @@
-# used to scale bots
+# used to connect many bots to one kata engine
 import json
 import random
 import socket
@@ -13,7 +13,7 @@ PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8587
 
 ENGINE_SETTINGS = {
     "katago": "../KataGo/cpp/katago",
-    "model": " models/b15-1.3.2.txt.gz",
+    "model": "KataGo/models/b15-1.3.2.txt.gz",
     "config": "KataGo/analysis_config.cfg",
     "max_visits": 50,
     "max_time": 1.0,

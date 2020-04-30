@@ -33,6 +33,8 @@ class KaTrainGui(BoxLayout):
         self.debug_level = 0
         self.engine = None  # type: Optional[KataGoEngine]
         self.game = None
+        self.fileselect_popup = None
+        self.config_popup = None
         self.logger = lambda message, level=OUTPUT_INFO: self.log(message, level)
 
         self._load_config()
@@ -176,22 +178,23 @@ class KaTrainGui(BoxLayout):
         self.game.analyze_extra(mode)
 
     def _do_analyze_sgf_popup(self):
-        fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
-        popup_contents = LoadSGFPopup()
-        fileselect_popup.add_widget(popup_contents)
-        popup_contents.filesel.path = os.path.expanduser(self.config("sgf/sgf_load"))
+        if not self.fileselect_popup:
+            self.fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
+            popup_contents = LoadSGFPopup()
+            self.fileselect_popup.add_widget(popup_contents)
+            popup_contents.filesel.path = os.path.expanduser(self.config("sgf/sgf_load"))
 
-        def readfile(files, _mouse):
-            fileselect_popup.dismiss()
-            try:
-                move_tree = KaTrainSGF.parse_file(files[0])
-            except ParseError as e:
-                self.log(f"Failed to load SGF. Parse Error: {e}", OUTPUT_ERROR)
+            def readfile(files, _mouse):
+                self.fileselect_popup.dismiss()
+                try:
+                    move_tree = KaTrainSGF.parse_file(files[0])
+                except ParseError as e:
+                    self.log(f"Failed to load SGF. Parse Error: {e}", OUTPUT_ERROR)
                 return
-            self._do_new_game(move_tree=move_tree, analyze_fast=popup_contents.fast.active)
+                self._do_new_game(move_tree=move_tree, analyze_fast=popup_contents.fast.active)
 
-        popup_contents.filesel.on_submit = readfile
-        fileselect_popup.open()
+            popup_contents.filesel.on_submit = readfile
+        self.fileselect_popup.open()
 
     def _do_new_game_popup(self):
         new_game_popup = Popup(title="New Game", size_hint=(0.5, 0.6))
@@ -200,10 +203,11 @@ class KaTrainGui(BoxLayout):
         new_game_popup.open()
 
     def _do_config_popup(self):
-        config_popup = Popup(title="Edit Settings", size_hint=(0.9, 0.9))
-        popup_contents = ConfigPopup(self, config_popup, dict(self._config), ignore_cats=("trainer", "ai"))
-        config_popup.add_widget(popup_contents)
-        config_popup.open()
+        if not self.config_popup:
+            self.config_popup = Popup(title="Edit Settings", size_hint=(0.9, 0.9))
+            popup_contents = ConfigPopup(self, self.config_popup, dict(self._config), ignore_cats=("trainer", "ai"))
+            self.config_popup.add_widget(popup_contents)
+        self.config_popup.open()
 
     def _do_output_sgf(self):
         for pl in Move.PLAYERS:
@@ -220,6 +224,21 @@ class KaTrainGui(BoxLayout):
         )
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)
+
+    def load_sgf_from_clipboard(self):
+        clipboard = Clipboard.paste()
+        if not clipboard:
+            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.")
+            return
+        try:
+            move_tree = KaTrainSGF.parse(clipboard)
+        except Exception as e:
+            self.controls.set_status(f"Failed to imported game from clipboard: {e}\nClipboard contents: {clipboard[:50]}...")
+            return
+        move_tree.nodes_in_tree[-1].analyze(self.engine, analyze_fast=False)  # speed up result for looking at end of game
+        self._do_new_game(move_tree=move_tree, analyze_fast=True)
+        self("redo", 999)
+        self.log("Imported game from clipboard.", OUTPUT_INFO)
 
     def on_touch_up(self, touch):
         if self.board_gui.collide_point(*touch.pos) or self.board_controls.collide_point(*touch.pos):
@@ -271,20 +290,8 @@ class KaTrainGui(BoxLayout):
         elif keycode[1] == "c" and "ctrl" in modifiers:
             Clipboard.copy(self.game.root.sgf())
             self.controls.set_status("Copied SGF to clipboard.")
-        elif keycode[1] == "v" and "ctrl" in modifiers:  # TODO: refactor
-            clipboard = Clipboard.paste()
-            if not clipboard:
-                self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.")
-                return
-            try:
-                move_tree = KaTrainSGF.parse(clipboard)
-            except Exception as e:
-                self.controls.set_status(f"Failed to imported game from clipboard: {e}\nClipboard contents: {clipboard[:50]}...")
-                return
-            move_tree.nodes_from_root[-1].analyze(self.engine)  # speed up result for looking at end of game
-            self._do_new_game(move_tree=move_tree, analyze_fast=True)
-            self("redo", 999)
-            self.log("Imported game from clipboard.", OUTPUT_INFO)
+        elif keycode[1] == "v" and "ctrl" in modifiers:
+            self.load_sgf_from_clipboard()
         return True
 
 

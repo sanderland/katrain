@@ -21,6 +21,7 @@ from gui.kivyutils import (
     LightHelpLabel,
     ScaledLightLabel,
     StyledButton,
+    StyledSpinner,
 )
 
 
@@ -33,6 +34,7 @@ class QuickConfigGui(BoxLayout):
         super().__init__(**kwargs)
         self.katrain = katrain
         self.popup = popup
+        self.orientation = "vertical"
         if initial_values:
             self.set_properties(self, initial_values)
 
@@ -100,11 +102,13 @@ class ConfigPopup(QuickConfigGui):
         self.ignore_cats = ignore_cats
         self.orientation = "vertical"
         super().__init__(katrain, popup, **kwargs)
-        Clock.schedule_once(self._build, 0)
+        Clock.schedule_once(self.build, 0)
 
-    def _build(self, _):
-        cols = [BoxLayout(orientation="vertical"), BoxLayout(orientation="vertical")]
+    def build(self, _):
+
         props_in_col = [0, 0]
+        cols = [BoxLayout(orientation="vertical"), BoxLayout(orientation="vertical")]
+
         for k1, all_d in sorted(self.config.items(), key=lambda tup: -len(tup[1])):  # sort to make greedy bin packing work better
             if k1 in self.ignore_cats:
                 continue
@@ -177,59 +181,57 @@ class ConfigPopup(QuickConfigGui):
 
 
 class ConfigAIPopup(QuickConfigGui):
-    def __init__(self, katrain, popup: Popup, ai_modes: Set, **kwargs):
-        self.settings = katrain.config("ai")
-        super().__init__(katrain, popup, self.settings, **kwargs)
-        self.ai_modes = ai_modes
-        Clock.schedule_once(self._build, 0)
-        self.orientation = "vertical"
+    def __init__(self, katrain, popup: Popup, settings):
+        super().__init__(katrain, popup, settings)
+        self.settings = settings
+        Clock.schedule_once(self.build, 0)
 
-    def _build(self, _dt):
-        colbox = BoxLayout(spacing=5)
-        for i, mode in enumerate(self.ai_modes):
-            mode_settings = self.settings[mode]
-            num_rows = len(mode_settings) - 2
-            column = GridLayout(cols=2, rows=max(num_rows, 4) + 3, spacing=1, padding=3)
-            column.add_widget(ScaledLightLabel(text=f"Settings for AI"))
-            column.add_widget(ScaledLightLabel(text=f"{mode}", bold=True))
-            column.add_widget(LightHelpLabel(size_hint=(1, 3), text=mode_settings.get("_help_left", "")))
-            column.add_widget(LightHelpLabel(size_hint=(1, 3), text=mode_settings.get("_help_right", "")))
-            for k, v in mode_settings.items():
-                if not k.startswith("_"):
-                    column.add_widget(ScaledLightLabel(text=f"{k}"))
-                    column.add_widget(ConfigPopup.type_to_widget_class(v)(text=str(v), input_property=f"{mode}/{k}"))
-            for _ in range(4 - num_rows):
-                column.add_widget(ScaledLightLabel(text=f""))
-                column.add_widget(ScaledLightLabel(text=f""))
-            colbox.add_widget(column)
-            if i == 0:
-                colbox.add_widget(BackgroundLabel(text=f"", size_hint=(0.02, 1), background=(1, 1, 1, 1)))
+    def build(self, _):
+        ais = list(self.settings.keys())
 
-        if len(self.ai_modes) == 1:
-            colbox.add_widget(ScaledLightLabel(text=f""))
+        top_bl = BoxLayout()
+        top_bl.add_widget(ScaledLightLabel(text="Settings for AI:"))
+        ai_spinner = StyledSpinner(values=ais, text=ais[0])
+        ai_spinner.fbind("text", lambda _, text: self.build_ai_options(text))
+        top_bl.add_widget(ai_spinner)
+        self.add_widget(top_bl)
+        self.options_grid = GridLayout(cols=2, rows=max(len(v) for v in self.settings.values()) - 1, size_hint=(1, 7.5), spacing=1)  # -1 for help in 1 col
+        bottom_bl = BoxLayout(spacing=2)
         self.info_label = Label()
-        bl = BoxLayout(size_hint=(1, 0.15), spacing=2)
-        bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
-        bl.add_widget(self.info_label)
-        bl.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
-        self.add_widget(colbox)
-        self.add_widget(bl)
+        bottom_bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
+        bottom_bl.add_widget(self.info_label)
+        bottom_bl.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
+        self.add_widget(self.options_grid)
+        self.add_widget(bottom_bl)
+        self.build_ai_options(ais[0])
+
+    def build_ai_options(self, mode):
+        mode_settings = self.settings[mode]
+        self.options_grid.clear_widgets()
+        self.options_grid.add_widget(LightHelpLabel(size_hint=(1, 4), padding=(2, 2), text=mode_settings.get("_help_left", "")))
+        self.options_grid.add_widget(LightHelpLabel(size_hint=(1, 4), padding=(2, 2), text=mode_settings.get("_help_right", "")))
+        for k, v in mode_settings.items():
+            if not k.startswith("_"):
+                self.options_grid.add_widget(ScaledLightLabel(text=f"{k}"))
+                self.options_grid.add_widget(ConfigPopup.type_to_widget_class(v)(text=str(v), input_property=f"{mode}/{k}"))
+        for _ in range(self.options_grid.rows * self.options_grid.cols - len(self.options_grid.children)):
+            self.options_grid.add_widget(ScaledLightLabel(text=f""))
+        self.set_properties(self, self.settings)
 
     def update_config(self, save_to_file=False):
         try:
             for k, v in self.collect_properties(self).items():
                 k1, k2 = k.split("/")
-                self.settings[k1][k2] = v
                 if self.settings[k1][k2] != v:
+                    self.settings[k1][k2] = v
                     self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
-                if save_to_file:
-                    self.katrain.save_config()
+            if save_to_file:
+                self.katrain.save_config()
             self.popup.dismiss()
         except InputParseError as e:
             self.info_label.text = str(e)
             self.katrain.log(e, OUTPUT_ERROR)
             return
-
         self.popup.dismiss()
 
 
@@ -239,11 +241,10 @@ class ConfigTeacherPopup(QuickConfigGui):
         self.sgf_settings = katrain.config("sgf")
         self.ui_settings = katrain.config("board_ui")
         super().__init__(katrain, popup, self.settings, **kwargs)
-        Clock.schedule_once(self._build, 0)
-        self.orientation = "vertical"
+        Clock.schedule_once(self.build, 0)
         self.spacing = 2
 
-    def _build(self, _dt):
+    def build(self, _dt):
         thresholds = self.settings["eval_thresholds"]
         undos = self.settings["num_undo_prompts"]
         colors = self.ui_settings["eval_colors"]

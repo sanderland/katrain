@@ -104,7 +104,7 @@ class BadukPanWidget(Widget):
         draw_circle((self.gridpos_x[x], self.gridpos_y[y]), stone_size, col)
         if outline_col:
             Color(*outline_col)
-            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size), width=0.05 * stone_size)
+            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size), width=min(2, 0.035 * stone_size))
         if evalcol:
             eval_radius = math.sqrt(evalscale)  # scale area by evalscale
             evalsize = self.stone_size * (self.ui_config["eval_dot_min_size"] + eval_radius * (self.ui_config["eval_dot_max_size"] - self.ui_config["eval_dot_min_size"]))
@@ -138,7 +138,7 @@ class BadukPanWidget(Widget):
             extra_px_margin_x = (self.width - board_width_with_margins) / 2
             extra_px_margin_y = (self.height - board_height_with_margins) / 2
             self.stone_size = self.grid_size * self.ui_config["stone_size"]
-            self.gridpos_x = [self.pos[0] + extra_px_margin_x + math.floor((grid_spaces_margin_x[0] + i) * self.grid_size + 0.5) for i in range(board_size_x)]  #
+            self.gridpos_x = [self.pos[0] + extra_px_margin_x + math.floor((grid_spaces_margin_x[0] + i) * self.grid_size + 0.5) for i in range(board_size_x)]
             self.gridpos_y = [self.pos[1] + extra_px_margin_y + math.floor((grid_spaces_margin_y[0] + i) * self.grid_size + 0.5) for i in range(board_size_y)]
 
             line_color = self.ui_config["line_color"]
@@ -212,15 +212,13 @@ class BadukPanWidget(Widget):
                 realized_points_lost = node.parent_realized_points_lost
 
             if katrain.game.current_node.is_root and katrain.config("debug/level") >= 3:  # secret ;)
-                for s in range(0, 19):
-                    c = s
-                    evalcol = self.eval_color(s)
-                    evalsize = 1
-                    self.draw_stone(5, c, stone_color["B"], outline_color["B"], None, evalcol, evalsize)
-                    self.draw_stone(6, c, stone_color["B"], outline_color["B"], stone_color["W"], evalcol, evalsize)
-                    self.draw_stone(7, c, stone_color["W"], outline_color["W"], None, evalcol, evalsize)
-                    self.draw_stone(8, c, stone_color["W"], outline_color["W"], stone_color["B"], evalcol, evalsize)
-                    self.draw_stone(9, c, [*evalcol[:3], 0.5], scale=0.8)
+                for y in range(0, board_size_y):
+                    evalcol = self.eval_color(16 * y / board_size_y)
+                    self.draw_stone(0, y, stone_color["B"], outline_color["B"], None, evalcol, y / (board_size_y - 1))
+                    self.draw_stone(1, y, stone_color["B"], outline_color["B"], stone_color["W"], evalcol, 1)
+                    self.draw_stone(2, y, stone_color["W"], outline_color["W"], None, evalcol, y / (board_size_y - 1))
+                    self.draw_stone(3, y, stone_color["W"], outline_color["W"], stone_color["B"], evalcol, 1)
+                    self.draw_stone(4, y, [*evalcol[:3], 0.5], scale=0.8)
 
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)

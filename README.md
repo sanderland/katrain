@@ -57,7 +57,7 @@ Under the 'play' tab you can select who is playing black and white.
 * Teach will give you instant feedback, and auto-undo bad moves to give you a second chance. 
     * Settings for this mode can be found under 'Configure Teacher'
 * AI will activate the AI in the dropdown next to the buttons.
-    * Settings for the selected AI(s) can be found under 'Configure AIs'
+    * Settings for all AIs can be found under 'Configure AIs'
  
 If you do not want to see 'Points lost' or other feedback for your moves,
  set 'show last n dots' to 0 under 'Configure Teacher', and click on the words 'Points lost' to hide its value.
@@ -80,7 +80,7 @@ Available AIs, with strength indicating an estimate for the default settings, ar
 * **[9p+]** **Default** is full KataGo, above professional level. 
 * **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points. 
 * **Jigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
-* **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used.
+* **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used. There is a setting to increase variety in the opening, but otherwise it plays deterministically.
 * **[~3k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
 * **[~5k]**: **P:Pick** picks `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
    The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
@@ -123,7 +123,7 @@ In addition to shortcuts mentioned above, there are:
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
 * **[click on a move]**: See detailed statistics for a previous move.
 * **[double-click on a move]**: Navigate directly to that point in the game.
-* **[Ctrl-v]**: Load SGF from clipboard and do a 'fast' analysis.
+* **[Ctrl-v]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
 * **[Ctrl-c]**: Save SGF to clipboard.
 * **[Ctrl-l]**: Load SGF from file and do a normal analysis.
 * **[Ctrl-s]**: Save SGF with automated review to file.

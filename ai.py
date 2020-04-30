@@ -44,12 +44,15 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         policy_grid = var_to_grid(cn.policy, size)  # type: List[List[float]]
         top_policy_move = policy_moves[0][1]
         ai_thoughts += f"Using policy based strategy, base top 5 moves are {fmt_moves(policy_moves[:5])}. "
+        if "policy" in ai_mode and cn.depth <= int(ai_settings["opening_moves"] * (game.board_size[0] * game.board_size[1])):
+            ai_mode = "p:weighted"
+            ai_thoughts += f"Switching to weighted strategy in the opening {int(ai_settings['opening_moves'] * (game.board_size[0]*game.board_size[1]))} moves."
         if top_5_pass:
             aimove = top_policy_move
             ai_thoughts += "Playing top one because one of them is pass."
         elif "policy" in ai_mode:
             aimove = top_policy_move
-            ai_thoughts += f"Playing top policy move {aimove.gtp()} due to mode chosen."
+            ai_thoughts += f"Playing top policy move {aimove.gtp()}."
         elif policy_moves[0][0] > ai_settings["pick_override"]:
             aimove = top_policy_move
             ai_thoughts += f"Top policy move has weight > {ai_settings['pick_override']:.1%}, so overriding other strategies."
@@ -88,7 +91,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                 else:
                     weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (max(0, min(size[0] - 1 - x, x, size[1] - 1 - y, y) - thr_line))
                 weighted_coords = [(policy_grid[y][x] * weight(x, y), weight(x, y), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
-                ai_thoughts += f"Generated weights for {ai_mode} according to weight factor {ai_settings['line_weight']} and distance from 4th line. "
+                ai_thoughts += f"Generated weights for {ai_mode} according to weight factor {ai_settings['line_weight']} and distance from {thr_line+1}th line. "
             elif "local" in ai_mode or "tenuki" in ai_mode:
                 var = ai_settings["stddev"] ** 2
                 if not cn.single_move or cn.single_move.coords is None:

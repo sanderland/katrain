@@ -52,13 +52,12 @@
 <StyledSpinner>:
     text: self.values[0] if self.values else ''
     font_size: self.size[1] * 0.33
-    sync_height_frac: 1.0
+    sync_height_frac: 0.7
     background_color: [*[c*255/88 for c in BUTTON_COLOR[:3]], 1] # compensate for texture
     option_cls: 'StyledSpinnerOption'
 
 <StyledToggleButton>:
     max_lines: 1
-
 
 <StyledTabButton@StyledToggleButton>:
     bold: True
@@ -542,7 +541,6 @@
                 StyledSpinner:
                     id: B_AI_mode
                     values: ['Default']
-                    sync_height_frac: 0.7
                     size_hint: 0.3, 1
                     on_text: if B_player_mode.children: B_player_mode.children[0].trigger_action(duration=0)
                 Label:
@@ -560,7 +558,6 @@
                 StyledSpinner:
                     id: W_AI_mode
                     size_hint: 0.3, 1
-                    sync_height_frac: 0.7
                     values: ['Default']
                     on_text: if W_player_mode.children: W_player_mode.children[0].trigger_action(duration=0)
             BoxLayout:
@@ -635,7 +632,7 @@
                 size: self.size
         orientation: 'vertical'
         BadukPanWidget:
-    		id: board_gui
+            id: board_gui
         BadukPanControls:
             id: board_controls
             size_hint_y: None

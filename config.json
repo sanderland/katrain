@@ -1,7 +1,7 @@
 {
     "engine": {
         "katago": "KataGo/katago-bs",
-        "model": "models/b15-1.3.2.txt.gz",
+        "model": "KataGo/models/b15-1.3.2.txt.gz",
         "config": "KataGo/analysis_config.cfg",
         "threads": 8,
         "max_visits": 500,
@@ -55,21 +55,22 @@
             "random_loss": 1,
             "max_loss": 5,
             "min_visits": 20,
-            "_help_right": "Will try to win by `target_score`, lose at most `random_loss` when behind and `max_loss` when ahead.",
-            "_help_left": "Never plays moves with less than `min_visits` visits, so also check engine settings."
+            "_help_left": "Will try to win by `target_score`, lose at most `random_loss` when behind and `max_loss` when ahead.",
+            "_help_right": "Never plays moves with less than `min_visits` visits, so also check engine settings."
         },
         "Jigo": {
             "target_score": 0.5,
-            "_help_right": "Will try to win by `target_score`, without further restrictions.",
-            "_help_left": "Also affected by engine settings such as `max_visits`."
+            "_help_left": "Will try to win by `target_score`, without further restrictions.",
+            "_help_right": "Also affected by engine settings such as `max_visits`."
         },
         "Policy": {
-            "_help_right": "No settings available for this mode, strength is mainly affected by `model` in engine settings, but should be high dan regardless.",
-            "_help_left": ""
+            "opening_moves": 0.05,
+            "_help_left": "Strength is mainly affected by `model` in engine settings, but should be high dan regardless.",
+            "_help_right": "Plays the P:Weighted strategy during the first `opening_moves` * <number of intersections> moves to allow variety."
         },
         "P:Weighted": {
-            "_help_right": "`lower_bound` determines the lower bound policy value that is allowed. `weaken_fac` influences how much more likely weaker moves are picked.",
-            "_help_left": "pick_override` determines when top move is chosen without randomness, and is effectively disabled by default (1.0).",
+            "_help_right": "pick_override` determines when top move is chosen without randomness, and `lower_bound` determines the lower bound policy value that is allowed.",
+            "_help_left": "Plays move with probability=policy^(1/weaken_fac),i.e. `weaken_fac` influences how much more likely weaker moves are picked.",
             "pick_override": 1.0,
             "lower_bound": 0.001,
             "weaken_fac": 1.25
@@ -78,31 +79,31 @@
             "pick_override": 0.95,
             "noise_strength": 0.6,
             "lower_bound": 0.001,
-            "_help_right": "Adds `noise_strength` noise to the policy of all moved > 'lower_bound' and plays the top move.",
-            "_help_left": "Plays top move if policy value is above `pick_override` to avoid obvious mistakes. Noise above 0.9 is near random, below 0.7 is fairly strong."
+            "_help_left": "Adds `noise_strength` noise to the policy of all moved > 'lower_bound' and plays the top move.",
+            "_help_right": "Plays top move if policy value is above `pick_override` to avoid obvious mistakes. Noise above 0.9 is near random, below 0.7 is fairly strong."
         },
         "P:Pick": {
             "pick_override": 0.95,
             "pick_n": 5,
             "pick_frac": 0.33,
-            "_help_right": "Picks `pick_n + pick_frac * <number of legal moves>` at random and plays the best one. Change `pick_frac` to make it see more moves.",
-            "_help_left": "Plays top move if policy value is above `pick_override` to avoid obvious mistakes."
+            "_help_left": "Picks `pick_n + pick_frac * <number of legal moves>` at random and plays the best one. Change `pick_frac` to make it see more moves.",
+            "_help_right": "Plays top move if policy value is above `pick_override` to avoid obvious mistakes."
         },
         "P:Local": {
             "pick_override": 0.95,
             "stddev": 1.5,
             "pick_n": 15,
             "pick_frac": 0.0,
-            "_help_right": "Samples `pick_n + pick_frac * <number of legal moves>` near the last move and plays the best one.",
-            "_help_left": "Lower `stddev` makes it prefer closer moves."
+            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` near the last move and plays the best one.",
+            "_help_right": "Lower `stddev` makes it prefer closer moves."
         },
         "P:Tenuki": {
             "pick_override": 0.9,
             "stddev": 7.5,
             "pick_n": 5,
             "pick_frac": 0.7,
-            "_help_right": "Samples `pick_n + pick_frac * <number of legal moves>` away from the last move and plays the best one.",
-            "_help_left": "Increase `stddev` makes it prefer moves further away."
+            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` away from the last move and plays the best one.",
+            "_help_right": "Increase `stddev` makes it prefer moves further away."
         },
         "P:Influence": {
             "pick_override": 0.95,
@@ -110,17 +111,17 @@
             "pick_frac": 0.4,
             "threshold": 3.5,
             "line_weight": 10,
-            "_help_right": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to above the `threshold` line.",
-            "_help_left": "Increase `line_weight` to penalize moves near the edge more."
+            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to above the `threshold` line.",
+            "_help_right": "Increase `line_weight` to penalize moves near the edge more."
         },
         "P:Territory": {
             "pick_override": 0.95,
             "pick_n": 5,
             "pick_frac": 0.4,
             "threshold": 3.5,
-            "line_weight": 5,
-            "_help_right": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to below the `threshold` line.",
-            "_help_left": "Increase `line_weight` to penalize moves closer to the center more."
+            "line_weight": 2,
+            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to below the `threshold` line.",
+            "_help_right": "Increase `line_weight` to penalize moves closer to the center more."
         }
     },
     "board_ui": {
@@ -238,6 +239,6 @@
         ]
     },
     "debug": {
-        "level": 2
+        "level": 1
     }
 }

@@ -1,5 +1,4 @@
-# used to scale bots
-import json
+# used to connect many bots to one kata engine
 import socket
 import sys
 import time
