@@ -19,13 +19,16 @@ from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 
+
 class ToolTipLabel(Label):
     pass
 
+
 class ToolTipBehavior(Widget):
-    tooltip_text = StringProperty('')
-    font_size = NumericProperty(10)
-    def __init__(self,  **kwargs):
+    tooltip_text = StringProperty("")
+    tooltip_font_size = NumericProperty(10)
+
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.tooltip = ToolTipLabel()
         self.open = False
@@ -44,22 +47,26 @@ class ToolTipBehavior(Widget):
         self.open = False
         Window.remove_widget(self.tooltip)
 
-    def on_size(self,*args):
-        mid = (self.pos[0]+self.width/2,self.pos[1]+self.height/2)
-        self.tooltip.font_size = self.font_size
+    def on_size(self, *args):
+        mid = (self.pos[0] + self.width / 2, self.pos[1] + self.height / 2)
+        self.tooltip.font_size = self.tooltip_font_size
+        print(self.tooltip.font_size)
         self.set_position(mid)
 
-    def set_position(self,pos):
-        self.tooltip.pos = (pos[0]-self.tooltip.texture_size[0],pos[1])
+    def set_position(self, pos):
+        self.tooltip.pos = (pos[0] - self.tooltip.texture_size[0], pos[1])
 
     def display_tooltip(self, pos):
         self.open = True
         self.tooltip.text = self.tooltip_text
-        self.tooltip.font_size = self.font_size
+        self.tooltip.font_size = self.tooltip_font_size
+        print(self.tooltip.font_size)
         Window.add_widget(self.tooltip)
+
 
 class DarkLabel(Label):
     pass
+
 
 class ScaledLightLabel(DarkLabel):
     pass
@@ -82,7 +89,7 @@ class ScrollableLabel(ScrollView):
     border_color = ListProperty([0, 0, 0, 1])
 
 
-class StyledButton(Button,ToolTipBehavior):
+class StyledButton(Button, ToolTipBehavior):
     button_color = ListProperty([])
     button_color_down = ListProperty([])
     radius = ListProperty((0,))

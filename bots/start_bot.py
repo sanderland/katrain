@@ -39,6 +39,6 @@ BYEMSG = (
     "Thank you for playing. If you have any feedback, please message my admin! Please note that score estimates in the malkovich log are based on low visits and likely inaccurate."
 )
 
-cmd = f'{GTP2OGS} --debug --apikey {APIKEY} --username {username} --greeting "{GREETING}" --farewell "{BYEMSG}"  {BOT_SETTINGS} --farewell_score --aichat --noclock --nopause --speeds blitz,live  --persist --minrank 25k --komis automatic,6.5,7.5 -- python bots/ai2gtp.py {bot} {port}'
+cmd = f'{GTP2OGS} --debug --apikey {APIKEY} --username {username} --greeting "{GREETING}" --farewell "{BYEMSG}"  {BOT_SETTINGS} --farewellscore --aichat --noclock --nopause --speeds blitz,live  --persist --minrank 25k --komis automatic,6.5,7.5 -- python bots/ai2gtp.py {bot} {port}'
 print(f"starting bot {username} using server port {port} --> {cmd}")
 os.system(cmd)

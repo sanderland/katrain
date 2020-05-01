@@ -26,8 +26,8 @@ class GameNode(SGFNode):
             show_class = save_comments_class[evaluation_class(self.points_lost, eval_thresholds)]
         else:
             show_class = False
-        if (save_comments_player or {}).get(self.player, False) and show_class and self.analysis_ready:
-            candidate_moves = self.candidate_moves
+        if (save_comments_player or {}).get(self.player, False) and show_class and self.analysis_ready and self.parent and self.parent.analysis_ready:
+            candidate_moves = self.parent.candidate_moves
             top_x = Move.from_gtp(candidate_moves[0]["move"]).sgf(self.board_size)
             best_sq = [Move.from_gtp(d["move"]).sgf(self.board_size) for d in candidate_moves[1:] if d["pointsLost"] <= 0.5]
             if best_sq and "SQ" not in properties:

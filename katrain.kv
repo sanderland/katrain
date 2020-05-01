@@ -4,7 +4,7 @@
 #:set PLAYER_MODES ['Human', 'Teach','AI']
 #:set PLAYER_MODE_VALUES ['human','human+undo','ai']
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
-#:set TOOLTIP_COLOR [0.33, 0.40, 0.45, 1]
+#:set TOOLTIP_COLOR [0.43, 0.50, 0.65, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
 #:set BOARD_COLOR [0.85, 0.68, 0.40,1]
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
@@ -23,12 +23,14 @@
             pos: self.pos
             size: self.size
 
+<ToolTipBehavior>:
+    tooltip_font_size: app.gui.board_controls.pass_btn.height*0.6 if app.gui else 12
+
 <ToolTipLabel>:
     size_hint: None, None
     size: self.texture_size
     padding: (2,2)
     halign: 'center'
-    font_size: app.gui.board_controls.pass_btn.height*0.6 if app.gui else 15
     canvas.before:
         Color:
             rgba: TOOLTIP_COLOR
@@ -109,7 +111,7 @@
     color: WHITE
 
 
-<StyledIconButton@StyledButton>:
+<StyledIconButton@StyledButton+ToolTipBehavior>:
     button_color: ICON_BUTTON_COLOR
     icon_margin: 0.15 * self.size[0]
     icon: ''
@@ -161,7 +163,7 @@
             rectangle: [self.pos[0],self.pos[1]+1,self.width-1,self.height]
             width:1.5
 
-<CheckBoxHintLabel@Label>:
+<CheckBoxHintLabel@Label+ToolTipBehavior>:
     font_size: 0.4*self.size[1]
     color: BLACK
 	halign: 'center'
@@ -305,9 +307,10 @@
         padding: [0.325*self.size[1],0.2*self.size[1]]
         StyledButton:
             text: 'Pass'
+            tooltip_text: '[space]\npass'
             font_size: 0.6*self.size[1]
             id: pass_btn
-            on_press: root.katrain("play",None)
+            on_press: if self.last_touch.button=="left": root.katrain("play",None)
     Label:
         size_hint: 0.05, 1
     BoxLayout:
@@ -470,14 +473,19 @@
                 size_hint: 1, 0.3
                 CheckBoxHintLabel:
                     text: 'next\nmoves'
+                    tooltip_text: '[q] show any next moves\nplayed from the current position'
                 CheckBoxHintLabel:
                     text: 'all\ndots'
+                    tooltip_text: '[w] show evaluation dots\non the stones\nfor all moves'
                 CheckBoxHintLabel:
                     text: 'top\nmoves'
+                    tooltip_text: '[e] show top\npredicted moves'
                 CheckBoxHintLabel:
                     text: 'show\nowner'
+                    tooltip_text: '[r] show predicted\nownership of\neach intersection'
                 CheckBoxHintLabel:
                     text: 'NN\npolicy'
+                    tooltip_text: "[t] show predicted\ntop moves using\npolicy only\n(the engine's 'shape sense')"
                 CheckBox:
                     id: show_children
                     active: True
@@ -506,17 +514,19 @@
                 StyledButton:
                     id: analyze_extra
                     text: 'Extra'
-                    tooltip_text: 'Analyze the current position more\nincreasing accuracy of top move predictions\nand score difference.'
+                    tooltip_text: '[a] Analyze the current position more\nincreasing accuracy of top move predictions\nand score difference.'
                     size_hint: 1, 1
                     on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","extra")
                 StyledButton:
                     id: analyze_equalize
                     text: 'Equalize'
+                    tooltip_text: '[s] Analyze all predicted\ntop moves witht the same accuracy.'
                     size_hint: 1, 1
                     on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","equalize")
                 StyledButton:
                     id: analyze_sweep
                     text: 'Sweep'
+                    tooltip_text: '[d] Analyze all legal moves\nusing fast analysis.'
                     size_hint: 1, 1
                     on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","sweep")
             ScoreGraph:
@@ -586,11 +596,13 @@
                 spacing: 1
                 StyledButton:
                     text: 'Configure Teacher'
-                    on_press: root.configure_teacher()
+                    tooltip_text: "Configure settings for the\n'teach' mode"
+                    on_press: if self.last_touch.button=="left": root.configure_teacher()
                     size_hint: 1.425, 1
                 StyledButton:
                     text: 'Configure AIs'
-                    on_press: root.configure_ais()
+                    tooltip_text: "Configure settings for AIs\nAllowing you to weaken or strengthen them."
+                    on_press: if self.last_touch.button=="left": root.configure_ais()
             LargeLabel:
                 text: ''
                 size_hint: 1,0.2
@@ -621,20 +633,24 @@
         height: self.width * 0.25
         StyledIconButton:
             icon: 'img/flaticon/go-game.png'
+            tooltip_text: '[Ctrl-n] New Game'
             size_hint: 0.25, 1
-            on_press: root.katrain("new-game-popup")
+            on_press: if self.last_touch.button=="left": root.katrain("new-game-popup")
         StyledIconButton:
             icon: 'img/flaticon/open-folder.png'
+            tooltip_text: '[Ctrl-L] Load Game'
             size_hint: 0.25, 1
-            on_press: root.katrain("analyze-sgf-popup")
+            on_press: if self.last_touch.button=="left": root.katrain("analyze-sgf-popup")
         StyledIconButton:
             icon: 'img/flaticon/bar.png'
+            tooltip_text: '[Ctrl-S] Save Game'
             size_hint: 0.25, 1
-            on_press: root.katrain('output-sgf')
+            on_press: if self.last_touch.button=="left": root.katrain('output-sgf')
         StyledIconButton:
             icon: 'img/flaticon/gears.png'
+            tooltip_text: 'Settings'
             size_hint: 0.25, 1
-            on_press: root.katrain('config-popup')
+            on_press: if self.last_touch.button=="left": root.katrain('config-popup')
 
 <KaTrainGui>:
 	board_gui: board_gui
@@ -716,7 +732,7 @@
             size_hint: 0.05,1
 
 <QuickInputButton@StyledButton>
-    on_press: self.parent.parent.children[self.parent.parent.children.index(self.parent)+1].text = self.text # why +1 instead of -1?
+    on_press: if self.last_touch.button=="left": self.parent.parent.children[self.parent.parent.children.index(self.parent)+1].text = self.text # why +1 instead of -1?
 
 <NewGamePopup>:
     orientation: 'vertical'
@@ -751,13 +767,13 @@
             spacing: 1
             QuickInputButton:
                 text: '2'
-                on_press: km.text='0.5'
+                on_press: if self.last_touch.button=="left": km.text='0.5'
             QuickInputButton:
                 text: '4'
-                on_press: km.text='0.5'
+                on_press: if self.last_touch.button=="left": km.text='0.5'
             QuickInputButton:
                 text: '9'
-                on_press: km.text='0.5'
+                on_press: if self.last_touch.button=="left": km.text='0.5'
         ScaledLightLabel:
             text: "Komi"
         LabelledFloatInput:
@@ -801,4 +817,4 @@
             halign: 'center'
             text: 'Start\nGame'
             font_size: 0.3 * self.size[1]
-            on_press: root.new_game()
+            on_press: if self.last_touch.button=="left": root.new_game()

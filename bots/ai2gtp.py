@@ -77,7 +77,7 @@ def malkovich_analysis(cn):
             if cn.ai_thoughts:
                 msg += f" -> Win Rate {cn.format_win_rate()} Score {cn.format_score()} AI Thoughts: {cn.ai_thoughts}"
             else:
-                comment = cn.comment(sgf=True).replace('\n',' ')
+                comment = cn.comment(sgf=True).replace("\n", " ")
                 msg += f" -> Detailed move analysis: {comment}"
             print(msg, file=sys.stderr)
             sys.stderr.flush()
