@@ -110,10 +110,10 @@ class GameNode(SGFNode):
 
                 if sgf or hints or teach:
                     policy_ranking = self.parent.policy_ranking
-                    policy_ix = [ix + 1 for (p, m), ix in zip(policy_ranking, range(len(policy_ranking))) if m == single_move]
-                    if policy_ix:
-                        text += f"Move was #{policy_ix[0]} according to policy.\n"
-                    if not policy_ix or policy_ix[0] != 1 and (sgf or hints):
+                    currmove_policy_with_ix = [(ix + 1,p) for (p, m), ix in zip(policy_ranking, range(len(policy_ranking))) if m == single_move]
+                    if currmove_policy_with_ix:
+                        text += f"Move was #{currmove_policy_with_ix[0][0]} according to policy  ({currmove_policy_with_ix[0][1]:.2%}).\n"
+                    if not currmove_policy_with_ix or currmove_policy_with_ix[0] != 1 and (sgf or hints):
                         text += f"Top policy move was {policy_ranking[0][1].gtp()} ({policy_ranking[0][0]:.1%}).\n"
             if self.auto_undo and sgf:
                 text += "Move was automatically undone in teaching mode."
