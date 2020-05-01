@@ -19,6 +19,7 @@ but has since grown to include a wide range of features, including:
 | ![screenshot](img/screenshot_analyze.png)  | ![screenshot](img/screenshot_play.png)  |
 
 ## Quickstart
+
 * You can right-click most button or checkbox labels to get a tooltip with help.
 * To analyze a game, load it using the button in the bottom right, or press `ctrl-L`
 * To play against AI, pick an AI from the drop down a color and either 'human' or 'teach' for yourself and start playing.
@@ -28,8 +29,8 @@ but has since grown to include a wide range of features, including:
 
 ### Quick Installation for Windows users
 
-* Currently not available for this pre-release, will be added soon.
-
+ * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers.
+ 
 ### Installation from source for Windows users
 
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
@@ -53,7 +54,7 @@ Under the 'play' tab you can select who is playing black and white.
 * Human is simple play with potential feedback, but without auto-undo.
 * Teach will give you instant feedback, and auto-undo bad moves to give you a second chance. 
     * Settings for this mode can be found under 'Configure Teacher'
-* AI will activate the AI in the dropdown next to the buttons.
+* AI will activate the AI in the dropdown menu next to the buttons.
     * Settings for all AIs can be found under 'Configure AIs'
  
 If you do not want to see 'Points lost' or other feedback for your moves,
@@ -69,8 +70,6 @@ The dots indicate how many points were lost by that move.
 
 In short, if you are a weaker player you should mostly on large dots that are red or purple,
 while stronger players can pay more attention to smaller mistakes.
-
-
 
 #### AIs
 Available AIs, with strength indicating an estimate for the default settings, are:
