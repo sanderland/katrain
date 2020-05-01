@@ -22,7 +22,7 @@ but has since grown to include a wide range of features, including:
 
 * You can right-click most button or checkbox labels to get a tooltip with help.
 * To analyze a game, load it using the button in the bottom right, or press `ctrl-L`
-* To play against AI, pick an AI from the drop down a color and either 'human' or 'teach' for yourself and start playing.
+* To play against AI, pick an AI from the dropdown and either 'human' or 'teach' for yourself and start playing.
     * For different board sizes, use the button with the little goban in the bottom right for a new game.
        
 ## Installation
