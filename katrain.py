@@ -33,6 +33,7 @@ class KaTrainGui(BoxLayout):
         self.debug_level = 0
         self.engine = None  # type: Optional[KataGoEngine]
         self.game = None
+        self.new_game_popup = None
         self.fileselect_popup = None
         self.config_popup = None
         self.logger = lambda message, level=OUTPUT_INFO: self.log(message, level)
@@ -179,7 +180,7 @@ class KaTrainGui(BoxLayout):
 
     def _do_analyze_sgf_popup(self):
         if not self.fileselect_popup:
-            self.fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8))
+            self.fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8)).__self__
             popup_contents = LoadSGFPopup()
             self.fileselect_popup.add_widget(popup_contents)
             popup_contents.filesel.path = os.path.expanduser(self.config("sgf/sgf_load"))
@@ -197,14 +198,15 @@ class KaTrainGui(BoxLayout):
         self.fileselect_popup.open()
 
     def _do_new_game_popup(self):
-        new_game_popup = Popup(title="New Game", size_hint=(0.5, 0.6))
-        popup_contents = NewGamePopup(self, new_game_popup, {k: v[0] for k, v in self.game.root.properties.items() if len(v) == 1})
-        new_game_popup.add_widget(popup_contents)
-        new_game_popup.open()
+        if not self.new_game_popup:
+            self.new_game_popup = Popup(title="New Game", size_hint=(0.5, 0.6)).__self__
+            popup_contents = NewGamePopup(self, self.new_game_popup, {k: v[0] for k, v in self.game.root.properties.items() if len(v) == 1})
+            self.new_game_popup.add_widget(popup_contents)
+        self.new_game_popup.open()
 
     def _do_config_popup(self):
         if not self.config_popup:
-            self.config_popup = Popup(title="Edit Settings", size_hint=(0.9, 0.9))
+            self.config_popup = Popup(title="Edit Settings", size_hint=(0.9, 0.9)).__self__
             popup_contents = ConfigPopup(self, self.config_popup, dict(self._config), ignore_cats=("trainer", "ai"))
             self.config_popup.add_widget(popup_contents)
         self.config_popup.open()

@@ -275,11 +275,11 @@ class BadukPanWidget(Widget):
             passed = len(nodes) > 1 and current_node.is_pass
             if passed:
                 if game_ended:
-                    text = katrain.game.manual_score or 'game\nend'
+                    text = katrain.game.manual_score or "game\nend"
                 else:
                     text = "pass"
                 Color(0.45, 0.05, 0.45, 0.7)
-                center = (self.gridpos_x[int(board_size_x/2)], self.gridpos_y[int(board_size_y/2)])
+                center = (self.gridpos_x[int(board_size_x / 2)], self.gridpos_y[int(board_size_y / 2)])
                 size = min(self.width, self.height) * 0.22
                 Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
                 Color(0.85, 0.85, 0.85)

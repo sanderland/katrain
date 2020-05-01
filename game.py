@@ -210,7 +210,8 @@ class Game:
         lo_threshold = 0.15
         hi_threshold = 0.85
         max_unknown = 10
-        max_dame = 4*(board_size_x+board_size_y)
+        max_dame = 4 * (board_size_x + board_size_y)
+
         def japanese_score_square(square, owner):
             player = stones.get(square, None)
             if (player == "B" and owner > hi_threshold) or (player == "W" and owner < -hi_threshold) or abs(owner) < lo_threshold:

@@ -1,7 +1,6 @@
 import json
 import os
 import sys
-
 from bots.settings import bot_strategy_names, greetings
 
 if len(sys.argv) < 2:
@@ -9,7 +8,10 @@ if len(sys.argv) < 2:
 
 bot = sys.argv[1].strip()
 port = int(sys.argv[2]) if len(sys.argv) > 2 else 8587
+
 MAXGAMES = 10
+GTP2OGS = "node ../gtp2ogs"
+# GTP2OGS = "gtp2ogs"
 BOT_SETTINGS = f" --maxconnectedgames {MAXGAMES} --noautohandicap --maxhandicap 0 --boardsizes 19"
 
 username = f"katrain-{bot}"
@@ -32,11 +34,11 @@ settings_dump = ", ".join(f"{k}={v}" for k, v in ai_settings.items() if not k.st
 print(settings_dump)
 GREETING = f"Hello, welcome to an experimental version of KaTrain AIs - These are based on weakened policy nets of KataGo. Current mode is: {greetings[bot]}"
 if settings:
-    GREETING += f"Settings: {settings_dump}."
+    GREETING += f" Settings: {settings_dump}."
 BYEMSG = (
     "Thank you for playing. If you have any feedback, please message my admin! Please note that score estimates in the malkovich log are based on low visits and likely inaccurate."
 )
 
-cmd = f'gtp2ogs --debug --apikey {APIKEY} --username {username} --greeting "{GREETING}" --farewell "{BYEMSG}" {BOT_SETTINGS} --aichat --noclock --nopause --speeds blitz,live  --persist --minrank 25k --komis automatic,6.5,7.5 -- python bots/ai2gtp.py {bot} {port}'
+cmd = f'{GTP2OGS} --debug --apikey {APIKEY} --username {username} --greeting "{GREETING}" --farewell "{BYEMSG}"  {BOT_SETTINGS} --farewell_score --aichat --noclock --nopause --speeds blitz,live  --persist --minrank 25k --komis automatic,6.5,7.5 -- python bots/ai2gtp.py {bot} {port}'
 print(f"starting bot {username} using server port {port} --> {cmd}")
 os.system(cmd)
