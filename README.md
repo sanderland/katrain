@@ -18,18 +18,19 @@ but has since grown to include a wide range of features, including:
 | ![screenshot](img/screenshot_analyze.png)  | ![screenshot](img/screenshot_play.png)  |
 
 ## Quickstart
-* Right-click any button you don't understand for help.
+* You can right-click most button or checkbox labels to get a tooltip with help.
 * To analyze a game, load it using the button in the bottom right, or press `ctrl-L`
 * To play against AI, pick an AI from the drop down a color and either 'human' or 'teach' for yourself and start playing.
     * For different board sizes, use the button with the little goban in the bottom right for a new game.
-      
        
 ## Installation
 
 ### Quick Installation for Windows users
+
 * See the releases tab for pre-built installers
 
 ### Installation from source for Windows users
+
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/distribution/#download-section). 
 * Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
@@ -46,10 +47,8 @@ but has since grown to include a wide range of features, including:
     * You will need to `chmod +x katago` your binary if you downloaded it.  
     * Executables for Mac are not available, so compiling from source code is required there.
 * Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to KataGo's GPU tuning.
-
      
 ## Manual
-
 
 ### Play
 Under the 'play' tab you can select who is playing black and white.
@@ -63,6 +62,7 @@ If you do not want to see 'Points lost' or other feedback for your moves,
  set 'show last n dots' to 0 under 'Configure Teacher', and click on the words 'Points lost' to hide its value.
  
 #### What are all these coloured dots?
+
 The dots indicate how many points were lost by that move.
 
 * The colour indicates the size of the mistake according to kata
@@ -94,6 +94,7 @@ Available AIs, with strength indicating an estimate for the default settings, ar
 Selecting the AI as either white or black opens up the option to configure it under 'Configure AI'.
 
 ### Analysis
+
 Keyboard shortcuts are shown with **[key]**.
 
 * The checkboxes configure:
@@ -139,6 +140,7 @@ You can use `python katrain.py your_config_file.json` to use another config file
 If you ever need to reset to the original settings, simply re-download the `config.json` file in this repository.
 
 ### Settings Panel
+
 * engine settings
     * max_visits: the number of visits used in analyses and AI moves, higher is more accurate but slower.
     * max_time: maximal time in seconds for analyses, even when the target number of visits has not been reached.    
@@ -160,16 +162,15 @@ If you ever need to reset to the original settings, simply re-download the `conf
 * debug settings
     * level: determines the level of output in the console, where 0 shows no debug output, 1 shows some and 2 shows a lot. This is mainly used for reporting bugs.
 
-
 ## FAQ
 
-* The program is slow to start!
-  * The first startup of KataGo can be slow, after that it should be much faster.
-* The program is running too slowly!
+* Why is the program is slow to start.
+  * The first startup of KataGo can be slow due to GPU tuning, after that it should be much faster.
+* The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
  
-
 ## Contributing
 
 * Feedback and pull requests are both very welcome.
 * For suggestions and planned improvements, see the 'issues' tab on github.
+* You can also contact me on discord (Sander#3278) or [reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.

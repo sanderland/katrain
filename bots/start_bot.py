@@ -12,7 +12,7 @@ port = int(sys.argv[2]) if len(sys.argv) > 2 else 8587
 MAXGAMES = 10
 GTP2OGS = "node ../gtp2ogs"
 # GTP2OGS = "gtp2ogs"
-BOT_SETTINGS = f" --maxconnectedgames {MAXGAMES} --noautohandicap --maxhandicap 0 --boardsizes 19"
+BOT_SETTINGS = f" --maxconnectedgames {MAXGAMES} --maxhandicap 0 --fakerank 1k --boardsizes 19"
 
 username = f"katrain-{bot}"
 
