@@ -110,7 +110,7 @@ class GameNode(SGFNode):
 
                 if sgf or hints or teach:
                     policy_ranking = self.parent.policy_ranking
-                    currmove_policy_with_ix = [(ix + 1,p) for (p, m), ix in zip(policy_ranking, range(len(policy_ranking))) if m == single_move]
+                    currmove_policy_with_ix = [(ix + 1, p) for (p, m), ix in zip(policy_ranking, range(len(policy_ranking))) if m == single_move]
                     if currmove_policy_with_ix:
                         text += f"Move was #{currmove_policy_with_ix[0][0]} according to policy  ({currmove_policy_with_ix[0][1]:.2%}).\n"
                     if not currmove_policy_with_ix or currmove_policy_with_ix[0] != 1 and (sgf or hints):

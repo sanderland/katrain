@@ -92,6 +92,13 @@ class StyledButton(Button, ToolTipBehavior):
 
 class StyledToggleButton(StyledButton, ToggleButtonBehavior, ToolTipBehavior):
     value = StringProperty("")
+    allow_no_selection = BooleanProperty(False)
+
+    def _do_press(self):
+        if (self.last_touch and self.last_touch.button != "left") or (not self.allow_no_selection and self.state == "down"):
+            return
+        self._release_group(self)
+        self.state = "normal" if self.state == "down" else "down"
 
 
 class StyledSpinner(Spinner):
@@ -145,14 +152,13 @@ class ToggleButtonContainer(GridLayout):
         if len(self.labels) < len(self.options):
             self.labels += self.options[len(self.labels) + 1 :]
 
-        def state_handler(btn, *args):
+        def state_handler(*args):
             self.dispatch("on_selection")
-            btn.state = "down"  # no toggle
 
         for i, opt in enumerate(self.options):
             state = "down" if opt == self.selected else "normal"
             tooltip = self.tooltips[i] if self.tooltips else None
-            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, on_press=state_handler,tooltip_text=tooltip))
+            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, on_press=state_handler, tooltip_text=tooltip))
         Clock.schedule_once(self._size, 0)
 
     def _size(self, _dt):
@@ -293,8 +299,6 @@ class ScoreGraph(Label):
                 if math.isnan(dot_point[1]):
                     dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((nn_values or [0])[-1] / self.y_scale)
                 self.dot_pos = [c - self.highlight_size / 2 for c in dot_point]
-
-    #                print("Graph updated to ", len(line_points), "points, hl=", self.highlighted_index, self.dot_pos)
 
     def update_value(self, node):
         self.highlighted_index = index = node.depth
