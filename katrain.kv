@@ -4,6 +4,7 @@
 #:set PLAYER_MODES ['Human', 'Teach','AI']
 #:set PLAYER_MODE_VALUES ['human','human+undo','ai']
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
+#:set TOOLTIP_COLOR [0.33, 0.40, 0.45, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
 #:set BOARD_COLOR [0.85, 0.68, 0.40,1]
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
@@ -11,6 +12,8 @@
 #:set WHITE [0.95,0.95,0.95,1]
 #:set GREY  [0.5,0.5,0.5,1]
 
+
+# mixins
 
 <BackgroundColor>:
     canvas.before:
@@ -20,6 +23,25 @@
             pos: self.pos
             size: self.size
 
+<ToolTipLabel>:
+    size_hint: None, None
+    size: self.texture_size
+    padding: (2,2)
+    halign: 'center'
+    font_size: app.gui.board_controls.pass_btn.height*0.6 if app.gui else 15
+    canvas.before:
+        Color:
+            rgba: TOOLTIP_COLOR
+        Rectangle:
+            size: self.size
+            pos: self.pos
+        Color:
+            rgba: BUTTON_COLOR
+        Line:
+            width: 1.1
+            rectangle: (*self.pos,*self.size)
+
+# widgets
 
 <StyledButton>:
     color: WHITE
@@ -139,9 +161,6 @@
             rectangle: [self.pos[0],self.pos[1]+1,self.width-1,self.height]
             width:1.5
 
-
-
-
 <CheckBoxHintLabel@Label>:
     font_size: 0.4*self.size[1]
     color: BLACK
@@ -170,8 +189,6 @@
 		font_size: desc.font_size
 		id: value
 		bold: True
-
-
 
 <BaseCircleWithText>:
     text: ''
@@ -268,10 +285,11 @@
         pos: root.right_edge - self.width-1, root.pos[1]
         text: 'W+' + str(int(root.y_scale))
 
+# UI components
+
 <BadukPanWidget>:
 	size: self.parent.height, self.parent.height
 	katrain: app.gui
-
 
 <BadukPanControls>:
     katrain: app.gui
@@ -341,8 +359,9 @@
         padding: 0.2 * self.size[1]
         StyledButton:
             text: 'AI Move'
+            tooltip_text: '[enter] Play an AI move\nusing the selected strategy.'
+            on_press: if self.last_touch.button=="left": root.katrain("ai-move",None)
             font_size: 0.6*self.size[1]
-            on_press: root.katrain("ai-move",None)
     ClickableLabel:
         size_hint: 0.025, 1
         canvas:
@@ -487,18 +506,19 @@
                 StyledButton:
                     id: analyze_extra
                     text: 'Extra'
+                    tooltip_text: 'Analyze the current position more\nincreasing accuracy of top move predictions\nand score difference.'
                     size_hint: 1, 1
-                    on_press: root.katrain("analyze-extra","extra")
+                    on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","extra")
                 StyledButton:
                     id: analyze_equalize
                     text: 'Equalize'
                     size_hint: 1, 1
-                    on_press: root.katrain("analyze-extra","equalize")
+                    on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","equalize")
                 StyledButton:
                     id: analyze_sweep
                     text: 'Sweep'
                     size_hint: 1, 1
-                    on_press: root.katrain("analyze-extra","sweep")
+                    on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","sweep")
             ScoreGraph:
                 id: graph
                 size_hint: 1,0.7

@@ -80,8 +80,13 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             d_noise = dirichlet_noise(len(selected_policy_moves))
             noisy_policy_moves = [(((1 - noise_str) * pol + noise_str * noise), mv) for ((pol, mv), noise) in zip(selected_policy_moves, d_noise)]
             new_top = heapq.nlargest(5, noisy_policy_moves)
+            ai_thoughts += f"Noisy policy strategy (strength={noise_str:.2f}) generated 5 moves {fmt_moves(new_top)} "
             aimove = new_top[0][1]
-            ai_thoughts += f"Noisy policy strategy (strength={noise_str:.2f}) generated 5 moves {fmt_moves(new_top)} so picked {aimove.gtp()} ({policy_grid[aimove.coords[1]][aimove.coords[0]]:.2%}). "
+            if new_top[0][0] < pass_policy:
+                ai_thoughts += f", but found pass ({pass_policy:.2%} to be higher rated than {aimove.gtp()} ({new_top[0][0]:.2%}) so will play top policy move instead."
+                aimove = top_policy_move
+            else:
+                ai_thoughts += f" so picked {aimove.gtp()} ({policy_grid[aimove.coords[1]][aimove.coords[0]]:.2%})."
         elif "p:" in ai_mode:
             legal_policy_moves = [(pol, mv) for pol, mv in policy_moves if not mv.is_pass if pol > 0]
             n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])

@@ -73,9 +73,12 @@ def malkovich_analysis(cn):
         logger.log(f"dscore {dscore} = {cn.analysis['root']['scoreLead']} {cn.parent.analysis['root']['scoreLead']} at {move}...", OUTPUT_ERROR)
         if abs(dscore) > REPORT_SCORE_THRESHOLD and (cn.player == "B" and dscore < 0 or cn.player == "W" and dscore > 0):  # relevant mistakes
             favpl = "B" if dscore > 0 else "W"
-            msg = f"MALKOVICH:{cn.player} {cn.single_move.gtp()} caused a significant score change ({favpl} gained {abs(dscore):.1f} points) -> Win Rate {cn.format_win_rate()} Expected Score {cn.format_score()}"
+            msg = f"MALKOVICH:{cn.player} {cn.single_move.gtp()} caused a significant score change ({favpl} gained {abs(dscore):.1f} points)"
             if cn.ai_thoughts:
-                msg += f" AI Thoughts: {cn.ai_thoughts}"
+                msg += f" -> Win Rate {cn.format_win_rate()} Score {cn.format_score()} AI Thoughts: {cn.ai_thoughts}"
+            else:
+                comment = cn.comment(sgf=True).replace('\n',' ')
+                msg += f" -> Detailed move analysis: {comment}"
             print(msg, file=sys.stderr)
             sys.stderr.flush()
 

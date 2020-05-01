@@ -5,6 +5,7 @@ import re
 
 from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
+from kivy.core.window import Window
 from kivy.graphics import *
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.behaviors import ToggleButtonBehavior
@@ -18,10 +19,47 @@ from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 
+class ToolTipLabel(Label):
+    pass
+
+class ToolTipBehavior(Widget):
+    tooltip_text = StringProperty('')
+    font_size = NumericProperty(10)
+    def __init__(self,  **kwargs):
+        super().__init__(**kwargs)
+        self.tooltip = ToolTipLabel()
+        self.open = False
+
+    def on_touch_up(self, touch):
+        inside = self.collide_point(*self.to_widget(*touch.pos))
+        if inside and touch.button == "right" and self.tooltip_text:
+            if not self.open:
+                self.display_tooltip(touch.pos)
+            Clock.schedule_once(lambda _: self.set_position(touch.pos), 0)
+        elif not inside and self.open:
+            self.close_tooltip()
+        return super().on_touch_up(touch)
+
+    def close_tooltip(self):
+        self.open = False
+        Window.remove_widget(self.tooltip)
+
+    def on_size(self,*args):
+        mid = (self.pos[0]+self.width/2,self.pos[1]+self.height/2)
+        self.tooltip.font_size = self.font_size
+        self.set_position(mid)
+
+    def set_position(self,pos):
+        self.tooltip.pos = (pos[0]-self.tooltip.texture_size[0],pos[1])
+
+    def display_tooltip(self, pos):
+        self.open = True
+        self.tooltip.text = self.tooltip_text
+        self.tooltip.font_size = self.font_size
+        Window.add_widget(self.tooltip)
 
 class DarkLabel(Label):
     pass
-
 
 class ScaledLightLabel(DarkLabel):
     pass
@@ -44,7 +82,7 @@ class ScrollableLabel(ScrollView):
     border_color = ListProperty([0, 0, 0, 1])
 
 
-class StyledButton(Button):
+class StyledButton(Button,ToolTipBehavior):
     button_color = ListProperty([])
     button_color_down = ListProperty([])
     radius = ListProperty((0,))
