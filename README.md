@@ -1,4 +1,4 @@
-# KaTrain v1.0
+# KaTrain v1.0 (pre-release)
 
 This repository contains a tool for analyzing and playing go with AI feedback from KataGo.
 
@@ -27,7 +27,7 @@ but has since grown to include a wide range of features, including:
 
 ### Quick Installation for Windows users
 
-* See the releases tab for pre-built installers
+* Currently not available for this pre-release, will be added soon.
 
 ### Installation from source for Windows users
 
@@ -81,15 +81,15 @@ Available AIs, with strength indicating an estimate for the default settings, ar
 * **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points. 
 * **Jigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
 * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used. There is a setting to increase variety in the opening, but otherwise it plays deterministically.
-* **[~3k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
+* **[~5k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
 * **[~5k]**: **P:Pick** picks `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
    The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
    This, along with 'Weighted' are probably the best choice for kyu players who want a chance of winning without playing the sillier bots below. Variants of this strategy include:
-    * **[~3k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
-    * **[~7k]**: **~P:Tenuki** is biased in the opposite way as P:Local, using the same setting.
-    * **[~7k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight. 
-    * **[~7k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting. 
-* * **[~7k]**: **P:Noise** mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. A threshold setting is included to avoid senseless first-line moves. 
+    * **[~5k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
+    * **[~10k]**: **~P:Tenuki** is biased in the opposite way as P:Local, using the same setting.
+    * **[~10k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight. 
+    * **[~10k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting. 
+* * **[~5k]**: **P:Noise** mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. A threshold setting is included to avoid senseless first-line moves. 
 
 Selecting the AI as either white or black opens up the option to configure it under 'Configure AI'.
 
