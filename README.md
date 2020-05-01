@@ -42,10 +42,7 @@ but has since grown to include a wide range of features, including:
 * This assumed you have a working Python 3.6/3.7 installation as a default. If your default is python 2, use pip3/python3. Kivy currently does not have a release for Python 3.8.
 * Git clone or download the repository.
 * `pip install kivy numpy`
-* Put your KataGo binary in the `KataGo/` directory or change the `engine.command` field in `config.json` to your KataGo v1.3.5+ binary.
-    *  Compiled binaries and source code can be found [here](https://github.com/lightvector/KataGo/releases).
-    * You will need to `chmod +x katago` your binary if you downloaded it.  
-    * Executables for Mac are not available, so compiling from source code is required there.
+* A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.3.5+ binary.
 * Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to KataGo's GPU tuning.
      
 ## Manual
