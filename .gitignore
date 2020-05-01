@@ -1,16 +1,24 @@
 # additions
 KataGoData
 KataGo/KataGoData
-old
+experiments
 .idea
 gtp.log
 *.zip
 log.txt
 *.sgf
 sgfout
+sgf_selfplay
+sgf_ogs
+log*
+tmp.pickle
 my
+
+# debug
+outdated_log.txt
+
 # too big
-models/b20*.gz
+models/*.bin.gz
 
 # standard python ignore
 # Byte-compiled / optimized / DLL files

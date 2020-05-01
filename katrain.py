@@ -1,241 +1,341 @@
-import math
+from kivy.config import Config  # isort:skip
+
+Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
+
+import os
 import signal
+import sys
+import threading
+import traceback
+from queue import Queue
+from typing import Optional
 
 from kivy.app import App
+from kivy.core.clipboard import Clipboard
 from kivy.core.window import Window
-from kivy.graphics import *
-from kivy.uix.widget import Widget
+from kivy.storage.jsonstore import JsonStore
+from kivy.uix.popup import Popup
 
-from board import Move
-from controller import Config
-from kivyutils import *
-
-STONE_COLORS = Config.get("ui")["stones"]
-OUTLINE_COLORS = Config.get("ui").get("outline", [None, None])
-GHOST_ALPHA = Config.get("ui")["ghost_alpha"]
-
-
-class BadukPanWidget(Widget):
-    def __init__(self, **kwargs):
-        super(BadukPanWidget, self).__init__(**kwargs)
-        self.ghost_stone = []
-        self.gridpos = []
-        self.grid_size = 0
-        self.stone_size = 0
-        self.last_eval = 0
-        self.EVAL_COLORS = Config.get("ui")["eval_colors"]
-        self.EVAL_KNOTS = Config.get("ui")["eval_knots"]
-        self.EVAL_BOUNDS = Config.get("ui")["eval_bounds"]
-
-    # stone placement functions
-    def _find_closest(self, pos):
-        return sorted([(abs(p - pos), i) for i, p in enumerate(self.gridpos)])[0]
-
-    def on_touch_down(self, touch):
-        xd, xp = self._find_closest(touch.x)
-        yd, yp = self._find_closest(touch.y)
-        prev_ghost = self.ghost_stone
-        if self.engine.ready and max(yd, xd) < self.grid_size / 2 and (xp, yp) not in [m.coords for m in self.engine.board.stones]:
-            self.ghost_stone = (xp, yp)
-        else:
-            self.ghost_stone = None
-        if prev_ghost != self.ghost_stone:
-            self.redraw()
-
-    def on_touch_move(self, touch):  # on_motion on_touch_move
-        return self.on_touch_down(touch)
-
-    def on_touch_up(self, touch):
-        if self.ghost_stone:
-            self.engine.action("play", self.ghost_stone)
-        else:
-            xd, xp = self._find_closest(touch.x)
-            yd, yp = self._find_closest(touch.y)
-            stones_here = [m for m in self.engine.board.stones if m.coords == (xp, yp)]
-            if stones_here and max(yd, xd) < self.grid_size / 2:  # load old comment
-                if self.engine.debug:
-                    print("\nAnalysis:\n", stones_here[-1].analysis)
-                    print("\nParent Analysis:\n", stones_here[-1].parent.analysis)
-                    if stones_here[-1].parent.pass_analysis:
-                        print("\nParent Pass Analysis:\n", stones_here[-1].parent.pass_analysis[0])
-                if not self.engine.ai_lock.active:
-                    self.engine.info.text = stones_here[-1].comment(sgf=True)
-                    self.engine.show_evaluation_stats(stones_here[-1])
-
-        self.ghost_stone = None
-        self.redraw()  # remove ghost
-
-    # drawing functions
-    def on_size(self, *args):
-        self.draw_board()
-        self.redraw()
-
-    def draw_stone(self, x, y, col, outline_col=None, innercol=None, evalcol=None, evalsize=10.0, scale=1.0):
-        stone_size = self.stone_size * scale
-        draw_circle((self.gridpos[x], self.gridpos[y]), stone_size, col)
-        if outline_col:
-            Color(*outline_col)
-            Line(circle=(self.gridpos[x], self.gridpos[y], stone_size), width=0.05 * stone_size)
-
-        if evalcol:
-            evalsize = min(self.EVAL_BOUNDS[1], max(evalsize, self.EVAL_BOUNDS[0])) / self.EVAL_BOUNDS[1]
-            draw_circle((self.gridpos[x], self.gridpos[y]), math.sqrt(evalsize) * stone_size * 0.5, evalcol)
-        if innercol:
-            Color(*innercol)
-            Line(circle=(self.gridpos[x], self.gridpos[y], stone_size * 0.45 / 0.85), width=0.125 * stone_size)  # 1.75
-
-    def _eval_spectrum(self, score):
-        score = max(0, score)
-        for i in range(len(self.EVAL_KNOTS) - 1):
-            if self.EVAL_KNOTS[i] <= score < self.EVAL_KNOTS[i + 1]:
-                t = (score - self.EVAL_KNOTS[i]) / (self.EVAL_KNOTS[i + 1] - self.EVAL_KNOTS[i])
-                return [a + t * (b - a) for a, b in zip(self.EVAL_COLORS[i], self.EVAL_COLORS[i + 1])]
-        return self.EVAL_COLORS[-1]
-
-    def draw_board(self, *args):
-        self.canvas.before.clear()
-        with self.canvas.before:
-            # board
-            sz = min(self.width, self.height)
-            Color(*Config.get("ui")["board_color"])
-            board = Rectangle(pos=(0, 0), size=(sz, sz))
-            # grid lines
-            margin = Config.get("ui")["board_margin"]
-            self.grid_size = board.size[0] / (self.engine.board_size - 1 + 1.5 * margin)
-            self.stone_size = self.grid_size * Config.get("ui")["stone_size"]
-            self.gridpos = [math.floor((margin + i) * self.grid_size + 0.5) for i in range(self.engine.board_size)]
-
-            line_color = Config.get("ui")["line_color"]
-            Color(*line_color)
-            lo, hi = self.gridpos[0], self.gridpos[-1]
-            for i in range(self.engine.board_size):
-                Line(points=[(self.gridpos[i], lo), (self.gridpos[i], hi)])
-                Line(points=[(lo, self.gridpos[i]), (hi, self.gridpos[i])])
-
-            # star points
-            star_point_pos = 3 if self.engine.board_size <= 11 else 4
-            starpt_size = self.grid_size * Config.get("ui")["starpoint_size"]
-            for x in [star_point_pos - 1, self.engine.board_size - star_point_pos, int(self.engine.board_size / 2)]:
-                for y in [star_point_pos - 1, self.engine.board_size - star_point_pos, int(self.engine.board_size / 2)]:
-                    draw_circle((self.gridpos[x], self.gridpos[y]), starpt_size, line_color)
-
-            # coordinates
-            Color(0.25, 0.25, 0.25)
-            for i in range(self.engine.board_size):
-                draw_text(pos=(self.gridpos[i], lo / 2), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5)
-                draw_text(pos=(lo / 2, self.gridpos[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
-
-    def redraw(self, *args):
-        self.canvas.clear()
-        with self.canvas:
-            # stones
-            moves = self.engine.board.moves
-            last_move = moves[-1] if moves else self.engine.board.root
-            current_player = self.engine.board.current_player
-            full_eval_on = [self.engine.eval.active(0), self.engine.eval.active(1)]
-            has_stone = {}
-            last_few_moves = self.engine.board.moves[-Config.get("trainer").get("eval_off_show_last", 3) :]
-            for i, m in enumerate(self.engine.board.stones):
-                has_stone[m.coords] = m.player
-                eval, evalsize = m.evaluation_info
-                move_eval_on = full_eval_on[m.player] or m in last_few_moves
-                evalcol = self._eval_spectrum(eval) if move_eval_on and eval and evalsize > Config.get("ui").get("min_eval_temperature", 0.5) else None
-                inner = STONE_COLORS[1 - m.player] if (m == last_move) else None
-                self.draw_stone(m.coords[0], m.coords[1], STONE_COLORS[m.player], OUTLINE_COLORS[m.player], inner, evalcol, evalsize)
-
-            # ownership - allow one move out of date for smooth animation
-            ownership = last_move.ownership or (last_move.parent and last_move.parent.ownership)
-            if self.engine.ownership.active and ownership:
-                rsz = self.grid_size * 0.2
-                ix = 0
-                for y in range(self.engine.board_size - 1, -1, -1):
-                    for x in range(self.engine.board_size):
-                        ix_owner = 0 if ownership[ix] > 0 else 1
-                        if ix_owner != (has_stone.get((x, y), -1)):
-                            Color(*STONE_COLORS[ix_owner], abs(ownership[ix]))
-                            Rectangle(pos=(self.gridpos[x] - rsz / 2, self.gridpos[y] - rsz / 2), size=(rsz, rsz))
-                        ix = ix + 1
-
-            # children of current moves in undo / review
-            undo_coords = set()
-            alpha = Config.get("ui")["undo_alpha"]
-            for m in last_move.children:
-                eval_info = m.evaluation_info
-                if m.coords[0] is not None:
-                    undo_coords.add(m.coords)
-                    evalcol = (*self._eval_spectrum(eval_info[0]), alpha) if eval_info[0] else None
-                    scale = Config.get("ui").get("undo_scale", 0.95)
-                    self.draw_stone(m.coords[0], m.coords[1], (*STONE_COLORS[m.player][:3], alpha), None, None, evalcol, self.EVAL_BOUNDS[1], scale=scale)
-
-            # hints
-            if self.engine.hints.active(current_player):
-                for i, d in enumerate(last_move.ai_moves):
-                    move = Move(gtpcoords=d["move"], player=0)
-                    c = [*self._eval_spectrum(d["evaluation"]), 0.5]
-                    if move.coords[0] is not None and move.coords not in undo_coords:
-                        self.draw_stone(move.coords[0], move.coords[1], c, scale=1.0 if i == 0 else 0.8)
-
-            # hover next move ghost stone
-            if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*STONE_COLORS[current_player], GHOST_ALPHA))
-
-            # pass circle
-            passed = len(moves) > 1 and last_move.is_pass
-            if passed:
-                if self.engine.board.game_ended:
-                    text = "game\nend"
-                else:
-                    text = "pass"
-                Color(0.45, 0.05, 0.45, 0.5)
-                center = self.gridpos[int(self.engine.board_size / 2)]
-                Ellipse(pos=(center - self.grid_size * 1.5, center - self.grid_size * 1.5), size=(self.grid_size * 3, self.grid_size * 3))
-                Color(0.15, 0.15, 0.15)
-                draw_text(pos=(center, center), text=text, font_size=self.grid_size * 0.66, halign="center", outline_color=[0.95, 0.95, 0.95])
+from ai import ai_move
+from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO
+from engine import KataGoEngine
+from game import Game, IllegalMoveException, KaTrainSGF, Move
+from gui import *
+from gui.popups import ConfigPopup, NewGamePopup
+from sgf_parser import ParseError
 
 
 class KaTrainGui(BoxLayout):
+    """Top level class responsible for tying everything together"""
+
     def __init__(self, **kwargs):
         super(KaTrainGui, self).__init__(**kwargs)
+        self.debug_level = 0
+        self.engine = None  # type: Optional[KataGoEngine]
+        self.game = None
+        self.new_game_popup = None
+        self.fileselect_popup = None
+        self.config_popup = None
+        self.logger = lambda message, level=OUTPUT_INFO: self.log(message, level)
+
+        self._load_config()
+
+        self.debug_level = self.config("debug/level", OUTPUT_INFO)
+        self.controls.ai_mode_groups["W"].values = self.controls.ai_mode_groups["B"].values = list(self.config("ai").keys())
+        self.message_queue = Queue()
+
         self._keyboard = Window.request_keyboard(None, self, "")
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
+    def log(self, message, level=OUTPUT_INFO):
+        if level == OUTPUT_ERROR:
+            self.controls.set_status(f"ERROR: {message}")
+            print(f"ERROR: {message}")
+        elif self.debug_level >= level:
+            print(message)
+
+    def _load_config(self):
+        base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))  # for pyinstaller
+        config_file = sys.argv[1] if len(sys.argv) > 1 else os.path.join(base_path, "config.json")
+        try:
+            self.log(f"Using config file {config_file}", OUTPUT_INFO)
+            self._config_store = JsonStore(config_file, indent=4)
+            self._config = dict(self._config_store)
+        except Exception as e:
+            self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
+            sys.exit(1)
+
+    def save_config(self):
+        for k, v in self._config.items():
+            self._config_store.put(k, **v)
+
+    def config(self, setting, default=None):
+        try:
+            if "/" in setting:
+                cat, key = setting.split("/")
+                return self._config[cat].get(key, default)
+            else:
+                return self._config[setting]
+        except KeyError:
+            self.log(f"Missing configuration option {setting}", OUTPUT_ERROR)
+
+    def start(self):
+        if self.engine:
+            return
+        self.board_gui.trainer_config = self.config("trainer")  # TODO: could be cleaner
+        self.board_gui.ui_config = self.config("board_ui")
+        self.engine = KataGoEngine(self, self.config("engine"))
+        threading.Thread(target=self._message_loop_thread, daemon=True).start()
+        self._do_new_game()
+
+    def update_state(self, redraw_board=False):  # is called after every message and on receiving analyses and config changes
+        # AI and Trainer/auto-undo handlers
+        cn = self.game.current_node
+        auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
+        if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready:
+            self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
+        if cn.analysis_ready and "ai" in self.controls.player_mode(cn.next_player).lower() and not cn.children and not self.game.ended and not (auto_undo and cn.auto_undo is None):
+            self._do_ai_move(cn)  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
+
+        # Handle prisoners and next player display
+        prisoners = self.game.prisoner_count
+        top, bot = self.board_controls.black_prisoners.__self__, self.board_controls.white_prisoners.__self__  # no weakref
+        if self.game.next_player == "W":
+            top, bot = bot, top
+        self.board_controls.mid_circles_container.clear_widgets()
+        self.board_controls.mid_circles_container.add_widget(bot)
+        self.board_controls.mid_circles_container.add_widget(top)
+        self.board_controls.black_prisoners.text = str(prisoners["W"])
+        self.board_controls.white_prisoners.text = str(prisoners["B"])
+
+        # update engine status dot
+        if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
+            self.board_controls.engine_status_col = self.config("board_ui/engine_down_col")
+        elif len(self.engine.queries) >= 4:
+            self.board_controls.engine_status_col = self.config("board_ui/engine_busy_col")
+        elif len(self.engine.queries) >= 2:
+            self.board_controls.engine_status_col = self.config("board_ui/engine_little_busy_col")
+        elif len(self.engine.queries) == 0:
+            self.board_controls.engine_status_col = self.config("board_ui/engine_ready_col")
+        else:
+            self.board_controls.engine_status_col = self.config("board_ui/engine_almost_done_col")
+        # redraw
+        if redraw_board:
+            Clock.schedule_once(self.board_gui.draw_board, -1)  # main thread needs to do this
+        Clock.schedule_once(self.board_gui.draw_board_contents, -1)
+        self.controls.update_evaluation()
+
+    def _message_loop_thread(self):
+        while True:
+            game, msg, *args = self.message_queue.get()
+            try:
+                self.log(f"Message Loop Received {msg}: {args} for Game {game}", OUTPUT_EXTRA_DEBUG)
+                if game != self.game.game_id:
+                    self.log(f"Message skipped as it is outdated (current game is {self.game.game_id}", OUTPUT_EXTRA_DEBUG)
+                    continue
+                getattr(self, f"_do_{msg.replace('-','_')}")(*args)
+                self.update_state()
+            except Exception as e:
+                self.log(f"Exception in processing message {msg} {args}: {e}", OUTPUT_ERROR)
+                traceback.print_exc()
+
+    def __call__(self, message, *args):
+        # curframe = inspect.currentframe() # TODO remove
+        # calframe = inspect.getouterframes(curframe, 2)
+        # print('caller name:', calframe[1])
+        if self.game:
+            self.message_queue.put([self.game.game_id, message, *args])
+
+    def _do_new_game(self, move_tree=None, analyze_fast=False):
+        self.engine.on_new_game()  # clear queries
+        self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree, analyze_fast=analyze_fast)
+        self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
+        self.controls.graph.initialize_from_game(self.game.root)
+        self.update_state(redraw_board=True)
+
+    def _do_ai_move(self, node=None):
+        if node is None or self.game.current_node == node:
+            mode = self.controls.ai_mode(self.game.current_node.next_player)
+            settings = self.config(f"ai/{mode}")
+            if settings:
+                ai_move(self.game, mode, settings)
+
+    def _do_undo(self, n_times=1):
+        self.game.undo(n_times)
+
+    def _do_redo(self, n_times=1):
+        self.game.redo(n_times)
+
+    def _do_switch_branch(self, direction):
+        self.game.switch_branch(direction)
+
+    def _do_play(self, coords):
+        try:
+            self.game.play(Move(coords, player=self.game.next_player))
+        except IllegalMoveException as e:
+            self.controls.set_status(f"Illegal Move: {str(e)}")
+
+    def _do_analyze_extra(self, mode):
+        self.game.analyze_extra(mode)
+
+    def _do_analyze_sgf_popup(self):
+        if not self.fileselect_popup:
+            self.fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8)).__self__
+            popup_contents = LoadSGFPopup()
+            self.fileselect_popup.add_widget(popup_contents)
+            popup_contents.filesel.path = os.path.expanduser(self.config("sgf/sgf_load"))
+
+            def readfile(files, _mouse):
+                self.fileselect_popup.dismiss()
+                try:
+                    move_tree = KaTrainSGF.parse_file(files[0])
+                except ParseError as e:
+                    self.log(f"Failed to load SGF. Parse Error: {e}", OUTPUT_ERROR)
+                    return
+                self._do_new_game(move_tree=move_tree, analyze_fast=popup_contents.fast.active)
+
+            popup_contents.filesel.on_submit = readfile
+        self.fileselect_popup.open()
+
+    def _do_new_game_popup(self):
+        if not self.new_game_popup:
+            self.new_game_popup = Popup(title="New Game", size_hint=(0.5, 0.6)).__self__
+            popup_contents = NewGamePopup(self, self.new_game_popup, {k: v[0] for k, v in self.game.root.properties.items() if len(v) == 1})
+            self.new_game_popup.add_widget(popup_contents)
+        self.new_game_popup.open()
+
+    def _do_config_popup(self):
+        if not self.config_popup:
+            self.config_popup = Popup(title="Edit Settings", size_hint=(0.9, 0.9)).__self__
+            popup_contents = ConfigPopup(self, self.config_popup, dict(self._config), ignore_cats=("trainer", "ai"))
+            self.config_popup.add_widget(popup_contents)
+        self.config_popup.open()
+
+    def _do_output_sgf(self):
+        for pl in Move.PLAYERS:
+            if not self.game.root.get_property(f"P{pl}"):
+                _, model_file = os.path.split(self.engine.config["model"])
+                self.game.root.set_property(
+                    f"P{pl}", f"AI {self.controls.ai_mode(pl)} (KataGo { os.path.splitext(model_file)[0]})" if "ai" in self.controls.player_mode(pl) else "Player"
+                )
+        msg = self.game.write_sgf(
+            self.config("sgf/sgf_save"),
+            trainer_config=self.config("trainer"),
+            save_feedback=self.config("sgf/save_feedback"),
+            eval_thresholds=self.config("trainer/eval_thresholds"),
+        )
+        self.log(msg, OUTPUT_INFO)
+        self.controls.set_status(msg)
+
+    def load_sgf_from_clipboard(self):
+        clipboard = Clipboard.paste()
+        if not clipboard:
+            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.")
+            return
+        try:
+            move_tree = KaTrainSGF.parse(clipboard)
+        except Exception as e:
+            self.controls.set_status(f"Failed to imported game from clipboard: {e}\nClipboard contents: {clipboard[:50]}...")
+            return
+        move_tree.nodes_in_tree[-1].analyze(self.engine, analyze_fast=False)  # speed up result for looking at end of game
+        self._do_new_game(move_tree=move_tree, analyze_fast=True)
+        self("redo", 999)
+        self.log("Imported game from clipboard.", OUTPUT_INFO)
+
+    def on_touch_up(self, touch):
+        if self.board_gui.collide_point(*touch.pos) or self.board_controls.collide_point(*touch.pos):
+            if touch.button == "scrollup":
+                self("redo")
+            elif touch.button == "scrolldown":
+                self("undo")
+        return super().on_touch_up(touch)
+
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        if keycode[1] == "up":
-            self.controls.action("undo")
-        elif keycode[1] == "down":
-            self.controls.action("redo")
-        elif keycode[1] == "right":
-            self.controls.action("redo-branch", 1)
-        elif keycode[1] == "left":
-            self.controls.action("redo-branch", -1)
+        if isinstance(App.get_running_app().root_window.children[0], Popup):
+            return  # if in new game or load, don't allow keyboard shortcuts
+
+        shortcuts = {
+            "q": self.controls.show_children,
+            "w": self.controls.eval,
+            "e": self.controls.hints,
+            "r": self.controls.ownership,
+            "t": self.controls.policy,
+            "enter": ("ai-move",),
+            "a": self.controls.analyze_extra,
+            "s": self.controls.analyze_equalize,
+            "d": self.controls.analyze_sweep,
+            "right": ("switch-branch", 1),
+            "left": ("switch-branch", -1),
+        }
+        if keycode[1] in shortcuts.keys():
+            shortcut = shortcuts[keycode[1]]
+            if isinstance(shortcut, Widget):
+                shortcut.trigger_action(duration=0)
+            else:
+                self(*shortcut)
+        elif keycode[1] == "tab":
+            self.controls.switch_mode()
+        elif keycode[1] == "spacebar":
+            self("play", None)  # pass
+        elif keycode[1] in ["`", "~", "p"]:
+            self.controls_box.hidden = not self.controls_box.hidden
+        elif keycode[1] in ["up", "z"]:
+            self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
+        elif keycode[1] in ["down", "x"]:
+            self("redo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
+        elif keycode[1] == "n" and "ctrl" in modifiers:
+            self("new-game-popup")
+        elif keycode[1] == "l" and "ctrl" in modifiers:
+            self("analyze-sgf-popup")
+        elif keycode[1] == "s" and "ctrl" in modifiers:
+            self("output-sgf")
+        elif keycode[1] == "c" and "ctrl" in modifiers:
+            Clipboard.copy(self.game.root.sgf())
+            self.controls.set_status("Copied SGF to clipboard.")
+        elif keycode[1] == "v" and "ctrl" in modifiers:
+            self.load_sgf_from_clipboard()
         return True
 
 
 class KaTrainApp(App):
+    gui = ObjectProperty(None)
+
     def build(self):
-        self.icon = "./icon.png"
+        self.icon = "./img/icon.png"
         self.gui = KaTrainGui()
+        Window.bind(on_request_close=self.on_request_close)
         return self.gui
 
     def on_start(self):
-        self.gui.controls.restart()
-        signal.signal(signal.SIGINT, self.signal_handler)
+        self.gui.start()
+
+    def on_request_close(self, *args):
+        if getattr(self, "gui", None) and self.gui.engine:
+            self.gui.engine.shutdown()
 
     def signal_handler(self, signal, frame):
         import sys
         import traceback
 
-        if self.gui.controls.debug:
-            code = ["TRACEBACKS"]
+        if self.gui.debug_level >= OUTPUT_DEBUG:
+            print("TRACEBACKS")
             for threadId, stack in sys._current_frames().items():
-                code.append("\n# ThreadID: %s" % threadId)
+                print(f"\n# ThreadID: {threadId}")
                 for filename, lineno, name, line in traceback.extract_stack(stack):
-                    code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+                    print(f"\tFile: {filename}, line {lineno}, in {name}")
                     if line:
-                        code.append("  %s" % (line.strip()))
-            print("\n".join(code))
+                        print(f"\t\t{line.strip()}")
+        self.on_request_close()
         sys.exit(0)
 
 
 if __name__ == "__main__":
-    KaTrainApp().run()
+    #    with open("katrain.kv", encoding="utf-8") as f:  # avoid windows using another encoding
+    #        Builder.load_string(f.read())
+    app = KaTrainApp()
+    signal.signal(signal.SIGINT, app.signal_handler)
+    try:
+        app.run()
+    except Exception:
+        app.on_request_close()
+        raise

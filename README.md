@@ -1,125 +1,176 @@
-Introduction
-============
-This repository contains  tool for playing go with AI feedback.
-The idea is to give immediate feedback on the many large mistakes we make in terms of inefficient moves.
-It is based on the KataGo AI and relies heavily on score estimation rather than win rate.
+# KaTrain v1.0
 
-Some uses include:
+This repository contains a tool for analyzing and playing go with AI feedback from KataGo.
+
+The original idea was to give immediate feedback on the many large mistakes we make in terms of inefficient moves,
+but has since grown to include a wide range of features, including:
 
 * Review your games to find the moves that were most costly in terms of points lost.
 * Play against AI and get immediate feedback on mistakes with option to retry.
+* Play against a wide range of weakened versions of AI with various styles.
 * Play against a stronger player and use the retry option instead of handicap stones.
-* Play a match with an evenly matched friend where both players get instant feedback.
+
+## Screenshots
 
 
-![screenshot](https://imgur.com/t3Im6Xu.png)
+| Analyze games  | Play against an AI Teacher |
+| ------------- | ------------- |
+| ![screenshot](img/screenshot_analyze.png)  | ![screenshot](img/screenshot_play.png)  |
 
-Manual
-======
+## Quickstart
+* You can right-click most button or checkbox labels to get a tooltip with help.
+* To analyze a game, load it using the button in the bottom right, or press `ctrl-L`
+* To play against AI, pick an AI from the drop down a color and either 'human' or 'teach' for yourself and start playing.
+    * For different board sizes, use the button with the little goban in the bottom right for a new game.
+       
+## Installation
 
-Installation for Windows users
-------------------------------
+### Quick Installation for Windows users
+
+* See the releases tab for pre-built installers
+
+### Installation from source for Windows users
+
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/distribution/#download-section). 
-* Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file.
-* Execute the command 'pip install kivy'
+* Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
+* Execute the command `pip install numpy kivy_deps.glew kivy_deps.sdl2 kivy_deps.gstreamer kivy`
 * Start the app by running `python katrain.py` in the directory where you downloaded the scripts. Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
 
-Installation for Linux/Mac users
---------------------------------
+### Installation for Linux/Mac users
+
 * This assumed you have a working Python 3.6/3.7 installation as a default. If your default is python 2, use pip3/python3. Kivy currently does not have a release for Python 3.8.
 * Git clone or download the repository.
-* pip install kivy
-* Put your katago binary in the `KataGo/` directory or change the `engine.command` field in `config.json` to your KataGo v1.3+ binary.
+* `pip install kivy numpy`
+* Put your KataGo binary in the `KataGo/` directory or change the `engine.command` field in `config.json` to your KataGo v1.3.5+ binary.
     *  Compiled binaries and source code can be found [here](https://github.com/lightvector/KataGo/releases).
-    * You will need to `chmod +x katago` your binary if your download it.  
+    * You will need to `chmod +x katago` your binary if you downloaded it.  
     * Executables for Mac are not available, so compiling from source code is required there.
-* Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
+* Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to KataGo's GPU tuning.
+     
+## Manual
 
-Options
--------
-* Check box options
-    * All Eval: show the coloured dots on all the moves for this player.
-    * Hints: show suggested moves for this player and output more statistics on moves.
-    * Undo: automatically undo poor moves for this player and make them try again.
-    * AI: let the AI control this player. Check both for self-play.
-    * Show owner: show expected control of territory.    
-    * Lock AI: disallow extra undos, changing hints options, changing auto move, or AI move. Also turns off the option to click on a move to see detailed comments.
-    * Fast: use a lower number of max visits for evaluation/AI move.
-    * Balance score: Deliberately make sub-optimal moves as the AI in an attempt to balance the score towards a slight win.
+### Play
+Under the 'play' tab you can select who is playing black and white.
+* Human is simple play with potential feedback, but without auto-undo.
+* Teach will give you instant feedback, and auto-undo bad moves to give you a second chance. 
+    * Settings for this mode can be found under 'Configure Teacher'
+* AI will activate the AI in the dropdown next to the buttons.
+    * Settings for all AIs can be found under 'Configure AIs'
+ 
+If you do not want to see 'Points lost' or other feedback for your moves,
+ set 'show last n dots' to 0 under 'Configure Teacher', and click on the words 'Points lost' to hide its value.
+ 
+#### What are all these coloured dots?
 
-* Temperature/Evaluation/Score: Not that these fields can be hidden by clicking on the text.
-    * Temperature is the point difference between passing and the best move.
-    * Evaluation is where on this scale the last move was, from 0% (equivalent to a pass) to 100% (best move). 
-    This can be < 0% in case of suicidal moves, or >100% when Kata did not consider the move before, or further analysis shows it to be better than the best one considered.
-    * Score: How far one player is ahead.
+The dots indicate how many points were lost by that move.
 
-* Keyboard controls
-   * Arrow up: undo
-   * Arrow down: redo
-   * Arrow left/right: alternate branch.
+* The colour indicates the size of the mistake according to kata
+* The size indicates if the mistake was actually punished. Going from fully punished at maximal size,
+  to no actual effect on the score at minimal size. 
 
-Play
-----
+In short, if you are a weaker player you should mostly on large dots that are red or purple,
+while stronger players can pay more attention to smaller mistakes.
 
-* Play against the AI
-    * Turn on AI for the chosen player. 
-    * Choose whether to turn on `balance score` to make the AI play slack moves.
-    * Choose whether to turn on `undo` for your colour to be prompted to re-try poor moves. 
-    * Choose whether or not to turn on `fast` to make the AI play faster but read less deeply (NB: with balance score, faster AI can be a stronger opponent, as there are fewer mediocre moves considered).
-    * Possibly lock AI to prevent yourself from peeking at hints, etc.
-    * Possibly hide score or temperature.
-    * If you chose AI to play black, click AI move for the first move.
+
+
+#### AIs
+Available AIs, with strength indicating an estimate for the default settings, are:
+
+* **[9p+]** **Default** is full KataGo, above professional level. 
+* **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points. 
+* **Jigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
+* **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used. There is a setting to increase variety in the opening, but otherwise it plays deterministically.
+* **[~3k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
+* **[~5k]**: **P:Pick** picks `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
+   The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
+   This, along with 'Weighted' are probably the best choice for kyu players who want a chance of winning without playing the sillier bots below. Variants of this strategy include:
+    * **[~3k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
+    * **[~7k]**: **~P:Tenuki** is biased in the opposite way as P:Local, using the same setting.
+    * **[~7k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight. 
+    * **[~7k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting. 
+* * **[~7k]**: **P:Noise** mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. A threshold setting is included to avoid senseless first-line moves. 
+
+Selecting the AI as either white or black opens up the option to configure it under 'Configure AI'.
+
+### Analysis
+
+Keyboard shortcuts are shown with **[key]**.
+
+* The checkboxes configure:
+    * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when wanting to guess the next move.
+    * **[w]**: All dots: Show all evaluation dots instead of the last few. 
+        * You can configure how many are shown with this setting off, and whether they are shown for AIs under 'Play/Configure Teacher'.
+    * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. Small dots indicate high uncertainty. Hover over any of them to see the principal variation.
+    * **[r]**: Show owner: Show expected ownership of each intersection.
+    * **[t]**: NN Policy: Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, and in the absence of any 'reading'.
+
+* The analysis buttons are used for:
+    * **[a]**: Extra: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
+    * **[s]**: Equalize: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
+    * **[d]**: Sweep: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but the result is nothing if not colourful.
+
     
-* Engine-assisted play
-    * Turn off auto move.
-    * Choose whether to turn on `undo` for either colour to be prompted to re-try poor moves.
-    * Possibly lock AI to prevent peeking at hints.
-    * Possibly hide score or temperature.
-    * Play with a friend with instant feedback and/or undos for both, or see how many stones stronger you are with one undo. (But please play unranked and be honest to your opponent on what you're doing) 
+## Keyboard and mouse shortcuts
 
-* Analysis
-    * Click 'Load' when the text box is empty-ish to get a file chooser dialog.  Note that branches are not supported and will lead to strange results.
-    * Select if you want fast analysis or rewinding to the start for reviewing. Note that the 'fast' checkbox still affects speed as well,
-      this is just an additional lowering of visits.
-    * Alternatively copy the SGF into the text box and click 'Load'. 
-    
-* Save game
-    * Click save to get an sgf with comments saved in the sgfout/ directory (and a short version in the text box).
+In addition to shortcuts mentioned above, there are:
 
-Configuration
--------------
-`config.json` has a number of options, many of them are stylistic, but also including the command kata is started with (and so the kata config and model).
+* **[Tab]**: to switch between analysis and play modes. (NB. keyboard shortcuts function regardless)
+* **[~]** or **[`]** or **[p]**: Hide side panel UI and only show the board.
+* **[enter]**: AI Move
+* **[arrow up]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
+* **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
+* **[click on a move]**: See detailed statistics for a previous move.
+* **[double-click on a move]**: Navigate directly to that point in the game.
+* **[Ctrl-v]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
+* **[Ctrl-c]**: Save SGF to clipboard.
+* **[Ctrl-l]**: Load SGF from file and do a normal analysis.
+* **[Ctrl-s]**: Save SGF with automated review to file.
+* **[Ctrl-n]**: Load SGF from clipboard
+* **[space]**: Pass
+
+
+## Configuration
+
+Configuration is stored in `config.json`. Most settings are now available to edit in the program, but some advanced options are not.
 You can use `python katrain.py your_config_file.json` to use another config file instead.
 
-The `trainer` block has the following options to tweak for engine assisted play and reviewing:
+If you ever need to reset to the original settings, simply re-download the `config.json` file in this repository.
 
-* `eval_off_show_last`: when the `eval` checkbox is off for a player, show coloured dots on the last this many moves regardless. 
-* `undo_eval_threshold`, `undo_point_threshold`: prompt player to undo if move is worse than this in terms of points AND evaluation.
-* `num_undo_prompts`: automatically undo bad moves when `undo` is on at most this many times. Can be a fraction like 0.5 for 50% chance of being granted an undo on a bad move.
-* `dont_lock_undos`: don't lock the undo button when `ai lock` is active.
+### Settings Panel
 
-The following options are relevant for the `balance score` AI play mode. 
+* engine settings
+    * max_visits: the number of visits used in analyses and AI moves, higher is more accurate but slower.
+    * max_time: maximal time in seconds for analyses, even when the target number of visits has not been reached.    
+    * fast_visits: the number of visits used for certain operations with fewer visits.
+    * katago: path to your KataGo executable.
+    * model: path to your KataGo model file.
+    * config: path to your KataGo config file.    
+    * threads: number of threads to use in the KataGo analysis engine.
+* game settings
+    * init_size: the initial size of the board, on start-up.
+    * init_komi: likewise, for komi.
+* sgf settings
+    * sgf_load: default path where the load SGF dialog opens.
+    * sgf_save: path where SGF files are saved.    
+* board_ui settings
+    * eval_dot_max_size: size of coloured dots when point size is maximal, relative to stone size.
+    * eval_dot_min_size: size of coloured dots when point size is minimal 
+    * ... various other minor cosmetic options.
+* debug settings
+    * level: determines the level of output in the console, where 0 shows no debug output, 1 shows some and 2 shows a lot. This is mainly used for reporting bugs.
 
-* `balance_play_target_score`: indicates how many points the AI aims to win by when using 'balance score'.
-* `balance_play_randomize_eval`: when not needing to balance score, the AI will pick a random move which is at least this good as long as it stays ahead.
-* `balance_play_min_eval`: when needing to balance score, the AI will pick a move which is at least this good.
-* `balance_play_min_visits`: never pick a move with fewer playouts than this.
+## FAQ
 
-The cfg file has additional configuration for kata. In particular, it changes the default to being more exploratory and score-based (and therefore nicer as an opponent, but weaker as analysis tool).
+* Why is the program is slow to start.
+  * The first startup of KataGo can be slow due to GPU tuning, after that it should be much faster.
+* The program is running too slowly. How can I speed it up?
+  *  Adjust the number of visits or maximum time allowed in the settings.
+ 
+## Contributing
 
-FAQ
-===
-* The program is slow to start!
-  * The first startup of KataGo can be slow, after that it should be much faster.
-* The program is running too slowly!
-  *  Lower the visits count in the `analysis` block of `config.json` by half or so and try again.
-* Why are the dots changing colour?
-  *  If the next move made is the predicted top move, more information is available to analyze the previous move and this is used to update the evaluation.  
-* Can I play on sizes other than 9, 13 or 19?
-  * Type in `SZ[n]HA[h]KM[k]` in the text box and hit 'load' for a game on a n by n board with h handicap stones and k komi, but note that the default KataGo does not support sizes above 19x19.  
-
-Contributing
-============
 * Feedback and pull requests are both very welcome.
 * For suggestions and planned improvements, see the 'issues' tab on github.
+* You can also contact me on discord (Sander#3278) or [reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
