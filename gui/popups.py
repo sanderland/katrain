@@ -193,7 +193,7 @@ class ConfigAIPopup(QuickConfigGui):
         ais = list(self.settings.keys())
 
         top_bl = BoxLayout()
-        top_bl.add_widget(ScaledLightLabel(text="Settings for AI:"))
+        top_bl.add_widget(ScaledLightLabel(text="Select AI to configure:"))
         ai_spinner = StyledSpinner(values=ais, text=ais[0])
         ai_spinner.fbind("text", lambda _, text: self.build_ai_options(text))
         top_bl.add_widget(ai_spinner)

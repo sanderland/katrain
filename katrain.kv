@@ -3,6 +3,7 @@
 
 #:set PLAYER_MODES ['Human', 'Teach','AI']
 #:set PLAYER_MODE_VALUES ['human','human+undo','ai']
+#:set PLAYER_TOOLTIPS ['Normal play mode','Undo Mode, asking you to try and improve on bad moves','Automatic play mode']
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
 #:set TOOLTIP_COLOR [0.43, 0.50, 0.65, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
@@ -307,7 +308,7 @@
         padding: [0.325*self.size[1],0.2*self.size[1]]
         StyledButton:
             text: 'Pass'
-            tooltip_text: '[space]\npass'
+            tooltip_text: '[space]\nPass'
             font_size: 0.6*self.size[1]
             id: pass_btn
             on_press: if self.last_touch.button=="left": root.katrain("play",None)
@@ -362,7 +363,7 @@
         padding: 0.2 * self.size[1]
         StyledButton:
             text: 'AI Move'
-            tooltip_text: '[enter] Play an AI move\nusing the selected strategy.'
+            tooltip_text: '[enter]\nPlay an AI move\nusing the\nselected strategy.'
             on_press: if self.last_touch.button=="left": root.katrain("ai-move",None)
             font_size: 0.6*self.size[1]
     ClickableLabel:
@@ -473,19 +474,19 @@
                 size_hint: 1, 0.3
                 CheckBoxHintLabel:
                     text: 'next\nmoves'
-                    tooltip_text: '[q] show any next moves\nplayed from the current position'
+                    tooltip_text: '[q]\nShow all next moves\nplayed from the current position'
                 CheckBoxHintLabel:
                     text: 'all\ndots'
-                    tooltip_text: '[w] show evaluation dots\non the stones\nfor all moves'
+                    tooltip_text: '[w]\nShow evaluation dots\non stones for all moves'
                 CheckBoxHintLabel:
                     text: 'top\nmoves'
-                    tooltip_text: '[e] show top\npredicted moves'
+                    tooltip_text: '[e]\nShow top\npredicted moves'
                 CheckBoxHintLabel:
                     text: 'show\nowner'
-                    tooltip_text: '[r] show predicted\nownership of\neach intersection'
+                    tooltip_text: '[r]\nShow predicted ownership\nof each intersection'
                 CheckBoxHintLabel:
                     text: 'NN\npolicy'
-                    tooltip_text: "[t] show predicted\ntop moves using\npolicy only\n(the engine's 'shape sense')"
+                    tooltip_text: "[t]\nShow Policy top moves\n(i.e. with no 'reading')"
                 CheckBox:
                     id: show_children
                     active: True
@@ -514,19 +515,19 @@
                 StyledButton:
                     id: analyze_extra
                     text: 'Extra'
-                    tooltip_text: '[a] Analyze the current position more\nincreasing accuracy of top move predictions\nand score difference.'
+                    tooltip_text: '[a]\nExtra analysis\nto increase accuracy\nof top move predictions\nand score difference'
                     size_hint: 1, 1
                     on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","extra")
                 StyledButton:
                     id: analyze_equalize
                     text: 'Equalize'
-                    tooltip_text: '[s] Analyze all predicted\ntop moves witht the same accuracy.'
+                    tooltip_text: '[s]\nAnalysis of all\npredicted top moves\nwith the same accuracy'
                     size_hint: 1, 1
                     on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","equalize")
                 StyledButton:
                     id: analyze_sweep
                     text: 'Sweep'
-                    tooltip_text: '[d] Analyze all legal moves\nusing fast analysis.'
+                    tooltip_text: '[d]\nFast analysis\nof all legal moves'
                     size_hint: 1, 1
                     on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","sweep")
             ScoreGraph:
@@ -567,6 +568,7 @@
                     id: B_player_mode
                     options: PLAYER_MODE_VALUES
                     labels: PLAYER_MODES
+                    tooltips: PLAYER_TOOLTIPS
                     on_selection: root.katrain.update_state()
                 StyledSpinner:
                     id: B_AI_mode
@@ -584,6 +586,7 @@
                     id: W_player_mode
                     options: PLAYER_MODE_VALUES
                     labels: PLAYER_MODES
+                    tooltips: PLAYER_TOOLTIPS
                     on_selection: root.katrain.update_state()
                 StyledSpinner:
                     id: W_AI_mode
@@ -596,12 +599,12 @@
                 spacing: 1
                 StyledButton:
                     text: 'Configure Teacher'
-                    tooltip_text: "Configure settings for the\n'teach' mode"
+                    tooltip_text: "Undos and dots Settings"
                     on_press: if self.last_touch.button=="left": root.configure_teacher()
                     size_hint: 1.425, 1
                 StyledButton:
                     text: 'Configure AIs'
-                    tooltip_text: "Configure settings for AIs\nAllowing you to weaken or strengthen them."
+                    tooltip_text: "Strength Settings per AI"
                     on_press: if self.last_touch.button=="left": root.configure_ais()
             LargeLabel:
                 text: ''
@@ -633,22 +636,22 @@
         height: self.width * 0.25
         StyledIconButton:
             icon: 'img/flaticon/go-game.png'
-            tooltip_text: '[Ctrl-n] New Game'
+            tooltip_text: '[Ctrl-N]\nNew Game'
             size_hint: 0.25, 1
             on_press: if self.last_touch.button=="left": root.katrain("new-game-popup")
         StyledIconButton:
             icon: 'img/flaticon/open-folder.png'
-            tooltip_text: '[Ctrl-L] Load Game'
+            tooltip_text: '[Ctrl-L]\nLoad Game'
             size_hint: 0.25, 1
             on_press: if self.last_touch.button=="left": root.katrain("analyze-sgf-popup")
         StyledIconButton:
             icon: 'img/flaticon/bar.png'
-            tooltip_text: '[Ctrl-S] Save Game'
+            tooltip_text: '[Ctrl-S]\nSave Game'
             size_hint: 0.25, 1
             on_press: if self.last_touch.button=="left": root.katrain('output-sgf')
         StyledIconButton:
             icon: 'img/flaticon/gears.png'
-            tooltip_text: 'Settings'
+            tooltip_text: 'General Settings'
             size_hint: 0.25, 1
             on_press: if self.last_touch.button=="left": root.katrain('config-popup')
 

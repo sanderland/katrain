@@ -47,7 +47,7 @@
     },
     "ai": {
         "Default": {
-            "_help_right": "No settings available here, strength is mainly affected by `max_visits` and `model` in the main settings `engine` section.",
+            "_help_right": "No settings available for Default KataGo AI, strength is mainly affected by `max_visits` and `model` in the main settings `engine` section.",
             "_help_left": ""
         },
         "Balance": {

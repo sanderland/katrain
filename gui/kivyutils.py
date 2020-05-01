@@ -90,7 +90,7 @@ class StyledButton(Button, ToolTipBehavior):
     radius = ListProperty((0,))
 
 
-class StyledToggleButton(StyledButton, ToggleButtonBehavior):
+class StyledToggleButton(StyledButton, ToggleButtonBehavior, ToolTipBehavior):
     value = StringProperty("")
 
 
@@ -122,6 +122,7 @@ class ToggleButtonContainer(GridLayout):
 
     options = ListProperty([])
     labels = ListProperty([])
+    tooltips = ListProperty(None)
     selected = StringProperty("")
     group = StringProperty(None)
     autosize = BooleanProperty(True)
@@ -150,7 +151,8 @@ class ToggleButtonContainer(GridLayout):
 
         for i, opt in enumerate(self.options):
             state = "down" if opt == self.selected else "normal"
-            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, on_press=state_handler))
+            tooltip = self.tooltips[i] if self.tooltips else None
+            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, on_press=state_handler,tooltip_text=tooltip))
         Clock.schedule_once(self._size, 0)
 
     def _size(self, _dt):
