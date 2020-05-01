@@ -6,8 +6,8 @@ import threading
 import time
 from typing import Callable, Optional
 
-from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG
-from game_node import GameNode
+from core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG
+from core.game_node import GameNode
 
 
 class EngineDiedException(Exception):

@@ -3,12 +3,12 @@ import json
 import sys
 import time
 
-from ai import ai_move
-from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO
+from core.ai import ai_move
+from core.common import OUTPUT_ERROR, OUTPUT_INFO
 from bots.settings import bot_strategy_names
-from engine import EngineDiedException, KataGoEngine
-from game import Game, Move
-from sgf_parser import Move
+from core.engine import EngineDiedException, KataGoEngine
+from core.game import Game
+from core.sgf_parser import Move
 
 if len(sys.argv) < 2:
     bot = "dev"

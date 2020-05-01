@@ -2,13 +2,13 @@ import heapq
 import math
 import random
 import time
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 
-from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, var_to_grid
-from engine import EngineDiedException
-from game import Game, GameNode, IllegalMoveException, Move
+from core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, var_to_grid
+from core.engine import EngineDiedException
+from core.game import Game, GameNode, IllegalMoveException, Move
 
 
 def weighted_selection_without_replacement(items: List[Tuple[float, float, int, int]], pick_n: int) -> List[Tuple[float, float, int, int]]:
@@ -132,7 +132,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         else:
             raise ValueError(f"Unknown AI mode {ai_mode}")
     elif "balance" in ai_mode and candidate_ai_moves[0]["move"] != "pass":  # don't play suicidal to balance score - pass when it's best
-        sign = cn.player_sign(cn.next_player)  # TODO check
+        sign = cn.player_sign(cn.next_player)
         sel_moves = [  # top move, or anything not too bad, or anything that makes you still ahead
             move
             for i, move in enumerate(candidate_ai_moves)
@@ -140,10 +140,10 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             or move["visits"] >= ai_settings["min_visits"]
             and (move["pointsLost"] < ai_settings["random_loss"] or move["pointsLost"] < ai_settings["max_loss"] and sign * move["scoreLead"] > ai_settings["target_score"])
         ]
-        aimove = Move.from_gtp(random.choice(sel_moves)["move"], player=cn.next_player)  # TODO: could be weighted towards worse
+        aimove = Move.from_gtp(random.choice(sel_moves)["move"], player=cn.next_player)
         ai_thoughts += f"Balance strategy selected moves {sel_moves} based on target score and max points lost, and randomly chose {aimove.gtp()}."
     elif "jigo" in ai_mode and candidate_ai_moves[0]["move"] != "pass":
-        sign = cn.player_sign(cn.next_player)  # TODO check
+        sign = cn.player_sign(cn.next_player)
         jigo_move = min(candidate_ai_moves, key=lambda move: abs(sign * move["scoreLead"] - ai_settings["target_score"]))
         aimove = Move.from_gtp(jigo_move["move"], player=cn.next_player)
         ai_thoughts += f"Jigo strategy found candidate moves {candidate_ai_moves} moves and chose {aimove.gtp()} as closest to 0.5 point win"

@@ -1,10 +1,9 @@
 import copy
-import math
 import random
 from typing import Dict, List, Optional, Tuple
 
-from common import evaluation_class, var_to_grid
-from sgf_parser import Move, SGFNode
+from core.common import evaluation_class, var_to_grid
+from core.sgf_parser import Move, SGFNode
 
 
 class GameNode(SGFNode):

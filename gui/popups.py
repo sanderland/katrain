@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, List, DefaultDict, Tuple, Set
+from typing import Dict, List, DefaultDict, Tuple
 
 from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
@@ -7,9 +7,9 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 
-from common import OUTPUT_DEBUG, OUTPUT_ERROR
-from engine import KataGoEngine
-from game import Game, GameNode
+from core.common import OUTPUT_DEBUG, OUTPUT_ERROR
+from core.engine import KataGoEngine
+from core.game import Game, GameNode
 from gui.kivyutils import (
     BackgroundLabel,
     LabelledCheckBox,

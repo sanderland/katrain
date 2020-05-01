@@ -1,7 +1,6 @@
 import pytest
-from unittest.mock import MagicMock
 
-from game import Game, IllegalMoveException, Move
+from core.game import Game, IllegalMoveException, Move
 
 
 class MockKaTrain:

@@ -5,10 +5,10 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Union
 
-from common import var_to_grid, OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG
-from engine import KataGoEngine
-from game_node import GameNode
-from sgf_parser import SGF, Move
+from core.common import var_to_grid, OUTPUT_INFO, OUTPUT_DEBUG
+from core.engine import KataGoEngine
+from core.game_node import GameNode
+from core.sgf_parser import SGF, Move
 
 
 class IllegalMoveException(Exception):
@@ -60,7 +60,7 @@ class Game:
         try:
             #            for m in self.moves:
             for node in self.current_node.nodes_from_root:
-                for m in node.move_with_placements:  # TODO: placements are never illegal
+                for m in node.move_with_placements:
                     self._validate_move_and_update_chains(m, True)  # ignore ko since we didn't know if it was forced
         except IllegalMoveException as e:
             raise Exception(f"Unexpected illegal move ({str(e)})")
@@ -109,7 +109,7 @@ class Game:
             raise IllegalMoveException("Ko")
         self.prisoners += self.last_capture
 
-        if -1 not in neighbours(self.chains[this_chain]):  # TODO: NZ?
+        if -1 not in neighbours(self.chains[this_chain]):  # TODO: NZ rules?
             raise IllegalMoveException("Suicide")
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.

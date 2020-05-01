@@ -6,8 +6,8 @@ import sys
 import threading
 import traceback
 
-from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO
-from engine import KataGoEngine
+from core.common import OUTPUT_INFO
+from core.engine import KataGoEngine
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8587
 

@@ -3,14 +3,13 @@ import math
 
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
-from kivy.properties import ListProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 
-from common import OUTPUT_DEBUG, evaluation_class
-from game import Move
+from core.common import OUTPUT_DEBUG, evaluation_class
+from core.game import Move
 from gui.kivyutils import draw_circle, draw_text
-from common import var_to_grid
+from core.common import var_to_grid
 from kivy.core.window import Window
 
 

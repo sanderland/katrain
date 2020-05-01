@@ -7,11 +7,11 @@ import traceback
 from collections import defaultdict
 from concurrent.futures.thread import ThreadPoolExecutor
 
-from ai import ai_move
-from common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO
+from core.ai import ai_move
+from core.common import OUTPUT_ERROR, OUTPUT_INFO
 from elote import EloCompetitor
-from engine import KataGoEngine
-from game import Game
+from core.engine import KataGoEngine
+from core.game import Game
 import json
 
 DB_FILENAME = "bots/ai_performance.pickle"
@@ -96,7 +96,7 @@ def retrieve_ais(selected_ais):
 
 
 test_ais = [
- #  AI("Jigo", {}, {"max_visits": 100}),
+    #  AI("Jigo", {}, {"max_visits": 100}),
     AI("Policy", {}),
     AI("P:Local", {}),
     AI("P:Pick", {}),
