@@ -16,7 +16,7 @@ def var_to_grid(array_var: List[Any], size: Tuple[int, int]) -> List[List[Any]]:
     return grid
 
 
-def evaluation_class(points_lost, eval_thresholds):
+def evaluation_class(points_lost: float, eval_thresholds: List[float]):
     i = 0
     while i < len(eval_thresholds) - 1 and points_lost < eval_thresholds[i]:
         i += 1

@@ -110,7 +110,7 @@ test_ais = [
 for ai in test_ais:
     add_ai(ai)
 
-N_GAMES = 25
+N_GAMES = 20
 
 ais_to_test = retrieve_ais(test_ais)
 
