@@ -24,11 +24,11 @@
             size: self.size
 
 <ToolTipBehavior>:
-    tooltip_font_size: app.gui.board_controls.pass_btn.height*0.6 if app.gui else 12
 
 <ToolTipLabel>:
     size_hint: None, None
     size: self.texture_size
+    tooltip_font_size: dp(14)
     padding: (2,2)
     halign: 'center'
     canvas.before:

@@ -26,7 +26,6 @@ class ToolTipLabel(Label):
 
 class ToolTipBehavior(Widget):
     tooltip_text = StringProperty("")
-    tooltip_font_size = NumericProperty(10)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -49,8 +48,6 @@ class ToolTipBehavior(Widget):
 
     def on_size(self, *args):
         mid = (self.pos[0] + self.width / 2, self.pos[1] + self.height / 2)
-        self.tooltip.font_size = self.tooltip_font_size
-        print(self.tooltip.font_size)
         self.set_position(mid)
 
     def set_position(self, pos):
@@ -59,8 +56,6 @@ class ToolTipBehavior(Widget):
     def display_tooltip(self, pos):
         self.open = True
         self.tooltip.text = self.tooltip_text
-        self.tooltip.font_size = self.tooltip_font_size
-        print(self.tooltip.font_size)
         Window.add_widget(self.tooltip)
 
 
