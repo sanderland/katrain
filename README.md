@@ -9,6 +9,7 @@ but has since grown to include a wide range of features, including:
 * Play against AI and get immediate feedback on mistakes with option to retry.
 * Play against a wide range of weakened versions of AI with various styles.
 * Play against a stronger player and use the retry option instead of handicap stones.
+* Automatically generate focused SGF reviews which show your biggest mistakes.
 
 ## Screenshots
 
