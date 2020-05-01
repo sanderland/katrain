@@ -227,7 +227,7 @@ class Game:
         prisoners = self.prisoner_count
         score = sum([t * n for t, n in num_sq.items()]) + prisoners["W"] - prisoners["B"] - self.komi
         self.katrain.log(f"Manual Scoring: {num_sq} score by square with {num_unkn} unknown, {prisoners} captures, and {self.komi} komi -> score = {score}", OUTPUT_INFO)
-        if num_unkn > max_unknown or num_sq[0] > max_dame:
+        if num_unkn > max_unknown or (num_sq[0] - len(stones)) > max_dame:
             return None
         return self.current_node.format_score(score)
 

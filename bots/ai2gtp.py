@@ -80,7 +80,7 @@ def malkovich_analysis(cn):
             sys.stderr.flush()
 
 
-while not game.ended:
+while True:
     p = game.current_node.next_player
     line = input()
     logger.log(f"GOT INPUT {line}", OUTPUT_ERROR)
@@ -91,6 +91,7 @@ while not game.ended:
     if "komi" in line:
         _, komi = line.split(" ")
         game.root.set_property("KM", komi.strip())
+        game.root.set_property("RU", "chinese")
         logger.log(f"Setting komi {game.root.properties}", OUTPUT_ERROR)
     elif "genmove" in line:
         logger.log(f"{ai_strategy} generating move", OUTPUT_ERROR)
@@ -106,7 +107,17 @@ while not game.ended:
         _, player, move = line.split(" ")
         node = game.play(Move.from_gtp(move.upper(), player=player[0].upper()), analyze=False)
         logger.log(f"played {player} {move}", OUTPUT_ERROR)
+    elif "final_score" in line:
+        score = game.current_node.format_score()
+        game.game_id += f"_{score}"
+        sgf = game.write_sgf("sgf_ogs/")
+        logger.log(f"Game ended. Score was {score} -> saved sgf to {sgf}", OUTPUT_ERROR)
+        print(f"= {score}\n")
+        sys.stdout.flush()
+        continue
+    elif "quit" in line:
+        print(f"= \n")
+        break
     print(f"= \n")
+    sys.stdout.flush()
 
-game.game_id += f"_{game.current_node.format_score()}"
-game.write_sgf("sgf_ogs/")
