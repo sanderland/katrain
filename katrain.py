@@ -1,7 +1,8 @@
 from kivy.config import Config  # isort:skip
+
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
 ICON = "img/icon.png"
-Config.set("kivy", "window_icon",ICON)  # isort:skip  # set icon before Window is imported
+Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon before Window is imported
 
 import signal
 import os
@@ -296,7 +297,7 @@ class KaTrainApp(App):
     gui = ObjectProperty(None)
 
     def build(self):
-        self.icon = ICON # how you're supposed to set an icon
+        self.icon = ICON  # how you're supposed to set an icon
         self.gui = KaTrainGui()
         print(self.get_application_icon())
         Window.bind(on_request_close=self.on_request_close)

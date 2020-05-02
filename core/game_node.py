@@ -44,6 +44,10 @@ class GameNode(SGFNode):
             ]
         return properties
 
+    @staticmethod
+    def order_children(children):
+        return sorted(children, key=lambda c: 0.5 if c.auto_undo is None else int(c.auto_undo))  # analyzed/not undone main, non-teach second, undone last
+
     # various analysis functions
     def analyze(self, engine, priority=0, visits=None, time_limit=True, refine_move=None, analyze_fast=False):
         engine.request_analysis(
