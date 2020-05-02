@@ -17,6 +17,7 @@ else:
 port = int(sys.argv[2]) if len(sys.argv) > 2 else 8587
 REPORT_SCORE_THRESHOLD = 1.5
 MAX_WAIT_ANALYSIS = 10
+MAX_PASS = 3  # after opponent passes this many times, we always pass
 
 
 class Logger:
@@ -88,20 +89,48 @@ while True:
     line = input()
     logger.log(f"GOT INPUT {line}", OUTPUT_ERROR)
     if "boardsize" in line:
-        _, size = line.split(" ")
-        game = Game(Logger(), engine, {"init_size": int(size)})
+        _, *size = line.strip().split(" ")
+        if len(size) > 1:
+            size = f"{size[0]}:{size[1]}"
+        else:
+            size = int(size[0])
+        game = Game(Logger(), engine, {"init_size": size})
         logger.log(f"Init game {game.root.properties}", OUTPUT_ERROR)
-    if "komi" in line:
+    elif "komi" in line:
         _, komi = line.split(" ")
         game.root.set_property("KM", komi.strip())
         game.root.set_property("RU", "chinese")
         logger.log(f"Setting komi {game.root.properties}", OUTPUT_ERROR)
+    elif "place_free_handicap" in line:
+        _, n = line.split(" ")
+        game.place_handicap_stones(int(n))
+        gtp = [Move.from_sgf(m, game.board_size, "B").gtp() for m in game.root.get_list_property("AB")]
+        logger.log(f"Chose handicap placements as {gtp}", OUTPUT_ERROR)
+        print(f"= {' '.join(gtp)}\n")
+        sys.stdout.flush()
+        game.analyze_all_nodes()  # re-evaluate root
+        continue
+    elif "set_free_handicap" in line:
+        _, *stones = line.split(" ")
+        game.root.set_property("AB", [Move.from_gtp(move.upper()).sgf(game.board_size) for move in stones])
+        logger.log(f"Set handicap placements to {game.root.get_list_property('AB')}", OUTPUT_ERROR)
     elif "genmove" in line:
         logger.log(f"{ai_strategy} generating move", OUTPUT_ERROR)
         game.current_node.analyze(engine)
         malkovich_analysis(game.current_node)
         game.root.properties[f"P{game.current_node.next_player}"] = [f"KaTrain {ai_strategy}"]
-        move, node = ai_move(game, ai_strategy, ai_settings)
+        num_passes = sum([int(n.is_pass or False) for n in game.current_node.nodes_from_root[::-1][0 : 2 * MAX_PASS : 2]])
+        bx, by = game.board_size
+        if num_passes >= MAX_PASS and game.current_node.depth - 2 * MAX_PASS >= bx + by:
+            logger.log(f"Forced pass as opponent is passing {MAX_PASS} times", OUTPUT_ERROR)
+            pol = game.current_node.policy
+            if not pol:
+                pol = ["??"]
+            print(f"DISCUSSION:OK, since you passed {MAX_PASS} times after the {bx+by}th move, I will pass as well [policy {pol[-1]:.3%}].", file=sys.stderr)
+            move = game.play(Move(None, player=game.next_player)).single_move
+        else:
+            move, node = ai_move(game, ai_strategy, ai_settings)
+            logger.log(f"Generated move {move}", OUTPUT_ERROR)
         print(f"= {move.gtp()}\n")
         sys.stdout.flush()
         malkovich_analysis(game.current_node)

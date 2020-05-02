@@ -1,6 +1,7 @@
 import copy
 import math
 
+from kivy.clock import Clock
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.uix.boxlayout import BoxLayout
@@ -26,6 +27,7 @@ class BadukPanWidget(Widget):
         self.last_eval = 0
         self.active_hints = []
         self.show_pv_for = None
+        self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents)
         Window.bind(mouse_pos=self.on_mouse_pos)
 
     # stone placement functions

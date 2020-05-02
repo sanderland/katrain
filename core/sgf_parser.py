@@ -211,15 +211,15 @@ class SGFNode:
 
     @property
     def next_player(self):
-        if self.get_list_property("B") or self.get_list_property("AB"):
+        if "B" in self.properties or "AB" in self.properties:
             return "W"
         return "B"
 
     @property
     def player(self):
-        if self.get_list_property("B") or self.get_list_property("AB"):
-            return "B"
-        return "W"
+        if "W" in self.properties:
+            return "W"
+        return "B"
 
 
 class SGF:

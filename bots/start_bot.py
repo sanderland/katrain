@@ -10,9 +10,12 @@ bot = sys.argv[1].strip()
 port = int(sys.argv[2]) if len(sys.argv) > 2 else 8587
 
 MAXGAMES = 10
-GTP2OGS = "node ../gtp2ogs"
-# GTP2OGS = "gtp2ogs"
-BOT_SETTINGS = f" --maxconnectedgames {MAXGAMES} --maxhandicap 0 --fakerank 1k --boardsizes 19"
+if True or bot in ["dev", "local"]:
+    GTP2OGS = "node ../gtp2ogs"
+else:
+    GTP2OGS = "node ../stable-gtp2ogs"
+BOT_SETTINGS = f" --maxconnectedgames {MAXGAMES} --maxhandicapunranked 25 --maxhandicapranked 1 --boardsizesranked 19 --boardsizesunranked all --komisranked automatic,5.5,6.5,7.5 --komisunranked all"
+
 
 username = f"katrain-{bot}"
 
@@ -37,6 +40,6 @@ if settings:
     GREETING += f" Settings: {settings_dump}."
 BYEMSG = "Thank you for playing. If you have any feedback, please message my admin! Play with these bots at any time by downloading KaTrain at github.com/sanderland/katrain"
 
-cmd = f'{GTP2OGS} --debug --apikey {APIKEY} --username {username} --greeting "{GREETING}" --farewell "{BYEMSG}"  {BOT_SETTINGS} --farewellscore --aichat --noclock --nopause --speeds blitz,live  --persist --minrank 25k --komis automatic,6.5,7.5 -- python bots/ai2gtp.py {bot} {port}'
+cmd = f'{GTP2OGS} --debug --apikey {APIKEY} --username {username} --greeting "{GREETING}" --farewell "{BYEMSG}"  {BOT_SETTINGS} --farewellscore --aichat --noclock --nopause --speeds blitz,live  --persist --minrank 25k  -- python bots/ai2gtp.py {bot} {port}'
 print(f"starting bot {username} using server port {port} --> {cmd}")
 os.system(cmd)
