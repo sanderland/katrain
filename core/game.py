@@ -156,8 +156,10 @@ class Game:
         board_size_x, board_size_y = self.board_size
         near_x = 3 if board_size_x >= 13 else 2
         near_y = 3 if board_size_y >= 13 else 2
+        if board_size_x < 3 or board_size_y < 3:
+            return
         far_x = board_size_x - 1 - near_x
-        far_y = board_size_x - 1 - near_x
+        far_y = board_size_y - 1 - near_y
         middle_x = board_size_x // 2  # what for even sizes?
         middle_y = board_size_y // 2
         if n_handicaps > 9 and board_size_x == board_size_y:
@@ -252,7 +254,7 @@ class Game:
     def analyze_extra(self, mode):
         stones = {s.coords for s in self.stones}
         cn = self.current_node
-        if not cn.analysis:
+        if not cn.analysis_ready:
             self.katrain.controls.set_status("Wait for initial analysis to complete before doing a board-sweep or refinement", self.current_node)
             return
 

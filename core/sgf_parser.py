@@ -24,7 +24,7 @@ class Move:
     def from_sgf(cls, sgf_coords, board_size, player="B"):
         if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size[0]:  # some servers use [tt] for pass
             return cls(coords=None, player=player)
-        return cls(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[0] - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
+        return cls(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[1] - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
 
     def __init__(self, coords: Optional[Tuple[int, int]] = None, player: str = "B"):
         self.player = player
@@ -44,7 +44,7 @@ class Move:
     def sgf(self, board_size):
         if self.is_pass:
             return ""
-        return f"{Move.SGF_COORD[self.coords[0]]}{Move.SGF_COORD[board_size[0] - self.coords[1] - 1]}"
+        return f"{Move.SGF_COORD[self.coords[0]]}{Move.SGF_COORD[board_size[1] - self.coords[1] - 1]}"
 
     @property
     def is_pass(self):
@@ -76,7 +76,8 @@ class SGFNode:
         """Generates an SGF, calling sgf_properties on each node with the given xargs, so it can filter relevant properties if needed."""
         import sys
 
-        sys.setrecursionlimit(max(sys.getrecursionlimit(), 3 * 29 * 29))  # thanks to lightvector for causing stack overflows
+        bszx, bszy = self.board_size
+        sys.setrecursionlimit(max(sys.getrecursionlimit(), 3 * bszx * bszy))  # thanks to lightvector for causing stack overflows ;)
         sgf_str = "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in self.sgf_properties(**xargs).items() if values])
         if self.children:
             children = [c.sgf(**xargs) for c in self.children]
@@ -189,7 +190,12 @@ class SGFNode:
 
     @property
     def nodes_from_root(self) -> List:
-        return [self] if self.is_root else self.parent.nodes_from_root + [self]
+        nodes = [self]
+        n = self
+        while not n.is_root:
+            n = n.parent
+            nodes.append(n)
+        return nodes[::-1]
 
     def play(self, move) -> "SGFNode":
         """Either find an existing child or create a new one with the given move."""

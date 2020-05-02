@@ -311,7 +311,7 @@
             tooltip_text: '[space]\nPass'
             font_size: 0.6*self.size[1]
             id: pass_btn
-            on_press: if self.last_touch.button=="left": root.katrain("play",None)
+            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("play",None)
     Label:
         size_hint: 0.05, 1
     BoxLayout:
@@ -364,7 +364,7 @@
         StyledButton:
             text: 'AI Move'
             tooltip_text: '[enter]\nPlay an AI move\nusing the\nselected strategy.'
-            on_press: if self.last_touch.button=="left": root.katrain("ai-move",None)
+            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("ai-move",None)
             font_size: 0.6*self.size[1]
     ClickableLabel:
         size_hint: 0.025, 1
@@ -517,19 +517,19 @@
                     text: 'Extra'
                     tooltip_text: '[a]\nExtra analysis\nto increase accuracy\nof top move predictions\nand score difference'
                     size_hint: 1, 1
-                    on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","extra")
+                    on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","extra")
                 StyledButton:
                     id: analyze_equalize
                     text: 'Equalize'
                     tooltip_text: '[s]\nAnalysis of all\npredicted top moves\nwith the same accuracy'
                     size_hint: 1, 1
-                    on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","equalize")
+                    on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","equalize")
                 StyledButton:
                     id: analyze_sweep
                     text: 'Sweep'
                     tooltip_text: '[d]\nFast analysis\nof all legal moves'
                     size_hint: 1, 1
-                    on_press: if self.last_touch.button=="left": root.katrain("analyze-extra","sweep")
+                    on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","sweep")
             ScoreGraph:
                 id: graph
                 size_hint: 1,0.7
@@ -545,7 +545,7 @@
                 CensorableLabel:
                     id: score
                     size_hint: 1, 0.5
-                    label: 'Score'
+                    label: 'Score Estimate'
                     text: ''
         BoxLayout: # ----------- play -----------
             orientation: 'vertical'
@@ -600,12 +600,12 @@
                 StyledButton:
                     text: 'Configure Teacher'
                     tooltip_text: "Undos, dots, and\nSGF output settings"
-                    on_press: if self.last_touch.button=="left": root.configure_teacher()
+                    on_press: if not self.last_touch or self.last_touch.button=="left": root.configure_teacher()
                     size_hint: 1.425, 1
                 StyledButton:
                     text: 'Configure AIs'
                     tooltip_text: "Strength Settings per AI"
-                    on_press: if self.last_touch.button=="left": root.configure_ais()
+                    on_press: if not self.last_touch or self.last_touch.button=="left": root.configure_ais()
             LargeLabel:
                 text: ''
                 size_hint: 1,0.2
@@ -638,22 +638,22 @@
             icon: 'img/flaticon/go-game.png'
             tooltip_text: '[Ctrl-N]\nNew Game'
             size_hint: 0.25, 1
-            on_press: if self.last_touch.button=="left": root.katrain("new-game-popup")
+            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("new-game-popup")
         StyledIconButton:
             icon: 'img/flaticon/open-folder.png'
             tooltip_text: '[Ctrl-L]\nLoad Game'
             size_hint: 0.25, 1
-            on_press: if self.last_touch.button=="left": root.katrain("analyze-sgf-popup")
+            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-sgf-popup")
         StyledIconButton:
             icon: 'img/flaticon/bar.png'
             tooltip_text: '[Ctrl-S]\nSave Game'
             size_hint: 0.25, 1
-            on_press: if self.last_touch.button=="left": root.katrain('output-sgf')
+            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain('output-sgf')
         StyledIconButton:
             icon: 'img/flaticon/gears.png'
             tooltip_text: 'General Settings'
             size_hint: 0.25, 1
-            on_press: if self.last_touch.button=="left": root.katrain('config-popup')
+            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain('config-popup')
 
 <KaTrainGui>:
 	board_gui: board_gui
@@ -735,7 +735,7 @@
             size_hint: 0.05,1
 
 <QuickInputButton@StyledButton>
-    on_press: if self.last_touch.button=="left": self.parent.parent.children[self.parent.parent.children.index(self.parent)+1].text = self.text # why +1 instead of -1?
+    on_press: if not self.last_touch or self.last_touch.button=="left": self.parent.parent.children[self.parent.parent.children.index(self.parent)+1].text = self.text # why +1 instead of -1?
 
 <NewGamePopup>:
     orientation: 'vertical'
@@ -752,6 +752,8 @@
             text: "Size"
         LabelledTextInput:
             text: '19'
+            font_size: 0.5*self.size[1]
+            padding: 7, 0.2*self.size[1]
             input_property: 'SZ'
         BoxLayout:
             spacing: 1
@@ -769,14 +771,14 @@
         BoxLayout:
             spacing: 1
             QuickInputButton:
-                text: '2'
-                on_press: if self.last_touch.button=="left": km.text='0.5'
+                text: '0'
+                on_press: if not self.last_touch or self.last_touch.button=="left": km.text='6.5'
             QuickInputButton:
-                text: '4'
-                on_press: if self.last_touch.button=="left": km.text='0.5'
+                text: '2'
+                on_press: if not self.last_touch or self.last_touch.button=="left": km.text='0.5'
             QuickInputButton:
                 text: '9'
-                on_press: if self.last_touch.button=="left": km.text='0.5'
+                on_press: if not self.last_touch or self.last_touch.button=="left": km.text='0.5'
         ScaledLightLabel:
             text: "Komi"
         LabelledFloatInput:
@@ -820,4 +822,4 @@
             halign: 'center'
             text: 'Start\nGame'
             font_size: 0.3 * self.size[1]
-            on_press: if self.last_touch.button=="left": root.new_game()
+            on_press: if not self.last_touch or self.last_touch.button=="left": root.new_game()
