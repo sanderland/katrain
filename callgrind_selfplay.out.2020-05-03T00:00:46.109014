@@ -1,0 +1,1885 @@
+version: 1
+creator: yappi
+pid: 32512
+cmd:  bots/selfplay.py
+part: 1
+
+events: Ticks
+
+fl=(806) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(807) /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py
+fl=(809) /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py
+fl=(815) bots/selfplay.py
+fl=(1453) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2374) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(2382) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(2383) /home/sander/Desktop/toy/katrain/core/engine.py
+fl=(2384) /home/sander/Desktop/toy/katrain/core/engine.py
+fl=(1321) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1325) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1326) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(2349) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(2351) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(1324) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1322) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(2385) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1323) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1314) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1319) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1849) /home/sander/anaconda3/lib/python3.7/subprocess.py
+fl=(2805) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(1850) /home/sander/anaconda3/lib/python3.7/subprocess.py
+fl=(2366) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2352) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(2390) /home/sander/Desktop/toy/katrain/core/engine.py
+fl=(2367) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2362) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(2363) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2806) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(1316) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1320) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1452) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(2357) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(2355) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(1309) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(4289) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2391) /home/sander/Desktop/toy/katrain/core/engine.py
+fl=(2369) /home/sander/anaconda3/lib/python3.7/heapq.py
+fl=(1865) /home/sander/anaconda3/lib/python3.7/json/__init__.py
+fl=(2883) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(1315) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1871) /home/sander/anaconda3/lib/python3.7/json/decoder.py
+fl=(1874) /home/sander/anaconda3/lib/python3.7/json/decoder.py
+fl=(2365) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(2375) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(1451) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(2398) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(3118) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2392) /home/sander/anaconda3/lib/python3.7/json/__init__.py
+fl=(2393) /home/sander/anaconda3/lib/python3.7/json/encoder.py
+fl=(2359) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2394) /home/sander/anaconda3/lib/python3.7/json/encoder.py
+fl=(1454) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(2894) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(2361) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2380) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1304) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(1305) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1313) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(2376) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(2377) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(2350) /home/sander/Desktop/toy/katrain/core/common.py
+fl=(2372) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2827) /home/sander/anaconda3/lib/python3.7/heapq.py
+fl=(3119) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2387) /home/sander/Desktop/toy/katrain/core/engine.py
+fl=(2356) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(1867) /home/sander/anaconda3/lib/python3.7/json/__init__.py
+fl=(1878) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(2996) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2389) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1879) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(2388) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(3121) <__array_function__ internals>
+fl=(2781) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2373) bots/selfplay.py
+fl=(3128) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(2831) /home/sander/anaconda3/lib/python3.7/heapq.py
+fl=(3124) /home/sander/anaconda3/lib/python3.7/site-packages/numpy/core/fromnumeric.py
+fl=(1307) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(2381) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(2370) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(3125) /home/sander/anaconda3/lib/python3.7/site-packages/numpy/core/fromnumeric.py
+fl=(2378) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(3129) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(2379) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(1299) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(1308) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1751) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(1752) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(2804) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(1334) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(1337) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(1339) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(1311) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(1312) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(3) /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py
+fl=(9) /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py
+fl=(816) bots/selfplay.py
+fl=(1317) /home/sander/Desktop/toy/katrain/core/game.py
+fl=(3130) /home/sander/Desktop/toy/katrain/core/ai.py
+fl=(3126) /home/sander/anaconda3/lib/python3.7/site-packages/numpy/core/fromnumeric.py
+fl=(1327) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(3122) /home/sander/anaconda3/lib/python3.7/site-packages/numpy/core/fromnumeric.py
+fl=(3070) /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py
+fl=(42) /home/sander/Desktop/toy/katrain/core/engine.py
+fl=(2924) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(3062) /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/elo.py
+fl=(3058) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(52) /home/sander/Desktop/toy/katrain/core/engine.py
+fl=(54) /home/sander/anaconda3/lib/python3.7/subprocess.py
+fl=(1329) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(1331) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(74) /home/sander/anaconda3/lib/python3.7/subprocess.py
+fl=(3071) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(811) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(3064) /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/elo.py
+fl=(810) /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py
+fl=(4) /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py
+fl=(813) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(3059) /home/sander/Desktop/toy/katrain/core/game_node.py
+fl=(1753) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1456) /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py
+fl=(1332) /home/sander/anaconda3/lib/python3.7/_weakrefset.py
+fl=(1457) /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py
+fl=(43) /home/sander/anaconda3/lib/python3.7/shlex.py
+fl=(1458) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(3072) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(47) /home/sander/anaconda3/lib/python3.7/shlex.py
+fl=(48) /home/sander/anaconda3/lib/python3.7/shlex.py
+fl=(3116) /home/sander/anaconda3/lib/python3.7/_weakrefset.py
+fl=(49) /home/sander/anaconda3/lib/python3.7/shlex.py
+fl=(1447) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(3065) /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/elo.py
+fl=(1340) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(1459) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(1449) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(1343) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(12) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(1328) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(3063) /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/base.py
+fl=(1335) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(7) /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py
+fl=(3074) /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py
+fl=(6) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(18) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(4468) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(1754) /home/sander/Desktop/toy/katrain/core/sgf_parser.py
+fl=(61) /home/sander/anaconda3/lib/python3.7/weakref.py
+fl=(3067) /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/elo.py
+fl=(3066) /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/elo.py
+fl=(2945) /home/sander/anaconda3/lib/python3.7/copyreg.py
+fl=(56) /home/sander/anaconda3/lib/python3.7/subprocess.py
+fl=(44) /home/sander/anaconda3/lib/python3.7/shlex.py
+fl=(78) /home/sander/anaconda3/lib/python3.7/posixpath.py
+fl=(14) /home/sander/anaconda3/lib/python3.7/threading.py
+fl=(0) /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py
+fl=(75) /home/sander/anaconda3/lib/python3.7/os.py
+fl=(79) /home/sander/anaconda3/lib/python3.7/posixpath.py
+fl=(55) /home/sander/anaconda3/lib/python3.7/subprocess.py
+fl=(46) /home/sander/anaconda3/lib/python3.7/shlex.py
+fl=(2) /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py
+fl=(128) /home/sander/Desktop/toy/katrain/core/engine.py
+
+fn=(806) Thread.run /home/sander/anaconda3/lib/python3.7/threading.py:854
+fn=(807) _worker /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py:66
+fn=(809) _WorkItem.run /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py:52
+fn=(815) play_games bots/selfplay.py:122
+fn=(1453) ai_move /home/sander/Desktop/toy/katrain/core/ai.py:28
+fn=(2374) Game.play /home/sander/Desktop/toy/katrain/core/game.py:116
+fn=(2382) GameNode.analyze /home/sander/Desktop/toy/katrain/core/game_node.py:52
+fn=(2383) KataGoEngine.request_analysis /home/sander/Desktop/toy/katrain/core/engine.py:124
+fn=(2384) <listcomp> /home/sander/Desktop/toy/katrain/core/engine.py:136
+fn=(1321) GameNode.move_with_placements /home/sander/Desktop/toy/katrain/core/sgf_parser.py:168
+fn=(1325) GameNode.moves /home/sander/Desktop/toy/katrain/core/sgf_parser.py:158
+fn=(1326) <listcomp> /home/sander/Desktop/toy/katrain/core/sgf_parser.py:161
+fn=(2349) GameNode.policy_ranking /home/sander/Desktop/toy/katrain/core/game_node.py:171
+fn=(2351) <listcomp> /home/sander/Desktop/toy/katrain/core/game_node.py:176
+fn=(1324) GameNode.get_list_property /home/sander/Desktop/toy/katrain/core/sgf_parser.py:99
+fn=(1322) GameNode.placements /home/sander/Desktop/toy/katrain/core/sgf_parser.py:163
+fn=(2385) from_sgf /home/sander/Desktop/toy/katrain/core/sgf_parser.py:23
+fn=(1323) <listcomp> /home/sander/Desktop/toy/katrain/core/sgf_parser.py:166
+fn=(1314) GameNode.board_size /home/sander/Desktop/toy/katrain/core/sgf_parser.py:140
+fn=(1319) GameNode.nodes_from_root /home/sander/Desktop/toy/katrain/core/sgf_parser.py:196
+fn=(1849) Popen.poll /home/sander/anaconda3/lib/python3.7/subprocess.py:963
+fn=(2805) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:98
+fn=(1850) Popen._internal_poll /home/sander/anaconda3/lib/python3.7/subprocess.py:1544
+fn=(2366) weighted_selection_without_replacement /home/sander/Desktop/toy/katrain/core/ai.py:14
+fn=(2352) Move.__init__ /home/sander/Desktop/toy/katrain/core/sgf_parser.py:29
+fn=(2390) <listcomp> /home/sander/Desktop/toy/katrain/core/engine.py:157
+fn=(2367) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:16
+fn=(2362) Move.gtp /home/sander/Desktop/toy/katrain/core/sgf_parser.py:39
+fn=(2363) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:90
+fn=(2806) <lambda> /home/sander/Desktop/toy/katrain/core/ai.py:95
+fn=(1316) GameNode.get_property /home/sander/Desktop/toy/katrain/core/sgf_parser.py:110
+fn=(1320) GameNode.is_root /home/sander/Desktop/toy/katrain/core/sgf_parser.py:180
+fn=(1452) GameNode.next_player /home/sander/Desktop/toy/katrain/core/sgf_parser.py:212
+fn=(2357) Move.is_pass /home/sander/Desktop/toy/katrain/core/sgf_parser.py:49
+fn=(2355) <lambda> /home/sander/Desktop/toy/katrain/core/game_node.py:178
+fn=(1309) GameNode.parent /home/sander/Desktop/toy/katrain/core/sgf_parser.py:114
+fn=(4289) <lambda> /home/sander/Desktop/toy/katrain/core/ai.py:97
+fn=(2391) KataGoEngine.send_query /home/sander/Desktop/toy/katrain/core/engine.py:109
+fn=(2369) nlargest /home/sander/anaconda3/lib/python3.7/heapq.py:524
+fn=(1865) loads /home/sander/anaconda3/lib/python3.7/json/__init__.py:299
+fn=(2883) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:108
+fn=(1315) GameNode.root /home/sander/Desktop/toy/katrain/core/sgf_parser.py:124
+fn=(1871) JSONDecoder.decode /home/sander/anaconda3/lib/python3.7/json/decoder.py:332
+fn=(1874) JSONDecoder.raw_decode /home/sander/anaconda3/lib/python3.7/json/decoder.py:343
+fn=(2365) GameNode.single_move /home/sander/Desktop/toy/katrain/core/sgf_parser.py:173
+fn=(2375) Game._validate_move_and_update_chains /home/sander/Desktop/toy/katrain/core/game.py:68
+fn=(1451) Game.ended /home/sander/Desktop/toy/katrain/core/game.py:193
+fn=(2398) GameNode.is_pass /home/sander/Desktop/toy/katrain/core/sgf_parser.py:184
+fn=(3118) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:78
+fn=(2392) dumps /home/sander/anaconda3/lib/python3.7/json/__init__.py:183
+fn=(2393) JSONEncoder.encode /home/sander/anaconda3/lib/python3.7/json/encoder.py:182
+fn=(2359) fmt_moves /home/sander/Desktop/toy/katrain/core/ai.py:24
+fn=(2394) JSONEncoder.iterencode /home/sander/anaconda3/lib/python3.7/json/encoder.py:204
+fn=(1454) GameNode.analysis_ready /home/sander/Desktop/toy/katrain/core/game_node.py:75
+fn=(2894) <listcomp> /home/sander/Desktop/toy/katrain/core/game.py:91
+fn=(2361) <genexpr> /home/sander/Desktop/toy/katrain/core/ai.py:25
+fn=(2380) GameNode.play /home/sander/Desktop/toy/katrain/core/sgf_parser.py:205
+fn=(1304) GameNode.__init__ /home/sander/Desktop/toy/katrain/core/game_node.py:12
+fn=(1305) GameNode.__init__ /home/sander/Desktop/toy/katrain/core/sgf_parser.py:59
+fn=(1313) Game.board_size /home/sander/Desktop/toy/katrain/core/game.py:181
+fn=(2376) neighbours /home/sander/Desktop/toy/katrain/core/game.py:71
+fn=(2377) <setcomp> /home/sander/Desktop/toy/katrain/core/game.py:72
+fn=(2350) var_to_grid /home/sander/Desktop/toy/katrain/core/common.py:9
+fn=(2372) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:122
+fn=(2827) <listcomp> /home/sander/anaconda3/lib/python3.7/heapq.py:552
+fn=(3119) dirichlet_noise /home/sander/Desktop/toy/katrain/core/ai.py:20
+fn=(2387) get_rules /home/sander/Desktop/toy/katrain/core/engine.py:24
+fn=(2356) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:40
+fn=(1867) detect_encoding /home/sander/anaconda3/lib/python3.7/json/__init__.py:244
+fn=(1878) <lambda> /home/sander/Desktop/toy/katrain/core/game_node.py:54
+fn=(2996) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:116
+fn=(2389) GameNode.komi /home/sander/Desktop/toy/katrain/core/sgf_parser.py:150
+fn=(1879) GameNode.set_analysis /home/sander/Desktop/toy/katrain/core/game_node.py:64
+fn=(2388) GameNode.ruleset /home/sander/Desktop/toy/katrain/core/sgf_parser.py:154
+fn=(3121) any <__array_function__ internals>:2
+fn=(2781) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:111
+fn=(2373) Logger.log bots/selfplay.py:22
+fn=(3128) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:80
+fn=(2831) <listcomp> /home/sander/anaconda3/lib/python3.7/heapq.py:565
+fn=(3124) any /home/sander/anaconda3/lib/python3.7/site-packages/numpy/core/fromnumeric.py:2236
+fn=(1307) GameNode.set_property /home/sander/Desktop/toy/katrain/core/sgf_parser.py:103
+fn=(2381) Move.sgf /home/sander/Desktop/toy/katrain/core/sgf_parser.py:44
+fn=(2370) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:17
+fn=(3125) _wrapreduction /home/sander/anaconda3/lib/python3.7/site-packages/numpy/core/fromnumeric.py:73
+fn=(2378) <setcomp> /home/sander/Desktop/toy/katrain/core/game.py:88
+fn=(3129) GameNode.depth /home/sander/Desktop/toy/katrain/core/sgf_parser.py:130
+fn=(2379) <setcomp> /home/sander/Desktop/toy/katrain/core/game.py:101
+fn=(1299) Game.__init__ /home/sander/Desktop/toy/katrain/core/game.py:27
+fn=(1308) GameNode.parent /home/sander/Desktop/toy/katrain/core/sgf_parser.py:118
+fn=(1751) <lambda> /home/sander/Desktop/toy/katrain/core/game.py:47
+fn=(1752) Game.analyze_all_nodes /home/sander/Desktop/toy/katrain/core/game.py:49
+fn=(2804) GameNode.update_move_analysis /home/sander/Desktop/toy/katrain/core/game_node.py:57
+fn=(1334) Thread.start /home/sander/anaconda3/lib/python3.7/threading.py:829
+fn=(1337) Event.wait /home/sander/anaconda3/lib/python3.7/threading.py:534
+fn=(1339) Condition.wait /home/sander/anaconda3/lib/python3.7/threading.py:264
+fn=(1311) Game.set_current_node /home/sander/Desktop/toy/katrain/core/game.py:131
+fn=(1312) Game._calculate_groups /home/sander/Desktop/toy/katrain/core/game.py:54
+fn=(3) ThreadPoolExecutor.submit /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py:145
+fn=(9) ThreadPoolExecutor._adjust_thread_count /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py:164
+fn=(816) AI.get_engine bots/selfplay.py:63
+fn=(1317) <listcomp> /home/sander/Desktop/toy/katrain/core/game.py:56
+fn=(3130) <listcomp> /home/sander/Desktop/toy/katrain/core/ai.py:62
+fn=(3126) <dictcomp> /home/sander/anaconda3/lib/python3.7/site-packages/numpy/core/fromnumeric.py:74
+fn=(1327) Thread.__init__ /home/sander/anaconda3/lib/python3.7/threading.py:758
+fn=(3122) _any_dispatcher /home/sander/anaconda3/lib/python3.7/site-packages/numpy/core/fromnumeric.py:2232
+fn=(3070) Future.set_result /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py:510
+fn=(42) KataGoEngine.__init__ /home/sander/Desktop/toy/katrain/core/engine.py:28
+fn=(2924) Move.__eq__ /home/sander/Desktop/toy/katrain/core/sgf_parser.py:36
+fn=(3062) EloCompetitor.beat /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/elo.py:90
+fn=(3058) GameNode.format_score /home/sander/Desktop/toy/katrain/core/game_node.py:79
+fn=(52) KataGoEngine.start /home/sander/Desktop/toy/katrain/core/engine.py:42
+fn=(54) Popen.__init__ /home/sander/anaconda3/lib/python3.7/subprocess.py:656
+fn=(1329) Event.__init__ /home/sander/anaconda3/lib/python3.7/threading.py:499
+fn=(1331) Condition.__init__ /home/sander/anaconda3/lib/python3.7/threading.py:216
+fn=(74) Popen._execute_child /home/sander/anaconda3/lib/python3.7/subprocess.py:1383
+fn=(3071) Condition.notify_all /home/sander/anaconda3/lib/python3.7/threading.py:358
+fn=(811) Condition.__enter__ /home/sander/anaconda3/lib/python3.7/threading.py:240
+fn=(3064) EloCompetitor.expected_score /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/elo.py:76
+fn=(810) Future.set_running_or_notify_cancel /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py:470
+fn=(4) Future.__init__ /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py:312
+fn=(813) Condition.__exit__ /home/sander/anaconda3/lib/python3.7/threading.py:243
+fn=(3059) GameNode.score /home/sander/Desktop/toy/katrain/core/game_node.py:148
+fn=(1753) GameNode.nodes_in_tree /home/sander/Desktop/toy/katrain/core/sgf_parser.py:192
+fn=(1456) ThreadPoolExecutor.__exit__ /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py:610
+fn=(1332) WeakSet.add /home/sander/anaconda3/lib/python3.7/_weakrefset.py:81
+fn=(1457) ThreadPoolExecutor.shutdown /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py:198
+fn=(43) split /home/sander/anaconda3/lib/python3.7/shlex.py:300
+fn=(1458) Thread.join /home/sander/anaconda3/lib/python3.7/threading.py:1000
+fn=(3072) Condition.notify /home/sander/anaconda3/lib/python3.7/threading.py:335
+fn=(47) shlex.__next__ /home/sander/anaconda3/lib/python3.7/shlex.py:294
+fn=(48) shlex.get_token /home/sander/anaconda3/lib/python3.7/shlex.py:97
+fn=(3116) _remove /home/sander/anaconda3/lib/python3.7/_weakrefset.py:38
+fn=(49) shlex.read_token /home/sander/anaconda3/lib/python3.7/shlex.py:129
+fn=(1447) Condition._acquire_restore /home/sander/anaconda3/lib/python3.7/threading.py:252
+fn=(3065) EloCompetitor.transformed_rating /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/elo.py:64
+fn=(1340) Condition._is_owned /home/sander/anaconda3/lib/python3.7/threading.py:255
+fn=(1459) Thread._wait_for_tstate_lock /home/sander/anaconda3/lib/python3.7/threading.py:1038
+fn=(1449) GameNode.add_list_property /home/sander/Desktop/toy/katrain/core/sgf_parser.py:95
+fn=(1343) Condition._release_save /home/sander/anaconda3/lib/python3.7/threading.py:249
+fn=(12) current_thread /home/sander/anaconda3/lib/python3.7/threading.py:1214
+fn=(1328) _newname /home/sander/anaconda3/lib/python3.7/threading.py:728
+fn=(3063) EloCompetitor.verify_competitor_types /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/base.py:28
+fn=(1335) Event.is_set /home/sander/anaconda3/lib/python3.7/threading.py:507
+fn=(7) _WorkItem.__init__ /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py:46
+fn=(3074) Future._invoke_callbacks /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py:321
+fn=(6) RLock /home/sander/anaconda3/lib/python3.7/threading.py:75
+fn=(18) Thread.daemon /home/sander/anaconda3/lib/python3.7/threading.py:1120
+fn=(4468) Thread._stop /home/sander/anaconda3/lib/python3.7/threading.py:968
+fn=(1754) <listcomp> /home/sander/Desktop/toy/katrain/core/sgf_parser.py:194
+fn=(61) WeakKeyDictionary.__setitem__ /home/sander/anaconda3/lib/python3.7/weakref.py:408
+fn=(3067) EloCompetitor.rating /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/elo.py:72
+fn=(3066) EloCompetitor.rating /home/sander/anaconda3/lib/python3.7/site-packages/elote/competitors/elo.py:68
+fn=(2945) _slotnames /home/sander/anaconda3/lib/python3.7/copyreg.py:96
+fn=(56) Popen._get_handles /home/sander/anaconda3/lib/python3.7/subprocess.py:1329
+fn=(44) shlex.__init__ /home/sander/anaconda3/lib/python3.7/shlex.py:21
+fn=(78) dirname /home/sander/anaconda3/lib/python3.7/posixpath.py:154
+fn=(14) _MainThread.daemon /home/sander/anaconda3/lib/python3.7/threading.py:1104
+fn=(0) ThreadPoolExecutor.__init__ /home/sander/anaconda3/lib/python3.7/concurrent/futures/thread.py:113
+fn=(75) fsencode /home/sander/anaconda3/lib/python3.7/os.py:803
+fn=(79) _get_sep /home/sander/anaconda3/lib/python3.7/posixpath.py:41
+fn=(55) _cleanup /home/sander/anaconda3/lib/python3.7/subprocess.py:226
+fn=(46) shlex.__iter__ /home/sander/anaconda3/lib/python3.7/shlex.py:291
+fn=(2) ThreadPoolExecutor.__enter__ /home/sander/anaconda3/lib/python3.7/concurrent/futures/_base.py:607
+fn=(128) KataGoEngine._analysis_read_thread /home/sander/Desktop/toy/katrain/core/engine.py:73
+
+fl=(806)
+fn=(806)
+854 387
+cfl=(807)
+cfn=(807)
+calls=16 0
+0 191843414
+cfl=(1751)
+cfn=(1751)
+calls=42 0
+0 10349
+cfl=(128)
+cfn=(128)
+calls=1 0
+0 0
+
+fl=(807)
+fn=(807)
+66 418
+cfl=(809)
+cfn=(809)
+calls=42 0
+0 191842867
+
+fl=(809)
+fn=(809)
+52 6470
+cfl=(3070)
+cfn=(3070)
+calls=42 0
+0 1472
+cfl=(815)
+cfn=(815)
+calls=42 0
+0 191834429
+cfl=(810)
+cfn=(810)
+calls=42 0
+0 495
+
+fl=(815)
+fn=(815)
+122 1011219
+cfl=(3062)
+cfn=(3062)
+calls=24 0
+0 963
+cfl=(3059)
+cfn=(3059)
+calls=42 0
+0 129
+cfl=(3058)
+cfn=(3058)
+calls=84 0
+0 919
+cfl=(1454)
+cfn=(1454)
+calls=14892 0
+0 20104
+cfl=(1453)
+cfn=(1453)
+calls=12059 0
+0 189401495
+cfl=(1452)
+cfn=(1452)
+calls=12059 0
+0 13421
+cfl=(1451)
+cfn=(1451)
+calls=12101 0
+0 1159379
+cfl=(1449)
+cfn=(1449)
+calls=84 0
+0 160
+cfl=(1299)
+cfn=(1299)
+calls=42 0
+0 16017
+cfl=(816)
+cfn=(816)
+calls=84 0
+0 2974
+
+fl=(1453)
+fn=(1453)
+28 6975429
+cfl=(2352)
+cfn=(2352)
+calls=96 0
+0 104
+cfl=(3130)
+cfn=(3130)
+calls=96 0
+0 2683
+cfl=(3129)
+cfn=(3129)
+calls=1809 0
+0 30676
+cfl=(3128)
+cfn=(3128)
+calls=1724 0
+0 48546
+cfl=(3119)
+cfn=(3119)
+calls=1724 0
+0 180250
+cfl=(3118)
+cfn=(3118)
+calls=1724 0
+0 1066371
+cfl=(2883)
+cfn=(2883)
+calls=3407 0
+0 1762997
+cfl=(2805)
+cfn=(2805)
+calls=2796 0
+0 9492344
+cfl=(2374)
+cfn=(2374)
+calls=12059 0
+0 98294188
+cfl=(2373)
+cfn=(2373)
+calls=12059 0
+0 13522
+cfl=(2362)
+cfn=(2362)
+calls=11478 0
+0 34341
+cfl=(2372)
+cfn=(2372)
+calls=7972 0
+0 189035
+cfl=(2369)
+cfn=(2369)
+calls=9696 0
+0 406912
+cfl=(2366)
+cfn=(2366)
+calls=8068 0
+0 8458900
+cfl=(2365)
+cfn=(2365)
+calls=10233 0
+0 390041
+cfl=(2363)
+cfn=(2363)
+calls=7972 0
+0 5308044
+cfl=(2359)
+cfn=(2359)
+calls=21755 0
+0 863420
+cfl=(2350)
+cfn=(2350)
+calls=12059 0
+0 80670
+cfl=(1313)
+cfn=(1313)
+calls=15905 0
+0 169308
+cfl=(2356)
+cfn=(2356)
+calls=12059 0
+0 131603
+cfl=(2349)
+cfn=(2349)
+calls=12059 0
+0 26817956
+cfl=(1849)
+cfn=(1849)
+calls=664871 0
+0 10103381
+cfl=(1452)
+cfn=(1452)
+calls=664967 0
+0 1033526
+cfl=(1454)
+cfn=(1454)
+calls=676930 0
+0 750881
+cfl=(2996)
+cfn=(2996)
+calls=1757 0
+0 100402
+cfl=(2781)
+cfn=(2781)
+calls=1722 0
+0 57051
+
+fl=(2374)
+fn=(2374)
+116 149165
+cfl=(2382)
+cfn=(2382)
+calls=12059 0
+0 96230167
+cfl=(1452)
+cfn=(1452)
+calls=12059 0
+0 12513
+cfl=(2380)
+cfn=(2380)
+calls=12059 0
+0 557079
+cfl=(2375)
+cfn=(2375)
+calls=12059 0
+0 1211312
+cfl=(2357)
+cfn=(2357)
+calls=12059 0
+0 9825
+cfl=(1313)
+cfn=(1313)
+calls=12059 0
+0 124124
+
+fl=(2382)
+fn=(2382)
+52 311933
+cfl=(2383)
+cfn=(2383)
+calls=12101 0
+0 95927425
+
+fl=(2383)
+fn=(2383)
+124 203361
+cfl=(2391)
+cfn=(2391)
+calls=12101 0
+0 2490562
+cfl=(2390)
+cfn=(2390)
+calls=12101 0
+0 7158238
+cfl=(2389)
+cfn=(2389)
+calls=12101 0
+0 79444
+cfl=(2387)
+cfn=(2387)
+calls=12101 0
+0 160207
+cfl=(1314)
+cfn=(1314)
+calls=12101 0
+0 80439
+cfl=(2384)
+cfn=(2384)
+calls=12101 0
+0 73608841
+cfl=(1319)
+cfn=(1319)
+calls=12101 0
+0 12134803
+
+fl=(2384)
+fn=(2384)
+136 2098351
+cfl=(1321)
+cfn=(1321)
+calls=1798527 0
+0 71510489
+
+fl=(1321)
+fn=(1321)
+168 4982350
+cfl=(1325)
+cfn=(1325)
+calls=1798569 0
+0 49193889
+cfl=(1322)
+cfn=(1322)
+calls=1798569 0
+0 17335455
+
+fl=(1325)
+fn=(1325)
+158 3324596
+cfl=(1326)
+cfn=(1326)
+calls=1833214 0
+0 46971770
+
+fl=(1326)
+fn=(1326)
+161 8938701
+cfl=(2385)
+cfn=(2385)
+calls=1821059 0
+0 17357736
+cfl=(1314)
+cfn=(1314)
+calls=1821059 0
+0 11818275
+cfl=(1324)
+cfn=(1324)
+calls=3666428 0
+0 8857056
+
+fl=(2349)
+fn=(2349)
+171 185015
+cfl=(2352)
+cfn=(2352)
+calls=12059 0
+0 15624
+cfl=(1452)
+cfn=(1452)
+calls=12059 0
+0 10050
+cfl=(2351)
+cfn=(2351)
+calls=12059 0
+0 19213520
+cfl=(2350)
+cfn=(2350)
+calls=12059 0
+0 135881
+cfl=(1314)
+cfn=(1314)
+calls=12059 0
+0 144198
+
+fl=(2351)
+fn=(2351)
+176 10977249
+cfl=(2352)
+cfn=(2352)
+calls=4353299 0
+0 4696856
+cfl=(1452)
+cfn=(1452)
+calls=4353299 0
+0 3539414
+
+fl=(1324)
+fn=(1324)
+99 12006725
+
+fl=(1322)
+fn=(1322)
+163 3292543
+cfl=(1323)
+cfn=(1323)
+calls=1810775 0
+0 14195269
+
+fl=(2385)
+fn=(2385)
+23 9552936
+cfl=(2352)
+cfn=(2352)
+calls=1821059 0
+0 2675842
+
+fl=(1323)
+fn=(1323)
+166 5188025
+cfl=(1324)
+cfn=(1324)
+calls=3621550 0
+0 9007244
+
+fl=(1314)
+fn=(1314)
+140 6120481
+cfl=(1316)
+cfn=(1316)
+calls=1897343 0
+0 4747878
+cfl=(1315)
+cfn=(1315)
+calls=1897343 0
+0 1641184
+
+fl=(1319)
+fn=(1319)
+196 4696242
+cfl=(1309)
+cfn=(1309)
+calls=1786426 0
+0 1367236
+cfl=(1320)
+cfn=(1320)
+calls=1798569 0
+0 4752312
+
+fl=(1849)
+fn=(1849)
+963 1640609
+cfl=(1850)
+cfn=(1850)
+calls=664871 0
+0 8462771
+
+fl=(2805)
+fn=(2805)
+98 1347247
+cfl=(4289)
+cfn=(4289)
+calls=692636 0
+0 2970088
+cfl=(2806)
+cfn=(2806)
+calls=680356 0
+0 5175008
+
+fl=(1850)
+fn=(1850)
+1544 3389445
+
+fl=(2366)
+fn=(2366)
+14 69941
+cfl=(2370)
+cfn=(2370)
+calls=8068 0
+0 41931
+cfl=(2369)
+cfn=(2369)
+calls=8068 0
+0 1955467
+cfl=(2367)
+cfn=(2367)
+calls=8068 0
+0 6391560
+
+fl=(2352)
+fn=(2352)
+29 7432656
+
+fl=(2390)
+fn=(2390)
+157 2220959
+cfl=(2362)
+cfn=(2362)
+calls=1786426 0
+0 4937278
+
+fl=(2367)
+fn=(2367)
+16 3550066
+
+fl=(2362)
+fn=(2362)
+39 3786286
+cfl=(2357)
+cfn=(2357)
+calls=1906590 0
+0 1521859
+
+fl=(2363)
+fn=(2363)
+90 3023286
+cfl=(2357)
+cfn=(2357)
+calls=2885864 0
+0 2284758
+
+fl=(2806)
+fn=(2806)
+95 2923734
+
+fl=(1316)
+fn=(1316)
+110 3343901
+
+fl=(1320)
+fn=(1320)
+180 2929161
+cfl=(1309)
+cfn=(1309)
+calls=1802181 0
+0 1833410
+
+fl=(1452)
+fn=(1452)
+212 4645955
+
+fl=(2357)
+fn=(2357)
+49 4396278
+
+fl=(2355)
+fn=(2355)
+178 3285254
+
+fl=(1309)
+fn=(1309)
+114 3253659
+
+fl=(4289)
+fn=(4289)
+97 1795662
+
+fl=(2391)
+fn=(2391)
+109 811007
+cfl=(2392)
+cfn=(2392)
+calls=12101 0
+0 1008280
+cfl=(2373)
+cfn=(2373)
+calls=12101 0
+0 16520
+
+fl=(2369)
+fn=(2369)
+524 903400
+cfl=(2831)
+cfn=(2831)
+calls=17609 0
+0 46309
+cfl=(2827)
+cfn=(2827)
+calls=17609 0
+0 187382
+
+fl=(1865)
+fn=(1865)
+299 98483
+cfl=(1871)
+cfn=(1871)
+calls=12101 0
+0 1561036
+cfl=(1867)
+cfn=(1867)
+calls=12101 0
+0 126340
+
+fl=(2883)
+fn=(2883)
+108 1188393
+
+fl=(1315)
+fn=(1315)
+124 1642182
+cfl=(1315)
+cfn=(1315)
+calls=12059 0
+0 10540
+cfl=(1309)
+cfn=(1309)
+calls=24160 0
+0 18569
+
+fl=(1871)
+fn=(1871)
+332 95732
+cfl=(1874)
+cfn=(1874)
+calls=12101 0
+0 1389583
+
+fl=(1874)
+fn=(1874)
+343 1389583
+
+fl=(2365)
+fn=(2365)
+173 108140
+cfl=(1325)
+cfn=(1325)
+calls=34645 0
+0 1102477
+
+fl=(2375)
+fn=(2375)
+68 249284
+cfl=(2924)
+cfn=(2924)
+calls=668 0
+0 974
+cfl=(2893)
+cfn=(2893)
+calls=6510 0
+0 389251
+cfl=(2379)
+cfn=(2379)
+calls=11912 0
+0 16866
+cfl=(2378)
+cfn=(2378)
+calls=11912 0
+0 30777
+cfl=(2376)
+cfn=(2376)
+calls=46781 0
+0 390256
+cfl=(2357)
+cfn=(2357)
+calls=12059 0
+0 9699
+cfl=(1313)
+cfn=(1313)
+calls=12059 0
+0 99588
+
+fl=(1451)
+fn=(1451)
+193 56911
+cfl=(2398)
+cfn=(2398)
+calls=12206 0
+0 1090225
+cfl=(1309)
+cfn=(1309)
+calls=12248 0
+0 12242
+
+fl=(2398)
+fn=(2398)
+184 78437
+cfl=(2357)
+cfn=(2357)
+calls=12206 0
+0 11034
+cfl=(2365)
+cfn=(2365)
+calls=24412 0
+0 848396
+cfl=(1322)
+cfn=(1322)
+calls=12206 0
+0 152357
+
+fl=(3118)
+fn=(3118)
+78 568707
+cfl=(2357)
+cfn=(2357)
+calls=624088 0
+0 497664
+
+fl=(2392)
+fn=(2392)
+183 35430
+cfl=(2393)
+cfn=(2393)
+calls=12101 0
+0 972849
+
+fl=(2393)
+fn=(2393)
+182 88009
+cfl=(2394)
+cfn=(2394)
+calls=12101 0
+0 848108
+
+fl=(2359)
+fn=(2359)
+24 60442
+
+fl=(2394)
+fn=(2394)
+204 848108
+
+fl=(1454)
+fn=(1454)
+75 771102
+
+fl=(2894)
+fn=(2894)
+91 389251
+cfl=(2894)
+cfn=(2894)
+calls=123690 0
+0 259912
+
+fl=(2361)
+fn=(2361)
+25 312012
+cfl=(2362)
+cfn=(2362)
+calls=108686 0
+0 336527
+
+fl=(2380)
+fn=(2380)
+205 48055
+cfl=(1304)
+cfn=(1304)
+calls=12059 0
+0 509023
+
+fl=(1304)
+fn=(1304)
+12 76131
+cfl=(1305)
+cfn=(1305)
+calls=12101 0
+0 423520
+
+fl=(1305)
+fn=(1305)
+59 139177
+cfl=(2381)
+cfn=(2381)
+calls=12059 0
+0 42788
+cfl=(1314)
+cfn=(1314)
+calls=12059 0
+0 155413
+cfl=(1309)
+cfn=(1309)
+calls=24160 0
+0 19476
+cfl=(1308)
+cfn=(1308)
+calls=12101 0
+0 13981
+cfl=(1307)
+cfn=(1307)
+calls=12353 0
+0 42953
+
+fl=(1313)
+fn=(1313)
+181 82478
+cfl=(1314)
+cfn=(1314)
+calls=40065 0
+0 311218
+
+fl=(2376)
+fn=(2376)
+71 94948
+cfl=(2377)
+cfn=(2377)
+calls=46781 0
+0 295308
+
+fl=(2377)
+fn=(2377)
+72 295308
+
+fl=(2350)
+fn=(2350)
+9 216552
+
+fl=(2372)
+fn=(2372)
+122 107836
+cfl=(2352)
+cfn=(2352)
+calls=39812 0
+0 44228
+cfl=(1452)
+cfn=(1452)
+calls=39812 0
+0 36970
+
+fl=(2827)
+fn=(2827)
+552 187382
+
+fl=(3119)
+fn=(3119)
+20 8377
+
+fl=(2387)
+fn=(2387)
+24 62004
+cfl=(2388)
+cfn=(2388)
+calls=12101 0
+0 75315
+
+fl=(2356)
+fn=(2356)
+40 80109
+cfl=(2357)
+cfn=(2357)
+calls=60295 0
+0 51494
+
+fl=(1867)
+fn=(1867)
+244 76669
+
+fl=(1878)
+fn=(1878)
+54 27105
+cfl=(1879)
+cfn=(1879)
+calls=12101 0
+0 77326
+
+fl=(2996)
+fn=(2996)
+116 100402
+
+fl=(2389)
+fn=(2389)
+150 37883
+cfl=(1316)
+cfn=(1316)
+calls=12101 0
+0 31720
+cfl=(1315)
+cfn=(1315)
+calls=12101 0
+0 9840
+
+fl=(1879)
+fn=(1879)
+64 48533
+cfl=(2804)
+cfn=(2804)
+calls=1487 0
+0 8725
+
+fl=(2388)
+fn=(2388)
+154 33821
+cfl=(1316)
+cfn=(1316)
+calls=12101 0
+0 31767
+cfl=(1315)
+cfn=(1315)
+calls=12101 0
+0 9727
+
+fl=(3121)
+fn=(3121)
+2 7881
+cfl=(3122)
+cfn=(3122)
+calls=1724 0
+0 1830
+
+fl=(2781)
+fn=(2781)
+111 57051
+
+fl=(2373)
+fn=(2373)
+22 52837
+
+fl=(3128)
+fn=(3128)
+80 48546
+
+fl=(2831)
+fn=(2831)
+565 46309
+
+fl=(3124)
+fn=(3124)
+2236 6932
+cfl=(3125)
+cfn=(3125)
+calls=1724 0
+0 37064
+
+fl=(1307)
+fn=(1307)
+103 29303
+
+fl=(2381)
+fn=(2381)
+44 32846
+cfl=(2357)
+cfn=(2357)
+calls=12059 0
+0 9942
+
+fl=(2370)
+fn=(2370)
+17 41931
+
+fl=(3125)
+fn=(3125)
+73 12748
+cfl=(3126)
+cfn=(3126)
+calls=1724 0
+0 2605
+
+fl=(2378)
+fn=(2378)
+88 30777
+
+fl=(3129)
+fn=(3129)
+130 17691
+cfl=(3129)
+cfn=(3129)
+calls=3600 0
+0 14922
+cfl=(1309)
+cfn=(1309)
+calls=3600 0
+0 2725
+cfl=(1320)
+cfn=(1320)
+calls=3612 0
+0 10259
+
+fl=(2379)
+fn=(2379)
+101 16866
+
+fl=(1299)
+fn=(1299)
+27 1222
+cfl=(3116)
+cfn=(3116)
+calls=19 0
+0 122
+cfl=(1334)
+cfn=(1334)
+calls=42 0
+0 5757
+cfl=(1327)
+cfn=(1327)
+calls=42 0
+0 1221
+cfl=(1311)
+cfn=(1311)
+calls=42 0
+0 4706
+cfl=(1304)
+cfn=(1304)
+calls=42 0
+0 2025
+
+fl=(1308)
+fn=(1308)
+118 13981
+
+fl=(1751)
+fn=(1751)
+47 207
+cfl=(1752)
+cfn=(1752)
+calls=42 0
+0 10142
+
+fl=(1752)
+fn=(1752)
+49 494
+cfl=(1757)
+cfn=(1757)
+calls=42 0
+0 9191
+cfl=(1756)
+cfn=(1756)
+calls=42 0
+0 58
+cfl=(1753)
+cfn=(1753)
+calls=42 0
+0 397
+
+fl=(2804)
+fn=(2804)
+57 7132
+
+fl=(1334)
+fn=(1334)
+829 543
+cfl=(1337)
+cfn=(1337)
+calls=59 0
+0 5977
+cfl=(1335)
+cfn=(1335)
+calls=59 0
+0 48
+
+fl=(1337)
+fn=(1337)
+534 515
+cfl=(813)
+cfn=(813)
+calls=59 0
+0 230
+cfl=(1339)
+cfn=(1339)
+calls=59 0
+0 5045
+cfl=(811)
+cfn=(811)
+calls=59 0
+0 185
+
+fl=(1339)
+fn=(1339)
+264 777
+cfl=(1447)
+cfn=(1447)
+calls=59 0
+0 236
+cfl=(1343)
+cfn=(1343)
+calls=59 0
+0 160
+cfl=(1340)
+cfn=(1340)
+calls=59 0
+0 195
+
+fl=(1311)
+fn=(1311)
+131 136
+cfl=(1312)
+cfn=(1312)
+calls=42 0
+0 4569
+
+fl=(1312)
+fn=(1312)
+54 465
+cfl=(1321)
+cfn=(1321)
+calls=42 0
+0 1206
+cfl=(1319)
+cfn=(1319)
+calls=42 0
+0 254
+cfl=(1317)
+cfn=(1317)
+calls=42 0
+0 1968
+cfl=(1313)
+cfn=(1313)
+calls=42 0
+0 674
+
+fl=(3)
+fn=(3)
+145 322
+cfl=(9)
+cfn=(9)
+calls=42 0
+0 3193
+cfl=(7)
+cfn=(7)
+calls=42 0
+0 60
+cfl=(4)
+cfn=(4)
+calls=42 0
+0 493
+
+fl=(9)
+fn=(9)
+164 340
+cfl=(61)
+cfn=(61)
+calls=16 0
+0 41
+cfl=(20)
+cfn=(20)
+calls=16 0
+0 2118
+cfl=(18)
+cfn=(18)
+calls=16 0
+0 49
+cfl=(11)
+cfn=(11)
+calls=16 0
+0 593
+
+fl=(816)
+fn=(816)
+63 1574
+cfl=(42)
+cfn=(42)
+calls=1 0
+0 1344
+
+fl=(1317)
+fn=(1317)
+56 1968
+cfl=(1318)
+cfn=(1318)
+calls=798 0
+0 1004
+
+fl=(3130)
+fn=(3130)
+62 2683
+
+fl=(3126)
+fn=(3126)
+74 2605
+
+fl=(1327)
+fn=(1327)
+758 640
+cfl=(1332)
+cfn=(1332)
+calls=59 0
+0 327
+cfl=(1329)
+cfn=(1329)
+calls=59 0
+0 717
+cfl=(1328)
+cfn=(1328)
+calls=43 0
+0 107
+cfl=(14)
+cfn=(14)
+calls=16 0
+0 16
+cfl=(12)
+cfn=(12)
+calls=16 0
+0 64
+
+fl=(3122)
+fn=(3122)
+2232 1830
+
+fl=(3070)
+fn=(3070)
+510 518
+cfl=(3074)
+cfn=(3074)
+calls=42 0
+0 58
+cfl=(813)
+cfn=(813)
+calls=42 0
+0 137
+cfl=(3071)
+cfn=(3071)
+calls=42 0
+0 553
+cfl=(811)
+cfn=(811)
+calls=42 0
+0 204
+
+fl=(42)
+fn=(42)
+28 39
+cfl=(116)
+cfn=(116)
+calls=1 0
+0 150
+cfl=(111)
+cfn=(111)
+calls=1 0
+0 59
+cfl=(52)
+cfn=(52)
+calls=1 0
+0 772
+cfl=(43)
+cfn=(43)
+calls=1 0
+0 321
+
+fl=(2924)
+fn=(2924)
+36 974
+
+fl=(3062)
+fn=(3062)
+90 323
+cfl=(3067)
+cfn=(3067)
+calls=24 0
+0 41
+cfl=(3066)
+cfn=(3066)
+calls=24 0
+0 26
+cfl=(3064)
+cfn=(3064)
+calls=48 0
+0 526
+cfl=(3063)
+cfn=(3063)
+calls=24 0
+0 45
+
+fl=(3058)
+fn=(3058)
+79 559
+cfl=(3059)
+cfn=(3059)
+calls=84 0
+0 277
+
+fl=(52)
+fn=(52)
+42 24
+cfl=(54)
+cfn=(54)
+calls=1 0
+0 747
+cfl=(53)
+cfn=(53)
+calls=1 0
+0 1
+
+fl=(54)
+fn=(54)
+656 34
+cfl=(74)
+cfn=(74)
+calls=1 0
+0 651
+cfl=(56)
+cfn=(56)
+calls=1 0
+0 23
+cfl=(55)
+cfn=(55)
+calls=1 0
+0 2
+
+fl=(1329)
+fn=(1329)
+499 246
+cfl=(1331)
+cfn=(1331)
+calls=59 0
+0 400
+
+fl=(1331)
+fn=(1331)
+216 593
+cfl=(6)
+cfn=(6)
+calls=42 0
+0 57
+
+fl=(74)
+fn=(74)
+1383 139
+cfl=(78)
+cfn=(78)
+calls=1 0
+0 17
+cfl=(75)
+cfn=(75)
+calls=1 0
+0 11
+
+fl=(3071)
+fn=(3071)
+358 218
+cfl=(3072)
+cfn=(3072)
+calls=42 0
+0 284
+
+fl=(811)
+fn=(811)
+240 360
+
+fl=(3064)
+fn=(3064)
+76 258
+cfl=(3065)
+cfn=(3065)
+calls=144 0
+0 220
+cfl=(3063)
+cfn=(3063)
+calls=48 0
+0 47
+
+fl=(810)
+fn=(810)
+470 231
+cfl=(813)
+cfn=(813)
+calls=42 0
+0 120
+cfl=(811)
+cfn=(811)
+calls=42 0
+0 142
+
+fl=(4)
+fn=(4)
+312 242
+cfl=(5)
+cfn=(5)
+calls=42 0
+0 251
+
+fl=(813)
+fn=(813)
+243 344
+
+fl=(3059)
+fn=(3059)
+148 291
+cfl=(1454)
+cfn=(1454)
+calls=126 0
+0 115
+
+fl=(1753)
+fn=(1753)
+192 305
+cfl=(1754)
+cfn=(1754)
+calls=42 0
+0 43
+
+fl=(1456)
+fn=(1456)
+610 11
+cfl=(1457)
+cfn=(1457)
+calls=1 0
+0 326
+
+fl=(1332)
+fn=(1332)
+81 259
+
+fl=(1457)
+fn=(1457)
+198 30
+cfl=(1458)
+cfn=(1458)
+calls=16 0
+0 295
+
+fl=(43)
+fn=(43)
+300 17
+cfl=(47)
+cfn=(47)
+calls=9 0
+0 281
+cfl=(46)
+cfn=(46)
+calls=1 0
+0 0
+cfl=(44)
+cfn=(44)
+calls=1 0
+0 21
+
+fl=(1458)
+fn=(1458)
+1000 73
+cfl=(1459)
+cfn=(1459)
+calls=16 0
+0 163
+cfl=(12)
+cfn=(12)
+calls=16 0
+0 43
+cfl=(19)
+cfn=(19)
+calls=16 0
+0 14
+
+fl=(3072)
+fn=(3072)
+335 242
+
+fl=(47)
+fn=(47)
+294 16
+cfl=(48)
+cfn=(48)
+calls=9 0
+0 264
+
+fl=(48)
+fn=(48)
+97 17
+cfl=(49)
+cfn=(49)
+calls=9 0
+0 246
+
+fl=(3116)
+fn=(3116)
+38 206
+
+fl=(49)
+fn=(49)
+129 167
+
+fl=(1447)
+fn=(1447)
+252 135
+
+fl=(3065)
+fn=(3065)
+64 220
+
+fl=(1340)
+fn=(1340)
+255 128
+
+fl=(1459)
+fn=(1459)
+1038 70
+cfl=(4468)
+cfn=(4468)
+calls=16 0
+0 47
+
+fl=(1449)
+fn=(1449)
+95 160
+
+fl=(1343)
+fn=(1343)
+249 112
+
+fl=(12)
+fn=(12)
+1214 67
+
+fl=(1328)
+fn=(1328)
+728 107
+
+fl=(3063)
+fn=(3063)
+28 93
+
+fl=(1335)
+fn=(1335)
+507 77
+
+fl=(7)
+fn=(7)
+46 60
+
+fl=(3074)
+fn=(3074)
+321 58
+
+fl=(6)
+fn=(6)
+75 57
+
+fl=(18)
+fn=(18)
+1120 35
+cfl=(19)
+cfn=(19)
+calls=16 0
+0 13
+
+fl=(4468)
+fn=(4468)
+968 34
+
+fl=(1754)
+fn=(1754)
+194 43
+
+fl=(61)
+fn=(61)
+408 41
+
+fl=(3067)
+fn=(3067)
+72 41
+
+fl=(3066)
+fn=(3066)
+68 26
+
+fl=(2945)
+fn=(2945)
+96 14
+
+fl=(56)
+fn=(56)
+1329 5
+
+fl=(44)
+fn=(44)
+21 20
+
+fl=(78)
+fn=(78)
+154 10
+cfl=(79)
+cfn=(79)
+calls=1 0
+0 3
+
+fl=(14)
+fn=(14)
+1104 16
+
+fl=(0)
+fn=(0)
+113 13
+
+fl=(75)
+fn=(75)
+803 5
+
+fl=(79)
+fn=(79)
+41 2
+
+fl=(55)
+fn=(55)
+226 2
+
+fl=(46)
+fn=(46)
+291 0
+
+fl=(2)
+fn=(2)
+607 0
+
+fl=(128)
+fn=(128)
+73 0
+cfl=(1878)
+cfn=(1878)
+calls=12101 0
+0 104431
+cfl=(1877)
+cfn=(1877)
+calls=24202 0
+0 22793
+cfl=(1865)
+cfn=(1865)
+calls=12101 0
+0 1849498

@@ -2,6 +2,7 @@
 import json
 import sys
 import time
+import random
 
 from core.ai import ai_move
 from core.common import OUTPUT_ERROR, OUTPUT_INFO
@@ -103,8 +104,14 @@ while True:
         logger.log(f"Setting komi {game.root.properties}", OUTPUT_ERROR)
     elif "place_free_handicap" in line:
         _, n = line.split(" ")
-        game.place_handicap_stones(int(n))
-        gtp = [Move.from_sgf(m, game.board_size, "B").gtp() for m in game.root.get_list_property("AB")]
+        n = int(n)
+        game.place_handicap_stones(n)
+        handicaps = set(game.root.get_list_property("AB"))
+        bx, by = game.board_size
+        while len(handicaps) < min(n, bx * by):  # really obscure cases
+            handicaps.add(Move((random.randint(0, bx - 1), random.randint(0, by - 1)), player="B").sgf(board_size=game.board_size))
+        game.root.set_property("AB", list(handicaps))
+        gtp = [Move.from_sgf(m, game.board_size, "B").gtp() for m in handicaps]
         logger.log(f"Chose handicap placements as {gtp}", OUTPUT_ERROR)
         print(f"= {' '.join(gtp)}\n")
         sys.stdout.flush()
@@ -115,6 +122,12 @@ while True:
         game.root.set_property("AB", [Move.from_gtp(move.upper()).sgf(game.board_size) for move in stones])
         logger.log(f"Set handicap placements to {game.root.get_list_property('AB')}", OUTPUT_ERROR)
     elif "genmove" in line:
+        _, player = line.strip().split(" ")
+        if player[0].upper() != game.next_player:
+            logger.log(f"ERROR generating move: UNEXPECTED PLAYER {player} != {game.next_player}.", OUTPUT_ERROR)
+            print(f"= ??\n")
+            sys.stdout.flush()
+            continue
         logger.log(f"{ai_strategy} generating move", OUTPUT_ERROR)
         game.current_node.analyze(engine)
         malkovich_analysis(game.current_node)
@@ -130,7 +143,12 @@ while True:
             move = game.play(Move(None, player=game.next_player)).single_move
         else:
             move, node = ai_move(game, ai_strategy, ai_settings)
-            logger.log(f"Generated move {move}", OUTPUT_ERROR)
+            if node is None:
+                while node is None:
+                    logger.log(f"ERROR generating move, backing up with weighted.", OUTPUT_ERROR)
+                    move, node = ai_move(game, "p:weighted", {"pick_override": 1.0, "lower_bound": 0.001, "weaken_fac": 1})
+            else:
+                logger.log(f"Generated move {move}", OUTPUT_ERROR)
         print(f"= {move.gtp()}\n")
         sys.stdout.flush()
         malkovich_analysis(game.current_node)

@@ -133,7 +133,7 @@ class ConfigPopup(QuickConfigGui):
         col_container.add_widget(cols[0])
         col_container.add_widget(cols[1])
         self.add_widget(col_container)
-        self.info_label = Label(halign='center')
+        self.info_label = Label(halign="center")
         self.apply_button = StyledButton(text="Apply", on_press=lambda _: self.update_config())
         self.save_button = StyledButton(text="Apply and Save", on_press=lambda _: self.update_config(save_to_file=True))
         btn_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.1), spacing=1, padding=1)
@@ -170,7 +170,7 @@ class ConfigPopup(QuickConfigGui):
 
             def restart_engine(_dt):
                 old_engine = self.katrain.engine  # type: KataGoEngine
-                old_proc  =old_engine.katago_process
+                old_proc = old_engine.katago_process
                 if old_proc:
                     old_engine.shutdown(finish=True)
 
