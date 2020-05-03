@@ -86,7 +86,6 @@ def malkovich_analysis(cn):
 
 
 while True:
-    p = game.current_node.next_player
     line = input()
     logger.log(f"GOT INPUT {line}", OUTPUT_ERROR)
     if "boardsize" in line:
