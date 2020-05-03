@@ -4,8 +4,6 @@ import random
 import time
 from typing import Dict, List, Tuple
 
-import numpy as np
-
 from core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, var_to_grid
 from core.engine import EngineDiedException
 from core.game import Game, GameNode, IllegalMoveException, Move
@@ -18,7 +16,9 @@ def weighted_selection_without_replacement(items: List[Tuple[float, float, int, 
 
 
 def dirichlet_noise(num, dir_alpha=0.3):
-    return np.random.dirichlet([dir_alpha] * num)
+    sample = [random.gammavariate(dir_alpha, 1) for _ in range(num)]
+    sum_sample = sum(sample)
+    return [s / sum_sample for s in sample]
 
 
 def fmt_moves(moves: List[Tuple[float, Move]]):

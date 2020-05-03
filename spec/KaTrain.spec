@@ -3,7 +3,7 @@ from kivy_deps import sdl2, glew
 
 block_cipher = None
 
-# build with  "pyinstaller spec/katrain.spec --noconfirm"
+# pyinstaller spec/katrain.spec --upx-dir my --noconfirm
 
 a = Analysis(['..\\katrain.py'],
              pathex=['C:\\Users\\sande\\Desktop\\katrain\\spec'],
@@ -12,7 +12,7 @@ a = Analysis(['..\\katrain.py'],
              hiddenimports=["win32file","win32timezone"], #  FileChooser in kivy loads this conditionally
              hookspath=[],
              runtime_hooks=[],
-             excludes=['..\\bots'],
+             excludes=['scipy','pandas','numpy','matplotlib','docutils','mkl'],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
              cipher=block_cipher,
@@ -32,6 +32,10 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           console=True) #  , icon='..\\icon.png'
+
+EXCLUDE_SUFFIX = ['katago-bs','b10-1.3.txt.gz','katago.exe','screenshot_analyze.png','screenshot_play.png']
+EXCLUDE = ['KataGoData']
+a.datas = [(ff,ft,tp) for ff,ft,tp in a.datas if not any(ff.endswith(suffix) for suffix in EXCLUDE_SUFFIX) and not any(kw in ff for kw in EXCLUDE)]
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

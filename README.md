@@ -36,14 +36,14 @@ but has since grown to include a wide range of features, including:
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/distribution/#download-section). 
 * Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
-* Execute the command `pip install numpy kivy_deps.glew kivy_deps.sdl2 kivy_deps.gstreamer kivy`
+* Execute the command `pip install kivy_deps.glew kivy_deps.sdl2 kivy_deps.gstreamer kivy`
 * Start the app by running `python katrain.py` in the directory where you downloaded the scripts. Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
 
 ### Installation for Linux/Mac users
 
 * This assumed you have a working Python 3.6/3.7 installation as a default. If your default is python 2, use pip3/python3. Kivy currently does not have a release for Python 3.8.
 * Git clone or download the repository.
-* `pip install kivy numpy`
+* `pip install kivy`
 * A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.3.5+ binary.
 * Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to KataGo's GPU tuning.
      
