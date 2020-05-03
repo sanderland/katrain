@@ -120,8 +120,8 @@ class KaTrainGui(BoxLayout):
             self.board_controls.engine_status_col = self.config("board_ui/engine_almost_done_col")
         # redraw
         if redraw_board:
-            Clock.schedule_once(self.board_gui.draw_board, -1)  # main thread needs to do this
-        Clock.schedule_once(self.board_gui.draw_board_contents, -1)
+            Clock.schedule_once(self.board_gui.draw_board, -1)
+        self.board_gui.redraw_board_contents_trigger()
         self.controls.update_evaluation()
 
     def _message_loop_thread(self):
