@@ -154,10 +154,8 @@ class Game:
 
     def place_handicap_stones(self, n_handicaps):
         board_size_x, board_size_y = self.board_size
-        near_x = 3 if board_size_x >= 13 else 2
-        near_y = 3 if board_size_y >= 13 else 2
-        if board_size_x < 3 or board_size_y < 3:
-            return
+        near_x = 3 if board_size_x >= 13 else min(2, board_size_x - 1)
+        near_y = 3 if board_size_y >= 13 else min(2, board_size_y - 1)
         far_x = board_size_x - 1 - near_x
         far_y = board_size_y - 1 - near_y
         middle_x = board_size_x // 2  # what for even sizes?
@@ -176,7 +174,7 @@ class Game:
             if n_handicaps % 2 == 1:
                 stones.append((middle_x, middle_y))
             stones += [(near_x, middle_y), (far_x, middle_y), (middle_x, near_y), (middle_x, far_y)]
-        self.root.set_property("AB", [Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]])
+        self.root.set_property("AB", list({Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]}))
 
     @property
     def board_size(self):

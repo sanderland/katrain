@@ -9,7 +9,7 @@ class ParseError(Exception):
 
 
 class Move:
-    GTP_COORD = list("ABCDEFGHJKLMNOPQRSTUVWXYZ") + ["A" + c for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"]  # kata board size 29 support
+    GTP_COORD = list("ABCDEFGHJKLMNOPQRSTUVWXYZ") + [xa + c for xa in "AB" for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"]  # kata board size 29 support
     PLAYERS = "BW"
     SGF_COORD = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ".lower()) + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
@@ -79,10 +79,11 @@ class SGFNode:
 
     def sgf(self, **xargs) -> str:
         """Generates an SGF, calling sgf_properties on each node with the given xargs, so it can filter relevant properties if needed."""
-        import sys
+        if self.is_root:
+            import sys
 
-        bszx, bszy = self.board_size
-        sys.setrecursionlimit(max(sys.getrecursionlimit(), 3 * bszx * bszy))  # thanks to lightvector for causing stack overflows ;)
+            bszx, bszy = self.board_size
+            sys.setrecursionlimit(max(sys.getrecursionlimit(), 4 * bszx * bszy))
         sgf_str = "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in self.sgf_properties(**xargs).items() if values])
         if self.children:
             children = [c.sgf(**xargs) for c in self.order_children(self.children)]
@@ -211,15 +212,17 @@ class SGFNode:
 
     @property
     def next_player(self):
-        if "B" in self.properties or "AB" in self.properties:
+        if "B" in self.properties or "AB" in self.properties: # root or black moved
             return "W"
-        return "B"
+        else:
+            return "B"
 
     @property
     def player(self):
-        if "W" in self.properties:
-            return "W"
-        return "B"
+        if "B" in self.properties or "AB" in self.properties:
+            return "B"
+        else:
+            return "W" # nb root is considered white played if no handicap stones are placed
 
 
 class SGF:

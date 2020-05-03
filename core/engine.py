@@ -113,7 +113,7 @@ class KataGoEngine:
                 query["id"] = f"QUERY:{str(self.query_counter)}"
             self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
         if self.katago_process:
-            self.katrain.log(f"Sending query {query['id']}: {str(query)}", OUTPUT_DEBUG)
+            self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
             try:
                 self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
                 self.katago_process.stdin.flush()
