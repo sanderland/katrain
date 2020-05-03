@@ -133,7 +133,7 @@ class ConfigPopup(QuickConfigGui):
         col_container.add_widget(cols[0])
         col_container.add_widget(cols[1])
         self.add_widget(col_container)
-        self.info_label = Label()
+        self.info_label = Label(halign='center')
         self.apply_button = StyledButton(text="Apply", on_press=lambda _: self.update_config())
         self.save_button = StyledButton(text="Apply and Save", on_press=lambda _: self.update_config(save_to_file=True))
         btn_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.1), spacing=1, padding=1)
@@ -165,16 +165,19 @@ class ConfigPopup(QuickConfigGui):
             self.katrain.engine.visits = engine_updates["visits"]
         if {key for key in engine_updates if key not in {"max_visits", "max_time", "enable_ownership"}}:
             self.katrain.log(f"Restarting Engine after {engine_updates} settings change")
-            self.katrain.controls.set_status(f"Restarting Engine after {engine_updates} settings change")
+            self.info_label.text = "Restarting engine\nplease wait."
+            self.katrain.controls.set_status(f"Restarted Engine after {engine_updates} settings change.")
 
             def restart_engine(_dt):
                 old_engine = self.katrain.engine  # type: KataGoEngine
+                old_proc  =old_engine.katago_process
+                if old_proc:
+                    old_engine.shutdown(finish=True)
+
                 new_engine = KataGoEngine(self.katrain, self.config["engine"])
                 self.katrain.engine = new_engine
-                self.katrain.game.engine = {"B": new_engine, "W": new_engine}
-                if getattr(old_engine, "katago_process"):
-                    old_engine.shutdown(finish=True)
-                else:
+                self.katrain.game.engines = {"B": new_engine, "W": new_engine}
+                if not old_proc:
                     self.katrain.game.analyze_all_nodes()  # old engine was broken, so make sure we redo any failures
 
             Clock.schedule_once(restart_engine, 0)
