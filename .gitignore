@@ -13,6 +13,8 @@ sgf_ogs
 log*
 tmp.pickle
 my
+logs
+callgrind.*
 
 # debug
 outdated_log.txt
