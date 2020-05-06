@@ -18,7 +18,7 @@ BOT_SETTINGS = f" --maxconnectedgames {MAXGAMES} --maxhandicapunranked 25 --maxh
 if 'beta' in bot:
     BOT_SETTINGS += " --beta"
 else:
-    BOT_SETTINGS += " --rankedonly"
+    BOT_SETTINGS +=  "" # --rankedonly"
 
 username = f"katrain-{bot}"
 

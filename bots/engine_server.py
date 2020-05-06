@@ -18,7 +18,7 @@ ENGINE_SETTINGS = {
     "max_visits": 50,
     "max_time": 1.0,
     "enable_ownership": False,
-    "threads": 8,
+    "threads": 32,
 }
 
 
