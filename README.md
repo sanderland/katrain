@@ -165,6 +165,8 @@ If you ever need to reset to the original settings, simply re-download the `conf
   * The first startup of KataGo can be slow due to GPU tuning, after that it should be much faster.
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
+* The engine crashes with out of memory errors
+  * Try setting `nnMaxBatchSize` in `KataGo/analysis_config.cfg` to something lower.
  
 ## Contributing
 
