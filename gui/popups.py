@@ -179,6 +179,7 @@ class ConfigPopup(QuickConfigGui):
                 if not old_proc:
                     self.katrain.game.analyze_all_nodes()  # old engine was broken, so make sure we redo any failures
                 self.katrain.update_state()
+
             Clock.schedule_once(restart_engine, 0)
 
         self.katrain.debug_level = self.config["debug"]["level"]

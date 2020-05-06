@@ -58,6 +58,7 @@ but has since grown to include a wide range of features, including:
 ## Manual
 
 ### Play
+
 Under the 'play' tab you can select who is playing black and white.
 * Human is simple play with potential feedback, but without auto-undo.
 * Teach will give you instant feedback, and auto-undo bad moves to give you a second chance. 
@@ -80,6 +81,7 @@ In short, if you are a weaker player you should mostly on large dots that are re
 while stronger players can pay more attention to smaller mistakes.
 
 #### AIs
+
 Available AIs, with strength indicating an estimate for the default settings, are:
 
 * **[9p+]** **Default** is full KataGo, above professional level. 
@@ -115,7 +117,6 @@ Keyboard shortcuts are shown with **[key]**.
     * **[s]**: Equalize: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
     * **[d]**: Sweep: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but the result is nothing if not colourful.
 
-    
 ## Keyboard and mouse shortcuts
 
 In addition to shortcuts mentioned above, there are:
@@ -135,7 +136,6 @@ In addition to shortcuts mentioned above, there are:
 * **[Ctrl-s]**: Save SGF with automated review to file.
 * **[Ctrl-n]**: Load SGF from clipboard
 * **[space]**: Pass
-
 
 ## Configuration
 
@@ -173,9 +173,12 @@ If you ever need to reset to the original settings, simply re-download the `conf
   * The first startup of KataGo can be slow due to GPU tuning, after that it should be much faster.
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
+* KataGo crashes with out of memory errors, how can I prevent this?
+  *  Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using the board size 29 version.
  
 ## Contributing
 
 * Feedback and pull requests are both very welcome.
 * For suggestions and planned improvements, see the 'issues' tab on github.
 * You can also contact me on discord (Sander#3278) or [reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
+
