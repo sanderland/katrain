@@ -18,8 +18,10 @@ with open("config.json") as f:
     game_settings = settings["game"]
     trainer_settings = settings["trainer"]
 
-#engine_settings['threads'] = 32
+engine_settings['threads'] = 16
+#engine_settings['katago'] = 'KataGo/katago-bs'
 engine_settings["max_time"] = 1000
+engine_settings["max_visits"] = 50
 
 class Logger:
     def log(self, msg, level):

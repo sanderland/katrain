@@ -98,7 +98,7 @@
             "_help_right": "Lower `stddev` makes it prefer closer moves."
         },
         "P:Tenuki": {
-            "pick_override": 0.9,
+            "pick_override": 0.85,
             "stddev": 7.5,
             "pick_n": 5,
             "pick_frac": 0.7,
