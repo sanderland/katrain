@@ -43,9 +43,9 @@ class KataGoEngine:
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
             self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        except FileNotFoundError:
+        except FileNotFoundError as e:
             self.katrain.log(
-                f"Starting kata with command '{self.command}' failed. If you are on Mac or Linux, please change the settings or configuration file (config.json) to point to the correct KataGo executable.",
+                f"Starting kata with command '{self.command}' failed with error {e}. Please make sure the 'katago' value under 'engine' in settings points to the correct KataGo executable.",
                 OUTPUT_ERROR,
             )
 
