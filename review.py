@@ -7,6 +7,7 @@ from core.common import OUTPUT_INFO
 from core.engine import KataGoEngine
 from core.game import Game, KaTrainSGF
 
+start = time.time()
 if len(sys.argv) < 2:
     exit(1)
 inputfile = sys.argv[1]
@@ -18,10 +19,10 @@ with open("config.json") as f:
     game_settings = settings["game"]
     trainer_settings = settings["trainer"]
 
-engine_settings['threads'] = 16
-#engine_settings['katago'] = 'KataGo/katago-bs'
+engine_settings["threads"] = 16
 engine_settings["max_time"] = 1000
 engine_settings["max_visits"] = 50
+
 
 class Logger:
     def log(self, msg, level):
@@ -41,9 +42,5 @@ while remaining > 0:
     print(f"Waiting for {remaining} queries")
     time.sleep(0.1)
 
-msg = game.write_sgf(
-    sgf_settings["sgf_save"],
-    trainer_config=trainer_settings,
-    save_feedback=sgf_settings["save_feedback"],
-    eval_thresholds=trainer_settings["eval_thresholds"],
-)
+msg = game.write_sgf(sgf_settings["sgf_save"], trainer_config=trainer_settings, save_feedback=sgf_settings["save_feedback"], eval_thresholds=trainer_settings["eval_thresholds"])
+print(time.time() - start, "s")

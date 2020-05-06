@@ -15,7 +15,7 @@ if True or bot in ["dev", "local"]:
 else:
     GTP2OGS = "node ../stable-gtp2ogs"
 BOT_SETTINGS = f" --maxconnectedgames {MAXGAMES} --maxhandicapunranked 25 --maxhandicapranked 1 --boardsizesranked 19 --boardsizesunranked all --komisranked automatic,5.5,6.5,7.5 --komisunranked all"
-if 'beta' in bot:
+if "beta" in bot:
     BOT_SETTINGS += " --beta"
 else:
     BOT_SETTINGS += " --rankedonly"

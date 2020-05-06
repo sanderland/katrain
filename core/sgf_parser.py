@@ -212,7 +212,7 @@ class SGFNode:
 
     @property
     def next_player(self):
-        if "B" in self.properties or "AB" in self.properties: # root or black moved
+        if "B" in self.properties or "AB" in self.properties:  # root or black moved
             return "W"
         else:
             return "B"
@@ -222,7 +222,7 @@ class SGFNode:
         if "B" in self.properties or "AB" in self.properties:
             return "B"
         else:
-            return "W" # nb root is considered white played if no handicap stones are placed
+            return "W"  # nb root is considered white played if no handicap stones are placed
 
 
 class SGF:
