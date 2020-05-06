@@ -1,6 +1,6 @@
 {
     "engine": {
-        "katago": "KataGo/katago-bs",
+        "katago": "KataGo/katago",
         "model": "KataGo/models/b15-1.3.2.txt.gz",
         "config": "KataGo/analysis_config.cfg",
         "threads": 16,

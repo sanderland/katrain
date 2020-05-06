@@ -239,10 +239,10 @@ class SGF:
             if not encoding:
                 match = re.search(rb"CA\[(.*?)\]", bin_contents)
                 if match:
-                    encoding = match[1].decode("ascii")
+                    encoding = match[1].decode("ascii", errors="ignore")
                 else:
                     encoding = "ISO-8859-1"  # default
-            decoded = bin_contents.decode(encoding=encoding)
+            decoded = bin_contents.decode(encoding=encoding, errors="ignore")
             return cls.parse(decoded)
 
     def __init__(self, contents):
