@@ -86,8 +86,14 @@ class GameNode(SGFNode):
         if win_rate is not None:
             return f"{'B' if win_rate > 0.5 else 'W'} {max(win_rate,1-win_rate):.1%}"
 
-    def comment(self, sgf=False, teach=False, hints=False):
-        single_move = self.single_move
+    def make_pv(self, player, pv, interactive):
+        pvtext = f"{player}{' '.join(pv)}"
+        # if interactive:
+        #    pvtext = f"[u][ref={pvtext}][color=#334466]{pvtext}[/color][/ref][/u]"
+        return pvtext
+
+    def comment(self, sgf=False, teach=False, hints=False, interactive=False):
+        single_move = self.move
         if not self.parent or not single_move:  # root
             return ""
 
@@ -109,7 +115,7 @@ class GameNode(SGFNode):
                         text += f"Move was predicted best move.\n"
                     if sgf:
                         if previous_top_move.get("pv") and (sgf or hints):
-                            text += f"PV: {single_move.player}{' '.join(previous_top_move['pv'])}\n"
+                            text += f"PV: {self.make_pv(single_move.player,previous_top_move['pv'],interactive)}\n"
 
                 if sgf or hints or teach:
                     policy_ranking = self.parent.policy_ranking
@@ -131,7 +137,7 @@ class GameNode(SGFNode):
 
     @property
     def points_lost(self) -> Optional[float]:
-        single_move = self.single_move
+        single_move = self.move
         if single_move and self.parent and self.analysis_ready and self.parent.analysis_ready:
             parent_score = self.parent.score
             score = self.score
@@ -139,7 +145,7 @@ class GameNode(SGFNode):
 
     @property
     def parent_realized_points_lost(self) -> Optional[float]:
-        single_move = self.single_move
+        single_move = self.move
         if single_move and self.parent and self.parent.parent and self.analysis_ready and self.parent.parent.analysis_ready:
             parent_parent_score = self.parent.parent.score
             score = self.score

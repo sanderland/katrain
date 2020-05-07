@@ -39,17 +39,25 @@ but has since grown to include a wide range of features, including:
 * Execute the command `pip install kivy_deps.glew kivy_deps.sdl2 kivy_deps.gstreamer kivy`
 * Start the app by running `python katrain.py` in the directory where you downloaded the scripts. Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
 
-### Installation for Linux/Mac users
+### Installation for Linux users
 
 * This assumed you have a working Python 3.6/3.7 installation as a default. If your default is python 2, use pip3/python3. Kivy currently does not have a release for Python 3.8.
 * Git clone or download the repository.
-* `pip install kivy`
-* A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.3.5+ binary.
+* Run the command `pip install kivy` in the terminal.
+* A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.3.5-bs29+ binary.
 * Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to KataGo's GPU tuning.
-     
+
+### Installation for MacOS users
+
+* Git clone or download the repository.
+* Run the command `pip install kivy` in the terminal.
+* Follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself -- note that the version required is currently too new for the 'brew' method.
+* Start the app by running `python katrain.py`, change the path of the 'katago' setting to the path where you compiled it, and click 'Apply and Save'.
+      
 ## Manual
 
 ### Play
+
 Under the 'play' tab you can select who is playing black and white.
 * Human is simple play with potential feedback, but without auto-undo.
 * Teach will give you instant feedback, and auto-undo bad moves to give you a second chance. 
@@ -72,6 +80,7 @@ In short, if you are a weaker player you should mostly on large dots that are re
 while stronger players can pay more attention to smaller mistakes.
 
 #### AIs
+
 Available AIs, with strength indicating an estimate for the default settings, are:
 
 * **[9p+]** **Default** is full KataGo, above professional level. 
@@ -107,7 +116,6 @@ Keyboard shortcuts are shown with **[key]**.
     * **[s]**: Equalize: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
     * **[d]**: Sweep: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but the result is nothing if not colourful.
 
-    
 ## Keyboard and mouse shortcuts
 
 In addition to shortcuts mentioned above, there are:
@@ -127,7 +135,6 @@ In addition to shortcuts mentioned above, there are:
 * **[Ctrl-s]**: Save SGF with automated review to file.
 * **[Ctrl-n]**: Load SGF from clipboard
 * **[space]**: Pass
-
 
 ## Configuration
 
@@ -165,11 +172,12 @@ If you ever need to reset to the original settings, simply re-download the `conf
   * The first startup of KataGo can be slow due to GPU tuning, after that it should be much faster.
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
-* The engine crashes with out of memory errors
-  * Try setting `nnMaxBatchSize` in `KataGo/analysis_config.cfg` to something lower.
+* KataGo crashes with out of memory errors, how can I prevent this?
+  *  Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using versions compiled with large board sizes.
  
 ## Contributing
 
-* Feedback and pull requests are both very welcome.
+* Feedback and pull requests are both very welcome. I would also be happy to host translations of this manual into languages where English fluency is typically lower.
 * For suggestions and planned improvements, see the 'issues' tab on github.
-* You can also contact me on discord (Sander#3278) or [reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
+* You can also contact me on discord (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) or [Reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
+* Some people have also asked me how to donate. Something go-related such as a book or teaching time is highly appreciated.

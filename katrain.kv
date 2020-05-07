@@ -402,6 +402,7 @@
             width:1
     Label:
         id: label
+        markup: root.markup
         padding: 5, 5
         font_size: dp(18)
         color: BLACK
@@ -409,6 +410,7 @@
         height: self.texture_size[1]
         text_size: self.width, None
         text: root.text
+        on_ref_press: root.dispatch('on_ref_press',args[1])
 
 <Controls>:
 	orientation: 'vertical'
@@ -626,6 +628,8 @@
             height: 0.00001 if not self.text else min(0.66*self.parent.height,self.label.texture_size[1])
         ScrollableLabel:
             id: info
+#            markup: True
+#            on_ref_press: root.katrain.board_gui.show_pv_from_label(args[1])
             size_hint: 1, None
             height: self.parent.height - status_label.height - 1
     BoxLayout:

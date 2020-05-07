@@ -75,7 +75,7 @@ def malkovich_analysis(cn):
         logger.log(f"dscore {dscore} = {cn.analysis['root']['scoreLead']} {cn.parent.analysis['root']['scoreLead']} at {move}...", OUTPUT_ERROR)
         if abs(dscore) > REPORT_SCORE_THRESHOLD and (cn.player == "B" and dscore < 0 or cn.player == "W" and dscore > 0):  # relevant mistakes
             favpl = "B" if dscore > 0 else "W"
-            msg = f"MALKOVICH:{cn.player} {cn.single_move.gtp()} caused a significant score change ({favpl} gained {abs(dscore):.1f} points)"
+            msg = f"MALKOVICH:{cn.player} {cn.move.gtp()} caused a significant score change ({favpl} gained {abs(dscore):.1f} points)"
             if cn.ai_thoughts:
                 msg += f" -> Win Rate {cn.format_win_rate()} Score {cn.format_score()} AI Thoughts: {cn.ai_thoughts}"
             else:
@@ -139,7 +139,7 @@ while True:
             if not pol:
                 pol = ["??"]
             print(f"DISCUSSION:OK, since you passed {MAX_PASS} times after the {bx+by}th move, I will pass as well [policy {pol[-1]:.3%}].", file=sys.stderr)
-            move = game.play(Move(None, player=game.next_player)).single_move
+            move = game.play(Move(None, player=game.next_player)).move
         else:
             move, node = ai_move(game, ai_strategy, ai_settings)
             if node is None:

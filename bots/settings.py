@@ -1,5 +1,6 @@
 bot_strategy_names = {
     "dev": "P:Noise",
+    "dev-beta": "P:Weighted",
     "strong": "Policy",
     "influence": "P:Influence",
     "territory": "P:Territory",
@@ -11,7 +12,8 @@ bot_strategy_names = {
 
 
 greetings = {
-    "dev": "Experimental!",
+    "dev": "Policy+Dirichlet noise.",
+    "dev-beta": "Play a policy-weighted move.",
     "strong": "Play top policy move.",
     "influence": "Play an influential style.",
     "territory": "Play a territorial style.",

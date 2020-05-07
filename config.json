@@ -1,9 +1,9 @@
 {
     "engine": {
-        "katago": "KataGo/katago-bs",
+        "katago": "KataGo/katago",
         "model": "KataGo/models/b15-1.3.2.txt.gz",
         "config": "KataGo/analysis_config.cfg",
-        "threads": 8,
+        "threads": 16,
         "max_visits": 500,
         "fast_visits": 50,
         "max_time": 3.0,
@@ -43,7 +43,8 @@
             0
         ],
         "eval_off_show_last": 3,
-        "eval_show_ai": true
+        "eval_show_ai": true,
+        "lock_ai": false
     },
     "ai": {
         "Default": {
@@ -98,7 +99,7 @@
             "_help_right": "Lower `stddev` makes it prefer closer moves."
         },
         "P:Tenuki": {
-            "pick_override": 0.9,
+            "pick_override": 0.85,
             "stddev": 7.5,
             "pick_n": 5,
             "pick_frac": 0.7,

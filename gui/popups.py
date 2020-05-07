@@ -179,6 +179,7 @@ class ConfigPopup(QuickConfigGui):
                 if not old_proc:
                     self.katrain.game.analyze_all_nodes()  # old engine was broken, so make sure we redo any failures
                 self.katrain.update_state()
+
             Clock.schedule_once(restart_engine, 0)
 
         self.katrain.debug_level = self.config["debug"]["level"]
@@ -274,6 +275,10 @@ class ConfigTeacherPopup(QuickConfigGui):
         xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
         xsettings.add_widget(ScaledLightLabel(text="Show dots/SGF comments for AI players"))
         xsettings.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.settings["eval_show_ai"]), input_property="eval_show_ai"))
+        self.add_widget(xsettings)
+        xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
+        xsettings.add_widget(ScaledLightLabel(text="Disable analysis while in teach mode"))
+        xsettings.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.settings["lock_ai"]), input_property="lock_ai"))
         self.add_widget(xsettings)
 
         bl = BoxLayout(size_hint=(1, 0.15), spacing=2)

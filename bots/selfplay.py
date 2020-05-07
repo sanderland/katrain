@@ -41,7 +41,7 @@ class AI:
         "max_time": 300.0,
         "_enable_ownership": False,
     }
-    NUM_THREADS = 8
+    NUM_THREADS = 32
     IGNORE_SETTINGS_IN_TAG = {"threads", "_enable_ownership", "katago"}  # katago for switching from/to bs version
     ENGINES = []
     LOCK = threading.Lock()

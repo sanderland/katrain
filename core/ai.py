@@ -99,11 +99,11 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                 ai_thoughts += f"Generated weights for {ai_mode} according to weight factor {ai_settings['line_weight']} and distance from {thr_line+1}th line. "
             elif "local" in ai_mode or "tenuki" in ai_mode:
                 var = ai_settings["stddev"] ** 2
-                if not cn.single_move or cn.single_move.coords is None:
+                if not cn.move or cn.move.coords is None:
                     weighted_coords = [(1, 1, *top_policy_move.coords)]  # if "pick" in ai_mode -> even
                     ai_thoughts += f"No previous non-pass move, faking weights to play top policy move. "
                 else:
-                    mx, my = cn.single_move.coords
+                    mx, my = cn.move.coords
                     weighted_coords = [
                         (policy_grid[y][x], math.exp(-0.5 * ((x - mx) ** 2 + (y - my) ** 2) / var), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0
                     ]
