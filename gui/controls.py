@@ -36,6 +36,9 @@ class Controls(BoxLayout):
     def ai_mode(self, player):
         return self.ai_mode_groups[player].text
 
+    def teaching_mode_enabled(self):
+        return "undo" in self.player_mode("B") or "undo" in self.player_mode("W")
+
     def on_size(self, *args):
         self.update_evaluation()
 

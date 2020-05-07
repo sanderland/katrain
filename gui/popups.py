@@ -276,6 +276,10 @@ class ConfigTeacherPopup(QuickConfigGui):
         xsettings.add_widget(ScaledLightLabel(text="Show dots/SGF comments for AI players"))
         xsettings.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.settings["eval_show_ai"]), input_property="eval_show_ai"))
         self.add_widget(xsettings)
+        xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
+        xsettings.add_widget(ScaledLightLabel(text="Disable analysis while in teach mode"))
+        xsettings.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.settings["lock_ai"]), input_property="lock_ai"))
+        self.add_widget(xsettings)
 
         bl = BoxLayout(size_hint=(1, 0.15), spacing=2)
         bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))

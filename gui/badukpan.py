@@ -176,6 +176,8 @@ class BadukPanWidget(Widget):
         outline_color = self.ui_config["outline"]
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
+        lock_ai = self.trainer_config.get("lock_ai", False) and katrain.controls.teaching_mode_enabled()
+        show_n_eval = self.trainer_config["eval_off_show_last"]
 
         self.canvas.clear()
         with self.canvas:
@@ -188,7 +190,6 @@ class BadukPanWidget(Widget):
             for m in katrain.game.stones:
                 has_stone[m.coords] = m.player
 
-            show_n_eval = self.trainer_config["eval_off_show_last"]
             show_dots_for = {p: self.trainer_config["eval_show_ai"] or "ai" not in katrain.controls.player_mode(p) for p in Move.PLAYERS}
             nodes = katrain.game.current_node.nodes_from_root
             realized_points_lost = None
@@ -239,7 +240,7 @@ class BadukPanWidget(Widget):
 
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
-            if katrain.controls.policy.active and policy:
+            if katrain.controls.policy.active and policy and not lock_ai:
                 policy_grid = var_to_grid(policy, (board_size_x, board_size_y))
                 best_move_policy = max(*policy)
                 for y in range(board_size_y - 1, -1, -1):
@@ -295,13 +296,13 @@ class BadukPanWidget(Widget):
         current_node = katrain.game.current_node
         player, next_player = current_node.player, current_node.next_player
         stone_color = self.ui_config["stones"]
+        lock_ai = self.trainer_config.get("lock_ai", False) and katrain.controls.teaching_mode_enabled()
 
         self.canvas.after.clear()
         with self.canvas.after:
-
             # hints or PV
             self.active_hints = []
-            if katrain.controls.hints.active and not game_ended:
+            if katrain.controls.hints.active and not game_ended and not lock_ai:
                 hint_moves = current_node.candidate_moves
                 for i, d in enumerate(hint_moves):
                     move = Move.from_gtp(d["move"])
