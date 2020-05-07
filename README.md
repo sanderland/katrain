@@ -44,16 +44,15 @@ but has since grown to include a wide range of features, including:
 * This assumed you have a working Python 3.6/3.7 installation as a default. If your default is python 2, use pip3/python3. Kivy currently does not have a release for Python 3.8.
 * Git clone or download the repository.
 * Run the command `pip install kivy` in the terminal.
-* A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.3.5+ binary.
+* A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.3.5-bs29+ binary.
 * Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to KataGo's GPU tuning.
 
 ### Installation for MacOS users
 
 * Git clone or download the repository.
 * Run the command `pip install kivy` in the terminal.
-* Follow instructions [here](https://github.com/lightvector/KataGo) to install KataGo using brew, or compile it yourself.
-* Start the app by running `python katrain.py`, change the path of the 'katago' setting to `/usr/local/bin/katago` when using Brew, or the path 
-   where you compiled it, and click 'Apply and Save'.
+* Follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself -- note that the version required is currently too new for the 'brew' method.
+* Start the app by running `python katrain.py`, change the path of the 'katago' setting to the path where you compiled it, and click 'Apply and Save'.
       
 ## Manual
 
