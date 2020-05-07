@@ -3,7 +3,8 @@ from kivy_deps import sdl2, glew
 
 block_cipher = None
 
-# pyinstaller spec/katrain.spec --upx-dir my --noconfirm
+# pyinstaller spec/katrain.spec --noconfirm
+# --upx-dir my
 
 a = Analysis(['..\\katrain.py'],
              pathex=['C:\\Users\\sande\\Desktop\\katrain\\spec'],
