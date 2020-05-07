@@ -54,7 +54,7 @@ class Controls(BoxLayout):
         info = ""
 
         if current_node:
-            move = current_node.single_move
+            move = current_node.move
             both_players_are_robots = "ai" in self.player_mode(current_node.player) and "ai" in self.player_mode(current_node.next_player)
             next_player_is_human_or_both_robots = current_node.player and ("ai" not in self.player_mode(current_node.player) or both_players_are_robots)
             current_player_is_ai_playing_human = current_node.player and "ai" in self.player_mode(current_node.player) and "ai" not in self.player_mode(current_node.next_player)
@@ -73,10 +73,10 @@ class Controls(BoxLayout):
                 elif not current_player_is_ai_playing_human:
                     self.score_change.label = f"Points lost"
                     self.score_change.text = ""
-            elif current_player_is_ai_playing_human and current_node.parent and current_node.parent.single_move:
+            elif current_player_is_ai_playing_human and current_node.parent and current_node.parent.move:
                 points_lost = current_node.parent.points_lost
                 self.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
-                self.score_change.text = f"{current_node.parent.single_move.player}: {abs(points_lost):.1f}" if points_lost else "..."
+                self.score_change.text = f"{current_node.parent.move.player}: {abs(points_lost):.1f}" if points_lost else "..."
             elif both_players_are_robots and current_node.parent and current_node.parent.analysis_ready:
                 self.score.text = current_node.parent.format_score()
                 self.win_rate.text = current_node.parent.format_win_rate()

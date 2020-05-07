@@ -286,7 +286,7 @@ class Game:
             cn.analyze(engine, priority, visits=visits, refine_move=move, time_limit=False)  # explicitly requested so take as long as you need
 
     def analyze_undo(self, node, train_config):
-        move = node.single_move
+        move = node.move
         if node != self.current_node or node.auto_undo is not None or not node.analysis_ready or not move:
             return
         points_lost = node.points_lost
@@ -309,5 +309,5 @@ class Game:
         node.auto_undo = undo
         if undo:
             self.undo(1)
-            self.katrain.controls.set_status(f"Undid move {move.gtp()} as it lost {points_lost:.1f} points{xmsg}")
+            self.katrain.controls.set_status(f"Undid move {move.gtp()} as it lost {points_lost:.1f} points{xmsg}. Hover over the move to see expected refutation.")
             self.katrain.update_state()

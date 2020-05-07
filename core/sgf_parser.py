@@ -5,16 +5,19 @@ from typing import Any, Dict, List, Optional, Tuple
 
 
 class ParseError(Exception):
+    """Exception raised on a parse error"""
+
     pass
 
 
 class Move:
-    GTP_COORD = list("ABCDEFGHJKLMNOPQRSTUVWXYZ") + [xa + c for xa in "AB" for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"]  # kata board size 29 support
+    GTP_COORD = list("ABCDEFGHJKLMNOPQRSTUVWXYZ") + [xa + c for xa in "AB" for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"]  # board size 52+ support
     PLAYERS = "BW"
-    SGF_COORD = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ".lower()) + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    SGF_COORD = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ".lower()) + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")  # sgf goes to 52
 
     @classmethod
     def from_gtp(cls, gtp_coords, player="B"):
+        """Initialize a move from GTP coordinates and player"""
         if "pass" in gtp_coords.lower():
             return cls(coords=None, player=player)
         match = re.match(r"([A-Z]+)(\d+)", gtp_coords)
@@ -22,11 +25,13 @@ class Move:
 
     @classmethod
     def from_sgf(cls, sgf_coords, board_size, player="B"):
+        """Initialize a move from SGF coordinates and player"""
         if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size[0]:  # some servers use [tt] for pass
             return cls(coords=None, player=player)
-        return cls(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[1] - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
+        return cls(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[1] - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player,)
 
     def __init__(self, coords: Optional[Tuple[int, int]] = None, player: str = "B"):
+        """Initialize a move from zero-based coordinates and player"""
         self.player = player
         self.coords = coords
 
@@ -37,21 +42,25 @@ class Move:
         return self.coords == other.coords and self.player == other.player
 
     def gtp(self):
+        """Returns GTP coordinates of the move"""
         if self.is_pass:
             return "pass"
         return Move.GTP_COORD[self.coords[0]] + str(self.coords[1] + 1)
 
     def sgf(self, board_size):
+        """Returns SGF coordinates of the move"""
         if self.is_pass:
             return ""
         return f"{Move.SGF_COORD[self.coords[0]]}{Move.SGF_COORD[board_size[1] - self.coords[1] - 1]}"
 
     @property
     def is_pass(self):
+        """Returns True if the move is a pass"""
         return self.coords is None
 
     @property
     def opponent(self):
+        """Returns the opposing player, i.e. W <-> B"""
         return "W" if self.player == "B" else "B"
 
 
@@ -114,6 +123,7 @@ class SGFNode:
 
     @property
     def parent(self) -> Optional["SGFNode"]:
+        """Returns the parent node"""
         return self._parent
 
     @parent.setter
@@ -123,13 +133,15 @@ class SGFNode:
         self._depth = None
 
     @property
-    def root(self) -> "SGFNode":  # cached root property
+    def root(self) -> "SGFNode":
+        """Returns the root of the tree, cached for speed"""
         if self._root is None:
             self._root = self.parent.root if self.parent else self
         return self._root
 
     @property
-    def depth(self) -> int:  # cached depth property
+    def depth(self) -> int:
+        """Returns the depth of this node, where root is 0, cached for speed"""
         if self._depth is None:
             if self.is_root:
                 self._depth = 0
@@ -137,9 +149,9 @@ class SGFNode:
                 self._depth = self.parent.depth + 1
         return self._depth
 
-    # some root properties are available on any node
     @property
     def board_size(self) -> Tuple[int, int]:
+        """Retrieves the root's SZ property, or 19 if missing. Parses it, and returns board size as a tuple x,y"""
         size = str(self.root.get_property("SZ", "19"))
         if ":" in size:
             x, y = map(int, size.split(":"))
@@ -150,15 +162,17 @@ class SGFNode:
 
     @property
     def komi(self) -> float:
+        """Retrieves the root's KM property, or 6.5 if missing"""
         return float(self.root.get_property("KM", 6.5))
 
     @property
     def ruleset(self) -> str:
-        return self.root.get_property("RU")
+        """Retrieves the root's RU property, or 'japanese' if missing"""
+        return self.root.get_property("RU", "japanese")
 
     @property
     def moves(self) -> List[Move]:
-        """Returns all moves in the node."""
+        """Returns all moves in the node - typically 'move' will be better."""
         return [Move.from_sgf(move, player=pl, board_size=self.board_size) for pl in Move.PLAYERS for move in self.get_list_property(pl, [])]
 
     @property
@@ -172,30 +186,35 @@ class SGFNode:
         return self.placements + self.moves
 
     @property
-    def single_move(self) -> Optional[Move]:
+    def move(self) -> Optional[Move]:
         """Returns the single move for the node if one exists, or None if no moves (or multiple ones) exist."""
         moves = self.moves
-        if len(moves) == 1:  # TODO: and not placements?
+        if len(moves) == 1:
             return moves[0]
 
     @property
     def is_root(self) -> bool:
+        """Returns true if node is a root"""
         return self.parent is None
 
     @property
     def is_pass(self) -> bool:
-        return not self.placements and self.single_move and self.single_move.is_pass
+        """Returns true if associated move is pass"""
+        return not self.placements and self.move and self.move.is_pass
 
     @property
     def empty(self) -> bool:
+        """Returns true if node has no children or properties"""
         return not self.children and not self.properties
 
     @property
     def nodes_in_tree(self) -> List:
+        """Returns all nodes in the tree rooted at this node"""
         return [self] + sum([c.nodes_in_tree for c in self.children], [])
 
     @property
     def nodes_from_root(self) -> List:
+        """Returns all nodes from the root up to this node, i.e. the moves played in the current branch of the game"""
         nodes = [self]
         n = self
         while not n.is_root:
@@ -206,12 +225,13 @@ class SGFNode:
     def play(self, move) -> "SGFNode":
         """Either find an existing child or create a new one with the given move."""
         for c in self.children:
-            if c.single_move == move:
+            if c.move == move:
                 return c
         return self.__class__(parent=self, move=move)
 
     @property
     def next_player(self):
+        """Returns player to move"""
         if "B" in self.properties or "AB" in self.properties:  # root or black moved
             return "W"
         else:
@@ -219,21 +239,26 @@ class SGFNode:
 
     @property
     def player(self):
+        """Returns player that moved last. nb root is considered white played if no handicap stones are placed"""
         if "B" in self.properties or "AB" in self.properties:
             return "B"
         else:
-            return "W"  # nb root is considered white played if no handicap stones are placed
+            return "W"
 
 
 class SGF:
+    """Class used for SGF Nodes, can change this to something that inherits from SGFNode"""
+
     _NODE_CLASS = SGFNode
 
     @classmethod
     def parse(cls, input_str) -> SGFNode:
+        """Parse a string as SGF."""
         return cls(input_str).root
 
     @classmethod
     def parse_file(cls, filename, encoding=None) -> SGFNode:
+        """Parse a file as SGF, encoding will be detected if not given."""
         with open(filename, "rb") as f:
             bin_contents = f.read()
             if not encoding:

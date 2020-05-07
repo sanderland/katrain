@@ -173,11 +173,11 @@ If you ever need to reset to the original settings, simply re-download the `conf
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
 * KataGo crashes with out of memory errors, how can I prevent this?
-  *  Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using the board size 29 version.
+  *  Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using versions compiled with large board sizes.
  
 ## Contributing
 
-* Feedback and pull requests are both very welcome.
+* Feedback and pull requests are both very welcome. I would also be happy to host translations of this manual into languages where English fluency is typically lower.
 * For suggestions and planned improvements, see the 'issues' tab on github.
-* You can also contact me on discord (Sander#3278) or [reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
-
+* You can also contact me on discord (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) or [Reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
+* Some people have also asked me how to donate. Something go-related such as a book or teaching time is highly appreciated.

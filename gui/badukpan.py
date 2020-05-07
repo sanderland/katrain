@@ -25,7 +25,7 @@ class BadukPanWidget(Widget):
         self.grid_size = 0
         self.stone_size = 0
         self.last_eval = 0
-        self.active_hints = []
+        self.active_pv_moves = []
         self.show_pv_for = None
         self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents)
         Window.bind(mouse_pos=self.on_mouse_pos)
@@ -60,10 +60,10 @@ class BadukPanWidget(Widget):
             pos = args[1]
             rel_pos = self.to_widget(*pos)  # compensate for relative layout
             inside = self.collide_point(*rel_pos)
-            if inside and self.active_hints:
+            if inside and self.active_pv_moves:
                 near_move = [
                     move
-                    for move in self.active_hints
+                    for move in self.active_pv_moves
                     if abs(rel_pos[0] - self.gridpos_x[move[0]]) < self.grid_size / 2 and abs(rel_pos[1] - self.gridpos_y[move[1]]) < self.grid_size / 2
                 ]
                 if near_move:
@@ -81,7 +81,7 @@ class BadukPanWidget(Widget):
             xd, xp = self._find_closest(touch.x, self.gridpos_x)
             yd, yp = self._find_closest(touch.y, self.gridpos_y)
 
-            nodes_here = [node for node in katrain.game.current_node.nodes_from_root if node.single_move and node.single_move.coords == (xp, yp)]
+            nodes_here = [node for node in katrain.game.current_node.nodes_from_root if node.move and node.move.coords == (xp, yp)]
             if nodes_here and max(yd, xd) < self.grid_size / 2:  # load old comment
                 if touch.is_double_tap:  # navigate to move
                     katrain.game.set_current_node(nodes_here[-1])
@@ -89,8 +89,7 @@ class BadukPanWidget(Widget):
                 else:  # load comments
                     katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
                     katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_DEBUG)
-                    katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
-                    katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
+                    katrain.controls.info.text = nodes_here[-1].comment(sgf=True, interactive=True)
 
         self.ghost_stone = None
         self.draw_hover_contents()  # remove ghost
@@ -256,23 +255,6 @@ class BadukPanWidget(Widget):
                 with pass_btn.canvas.after:
                     draw_circle((pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2), polsize * pass_btn.height / 2, self.ui_config["policy_color"])
 
-            # children of current moves in undo / review
-            undo_coords = set()
-            if katrain.controls.show_children.active:
-                alpha = self.ui_config["ghost_alpha"]
-                for child_node in current_node.children:
-                    points_lost = child_node.points_lost
-                    m = child_node.single_move
-                    if m and m.coords is not None:
-                        undo_coords.add(m.coords)
-                        if points_lost is None:
-                            evalcol = None
-                        else:
-                            evalcol = copy.copy(self.eval_color(points_lost))
-                            evalcol[3] = alpha
-                        scale = self.ui_config["child_scale"]
-                        self.draw_stone(m.coords[0], m.coords[1], (*stone_color[m.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
-
             # pass circle
             passed = len(nodes) > 1 and current_node.is_pass
             if passed:
@@ -296,48 +278,72 @@ class BadukPanWidget(Widget):
         current_node = katrain.game.current_node
         player, next_player = current_node.player, current_node.next_player
         stone_color = self.ui_config["stones"]
-        lock_ai = self.trainer_config.get("lock_ai", False) and katrain.controls.teaching_mode_enabled()
+        teaching = katrain.controls.teaching_mode_enabled()
+        lock_ai = self.trainer_config.get("lock_ai", False) and teaching
 
         self.canvas.after.clear()
         with self.canvas.after:
+            self.active_pv_moves = []
+
+            # children of current moves in undo / review
+            if katrain.controls.show_children.active:
+                alpha = self.ui_config["ghost_alpha"]
+                for child_node in current_node.children:
+                    points_lost = child_node.points_lost
+                    move = child_node.move
+                    if move and move.coords is not None:
+                        if points_lost is None:
+                            evalcol = None
+                        else:
+                            evalcol = copy.copy(self.eval_color(points_lost))
+                            evalcol[3] = alpha
+                        self.active_pv_moves.append(move.coords)
+                        if teaching and move.coords == self.show_pv_for and child_node.analysis_ready:
+                            self.draw_pv(katrain, [move.gtp()] + child_node.candidate_moves[0].get("pv", []), [next_player, player])
+                        else:
+                            scale = self.ui_config["child_scale"]
+                            self.draw_stone(move.coords[0], move.coords[1], (*stone_color[move.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
+
             # hints or PV
-            self.active_hints = []
             if katrain.controls.hints.active and not game_ended and not lock_ai:
                 hint_moves = current_node.candidate_moves
-                for i, d in enumerate(hint_moves):
-                    move = Move.from_gtp(d["move"])
-                    if move.coords is not None:  # and move.coords not in undo_coords:
+                for i, move_dict in enumerate(hint_moves):
+                    move = Move.from_gtp(move_dict["move"])
+                    if move.coords is not None:
                         alpha, scale = self.ui_config["ghost_alpha"], 1.0
                         if i == 0:
                             alpha += self.ui_config["top_move_x_alpha"]
-                        elif d["visits"] < self.ui_config["visit_frac_small"] * hint_moves[0]["visits"]:
+                        elif move_dict["visits"] < self.ui_config["visit_frac_small"] * hint_moves[0]["visits"]:
                             scale = 0.8
-                        self.active_hints.append(move.coords)
-
-                        if move.coords == self.show_pv_for:  # TODO: overlapping moves
-                            pv = d.get("pv", [move.gtp()])  # if empty, show current move at least
-                            for i, gtpmove in enumerate(pv):
-                                move_player = [next_player, player][i % 2]
-                                opp_player = [next_player, player][1 - i % 2]
-                                coords = Move.from_gtp(gtpmove).coords
-                                if coords is None:  # tee-hee
-                                    sizefac = katrain.board_controls.pass_btn.size[1] / 2 / self.stone_size
-                                    board_coords = [
-                                        katrain.board_controls.pass_btn.pos[0] + katrain.board_controls.pass_btn.size[0] + self.stone_size * sizefac,
-                                        katrain.board_controls.pass_btn.pos[1] + katrain.board_controls.pass_btn.size[1] / 2,
-                                    ]
-                                else:
-                                    board_coords = (self.gridpos_x[coords[0]], self.gridpos_y[coords[1]])
-                                    sizefac = 0.95
-                                draw_circle(board_coords, self.stone_size * sizefac, stone_color[move_player])
-                                Color(*stone_color[opp_player])
-                                draw_text(pos=board_coords, text=str(i + 1), font_size=sizefac * self.grid_size / 1.45)
+                        self.active_pv_moves.append(move.coords)
+                        if move.coords == self.show_pv_for:
+                            self.draw_pv(katrain, move_dict.get("pv", [move.gtp()]), [next_player, player])  # if empty, show current move at least
                         elif not self.show_pv_for:
-                            self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(d["pointsLost"])[:3], alpha], scale=scale)
+                            self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(move_dict["pointsLost"])[:3], alpha], scale=scale)
 
             # hover next move ghost stone
             if self.ghost_stone:
                 self.draw_stone(*self.ghost_stone, (*stone_color[next_player], ghost_alpha))
+
+    def draw_pv(self, katrain, pv, next_last_player):
+        # TODO: overlapping moves
+        stone_color = self.ui_config["stones"]
+        for i, gtpmove in enumerate(pv):
+            move_player = next_last_player[i % 2]
+            opp_player = next_last_player[1 - i % 2]
+            coords = Move.from_gtp(gtpmove).coords
+            if coords is None:  # tee-hee
+                sizefac = katrain.board_controls.pass_btn.size[1] / 2 / self.stone_size
+                board_coords = [
+                    katrain.board_controls.pass_btn.pos[0] + katrain.board_controls.pass_btn.size[0] + self.stone_size * sizefac,
+                    katrain.board_controls.pass_btn.pos[1] + katrain.board_controls.pass_btn.size[1] / 2,
+                ]
+            else:
+                board_coords = (self.gridpos_x[coords[0]], self.gridpos_y[coords[1]])
+                sizefac = 0.95
+            draw_circle(board_coords, self.stone_size * sizefac, stone_color[move_player])
+            Color(*stone_color[opp_player])
+            draw_text(pos=board_coords, text=str(i + 1), font_size=sizefac * self.grid_size / 1.45)
 
 
 class BadukPanControls(BoxLayout):
