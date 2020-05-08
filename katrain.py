@@ -187,7 +187,7 @@ class KaTrainGui(BoxLayout):
             self.fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8)).__self__
             popup_contents = LoadSGFPopup()
             self.fileselect_popup.add_widget(popup_contents)
-            popup_contents.filesel.path = os.path.expanduser(self.config("sgf/sgf_load"))
+            popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("sgf/sgf_load")))
 
             def readfile(files, _mouse):
                 self.fileselect_popup.dismiss()
