@@ -45,7 +45,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         ai_thoughts += f"Using policy based strategy, base top 5 moves are {fmt_moves(policy_moves[:5])}. "
         if "policy" in ai_mode and cn.depth <= int(ai_settings["opening_moves"] * (game.board_size[0] * game.board_size[1])):
             ai_mode = "p:weighted"
-            ai_thoughts += f"Switching to weighted strategy in the opening {int(ai_settings['opening_moves'] * (game.board_size[0]*game.board_size[1]))} moves."
+            ai_thoughts += f"Switching to weighted strategy in the opening {int(ai_settings['opening_moves'] * (game.board_size[0]*game.board_size[1]))} moves. "
             ai_settings = {"pick_override": 0.9, "weaken_fac": 1, "lower_bound": 0.02}
         if top_5_pass:
             aimove = top_policy_move
@@ -57,9 +57,14 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             aimove = top_policy_move
             ai_thoughts += f"Top policy move has weight > {ai_settings['pick_override']:.1%}, so overriding other strategies."
         elif "weighted" in ai_mode:
-            lower_bound = max(0, ai_settings["lower_bound"])
+            lower_bound = max(0, ai_settings["lower_bound"]) * 2  # compensate for first halving in loop
             weaken_fac = max(0.01, ai_settings["weaken_fac"])
-            weighted_coords = [(policy_grid[y][x], policy_grid[y][x] ** (1 / weaken_fac), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > lower_bound]
+            weighted_coords = []
+            while not weighted_coords and lower_bound > 1e-6:  # fix edge case where no moves are > lb
+                lower_bound /= 2
+                weighted_coords = [
+                    (policy_grid[y][x], policy_grid[y][x] ** (1 / weaken_fac), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > lower_bound
+                ]
             top = weighted_selection_without_replacement(weighted_coords, 1)
             if top:
                 best = top[0]

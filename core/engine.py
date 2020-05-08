@@ -91,30 +91,27 @@ class KataGoEngine:
             if not line:
                 continue
             analysis = json.loads(line)
-            if analysis["id"] in self.queries:
-                query_id = analysis["id"]
-                callback, error_callback, start_time, next_move = self.queries[query_id]
-            else:
+            if analysis["id"] not in self.queries:
                 self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
                 continue
+            query_id = analysis["id"]
+            callback, error_callback, start_time, next_move = self.queries[query_id]
+            del self.queries[query_id]
             if "error" in analysis:
                 if error_callback:
                     error_callback(analysis)
                 elif not (next_move and "Illegal move" in analysis["error"]):  # sweep
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
-                continue
             else:
-                callback, error_callback, start_time, next_move = self.queries[query_id]
                 time_taken = time.time() - start_time
                 self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG)
                 self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
-                del self.queries[query_id]
                 try:
                     callback(analysis)
                 except Exception as e:
                     self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
-                if getattr(self.katrain, "update_state", None):  # easier mocking etc
-                    self.katrain.update_state()
+            if getattr(self.katrain, "update_state", None):  # easier mocking etc
+                self.katrain.update_state()
 
     def send_query(self, query, callback, error_callback, next_move=None):
         with self._lock:

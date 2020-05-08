@@ -170,11 +170,8 @@ class GameNode(SGFNode):
             return [{**self.analysis["root"], "pointsLost": 0, "order": 0, "move": top_polmove.gtp()}]  # single visit -> go by policy/root
 
         root_score = self.analysis["root"]["scoreLead"]
-        move_dicts = list(self.analysis["moves"].values()) # prevent incoming analysis from causing crash
-        return sorted(
-            [{"pointsLost": self.player_sign(self.next_player) * (root_score - d["scoreLead"]), **d} for d in move_dicts],
-            key=lambda d: (d["order"], d["pointsLost"]),
-        )
+        move_dicts = list(self.analysis["moves"].values())  # prevent incoming analysis from causing crash
+        return sorted([{"pointsLost": self.player_sign(self.next_player) * (root_score - d["scoreLead"]), **d} for d in move_dicts], key=lambda d: (d["order"], d["pointsLost"]))
 
     @property
     def policy_ranking(self) -> Optional[List[Tuple[float, Move]]]:  # return moves from highest policy value to lowest
