@@ -169,8 +169,10 @@ class GameNode(SGFNode):
             top_polmove = polmoves[0][1] if polmoves else Move(None)  # if no info at all, pass
             return [{**self.analysis["root"], "pointsLost": 0, "order": 0, "move": top_polmove.gtp()}]  # single visit -> go by policy/root
 
+        root_score = self.analysis["root"]["scoreLead"]
+        move_dicts = list(self.analysis["moves"].values()) # prevent incoming analysis from causing crash
         return sorted(
-            [{"pointsLost": self.player_sign(self.next_player) * (self.analysis["root"]["scoreLead"] - d["scoreLead"]), **d} for d in self.analysis["moves"].values()],
+            [{"pointsLost": self.player_sign(self.next_player) * (root_score - d["scoreLead"]), **d} for d in move_dicts],
             key=lambda d: (d["order"], d["pointsLost"]),
         )
 

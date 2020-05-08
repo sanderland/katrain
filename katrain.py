@@ -197,6 +197,8 @@ class KaTrainGui(BoxLayout):
                     self.log(f"Failed to load SGF. Parse Error: {e}", OUTPUT_ERROR)
                     return
                 self._do_new_game(move_tree=move_tree, analyze_fast=popup_contents.fast.active)
+                if not popup_contents.rewind.active:
+                    self.game.redo(999)
 
             popup_contents.filesel.on_submit = readfile
         self.fileselect_popup.open()
