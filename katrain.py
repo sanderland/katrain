@@ -91,7 +91,7 @@ class KaTrainGui(BoxLayout):
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
         auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
-        if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready:
+        if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready and not cn.children and not self.game.ended:
             self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
         if cn.analysis_ready and "ai" in self.controls.player_mode(cn.next_player).lower() and not cn.children and not self.game.ended and not (auto_undo and cn.auto_undo is None):
             self._do_ai_move(cn)  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
