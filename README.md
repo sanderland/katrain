@@ -51,8 +51,15 @@ but has since grown to include a wide range of features, including:
 
 * Git clone or download the repository.
 * Run the command `pip install kivy` in the terminal.
-* Follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself -- note that the version required is currently too new for the 'brew' method.
-* Start the app by running `python katrain.py`, change the path of the 'katago' setting to the path where you compiled it, and click 'Apply and Save'.
+* Either follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself, or...
+* Install using [Homebrew](https://brew.sh/)
+   * Note that the version required is currently too new
+   * So, execute `homebrew edit katago` and replace lines 4-5 with
+   * ```
+      url "https://github.com/lightvector/KataGo/archive/v1.3.5+bs29.tar.gz"
+      sha256 "aa0afe1074aebd300e94b84902c4a98e3b7621c9f756129547472e94b094f70d"
+      ```
+* Start the app by running `python katrain.py`, change the path of the 'katago' setting to the path where you compiled it (or `/usr/local/bin/katago` for homebrew) and click 'Apply and Save'.
       
 ## Manual
 
