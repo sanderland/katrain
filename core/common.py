@@ -1,6 +1,7 @@
 from typing import Any, List, Tuple
 
 OUTPUT_ERROR = -1
+OUTPUT_KATAGO_STDERR = -0.5
 OUTPUT_INFO = 0
 OUTPUT_DEBUG = 1
 OUTPUT_EXTRA_DEBUG = 2

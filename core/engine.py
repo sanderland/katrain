@@ -6,7 +6,7 @@ import threading
 import time
 from typing import Callable, Optional
 
-from core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG
+from core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from core.game_node import GameNode
 
 
@@ -38,11 +38,12 @@ class KataGoEngine:
         self._lock = threading.Lock()
         self.start()
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
+        self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
 
     def start(self):
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
-            self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except FileNotFoundError as e:
             self.katrain.log(
                 f"Starting kata with command '{self.command}' failed with error {e}. Please make sure the 'katago' value under 'engine' in settings points to the correct KataGo executable.",
@@ -69,6 +70,15 @@ class KataGoEngine:
 
     def is_idle(self):
         return not self.queries
+
+    def _read_stderr_thread(self):
+        while self.katago_process is not None:
+            try:
+                line = self.katago_process.stderr.readline()
+                if line:
+                    self.katrain.log(line.decode(), OUTPUT_KATAGO_STDERR)
+            except:
+                return
 
     def _analysis_read_thread(self):
         while self.katago_process is not None:

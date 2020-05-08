@@ -17,7 +17,7 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
 
 from core.ai import ai_move
-from core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG
+from core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from core.engine import KataGoEngine
 from core.game import Game, IllegalMoveException, KaTrainSGF
 from core.sgf_parser import Move, ParseError
@@ -47,7 +47,15 @@ class KaTrainGui(BoxLayout):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def log(self, message, level=OUTPUT_INFO):
-        if level == OUTPUT_ERROR:
+        if level == OUTPUT_KATAGO_STDERR:
+            if "starting" in message.lower():
+                self.controls.set_status(f"KataGo engine starting...")
+            if message.startswith("Tuning"):
+                self.controls.set_status(f"KataGo is tuning settings for first startup, please wait." + message)
+            if "ready" in message.lower():
+                self.controls.set_status(f"KataGo engine ready.")
+            print(f"[KG:STDERR]{message}")
+        elif level == OUTPUT_ERROR:
             self.controls.set_status(f"ERROR: {message}")
             print(f"ERROR: {message}")
         elif self.debug_level >= level:
