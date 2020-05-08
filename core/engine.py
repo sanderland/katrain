@@ -28,7 +28,7 @@ class KataGoEngine:
     def __init__(self, katrain, config):
         self.katrain = katrain
         self.command = f"{config['katago']} analysis -model {config['model']} -config {config['config']} -analysis-threads {config['threads']}"
-        if "win" not in sys.platform:
+        if not sys.platform.startswith("win"):
             self.command = shlex.split(self.command)
         self.queries = {}  # outstanding query id -> start time and callback
         self.config = config
