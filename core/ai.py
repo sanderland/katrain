@@ -152,7 +152,13 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             sign = cn.player_sign(cn.next_player)
             jigo_move = min(candidate_ai_moves, key=lambda move: abs(sign * move["scoreLead"] - ai_settings["target_score"]))
             aimove = Move.from_gtp(jigo_move["move"], player=cn.next_player)
-            ai_thoughts += f"Jigo strategy found candidate moves {candidate_ai_moves} moves and chose {aimove.gtp()} as closest to 0.5 point win"
+            ai_thoughts += f"Jigo strategy found {len(candidate_ai_moves)} candidate moves and chose {aimove.gtp()} as closest to 0.5 point win"
+        elif "scoreloss" in ai_mode and candidate_ai_moves[0]["move"] != "pass":
+            c = ai_settings["strength"]
+            moves = [[d['pointsLost'],math.exp(-c*d['pointsLost']),Move.from_gtp(d['move'])] for d in candidate_ai_moves]
+            topmove = weighted_selection_without_replacement(moves,1)[0]
+            aimove = topmove[2]
+            ai_thoughts += f"ScoreLoss strategy found {len(candidate_ai_moves)} candidate moves and chose {aimove.gtp()} (weight {topmove[1]}, point loss {topmove[0]}) as based on score weights."
         else:
             if "default" not in ai_mode and "katago" not in ai_mode:
                 game.katrain.log(f"Unknown AI mode {ai_mode} or policy missing, using default.", OUTPUT_INFO)

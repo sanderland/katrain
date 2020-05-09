@@ -64,6 +64,11 @@
             "_help_left": "Will try to win by `target_score`, without further restrictions.",
             "_help_right": "Also affected by engine settings such as `max_visits`."
         },
+        "ScoreLoss": {
+            "strength": 0.5,
+            "_help_left": "Plays moves weighted inversely by point loss.",
+            "_help_right": "Also affected by engine settings such as `max_visits`."
+        },
         "Policy": {
             "opening_moves": 0.05,
             "_help_left": "Strength is mainly affected by `model` in engine settings, but should be high dan regardless.",
