@@ -101,7 +101,7 @@
             "stddev": 7.5,
             "pick_n": 5,
             "pick_frac": 0.5,
-            "endgame": 0.5,
+            "endgame": 0.45,
             "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` away from the last move and plays the best one.",
             "_help_right": "Increase `stddev` makes it prefer moves further away. Stops tenukiing after the 'endgame' fraction of the board is filled."
         },
@@ -111,8 +111,9 @@
             "pick_frac": 0.4,
             "threshold": 3.5,
             "line_weight": 10,
+            "endgame": 0.4,
             "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to above the `threshold` line.",
-            "_help_right": "Increase `line_weight` to penalize moves near the edge more."
+            "_help_right": "Increase `line_weight` to penalize moves near the edge more. Stops strategy after the 'endgame' fraction of the board is filled."
         },
         "P:Territory": {
             "pick_override": 0.95,
@@ -120,8 +121,9 @@
             "pick_frac": 0.4,
             "threshold": 3.5,
             "line_weight": 2,
+            "endgame": 0.4,
             "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to below the `threshold` line.",
-            "_help_right": "Increase `line_weight` to penalize moves closer to the center more."
+            "_help_right": "Increase `line_weight` to penalize moves closer to the center more.  Stops strategy after the 'endgame' fraction of the board is filled."
         }
     },
     "board_ui": {

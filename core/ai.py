@@ -95,13 +95,18 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             legal_policy_moves = [(pol, mv) for pol, mv in policy_moves if not mv.is_pass if pol > 0]
             n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])
             if "influence" in ai_mode or "territory" in ai_mode:
+
                 thr_line = ai_settings["threshold"] - 1  # zero-based
-                if "influence" in ai_mode:
-                    weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (max(0, thr_line - min(size[0] - 1 - x, x)) + max(0, thr_line - min(size[1] - 1 - y, y)))
+                if cn.depth >= ai_settings["endgame"] * size[0] * size[1]:
+                    weighted_coords = [(policy_grid[y][x], 1, x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
+                    ai_thoughts += f"Generated equal weights as move number >= {ai_settings['endgame'] * size[0] * size[1]}. "
                 else:
-                    weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (max(0, min(size[0] - 1 - x, x, size[1] - 1 - y, y) - thr_line))
-                weighted_coords = [(policy_grid[y][x] * weight(x, y), weight(x, y), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
-                ai_thoughts += f"Generated weights for {ai_mode} according to weight factor {ai_settings['line_weight']} and distance from {thr_line+1}th line. "
+                    if "influence" in ai_mode:
+                        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (max(0, thr_line - min(size[0] - 1 - x, x)) + max(0, thr_line - min(size[1] - 1 - y, y)))
+                    else:
+                        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (max(0, min(size[0] - 1 - x, x, size[1] - 1 - y, y) - thr_line))
+                    weighted_coords = [(policy_grid[y][x] * weight(x, y), weight(x, y), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
+                    ai_thoughts += f"Generated weights for {ai_mode} according to weight factor {ai_settings['line_weight']} and distance from {thr_line+1}th line. "
             elif "local" in ai_mode or "tenuki" in ai_mode:
                 var = ai_settings["stddev"] ** 2
                 if not cn.move or cn.move.coords is None:
