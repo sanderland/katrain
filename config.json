@@ -7,6 +7,7 @@
         "max_visits": 500,
         "fast_visits": 50,
         "max_time": 3.0,
+        "wide_root_noise": 0.0,
         "_enable_ownership": true
     },
     "sgf": {

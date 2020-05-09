@@ -144,13 +144,14 @@ If you ever need to reset to the original settings, simply re-download the `conf
 ### Settings Panel
 
 * engine settings
-    * max_visits: the number of visits used in analyses and AI moves, higher is more accurate but slower.
-    * max_time: maximal time in seconds for analyses, even when the target number of visits has not been reached.    
-    * fast_visits: the number of visits used for certain operations with fewer visits.
-    * katago: path to your KataGo executable.
-    * model: path to your KataGo model file.
-    * config: path to your KataGo config file.    
-    * threads: number of threads to use in the KataGo analysis engine.
+    * max_visits: The number of visits used in analyses and AI moves, higher is more accurate but slower.
+    * max_time: Maximal time in seconds for analyses, even when the target number of visits has not been reached.    
+    * fast_visits: The number of visits used for certain operations with fewer visits.
+    * wide_root_noise: Consider a wider variety of moves, using KataGo's `analysisWideRootNoise` option. Will affect both analysis and AIs such as ScoreLoss. 
+    * katago: Path to your KataGo executable.
+    * model: Path to your KataGo model file. Note that the default model file included is an older 15 block one. Replace it with a new model from [here](https://github.com/lightvector/KataGo/releases) for maximal strength.
+    * config: Path to your KataGo config file.    
+    * threads: Number of threads to use in the KataGo analysis engine.
 * game settings
     * init_size: the initial size of the board, on start-up.
     * init_komi: likewise, for komi.
