@@ -116,11 +116,16 @@ while True:
         print(f"= {' '.join(gtp)}\n")
         sys.stdout.flush()
         game.analyze_all_nodes()  # re-evaluate root
+        while engine.queries:  # and make sure this gets processed
+            time.sleep(0.001)
         continue
     elif "set_free_handicap" in line:
         _, *stones = line.split(" ")
         game.root.set_property("AB", [Move.from_gtp(move.upper()).sgf(game.board_size) for move in stones])
         game._calculate_groups()
+        game.analyze_all_nodes()  # re-evaluate root
+        while engine.queries:  # and make sure this gets processed
+            time.sleep(0.001)
         logger.log(f"Set handicap placements to {game.root.get_list_property('AB')}", OUTPUT_ERROR)
     elif "genmove" in line:
         _, player = line.strip().split(" ")
