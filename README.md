@@ -24,17 +24,17 @@ but has since grown to include a wide range of features, including:
 * To analyze a game, load it using the button in the bottom right, or press `ctrl-L`
 * To play against AI, pick an AI from the dropdown and either 'human' or 'teach' for yourself and start playing.
     * For different board sizes, use the button with the little goban in the bottom right for a new game.
-       
+
 ## Installation
 
 ### Quick Installation for Windows users
 
  * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers.
- 
+
 ### Installation from source for Windows users
 
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
-* Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/distribution/#download-section). 
+* Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/distribution/#download-section).
 * Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
 * Execute the command `pip install kivy_deps.glew kivy_deps.sdl2 kivy_deps.gstreamer kivy`
 * Start the app by running `python katrain.py` in the directory where you downloaded the scripts. Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
@@ -49,39 +49,78 @@ but has since grown to include a wide range of features, including:
 
 ### Installation for MacOS users
 
-* Git clone or download the repository.
-* Run the command `pip install kivy` in the terminal.
-* Either follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself, or...
-* Install using [Homebrew](https://brew.sh/)
-   * Note that the version required is currently too new
-   * So, execute `homebrew edit katago` and replace lines 4-5 with
+* Download and install [Python 3.7.5] (https://www.python.org/downloads/release/python-375/)
+* Install [Homebrew] (https://brew.sh) by running the following command in terminal
+* `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"`
+* Run the command `pip3 install kivy` in the terminal.
+* Install Katago using [Homebrew](https://brew.sh/)
+   * Note that the version required for Katrain is currently too new so we need to update the Homebrew script.
+   * Run the command `homebrew edit katago` and replace lines 4-5 with
    * ```
       url "https://github.com/lightvector/KataGo/archive/v1.3.5+bs29.tar.gz"
       sha256 "aa0afe1074aebd300e94b84902c4a98e3b7621c9f756129547472e94b094f70d"
       ```
-* Start the app by running `python katrain.py`, change the path of the 'katago' setting to the path where you compiled it (or `/usr/local/bin/katago` for homebrew) and click 'Apply and Save'.
-      
+    * You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself
+* Now that the dependencies are installed Git clone or download the katrain repository
+* Start katrain by running `python3 katrain.py` in the terminal. Note you need to run the command in the Katrain folder. The easiest way to do this is to type `cd` in terminal and then drag the Katrain folder into the terminal window. This will copy its paths for you.
+* The frist time you run Katrain you will see an error about initializing KataGo.
+* Open the settings dialog by clicking on the gear icon and change the path of the 'katago' setting to `/usr/local/bin/katago` (or the path where you compiled KataGo) then click 'Apply and Save'.
+
+Configuring the GPU KataGo uses.
+  When KataGo initializes it will automatically search for OpenCL devices and select the highest scoring device. If you have multiple GPUs or want to force a specific device you will need to edit the 'analysis_config.cfg' file in the KataGo folder.
+
+To see what devices are available and which one KataGo is using. Look for the following lines in the terminal after running `python3 katrain.py`
+
+``
+Found OpenCL Platform 0: Apple (Apple) (OpenCL 1.2 (Feb 29 2020 00:40:07))
+Found 3 device(s) on platform 0 with type CPU or GPU or Accelerator
+Found OpenCL Device 0: Intel(R) Core(TM) i9-9880H CPU @ 2.30GHz (Intel) (score 102)
+Found OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) (score 6000102)
+Found OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) (score 11000102)
+Using OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) OpenCL 1.2
+``
+
+The above devices were found on a 2019 macbook pro with a discreet video card, the AMD Radeon Pro 550M. As you can see it scores about twice as high as the Intel UHD chip and KataGo has selected it as it's sole device. You can configure KataGo to use BOTH the AMD and the Intel devices to get the best performance out of the system.
+
+* Open the 'analysis_config.cfg' file in the KataGo folder.
+* Uncomment line 75 by deleting the # and setting the value to 2. The line should read `numNNServerThreadsPerModel = 2`
+* Uncomment lines 117 - 118 by deleting the # and set the values to the device ID numbers identified in the terminal.
+  From the example above I'v selected 1 & 2 for the Intel and AMD GPU's
+``
+openclDeviceToUseThread0 = 1
+openclDeviceToUseThread1 = 2
+``
+* Run `python3 katrain.py` and confrim that KataGo is now using both devices. (Note that the first time a device is used it needs to be tuned which will take a few mintues). Below is the update output from the terminal.
+``
+Found OpenCL Platform 0: Apple (Apple) (OpenCL 1.2 (Feb 29 2020 00:40:07))
+Found 3 device(s) on platform 0 with type CPU or GPU or Accelerator
+Found OpenCL Device 0: Intel(R) Core(TM) i9-9880H CPU @ 2.30GHz (Intel) (score 102)
+Found OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) (score 6000102)
+Found OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) (score 11000102)
+Using OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) OpenCL 1.2
+Using OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) OpenCL 1.2
+``
 ## Manual
 
 ### Play
 
 Under the 'play' tab you can select who is playing black and white.
 * Human is simple play with potential feedback, but without auto-undo.
-* Teach will give you instant feedback, and auto-undo bad moves to give you a second chance. 
+* Teach will give you instant feedback, and auto-undo bad moves to give you a second chance.
     * Settings for this mode can be found under 'Configure Teacher'
 * AI will activate the AI in the dropdown menu next to the buttons.
     * Settings for all AIs can be found under 'Configure AIs'
- 
+
 If you do not want to see 'Points lost' or other feedback for your moves,
  set 'show last n dots' to 0 under 'Configure Teacher', and click on the words 'Points lost' to hide its value.
- 
+
 #### What are all these coloured dots?
 
 The dots indicate how many points were lost by that move.
 
 * The colour indicates the size of the mistake according to kata
 * The size indicates if the mistake was actually punished. Going from fully punished at maximal size,
-  to no actual effect on the score at minimal size. 
+  to no actual effect on the score at minimal size.
 
 In short, if you are a weaker player you should mostly on large dots that are red or purple,
 while stronger players can pay more attention to smaller mistakes.
@@ -90,8 +129,8 @@ while stronger players can pay more attention to smaller mistakes.
 
 Available AIs, with strength indicating an estimate for the default settings, are:
 
-* **[9p+]** **Default** is full KataGo, above professional level. 
-* **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points. 
+* **[9p+]** **Default** is full KataGo, above professional level.
+* **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points.
 * **Jigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
 * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used. There is a setting to increase variety in the opening, but otherwise it plays deterministically.
 * **[~5k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
@@ -100,9 +139,9 @@ Available AIs, with strength indicating an estimate for the default settings, ar
    This, along with 'Weighted' are probably the best choice for kyu players who want a chance of winning without playing the sillier bots below. Variants of this strategy include:
     * **[~5k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
     * **[~10k]**: **~P:Tenuki** is biased in the opposite way as P:Local, using the same setting.
-    * **[~10k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight. 
-    * **[~10k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting. 
-* * **[~5k]**: **P:Noise** mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. A threshold setting is included to avoid senseless first-line moves. 
+    * **[~10k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight.
+    * **[~10k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting.
+* * **[~5k]**: **P:Noise** mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. A threshold setting is included to avoid senseless first-line moves.
 
 Selecting the AI as either white or black opens up the option to configure it under 'Configure AI'.
 
@@ -112,7 +151,7 @@ Keyboard shortcuts are shown with **[key]**.
 
 * The checkboxes configure:
     * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when wanting to guess the next move.
-    * **[w]**: All dots: Show all evaluation dots instead of the last few. 
+    * **[w]**: All dots: Show all evaluation dots instead of the last few.
         * You can configure how many are shown with this setting off, and whether they are shown for AIs under 'Play/Configure Teacher'.
     * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. Small dots indicate high uncertainty. Hover over any of them to see the principal variation.
     * **[r]**: Show owner: Show expected ownership of each intersection.
@@ -168,7 +207,7 @@ If you ever need to reset to the original settings, simply re-download the `conf
     * sgf_save: path where SGF files are saved.    
 * board_ui settings
     * eval_dot_max_size: size of coloured dots when point size is maximal, relative to stone size.
-    * eval_dot_min_size: size of coloured dots when point size is minimal 
+    * eval_dot_min_size: size of coloured dots when point size is minimal
     * ... various other minor cosmetic options.
 * debug settings
     * level: determines the level of output in the console, where 0 shows no debug output, 1 shows some and 2 shows a lot. This is mainly used for reporting bugs.
@@ -181,7 +220,7 @@ If you ever need to reset to the original settings, simply re-download the `conf
   *  Adjust the number of visits or maximum time allowed in the settings.
 * KataGo crashes with out of memory errors, how can I prevent this?
   *  Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using versions compiled with large board sizes.
- 
+
 ## Contributing
 
 * Feedback and pull requests are both very welcome. I would also be happy to host translations of this manual into languages where English fluency is typically lower.
