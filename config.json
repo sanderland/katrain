@@ -67,7 +67,7 @@
         "ScoreLoss": {
             "strength": 0.5,
             "_help_left": "Plays moves weighted inversely by point loss.",
-            "_help_right": "Also affected by engine settings such as `max_visits`."
+            "_help_right": "Also affected by engine settings such as `max_visits`, likely to play more varied/weaker with higher visits."
         },
         "Policy": {
             "opening_moves": 0.05,
@@ -80,13 +80,6 @@
             "pick_override": 1.0,
             "lower_bound": 0.001,
             "weaken_fac": 1.25
-        },
-        "P:Noise": {
-            "pick_override": 0.95,
-            "noise_strength": 0.6,
-            "lower_bound": 0.001,
-            "_help_left": "Adds `noise_strength` noise to the policy of all moved > 'lower_bound' and plays the top move.",
-            "_help_right": "Plays top move if policy value is above `pick_override` to avoid obvious mistakes. Noise above 0.9 is near random, below 0.7 is fairly strong."
         },
         "P:Pick": {
             "pick_override": 0.95,
@@ -107,9 +100,10 @@
             "pick_override": 0.85,
             "stddev": 7.5,
             "pick_n": 5,
-            "pick_frac": 0.7,
+            "pick_frac": 0.5,
+            "endgame": 0.5,
             "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` away from the last move and plays the best one.",
-            "_help_right": "Increase `stddev` makes it prefer moves further away."
+            "_help_right": "Increase `stddev` makes it prefer moves further away. Stops tenukiing after the 'endgame' fraction of the board is filled."
         },
         "P:Influence": {
             "pick_override": 0.95,

@@ -57,8 +57,7 @@ class AI:
 
     def fix_settings(self):
         self.ai_settings = {**DEFAULT_AI_SETTINGS[self.strategy], **self.ai_settings}
-        self.engine_settings = {**AI.DEFAULT_ENGINE_SETTINGS, **self.engine_settings,
-                                "threads": AI.NUM_THREADS}
+        self.engine_settings = {**AI.DEFAULT_ENGINE_SETTINGS, **self.engine_settings, "threads": AI.NUM_THREADS}
 
     def get_engine(self):  # factory
         with AI.LOCK:
@@ -98,8 +97,8 @@ def retrieve_ais(selected_ais):
 
 test_ais = [
     #  AI("Jigo", {}, {"max_visits": 100}),
-    AI("Policy", {}, {'model': 'my/model.bin.gz'}),
-    AI("Policy", {}, {'model': 'KataGo/models/b10-1.3.txt.gz'}),
+    AI("Policy", {}, {"model": "my/model.bin.gz"}),
+    AI("Policy", {}, {"model": "KataGo/models/b10-1.3.txt.gz"}),
     AI("Policy", {}),
     AI("P:Local", {}),
     AI("P:Pick", {}),
@@ -128,7 +127,7 @@ def play_games(black: AI, white: AI):
     engines = {"B": black.get_engine(), "W": white.get_engine()}
     tag = f"{black.name} vs {white.name}"
     try:
-        game = Game(Logger(), engines, {'init_size':BOARDSIZE})
+        game = Game(Logger(), engines, {"init_size": BOARDSIZE})
         game.root.add_list_property("PW", [white.name])
         game.root.add_list_property("PB", [black.name])
         start_time = time.time()
@@ -163,9 +162,9 @@ print(len(ais_to_test), "ais to test")
 global_start = time.time()
 
 for n in range(N_GAMES):
-    for _,e in AI.ENGINES: # no caching/replays
+    for _, e in AI.ENGINES:  # no caching/replays
         e.shutdown()
-    AI.ENGINES=[]
+    AI.ENGINES = []
 
     with ThreadPoolExecutor(max_workers=16) as threadpool:
         for b in ais_to_test:

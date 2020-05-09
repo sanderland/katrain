@@ -40,14 +40,15 @@ ENGINE_SETTINGS = {
     "threads": 1,
 }
 
-
 engine = KataGoEngine(logger, ENGINE_SETTINGS)
 
 with open("config.json") as f:
     settings = json.load(f)
     all_ai_settings = settings["ai"]
 
-all_ai_settings["dev"] = all_ai_settings["P:Noise"]
+if bot == "dev":
+    engine.override_settings["maxVisits"] = 500
+all_ai_settings["dev"] = all_ai_settings["ScoreLoss"]
 
 ai_strategy = bot_strategy_names[bot]
 ai_settings = all_ai_settings[ai_strategy]
@@ -149,12 +150,7 @@ while True:
             move = game.play(Move(None, player=game.next_player)).move
         else:
             move, node = ai_move(game, ai_strategy, ai_settings)
-            if node is None:
-                while node is None:
-                    logger.log(f"ERROR generating move, backing up with weighted.", OUTPUT_ERROR)
-                    move, node = ai_move(game, "p:weighted", {"pick_override": 1.0, "lower_bound": 0.001, "weaken_fac": 1})
-            else:
-                logger.log(f"Generated move {move}", OUTPUT_ERROR)
+            logger.log(f"Generated move {move}", OUTPUT_ERROR)
         print(f"= {move.gtp()}\n")
         sys.stdout.flush()
         malkovich_analysis(game.current_node)
