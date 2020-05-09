@@ -54,7 +54,7 @@ class KaTrainGui(BoxLayout):
                 self.controls.set_status(f"KataGo is tuning settings for first startup, please wait." + message)
             if "ready" in message.lower():
                 self.controls.set_status(f"KataGo engine ready.")
-            print(f"[KG:STDERR]{message}")
+            print(f"[KG:STDERR]{message.strip()}")
         elif level == OUTPUT_ERROR:
             self.controls.set_status(f"ERROR: {message}")
             print(f"ERROR: {message}")

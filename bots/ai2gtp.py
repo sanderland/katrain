@@ -110,6 +110,7 @@ while True:
         while len(handicaps) < min(n, bx * by):  # really obscure cases
             handicaps.add(Move((random.randint(0, bx - 1), random.randint(0, by - 1)), player="B").sgf(board_size=game.board_size))
         game.root.set_property("AB", list(handicaps))
+        game._calculate_groups()
         gtp = [Move.from_sgf(m, game.board_size, "B").gtp() for m in handicaps]
         logger.log(f"Chose handicap placements as {gtp}", OUTPUT_ERROR)
         print(f"= {' '.join(gtp)}\n")
@@ -119,6 +120,7 @@ while True:
     elif "set_free_handicap" in line:
         _, *stones = line.split(" ")
         game.root.set_property("AB", [Move.from_gtp(move.upper()).sgf(game.board_size) for move in stones])
+        game._calculate_groups()
         logger.log(f"Set handicap placements to {game.root.get_list_property('AB')}", OUTPUT_ERROR)
     elif "genmove" in line:
         _, player = line.strip().split(" ")

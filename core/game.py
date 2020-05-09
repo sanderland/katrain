@@ -233,7 +233,7 @@ class Game:
         return self.current_node.format_score(score)
 
     def __repr__(self):
-        return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
+        return "\n".join("".join(self.chains[c][0].player if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
     def write_sgf(self, path=None, trainer_config={}, save_feedback=(True,), eval_thresholds=(0,)):
         black, white = self.root.get_property("PB"), self.root.get_property("PW")
