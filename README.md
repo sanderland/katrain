@@ -147,7 +147,7 @@ If you ever need to reset to the original settings, simply re-download the `conf
     * max_visits: The number of visits used in analyses and AI moves, higher is more accurate but slower.
     * max_time: Maximal time in seconds for analyses, even when the target number of visits has not been reached.    
     * fast_visits: The number of visits used for certain operations with fewer visits.
-    * wide_root_noise: Consider a wider variety of moves, using KataGo's `analysisWideRootNoise` option. Will affect both analysis and AIs such as ScoreLoss. 
+    * wide_root_noise: Consider a wider variety of moves, using KataGo's `analysisWideRootNoise` option. Will affect both analysis and AIs such as ScoreLoss. (KataGo 1.4+ only, keep at 0.0 otherwise) 
     * katago: Path to your KataGo executable.
     * model: Path to your KataGo model file. Note that the default model file included is an older 15 block one. Replace it with a new model from [here](https://github.com/lightvector/KataGo/releases) for maximal strength.
     * config: Path to your KataGo config file.    

@@ -152,6 +152,12 @@ class KataGoEngine:
                 visits = self.config["fast_visits"]
 
         size_x, size_y = analysis_node.board_size
+        settings = self.override_settings
+        if time_limit:
+            settings["maxTime"] = self.config["max_time"]
+        if self.config.get("wide_root_noise",0.0) > 0.0: # don't send if 0.0, so older versions don't error
+            settings["wideRootNoise"] = self.config["wide_root_noise"]
+
         query = {
             "rules": self.get_rules(analysis_node),
             "priority": self.base_priority + priority,
@@ -163,10 +169,6 @@ class KataGoEngine:
             "includeOwnership": ownership,
             "includePolicy": not next_move,
             "moves": [[m.player, m.gtp()] for m in moves],
-            "overrideSettings": {
-                "maxTime": self.config["max_time"] if time_limit else 1000.0,
-                "wideRootNoise": self.config.get("wide_root_noise", 0.0),
-                **self.override_settings,
-            },
+            "overrideSettings": settings
         }
         self.send_query(query, callback, error_callback, next_move)
