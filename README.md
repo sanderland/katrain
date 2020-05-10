@@ -61,10 +61,17 @@ but has since grown to include a wide range of features, including:
       sha256 "aa0afe1074aebd300e94b84902c4a98e3b7621c9f756129547472e94b094f70d"
       ```
     * You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself
-* Now that the dependencies are installed Git clone or download the katrain repository
-* Start katrain by running `python3 katrain.py` in the terminal. Note you need to run the command in the Katrain folder. The easiest way to do this is to type `cd` in terminal and then drag the Katrain folder into the terminal window. This will copy its paths for you.
-* The frist time you run Katrain you will see an error about initializing KataGo.
-* Open the settings dialog by clicking on the gear icon and change the path of the 'katago' setting to `/usr/local/bin/katago` (or the path where you compiled KataGo) then click 'Apply and Save'.
+* Now that the dependencies are installed its time to Git clone or download the katrain repository
+  * Run the command `git clone https://github.com/sanderland/katrain.git` this will clone Katrain to your home folder.
+
+* To run Katrain you need to first access the Katrain folder.
+  * If you used the 'git clone' command to download the repository then its located in your home folder. You can access it by typing `cd katrain` in the terminal. If you've moved the folder to another location the easiest way to navigate to it in terminal is to type `cd` and drag the Katrain folder from the finder window into terminal. This will copy its full path to the command line.
+
+* Now that we're in the Katrain folder run the following command. `python3 katrain.py`
+
+The frist time you run Katrain you will see an error about initializing KataGo.
+
+* Open the settings dialog by clicking on the gear icon at the bottom right of the window and change the path of the 'katago' setting to `/usr/local/bin/katago` (or the path where you compiled KataGo) then click 'Apply and Save'.
 
 Configuring the GPU KataGo uses.
   When KataGo initializes it will automatically search for OpenCL devices and select the highest scoring device. If you have multiple GPUs or want to force a specific device you will need to edit the 'analysis_config.cfg' file in the KataGo folder.
