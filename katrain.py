@@ -17,7 +17,7 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
 
 from core.ai import ai_move
-from core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG
+from core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from core.engine import KataGoEngine
 from core.game import Game, IllegalMoveException, KaTrainSGF
 from core.sgf_parser import Move, ParseError
@@ -47,7 +47,15 @@ class KaTrainGui(BoxLayout):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def log(self, message, level=OUTPUT_INFO):
-        if level == OUTPUT_ERROR:
+        if level == OUTPUT_KATAGO_STDERR:
+            if "starting" in message.lower():
+                self.controls.set_status(f"KataGo engine starting...")
+            if message.startswith("Tuning"):
+                self.controls.set_status(f"KataGo is tuning settings for first startup, please wait." + message)
+            if "ready" in message.lower():
+                self.controls.set_status(f"KataGo engine ready.")
+            print(f"[KG:STDERR]{message.strip()}")
+        elif level == OUTPUT_ERROR:
             self.controls.set_status(f"ERROR: {message}")
             print(f"ERROR: {message}")
         elif self.debug_level >= level:
@@ -91,7 +99,7 @@ class KaTrainGui(BoxLayout):
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
         auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
-        if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready:
+        if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready and not cn.children and not self.game.ended:
             self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
         if cn.analysis_ready and "ai" in self.controls.player_mode(cn.next_player).lower() and not cn.children and not self.game.ended and not (auto_undo and cn.auto_undo is None):
             self._do_ai_move(cn)  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
@@ -179,7 +187,7 @@ class KaTrainGui(BoxLayout):
             self.fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8)).__self__
             popup_contents = LoadSGFPopup()
             self.fileselect_popup.add_widget(popup_contents)
-            popup_contents.filesel.path = os.path.expanduser(self.config("sgf/sgf_load"))
+            popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("sgf/sgf_load")))
 
             def readfile(files, _mouse):
                 self.fileselect_popup.dismiss()
@@ -189,6 +197,8 @@ class KaTrainGui(BoxLayout):
                     self.log(f"Failed to load SGF. Parse Error: {e}", OUTPUT_ERROR)
                     return
                 self._do_new_game(move_tree=move_tree, analyze_fast=popup_contents.fast.active)
+                if not popup_contents.rewind.active:
+                    self.game.redo(999)
 
             popup_contents.filesel.on_submit = readfile
         self.fileselect_popup.open()

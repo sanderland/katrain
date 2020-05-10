@@ -233,14 +233,14 @@ class Game:
         return self.current_node.format_score(score)
 
     def __repr__(self):
-        return "\n".join("".join(Move.PLAYERS[self.chains[c][0].player] if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
+        return "\n".join("".join(self.chains[c][0].player if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
     def write_sgf(self, path=None, trainer_config={}, save_feedback=(True,), eval_thresholds=(0,)):
         black, white = self.root.get_property("PB"), self.root.get_property("PW")
         black = re.sub(r"['<>:\"/\\|?*]", "", black or "Black")
         white = re.sub(r"['<>:\"/\\|?*]", "", white or "White")
         game_name = f"katrain_{black} vs {white} {self.game_id}"
-        file_name = os.path.join(path, f"{game_name}.sgf")
+        file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
         show_dots_for = {p: trainer_config.get("eval_show_ai", True) or "ai" not in self.katrain.controls.player_mode(p) for p in Move.PLAYERS}

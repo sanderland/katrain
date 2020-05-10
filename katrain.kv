@@ -229,7 +229,7 @@
     valign: 'bottom'
     halign: 'left'
     text: '+0'
-    color:  GREY
+    color:  BUTTON_COLOR
     size: self.texture_size
 
 <ScoreGraph>:
@@ -271,18 +271,10 @@
         id: range_label_top
         pos: root.right_edge - self.width-1, root.pos[1]+root.height*(1-root.marginy) - self.font_size
         text: 'B+' + str(int(root.y_scale))
-#    GraphMarkerLabel:
-#       font_size: 0.1 * root.height
-#       pos: root.right_edge - self.width-1, root.bhalf - self.font_size + 1
-#        text: 'B+' + str(int(root.y_scale/2))
     GraphMarkerLabel:
         font_size: 0.1 * root.height
         pos: root.right_edge - self.width-1, root.mid - self.height/2 + 2
         text: 'Jigo'
-#    GraphMarkerLabel:
-#        font_size: 0.1 * root.height
-#        pos: root.right_edge - self.width-1, root.whalf - 1
-#        text: 'W+' + str(int(root.y_scale/2))
     GraphMarkerLabel:
         font_size: 0.1 * root.height
         pos: root.right_edge - self.width-1, root.pos[1]

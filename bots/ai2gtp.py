@@ -40,14 +40,15 @@ ENGINE_SETTINGS = {
     "threads": 1,
 }
 
-
 engine = KataGoEngine(logger, ENGINE_SETTINGS)
 
 with open("config.json") as f:
     settings = json.load(f)
     all_ai_settings = settings["ai"]
 
-all_ai_settings["dev"] = all_ai_settings["P:Noise"]
+if bot == "dev":
+    engine.override_settings["maxVisits"] = 500
+all_ai_settings["dev"] = all_ai_settings["ScoreLoss"]
 
 ai_strategy = bot_strategy_names[bot]
 ai_settings = all_ai_settings[ai_strategy]
@@ -110,15 +111,22 @@ while True:
         while len(handicaps) < min(n, bx * by):  # really obscure cases
             handicaps.add(Move((random.randint(0, bx - 1), random.randint(0, by - 1)), player="B").sgf(board_size=game.board_size))
         game.root.set_property("AB", list(handicaps))
+        game._calculate_groups()
         gtp = [Move.from_sgf(m, game.board_size, "B").gtp() for m in handicaps]
         logger.log(f"Chose handicap placements as {gtp}", OUTPUT_ERROR)
         print(f"= {' '.join(gtp)}\n")
         sys.stdout.flush()
         game.analyze_all_nodes()  # re-evaluate root
+        while engine.queries:  # and make sure this gets processed
+            time.sleep(0.001)
         continue
     elif "set_free_handicap" in line:
         _, *stones = line.split(" ")
         game.root.set_property("AB", [Move.from_gtp(move.upper()).sgf(game.board_size) for move in stones])
+        game._calculate_groups()
+        game.analyze_all_nodes()  # re-evaluate root
+        while engine.queries:  # and make sure this gets processed
+            time.sleep(0.001)
         logger.log(f"Set handicap placements to {game.root.get_list_property('AB')}", OUTPUT_ERROR)
     elif "genmove" in line:
         _, player = line.strip().split(" ")
@@ -142,12 +150,7 @@ while True:
             move = game.play(Move(None, player=game.next_player)).move
         else:
             move, node = ai_move(game, ai_strategy, ai_settings)
-            if node is None:
-                while node is None:
-                    logger.log(f"ERROR generating move, backing up with weighted.", OUTPUT_ERROR)
-                    move, node = ai_move(game, "p:weighted", {"pick_override": 1.0, "lower_bound": 0.001, "weaken_fac": 1})
-            else:
-                logger.log(f"Generated move {move}", OUTPUT_ERROR)
+            logger.log(f"Generated move {move}", OUTPUT_ERROR)
         print(f"= {move.gtp()}\n")
         sys.stdout.flush()
         malkovich_analysis(game.current_node)

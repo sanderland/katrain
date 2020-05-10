@@ -7,6 +7,7 @@
         "max_visits": 500,
         "fast_visits": 50,
         "max_time": 3.0,
+        "wide_root_noise": 0.0,
         "_enable_ownership": true
     },
     "sgf": {
@@ -64,6 +65,11 @@
             "_help_left": "Will try to win by `target_score`, without further restrictions.",
             "_help_right": "Also affected by engine settings such as `max_visits`."
         },
+        "ScoreLoss": {
+            "strength": 0.5,
+            "_help_left": "Plays moves weighted inversely by point loss.",
+            "_help_right": "Also affected by engine settings such as `max_visits`, likely to play more varied/weaker with higher visits."
+        },
         "Policy": {
             "opening_moves": 0.05,
             "_help_left": "Strength is mainly affected by `model` in engine settings, but should be high dan regardless.",
@@ -75,13 +81,6 @@
             "pick_override": 1.0,
             "lower_bound": 0.001,
             "weaken_fac": 1.25
-        },
-        "P:Noise": {
-            "pick_override": 0.95,
-            "noise_strength": 0.6,
-            "lower_bound": 0.001,
-            "_help_left": "Adds `noise_strength` noise to the policy of all moved > 'lower_bound' and plays the top move.",
-            "_help_right": "Plays top move if policy value is above `pick_override` to avoid obvious mistakes. Noise above 0.9 is near random, below 0.7 is fairly strong."
         },
         "P:Pick": {
             "pick_override": 0.95,
@@ -102,9 +101,10 @@
             "pick_override": 0.85,
             "stddev": 7.5,
             "pick_n": 5,
-            "pick_frac": 0.7,
+            "pick_frac": 0.5,
+            "endgame": 0.45,
             "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` away from the last move and plays the best one.",
-            "_help_right": "Increase `stddev` makes it prefer moves further away."
+            "_help_right": "Increase `stddev` makes it prefer moves further away. Stops tenukiing after the 'endgame' fraction of the board is filled."
         },
         "P:Influence": {
             "pick_override": 0.95,
@@ -112,8 +112,9 @@
             "pick_frac": 0.4,
             "threshold": 3.5,
             "line_weight": 10,
+            "endgame": 0.4,
             "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to above the `threshold` line.",
-            "_help_right": "Increase `line_weight` to penalize moves near the edge more."
+            "_help_right": "Increase `line_weight` to penalize moves near the edge more. Stops strategy after the 'endgame' fraction of the board is filled."
         },
         "P:Territory": {
             "pick_override": 0.95,
@@ -121,8 +122,9 @@
             "pick_frac": 0.4,
             "threshold": 3.5,
             "line_weight": 2,
+            "endgame": 0.4,
             "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to below the `threshold` line.",
-            "_help_right": "Increase `line_weight` to penalize moves closer to the center more."
+            "_help_right": "Increase `line_weight` to penalize moves closer to the center more.  Stops strategy after the 'endgame' fraction of the board is filled."
         }
     },
     "board_ui": {

@@ -6,7 +6,7 @@ import threading
 import time
 from typing import Callable, Optional
 
-from core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG
+from core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from core.game_node import GameNode
 
 
@@ -35,14 +35,16 @@ class KataGoEngine:
         self.query_counter = 0
         self.katago_process = None
         self.base_priority = 0
+        self.override_settings = {} # mainly for bot scripts to hook into
         self._lock = threading.Lock()
         self.start()
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
+        self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
 
     def start(self):
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
-            self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except FileNotFoundError as e:
             self.katrain.log(
                 f"Starting kata with command '{self.command}' failed with error {e}. Please make sure the 'katago' value under 'engine' in settings points to the correct KataGo executable.",
@@ -70,6 +72,15 @@ class KataGoEngine:
     def is_idle(self):
         return not self.queries
 
+    def _read_stderr_thread(self):
+        while self.katago_process is not None:
+            try:
+                line = self.katago_process.stderr.readline()
+                if line:
+                    self.katrain.log(line.decode(), OUTPUT_KATAGO_STDERR)
+            except:
+                return
+
     def _analysis_read_thread(self):
         while self.katago_process is not None:
             try:
@@ -81,30 +92,27 @@ class KataGoEngine:
             if not line:
                 continue
             analysis = json.loads(line)
-            if analysis["id"] in self.queries:
-                query_id = analysis["id"]
-                callback, error_callback, start_time, next_move = self.queries[query_id]
-            else:
+            if analysis["id"] not in self.queries:
                 self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
                 continue
+            query_id = analysis["id"]
+            callback, error_callback, start_time, next_move = self.queries[query_id]
+            del self.queries[query_id]
             if "error" in analysis:
                 if error_callback:
                     error_callback(analysis)
                 elif not (next_move and "Illegal move" in analysis["error"]):  # sweep
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
-                continue
             else:
-                callback, error_callback, start_time, next_move = self.queries[query_id]
                 time_taken = time.time() - start_time
                 self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG)
                 self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
-                del self.queries[query_id]
                 try:
                     callback(analysis)
                 except Exception as e:
                     self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
-                if getattr(self.katrain, "update_state", None):  # easier mocking etc
-                    self.katrain.update_state()
+            if getattr(self.katrain, "update_state", None):  # easier mocking etc
+                self.katrain.update_state()
 
     def send_query(self, query, callback, error_callback, next_move=None):
         with self._lock:
@@ -144,6 +152,12 @@ class KataGoEngine:
                 visits = self.config["fast_visits"]
 
         size_x, size_y = analysis_node.board_size
+        settings = self.override_settings
+        if time_limit:
+            settings["maxTime"] = self.config["max_time"]
+        if self.config.get("wide_root_noise",0.0) > 0.0: # don't send if 0.0, so older versions don't error
+            settings["wideRootNoise"] = self.config["wide_root_noise"]
+
         query = {
             "rules": self.get_rules(analysis_node),
             "priority": self.base_priority + priority,
@@ -155,7 +169,6 @@ class KataGoEngine:
             "includeOwnership": ownership,
             "includePolicy": not next_move,
             "moves": [[m.player, m.gtp()] for m in moves],
-            "overrideSettings": {"maxTime": self.config["max_time"] if time_limit else 1000.0}
-            # "overrideSettings": {"playoutDoublingAdvantage": 3.0, "playoutDoublingAdvantagePla":  'BLACK' if not moves or moves[-1].player == 'W' else "WHITE"}
+            "overrideSettings": settings
         }
         self.send_query(query, callback, error_callback, next_move)

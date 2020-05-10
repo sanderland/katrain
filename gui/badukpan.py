@@ -85,7 +85,7 @@ class BadukPanWidget(Widget):
             if nodes_here and max(yd, xd) < self.grid_size / 2:  # load old comment
                 if touch.is_double_tap:  # navigate to move
                     katrain.game.set_current_node(nodes_here[-1])
-                    self.draw_board_contents()
+                    katrain.update_state()
                 else:  # load comments
                     katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
                     katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_DEBUG)

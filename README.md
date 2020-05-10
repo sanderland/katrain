@@ -84,20 +84,18 @@ while stronger players can pay more attention to smaller mistakes.
 Available AIs, with strength indicating an estimate for the default settings, are:
 
 * **[9p+]** **Default** is full KataGo, above professional level. 
+* **[~1d?]**  **ScoreLoss** is KataGo making moves with probability `~ e^(-strength * points lost)`.
 * **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points. 
 * **Jigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
 * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used. There is a setting to increase variety in the opening, but otherwise it plays deterministically.
-* **[~5k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
+* **[~2k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
 * **[~5k]**: **P:Pick** picks `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
    The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
    This, along with 'Weighted' are probably the best choice for kyu players who want a chance of winning without playing the sillier bots below. Variants of this strategy include:
-    * **[~5k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
-    * **[~10k]**: **~P:Tenuki** is biased in the opposite way as P:Local, using the same setting.
+    * **[~2k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
+    * **[~10k]**: **P:Tenuki** is biased in the opposite way as P:Local, using the same setting.
     * **[~10k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight. 
     * **[~10k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting. 
-* * **[~5k]**: **P:Noise** mixes the policy with `noise_strength` Dirichlet noise. At `noise_strength=0.9` play is near-random, while `noise_strength=0.7` is still quite strong. A threshold setting is included to avoid senseless first-line moves. 
-
-Selecting the AI as either white or black opens up the option to configure it under 'Configure AI'.
 
 ### Analysis
 
@@ -146,13 +144,14 @@ If you ever need to reset to the original settings, simply re-download the `conf
 ### Settings Panel
 
 * engine settings
-    * max_visits: the number of visits used in analyses and AI moves, higher is more accurate but slower.
-    * max_time: maximal time in seconds for analyses, even when the target number of visits has not been reached.    
-    * fast_visits: the number of visits used for certain operations with fewer visits.
-    * katago: path to your KataGo executable.
-    * model: path to your KataGo model file.
-    * config: path to your KataGo config file.    
-    * threads: number of threads to use in the KataGo analysis engine.
+    * max_visits: The number of visits used in analyses and AI moves, higher is more accurate but slower.
+    * max_time: Maximal time in seconds for analyses, even when the target number of visits has not been reached.    
+    * fast_visits: The number of visits used for certain operations with fewer visits.
+    * wide_root_noise: Consider a wider variety of moves, using KataGo's `analysisWideRootNoise` option. Will affect both analysis and AIs such as ScoreLoss. (KataGo 1.4+ only, keep at 0.0 otherwise) 
+    * katago: Path to your KataGo executable.
+    * model: Path to your KataGo model file. Note that the default model file included is an older 15 block one. Replace it with a new model from [here](https://github.com/lightvector/KataGo/releases) for maximal strength.
+    * config: Path to your KataGo config file.    
+    * threads: Number of threads to use in the KataGo analysis engine.
 * game settings
     * init_size: the initial size of the board, on start-up.
     * init_komi: likewise, for komi.

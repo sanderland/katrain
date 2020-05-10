@@ -28,7 +28,7 @@ class Move:
         """Initialize a move from SGF coordinates and player"""
         if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size[0]:  # some servers use [tt] for pass
             return cls(coords=None, player=player)
-        return cls(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[1] - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player,)
+        return cls(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[1] - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
 
     def __init__(self, coords: Optional[Tuple[int, int]] = None, player: str = "B"):
         """Initialize a move from zero-based coordinates and player"""
