@@ -49,8 +49,8 @@ but has since grown to include a wide range of features, including:
 
 ### Installation for MacOS users
 
-* Download and install [Python 3.7.5] (https://www.python.org/downloads/release/python-375/)
-* Install [Homebrew] (https://brew.sh) by running the following command in terminal
+* Download and install [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
+* Install [Homebrew](https://brew.sh) by running the following command in terminal
 * `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"`
 * Run the command `pip3 install kivy` in the terminal.
 * Install Katago using [Homebrew](https://brew.sh/)
