@@ -35,7 +35,7 @@ class KataGoEngine:
         self.query_counter = 0
         self.katago_process = None
         self.base_priority = 0
-        self.override_settings = {} # mainly for bot scripts to hook into
+        self.override_settings = {}  # mainly for bot scripts to hook into
         self._lock = threading.Lock()
         self.start()
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
@@ -155,7 +155,7 @@ class KataGoEngine:
         settings = self.override_settings
         if time_limit:
             settings["maxTime"] = self.config["max_time"]
-        if self.config.get("wide_root_noise",0.0) > 0.0: # don't send if 0.0, so older versions don't error
+        if self.config.get("wide_root_noise", 0.0) > 0.0:  # don't send if 0.0, so older versions don't error
             settings["wideRootNoise"] = self.config["wide_root_noise"]
 
         query = {
@@ -169,6 +169,6 @@ class KataGoEngine:
             "includeOwnership": ownership,
             "includePolicy": not next_move,
             "moves": [[m.player, m.gtp()] for m in moves],
-            "overrideSettings": settings
+            "overrideSettings": settings,
         }
         self.send_query(query, callback, error_callback, next_move)
