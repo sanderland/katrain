@@ -73,13 +73,13 @@ The frist time you run Katrain you will see an error about initializing KataGo.
 
 * Open the settings dialog by clicking on the gear icon at the bottom right of the window and change the path of the 'katago' setting to `/usr/local/bin/katago` (or the path where you compiled KataGo) then click 'Apply and Save'.
 
-Configuring the GPU KataGo uses.
+### Configuring the GPU KataGo uses.
+
   When KataGo initializes it will automatically search for OpenCL devices and select the highest scoring device. If you have multiple GPUs or want to force a specific device you will need to edit the 'analysis_config.cfg' file in the KataGo folder.
 
 To see what devices are available and which one KataGo is using. Look for the following lines in the terminal after running `python3 katrain.py`
 
 ``
-Found OpenCL Platform 0: Apple (Apple) (OpenCL 1.2 (Feb 29 2020 00:40:07))
 Found 3 device(s) on platform 0 with type CPU or GPU or Accelerator
 Found OpenCL Device 0: Intel(R) Core(TM) i9-9880H CPU @ 2.30GHz (Intel) (score 102)
 Found OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) (score 6000102)
@@ -92,14 +92,15 @@ The above devices were found on a 2019 macbook pro with a discreet video card, t
 * Open the 'analysis_config.cfg' file in the KataGo folder.
 * Uncomment line 75 by deleting the # and setting the value to 2. The line should read `numNNServerThreadsPerModel = 2`
 * Uncomment lines 117 - 118 by deleting the # and set the values to the device ID numbers identified in the terminal.
+
   From the example above I'v selected 1 & 2 for the Intel and AMD GPU's
 ``
 openclDeviceToUseThread0 = 1
 openclDeviceToUseThread1 = 2
 ``
 * Run `python3 katrain.py` and confrim that KataGo is now using both devices. (Note that the first time a device is used it needs to be tuned which will take a few mintues). Below is the update output from the terminal.
+
 ``
-Found OpenCL Platform 0: Apple (Apple) (OpenCL 1.2 (Feb 29 2020 00:40:07))
 Found 3 device(s) on platform 0 with type CPU or GPU or Accelerator
 Found OpenCL Device 0: Intel(R) Core(TM) i9-9880H CPU @ 2.30GHz (Intel) (score 102)
 Found OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) (score 6000102)
@@ -107,6 +108,7 @@ Found OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) (score 11000102
 Using OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) OpenCL 1.2
 Using OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) OpenCL 1.2
 ``
+
 ## Manual
 
 ### Play
