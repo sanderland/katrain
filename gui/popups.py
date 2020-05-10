@@ -163,7 +163,7 @@ class ConfigPopup(QuickConfigGui):
         engine_updates = updated_cat["engine"]
         if "visits" in engine_updates:
             self.katrain.engine.visits = engine_updates["visits"]
-        if {key for key in engine_updates if key not in {"max_visits", "max_time", "enable_ownership","wide_root_noise"}}:
+        if {key for key in engine_updates if key not in {"max_visits", "max_time", "enable_ownership", "wide_root_noise"}}:
             self.katrain.log(f"Restarting Engine after {engine_updates} settings change")
             self.info_label.text = "Restarting engine\nplease wait."
             self.katrain.controls.set_status(f"Restarted Engine after {engine_updates} settings change.")

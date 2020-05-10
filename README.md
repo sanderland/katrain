@@ -13,7 +13,6 @@ but has since grown to include a wide range of features, including:
 
 ## Screenshots
 
-
 | Analyze games  | Play against an AI Teacher |
 | ------------- | ------------- |
 | ![screenshot](img/screenshot_analyze.png)  | ![screenshot](img/screenshot_play.png)  |
@@ -29,7 +28,7 @@ but has since grown to include a wide range of features, including:
 
 ### Quick Installation for Windows users
 
- * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers.
+See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers.
  
 ### Installation from source for Windows users
 
@@ -37,7 +36,7 @@ but has since grown to include a wide range of features, including:
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/distribution/#download-section). 
 * Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
 * Execute the command `pip install kivy_deps.glew kivy_deps.sdl2 kivy_deps.gstreamer kivy`
-* Start the app by running `python katrain.py` in the directory where you downloaded the scripts. Note that the program can be slow to initialize the first time, due to kata's gpu tuning.
+* Start the app by running `python katrain.py` in the directory where you downloaded the scripts. Note that the program can be slow to initialize the first time, due to KataGo's gpu tuning.
 
 ### Installation for Linux users
 
@@ -51,7 +50,7 @@ but has since grown to include a wide range of features, including:
 
 * Git clone or download the repository.
 * Run the command `pip install kivy` in the terminal.
-* Follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself -- note that the version required is currently too new for the 'brew' method.
+* Follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself -- note that the version required may be currently too new for the 'brew' method.
 * Start the app by running `python katrain.py`, change the path of the 'katago' setting to the path where you compiled it, and click 'Apply and Save'.
       
 ## Manual
@@ -59,6 +58,7 @@ but has since grown to include a wide range of features, including:
 ### Play
 
 Under the 'play' tab you can select who is playing black and white.
+
 * Human is simple play with potential feedback, but without auto-undo.
 * Teach will give you instant feedback, and auto-undo bad moves to give you a second chance. 
     * Settings for this mode can be found under 'Configure Teacher'
@@ -84,7 +84,7 @@ while stronger players can pay more attention to smaller mistakes.
 Available AIs, with strength indicating an estimate for the default settings, are:
 
 * **[9p+]** **Default** is full KataGo, above professional level. 
-* **[~1d?]**  **ScoreLoss** is KataGo making moves with probability `~ e^(-strength * points lost)`.
+* **[~1k?]**  **ScoreLoss** is KataGo making moves with probability `~ e^(-strength * points lost)`, playing a varied style with small mistakes.
 * **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points. 
 * **Jigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
 * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used. There is a setting to increase variety in the opening, but otherwise it plays deterministically.
@@ -144,14 +144,16 @@ If you ever need to reset to the original settings, simply re-download the `conf
 ### Settings Panel
 
 * engine settings
-    * max_visits: The number of visits used in analyses and AI moves, higher is more accurate but slower.
-    * max_time: Maximal time in seconds for analyses, even when the target number of visits has not been reached.    
-    * fast_visits: The number of visits used for certain operations with fewer visits.
-    * wide_root_noise: Consider a wider variety of moves, using KataGo's `analysisWideRootNoise` option. Will affect both analysis and AIs such as ScoreLoss. (KataGo 1.4+ only, keep at 0.0 otherwise) 
-    * katago: Path to your KataGo executable.
-    * model: Path to your KataGo model file. Note that the default model file included is an older 15 block one. Replace it with a new model from [here](https://github.com/lightvector/KataGo/releases) for maximal strength.
-    * config: Path to your KataGo config file.    
-    * threads: Number of threads to use in the KataGo analysis engine.
+    * These settings can be updated anytime:
+        * max_visits: The number of visits used in analyses and AI moves, higher is more accurate but slower.
+        * max_time: Maximal time in seconds for analyses, even when the target number of visits has not been reached.    
+        * fast_visits: The number of visits used for certain operations with fewer visits.
+        * wide_root_noise: Consider a wider variety of moves, using KataGo's `analysisWideRootNoise` option. Will affect both analysis and AIs such as ScoreLoss. (KataGo 1.4+ only, keep at 0.0 otherwise)
+    * These settings cause the engine to be restarted:
+        * katago: Path to your KataGo executable.
+        * model: Path to your KataGo model file. Note that the default model file included is an older 15 block one for high speed and low memory requirements. Replace it with a new model from [here](https://github.com/lightvector/KataGo/releases) for maximal strength.
+        * config: Path to your KataGo config file.    
+        * threads: Number of threads to use in the KataGo analysis engine.
 * game settings
     * init_size: the initial size of the board, on start-up.
     * init_komi: likewise, for komi.
