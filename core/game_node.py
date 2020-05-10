@@ -88,8 +88,8 @@ class GameNode(SGFNode):
 
     def make_pv(self, player, pv, interactive):
         pvtext = f"{player}{' '.join(pv)}"
-        # if interactive:
-        #    pvtext = f"[u][ref={pvtext}][color=#334466]{pvtext}[/color][/ref][/u]"
+        if interactive:
+            pvtext = f"[u][ref={pvtext}][color=#334466]{pvtext}[/color][/ref][/u]"
         return pvtext
 
     def comment(self, sgf=False, teach=False, hints=False, interactive=False):
@@ -113,9 +113,8 @@ class GameNode(SGFNode):
                         text += f"Predicted top move was {previous_top_move['move']} ({self.format_score(previous_top_move['scoreLead'])}).\n"
                     else:
                         text += f"Move was predicted best move.\n"
-                    if sgf:
-                        if previous_top_move.get("pv") and (sgf or hints):
-                            text += f"PV: {self.make_pv(single_move.player,previous_top_move['pv'],interactive)}\n"
+                    if previous_top_move.get("pv") and (sgf or hints):
+                        text += f"PV: {self.make_pv(single_move.player,previous_top_move['pv'],interactive)}\n"
 
                 if sgf or hints or teach:
                     policy_ranking = self.parent.policy_ranking

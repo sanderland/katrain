@@ -89,7 +89,7 @@ class BadukPanWidget(Widget):
                 else:  # load comments
                     katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
                     katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_DEBUG)
-                    katrain.controls.info.text = nodes_here[-1].comment(sgf=True, interactive=True)
+                    katrain.controls.info.text = nodes_here[-1].comment(sgf=True, interactive=(nodes_here[-1] == katrain.game.current_node))
 
         self.ghost_stone = None
         self.draw_hover_contents()  # remove ghost
@@ -344,6 +344,15 @@ class BadukPanWidget(Widget):
             draw_circle(board_coords, self.stone_size * sizefac, stone_color[move_player])
             Color(*stone_color[opp_player])
             draw_text(pos=board_coords, text=str(i + 1), font_size=sizefac * self.grid_size / 1.45)
+
+    def show_pv_from_label(self, pv):
+        cn = self.katrain.game.current_node
+        next_player = pv[0]
+        next_last_player = [next_player, "W" if next_player == "B" else "B"]
+        with self.canvas.after:
+            if cn.player == next_player and cn.move and not cn.move.is_pass:
+                self.draw_stone(*cn.move.coords, [0.85, 0.68, 0.40, 0.66])
+            self.draw_pv(self.katrain, pv[1:].split(" "), next_last_player)
 
 
 class BadukPanControls(BoxLayout):
