@@ -169,7 +169,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                 ai_thoughts += f"Jigo strategy found {len(candidate_ai_moves)} candidate moves (best {top_cand.gtp()}) and chose {aimove.gtp()} as closest to 0.5 point win"
             elif "scoreloss" in ai_mode:
                 c = ai_settings["strength"]
-                moves = [(d["pointsLost"], math.exp(-c * max(0, d["pointsLost"])), Move.from_gtp(d["move"], player=cn.next_player)) for d in candidate_ai_moves]
+                moves = [(d["pointsLost"], math.exp(min(200, -c * max(0, d["pointsLost"]))), Move.from_gtp(d["move"], player=cn.next_player)) for d in candidate_ai_moves]
                 topmove = weighted_selection_without_replacement(moves, 1)[0]
                 aimove = topmove[2]
                 ai_thoughts += f"ScoreLoss strategy found {len(candidate_ai_moves)} candidate moves (best {top_cand.gtp()}) and chose {aimove.gtp()} (weight {topmove[1]:.3f}, point loss {topmove[0]:.1f}) based on score weights."
