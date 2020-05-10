@@ -125,6 +125,7 @@ In addition to shortcuts mentioned above, there are:
 * **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
+* **[click and hold on the last move]**: See variation for the best expected move.
 * **[click on a move]**: See detailed statistics for a previous move.
 * **[double-click on a move]**: Navigate directly to that point in the game.
 * **[Ctrl-v]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).

@@ -24,7 +24,6 @@ class BadukPanWidget(Widget):
         self.gridpos_y = []
         self.grid_size = 0
         self.stone_size = 0
-        self.last_eval = 0
         self.active_pv_moves = []
         self.show_pv_for = None
         self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents)
@@ -34,7 +33,7 @@ class BadukPanWidget(Widget):
     def _find_closest(self, pos, gridpos):
         return sorted([(abs(p - pos), i) for i, p in enumerate(gridpos)])[0]
 
-    def on_touch_down(self, touch):
+    def on_touch_down(self, touch, mouse_move=False):
         if touch.button != "left":
             return
 
@@ -47,11 +46,15 @@ class BadukPanWidget(Widget):
             self.ghost_stone = (xp, yp)
         else:
             self.ghost_stone = None
+        cn = self.katrain.game.current_node
         if prev_ghost != self.ghost_stone:
             self.draw_hover_contents()
 
+        if not mouse_move and cn.move and (xp, yp) == cn.move.coords and cn.parent and cn.parent.analysis_ready:
+            self.show_pv_for_last_move(cn.parent.candidate_moves[0]["pv"])
+
     def on_touch_move(self, touch):  # on_motion on_touch_move
-        return self.on_touch_down(touch)
+        return self.on_touch_down(touch, mouse_move=True)
 
     def on_mouse_pos(self, *args):  # https://gist.github.com/opqopq/15c707dc4cffc2b6455f
         last_show_pv = self.show_pv_for
@@ -345,14 +348,18 @@ class BadukPanWidget(Widget):
             Color(*stone_color[opp_player])
             draw_text(pos=board_coords, text=str(i + 1), font_size=sizefac * self.grid_size / 1.45)
 
-    def show_pv_from_label(self, pv):
+    def show_pv_for_last_move(self, pv):
         cn = self.katrain.game.current_node
-        next_player = pv[0]
+        if isinstance(pv, str):
+            next_player = pv[0]
+            pv = pv[1:].split(" ")
+        else:
+            next_player = cn.player
         next_last_player = [next_player, "W" if next_player == "B" else "B"]
         with self.canvas.after:
             if cn.player == next_player and cn.move and not cn.move.is_pass:
                 self.draw_stone(*cn.move.coords, [0.85, 0.68, 0.40, 0.66])
-            self.draw_pv(self.katrain, pv[1:].split(" "), next_last_player)
+            self.draw_pv(self.katrain, pv, next_last_player)
 
 
 class BadukPanControls(BoxLayout):
