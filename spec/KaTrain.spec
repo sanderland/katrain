@@ -34,7 +34,7 @@ exe = EXE(pyz,
           upx=True,
           console=True) #  , icon='..\\icon.png'
 
-EXCLUDE_SUFFIX = ['b10-1.3.txt.gz','screenshot_analyze.png','screenshot_play.png']
+EXCLUDE_SUFFIX = ['katago','b10-1.3.txt.gz','screenshot_analyze.png','screenshot_play.png']
 EXCLUDE = ['KataGoData']
 a.datas = [(ff,ft,tp) for ff,ft,tp in a.datas if not any(ff.endswith(suffix) for suffix in EXCLUDE_SUFFIX) and not any(kw in ff for kw in EXCLUDE)]
 coll = COLLECT(exe,
