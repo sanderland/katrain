@@ -37,9 +37,9 @@ class KataGoEngine:
         self.base_priority = 0
         self.override_settings = {}  # mainly for bot scripts to hook into
         self._lock = threading.Lock()
+        self.analysis_thread = None
+        self.stderr_thread = None
         self.start()
-        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
-        self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
 
     def start(self):
         try:
@@ -50,6 +50,8 @@ class KataGoEngine:
                 f"Starting kata with command '{self.command}' failed with error {e}. Please make sure the 'katago' value under 'engine' in settings points to the correct KataGo executable.",
                 OUTPUT_ERROR,
             )
+        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
+        self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
 
     def on_new_game(self):
         self.base_priority += 1
@@ -68,6 +70,10 @@ class KataGoEngine:
         if process:
             process.terminate()
             self.katago_process = None
+        if self.stderr_thread:
+            self.stderr_thread.join()
+        if self.analysis_thread:
+            self.analysis_thread.join()
 
     def is_idle(self):
         return not self.queries
@@ -127,7 +133,7 @@ class KataGoEngine:
                 self.katago_process.stdin.flush()
             except OSError as e:
                 self.katrain.log(f"Engine died unexpectedly, possibly due to out of memory: {e}", OUTPUT_ERROR)
-                return  # do not raise, since
+                return  # do not raise, since there's nothing to catch it
 
     def request_analysis(
         self,
