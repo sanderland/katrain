@@ -55,7 +55,7 @@ but has since grown to include a wide range of features, including:
 * Run the command `pip3 install kivy` in the terminal.
 * Install Katago using [Homebrew](https://brew.sh/)
    * Note that the version required for Katrain is currently too new so we need to update the Homebrew script.
-   * Run the command `homebrew edit katago` and replace lines 4-5 with
+   * Run the command `brew edit katago` and replace lines 4-5 with
    * ```
       url "https://github.com/lightvector/KataGo/archive/v1.3.5+bs29.tar.gz"
       sha256 "aa0afe1074aebd300e94b84902c4a98e3b7621c9f756129547472e94b094f70d"
