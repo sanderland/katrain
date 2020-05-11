@@ -41,7 +41,7 @@ class AI:
         "max_time": 300.0,
         "_enable_ownership": False,
     }
-    NUM_THREADS = 8
+    NUM_THREADS = 32
     IGNORE_SETTINGS_IN_TAG = {"threads", "_enable_ownership", "katago"}  # katago for switching from/to bs version
     ENGINES = []
     LOCK = threading.Lock()
@@ -101,19 +101,19 @@ def retrieve_ais(selected_ais):
 
 
 test_ais = [
-    AI("Default", {}, {"model": "my/6b.bin.gz", "max_visits": 500}),
-    AI("Default", {}, {"model": "my/6bf104.txt.gz", "max_visits": 500}),
-    AI("Default", {}, {"model": "my/6b104-223.txt.gz", "max_visits": 500}),
-    AI("Default", {}, {"model": "my/6b104-423.txt.gz", "max_visits": 500}),
-    AI("Default", {}, {"model": "KataGo/models/b10-1.3.txt.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "bots/6b.bin.gz", "max_visits": 500}),
+#    AI("Default", {}, {"model": "bots/6bf104.txt.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "bots/6b104-223.txt.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "bots/6b104-423.txt.gz", "max_visits": 500}),
+#    AI("Default", {}, {"model": "KataGo/models/b10-1.3.txt.gz", "max_visits": 500}),
     AI("Policy", {}),
     AI("P:Local", {}),
     AI("P:Weighted", {}),
-    #    AI("P:Pick", {}),
-    #    AI("ScoreLoss", {"max_visits": 500}),
+    AI("P:Pick", {}),
+    AI("ScoreLoss", {"max_visits": 500}),
     #    AI("P:Tenuki", {}),
     #    AI("P:Local", {}),
-    #    AI("P:Influence", {}),
+    AI("P:Influence", {}),
     #    AI("P:Territory", {}),
 ]
 
@@ -138,14 +138,13 @@ def play_games(black: AI, white: AI):
         game.root.add_list_property("PW", [white.name])
         game.root.add_list_property("PB", [black.name])
         start_time = time.time()
-        while not game.ended:
+        while not game.ended and game.current_node.depth < 300:
             p = game.current_node.next_player
             move, node = ai_move(game, players[p].strategy, players[p].ai_settings)
-            print(tag, move)
         while not game.current_node.analysis_ready:
             time.sleep(0.001)
         game.game_id += f"_{game.current_node.format_score()}"
-        print(f"{tag}\tGame finished in {time.time()-start_time:.1f}s  {game.current_node.format_score()} -> {game.write_sgf('sgf_selfplay/')}", file=sys.stderr)
+        print(f"{tag}\tGame finished in {time.time()-start_time:.1f}s @ move {game.current_node.depth} {game.current_node.format_score()} -> {game.write_sgf('sgf_selfplay/')}", file=sys.stderr)
         score = game.current_node.score
         if score > 0.3:
             black.elo_comp.beat(white.elo_comp)
