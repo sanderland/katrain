@@ -33,7 +33,7 @@ class GameNode(SGFNode):
                 properties["SQ"] = best_sq
             if top_x and "MA" not in properties:
                 properties["MA"] = [top_x]
-            comment = self.comment(sgf=True)
+            comment = self.comment(sgf=True, interactive=False)
             if comment:
                 properties["C"] = [properties.get("C", "") + comment]
         if self.is_root:
@@ -92,7 +92,7 @@ class GameNode(SGFNode):
             pvtext = f"[u][ref={pvtext}][color=#334466]{pvtext}[/color][/ref][/u]"
         return pvtext
 
-    def comment(self, sgf=False, teach=False, hints=False, interactive=False):
+    def comment(self, sgf=False, teach=False, hints=False, interactive=True):
         single_move = self.move
         if not self.parent or not single_move:  # root
             return ""
