@@ -57,8 +57,8 @@ but has since grown to include a wide range of features, including:
    * Note that the version required for Katrain is currently too new so we need to update the Homebrew script.
    * Run the command `brew edit katago` and replace lines 4-5 with
    * ```
-      url "https://github.com/lightvector/KataGo/archive/v1.3.5+bs29.tar.gz"
-      sha256 "aa0afe1074aebd300e94b84902c4a98e3b7621c9f756129547472e94b094f70d"
+      url "https://github.com/lightvector/KataGo/archive/v1.4.1.tar.gz"
+      sha256 "b408086c7c973ddc6144e16156907556ae5f42921b9f29dc13e6909a9e9a4787"
       ```
     * You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself
 * Now that the dependencies are installed its time to Git clone or download the katrain repository
