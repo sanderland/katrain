@@ -25,89 +25,9 @@ but has since grown to include a wide range of features, including:
     * For different board sizes, use the button with the little goban in the bottom right for a new game.
 
 ## Installation
-
-### Quick Installation for Windows users
-
-See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers.
-
-### Installation from source for Windows users
-
-* Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
-* Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/distribution/#download-section).
-* Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
-* Execute the command `pip install kivy_deps.glew kivy_deps.sdl2 kivy_deps.gstreamer kivy`
-* Start the app by running `python katrain.py` in the directory where you downloaded the scripts. Note that the program can be slow to initialize the first time, due to KataGo's gpu tuning.
-
-### Installation for Linux users
-
-* This assumed you have a working Python 3.6/3.7 installation as a default. If your default is python 2, use pip3/python3. Kivy currently does not have a release for Python 3.8.
-* Git clone or download the repository.
-* Run the command `pip install kivy` in the terminal.
-* A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.3.5-bs29+ binary.
-* Start the app by running `python katrain.py`.  Note that the program can be slow to initialize the first time, due to KataGo's GPU tuning.
-
-### Installation for MacOS users
-
-* Download and install [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
-* Install [Homebrew](https://brew.sh) by running the following command in terminal
-* `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"`
-* Run the command `pip3 install kivy` in the terminal.
-* Install Katago using [Homebrew](https://brew.sh/)
-   * Note that the version required for Katrain is currently too new so we need to update the Homebrew script.
-   * Run the command `brew edit katago` and replace lines 4-5 with
-   * ```
-      url "https://github.com/lightvector/KataGo/archive/v1.4.1.tar.gz"
-      sha256 "b408086c7c973ddc6144e16156907556ae5f42921b9f29dc13e6909a9e9a4787"
-      ```
-    * You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself
-* Now that the dependencies are installed its time to Git clone or download the katrain repository
-  * Run the command `git clone https://github.com/sanderland/katrain.git` this will clone Katrain to your home folder.
-
-* To run Katrain you need to first access the Katrain folder.
-  * If you used the 'git clone' command to download the repository then its located in your home folder. You can access it by typing `cd katrain` in the terminal. If you've moved the folder to another location the easiest way to navigate to it in terminal is to type `cd` and drag the Katrain folder from the finder window into terminal. This will copy its full path to the command line.
-
-* Now that we're in the Katrain folder run the following command. `python3 katrain.py`
-
-The frist time you run Katrain you will see an error about initializing KataGo.
-
-* Open the settings dialog by clicking on the gear icon at the bottom right of the window and change the path of the 'katago' setting to `/usr/local/bin/katago` (or the path where you compiled KataGo) then click 'Apply and Save'.
-
-### Configuring the GPU KataGo uses.
-
-  When KataGo initializes it will automatically search for OpenCL devices and select the highest scoring device. If you have multiple GPUs or want to force a specific device you will need to edit the 'analysis_config.cfg' file in the KataGo folder.
-
-To see what devices are available and which one KataGo is using. Look for the following lines in the terminal after running `python3 katrain.py`
-
-```
-  Found 3 device(s) on platform 0 with type CPU or GPU or Accelerator
-  Found OpenCL Device 0: Intel(R) Core(TM) i9-9880H CPU @ 2.30GHz (Intel) (score 102)
-  Found OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) (score 6000102)
-  Found OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) (score 11000102)
-  Using OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) OpenCL 1.2
-```
-
-The above devices were found on a 2019 macbook pro with a discreet video card, the AMD Radeon Pro 550M. As you can see it scores about twice as high as the Intel UHD chip and KataGo has selected it as it's sole device. You can configure KataGo to use BOTH the AMD and the Intel devices to get the best performance out of the system.
-
-* Open the 'analysis_config.cfg' file in the KataGo folder.
-* Uncomment line 75 by deleting the # and setting the value to 2. The line should read `numNNServerThreadsPerModel = 2`
-* Uncomment lines 117 - 118 by deleting the # and set the values to the device ID numbers identified in the terminal.
-
-  From the example above I'v selected 1 & 2 for the Intel and AMD GPU's
-```
-openclDeviceToUseThread0 = 1
-openclDeviceToUseThread1 = 2
-```
-* Run `python3 katrain.py` and confrim that KataGo is now using both devices. (Note that the first time a device is used it needs to be tuned which will take a few mintues). Below is the update output from the terminal.
-
-```
-  Found 3 device(s) on platform 0 with type CPU or GPU or Accelerator
-  Found OpenCL Device 0: Intel(R) Core(TM) i9-9880H CPU @ 2.30GHz (Intel) (score 102)
-  Found OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) (score 6000102)
-  Found OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) (score 11000102)
-  Using OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) OpenCL 1.2
-  Using OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) OpenCL 1.2
-```
-
+* See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
+* See [here](INSTALL.md) for detailed instructions for running from source files on Window, Linux and MacOS,
+  as well as setting up KataGo to use multiple GPUs.
 
 ## Manual
 
