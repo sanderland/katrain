@@ -30,7 +30,7 @@ class BadukPanWidget(Widget):
         self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents)
         self.last_mouse_pos = (0, 0)
         Window.bind(mouse_pos=self.on_mouse_pos)
-        Clock.schedule_interval(self.animate_pv, 0.25)
+        Clock.schedule_interval(self.animate_pv, 0.1)
 
     # stone placement functions
     def _find_closest(self, pos, gridpos):
@@ -66,12 +66,12 @@ class BadukPanWidget(Widget):
             inside = self.collide_point(*rel_pos)
             if inside and self.active_pv_moves:
                 near_move = [
-                    (move, pv)
-                    for move, pv in self.active_pv_moves
+                    (pv, node)
+                    for move, pv, node in self.active_pv_moves
                     if abs(rel_pos[0] - self.gridpos_x[move[0]]) < self.grid_size / 2 and abs(rel_pos[1] - self.gridpos_y[move[1]]) < self.grid_size / 2
                 ]
                 if near_move:
-                    self.set_animating_pv(near_move[0][1], self.katrain.game.current_node)
+                    self.set_animating_pv(near_move[0][0], near_move[0][1])
                 else:
                     self.animating_pv = None
                     self.draw_hover_contents()
@@ -311,8 +311,8 @@ class BadukPanWidget(Widget):
                         else:
                             evalcol = copy.copy(self.eval_color(points_lost))
                             evalcol[3] = alpha
-                        if teaching and child_node.auto_undo and current_node.analysis_ready:
-                            self.active_pv_moves.append((move.coords, current_node.candidate_moves[0]["pv"]))
+                        if teaching and child_node.auto_undo and child_node.analysis_ready:
+                            self.active_pv_moves.append((move.coords, child_node.candidate_moves[0]["pv"], child_node))
                         scale = self.ui_config["child_scale"]
                         self.draw_stone(move.coords[0], move.coords[1], (*stone_color[move.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
@@ -327,7 +327,7 @@ class BadukPanWidget(Widget):
                             alpha += self.ui_config["top_move_x_alpha"]
                         elif move_dict["visits"] < self.ui_config["visit_frac_small"] * hint_moves[0]["visits"]:
                             scale = 0.8
-                        self.active_pv_moves.append((move.coords, move_dict["pv"]))
+                        self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(move_dict["pointsLost"])[:3], alpha], scale=scale)
 
             # hover next move ghost stone
@@ -335,10 +335,11 @@ class BadukPanWidget(Widget):
                 self.draw_stone(*self.ghost_stone, (*stone_color[next_player], ghost_alpha))
 
     def animate_pv(self, _dt):
-        if not self.animating_pv:
+        animating_pv = self.animating_pv
+        if not animating_pv:
             return
-        pv, node, start_time, _ = self.animating_pv
-        delay = self.ui_config.get("anim_pv_time", 1)
+        pv, node, start_time, _ = animating_pv
+        delay = self.ui_config.get("anim_pv_time", 0.5)
         up_to_move = (time.time() - start_time) / delay
         self.draw_hover_contents()
         self.draw_pv(pv, node, up_to_move)
@@ -349,9 +350,9 @@ class BadukPanWidget(Widget):
         stone_color = self.ui_config["stones"]
         cn = katrain.game.current_node
         with self.canvas.after:
-            if node != cn:
+            if node != cn and node.parent != cn:
                 hide_node = cn
-                while hide_node and hide_node != node:
+                while hide_node and hide_node.move and hide_node != node:
                     self.draw_stone(*hide_node.move.coords, [0.85, 0.68, 0.40, 0.8])  # board coloured dot
                     hide_node = hide_node.parent
             for i, gtpmove in enumerate(pv):
@@ -368,10 +369,11 @@ class BadukPanWidget(Widget):
                     ]
                 else:
                     board_coords = (self.gridpos_x[coords[0]], self.gridpos_y[coords[1]])
-                    sizefac = 0.95
-                draw_circle(board_coords, self.stone_size * sizefac, stone_color[move_player])
+
+
+                draw_circle(board_coords, self.stone_size, stone_color[move_player])
                 Color(*stone_color[opp_player])
-                draw_text(pos=board_coords, text=str(i + 1), font_size=sizefac * self.grid_size / 1.45)
+                draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size / 1.45)
 
     def set_animating_pv(self, pv, node):
         if node is not None and (not self.animating_pv or not (self.animating_pv[0] == pv and self.animating_pv[1] == node)):

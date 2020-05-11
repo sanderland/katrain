@@ -16,6 +16,7 @@ import json
 
 DB_FILENAME = "bots/ai_performance.pickle"
 
+
 class Logger:
     def log(self, msg, level):
         if level <= OUTPUT_INFO:
@@ -104,16 +105,16 @@ test_ais = [
     AI("Default", {}, {"model": "my/6bf104.txt.gz", "max_visits": 500}),
     AI("Default", {}, {"model": "my/6b104-223.txt.gz", "max_visits": 500}),
     AI("Default", {}, {"model": "my/6b104-423.txt.gz", "max_visits": 500}),
-    AI("Default", {}, {"model": "KataGo/models/b10-1.3.txt.gz","max_visits": 500}),
+    AI("Default", {}, {"model": "KataGo/models/b10-1.3.txt.gz", "max_visits": 500}),
     AI("Policy", {}),
     AI("P:Local", {}),
     AI("P:Weighted", {}),
-#    AI("P:Pick", {}),
-#    AI("ScoreLoss", {"max_visits": 500}),
-#    AI("P:Tenuki", {}),
-#    AI("P:Local", {}),
-#    AI("P:Influence", {}),
-#    AI("P:Territory", {}),
+    #    AI("P:Pick", {}),
+    #    AI("ScoreLoss", {"max_visits": 500}),
+    #    AI("P:Tenuki", {}),
+    #    AI("P:Local", {}),
+    #    AI("P:Influence", {}),
+    #    AI("P:Territory", {}),
 ]
 
 
@@ -140,7 +141,7 @@ def play_games(black: AI, white: AI):
         while not game.ended:
             p = game.current_node.next_player
             move, node = ai_move(game, players[p].strategy, players[p].ai_settings)
-            print(tag,move)
+            print(tag, move)
         while not game.current_node.analysis_ready:
             time.sleep(0.001)
         game.game_id += f"_{game.current_node.format_score()}"

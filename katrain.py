@@ -151,6 +151,7 @@ class KaTrainGui(BoxLayout):
             self.message_queue.put([self.game.game_id, message, *args])
 
     def _do_new_game(self, move_tree=None, analyze_fast=False):
+        self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
         self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree, analyze_fast=analyze_fast)
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
@@ -165,15 +166,18 @@ class KaTrainGui(BoxLayout):
                 ai_move(self.game, mode, settings)
 
     def _do_undo(self, n_times=1):
+        self.board_gui.animating_pv = None
         self.game.undo(n_times)
 
     def _do_redo(self, n_times=1):
+        self.board_gui.animating_pv = None
         self.game.redo(n_times)
 
     def _do_switch_branch(self, direction):
         self.game.switch_branch(direction)
 
     def _do_play(self, coords):
+        self.board_gui.animating_pv = None
         try:
             self.game.play(Move(coords, player=self.game.next_player))
         except IllegalMoveException as e:
