@@ -18,7 +18,7 @@ ENGINE_SETTINGS = {
     "config": "KataGo/analysis_config.cfg",
     "max_visits": 50,
     "max_time": 1.0,
-    "enable_ownership": False,
+    "_enable_ownership": False,
     "threads": 32,
 }
 

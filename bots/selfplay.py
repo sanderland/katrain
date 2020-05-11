@@ -16,7 +16,6 @@ import json
 
 DB_FILENAME = "bots/ai_performance.pickle"
 
-
 class Logger:
     def log(self, msg, level):
         if level <= OUTPUT_INFO:
@@ -36,12 +35,12 @@ class AI:
     DEFAULT_ENGINE_SETTINGS = {
         "katago": "KataGo/katago",
         "model": "KataGo/models/b15-1.3.2.txt.gz",
-        "config": "KataGo/analysis_config.cfg",
+        "config": "bots/lowmem.cfg",
         "max_visits": 1,
         "max_time": 300.0,
         "_enable_ownership": False,
     }
-    NUM_THREADS = 32
+    NUM_THREADS = 8
     IGNORE_SETTINGS_IN_TAG = {"threads", "_enable_ownership", "katago"}  # katago for switching from/to bs version
     ENGINES = []
     LOCK = threading.Lock()
@@ -75,9 +74,14 @@ class AI:
 
 try:
     with open(DB_FILENAME, "rb") as f:
-        ai_database, all_results = pickle.load(f)
-        for ai in ai_database:
-            ai.fix_settings()  # update as required
+        ai_database_loaded, all_results = pickle.load(f)
+        ai_database = []
+        for ai in ai_database_loaded:
+            try:
+                ai.fix_settings()  # update as required
+                ai_database.append(ai)
+            except:
+                print("Error loading AI", ai.strategy)
 except FileNotFoundError:
     ai_database = []
     all_results = []
@@ -96,25 +100,27 @@ def retrieve_ais(selected_ais):
 
 
 test_ais = [
-    #  AI("Jigo", {}, {"max_visits": 100}),
-    AI("Policy", {}, {"model": "my/model.bin.gz"}),
-    AI("Policy", {}, {"model": "KataGo/models/b10-1.3.txt.gz"}),
+    AI("Default", {}, {"model": "my/6b.bin.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "my/6bf104.txt.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "my/6b104-223.txt.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "my/6b104-423.txt.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "KataGo/models/b10-1.3.txt.gz","max_visits": 500}),
     AI("Policy", {}),
     AI("P:Local", {}),
-    AI("P:Pick", {}),
-    AI("P:Noise", {}),
-    AI("P:Tenuki", {}),
-    AI("P:Local", {}),
-    AI("P:Influence", {}),
-    AI("P:Territory", {}),
     AI("P:Weighted", {}),
+#    AI("P:Pick", {}),
+#    AI("ScoreLoss", {"max_visits": 500}),
+#    AI("P:Tenuki", {}),
+#    AI("P:Local", {}),
+#    AI("P:Influence", {}),
+#    AI("P:Territory", {}),
 ]
 
 
 for ai in test_ais:
     add_ai(ai)
 
-N_GAMES = 5
+N_GAMES = 1
 BOARDSIZE = 19
 
 ais_to_test = retrieve_ais(test_ais)
@@ -133,7 +139,8 @@ def play_games(black: AI, white: AI):
         start_time = time.time()
         while not game.ended:
             p = game.current_node.next_player
-            move = ai_move(game, players[p].strategy, players[p].ai_settings)
+            move, node = ai_move(game, players[p].strategy, players[p].ai_settings)
+            print(tag,move)
         while not game.current_node.analysis_ready:
             time.sleep(0.001)
         game.game_id += f"_{game.current_node.format_score()}"

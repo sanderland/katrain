@@ -296,16 +296,16 @@ class Game:
         while i < len(thresholds) and points_lost < thresholds[i]:
             i += 1
         num_undos = num_undo_prompts[i] if i < len(num_undo_prompts) else 0
-        xmsg = ". Please try again."
+        xmsg = ". Please try once more"
         if num_undos == 0:
             undo = False
         elif num_undos < 1:  # probability
             undo = int(node.undo_threshold < num_undos) and len(node.parent.children) == 1
-            xmsg = f" (with {num_undos:.0%} probability at this level of mistake)" + xmsg
         else:
             undo = len(node.parent.children) <= num_undos
-            if len(node.parent.children) == num_undos:
-                xmsg = xmsg[:-1] + ", but note that this is your last try at this level of mistake."
+            if len(node.parent.children) < num_undos:
+                xmsg = ". Please try again (multiple tries remaining)."
+
         node.auto_undo = undo
         if undo:
             self.undo(1)

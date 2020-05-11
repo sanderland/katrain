@@ -11,6 +11,7 @@ class Controls(BoxLayout):
         self.status_node = None
         self.ai_settings_popup = None
         self.teacher_settings_popup = None
+        self.active_comment_node = None
 
     def set_status(self, msg, at_node=None):
         self.status = msg
@@ -59,9 +60,11 @@ class Controls(BoxLayout):
             next_player_is_human_or_both_robots = current_node.player and ("ai" not in self.player_mode(current_node.player) or both_players_are_robots)
             current_player_is_ai_playing_human = current_node.player and "ai" in self.player_mode(current_node.player) and "ai" not in self.player_mode(current_node.next_player)
             if next_player_is_human_or_both_robots and not current_node.is_root and move:
-                info += current_node.comment(teach="undo" in self.player_mode(current_node.player), hints=self.hints.active, interactive=True)
+                info += current_node.comment(teach="undo" in self.player_mode(current_node.player), hints=self.hints.active)
+                self.active_comment_node = current_node
             elif current_player_is_ai_playing_human and current_node.parent:
-                info += current_node.parent.comment(teach="undo" in self.player_mode(current_node.next_player), hints=self.hints.active, interactive=False)
+                info += current_node.parent.comment(teach="undo" in self.player_mode(current_node.next_player), hints=self.hints.active)
+                self.active_comment_node = current_node.parent
 
             if current_node.analysis_ready:
                 self.score.text = current_node.format_score()

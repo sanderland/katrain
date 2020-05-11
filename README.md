@@ -181,5 +181,5 @@ If you ever need to reset to the original settings, simply re-download the `conf
 
 * Feedback and pull requests are both very welcome. I would also be happy to host translations of this manual into languages where English fluency is typically lower.
 * For suggestions and planned improvements, see the 'issues' tab on github.
-* You can also contact me on discord (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) or [Reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
+* You can also contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) or [Reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
 * Some people have also asked me how to donate. Something go-related such as a book or teaching time is highly appreciated.
