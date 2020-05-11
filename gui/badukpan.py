@@ -370,7 +370,6 @@ class BadukPanWidget(Widget):
                 else:
                     board_coords = (self.gridpos_x[coords[0]], self.gridpos_y[coords[1]])
 
-
                 draw_circle(board_coords, self.stone_size, stone_color[move_player])
                 Color(*stone_color[opp_player])
                 draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size / 1.45)
@@ -380,7 +379,7 @@ class BadukPanWidget(Widget):
             self.animating_pv = (pv, node, time.time(), self.last_mouse_pos)
 
     def show_pv_from_comments(self, pv_str):
-        self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node)
+        self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
 
 class BadukPanControls(BoxLayout):

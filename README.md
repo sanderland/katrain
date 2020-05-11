@@ -11,11 +11,11 @@ but has since grown to include a wide range of features, including:
 * Play against a stronger player and use the retry option instead of handicap stones.
 * Automatically generate focused SGF reviews which show your biggest mistakes.
 
-## Screenshots
+## Animated Screenshots
 
 | Analyze games  | Play against an AI Teacher |
 | ------------- | ------------- |
-| ![screenshot](img/screenshot_analyze.png)  | ![screenshot](img/screenshot_play.png)  |
+| ![screenshot](img/anim_analyze.gif)  | ![screenshot](img/anim_teach.gif)  |
 
 ## Quickstart
 
@@ -48,12 +48,13 @@ If you do not want to see 'Points lost' or other feedback for your moves,
 
 The dots indicate how many points were lost by that move.
 
-* The colour indicates the size of the mistake according to kata
+* The colour indicates the size of the mistake according to KataGo
 * The size indicates if the mistake was actually punished. Going from fully punished at maximal size,
   to no actual effect on the score at minimal size.
 
 In short, if you are a weaker player you should mostly on large dots that are red or purple,
-while stronger players can pay more attention to smaller mistakes.
+while stronger players can pay more attention to smaller mistakes. If you want to hide some colours, you 
+can do so under 'Configure Teacher'.
 
 #### AIs
 
@@ -69,9 +70,12 @@ Available AIs, with strength indicating an estimate for the default settings, ar
    The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
    This, along with 'Weighted' are probably the best choice for kyu players who want a chance of winning without playing the sillier bots below. Variants of this strategy include:
     * **[~2k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
-    * **[~10k]**: **P:Tenuki** is biased in the opposite way as P:Local, using the same setting.
+    * **[~5k]**: **P:Tenuki** is biased in the opposite way as P:Local, using the same setting. After about half the board is filled, it stops and plays like P:Pick.
     * **[~10k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight.
-    * **[~10k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting.
+    * **[~10k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting. Both of these also stop the strategy in endgame and revert to P:Pick.
+
+The Engine based AIs (Default, ScoreLoss, Balance, Jigo) are affected by both the model and choice of max_visits/max_time,
+ while the Policy net based AIs (Policy, P:...) are affected by the choice of model file, but work identically with 'max_visits' set to 1. 
 
 ### Analysis
 

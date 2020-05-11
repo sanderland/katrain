@@ -26,7 +26,7 @@ class Game:
 
     def __init__(self, katrain, engine: Union[Dict, KataGoEngine], config: Dict, move_tree: GameNode = None, analyze_fast=False):
         self.katrain = katrain
-        if isinstance(engine, KataGoEngine):
+        if not isinstance(engine, Dict):
             engine = {"B": engine, "W": engine}
         self.engines = engine
         self.config = config

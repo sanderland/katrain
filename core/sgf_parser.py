@@ -88,19 +88,23 @@ class SGFNode:
 
     def sgf(self, **xargs) -> str:
         """Generates an SGF, calling sgf_properties on each node with the given xargs, so it can filter relevant properties if needed."""
-        if self.is_root:
-            import sys
 
-            bszx, bszy = self.board_size
-            sys.setrecursionlimit(max(sys.getrecursionlimit(), 4 * bszx * bszy))
-        sgf_str = "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in self.sgf_properties(**xargs).items() if values])
-        if self.children:
-            children = [c.sgf(**xargs) for c in self.order_children(self.children)]
-            if len(children) == 1:
-                sgf_str += ";" + children[0]
+        def node_sgf_str(node):
+            return ";" + "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in node.sgf_properties(**xargs).items() if values])
+
+        stack = [")", self, "("]
+        sgf_str = ""
+        while stack:
+            item = stack.pop()
+            if isinstance(item, str):
+                sgf_str += item
             else:
-                sgf_str += "(;" + ")(;".join(children) + ")"
-        return f"(;{sgf_str})" if self.is_root else sgf_str
+                sgf_str += node_sgf_str(item)
+                if len(item.children) == 1:
+                    stack.append(item.children[0])
+                elif item.children:
+                    stack += sum([[")", c, "("] for c in self.order_children(item.children)[::-1]], [])
+        return sgf_str
 
     def add_list_property(self, property: str, values: List):
         """Add some values to the property list."""
