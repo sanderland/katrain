@@ -265,7 +265,7 @@ class ScoreGraph(Label):
     line_points = ListProperty([])
     dot_pos = ListProperty([0, 0])
     highlighted_index = NumericProperty(None)
-    y_scale = NumericProperty(4)
+    y_scale = NumericProperty(5)
     marginx = NumericProperty(0.015)
     marginy = NumericProperty(0.01)
     highlight_size = NumericProperty(5)
@@ -289,7 +289,7 @@ class ScoreGraph(Label):
             nn_values = [n.score for n in nodes if n and n.score]
             val_range = min(nn_values or [0]), max(nn_values or [0])
 
-            self.y_scale = math.ceil(max(4, max(-val_range[0], val_range[1])) / 2) * 2
+            self.y_scale = math.ceil(max(5, max(-val_range[0], val_range[1])) / 5) * 5
 
             xscale = self.width * (1 - 2 * self.marginx) / max(len(values) - 1, 15)
             available_height = self.height * (1 - 2 * self.marginy)

@@ -125,8 +125,7 @@ In addition to shortcuts mentioned above, there are:
 * **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
-* **[click and hold on the last move]**: See variation for the best expected move.
-* **[click on a move]**: See detailed statistics for a previous move.
+* **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
 * **[double-click on a move]**: Navigate directly to that point in the game.
 * **[Ctrl-v]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
 * **[Ctrl-c]**: Save SGF to clipboard.
@@ -181,5 +180,5 @@ If you ever need to reset to the original settings, simply re-download the `conf
 
 * Feedback and pull requests are both very welcome. I would also be happy to host translations of this manual into languages where English fluency is typically lower.
 * For suggestions and planned improvements, see the 'issues' tab on github.
-* You can also contact me on discord (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) or [Reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
+* You can also contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) or [Reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
 * Some people have also asked me how to donate. Something go-related such as a book or teaching time is highly appreciated.

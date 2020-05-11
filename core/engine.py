@@ -6,7 +6,7 @@ import threading
 import time
 from typing import Callable, Optional
 
-from core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
+from core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, OUTPUT_INFO
 from core.game_node import GameNode
 
 
@@ -103,13 +103,16 @@ class KataGoEngine:
                 continue
             query_id = analysis["id"]
             callback, error_callback, start_time, next_move = self.queries[query_id]
-            del self.queries[query_id]
             if "error" in analysis:
+                del self.queries[query_id]
                 if error_callback:
                     error_callback(analysis)
                 elif not (next_move and "Illegal move" in analysis["error"]):  # sweep
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
+            elif "warning" in analysis:
+                self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
             else:
+                del self.queries[query_id]
                 time_taken = time.time() - start_time
                 self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG)
                 self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
