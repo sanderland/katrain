@@ -104,7 +104,7 @@ test_ais = [
     AI("Default", {}, {"model": "bots/6b.bin.gz", "max_visits": 500}),
     AI("Default", {}, {"model": "bots/6b104-s22347264.txt.gz", "max_visits": 500}),
     AI("Default", {}, {"model": "bots/6b104-s42364928.txt.gz", "max_visits": 500}),
-#    AI("Default", {}, {"model": "KataGo/models/b10-1.3.txt.gz", "max_visits": 500}),
+    #    AI("Default", {}, {"model": "KataGo/models/b10-1.3.txt.gz", "max_visits": 500}),
     AI("Policy", {}),
     AI("P:Local", {}),
     AI("P:Weighted", {}),
@@ -143,7 +143,10 @@ def play_games(black: AI, white: AI):
         while not game.current_node.analysis_ready:
             time.sleep(0.001)
         game.game_id += f"_{game.current_node.format_score()}"
-        print(f"{tag}\tGame finished in {time.time()-start_time:.1f}s @ move {game.current_node.depth} {game.current_node.format_score()} -> {game.write_sgf('sgf_selfplay/')}", file=sys.stderr)
+        print(
+            f"{tag}\tGame finished in {time.time()-start_time:.1f}s @ move {game.current_node.depth} {game.current_node.format_score()} -> {game.write_sgf('sgf_selfplay/')}",
+            file=sys.stderr,
+        )
         score = game.current_node.score
         if score > 0.3:
             black.elo_comp.beat(white.elo_comp)

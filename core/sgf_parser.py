@@ -214,7 +214,13 @@ class SGFNode:
     @property
     def nodes_in_tree(self) -> List:
         """Returns all nodes in the tree rooted at this node"""
-        return [self] + sum([c.nodes_in_tree for c in self.children], [])
+        stack = [self]
+        nodes = []
+        while stack:
+            item = stack.pop(0)
+            nodes.append(item)
+            stack += item.children
+        return nodes
 
     @property
     def nodes_from_root(self) -> List:
