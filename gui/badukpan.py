@@ -353,7 +353,8 @@ class BadukPanWidget(Widget):
             if node != cn and node.parent != cn:
                 hide_node = cn
                 while hide_node and hide_node.move and hide_node != node:
-                    self.draw_stone(*hide_node.move.coords, [0.85, 0.68, 0.40, 0.8])  # board coloured dot
+                    if not hide_node.move.is_pass:
+                        self.draw_stone(*hide_node.move.coords, [0.85, 0.68, 0.40, 0.8])  # board coloured dot
                     hide_node = hide_node.parent
             for i, gtpmove in enumerate(pv):
                 if i > up_to_move:
