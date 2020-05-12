@@ -6,7 +6,6 @@ experiments
 gtp.log
 *.zip
 log.txt
-*.sgf
 sgfout
 sgf_selfplay
 sgf_ogs
