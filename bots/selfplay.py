@@ -102,9 +102,8 @@ def retrieve_ais(selected_ais):
 
 test_ais = [
     AI("Default", {}, {"model": "bots/6b.bin.gz", "max_visits": 500}),
-#    AI("Default", {}, {"model": "bots/6bf104.txt.gz", "max_visits": 500}),
-    AI("Default", {}, {"model": "bots/6b104-223.txt.gz", "max_visits": 500}),
-    AI("Default", {}, {"model": "bots/6b104-423.txt.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "bots/6b104-s22347264.txt.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "bots/6b104-s42364928.txt.gz", "max_visits": 500}),
 #    AI("Default", {}, {"model": "KataGo/models/b10-1.3.txt.gz", "max_visits": 500}),
     AI("Policy", {}),
     AI("P:Local", {}),

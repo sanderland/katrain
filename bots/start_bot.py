@@ -38,10 +38,10 @@ if bot not in greetings or username not in apikeys:
 APIKEY = apikeys[username]
 settings_dump = ", ".join(f"{k}={v}" for k, v in ai_settings.items() if not k.startswith("_"))
 print(settings_dump)
-GREETING = f"Hello, welcome to an experimental version of KaTrain AIs - These are based on weakened policy nets of KataGo. Current mode is: {greetings[bot]}"
+GREETING = f"Hello, play with these bots at any time by downloading KaTrain at github.com/sanderland/katrain - Current mode is {bot_strategy_names[bot]} ({greetings[bot]})"
 if settings:
     GREETING += f" Settings: {settings_dump}."
-BYEMSG = "Thank you for playing. If you have any feedback, please message my admin! Play with these bots at any time by downloading KaTrain at github.com/sanderland/katrain"
+BYEMSG = "Thank you for playing. If you have any feedback, please message my admin! "
 
 cmd = f'{GTP2OGS} --debug --apikey {APIKEY} --rejectnewfile ~/shutdown_bots --username {username} --greeting "{GREETING}" --farewell "{BYEMSG}"  {BOT_SETTINGS} --farewellscore --aichat --noclock --nopause --speeds blitz,live  --persist --minrank 25k  -- python bots/ai2gtp.py {bot} {port}'
 print(f"starting bot {username} using server port {port} --> {cmd}")
