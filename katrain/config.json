@@ -1,0 +1,248 @@
+{
+    "engine": {
+        "katago": "",
+        "model": "katrain/models/b15-1.3.2.txt.gz",
+        "config": "katrain/KataGo/analysis_config.cfg",
+        "threads": 16,
+        "max_visits": 500,
+        "fast_visits": 50,
+        "max_time": 3.0,
+        "wide_root_noise": 0.0,
+        "_enable_ownership": true
+    },
+    "sgf": {
+        "sgf_load": "~/Downloads",
+        "sgf_save": "./sgfout",
+        "save_feedback": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+        ]
+    },
+    "game": {
+        "init_size": 19,
+        "init_komi": 6.5
+    },
+    "trainer": {
+        "num_undo_prompts": [
+            1,
+            1,
+            1,
+            0.5,
+            0,
+            0
+        ],
+        "eval_thresholds": [
+            12,
+            6,
+            3,
+            1.5,
+            0.5,
+            0
+        ],
+        "eval_off_show_last": 3,
+        "eval_show_ai": true,
+        "lock_ai": false
+    },
+    "ai": {
+        "Default": {
+            "_help_right": "No settings available for Default KataGo AI, strength is mainly affected by `max_visits` and `model` in the main settings `engine` section.",
+            "_help_left": ""
+        },
+        "Balance": {
+            "target_score": 2,
+            "random_loss": 1,
+            "max_loss": 5,
+            "min_visits": 20,
+            "_help_left": "Will try to win by `target_score`, lose at most `random_loss` when behind and `max_loss` when ahead.",
+            "_help_right": "Never plays moves with less than `min_visits` visits, so also check engine settings."
+        },
+        "Jigo": {
+            "target_score": 0.5,
+            "_help_left": "Will try to win by `target_score`, without further restrictions.",
+            "_help_right": "Also affected by engine settings such as `max_visits`."
+        },
+        "ScoreLoss": {
+            "strength": 0.5,
+            "_help_left": "Plays moves weighted inversely by point loss.",
+            "_help_right": "Also affected by engine settings such as `max_visits`, likely to play more varied/weaker with higher visits."
+        },
+        "Policy": {
+            "opening_moves": 0.05,
+            "_help_left": "Strength is mainly affected by `model` in engine settings, but should be high dan regardless.",
+            "_help_right": "Plays the P:Weighted strategy during the first `opening_moves` * <number of intersections> moves to allow variety."
+        },
+        "P:Weighted": {
+            "_help_right": "pick_override` determines when top move is chosen without randomness, and `lower_bound` determines the lower bound policy value that is allowed.",
+            "_help_left": "Plays move with probability=policy^(1/weaken_fac),i.e. `weaken_fac` influences how much more likely weaker moves are picked.",
+            "pick_override": 1.0,
+            "lower_bound": 0.001,
+            "weaken_fac": 1.25
+        },
+        "P:Pick": {
+            "pick_override": 0.95,
+            "pick_n": 5,
+            "pick_frac": 0.33,
+            "_help_left": "Picks `pick_n + pick_frac * <number of legal moves>` at random and plays the best one. Change `pick_frac` to make it see more moves.",
+            "_help_right": "Plays top move if policy value is above `pick_override` to avoid obvious mistakes."
+        },
+        "P:Local": {
+            "pick_override": 0.95,
+            "stddev": 1.5,
+            "pick_n": 15,
+            "pick_frac": 0.0,
+            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` near the last move and plays the best one.",
+            "_help_right": "Lower `stddev` makes it prefer closer moves."
+        },
+        "P:Tenuki": {
+            "pick_override": 0.85,
+            "stddev": 7.5,
+            "pick_n": 5,
+            "pick_frac": 0.5,
+            "endgame": 0.45,
+            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` away from the last move and plays the best one.",
+            "_help_right": "Increase `stddev` makes it prefer moves further away. Stops tenukiing after the 'endgame' fraction of the board is filled."
+        },
+        "P:Influence": {
+            "pick_override": 0.95,
+            "pick_n": 5,
+            "pick_frac": 0.4,
+            "threshold": 3.5,
+            "line_weight": 10,
+            "endgame": 0.4,
+            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to above the `threshold` line.",
+            "_help_right": "Increase `line_weight` to penalize moves near the edge more. Stops strategy after the 'endgame' fraction of the board is filled."
+        },
+        "P:Territory": {
+            "pick_override": 0.95,
+            "pick_n": 5,
+            "pick_frac": 0.4,
+            "threshold": 3.5,
+            "line_weight": 2,
+            "endgame": 0.4,
+            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to below the `threshold` line.",
+            "_help_right": "Increase `line_weight` to penalize moves closer to the center more.  Stops strategy after the 'endgame' fraction of the board is filled."
+        }
+    },
+    "board_ui": {
+        "anim_pv_time": 0.5,
+        "engine_down_col": [
+            0.8,
+            0,
+            0,
+            1
+        ],
+        "engine_busy_col": [
+            0.9,
+            0.4,
+            0.1,
+            1
+        ],
+        "engine_little_busy_col": [
+            0.85,
+            0.89,
+            0.3,
+            1
+        ],
+        "engine_almost_done_col": [
+            0.67,
+            0.9,
+            0.18,
+            1
+        ],
+        "engine_ready_col": [
+            0.117,
+            0.588,
+            0,
+            1
+        ],
+        "starpoint_size": 0.1,
+        "stone_size": 0.475,
+        "eval_dot_max_size": 0.5,
+        "eval_dot_min_size": 0.25,
+        "visit_frac_small": 0.1,
+        "stones": {
+            "B": [
+                0.05,
+                0.05,
+                0.05
+            ],
+            "W": [
+                0.95,
+                0.95,
+                0.95
+            ]
+        },
+        "outline": {
+            "B": [
+                0.3,
+                0.3,
+                0.3,
+                0.5
+            ],
+            "W": [
+                0.7,
+                0.7,
+                0.7,
+                0.5
+            ]
+        },
+        "ghost_alpha": 0.5,
+        "top_move_x_alpha": 0.3,
+        "child_scale": 0.95,
+        "eval_colors": [
+            [
+                0.447,
+                0.129,
+                0.42,
+                1
+            ],
+            [
+                0.8,
+                0,
+                0,
+                1
+            ],
+            [
+                0.9,
+                0.4,
+                0.1,
+                1
+            ],
+            [
+                0.85,
+                0.89,
+                0.3,
+                1
+            ],
+            [
+                0.67,
+                0.9,
+                0.18,
+                1.0
+            ],
+            [
+                0.117,
+                0.588,
+                0,
+                1.0
+            ]
+        ],
+        "line_color": [
+            0,
+            0,
+            0
+        ],
+        "policy_color": [
+            0.9,
+            0.2,
+            0.8
+        ]
+    },
+    "debug": {
+        "level": 1
+    }
+}

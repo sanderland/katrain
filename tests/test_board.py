@@ -1,6 +1,6 @@
 import pytest
 
-from core.game import Game, IllegalMoveException, Move
+from katrain.core.game import Game, IllegalMoveException, Move
 
 
 class MockKaTrain:
@@ -18,7 +18,7 @@ class TestBoard:
         return [c for c in b.chains if c]
 
     def test_merge(self):
-        b = Game(MockKaTrain(), MockEngine(), {}, board_size=9)
+        b = Game(MockKaTrain(), MockEngine(), config={"init_size": 9})
         b.play(Move.from_gtp("B9", player="B"))
         b.play(Move.from_gtp("A3", player="B"))
         b.play(Move.from_gtp("A9", player="B"))
@@ -27,7 +27,7 @@ class TestBoard:
         assert 0 == len(b.prisoners)
 
     def test_collide(self):
-        b = Game(MockKaTrain(), MockEngine(), {}, board_size=9)
+        b = Game(MockKaTrain(), MockEngine(), config={"init_size": 9})
         b.play(Move.from_gtp("B9", player="B"))
         with pytest.raises(IllegalMoveException):
             b.play(Move.from_gtp("B9", player="W"))
@@ -36,7 +36,7 @@ class TestBoard:
         assert 0 == len(b.prisoners)
 
     def test_capture(self):
-        b = Game(MockKaTrain(), MockEngine(), {}, board_size=9)
+        b = Game(MockKaTrain(), MockEngine(), config={"init_size": 9})
         b.play(Move.from_gtp("A2", player="B"))
         b.play(Move.from_gtp("B1", player="W"))
         b.play(Move.from_gtp("A1", player="W"))
@@ -57,7 +57,7 @@ class TestBoard:
         assert 2 == len(b.prisoners)
 
     def test_snapback(self):
-        b = Game(MockKaTrain(), MockEngine(), {}, board_size=9)
+        b = Game(MockKaTrain(), MockEngine(), config={"init_size": 9})
         for move in ["C1", "D1", "E1", "C2", "D3", "E4", "F2", "F3", "F4"]:
             b.play(Move.from_gtp(move, player="B"))
         for move in ["D2", "E2", "C3", "D4", "C4"]:
@@ -75,7 +75,7 @@ class TestBoard:
         assert 4 == len(b.prisoners)
 
     def test_ko(self):
-        b = Game(MockKaTrain(), MockEngine(), {}, board_size=9)
+        b = Game(MockKaTrain(), MockEngine(), config={"init_size": 9})
         for move in ["A2", "B1"]:
             b.play(Move.from_gtp(move, player="B"))
 

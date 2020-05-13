@@ -1,55 +1,43 @@
-# Installation from source for Windows users
-
-* Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
-* Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/products/individual#download-section).
-* Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
-* Execute the command `pip install kivy_deps.glew kivy_deps.sdl2 kivy_deps.gstreamer kivy`
-* Start the app by running `python katrain.py` in the directory where you downloaded the scripts. 
-  * Note that the program can be slow to initialize the first time, due to KataGo's gpu tuning.
-
-# Installation for Linux users
-
-* This assumed you have a working Python 3.6/3.7 installation as a default. If your default is python 2, use pip3/python3. 
-  Kivy currently does not have a release for Python 3.8.
-* Open a terminal.
-    * Run the command `git clone https://github.com/sanderland/katrain.git` to download the repository.
-    * Run the command `pip install kivy`.
-* A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.4+ binary.
-* Start the app by changing directory using `cd katrain` and running `python katrain.py`.
-  * Note that the program can be slow to initialize the first time, due to KataGo's GPU tuning.
 
 # Installation for MacOS users
 
-## Installation pre-requisites
-
+## <a name="MacPrereq"></a>Installation pre-requisites
 * Download and install [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
 * Install [Homebrew](https://brew.sh) by running the following command in terminal:
   * ```
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     ```
-* Run the command `pip3 install kivy` in the terminal.
-* Install Katago using [Homebrew](https://brew.sh/)
-   * Note that the version required for KaTrain is currently too new so we need to update the Homebrew script.
-   * Run the command `brew edit katago` and replace lines 4-5 with
-   * ```
-     url "https://github.com/lightvector/KataGo/archive/v1.4.1.tar.gz"
-     sha256 "b408086c7c973ddc6144e16156907556ae5f42921b9f29dc13e6909a9e9a4787"
-     ```
-    * You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself.
+* Install Katago using [Homebrew](https://brew.sh/) by executing `brew install katago`
+* You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself.
 
-## Installation and running KaTrain
-
-* Now that the dependencies are installed its time to Git clone or download the KaTrain repository
-  * Run the command `git clone https://github.com/sanderland/katrain.git` this will clone KaTrain to your home folder.
-* To run Katrain you need to first access the KaTrain folder.
-  * If you used the 'git clone' command to download the repository then its located in your home folder.
-   You can access it by typing `cd katrain` in the terminal. 
-  * If you've moved the folder to another location the easiest way to navigate to it in terminal is to type `cd` and drag
-   the KaTrain folder from the finder window into terminal. This will copy its full path to the command line.
-* Now that we're in the KaTrain folder run the following command. `python3 katrain.py`
-* The first time you run KaTrain you will see an error about initializing KataGo.
+## Installation and running KaTrain from PyPi
+* Run `pip3 install katrain`
+* Run the program by executing `katrain` in a terminal.
+* If you see an error about initializing KataGo:
   * Open the settings dialog by clicking on the gear icon at the bottom right of the window and change the path of the 'katago'
-   setting to `/usr/local/bin/katago` (or the path where you compiled KataGo) then click 'Apply and Save'.
+   setting under 'engine' to `/usr/local/bin/katago`, or the path where you compiled KataGo.
+
+## Installation from sources
+* This is largely the same as for linux, see [here](#LinuxSources).
+
+# Installation from sources for Windows users
+* Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
+* Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/products/individual#download-section).
+* Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
+* Execute the command `python setup.py install`
+* Start the app by running `katrain` in the directory where you downloaded the scripts. 
+
+# <a name="LinuxSources"></a>Installation from sources for Linux users
+
+* This assumed you have a working Python 3.6/3.7 installation as a default. If your default is python 2, use pip3/python3. 
+  Kivy currently does not have a release for Python 3.8.
+* Open a terminal.
+    * Run the command `git clone https://github.com/sanderland/katrain.git` to download the repository.
+    * Changing directory using `cd katrain`. 
+    * Run the command `python3 setup.py install`.
+* A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.4+ binary.
+* Run the program by typing `katrain` in the terminal.
+
 
 # Configuring the GPU(s) KataGo uses
 

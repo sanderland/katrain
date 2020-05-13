@@ -6,10 +6,12 @@ block_cipher = None
 # pyinstaller spec/katrain.spec --noconfirm
 # --upx-dir my
 
-a = Analysis(['..\\katrain.py'],
+a = Analysis(['..\\katrain\\__main__.py'],
              pathex=['C:\\Users\\sande\\Desktop\\katrain\\spec'],
              binaries=[],
-             datas=[('..\\katrain.kv','.'),('..\\config.json','.'),('..\\KataGo','KataGo'),('..\\img','img')],
+             datas=[('..\\katrain\\gui.kv','katrain'),('..\\katrain\\config.json','katrain'),
+                    ('..\\katrain\\KataGo','katrain\KataGo'),('..\\katrain\img','katrain\img'),
+                    ('..\\katrain\\models','katrain\models')],
              hiddenimports=["win32file","win32timezone"], #  FileChooser in kivy loads this conditionally
              hookspath=[],
              runtime_hooks=[],
@@ -34,8 +36,8 @@ exe = EXE(pyz,
           upx=True,
           console=True) #  , icon='..\\icon.png'
 
-EXCLUDE_SUFFIX = ['katago','b10-1.3.txt.gz','screenshot_analyze.png','screenshot_play.png']
-EXCLUDE = ['KataGoData']
+EXCLUDE_SUFFIX = ['katago']
+EXCLUDE = ['KataGoData','anim_','screenshot_','__pycache__']
 a.datas = [(ff,ft,tp) for ff,ft,tp in a.datas if not any(ff.endswith(suffix) for suffix in EXCLUDE_SUFFIX) and not any(kw in ff for kw in EXCLUDE)]
 coll = COLLECT(exe,
                a.binaries,

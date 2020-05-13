@@ -6,8 +6,8 @@ import sys
 import threading
 import traceback
 
-from core.common import OUTPUT_INFO
-from core.engine import KataGoEngine
+from katrain.core.common import OUTPUT_INFO
+from katrain.core.engine import KataGoEngine
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8587
 
@@ -18,7 +18,7 @@ ENGINE_SETTINGS = {
     "config": "KataGo/analysis_config.cfg",
     "max_visits": 50,
     "max_time": 1.0,
-    "enable_ownership": False,
+    "_enable_ownership": False,
     "threads": 32,
 }
 

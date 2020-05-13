@@ -7,11 +7,11 @@ import traceback
 from collections import defaultdict
 from concurrent.futures.thread import ThreadPoolExecutor
 
-from core.ai import ai_move
-from core.common import OUTPUT_ERROR, OUTPUT_INFO
+from katrain.core.ai import ai_move
+from katrain.core.common import OUTPUT_ERROR, OUTPUT_INFO
 from elote import EloCompetitor
-from core.engine import KataGoEngine
-from core.game import Game
+from katrain.core.engine import KataGoEngine
+from katrain.core.game import Game
 import json
 
 DB_FILENAME = "bots/ai_performance.pickle"
@@ -36,7 +36,7 @@ class AI:
     DEFAULT_ENGINE_SETTINGS = {
         "katago": "KataGo/katago",
         "model": "KataGo/models/b15-1.3.2.txt.gz",
-        "config": "KataGo/analysis_config.cfg",
+        "config": "bots/lowmem.cfg",
         "max_visits": 1,
         "max_time": 300.0,
         "_enable_ownership": False,
@@ -75,9 +75,14 @@ class AI:
 
 try:
     with open(DB_FILENAME, "rb") as f:
-        ai_database, all_results = pickle.load(f)
-        for ai in ai_database:
-            ai.fix_settings()  # update as required
+        ai_database_loaded, all_results = pickle.load(f)
+        ai_database = []
+        for ai in ai_database_loaded:
+            try:
+                ai.fix_settings()  # update as required
+                ai_database.append(ai)
+            except:
+                print("Error loading AI", ai.strategy)
 except FileNotFoundError:
     ai_database = []
     all_results = []
@@ -96,25 +101,26 @@ def retrieve_ais(selected_ais):
 
 
 test_ais = [
-    #  AI("Jigo", {}, {"max_visits": 100}),
-    AI("Policy", {}, {"model": "my/model.bin.gz"}),
-    AI("Policy", {}, {"model": "KataGo/models/b10-1.3.txt.gz"}),
+    AI("Default", {}, {"model": "bots/6b.bin.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "bots/6b104-s22347264.txt.gz", "max_visits": 500}),
+    AI("Default", {}, {"model": "bots/6b104-s42364928.txt.gz", "max_visits": 500}),
+    #    AI("Default", {}, {"model": "KataGo/models/b10-1.3.txt.gz", "max_visits": 500}),
     AI("Policy", {}),
     AI("P:Local", {}),
-    AI("P:Pick", {}),
-    AI("P:Noise", {}),
-    AI("P:Tenuki", {}),
-    AI("P:Local", {}),
-    AI("P:Influence", {}),
-    AI("P:Territory", {}),
     AI("P:Weighted", {}),
+    AI("P:Pick", {}),
+    AI("ScoreLoss", {"max_visits": 500}),
+    #    AI("P:Tenuki", {}),
+    #    AI("P:Local", {}),
+    AI("P:Influence", {}),
+    #    AI("P:Territory", {}),
 ]
 
 
 for ai in test_ais:
     add_ai(ai)
 
-N_GAMES = 5
+N_GAMES = 1
 BOARDSIZE = 19
 
 ais_to_test = retrieve_ais(test_ais)
@@ -131,13 +137,16 @@ def play_games(black: AI, white: AI):
         game.root.add_list_property("PW", [white.name])
         game.root.add_list_property("PB", [black.name])
         start_time = time.time()
-        while not game.ended:
+        while not game.ended and game.current_node.depth < 300:
             p = game.current_node.next_player
-            move = ai_move(game, players[p].strategy, players[p].ai_settings)
+            move, node = ai_move(game, players[p].strategy, players[p].ai_settings)
         while not game.current_node.analysis_ready:
             time.sleep(0.001)
         game.game_id += f"_{game.current_node.format_score()}"
-        print(f"{tag}\tGame finished in {time.time()-start_time:.1f}s  {game.current_node.format_score()} -> {game.write_sgf('sgf_selfplay/')}", file=sys.stderr)
+        print(
+            f"{tag}\tGame finished in {time.time()-start_time:.1f}s @ move {game.current_node.depth} {game.current_node.format_score()} -> {game.write_sgf('sgf_selfplay/')}",
+            file=sys.stderr,
+        )
         score = game.current_node.score
         if score > 0.3:
             black.elo_comp.beat(white.elo_comp)

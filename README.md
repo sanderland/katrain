@@ -11,11 +11,11 @@ but has since grown to include a wide range of features, including:
 * Play against a stronger player and use the retry option instead of handicap stones.
 * Automatically generate focused SGF reviews which show your biggest mistakes.
 
-## Screenshots
+## Animated Screenshots
 
 | Analyze games  | Play against an AI Teacher |
 | ------------- | ------------- |
-| ![screenshot](img/screenshot_analyze.png)  | ![screenshot](img/screenshot_play.png)  |
+| ![screenshot](katrain/img/anim_analyze.gif)  | ![screenshot](katrain/img/anim_teach.gif)  |
 
 ## Quickstart
 
@@ -26,7 +26,9 @@ but has since grown to include a wide range of features, including:
 
 ## Installation
 * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
-* See [here](INSTALL.md) for detailed instructions for running from source files on Window, Linux and MacOS,
+* Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any OS.
+    * Note that on MacOS you will need to set up KataGo using brew, as described [here](INSTALL.md).
+* See [here](INSTALL.md#MacPrereq) for detailed instructions for running from source files on Window, Linux and MacOS,
   as well as setting up KataGo to use multiple GPUs.
 
 ## Manual
@@ -48,30 +50,34 @@ If you do not want to see 'Points lost' or other feedback for your moves,
 
 The dots indicate how many points were lost by that move.
 
-* The colour indicates the size of the mistake according to kata
+* The colour indicates the size of the mistake according to KataGo
 * The size indicates if the mistake was actually punished. Going from fully punished at maximal size,
   to no actual effect on the score at minimal size.
 
 In short, if you are a weaker player you should mostly on large dots that are red or purple,
-while stronger players can pay more attention to smaller mistakes.
+while stronger players can pay more attention to smaller mistakes. If you want to hide some colours, you 
+can do so under 'Configure Teacher'.
 
 #### AIs
 
-Available AIs, with strength indicating an estimate for the default settings, are:
+Available AIs, with strength indicating an estimate for the default settings based on their current OGS rankings, are:
 
 * **[9p+]** **Default** is full KataGo, above professional level.
-* **[~1k?]**  **ScoreLoss** is KataGo making moves with probability `~ e^(-strength * points lost)`, playing a varied style with small mistakes.
+* **[~5k]**  **ScoreLoss** is KataGo making moves with probability `~ e^(-strength * points lost)`, playing a varied style with small mistakes.
 * **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points.
 * **Jigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
 * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used. There is a setting to increase variety in the opening, but otherwise it plays deterministically.
-* **[~2k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
-* **[~5k]**: **P:Pick** picks `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
+* **[~3k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
+* **[~7k]**: **P:Pick** picks `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
    The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
    This, along with 'Weighted' are probably the best choice for kyu players who want a chance of winning without playing the sillier bots below. Variants of this strategy include:
-    * **[~2k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
-    * **[~10k]**: **P:Tenuki** is biased in the opposite way as P:Local, using the same setting.
-    * **[~10k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight.
-    * **[~10k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting.
+    * **[~3k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
+    * **[~5k]**: **P:Tenuki** is biased in the opposite way as P:Local, using the same setting. After about half the board is filled, it stops and plays like P:Pick.
+    * **[~6k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight.
+    * **[~8k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting. Both of these also stop the strategy in endgame and revert to P:Pick.
+
+The Engine based AIs (Default, ScoreLoss, Balance, Jigo) are affected by both the model and choice of max_visits/max_time,
+ while the Policy net based AIs (Policy, P:...) are affected by the choice of model file, but work identically with 'max_visits' set to 1. 
 
 ### Analysis
 
@@ -101,7 +107,7 @@ In addition to shortcuts mentioned above, there are:
 * **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
-* **[click on a move]**: See detailed statistics for a previous move.
+* **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
 * **[double-click on a move]**: Navigate directly to that point in the game.
 * **[Ctrl-v]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
 * **[Ctrl-c]**: Save SGF to clipboard.
@@ -156,5 +162,5 @@ If you ever need to reset to the original settings, simply re-download the `conf
 
 * Feedback and pull requests are both very welcome. I would also be happy to host translations of this manual into languages where English fluency is typically lower.
 * For suggestions and planned improvements, see the 'issues' tab on github.
-* You can also contact me on discord (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) or [Reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
+* You can also contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) or [Reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
 * Some people have also asked me how to donate. Something go-related such as a book or teaching time is highly appreciated.

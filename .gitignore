@@ -1,12 +1,13 @@
 # additions
 KataGoData
-KataGo/KataGoData
+katrain/KataGo/KataGoData
 experiments
 .idea
+.buildozer
+bin
 gtp.log
 *.zip
 log.txt
-*.sgf
 sgfout
 sgf_selfplay
 sgf_ogs
