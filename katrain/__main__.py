@@ -53,15 +53,16 @@ class KaTrainGui(BoxLayout):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def log(self, message, level=OUTPUT_INFO):
-        if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
+        if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status_label.text:
             if "starting" in message.lower():
                 self.controls.set_status(f"KataGo engine starting...")
             if message.startswith("Tuning"):
                 self.controls.set_status(f"KataGo is tuning settings for first startup, please wait." + message)
             if "ready" in message.lower():
                 self.controls.set_status(f"KataGo engine ready.")
-            print(f"[KG:STDERR]{message.strip()}")
-        elif level == OUTPUT_ERROR:
+            if "ready" in message.lower():
+                self.controls.set_status(f"KataGo engine ready.")
+        if level == OUTPUT_ERROR or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower()):
             self.controls.set_status(f"ERROR: {message}")
             print(f"ERROR: {message}")
         elif self.debug_level >= level:

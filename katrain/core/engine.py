@@ -99,7 +99,7 @@ class KataGoEngine:
             try:
                 line = self.katago_process.stderr.readline()
                 if line:
-                    self.katrain.log(line.decode(), OUTPUT_KATAGO_STDERR)
+                    self.katrain.log(line.decode().strip(), OUTPUT_KATAGO_STDERR)
             except:
                 return
 

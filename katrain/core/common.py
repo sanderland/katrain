@@ -47,6 +47,6 @@ def find_package_resource(path):
             return str(path_obj)
         except (ModuleNotFoundError, FileNotFoundError) as e:
             print(f"File {path} not found, installation possibly broken")
-            return "FILENOTFOUND"
+            return f"FILENOTFOUND::{path}"
     else:
         return path  # absolute path
