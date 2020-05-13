@@ -22,10 +22,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install dependencies
-      run: pip3 install -e .
+      run: |
+        pip3 install -e .
+        pip3 install pytest
 
     - name: Run tests
       run: pytest tests
 
     - name: Build
-      run: python3 setup.py sdist
+      run: |
+        python3 setup.py sdist
+        python3 setup.py bdist_wheel
