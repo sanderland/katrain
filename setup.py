@@ -33,7 +33,6 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Sander Land",
-    author_email="sander.land@gmail.com",
     url="https://github.com/sanderland/katrain",
     license="MIT",
     install_requires=[

@@ -1,6 +1,6 @@
-# KaTrain v1.0 (pre-release)
+# KaTrain v1.0.5
 
-This repository contains a tool for analyzing and playing go with AI feedback from KataGo.
+KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
 
 The original idea was to give immediate feedback on the many large mistakes we make in terms of inefficient moves,
 but has since grown to include a wide range of features, including:
