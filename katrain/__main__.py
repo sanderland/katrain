@@ -58,6 +58,7 @@ class KaTrainGui(BoxLayout):
                 self.controls.set_status(f"KataGo engine starting...")
             if message.startswith("Tuning"):
                 self.controls.set_status(f"KataGo is tuning settings for first startup, please wait." + message)
+                return
             if "ready" in message.lower():
                 self.controls.set_status(f"KataGo engine ready.")
             if "ready" in message.lower():
