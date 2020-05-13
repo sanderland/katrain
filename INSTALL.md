@@ -12,17 +12,15 @@
 
 ## Installation and running KaTrain from PyPi
 * Run `pip3 install katrain`
-* The first time you run KaTrain you will see an error about initializing KataGo.
+* Run the program by executing `katrain` in a terminal.
+* If you see an error about initializing KataGo:
   * Open the settings dialog by clicking on the gear icon at the bottom right of the window and change the path of the 'katago'
-   setting under 'engine' to `katago`  and then click 'Apply and Save'.
-  * If katago is not in your path, try `/usr/local/bin/katago`, or the path where you compiled KataGo.
-* Run the program by typing `katrain` in the terminal.
+   setting under 'engine' to `/usr/local/bin/katago`, or the path where you compiled KataGo.
 
 ## Installation from sources
 * This is largely the same as for linux, see [here](#LinuxSources).
 
 # Installation from sources for Windows users
-
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/products/individual#download-section).
 * Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.

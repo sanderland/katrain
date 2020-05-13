@@ -30,11 +30,23 @@ def evaluation_class(points_lost: float, eval_thresholds: List[float]):
     return i
 
 
+resource_scopes = []
+
+
+def clean_temp():
+    for s in resource_scopes:
+        s.__exit__(None, None, None)
+
+
 def find_package_resource(path):
     if path.startswith("katrain"):
         parts = path.replace("\\", "/").split("/")
-        with pkg_resources.path(".".join(parts[:-1]), parts[-1]) as path_obj:
-            found_path = str(path_obj)
-        return found_path
+        try:
+            path_obj = pkg_resources.path(".".join(parts[:-1]), parts[-1]).__enter__()
+            resource_scopes.append(path_obj)
+            return str(path_obj)
+        except ModuleNotFoundError as e:
+            print(f"File {path} not found, installation possibly broken")
+            return "FILENOTFOUND"
     else:
         return path  # absolute path

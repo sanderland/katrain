@@ -28,8 +28,17 @@ class KataGoEngine:
 
     def __init__(self, katrain, config):
         self.katrain = katrain
+        executable = config["katago"].strip()
+        if not executable:
+            if sys.platform.startswith("win"):
+                executable = "katrain/KataGo/katago.exe"
+            elif sys.platform.startswith("linux"):
+                executable = "katrain/KataGo/katago"
+            else:  # e.g. MacOS after brewing
+                executable = "katago"
 
-        self.command = f"{find_package_resource(config['katago'])} analysis -model {config['model']} -config {config['config']} -analysis-threads {config['threads']}"
+        modelfile, configfile = find_package_resource(config["model"]), find_package_resource(config["config"])
+        self.command = f"{find_package_resource(executable)} analysis -model {modelfile} -config {configfile} -analysis-threads {config['threads']}"
         if not sys.platform.startswith("win"):
             self.command = shlex.split(self.command)
         self.queries = {}  # outstanding query id -> start time and callback
@@ -47,11 +56,17 @@ class KataGoEngine:
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
             self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        except (FileNotFoundError, PermissionError) as e:
-            self.katrain.log(
-                f"Starting kata with command '{self.command}' failed with error {e}. Please make sure the 'katago' value under 'engine' in settings points to the correct KataGo executable.",
-                OUTPUT_ERROR,
-            )
+        except (FileNotFoundError, PermissionError, OSError) as e:
+            if self.config["katago"].strip():
+                self.katrain.log(
+                    f"Starting kata with command '{self.command}' failed with error {e}. If on MacOS, see the manual on how to use brew to install katago first, and add it to your path or 'engine/katago' setting.",
+                    OUTPUT_ERROR,
+                )
+            else:
+                self.katrain.log(
+                    f"Starting kata with command '{self.command}' failed with error {e}. Please make sure the 'katago' value under 'engine' in settings points to the correct KataGo executable.",
+                    OUTPUT_ERROR,
+                )
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
         self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
 

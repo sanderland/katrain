@@ -19,7 +19,7 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
 
 from katrain.core.ai import ai_move
-from katrain.core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource
+from katrain.core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource, clean_temp
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
@@ -29,6 +29,7 @@ from katrain.gui.controls import Controls
 from katrain.gui.popups import NewGamePopup, ConfigPopup, LoadSGFPopup
 
 __version__ = "1.0.5"
+
 
 class KaTrainGui(BoxLayout):
     """Top level class responsible for tying everything together"""
@@ -52,7 +53,7 @@ class KaTrainGui(BoxLayout):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def log(self, message, level=OUTPUT_INFO):
-        if level == OUTPUT_KATAGO_STDERR:
+        if level == OUTPUT_KATAGO_STDERR and 'ERROR' not in self.controls.status.text:
             if "starting" in message.lower():
                 self.controls.set_status(f"KataGo engine starting...")
             if message.startswith("Tuning"):
@@ -319,7 +320,6 @@ class KaTrainApp(App):
         self.icon = ICON  # how you're supposed to set an icon
         self.gui = KaTrainGui()
         self.title = f"KaTrain v{__version__}"
-        print(self.get_application_icon())
         Window.bind(on_request_close=self.on_request_close)
         return self.gui
 
@@ -329,6 +329,7 @@ class KaTrainApp(App):
     def on_request_close(self, *args):
         if getattr(self, "gui", None) and self.gui.engine:
             self.gui.engine.shutdown()
+        clean_temp()
 
     def signal_handler(self, *args):
         if self.gui.debug_level >= OUTPUT_DEBUG:
