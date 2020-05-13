@@ -136,6 +136,7 @@ class Game:
         cn = self.current_node  # avoid race conditions
         for _ in range(n_times):
             if not cn.is_root:
+                cn.parent.set_favourite_child(cn)
                 cn = cn.parent
         self.set_current_node(cn)
 
@@ -143,7 +144,7 @@ class Game:
         cn = self.current_node  # avoid race conditions
         for _ in range(n_times):
             if cn.children:
-                cn = cn.children[-1]
+                cn = cn.favourite_child
         self.set_current_node(cn)
 
     def switch_branch(self, direction):

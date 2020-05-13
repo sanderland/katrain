@@ -45,7 +45,7 @@ def find_package_resource(path):
             path_obj = pkg_resources.path(".".join(parts[:-1]), parts[-1]).__enter__()
             resource_scopes.append(path_obj)
             return str(path_obj)
-        except ModuleNotFoundError as e:
+        except (ModuleNotFoundError, FileNotFoundError) as e:
             print(f"File {path} not found, installation possibly broken")
             return "FILENOTFOUND"
     else:

@@ -278,7 +278,7 @@ class ScoreGraph(Label):
         self.nodes = [root]
         node = root
         while node.children:
-            node = node.children[0]
+            node = node.favourite_child
             self.nodes.append(node)
         self.highlighted_index = 0
 

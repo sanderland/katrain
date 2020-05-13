@@ -334,46 +334,46 @@ class BadukPanWidget(Widget):
             if self.ghost_stone:
                 self.draw_stone(*self.ghost_stone, (*stone_color[next_player], ghost_alpha))
 
+            animating_pv = self.animating_pv
+            if animating_pv:
+                pv, node, start_time, _ = animating_pv
+                delay = self.ui_config.get("anim_pv_time", 0.5)
+                up_to_move = (time.time() - start_time) / delay
+                self.draw_pv(pv, node, up_to_move)
+
     def animate_pv(self, _dt):
-        animating_pv = self.animating_pv
-        if not animating_pv:
-            return
-        pv, node, start_time, _ = animating_pv
-        delay = self.ui_config.get("anim_pv_time", 0.5)
-        up_to_move = (time.time() - start_time) / delay
-        self.draw_hover_contents()
-        self.draw_pv(pv, node, up_to_move)
+        if self.animating_pv:
+            self.draw_hover_contents()
 
     def draw_pv(self, pv, node, up_to_move):
         katrain = self.katrain
         next_last_player = [node.next_player, node.player]
         stone_color = self.ui_config["stones"]
         cn = katrain.game.current_node
-        with self.canvas.after:
-            if node != cn and node.parent != cn:
-                hide_node = cn
-                while hide_node and hide_node.move and hide_node != node:
-                    if not hide_node.move.is_pass:
-                        self.draw_stone(*hide_node.move.coords, [0.85, 0.68, 0.40, 0.8])  # board coloured dot
-                    hide_node = hide_node.parent
-            for i, gtpmove in enumerate(pv):
-                if i > up_to_move:
-                    return
-                move_player = next_last_player[i % 2]
-                opp_player = next_last_player[1 - i % 2]
-                coords = Move.from_gtp(gtpmove).coords
-                if coords is None:  # tee-hee
-                    sizefac = katrain.board_controls.pass_btn.size[1] / 2 / self.stone_size
-                    board_coords = [
-                        katrain.board_controls.pass_btn.pos[0] + katrain.board_controls.pass_btn.size[0] + self.stone_size * sizefac,
-                        katrain.board_controls.pass_btn.pos[1] + katrain.board_controls.pass_btn.size[1] / 2,
-                    ]
-                else:
-                    board_coords = (self.gridpos_x[coords[0]], self.gridpos_y[coords[1]])
+        if node != cn and node.parent != cn:
+            hide_node = cn
+            while hide_node and hide_node.move and hide_node != node:
+                if not hide_node.move.is_pass:
+                    self.draw_stone(*hide_node.move.coords, [0.85, 0.68, 0.40, 0.8])  # board coloured dot
+                hide_node = hide_node.parent
+        for i, gtpmove in enumerate(pv):
+            if i > up_to_move:
+                return
+            move_player = next_last_player[i % 2]
+            opp_player = next_last_player[1 - i % 2]
+            coords = Move.from_gtp(gtpmove).coords
+            if coords is None:  # tee-hee
+                sizefac = katrain.board_controls.pass_btn.size[1] / 2 / self.stone_size
+                board_coords = [
+                    katrain.board_controls.pass_btn.pos[0] + katrain.board_controls.pass_btn.size[0] + self.stone_size * sizefac,
+                    katrain.board_controls.pass_btn.pos[1] + katrain.board_controls.pass_btn.size[1] / 2,
+                ]
+            else:
+                board_coords = (self.gridpos_x[coords[0]], self.gridpos_y[coords[1]])
 
-                draw_circle(board_coords, self.stone_size, stone_color[move_player])
-                Color(*stone_color[opp_player])
-                draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size / 1.45)
+            draw_circle(board_coords, self.stone_size, stone_color[move_player])
+            Color(*stone_color[opp_player])
+            draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size / 1.45)
 
     def set_animating_pv(self, pv, node):
         if node is not None and (not self.animating_pv or not (self.animating_pv[0] == pv and self.animating_pv[1] == node)):

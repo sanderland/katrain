@@ -18,6 +18,7 @@ class GameNode(SGFNode):
         self.ai_thoughts = ""
         self.move_number = 0
         self.undo_threshold = random.random()  # for fractional undos, store the random threshold in the move itself for consistency
+        self._favourite_child = None
 
     def sgf_properties(self, save_comments_player=None, save_comments_class=None, eval_thresholds=None):
         properties = copy.copy(super().sgf_properties())
@@ -47,6 +48,16 @@ class GameNode(SGFNode):
     @staticmethod
     def order_children(children):
         return sorted(children, key=lambda c: 0.5 if c.auto_undo is None else int(c.auto_undo))  # analyzed/not undone main, non-teach second, undone last
+
+    def set_favourite_child(self, c):
+        self._favourite_child = c
+
+    @property
+    def favourite_child(self) -> Optional["GameNode"]:
+        if self._favourite_child:
+            return self._favourite_child
+        elif self.children:
+            return self.children[0]
 
     # various analysis functions
     def analyze(self, engine, priority=0, visits=None, time_limit=True, refine_move=None, analyze_fast=False):

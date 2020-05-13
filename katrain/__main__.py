@@ -53,7 +53,7 @@ class KaTrainGui(BoxLayout):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def log(self, message, level=OUTPUT_INFO):
-        if level == OUTPUT_KATAGO_STDERR and 'ERROR' not in self.controls.status.text:
+        if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
             if "starting" in message.lower():
                 self.controls.set_status(f"KataGo engine starting...")
             if message.startswith("Tuning"):

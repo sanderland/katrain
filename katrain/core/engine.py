@@ -37,7 +37,7 @@ class KataGoEngine:
                 executable = "katago"
 
         modelfile, configfile = find_package_resource(config["model"]), find_package_resource(config["config"])
-        self.command = f"{find_package_resource(executable)} analysis -model {modelfile} -config {configfile} -analysis-threads {config['threads']}"
+        self.command = f'{find_package_resource(executable)} analysis -model "{modelfile}" -config "{configfile}" -analysis-threads {config["threads"]}'
         if not sys.platform.startswith("win"):
             self.command = shlex.split(self.command)
         self.queries = {}  # outstanding query id -> start time and callback
@@ -55,6 +55,7 @@ class KataGoEngine:
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
             self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            print(self.katago_process, self.katago_process.poll())
         except (FileNotFoundError, PermissionError, OSError) as e:
             if self.config["katago"].strip():
                 self.katrain.log(
@@ -111,6 +112,7 @@ class KataGoEngine:
                 raise EngineDiedException(f"Engine died unexpectedly without sending output, possibly due to out of memory: {e}")
             if b"Uncaught exception" in line:
                 self.katrain.log(f"KataGo Engine Failed: {line.decode()}", OUTPUT_ERROR)
+                return
             if not line:
                 continue
             analysis = json.loads(line)
