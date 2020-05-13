@@ -1,7 +1,7 @@
 {
     "engine": {
         "katago": "",
-        "model": "katrain/models/b15-1.3.2.txt.gz",
+        "model": "katrain/models/g170e-b15c192-s1672170752-d466197061.bin.gz",
         "config": "katrain/KataGo/analysis_config.cfg",
         "threads": 16,
         "max_visits": 500,

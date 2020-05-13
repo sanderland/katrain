@@ -28,7 +28,7 @@ from katrain.gui.badukpan import BadukPanWidget
 from katrain.gui.controls import Controls
 from katrain.gui.popups import NewGamePopup, ConfigPopup, LoadSGFPopup
 
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 
 
 class KaTrainGui(BoxLayout):
