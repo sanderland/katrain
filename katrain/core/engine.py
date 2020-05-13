@@ -5,7 +5,6 @@ import sys
 import threading
 import time
 from typing import Callable, Optional
-import importlib.resources as pkg_resources
 
 from katrain.core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource
 from katrain.core.game_node import GameNode
