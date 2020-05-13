@@ -1,8 +1,10 @@
 # additions
 KataGoData
-KataGo/KataGoData
+katrain/KataGo/KataGoData
 experiments
 .idea
+.buildozer
+bin
 gtp.log
 *.zip
 log.txt

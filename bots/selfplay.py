@@ -7,11 +7,11 @@ import traceback
 from collections import defaultdict
 from concurrent.futures.thread import ThreadPoolExecutor
 
-from core.ai import ai_move
-from core.common import OUTPUT_ERROR, OUTPUT_INFO
+from katrain.core.ai import ai_move
+from katrain.core.common import OUTPUT_ERROR, OUTPUT_INFO
 from elote import EloCompetitor
-from core.engine import KataGoEngine
-from core.game import Game
+from katrain.core.engine import KataGoEngine
+from katrain.core.game import Game
 import json
 
 DB_FILENAME = "bots/ai_performance.pickle"

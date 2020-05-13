@@ -4,12 +4,12 @@ import sys
 import time
 import random
 
-from core.ai import ai_move
-from core.common import OUTPUT_ERROR, OUTPUT_INFO
+from katrain.core.ai import ai_move
+from katrain.core.common import OUTPUT_ERROR, OUTPUT_INFO
 from bots.settings import bot_strategy_names
-from core.engine import EngineDiedException, KataGoEngine
-from core.game import Game
-from core.sgf_parser import Move
+from katrain.core.engine import EngineDiedException, KataGoEngine
+from katrain.core.game import Game
+from katrain.core.sgf_parser import Move
 
 if len(sys.argv) < 2:
     bot = "dev"
@@ -42,7 +42,7 @@ ENGINE_SETTINGS = {
 
 engine = KataGoEngine(logger, ENGINE_SETTINGS)
 
-with open("config.json") as f:
+with open("katrain/config.json") as f:
     settings = json.load(f)
     all_ai_settings = settings["ai"]
 

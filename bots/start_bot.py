@@ -22,7 +22,7 @@ else:
 
 username = f"katrain-{bot}"
 
-with open("config.json") as f:
+with open("katrain/config.json") as f:
     settings = json.load(f)
     all_ai_settings = settings["ai"]
 

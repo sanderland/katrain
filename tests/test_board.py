@@ -1,6 +1,6 @@
 import pytest
 
-from core.game import Game, IllegalMoveException, Move
+from katrain.core.game import Game, IllegalMoveException, Move
 
 
 class MockKaTrain:

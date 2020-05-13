@@ -1,6 +1,6 @@
 import os
 
-from core.sgf_parser import SGF
+from katrain.core.sgf_parser import SGF
 
 
 def test_simple():

@@ -15,7 +15,7 @@ but has since grown to include a wide range of features, including:
 
 | Analyze games  | Play against an AI Teacher |
 | ------------- | ------------- |
-| ![screenshot](img/anim_analyze.gif)  | ![screenshot](img/anim_teach.gif)  |
+| ![screenshot](katrain/img/anim_analyze.gif)  | ![screenshot](katrain/img/anim_teach.gif)  |
 
 ## Quickstart
 
@@ -26,7 +26,9 @@ but has since grown to include a wide range of features, including:
 
 ## Installation
 * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
-* See [here](INSTALL.md) for detailed instructions for running from source files on Window, Linux and MacOS,
+* Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any OS.
+    * Note that on MacOS you will need to set up KataGo using brew, as described [here](INSTALL.md).
+* See [here](INSTALL.md#MacPrereq) for detailed instructions for running from source files on Window, Linux and MacOS,
   as well as setting up KataGo to use multiple GPUs.
 
 ## Manual
