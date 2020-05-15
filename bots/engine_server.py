@@ -14,8 +14,8 @@ PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8587
 ENGINE_SETTINGS = {
     "katago": "my/katago25",
     #   "katago": "KataGo/katago",
-    "model": "KataGo/models/b15-1.3.2.txt.gz",
-    "config": "KataGo/analysis_config.cfg",
+    "model": "katrain/models/g170e-b15c192-s1672170752-d466197061.bin.gz",
+    "config": "katrain/KataGo/analysis_config.cfg",
     "max_visits": 50,
     "max_time": 1.0,
     "_enable_ownership": False,

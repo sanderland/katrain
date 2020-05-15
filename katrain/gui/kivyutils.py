@@ -111,7 +111,7 @@ class StyledSpinner(Spinner):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.fbind("size", self._update_dropdown_size_frac)
+        self.fbind("size", lambda s,dt: Clock.schedule_once(self._update_dropdown_size_frac,0) )
 
     def _update_dropdown_size_frac(self, *largs):
         if not self.sync_height_frac:
@@ -127,6 +127,7 @@ class StyledSpinner(Spinner):
         for item in container.children[:]:
             item.height = h * self.sync_height_frac
             item.font_size = fsz
+
 
 
 class ToggleButtonContainer(GridLayout):
