@@ -132,7 +132,7 @@ If you ever need to reset to the original settings, simply re-download the `conf
         * fast_visits: The number of visits used for certain operations with fewer visits.
         * wide_root_noise: Consider a wider variety of moves, using KataGo's `analysisWideRootNoise` option. Will affect both analysis and AIs such as ScoreLoss. (KataGo 1.4+ only, keep at 0.0 otherwise)
     * These settings cause the engine to be restarted:
-        * katago: Path to your KataGo executable.
+        * katago: Path to your KataGo executable. If blank, as is the default, uses the included binaries on windows/linux, or 'katago' on MacOS (which assumes you have installed KataGo yourself).
         * model: Path to your KataGo model file. Note that the default model file included is an older 15 block one for high speed and low memory requirements. Replace it with a new model from [here](https://github.com/lightvector/KataGo/releases) for maximal strength.
         * config: Path to your KataGo config file.    
         * threads: Number of threads to use in the KataGo analysis engine.
