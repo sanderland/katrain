@@ -82,6 +82,8 @@ class GameNode(SGFNode):
             self.ownership = analysis_json.get("ownership")
             self.policy = analysis_json.get("policy")
             self.analysis["root"] = analysis_json["rootInfo"]
+            if self.parent and self.move:
+                self.parent.update_move_analysis(analysis_json["rootInfo"], self.move.gtp())  # update analysis in parent for consistency
 
     @property
     def analysis_ready(self):

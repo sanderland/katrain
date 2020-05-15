@@ -1,4 +1,4 @@
-# KaTrain v1.0.5
+# KaTrain v1.0.6
 
 KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
 

@@ -33,8 +33,9 @@
   Kivy currently does not have a release for Python 3.8.
 * Open a terminal.
     * Run the command `git clone https://github.com/sanderland/katrain.git` to download the repository.
-    * Changing directory using `cd katrain`. 
-    * Run the command `python3 setup.py install`.
+    * Changing directory using `cd katrain`
+    * Run the command `python3 setup.py install`
+      * If you get an error about permissions, try `python3 setup.py install --user`
 * A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.4+ binary.
 * Run the program by typing `katrain` in the terminal.
 

@@ -25,8 +25,14 @@ class Controls(BoxLayout):
         else:
             self.play_tab_button.trigger_action(duration=0)
 
-    def switch_mode(self):
+    @property
+    def play_analyze_mode(self):
         if self.play_tab_button.state == "down":
+            return "play"
+        return "analyze"
+
+    def switch_mode(self):
+        if self.play_analyze_mode == "play":
             self.select_mode("analyze")
         else:
             self.select_mode("play")
