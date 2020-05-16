@@ -19,7 +19,7 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
 
 from katrain.core.ai import ai_move
-from katrain.core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource, clean_temp
+from katrain.core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
@@ -338,7 +338,6 @@ class KaTrainApp(App):
     def on_request_close(self, *args):
         if getattr(self, "gui", None) and self.gui.engine:
             self.gui.engine.shutdown()
-        clean_temp()
 
     def signal_handler(self, *args):
         if self.gui.debug_level >= OUTPUT_DEBUG:

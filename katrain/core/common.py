@@ -1,5 +1,5 @@
-from typing import Any, List, Tuple
 import os
+from typing import Any, List, Tuple
 
 try:
     import importlib.resources as pkg_resources
@@ -30,21 +30,12 @@ def evaluation_class(points_lost: float, eval_thresholds: List[float]):
     return i
 
 
-resource_scopes = []
-
-
-def clean_temp():
-    for s in resource_scopes:
-        s.__exit__(None, None, None)
-
-
 def find_package_resource(path):
     if path.startswith("katrain"):
         parts = path.replace("\\", "/").split("/")
         try:
-            path_obj = pkg_resources.path(".".join(parts[:-1]), parts[-1]).__enter__()
-            resource_scopes.append(path_obj)
-            return str(path_obj)
+            with pkg_resources.path(".".join(parts[:-1]), parts[-1]) as path_obj:
+                return str(path_obj)  # this will clean up if egg etc, but these don't work anyway
         except (ModuleNotFoundError, FileNotFoundError) as e:
             print(f"File {path} not found, installation possibly broken")
             return f"FILENOTFOUND::{path}"
