@@ -409,6 +409,7 @@
 	play_tab_button: play_tab_button
 	analyze_tab_button: analyze_tab_button
     info: info
+    note: note
     status_label: status_label
 	win_rate: win_rate
 	score_change: score_change
@@ -623,7 +624,13 @@
             markup: True
             on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
             size_hint: 1, None
-            height: self.parent.height - status_label.height - 1
+            height: self.parent.height - status_label.height - note.height - 1
+        TextInput:
+            id: note
+            size_hint: 1, None
+            on_text: root.katrain.set_note(self.text)
+            hint_text: 'Your SGF notes for this position here.'
+            height: min( (len(self._lines)+0.7) * self.line_height, self.parent.height - status_label.height - 2.7*self.line_height)
     BoxLayout:
         orientation: 'horizontal'
         size_hint: 1, None

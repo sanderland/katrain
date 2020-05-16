@@ -147,6 +147,9 @@ class KaTrainGui(BoxLayout):
         self.board_gui.redraw_board_contents_trigger()
         self.controls.update_evaluation()
 
+    def set_note(self, note):
+        self.game.current_node.note = note
+
     def _message_loop_thread(self):
         while True:
             game, msg, *args = self.message_queue.get()
@@ -189,6 +192,7 @@ class KaTrainGui(BoxLayout):
         self.game.redo(n_times)
 
     def _do_switch_branch(self, direction):
+        self.board_gui.animating_pv = None
         self.game.switch_branch(direction)
 
     def _do_play(self, coords):
@@ -276,7 +280,7 @@ class KaTrainGui(BoxLayout):
         return super().on_touch_up(touch)
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
-        if isinstance(App.get_running_app().root_window.children[0], Popup):
+        if isinstance(App.get_running_app().root_window.children[0], Popup) or self.controls.note.focus:
             return  # if in new game or load, don't allow keyboard shortcuts
 
         shortcuts = {
@@ -335,11 +339,11 @@ class KaTrainApp(App):
     def on_start(self):
         self.gui.start()
 
-    def on_request_close(self, *args):
+    def on_request_close(self, *_args):
         if getattr(self, "gui", None) and self.gui.engine:
             self.gui.engine.shutdown()
 
-    def signal_handler(self, *args):
+    def signal_handler(self, _signal, _frame):
         if self.gui.debug_level >= OUTPUT_DEBUG:
             print("TRACEBACKS")
             for threadId, stack in sys._current_frames().items():

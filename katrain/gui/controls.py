@@ -91,7 +91,7 @@ class Controls(BoxLayout):
                 self.win_rate.text = current_node.parent.format_win_rate()
 
             self.graph.update_value(current_node)
-
+            self.note.text = current_node.note
         self.info.text = info
 
     def configure_ais(self):

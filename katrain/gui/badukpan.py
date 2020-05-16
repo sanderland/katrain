@@ -330,7 +330,7 @@ class BadukPanWidget(Widget):
                         if "pv" in move_dict:
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:
-                            katrain.log(f"PV missing for move_dict {move_dict}",OUTPUT_DEBUG)
+                            katrain.log(f"PV missing for move_dict {move_dict}", OUTPUT_DEBUG)
                         self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(move_dict["pointsLost"])[:3], alpha], scale=scale)
 
             # hover next move ghost stone
