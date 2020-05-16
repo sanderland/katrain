@@ -143,6 +143,7 @@ If you ever need to reset to the original settings, simply re-download the `conf
     * sgf_load: default path where the load SGF dialog opens.
     * sgf_save: path where SGF files are saved.    
 * board_ui settings
+    * anim_pv_time: time in seconds between each stone when animating variations. 
     * eval_dot_max_size: size of coloured dots when point size is maximal, relative to stone size.
     * eval_dot_min_size: size of coloured dots when point size is minimal
     * ... various other minor cosmetic options.
