@@ -24,7 +24,7 @@
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/products/individual#download-section).
 * Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
-* Execute the command `python setup.py install`
+* Execute the command `pip3 install .`
 * Start the app by running `katrain` in the directory where you downloaded the scripts. 
 
 # <a name="LinuxSources"></a>Installation from sources for Linux users
@@ -33,11 +33,10 @@
   Kivy currently does not have a release for Python 3.8.
 * Open a terminal.
     * Run the command `git clone https://github.com/sanderland/katrain.git` to download the repository.
-    * Changing directory using `cd katrain`. 
-    * Run the command `python3 setup.py install`.
+    * Changing directory using `cd katrain`
+    * Run the command `pip3 install .` to install the package globally, then run the program by typing `katrain` in the terminal.
+    * If you prefer not to install, run without installing using `python -m katrain`
 * A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.4+ binary.
-* Run the program by typing `katrain` in the terminal.
-
 
 # Configuring the GPU(s) KataGo uses
 
@@ -75,4 +74,3 @@ openclDeviceToUseThread1 = 2
   Using OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) OpenCL 1.2
   Using OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) OpenCL 1.2
 ```
-
