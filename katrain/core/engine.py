@@ -1,8 +1,6 @@
 import json
-import os
 import shlex
 import subprocess
-import stat
 import sys
 import threading
 import time
