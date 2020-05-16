@@ -36,7 +36,7 @@ setup(
     url="https://github.com/sanderland/katrain",
     license="MIT",
     install_requires=[
-        "kivy>=1.10,<2",
+        "kivy>=1.11",
         "kivy_deps.glew;platform_system=='Windows'",
         "kivy_deps.sdl2;platform_system=='Windows'",
         "kivy_deps.gstreamer;platform_system=='Windows'",

@@ -1,4 +1,4 @@
-#:kivy 1.10.0
+#:kivy 1.11.0
 #:import ew kivy.uix.effectwidget
 
 #:set PLAYER_MODES ['Human', 'Teach','AI']
@@ -243,18 +243,15 @@
         Line:
             points: [root.pos[0]+self.width*root.marginx,root.whalf,root.pos[0]+self.width*(1-root.marginx),root.whalf]
             width: 1.0
-            dash_length: 1
-            dash_offset: 2
+            dashes: [1,2]
         Line:
             points: [root.pos[0]+self.width*root.marginx,root.mid,root.pos[0]+self.width*(1-root.marginx),root.mid]
             width: 1.0
-            dash_length: 4
-            dash_offset: 4
+            dashes: [4,4]
         Line:
             points: [root.pos[0]+self.width*root.marginx,root.bhalf,root.pos[0]+self.width*(1-root.marginx),root.bhalf]
             width: 1.0
-            dash_length: 1
-            dash_offset: 2
+            dashes: [1,2]
         Line:
             rectangle: [root.pos[0] + root.marginx * self.width, root.pos[1] + root.marginy*self.height, self.width*(1-2*root.marginx), root.height*(1-2*root.marginy)]
     canvas.after:
