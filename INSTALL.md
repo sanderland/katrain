@@ -74,4 +74,3 @@ openclDeviceToUseThread1 = 2
   Using OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) OpenCL 1.2
   Using OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) OpenCL 1.2
 ```
-
