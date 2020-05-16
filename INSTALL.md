@@ -34,8 +34,8 @@
 * Open a terminal.
     * Run the command `git clone https://github.com/sanderland/katrain.git` to download the repository.
     * Changing directory using `cd katrain`
-    * Run the command `pip3 install .` to install the package globally, then run the program by typing `katrain` in the terminal.
-    * If you prefer not to install, run without installing using `python -m katrain`
+    * Run the command `pip3 install .` to install the package globally, or use `--user` to install locally, then run the program by typing `katrain` in the terminal.
+    * If you prefer not to install, run without installing using `python3 -m katrain`
 * A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.4+ binary.
 
 # Configuring the GPU(s) KataGo uses
