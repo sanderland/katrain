@@ -18,6 +18,7 @@ class GameNode(SGFNode):
         self.ai_thoughts = ""
         self.note = ""
         self.move_number = 0
+        self.time_used = 0
         self.undo_threshold = random.random()  # for fractional undos, store the random threshold in the move itself for consistency
         self._favourite_child = None
 
