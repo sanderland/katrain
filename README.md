@@ -101,8 +101,10 @@ Keyboard shortcuts are shown with **[key]**.
 In addition to shortcuts mentioned above, there are:
 
 * **[Tab]**: to switch between analysis and play modes. (NB. keyboard shortcuts function regardless)
-* **[~]** or **[`]** or **[p]**: Hide side panel UI and only show the board.
+* **[~]** or **[`]** or **[m]**: Hide side panel UI and only show the board.
 * **[enter]**: AI Move
+* **[p]**: Pass
+* **[spacebar]**: Pause/Resume timer
 * **[arrow up]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
@@ -114,7 +116,7 @@ In addition to shortcuts mentioned above, there are:
 * **[Ctrl-l]**: Load SGF from file and do a normal analysis.
 * **[Ctrl-s]**: Save SGF with automated review to file.
 * **[Ctrl-n]**: Load SGF from clipboard
-* **[space]**: Pass
+
 
 ## Configuration
 
@@ -152,12 +154,12 @@ If you ever need to reset to the original settings, simply re-download the `conf
 
 ## FAQ
 
-* Why is the program is slow to start.
-  * The first startup of KataGo can be slow due to GPU tuning, after that it should be much faster.
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
 * KataGo crashes with out of memory errors, how can I prevent this?
   *  Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using versions compiled with large board sizes.
+* How can I play on larger boards?
+  * For windows, change the `katago` setting to `katrain\KataGo\katago-bs52.exe`. For other operating systems, you need to compile your own KataGo version with higher limits.
 
 ## Contributing
 

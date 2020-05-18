@@ -131,21 +131,24 @@ class Controls(BoxLayout):
                     current_node.time_used -= byo_len
                     time_remaining += byo_len
                     self.periods_used += 1
-            if not self.pause.state == "down" or _dt >= 1:
+            ai = "ai" in self.player_mode(current_node.next_player)
+            if not ai:
                 time_remaining = byo_len - current_node.time_used
                 periods_rem = byo_num - self.periods_used
-                if not self.pause.state == "down" and "ai" not in self.player_mode(current_node.next_player):
-                    if periods_rem >= 0:
-                        self.timer.text = f"{time_remaining:05.2f}".replace(".", ":")
-                        self.periods.text = f"x{periods_rem}"
-                    else:
-                        self.timer.text = f"[color=red]00:00[/color]"
-                        self.periods.text = f"[color=red]x0[/color]"
-                else:
-                    self.timer.text = f"[color=#444]00:00[/color]"
-                    self.periods.text = f"[color=#444]x0[/color]"
+                col = "#444" if self.pause.state == "down" else "#111"
+            else:
+                time_remaining, periods_rem = 59.59, 1
+                col = "#444"
+            if periods_rem >= 0:
+                self.timer.text = f"[color={col}]{time_remaining:05.2f}[/color]".replace(".", ":")
+                self.periods.text = f"x{periods_rem}"
+            else:
+                self.timer.text = f"[color=#b22]00:00[/color]"
+                self.periods.text = f"[color=#b22]x0[/color]"
+                self.pause.state = "down"
 
     def configure_timer(self):
+        self.pause.state = "down"
         if not self.timer_settings_popup:
             self.timer_settings_popup = Popup(title="Edit Timer Settings", size_hint=(0.4, 0.4)).__self__
             self.timer_settings_popup.add_widget(ConfigTimerPopup(self.katrain, self.timer_settings_popup))

@@ -350,5 +350,6 @@ class ConfigTimerPopup(QuickConfigGui):
             self.settings[k] = v
         if save_to_file:
             self.katrain.save_config()
+        self.katrain.controls.periods_used = 0
         self.katrain.update_state()
         self.popup.dismiss()
