@@ -7,6 +7,7 @@
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
 #:set TOOLTIP_COLOR [0.43, 0.50, 0.65, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
+#:set ICON_BUTTON_COLOR_DOWN [0.51, 0.58, 0.51, 1]
 #:set BOARD_COLOR [0.85, 0.68, 0.40,1]
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 #:set BLACK [0.05,0.05,0.05,1]
@@ -112,8 +113,9 @@
     color: WHITE
 
 
-<StyledIconButton@StyledButton+ToolTipBehavior>:
+<StyledIconButton@StyledButton>:
     button_color: ICON_BUTTON_COLOR
+    button_color_down: ICON_BUTTON_COLOR_DOWN
     icon_margin: 0.15 * self.size[0]
     icon: ''
     icon_size: min(self.size[0]-2*self.icon_margin,self.size[1]-2*self.icon_margin)
@@ -122,6 +124,8 @@
         pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
         source: root.icon
         mipmap: True
+
+<StyledIconStyledToggleButton@StyledIconButton+ToggleButtonBehavior>:
 
 <TransparentIconButton@Button>:
     background_normal: ''
@@ -144,9 +148,17 @@
 <LargeLabel@DarkLabel>:
 	bold: True
 
+<TimerLabel@Label>
+    color: BLACK
+    text_size: self.size
+    font_size: 0.9*self.size[1]
+    halign: 'right'
+    valign: 'center'
+    font_name: 'img/fonts/digital-7.ttf'
+
 <ScaledLightLabel>: # popups
     color: WHITE
-    font_size: 0.45*self.size[1]
+    font_size: 0.45*self.size[1]/self.num_lines
 
 <LightHelpLabel>:
     font_size: self.size[1]/10
@@ -601,14 +613,54 @@
                     text: 'Configure AIs'
                     tooltip_text: "Strength Settings per AI"
                     on_press: if not self.last_touch or self.last_touch.button=="left": root.configure_ais()
-            LargeLabel:
-                text: ''
-                size_hint: 1,0.2
+            BoxLayout:
+                size_hint: 1,0.10
+                padding: 5,5
+                spacing: 3
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 0.15,1
+                    Label:
+                    StyledIconButton:
+                        height: self.width
+                        size_hint: 1, None
+                        icon: 'img/flaticon/cogwheel.png'
+                        on_press: if not self.last_touch or self.last_touch.button=="left": root.configure_timer()
+                        tooltip_text: "Configure timer"
+                    Label:
+                Label:
+                    size_hint: 0.025, 1
+                TimerLabel:
+                    size_hint: 0.45,1
+                    id: timer
+                    text: '00:30'
+                DarkLabel:
+                    size_hint: 0.1,1
+                    id: periods
+                    text: 'x5'
+                    font_size: self.width*0.75
+                    valign: 'top'
+                    halign: 'left'
+                Label:
+                    size_hint: 0.025, 1
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 0.15,1
+                    Label:
+                    StyledIconStyledToggleButton:
+                        height: self.width
+                        size_hint: 1, None
+                        icon_margin: 0.2 * self.size[0]
+                        icon: 'img/flaticon/pause.png'
+                        state: 'down'
+                    Label:
+            Label:
+                size_hint: 1,0.1
     CensorableLabel:
         id: score_change
         size_hint: 1, 0.024
         label: 'Points Lost'
-        text: ''
+        text: '-'
     BoxLayout:
         size_hint: 1,0.2
         orientation: 'vertical'

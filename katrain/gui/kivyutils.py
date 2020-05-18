@@ -64,7 +64,7 @@ class DarkLabel(Label):
 
 
 class ScaledLightLabel(DarkLabel):
-    pass
+    num_lines = NumericProperty(1)
 
 
 class LightHelpLabel(ScaledLightLabel):

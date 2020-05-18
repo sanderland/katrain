@@ -1,7 +1,7 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 
-from katrain.gui.popups import ConfigAIPopup, ConfigTeacherPopup
+from katrain.gui.popups import ConfigAIPopup, ConfigTeacherPopup, ConfigTimerPopup
 
 
 class Controls(BoxLayout):
@@ -12,6 +12,7 @@ class Controls(BoxLayout):
         self.ai_settings_popup = None
         self.teacher_settings_popup = None
         self.active_comment_node = None
+        self.timer_settings_popup = None
 
     def set_status(self, msg, at_node=None):
         self.status = msg
@@ -78,14 +79,14 @@ class Controls(BoxLayout):
                 if move and next_player_is_human_or_both_robots:  # don't immediately hide this when an ai moves comes in
                     points_lost = current_node.points_lost
                     self.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
-                    self.score_change.text = f"{move.player}: {abs(points_lost):.1f}" if points_lost else "..."
+                    self.score_change.text = f"{move.player}: {abs(points_lost):.1f}" if points_lost else "-"
                 elif not current_player_is_ai_playing_human:
                     self.score_change.label = f"Points lost"
-                    self.score_change.text = ""
+                    self.score_change.text = "-"
             elif current_player_is_ai_playing_human and current_node.parent and current_node.parent.move:
                 points_lost = current_node.parent.points_lost
                 self.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
-                self.score_change.text = f"{current_node.parent.move.player}: {abs(points_lost):.1f}" if points_lost else "..."
+                self.score_change.text = f"{current_node.parent.move.player}: {abs(points_lost):.1f}" if points_lost else "-"
             elif both_players_are_robots and current_node.parent and current_node.parent.analysis_ready:
                 self.score.text = current_node.parent.format_score()
                 self.win_rate.text = current_node.parent.format_win_rate()
@@ -105,3 +106,10 @@ class Controls(BoxLayout):
             self.teacher_settings_popup = Popup(title="Edit Teacher Settings", size_hint=(0.7, 0.8)).__self__
             self.teacher_settings_popup.add_widget(ConfigTeacherPopup(self.katrain, self.teacher_settings_popup))
         self.teacher_settings_popup.open()
+
+    def configure_timer(self):
+        if not self.timer_settings_popup:
+            self.timer_settings_popup = Popup(title="Edit Timer Settings", size_hint=(0.4, 0.4)).__self__
+            self.timer_settings_popup.add_widget(ConfigTimerPopup(self.katrain, self.timer_settings_popup))
+        self.timer_settings_popup.open()
+
