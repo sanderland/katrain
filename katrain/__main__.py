@@ -146,6 +146,7 @@ class KaTrainGui(BoxLayout):
             Clock.schedule_once(self.board_gui.draw_board, -1)
         self.board_gui.redraw_board_contents_trigger()
         self.controls.update_evaluation()
+        self.controls.update_timer(1)
 
     def set_note(self, note):
         self.game.current_node.note = note
@@ -174,6 +175,7 @@ class KaTrainGui(BoxLayout):
         self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree, analyze_fast=analyze_fast)
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
         self.controls.graph.initialize_from_game(self.game.root)
+        self.controls.periods_used = 0
         self.update_state(redraw_board=True)
 
     def _do_ai_move(self, node=None):

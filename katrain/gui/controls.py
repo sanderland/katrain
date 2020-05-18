@@ -1,3 +1,6 @@
+import time
+
+from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 
@@ -13,6 +16,9 @@ class Controls(BoxLayout):
         self.teacher_settings_popup = None
         self.active_comment_node = None
         self.timer_settings_popup = None
+        self.last_timer_update = (None, 0)
+        self.periods_used = 0
+        Clock.schedule_interval(self.update_timer, 0.07)
 
     def set_status(self, msg, at_node=None):
         self.status = msg
@@ -107,9 +113,40 @@ class Controls(BoxLayout):
             self.teacher_settings_popup.add_widget(ConfigTeacherPopup(self.katrain, self.teacher_settings_popup))
         self.teacher_settings_popup.open()
 
+    def update_timer(self, _dt):
+        current_node = self.katrain and self.katrain.game and self.katrain.game.current_node
+        if current_node:
+            last_update_node, last_update_time = self.last_timer_update
+            now = time.time()
+            self.last_timer_update = (current_node, now)
+            byo_len = max(1, self.katrain.config("timer/byo_length"))
+            byo_num = max(1, self.katrain.config("timer/byo_num"))
+            if not self.pause.state == "down" and "ai" not in self.player_mode(current_node.next_player):
+                if last_update_node == current_node and not current_node.children:
+                    current_node.time_used += now - last_update_time
+                else:
+                    current_node.time_used = 0
+                time_remaining = byo_len - current_node.time_used
+                while time_remaining < 0:
+                    current_node.time_used -= byo_len
+                    time_remaining += byo_len
+                    self.periods_used += 1
+            if not self.pause.state == "down" or _dt >= 1:
+                time_remaining = byo_len - current_node.time_used
+                periods_rem = byo_num - self.periods_used
+                if not self.pause.state == "down" and "ai" not in self.player_mode(current_node.next_player):
+                    if periods_rem >= 0:
+                        self.timer.text = f"{time_remaining:05.2f}".replace(".", ":")
+                        self.periods.text = f"x{periods_rem}"
+                    else:
+                        self.timer.text = f"[color=red]00:00[/color]"
+                        self.periods.text = f"[color=red]x0[/color]"
+                else:
+                    self.timer.text = f"[color=#444]00:00[/color]"
+                    self.periods.text = f"[color=#444]x0[/color]"
+
     def configure_timer(self):
         if not self.timer_settings_popup:
             self.timer_settings_popup = Popup(title="Edit Timer Settings", size_hint=(0.4, 0.4)).__self__
             self.timer_settings_popup.add_widget(ConfigTimerPopup(self.katrain, self.timer_settings_popup))
         self.timer_settings_popup.open()
-

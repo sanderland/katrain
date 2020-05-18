@@ -63,7 +63,7 @@ class DarkLabel(Label):
     pass
 
 
-class ScaledLightLabel(DarkLabel):
+class ScaledLightLabel(DarkLabel, ToolTipBehavior):
     num_lines = NumericProperty(1)
 
 

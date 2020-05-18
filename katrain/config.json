@@ -1,6 +1,7 @@
 {
     "engine": {
         "katago": "",
+        "_hint_katago": "Path to your katago executable",
         "model": "katrain/models/g170e-b15c192-s1672170752-d466197061.bin.gz",
         "config": "katrain/KataGo/analysis_config.cfg",
         "threads": 16,
@@ -8,7 +9,12 @@
         "fast_visits": 50,
         "max_time": 3.0,
         "wide_root_noise": 0.0,
+        "_hint_wide_root_noise": "A higher value here (typically 0.05-0.1)\nmakes the analysis explore more moves\nat the cost of some strength.",
         "_enable_ownership": true
+    },
+    "timer": {
+      "byo_length": 30,
+      "byo_num": 5
     },
     "sgf": {
         "sgf_load": "~/Downloads",
@@ -243,6 +249,7 @@
         ]
     },
     "debug": {
-        "level": 1
+        "level": 1,
+        "_hint_level": "0: Little console output.\n1: Some extra output\nfor error reporting."
     }
 }

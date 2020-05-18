@@ -120,8 +120,15 @@ class ConfigPopup(QuickConfigGui):
             cat.add_widget(Label(text=""))
             cat.add_widget(ScaledLightLabel(text=f"{k1} settings", bold=True))
             for k2, v in d.items():
-                cat.add_widget(ScaledLightLabel(text=f"{k2}:"))
-                cat.add_widget(self.type_to_widget_class(v)(text=str(v), input_property=f"{k1}/{k2}"))
+                label = ScaledLightLabel(text=f"{k2}:")
+                widget = self.type_to_widget_class(v)(text=str(v), input_property=f"{k1}/{k2}")
+                hint = all_d.get("_hint_" + k2)
+                if hint:
+                    label.tooltip_text = hint
+                    if isinstance(widget, LabelledTextInput):
+                        widget.hint_text = hint
+                cat.add_widget(label)
+                cat.add_widget(widget)
             if props_in_col[0] <= props_in_col[1]:
                 cols[0].add_widget(cat)
                 props_in_col[0] += len(d)
@@ -246,8 +253,8 @@ class ConfigTeacherPopup(QuickConfigGui):
         self.sgf_settings = katrain.config("sgf")
         self.ui_settings = katrain.config("board_ui")
         super().__init__(katrain, popup, self.settings, **kwargs)
-        Clock.schedule_once(self.build, 0)
         self.spacing = 2
+        Clock.schedule_once(self.build, 0)
 
     def build(self, _dt):
         thresholds = self.settings["eval_thresholds"]
@@ -322,25 +329,26 @@ class ConfigTeacherPopup(QuickConfigGui):
         self.popup.dismiss()
 
 
-
 class ConfigTimerPopup(QuickConfigGui):
     def __init__(self, katrain, popup, **kwargs):
         self.settings = katrain.config("timer")
         super().__init__(katrain, popup, self.settings, **kwargs)
-        Clock.schedule_once(self.build, 0)
         self.spacing = 2
+        Clock.schedule_once(self.build, 0)
 
     def build(self, _dt):
-        thrbox = GridLayout(spacing=1, padding=2, cols=2, rows=2,size_hint=(1,2))
-        thrbox.add_widget(ScaledLightLabel(text="Byo-yomi\nperiod length (s)", bold=True,size_hint=(2,1),num_lines=2))
-        thrbox.add_widget(LabelledIntInput(text='30', input_property="byo_length"))
-        thrbox.add_widget(ScaledLightLabel(text="Byo-yomi\nnumber of periods", bold=True,size_hint=(2,1),num_lines=2))
-        thrbox.add_widget(LabelledIntInput(text='5', input_property="byo_num"))
+        thrbox = GridLayout(spacing=1, padding=2, cols=2, rows=2, size_hint=(1, 2))
+        thrbox.add_widget(ScaledLightLabel(text="Byo-yomi\nperiod length (s)", bold=True, size_hint=(2, 1), num_lines=2))
+        thrbox.add_widget(LabelledIntInput(text="30", input_property="byo_length"))
+        thrbox.add_widget(ScaledLightLabel(text="Byo-yomi\nnumber of periods", bold=True, size_hint=(2, 1), num_lines=2))
+        thrbox.add_widget(LabelledIntInput(text="5", input_property="byo_num"))
         self.add_widget(thrbox)
-        self.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
+        self.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
 
     def update_config(self, save_to_file=False):
-        self.katrain.controls.timer_settings = self.collect_properties(self)
+        for k, v in self.collect_properties(self).items():
+            self.settings[k] = v
+        if save_to_file:
+            self.katrain.save_config()
         self.katrain.update_state()
         self.popup.dismiss()
-
