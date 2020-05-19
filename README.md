@@ -24,6 +24,16 @@ but has since grown to include a wide range of features, including:
 * To play against AI, pick an AI from the dropdown and either 'human' or 'teach' for yourself and start playing.
     * For different board sizes, use the button with the little goban in the bottom right for a new game.
 
+
+# Documentation
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/katrain.svg)](#Installation)
+[![Latest version on PyPI](https://img.shields.io/pypi/v/katrain.svg)](https://pypi.org/project/katrain)
+[![Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
+![PyPI - License](https://img.shields.io/pypi/l/katrain)
+![Build Status](https://github.com/sanderland/katrain/workflows/release/badge.svg)
+[![Code style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
+
 ## Installation
 * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any OS.

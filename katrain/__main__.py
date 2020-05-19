@@ -26,7 +26,7 @@ from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
 from katrain.gui.badukpan import BadukPanWidget
-from katrain.gui.controls import Controls
+from katrain.gui.controlspanel import ControlsPanel
 from katrain.gui.popups import NewGamePopup, ConfigPopup, LoadSGFPopup
 
 __version__ = "1.0.6"
@@ -47,7 +47,6 @@ class KaTrainGui(BoxLayout):
         self.config_file = self._load_config()
 
         self.debug_level = self.config("debug/level", OUTPUT_INFO)
-        self.controls.ai_mode_groups["W"].values = self.controls.ai_mode_groups["B"].values = list(self.config("ai").keys())
         self.message_queue = Queue()
 
         self._keyboard = Window.request_keyboard(None, self, "")
@@ -174,7 +173,6 @@ class KaTrainGui(BoxLayout):
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
         self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree, analyze_fast=analyze_fast)
-        self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
         self.controls.graph.initialize_from_game(self.game.root)
         self.controls.periods_used = {"B": 0, "W": 0}
         self.update_state(redraw_board=True)
@@ -287,11 +285,11 @@ class KaTrainGui(BoxLayout):
             return  # if in new game or load, don't allow keyboard shortcuts
 
         shortcuts = {
-            "q": self.controls.show_children,
-            "w": self.controls.eval,
-            "e": self.controls.hints,
-            "r": self.controls.ownership,
-            "t": self.controls.policy,
+            "q": self.analysis_controls.show_children,
+            "w": self.analysis_controls.eval,
+            "e": self.analysis_controls.hints,
+            "r": self.analysis_controls.ownership,
+            "t": self.analysis_controls.policy,
             "enter": ("ai-move",),
             "a": self.controls.analyze_extra,
             "s": self.controls.analyze_equalize,

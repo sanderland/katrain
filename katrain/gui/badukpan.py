@@ -157,7 +157,9 @@ class BadukPanWidget(Widget):
             self.gridpos_y = [self.pos[1] + extra_px_margin_y + math.floor((grid_spaces_margin_y[0] + i) * self.grid_size + 0.5) for i in range(board_size_y)]
 
             Color(*self.ui_config["board_color"])
-            Rectangle(pos=(self.gridpos_x[0]-self.grid_size*1.5,self.gridpos_y[0]-self.grid_size*1.5),size=(self.grid_size*x_grid_spaces,self.grid_size*y_grid_spaces) )
+            Rectangle(
+                pos=(self.gridpos_x[0] - self.grid_size * 1.5, self.gridpos_y[0] - self.grid_size * 1.5), size=(self.grid_size * x_grid_spaces, self.grid_size * y_grid_spaces)
+            )
 
             line_color = self.ui_config["line_color"]
             Color(*line_color)
@@ -201,7 +203,7 @@ class BadukPanWidget(Widget):
             # stones
             current_node = katrain.game.current_node
             game_ended = katrain.game.ended
-            full_eval_on = katrain.controls.eval.active
+            full_eval_on = katrain.analysis_controls.eval.active
             has_stone = {}
             drawn_stone = {}
             for m in katrain.game.stones:
@@ -241,7 +243,7 @@ class BadukPanWidget(Widget):
 
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
-            if katrain.controls.ownership.active and ownership:
+            if katrain.analysis_controls.ownership.active and ownership:
                 ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
                 rsz = self.grid_size * 0.2
                 for y in range(board_size_y - 1, -1, -1):
@@ -257,7 +259,7 @@ class BadukPanWidget(Widget):
 
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
-            if katrain.controls.policy.active and policy and not lock_ai:
+            if katrain.analysis_controls.policy.active and policy and not lock_ai:
                 policy_grid = var_to_grid(policy, (board_size_x, board_size_y))
                 best_move_policy = max(*policy)
                 for y in range(board_size_y - 1, -1, -1):
@@ -304,7 +306,7 @@ class BadukPanWidget(Widget):
             self.active_pv_moves = []
 
             # children of current moves in undo / review
-            if katrain.controls.show_children.active:
+            if katrain.analysis_controls.show_children.active:
                 alpha = self.ui_config["ghost_alpha"]
                 for child_node in current_node.children:
                     points_lost = child_node.points_lost
@@ -315,13 +317,14 @@ class BadukPanWidget(Widget):
                         else:
                             evalcol = copy.copy(self.eval_color(points_lost))
                             evalcol[3] = alpha
-                        if ((teaching and child_node.auto_undo) or katrain.controls.play_analyze_mode == "analyze") and child_node.analysis_ready:
+                        # if ((teaching and child_node.auto_undo) or katrain.controls.play_analyze_mode == "analyze") and child_node.analysis_ready: # TODO:?
+                        if child_node.analysis_ready:
                             self.active_pv_moves.append((move.coords, child_node.candidate_moves[0]["pv"], child_node))
                         scale = self.ui_config["child_scale"]
                         self.draw_stone(move.coords[0], move.coords[1], (*stone_color[move.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
             # hints or PV
-            if katrain.controls.hints.active and not game_ended and not lock_ai:
+            if katrain.analysis_controls.hints.active and not game_ended and not lock_ai:
                 hint_moves = current_node.candidate_moves
                 for i, move_dict in enumerate(hint_moves):
                     move = Move.from_gtp(move_dict["move"])

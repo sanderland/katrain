@@ -38,8 +38,7 @@ setup(
     install_requires=[
         "kivy>=1.11 ;python_version<'3.8'",
         "kivy>=2.0.0rc2 ;python_version>='3.8'",
-        "kivymd>=0.104.0"
-        "kivy_deps.glew;platform_system=='Windows'",
+        "kivymd>=0.104.0" "kivy_deps.glew;platform_system=='Windows'",
         "kivy_deps.sdl2;platform_system=='Windows'",
         "kivy_deps.gstreamer;platform_system=='Windows'",
         "importlib_resources ;python_version<'3.7'",

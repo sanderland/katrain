@@ -260,7 +260,7 @@ class CensorableLabel(BoxLayout):
     label = StringProperty("")
 
 
-class ScoreGraph(Label):
+class ScoreGraph(Label, BackgroundColor):
     nodes = ListProperty([])
     line_points = ListProperty([])
     dot_pos = ListProperty([0, 0])
