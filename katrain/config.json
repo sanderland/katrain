@@ -165,6 +165,7 @@
             0,
             1
         ],
+        "board_color": [0.85, 0.68, 0.40,1],
         "starpoint_size": 0.1,
         "stone_size": 0.475,
         "eval_dot_max_size": 0.5,

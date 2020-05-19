@@ -8,12 +8,12 @@
 #:set TOOLTIP_COLOR [0.43, 0.50, 0.65, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
 #:set ICON_BUTTON_COLOR_DOWN [0.51, 0.58, 0.51, 1]
-#:set BOARD_COLOR [0.85, 0.68, 0.40,1]
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 #:set BLACK [0.05,0.05,0.05,1]
 #:set WHITE [0.95,0.95,0.95,1]
 #:set GREY  [0.5,0.5,0.5,1]
 
+#:set BACKGROUND_COLOR [0,0,1,1]
 
 # mixins
 
@@ -416,6 +416,79 @@
         text: root.text
         on_ref_press: root.dispatch('on_ref_press',args[1])
 
+
+<PlayerInfo>:
+    BlackCircleWithText:
+        text: '0'
+        size_hint: 0.2, 1
+        id: captures
+    Label:
+        id: description
+
+<PonderInfo@BoxLayout>:
+    Label:
+        text: 'AI\nPonder\nO'
+
+<Timer@BoxLayout>:
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: 0.15,1
+        Label:
+        StyledIconButton:
+            height: self.width
+            size_hint: 1, None
+            icon: 'img/flaticon/cogwheel.png'
+            on_release: if not self.last_touch or self.last_touch.button=="left": root.configure_timer()
+            tooltip_text: "Configure timer"
+        Label:
+    Label:
+        size_hint: 0.025, 1
+    TimerLabel:
+        size_hint: 0.45,1
+        id: timer
+        text: '30:00'
+    DarkLabel:
+        size_hint: 0.125,1
+        id: periods
+        markup: True
+        text: 'x5'
+        font_size: self.width*0.5
+        multiline: False
+        valign: 'top'
+        halign: 'left'
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: 0.15,1
+        Label:
+        StyledIconStyledToggleButton:
+            id: pause
+            height: self.width
+            size_hint: 1, None
+            icon_margin: 0.2 * self.size[0]
+            icon: 'img/flaticon/pause.png'
+            state: 'down'
+        Label:
+
+<StatsBox>
+    CensorableLabel:
+        id: win_rate
+        label: 'Win rate'
+        text: ''
+    CensorableLabel:
+        id: score
+        label: 'Score Estimate'
+        text: ''
+    CensorableLabel:
+        id: point_loss
+        label: 'Score Estimate'
+        text: ''
+
+#:set PLAYER_BOX_HEIGHT 0.1
+#:set TIMER_BOX_HEIGHT  0.3
+#:set GRAPH_BOX_HEIGHT  0.33
+#:set STATS_BOX_HEIGHT  0.27
+#:set INFO_BOX_HEIGHT   1
+
 <Controls>:
 	orientation: 'vertical'
 	play_tab_button: play_tab_button
@@ -441,240 +514,30 @@
 	periods: periods
 	pause: pause
 	katrain: app.gui
+    BoxLayout: # -- Players
+        size_hint_y: PLAYER_BOX_HEIGHT
+        PlayerInfo:
+            id: B_player
+        PlayerInfo:
+            id: W_player
     BoxLayout:
-        size_hint: 1,0.05
-        orientation: 'horizontal'
-        padding: 3,1,3,0
-        spacing: 2
-        StyledTabButton:
-            text: 'Play'
-            group: 'tabs'
-            state: 'down'
-            id: play_tab_button
-            on_press:
-                play_tab.size_hint[0] = 1
-                play_tab.opacity = 1
-                analyze_tab.size_hint_x = None
-                analyze_tab.width = 0
-                analyze_tab.opacity = 0
-                self.state = 'down'
-        StyledTabButton:
-            text: 'Analyze'
-            id: analyze_tab_button
-            group: 'tabs'
-            on_press:
-                analyze_tab.size_hint[0] = 1
-                analyze_tab.opacity = 1
-                play_tab.size_hint_x = None
-                play_tab.width = 0
-                play_tab.opacity = 0
-                self.state = 'down'
+        size_hint_y: TIMER_BOX_HEIGHT
+        PonderInfo:
+            id: ponder
+        Timer:
+            id: timer
     BoxLayout:
-        size_hint: 1,0.25
-        orientation: 'horizontal'
-        BoxLayout: # ----------- analyze -----------
-            size_hint: 0,1
-            id: analyze_tab
-            padding: [3,3]
-            opacity: 0
-            orientation: 'vertical'
-            GridLayout:
-                cols: 5
-                rows: 2
-                size_hint: 1, 0.3
-                CheckBoxHintLabel:
-                    text: 'next\nmoves'
-                    tooltip_text: '[q]\nShow all next moves\nplayed from the current position'
-                CheckBoxHintLabel:
-                    text: 'all\ndots'
-                    tooltip_text: '[w]\nShow evaluation dots\non stones for all moves'
-                CheckBoxHintLabel:
-                    text: 'top\nmoves'
-                    tooltip_text: '[e]\nShow top\npredicted moves'
-                CheckBoxHintLabel:
-                    text: 'show\nowner'
-                    tooltip_text: '[r]\nShow predicted ownership\nof each intersection'
-                CheckBoxHintLabel:
-                    text: 'NN\npolicy'
-                    tooltip_text: "[t]\nShow Policy top moves\n(i.e. with no 'reading')"
-                CheckBox:
-                    id: show_children
-                    active: True
-                    on_active: root.katrain.update_state()
-                CheckBox:
-                    id: eval
-                    on_active: root.katrain.update_state()
-                CheckBox:
-                    id: hints
-                    on_active: root.katrain.update_state()
-                CheckBox:
-                    id: ownership
-                    on_active: root.katrain.update_state()
-                CheckBox:
-                    id: policy
-                    on_active: root.katrain.update_state()
-            BoxLayout:
-                spacing:1
-                padding: 1,2,1,2
-                size_hint: 1,0.2
-                DarkLabel:
-                    text: 'Analysis'
-                    size_hint: 1, 1
-                    multiline: False
-                    font_size: 0.45*self.size[1]
-                StyledButton:
-                    id: analyze_extra
-                    text: 'Extra'
-                    tooltip_text: '[a]\nExtra analysis\nto increase accuracy\nof top move predictions\nand score difference'
-                    size_hint: 1, 1
-                    on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","extra")
-                StyledButton:
-                    id: analyze_equalize
-                    text: 'Equalize'
-                    tooltip_text: '[s]\nAnalysis of all\npredicted top moves\nwith the same accuracy'
-                    size_hint: 1, 1
-                    on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","equalize")
-                StyledButton:
-                    id: analyze_sweep
-                    text: 'Sweep'
-                    tooltip_text: '[d]\nFast analysis\nof all legal moves'
-                    size_hint: 1, 1
-                    on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","sweep")
-            ScoreGraph:
-                id: graph
-                size_hint: 1,0.7
-            BoxLayout:
-                orientation: 'vertical'
-                size_hint: 1,0.3
-                spacing: 3
-                CensorableLabel:
-                    id: win_rate
-                    size_hint: 1, 0.5
-                    label: 'Win rate'
-                    text: ''
-                CensorableLabel:
-                    id: score
-                    size_hint: 1, 0.5
-                    label: 'Score Estimate'
-                    text: ''
-        BoxLayout: # ----------- play -----------
-            orientation: 'vertical'
-            size_hint: 1,1
-            opacity: 1
-            id: play_tab
-            Label:
-                size_hint: 1,0.02
-            GridLayout:
-                cols: 4
-                rows: 2
-                spacing: 1
-                padding: 1
-                size_hint: 1,0.125
-                BlackCircleWithText:
-                    text: 'B'
-                    size_hint: 0.1, 1
-                ToggleButtonContainer:
-                    size_hint: 0.6, 1
-                    id: B_player_mode
-                    options: PLAYER_MODE_VALUES
-                    labels: PLAYER_MODES
-                    tooltips: PLAYER_TOOLTIPS
-                    on_selection: root.katrain.update_state()
-                StyledSpinner:
-                    id: B_AI_mode
-                    values: ['Default']
-                    size_hint: 0.3, 1
-                    on_text: if B_player_mode.children: B_player_mode.children[0].trigger_action(duration=0)
-                Label:
-                    size_hint: None,1
-                    width: 3
-                WhiteCircleWithText:
-                    text: 'W'
-                    size_hint: 0.1, 1
-                ToggleButtonContainer:
-                    size_hint: 0.6, 1
-                    id: W_player_mode
-                    options: PLAYER_MODE_VALUES
-                    labels: PLAYER_MODES
-                    tooltips: PLAYER_TOOLTIPS
-                    on_selection: root.katrain.update_state()
-                StyledSpinner:
-                    id: W_AI_mode
-                    size_hint: 0.3, 1
-                    values: ['Default']
-                    on_text: if W_player_mode.children: W_player_mode.children[0].trigger_action(duration=0)
-            BoxLayout:
-                size_hint: 1,0.05
-                padding: 5,0
-                spacing: 1
-                StyledButton:
-                    text: 'Configure Teacher'
-                    tooltip_text: "Undos, dots, and\nSGF output settings"
-                    on_release: if not self.last_touch or self.last_touch.button=="left": root.configure_teacher()
-                    size_hint: 1.425, 1
-                StyledButton:
-                    text: 'Configure AIs'
-                    tooltip_text: "Strength Settings per AI"
-                    on_release: if not self.last_touch or self.last_touch.button=="left": root.configure_ais()
-            BoxLayout:
-                size_hint: 1,0.10
-                padding: 5,5
-                spacing: 3
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint: 0.15,1
-                    Label:
-                    StyledIconButton:
-                        height: self.width
-                        size_hint: 1, None
-                        icon: 'img/flaticon/cogwheel.png'
-                        on_release: if not self.last_touch or self.last_touch.button=="left": root.configure_timer()
-                        tooltip_text: "Configure timer"
-                    Label:
-                Label:
-                    size_hint: 0.025, 1
-                TimerLabel:
-                    size_hint: 0.45,1
-                    id: timer
-                    text: '30:00'
-                DarkLabel:
-                    size_hint: 0.125,1
-                    id: periods
-                    markup: True
-                    text: 'x5'
-                    font_size: self.width*0.5
-                    multiline: False
-                    valign: 'top'
-                    halign: 'left'
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint: 0.15,1
-                    Label:
-                    StyledIconStyledToggleButton:
-                        id: pause
-                        height: self.width
-                        size_hint: 1, None
-                        icon_margin: 0.2 * self.size[0]
-                        icon: 'img/flaticon/pause.png'
-                        state: 'down'
-                    Label:
-            Label:
-                size_hint: 1,0.1
-    CensorableLabel:
-        id: score_change
-        size_hint: 1, 0.024
-        label: 'Points Lost'
-        text: '-'
+        size_hint_y: GRAPH_BOX_HEIGHT
+        ScoreGraph:
     BoxLayout:
-        size_hint: 1,0.2
-        orientation: 'vertical'
+        size_hint_y: STATS_BOX_HEIGHT
+        StatsBox:
+    BoxLayout:
+        size_hint_y: INFO_BOX_HEIGHT
         ScrollableLabel:
-            id: status_label
-            border_color: 0.5,0.1,0.1,1
-            opacity: 1 if self.text else 0
-            text: ''
-            size_hint_y: None
-            height: 0.00001 if not self.text else min(0.66*self.parent.height,self.label.texture_size[1])
+            id: status
+            size_hint: 1, None
+            height: self.parent.height - status_label.height - note.height - 1
         ScrollableLabel:
             id: info
             markup: True
@@ -687,47 +550,26 @@
             on_text: root.katrain.set_note(self.text)
             hint_text: 'Your SGF notes for this position here.'
             height: min( (len(self._lines)+0.7) * self.line_height, self.parent.height - status_label.height - 2.7*self.line_height)
-    BoxLayout:
-        orientation: 'horizontal'
-        size_hint: 1, None
-        spacing: 2
-        padding: 2
-        height: self.width * 0.25
-        StyledIconButton:
-            icon: 'img/flaticon/go-game.png'
-            tooltip_text: '[Ctrl-N]\nNew Game'
-            size_hint: 0.25, 1
-            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain("new-game-popup")
-        StyledIconButton:
-            icon: 'img/flaticon/open-folder.png'
-            tooltip_text: '[Ctrl-L]\nLoad Game'
-            size_hint: 0.25, 1
-            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-sgf-popup")
-        StyledIconButton:
-            icon: 'img/flaticon/bar.png'
-            tooltip_text: '[Ctrl-S]\nSave Game'
-            size_hint: 0.25, 1
-            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain('output-sgf')
-        StyledIconButton:
-            icon: 'img/flaticon/gears.png'
-            tooltip_text: 'General Settings'
-            size_hint: 0.25, 1
-            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain('config-popup')
+
+
 
 <KaTrainGui>:
 	board_gui: board_gui
-	controls_box: controls_box
 	controls: controls
 	board_controls: board_controls
-	board_aspect_ratio: 1.075
+    canvas.before:
+        Color:
+            rgb: BACKGROUND_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
     BoxLayout:
-        size_hint: 1,1
-        canvas.before:
-            Color:
-                rgb: BOARD_COLOR
-            Rectangle:
-                pos: self.pos
-                size: self.size
+        width: 50
+        size_hint: None,1
+        orientation: 'vertical'
+        Label:
+            text: '='
+    BoxLayout:
         orientation: 'vertical'
         BadukPanWidget:
             id: board_gui
@@ -735,21 +577,12 @@
             id: board_controls
             size_hint_y: None
             height: min(100,self.width / 13.5)
-    BoxLayout: # avoids a weird syntax error in builder .. somehow
+    Controls:
+        id: controls
         size_hint_x: None
-        size_hint_y: 1
         hidden: False
         width: 0 if self.hidden else self.height * 0.4
         opacity: 0 if self.hidden else 1
-        id: controls_box
-        canvas.before:
-            Color:
-                rgba: 0.95, 0.95, 0.95, 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Controls:
-            id: controls
 
 <LoadSGFPopup>:
     fast: fast

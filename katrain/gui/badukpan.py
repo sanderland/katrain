@@ -143,7 +143,7 @@ class BadukPanWidget(Widget):
         with self.canvas.before:
             # set up margins and grid lines
             grid_spaces_margin_x = [1.5, 0.75]  # left, right
-            grid_spaces_margin_y = [1.125, 0.75]  # bottom, top
+            grid_spaces_margin_y = [1.5, 0.75]  # bottom, top
             x_grid_spaces = board_size_x - 1 + sum(grid_spaces_margin_x)
             y_grid_spaces = board_size_y - 1 + sum(grid_spaces_margin_y)
             self.grid_size = min(self.width / x_grid_spaces, self.height / y_grid_spaces)
@@ -152,8 +152,12 @@ class BadukPanWidget(Widget):
             extra_px_margin_x = (self.width - board_width_with_margins) / 2
             extra_px_margin_y = (self.height - board_height_with_margins) / 2
             self.stone_size = self.grid_size * self.ui_config["stone_size"]
+
             self.gridpos_x = [self.pos[0] + extra_px_margin_x + math.floor((grid_spaces_margin_x[0] + i) * self.grid_size + 0.5) for i in range(board_size_x)]
             self.gridpos_y = [self.pos[1] + extra_px_margin_y + math.floor((grid_spaces_margin_y[0] + i) * self.grid_size + 0.5) for i in range(board_size_y)]
+
+            Color(*self.ui_config["board_color"])
+            Rectangle(pos=(self.gridpos_x[0]-self.grid_size*1.5,self.gridpos_y[0]-self.grid_size*1.5),size=(self.grid_size*x_grid_spaces,self.grid_size*y_grid_spaces) )
 
             line_color = self.ui_config["line_color"]
             Color(*line_color)

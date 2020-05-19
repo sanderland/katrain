@@ -14,6 +14,7 @@ import traceback
 from queue import Queue
 
 from kivy.app import App
+from kivymd.app import MDApp
 from kivy.core.clipboard import Clipboard
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
@@ -328,13 +329,15 @@ class KaTrainGui(BoxLayout):
         return True
 
 
-class KaTrainApp(App):
+class KaTrainApp(MDApp):
     gui = ObjectProperty(None)
 
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
         self.gui = KaTrainGui()
         self.title = f"KaTrain v{__version__}"
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "DeepPurple"
         Window.bind(on_request_close=self.on_request_close)
         return self.gui
 
