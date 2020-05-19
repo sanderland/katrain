@@ -17,7 +17,7 @@ class Controls(BoxLayout):
         self.active_comment_node = None
         self.timer_settings_popup = None
         self.last_timer_update = (None, 0)
-        self.periods_used = 0
+        self.periods_used = {"B": 0, "W": 0}
         Clock.schedule_interval(self.update_timer, 0.07)
 
     def set_status(self, msg, at_node=None):
@@ -119,9 +119,11 @@ class Controls(BoxLayout):
             last_update_node, last_update_time = self.last_timer_update
             now = time.time()
             self.last_timer_update = (current_node, now)
+            player = current_node.next_player
             byo_len = max(1, self.katrain.config("timer/byo_length"))
             byo_num = max(1, self.katrain.config("timer/byo_num"))
-            if not self.pause.state == "down" and "ai" not in self.player_mode(current_node.next_player):
+            ai = "ai" in self.player_mode(player)
+            if not self.pause.state == "down" and not ai:
                 if last_update_node == current_node and not current_node.children:
                     current_node.time_used += now - last_update_time
                 else:
@@ -130,16 +132,15 @@ class Controls(BoxLayout):
                 while time_remaining < 0:
                     current_node.time_used -= byo_len
                     time_remaining += byo_len
-                    self.periods_used += 1
-            ai = "ai" in self.player_mode(current_node.next_player)
+                    self.periods_used[player] += 1
             if not ai:
                 time_remaining = byo_len - current_node.time_used
-                periods_rem = byo_num - self.periods_used
+                periods_rem = byo_num - self.periods_used[player]
                 col = "#444" if self.pause.state == "down" else "#111"
             else:
                 time_remaining, periods_rem = 59.59, 1
                 col = "#444"
-            if periods_rem >= 0:
+            if periods_rem > 0:
                 self.timer.text = f"[color={col}]{time_remaining:05.2f}[/color]".replace(".", ":")
                 self.periods.text = f"x{periods_rem}"
             else:

@@ -175,7 +175,7 @@ class KaTrainGui(BoxLayout):
         self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree, analyze_fast=analyze_fast)
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
         self.controls.graph.initialize_from_game(self.game.root)
-        self.controls.periods_used = 0
+        self.controls.periods_used = {"B": 0, "W": 0}
         self.update_state(redraw_board=True)
 
     def _do_ai_move(self, node=None):
