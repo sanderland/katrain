@@ -1,4 +1,4 @@
-# KaTrain v1.0.5
+# KaTrain v1.0.6
 
 KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
 
@@ -63,11 +63,11 @@ can do so under 'Configure Teacher'.
 Available AIs, with strength indicating an estimate for the default settings based on their current OGS rankings, are:
 
 * **[9p+]** **Default** is full KataGo, above professional level.
-* **[~5k]**  **ScoreLoss** is KataGo making moves with probability `~ e^(-strength * points lost)`, playing a varied style with small mistakes.
+* **(RECOMMENDED)** **[~5k]**  **ScoreLoss** is KataGo making moves with probability `~ e^(-strength * points lost)`, playing a varied style with small mistakes.
 * **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points.
 * **Jigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
 * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used. There is a setting to increase variety in the opening, but otherwise it plays deterministically.
-* **[~3k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
+* **(RECOMMENDED)** **[~3k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
 * **[~7k]**: **P:Pick** picks `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
    The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
    This, along with 'Weighted' are probably the best choice for kyu players who want a chance of winning without playing the sillier bots below. Variants of this strategy include:
@@ -101,8 +101,10 @@ Keyboard shortcuts are shown with **[key]**.
 In addition to shortcuts mentioned above, there are:
 
 * **[Tab]**: to switch between analysis and play modes. (NB. keyboard shortcuts function regardless)
-* **[~]** or **[`]** or **[p]**: Hide side panel UI and only show the board.
+* **[~]** or **[`]** or **[m]**: Hide side panel UI and only show the board.
 * **[enter]**: AI Move
+* **[p]**: Pass
+* **[spacebar]**: Pause/Resume timer
 * **[arrow up]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
@@ -114,7 +116,7 @@ In addition to shortcuts mentioned above, there are:
 * **[Ctrl-l]**: Load SGF from file and do a normal analysis.
 * **[Ctrl-s]**: Save SGF with automated review to file.
 * **[Ctrl-n]**: Load SGF from clipboard
-* **[space]**: Pass
+
 
 ## Configuration
 
@@ -132,7 +134,7 @@ If you ever need to reset to the original settings, simply re-download the `conf
         * fast_visits: The number of visits used for certain operations with fewer visits.
         * wide_root_noise: Consider a wider variety of moves, using KataGo's `analysisWideRootNoise` option. Will affect both analysis and AIs such as ScoreLoss. (KataGo 1.4+ only, keep at 0.0 otherwise)
     * These settings cause the engine to be restarted:
-        * katago: Path to your KataGo executable.
+        * katago: Path to your KataGo executable. If blank, as is the default, uses the included binaries on windows/linux, or 'katago' on MacOS (which assumes you have installed KataGo yourself).
         * model: Path to your KataGo model file. Note that the default model file included is an older 15 block one for high speed and low memory requirements. Replace it with a new model from [here](https://github.com/lightvector/KataGo/releases) for maximal strength.
         * config: Path to your KataGo config file.    
         * threads: Number of threads to use in the KataGo analysis engine.
@@ -143,6 +145,7 @@ If you ever need to reset to the original settings, simply re-download the `conf
     * sgf_load: default path where the load SGF dialog opens.
     * sgf_save: path where SGF files are saved.    
 * board_ui settings
+    * anim_pv_time: time in seconds between each stone when animating variations. 
     * eval_dot_max_size: size of coloured dots when point size is maximal, relative to stone size.
     * eval_dot_min_size: size of coloured dots when point size is minimal
     * ... various other minor cosmetic options.
@@ -151,12 +154,12 @@ If you ever need to reset to the original settings, simply re-download the `conf
 
 ## FAQ
 
-* Why is the program is slow to start.
-  * The first startup of KataGo can be slow due to GPU tuning, after that it should be much faster.
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
 * KataGo crashes with out of memory errors, how can I prevent this?
   *  Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using versions compiled with large board sizes.
+* How can I play on larger boards?
+  * For windows, change the `katago` setting to `katrain\KataGo\katago-bs52.exe`. For other operating systems, you need to compile your own KataGo version with higher limits.
 
 ## Contributing
 

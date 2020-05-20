@@ -36,8 +36,8 @@ class KataGoEngine:
             else:  # e.g. MacOS after brewing
                 executable = "katago"
 
-        modelfile, configfile = find_package_resource(config["model"]), find_package_resource(config["config"])
-        self.command = f'{find_package_resource(executable)} analysis -model "{modelfile}" -config "{configfile}" -analysis-threads {config["threads"]}'
+        modelfile, configfile, exefile = find_package_resource(config["model"]), find_package_resource(config["config"]), find_package_resource(executable)
+        self.command = f'{exefile} analysis -model "{modelfile}" -config "{configfile}" -analysis-threads {config["threads"]}'
         if not sys.platform.startswith("win"):
             self.command = shlex.split(self.command)
         self.queries = {}  # outstanding query id -> start time and callback

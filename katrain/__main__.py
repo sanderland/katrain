@@ -19,7 +19,7 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
 
 from katrain.core.ai import ai_move
-from katrain.core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource, clean_temp
+from katrain.core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
@@ -28,7 +28,7 @@ from katrain.gui.badukpan import BadukPanWidget
 from katrain.gui.controls import Controls
 from katrain.gui.popups import NewGamePopup, ConfigPopup, LoadSGFPopup
 
-__version__ = "1.0.5"
+__version__ = "1.0.6"
 
 
 class KaTrainGui(BoxLayout):
@@ -106,11 +106,18 @@ class KaTrainGui(BoxLayout):
     def update_state(self, redraw_board=False):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
-        auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
-        if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready and not cn.children and not self.game.ended:
-            self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
-        if cn.analysis_ready and "ai" in self.controls.player_mode(cn.next_player).lower() and not cn.children and not self.game.ended and not (auto_undo and cn.auto_undo is None):
-            self._do_ai_move(cn)  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
+        if self.controls.play_analyze_mode == "play":
+            auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
+            if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready and not cn.children and not self.game.ended:
+                self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
+            if (
+                cn.analysis_ready
+                and "ai" in self.controls.player_mode(cn.next_player).lower()
+                and not cn.children
+                and not self.game.ended
+                and not (auto_undo and cn.auto_undo is None)
+            ):
+                self._do_ai_move(cn)  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
 
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
@@ -139,6 +146,10 @@ class KaTrainGui(BoxLayout):
             Clock.schedule_once(self.board_gui.draw_board, -1)
         self.board_gui.redraw_board_contents_trigger()
         self.controls.update_evaluation()
+        self.controls.update_timer(1)
+
+    def set_note(self, note):
+        self.game.current_node.note = note
 
     def _message_loop_thread(self):
         while True:
@@ -164,6 +175,7 @@ class KaTrainGui(BoxLayout):
         self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree, analyze_fast=analyze_fast)
         self.controls.select_mode("analyze" if move_tree and len(move_tree.nodes_in_tree) > 1 else "play")
         self.controls.graph.initialize_from_game(self.game.root)
+        self.controls.periods_used = {"B": 0, "W": 0}
         self.update_state(redraw_board=True)
 
     def _do_ai_move(self, node=None):
@@ -182,6 +194,7 @@ class KaTrainGui(BoxLayout):
         self.game.redo(n_times)
 
     def _do_switch_branch(self, direction):
+        self.board_gui.animating_pv = None
         self.game.switch_branch(direction)
 
     def _do_play(self, coords):
@@ -269,7 +282,7 @@ class KaTrainGui(BoxLayout):
         return super().on_touch_up(touch)
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
-        if isinstance(App.get_running_app().root_window.children[0], Popup):
+        if isinstance(App.get_running_app().root_window.children[0], Popup) or self.controls.note.focus:
             return  # if in new game or load, don't allow keyboard shortcuts
 
         shortcuts = {
@@ -282,6 +295,8 @@ class KaTrainGui(BoxLayout):
             "a": self.controls.analyze_extra,
             "s": self.controls.analyze_equalize,
             "d": self.controls.analyze_sweep,
+            "spacebar": self.controls.pause,
+            "p": ("play", None),
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),
         }
@@ -293,9 +308,7 @@ class KaTrainGui(BoxLayout):
                 self(*shortcut)
         elif keycode[1] == "tab":
             self.controls.switch_mode()
-        elif keycode[1] == "spacebar":
-            self("play", None)  # pass
-        elif keycode[1] in ["`", "~", "p"]:
+        elif keycode[1] in ["`", "~", "m"]:
             self.controls_box.hidden = not self.controls_box.hidden
         elif keycode[1] in ["up", "z"]:
             self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
@@ -328,12 +341,11 @@ class KaTrainApp(App):
     def on_start(self):
         self.gui.start()
 
-    def on_request_close(self, *args):
+    def on_request_close(self, *_args):
         if getattr(self, "gui", None) and self.gui.engine:
             self.gui.engine.shutdown()
-        clean_temp()
 
-    def signal_handler(self, *args):
+    def signal_handler(self, _signal, _frame):
         if self.gui.debug_level >= OUTPUT_DEBUG:
             print("TRACEBACKS")
             for threadId, stack in sys._current_frames().items():

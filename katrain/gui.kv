@@ -7,6 +7,7 @@
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
 #:set TOOLTIP_COLOR [0.43, 0.50, 0.65, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
+#:set ICON_BUTTON_COLOR_DOWN [0.51, 0.58, 0.51, 1]
 #:set BOARD_COLOR [0.85, 0.68, 0.40,1]
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 #:set BLACK [0.05,0.05,0.05,1]
@@ -112,8 +113,9 @@
     color: WHITE
 
 
-<StyledIconButton@StyledButton+ToolTipBehavior>:
+<StyledIconButton@StyledButton>:
     button_color: ICON_BUTTON_COLOR
+    button_color_down: ICON_BUTTON_COLOR_DOWN
     icon_margin: 0.15 * self.size[0]
     icon: ''
     icon_size: min(self.size[0]-2*self.icon_margin,self.size[1]-2*self.icon_margin)
@@ -122,6 +124,8 @@
         pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
         source: root.icon
         mipmap: True
+
+<StyledIconStyledToggleButton@StyledIconButton+ToggleButtonBehavior>:
 
 <TransparentIconButton@Button>:
     background_normal: ''
@@ -134,7 +138,6 @@
         source: root.icon
         mipmap: True
 
-
 <DarkLabel>:
     color: BLACK
     text_size: self.size # don't overflow these
@@ -144,9 +147,18 @@
 <LargeLabel@DarkLabel>:
 	bold: True
 
+<TimerLabel@Label>
+    color: BLACK
+    font_size: 0.85*self.size[1]
+    halign: 'right'
+    valign: 'middle'
+    markup: True
+    multiline: False
+    font_name: 'img/fonts/digital-7 (mono).ttf'
+
 <ScaledLightLabel>: # popups
     color: WHITE
-    font_size: 0.45*self.size[1]
+    font_size: 0.45*self.size[1]/self.num_lines
 
 <LightHelpLabel>:
     font_size: self.size[1]/10
@@ -303,7 +315,7 @@
             tooltip_text: '[space]\nPass'
             font_size: 0.6*self.size[1]
             id: pass_btn
-            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("play",None)
+            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain("play",None)
     Label:
         size_hint: 0.05, 1
     BoxLayout:
@@ -409,6 +421,7 @@
 	play_tab_button: play_tab_button
 	analyze_tab_button: analyze_tab_button
     info: info
+    note: note
     status_label: status_label
 	win_rate: win_rate
 	score_change: score_change
@@ -424,6 +437,9 @@
 	player_mode_groups: {'B':B_player_mode,'W':W_player_mode}
 	ai_mode_groups: {'B':B_AI_mode,'W':W_AI_mode}
 	graph: graph
+	timer: timer
+	periods: periods
+	pause: pause
 	katrain: app.gui
     BoxLayout:
         size_hint: 1,0.05
@@ -594,20 +610,61 @@
                 StyledButton:
                     text: 'Configure Teacher'
                     tooltip_text: "Undos, dots, and\nSGF output settings"
-                    on_press: if not self.last_touch or self.last_touch.button=="left": root.configure_teacher()
+                    on_release: if not self.last_touch or self.last_touch.button=="left": root.configure_teacher()
                     size_hint: 1.425, 1
                 StyledButton:
                     text: 'Configure AIs'
                     tooltip_text: "Strength Settings per AI"
-                    on_press: if not self.last_touch or self.last_touch.button=="left": root.configure_ais()
-            LargeLabel:
-                text: ''
-                size_hint: 1,0.2
+                    on_release: if not self.last_touch or self.last_touch.button=="left": root.configure_ais()
+            BoxLayout:
+                size_hint: 1,0.10
+                padding: 5,5
+                spacing: 3
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 0.15,1
+                    Label:
+                    StyledIconButton:
+                        height: self.width
+                        size_hint: 1, None
+                        icon: 'img/flaticon/cogwheel.png'
+                        on_release: if not self.last_touch or self.last_touch.button=="left": root.configure_timer()
+                        tooltip_text: "Configure timer"
+                    Label:
+                Label:
+                    size_hint: 0.025, 1
+                TimerLabel:
+                    size_hint: 0.45,1
+                    id: timer
+                    text: '30:00'
+                DarkLabel:
+                    size_hint: 0.125,1
+                    id: periods
+                    markup: True
+                    text: 'x5'
+                    font_size: self.width*0.5
+                    multiline: False
+                    valign: 'top'
+                    halign: 'left'
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 0.15,1
+                    Label:
+                    StyledIconStyledToggleButton:
+                        id: pause
+                        height: self.width
+                        size_hint: 1, None
+                        icon_margin: 0.2 * self.size[0]
+                        icon: 'img/flaticon/pause.png'
+                        state: 'down'
+                    Label:
+            Label:
+                size_hint: 1,0.1
     CensorableLabel:
         id: score_change
         size_hint: 1, 0.024
         label: 'Points Lost'
-        text: ''
+        text: '-'
     BoxLayout:
         size_hint: 1,0.2
         orientation: 'vertical'
@@ -623,7 +680,13 @@
             markup: True
             on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
             size_hint: 1, None
-            height: self.parent.height - status_label.height - 1
+            height: self.parent.height - status_label.height - note.height - 1
+        TextInput:
+            id: note
+            size_hint: 1, None
+            on_text: root.katrain.set_note(self.text)
+            hint_text: 'Your SGF notes for this position here.'
+            height: min( (len(self._lines)+0.7) * self.line_height, self.parent.height - status_label.height - 2.7*self.line_height)
     BoxLayout:
         orientation: 'horizontal'
         size_hint: 1, None
@@ -634,22 +697,22 @@
             icon: 'img/flaticon/go-game.png'
             tooltip_text: '[Ctrl-N]\nNew Game'
             size_hint: 0.25, 1
-            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("new-game-popup")
+            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain("new-game-popup")
         StyledIconButton:
             icon: 'img/flaticon/open-folder.png'
             tooltip_text: '[Ctrl-L]\nLoad Game'
             size_hint: 0.25, 1
-            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-sgf-popup")
+            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-sgf-popup")
         StyledIconButton:
             icon: 'img/flaticon/bar.png'
             tooltip_text: '[Ctrl-S]\nSave Game'
             size_hint: 0.25, 1
-            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain('output-sgf')
+            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain('output-sgf')
         StyledIconButton:
             icon: 'img/flaticon/gears.png'
             tooltip_text: 'General Settings'
             size_hint: 0.25, 1
-            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain('config-popup')
+            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain('config-popup')
 
 <KaTrainGui>:
 	board_gui: board_gui

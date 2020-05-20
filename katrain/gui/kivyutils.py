@@ -63,8 +63,8 @@ class DarkLabel(Label):
     pass
 
 
-class ScaledLightLabel(DarkLabel):
-    pass
+class ScaledLightLabel(DarkLabel, ToolTipBehavior):
+    num_lines = NumericProperty(1)
 
 
 class LightHelpLabel(ScaledLightLabel):
@@ -111,7 +111,7 @@ class StyledSpinner(Spinner):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.fbind("size", self._update_dropdown_size_frac)
+        self.fbind("size", lambda s, dt: Clock.schedule_once(self._update_dropdown_size_frac, 0))
 
     def _update_dropdown_size_frac(self, *largs):
         if not self.sync_height_frac:

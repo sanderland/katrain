@@ -3,10 +3,10 @@ This repository includes:
 1. Binaries for 'KataGo', which is Copyright 2019 David J Wu et al.
 For on related licenses for these binaries and libraries see https://github.com/lightvector/KataGo
 2. Icons from www.flaticon.com, used with permission with the following attributions:
-- New game/Load game/Config icons: made by Freepik from www.flaticon.com
-- Save icon: made by Pixel perfect from www.flaticon.com
+- New game/Load game/Config/Config clock icons: made by Freepik from www.flaticon.com
+- Save icon, Pause Icon: made by Pixel perfect from www.flaticon.com
 - Next/Previous icons: made by/derived from ones made by RoundIcons from www.flaticon.com
-
+3. The True Type Font: DIGITAL-7 version 1.02 by Sizenko Alexander, which is free for non-commercial use.
 
 Aside from the above, the license for all other content in this repository is as follows:
 ----------------------------------------
