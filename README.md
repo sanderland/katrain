@@ -177,3 +177,6 @@ If you ever need to reset to the original settings, simply re-download the `conf
 * For suggestions and planned improvements, see the 'issues' tab on github.
 * You can also contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) or [Reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
 * Some people have also asked me how to donate. Something go-related such as a book or teaching time is highly appreciated.
+
+![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)
+[![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)

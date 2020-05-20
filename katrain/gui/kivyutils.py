@@ -20,6 +20,34 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 
 
+#--new
+from kivymd.uix.behaviors import RectangularRippleBehavior
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.button import MDRectangleFlatButton, BaseButton
+from kivymd.uix.label import MDLabel
+
+
+class RightButtonControls(MDBoxLayout):
+    button_size = ListProperty([100,33])
+
+class RHSButton(RectangularRippleBehavior,BaseButton):
+    button_label = BooleanProperty(True)
+    text = StringProperty("")
+    color = ListProperty([1, 1, 1, 1])
+    _color = ListProperty([1,1,1,1])
+
+class LightLabel(MDLabel):
+    pass
+
+class CensorableLabel(MDBoxLayout):
+    text = StringProperty("")
+    label = StringProperty("")
+    color = ListProperty([1, 1, 1, 1])
+
+
+
+# --- not checked
+
 class ToolTipLabel(Label):
     pass
 
@@ -59,11 +87,9 @@ class ToolTipBehavior(Widget):
         Window.add_widget(self.tooltip)
 
 
-class DarkLabel(Label):
-    pass
 
 
-class ScaledLightLabel(DarkLabel, ToolTipBehavior):
+class ScaledLightLabel(LightLabel, ToolTipBehavior):
     num_lines = NumericProperty(1)
 
 
@@ -180,7 +206,7 @@ class ToggleButtonContainer(GridLayout):
             return self.options[0]
 
 
-class BaseCircleWithText(DarkLabel):
+class BaseCircleWithText(LightLabel):
     radius = NumericProperty(0.48)
 
 
@@ -255,12 +281,8 @@ class LabelledIntInput(LabelledTextInput):
         return int(self.text)
 
 
-class CensorableLabel(BoxLayout):
-    text = StringProperty("")
-    label = StringProperty("")
 
-
-class ScoreGraph(Label, BackgroundColor):
+class ScoreGraph(Label):
     nodes = ListProperty([])
     line_points = ListProperty([])
     dot_pos = ListProperty([0, 0])

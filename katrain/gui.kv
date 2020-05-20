@@ -1,5 +1,4 @@
 #:kivy 1.11.0
-#:import ew kivy.uix.effectwidget
 
 #:set PLAYER_MODES ['Human', 'Teach','AI']
 #:set PLAYER_MODE_VALUES ['human','human+undo','ai']
@@ -14,10 +13,20 @@
 #:set GREY  [0.5,0.5,0.5,1]
 
 #-- NEW
+#:set BLACK [0.05,0.05,0.05,1]
+#:set WHITE [0.95,0.95,0.95,1]
+#:set GREY  [0.5,0.5,0.5,1]
+#:set GREEN  [0.1,0.8,0.1,1]
+#:set RED    [0.8,0.1,0.1,1]
+#:set LIGHTBLUE  [0.3,0.7,0.9,1]
+#:set YELLOW [0.8,0.8,0.1,1]
+
+#:set SCORE_COLOR LIGHTBLUE
+#:set POINTLOSS_COLOR YELLOW
+#:set WINRATE_COLOR GREEN
 
 #:set BACKGROUND_COLOR      [36/255,48/255,62/255,1]
 #:set BOX_BACKGROUND_COLOR  [46/255,65/255,88/255,1]
-#:set BOX_BACKGROUND_COLOR  [56/255,75/255,98/255,1]
 
 
 # mixins
@@ -142,13 +151,13 @@
         source: root.icon
         mipmap: True
 
-<DarkLabel>:
-    color: BLACK
+<LightLabel>:
+    color: WHITE
     text_size: self.size # don't overflow these
     halign: 'center'
     valign: 'center'
 
-<LargeLabel@DarkLabel>:
+<LargeLabel@LightLabel>:
     bold: True
 
 <TimerLabel@Label>
@@ -170,16 +179,6 @@
     valign: 'center'
     multiline: True
 
-<BoxedDarkLabel@Label>:
-    halign: 'left'
-    valign: 'top'
-    canvas.before:
-        Color:
-            rgba: BLACK
-        Line:
-            rectangle: [self.pos[0],self.pos[1]+1,self.width-1,self.height]
-            width:1.5
-
 <CheckBoxHintLabel@Label+ToolTipBehavior>:
     font_size: 0.4*self.size[1]
     color: BLACK
@@ -187,8 +186,8 @@
     valign: 'center'
     size: self.texture_size
 
-<ClickableLabel@ButtonBehavior+DarkLabel>:
-    color: BLACK
+<ClickableLabel@ButtonBehavior+LightLabel>:
+    color: WHITE
     halign: 'center'
     valign: 'center'
     size: self.texture_size
@@ -202,9 +201,11 @@
         text: root.label
         font_size: self.size[1] * 0.8
         on_press: value.opacity =  1 if  value.opacity==0 else 0
-    DarkLabel:
+    MDLabel:
         size_hint: 0.4,1
         text: root.text
+        theme_text_color: 'Custom'
+        text_color: root.color
         font_size: desc.font_size
         id: value
         bold: True
@@ -441,7 +442,7 @@
         size_hint: 0.45,1
         id: timer
         text: f"{root.state[0]//60}:{int(root.state[0] % 60):02d}"
-    DarkLabel:
+    LightLabel:
         size_hint: 0.125,1
         id: periods
         markup: True
@@ -464,29 +465,33 @@
             on_press: root.paused = not root.paused
         Label:
 
+#:set GRAPH_CENTER_COLOR GREY
+
 <ScoreGraph>:
-    background: BOX_BACKGROUND_COLOR
     whalf: root.pos[1]+self.height*0.25*(1 + 2 * root.marginy)
     bhalf: root.pos[1]+self.height*0.75*(1 - 2/3 * root.marginy)
     mid: root.pos[1]+self.height*0.5
     right_edge: root.pos[0] + root.width * (1 - root.marginx)
     canvas.before:
         Color:
-            rgba: GREY
+            rgb: BOX_BACKGROUND_COLOR
+        Rectangle:
+            pos:  [root.pos[0] + root.marginx * self.width, root.pos[1] + root.marginy*self.height]
+            size: [self.width*(1-2*root.marginx), root.height*(1-2*root.marginy)]
+        Color:
+            rgba: GRAPH_CENTER_COLOR
         Line:
             points: [root.pos[0]+self.width*root.marginx,root.whalf,root.pos[0]+self.width*(1-root.marginx),root.whalf]
-            width: 1.0
-            dashes: [1,2]
+            width: 1
+            dashes: [2,2]
         Line:
             points: [root.pos[0]+self.width*root.marginx,root.mid,root.pos[0]+self.width*(1-root.marginx),root.mid]
-            width: 1.0
+            width: 1
             dashes: [4,4]
         Line:
             points: [root.pos[0]+self.width*root.marginx,root.bhalf,root.pos[0]+self.width*(1-root.marginx),root.bhalf]
-            width: 1.0
-            dashes: [1,2]
-        Line:
-            rectangle: [root.pos[0] + root.marginx * self.width, root.pos[1] + root.marginy*self.height, self.width*(1-2*root.marginx), root.height*(1-2*root.marginy)]
+            width: 1
+            dashes: [2,2]
     canvas.after:
         Color:
             rgba: BLACK
@@ -522,15 +527,17 @@
         id: win_rate
         label: 'Win rate'
         text: ''
+        color: WINRATE_COLOR
     CensorableLabel:
         id: score
         label: 'Score Estimate'
         text: ''
+        color: SCORE_COLOR
     CensorableLabel:
         id: score_change
         label: 'Points Lost'
         text: ''
-
+        color: POINTLOSS_COLOR
 
 <ScrollableLabel>:
     do_scroll_x: False
@@ -564,8 +571,8 @@
 
 #:set PLAYER_BOX_HEIGHT 0.15
 #:set TIMER_BOX_HEIGHT  0.3
-#:set GRAPH_BOX_HEIGHT  0.35
-#:set STATS_BOX_HEIGHT  0.25
+#:set GRAPH_BOX_HEIGHT  0.37
+#:set STATS_BOX_HEIGHT  0.27
 #:set INFO_BOX_HEIGHT   1
 
 #:set CP_SPACING 6
@@ -585,7 +592,6 @@
     status: status
     padding: CP_PADDING
     spacing: CP_SPACING
-
     BoxLayout: # -- Players
         size_hint_y: PLAYER_BOX_HEIGHT
         PlayerInfo:
@@ -628,51 +634,112 @@
             hint_text: 'Your SGF notes for this position here.'
             height: min( (len(self._lines)+0.7) * self.line_height, self.parent.height - status.height - 2.7*self.line_height)
 
-<RHSButton@MDRectangleFlatButton>:
-    height: self.parent.parent.height / 25
-    width: self.height * 3.5
-    on_press: print(self.height, self.width, self.height * 3.5, self.parent.parent.height)
+
+<RHSButton>:
+    size: self.parent.button_size
+    on_press: print(self.height, self.parent.height, self.parent.parent.height)
+    _color: self.color
+    canvas.before:
+        Color:
+            rgba: BOX_BACKGROUND_COLOR
+        Rectangle:
+            size: root.size
+            pos: root.pos
+        Color:
+            rgba: root._color
+        Line:
+            width: 1
+            rectangle: (self.x, self.y, self.width, self.height)
+    MDLabel:
+        text: root.text
+        font_size: root.height * 0.7
+        font_name: root.font_name if root.font_name is not None else self.font_name
+        size_hint_x: None
+        text_size: (None, root.height)
+        height: self.texture_size[1]
+        theme_text_color: 'Custom'
+        text_color: root._color
+        valign: 'middle'
+        halign: 'center'
+
+#:set RHS_BUTTON_UP_COLOR (0.5,0.5,0.5,1)
+<RHSToggleButton@RHSButton+ToggleButtonBehavior>:
+    _color: root.color if self.state=='down' else RHS_BUTTON_UP_COLOR
 
 <ButtonBox@MDBoxLayout>
     orientation: 'vertical'
-    adaptive_width: True
-    width: self.minimum_width
+    button_size: self.parent.button_size
+    adaptive_size: True
+    pos_hint: {'center_y':0.5,'x':0}
     spacing: CP_SMALL_SPACING
 
-<RightButtonControls@MDBoxLayout>:
+<ButtonBoxHolder@MDFloatLayout>:
+    button_size: self.parent.button_size
+    size_hint_x: None
+    width: self.parent.width
+
+
+<RightButtonControls>:
     orientation: 'vertical'
-    adaptive_width: True
-    width: self.minimum_width
-    padding: CP_PADDING,CP_PADDING
+    button_size: (self.size[1] * 0.15 , self.size[1] * 0.04)
+    size_hint_x: None
+    width: self.button_size[0] + 2*CP_PADDING
+    padding: CP_PADDING, CP_PADDING
     spacing: CP_SPACING
-    ButtonBox:
-        size_hint: 1,PLAYER_BOX_HEIGHT
-        RHSButton:
-            text: 'PASS'
-    ButtonBox:
+    ButtonBoxHolder:
+        size_hint_y: PLAYER_BOX_HEIGHT
+        ButtonBox:
+            RHSButton:
+                text: 'PASS'
+    ButtonBoxHolder:
         size_hint_y: TIMER_BOX_HEIGHT
-        RHSButton:
-            text: 'MAN'
-        RHSButton:
-            text: 'BYO'
-    ButtonBox:
+        ButtonBox:
+            RHSToggleButton:
+                text: 'MAN'
+            RHSToggleButton:
+                text: 'BYO'
+    ButtonBoxHolder:
         size_hint_y: GRAPH_BOX_HEIGHT
-        RHSButton:
-            text: 'Win %'
-        RHSButton:
-            text: 'Score'
-        RHSButton:
-            text: 'PtLoss'
-    ButtonBox:
+        ButtonBox:
+            RHSToggleButton:
+                text: 'Win %'
+                group: 'graph'
+                color: WINRATE_COLOR
+            RHSToggleButton:
+                text: 'Score'
+                color: SCORE_COLOR
+                state: "down"
+                group: 'graph'
+            RHSToggleButton:
+                text: 'Point Loss'
+                group: 'graph'
+                color: POINTLOSS_COLOR
+    ButtonBoxHolder:
         size_hint_y: STATS_BOX_HEIGHT
-        RHSButton:
-            text: 'Win %'
-        RHSButton:
-            text: 'Score'
-        RHSButton:
-            text: 'PtLoss'
-    ButtonBox:
+        ButtonBox:
+            RHSToggleButton:
+                text: 'Win %'
+                color: WINRATE_COLOR
+                state: "down"
+            RHSToggleButton:
+                text: 'Score'
+                color: SCORE_COLOR
+                state: "down"
+            RHSToggleButton:
+                text: 'Point Loss'
+                color: POINTLOSS_COLOR
+                state: "down"
+    ButtonBoxHolder:
         size_hint_y: INFO_BOX_HEIGHT
+        ButtonBox:
+            RHSToggleButton:
+                text: 'Info'
+                color: RED
+                state: "down"
+            RHSToggleButton:
+                text: 'Note'
+                color: GREEN
+
 
 
 
@@ -723,7 +790,7 @@
             spacing:1
             padding: 1,2,1,2
             size_hint: 1,0.2
-            DarkLabel:
+            LightLabel:
                 text: 'Analysis'
                 size_hint: 1, 1
                 multiline: False
@@ -858,6 +925,7 @@
             size: self.size
     BoxLayout:
         orientation: 'vertical'
+        padding: CP_PADDING, 0
         AnalysisControls:
             id: analysis_controls
             size_hint_y: None
