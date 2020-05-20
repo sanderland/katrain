@@ -291,10 +291,9 @@ class KaTrainGui(BoxLayout):
             "r": self.analysis_controls.ownership,
             "t": self.analysis_controls.policy,
             "enter": ("ai-move",),
-            "a": self.controls.analyze_extra,
-            "s": self.controls.analyze_equalize,
-            "d": self.controls.analyze_sweep,
-            "spacebar": self.controls.pause,
+            "a": self.analysis_controls.analyze_extra,
+            "s": self.analysis_controls.analyze_equalize,
+            "d": self.analysis_controls.analyze_sweep,
             "p": ("play", None),
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),
@@ -307,6 +306,8 @@ class KaTrainGui(BoxLayout):
                 self(*shortcut)
         elif keycode[1] == "tab":
             self.controls.switch_mode()
+        elif keycode[1]==            "spacebar":
+            self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in ["`", "~", "m"]:
             self.controls_box.hidden = not self.controls_box.hidden
         elif keycode[1] in ["up", "z"]:

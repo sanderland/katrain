@@ -8,7 +8,7 @@ from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 
-from katrain.core.common import OUTPUT_DEBUG, evaluation_class
+from katrain.core.common import OUTPUT_DEBUG, evaluation_class, PLAYER_AI
 from katrain.core.game import Move
 from katrain.gui.kivyutils import draw_circle, draw_text
 from katrain.core.common import var_to_grid
@@ -209,7 +209,7 @@ class BadukPanWidget(Widget):
             for m in katrain.game.stones:
                 has_stone[m.coords] = m.player
 
-            show_dots_for = {p: self.trainer_config["eval_show_ai"] or "ai" not in katrain.controls.player_mode(p) for p in Move.PLAYERS}
+            show_dots_for = {p: self.trainer_config["eval_show_ai"] or katrain.controls.player_mode(p)!=PLAYER_AI for p in Move.PLAYERS}
             nodes = katrain.game.current_node.nodes_from_root
             realized_points_lost = None
             for i, node in enumerate(nodes[::-1]):  # reverse order!
@@ -254,7 +254,7 @@ class BadukPanWidget(Widget):
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
 
             policy = current_node.policy
-            if not policy and current_node.parent and current_node.parent.policy and "ai" in katrain.controls.player_mode("B") and "ai" in katrain.controls.player_mode("W"):
+            if not policy and current_node.parent and current_node.parent.policy and katrain.controls.player_mode("B")==PLAYER_AI and katrain.controls.player_mode("W")==PLAYER_AI:
                 policy = current_node.parent.policy  # in the case of AI self-play we allow the policy to be one step out of date
 
             pass_btn = katrain.board_controls.pass_btn

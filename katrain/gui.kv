@@ -352,6 +352,9 @@
     policy: policy
     hints: hints
     ownership: ownership
+    analyze_extra: analyze_extra
+    analyze_equalize: analyze_equalize
+    analyze_sweep: analyze_sweep
     Label:
         text: '='
         size_hint_x: None
@@ -457,7 +460,7 @@
             size_hint: 1, None
             icon_margin: 0.2 * self.size[0]
             icon: 'img/flaticon/pause.png'
-            state: 'down' if root.paused else 'up'
+            state: 'down' if root.paused else 'normal'
             on_press: root.paused = not root.paused
         Label:
 
@@ -512,7 +515,9 @@
 
 <StatsBox@BoxLayout>
     orientation: 'vertical'
-
+    score: score
+    win_rate: win_rate
+    score_change: score_change
     CensorableLabel:
         id: win_rate
         label: 'Win rate'
@@ -522,8 +527,8 @@
         label: 'Score Estimate'
         text: ''
     CensorableLabel:
-        id: point_loss
-        label: 'Score Estimate'
+        id: score_change
+        label: 'Points Lost'
         text: ''
 
 
@@ -559,12 +564,13 @@
 
 #:set PLAYER_BOX_HEIGHT 0.15
 #:set TIMER_BOX_HEIGHT  0.3
-#:set GRAPH_BOX_HEIGHT  0.33
-#:set STATS_BOX_HEIGHT  0.27
+#:set GRAPH_BOX_HEIGHT  0.35
+#:set STATS_BOX_HEIGHT  0.25
 #:set INFO_BOX_HEIGHT   1
 
-#:set CP_SPACING 2
-#:set CP_PADDING 2
+#:set CP_SPACING 6
+#:set CP_SMALL_SPACING 3
+#:set CP_PADDING 4
 
 <ControlsPanel>:
     katrain: app.gui
@@ -623,22 +629,20 @@
             height: min( (len(self._lines)+0.7) * self.line_height, self.parent.height - status.height - 2.7*self.line_height)
 
 <RHSButton@MDRectangleFlatButton>:
-    height: self.width * 0.3
-    width: self.parent.width
-    canvas.before:
-        Color:
-            rgb: (1,0,0,1)
-        Rectangle:
-            pos: self.pos
-            size: (self.size[0]-2,self.size[1]-5)
+    height: self.parent.parent.height / 25
+    width: self.height * 3.5
+    on_press: print(self.height, self.width, self.height * 3.5, self.parent.parent.height)
 
-
-<ButtonBox@BoxLayout>
+<ButtonBox@MDBoxLayout>
     orientation: 'vertical'
-    spacing: CP_SPACING
+    adaptive_width: True
+    width: self.minimum_width
+    spacing: CP_SMALL_SPACING
 
-<RightButtonControls@BoxLayout>:
+<RightButtonControls@MDBoxLayout>:
     orientation: 'vertical'
+    adaptive_width: True
+    width: self.minimum_width
     padding: CP_PADDING,CP_PADDING
     spacing: CP_SPACING
     ButtonBox:
@@ -871,10 +875,7 @@
         opacity: 0 if root.zen else 1
     RightButtonControls:
         id: button_controls
-        size_hint_x: None
-        hidden: False
-        width: 0 if root.zen else controls.width * 0.3
-        opacity: 0 if root.zen else 1
+
 
 <LoadSGFPopup>:
     fast: fast
