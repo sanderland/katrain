@@ -1,10 +1,7 @@
 from kivy.config import Config  # isort:skip
-from kivy.lang import Builder
-from kivy.resources import resource_add_path
-
-Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
 ICON = "img/icon.png"
-Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon before Window is imported
+Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
+Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
 
 import signal
 import os
@@ -12,6 +9,9 @@ import sys
 import threading
 import traceback
 from queue import Queue
+
+from kivy.lang import Builder
+from kivy.resources import resource_add_path
 
 from kivy.app import App
 from kivymd.app import MDApp
