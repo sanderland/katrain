@@ -1,8 +1,6 @@
 # KaTrain v1.0.6
 [![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
 [![Latest version on PyPI](https://img.shields.io/pypi/v/katrain.svg)](https://pypi.org/project/katrain)
-![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)
-[![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
 ![License:MIT](https://img.shields.io/pypi/l/katrain)
 ![Build Status](https://github.com/sanderland/katrain/workflows/release/badge.svg)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/katrain.svg)](#Installation)
