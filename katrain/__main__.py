@@ -34,6 +34,7 @@ __version__ = "1.0.6"
 
 class KaTrainGui(BoxLayout):
     """Top level class responsible for tying everything together"""
+    zen = BooleanProperty(False)
 
     def __init__(self, **kwargs):
         super(KaTrainGui, self).__init__(**kwargs)

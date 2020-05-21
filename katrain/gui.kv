@@ -138,7 +138,6 @@
         source: root.icon
         mipmap: True
 
-<StyledIconStyledToggleButton@StyledIconButton+ToggleButtonBehavior>:
 
 <TransparentIconButton@Button>:
     background_normal: ''
@@ -161,7 +160,7 @@
     bold: True
 
 <TimerLabel@Label>
-    color: BLACK
+    color: GREEN
     font_size: 0.85*self.size[1]
     halign: 'right'
     valign: 'middle'
@@ -241,14 +240,6 @@
         Line:
             circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, min(self.height,self.width) * root.radius - 1
             width: 1.1 if root.outline else 0.0001
-
-<GraphMarkerLabel@Label>:
-    valign: 'bottom'
-    halign: 'left'
-    text: '+0'
-    color:  BUTTON_COLOR
-    size: self.texture_size
-
 
 
 # UI components
@@ -346,6 +337,12 @@
     Label:
         size_hint: 0.025, 1
 
+
+<HamburgerButton@MDFloatingActionButton>:
+    icon: 'img/flaticon/hamburger.png'
+    size_hint: None, 1
+    width: self.height
+
 <AnalysisControls@BoxLayout>:
     katrain: app.gui
     show_children: show_children
@@ -356,10 +353,7 @@
     analyze_extra: analyze_extra
     analyze_equalize: analyze_equalize
     analyze_sweep: analyze_sweep
-    Label:
-        text: '='
-        size_hint_x: None
-        width: self.height
+    HamburgerButton:
     GridLayout:
         cols: 5
         rows: 2
@@ -432,71 +426,87 @@
         id: description
 
 <PonderInfo@ControlPanelSection>:
-    Label:
-        text: 'AI\nPonder\nO'
+    LightLabel:
+        text: 'AI\nBusy'
+
+<PauseButton@MDFloatingActionButton+ToggleButtonBehavior>:
+    icon: 'img/flaticon/pause.png'
+    height: self.width
+    size_hint: 1, None
 
 <Timer@ControlPanelSection>:
     state: (30,5,1)
+    spacing: CP_SPACING
+    padding: CP_PADDING * 2
     paused: True
     TimerLabel:
-        size_hint: 0.45,1
+        size_hint: 0.5,1
         id: timer
         text: f"{root.state[0]//60}:{int(root.state[0] % 60):02d}"
     LightLabel:
-        size_hint: 0.125,1
+        size_hint: 0.1,1
         id: periods
         markup: True
         text: f"x{root.state[1]}"
-        font_size: self.width*0.5
+        font_size: self.width*0.75
         multiline: False
         valign: 'top'
         halign: 'left'
-    BoxLayout:
-        orientation: 'vertical'
-        size_hint: 0.15,1
-        Label:
-        StyledIconStyledToggleButton:
+    MDBoxLayout:
+        size_hint: 0.2,1
+        PauseButton:
+            pos_hint: {'center_y':0.5}
             id: pause
-            height: self.width
-            size_hint: 1, None
-            icon_margin: 0.2 * self.size[0]
-            icon: 'img/flaticon/pause.png'
             state: 'down' if root.paused else 'normal'
             on_press: root.paused = not root.paused
-        Label:
+
 
 #:set GRAPH_CENTER_COLOR GREY
 
+
+<GraphMarkerLabel@Label>:
+    valign: 'bottom'
+    halign: 'left'
+    text: '+0'
+    color:  SCORE_COLOR
+    size: self.texture_size
+
 <ScoreGraph>:
-    whalf: root.pos[1]+self.height*0.25*(1 + 2 * root.marginy)
-    bhalf: root.pos[1]+self.height*0.75*(1 - 2/3 * root.marginy)
-    mid: root.pos[1]+self.height*0.5
-    right_edge: root.pos[0] + root.width * (1 - root.marginx)
+    whalf: root.pos[1]+self.height*0.25
+    bhalf: root.pos[1]+self.height*0.75
+    mid:  root.pos[1]+self.height*0.5
+    right_edge: root.pos[0] + root.width
     canvas.before:
         Color:
             rgb: BOX_BACKGROUND_COLOR
         Rectangle:
-            pos:  [root.pos[0] + root.marginx * self.width, root.pos[1] + root.marginy*self.height]
-            size: [self.width*(1-2*root.marginx), root.height*(1-2*root.marginy)]
+            pos:  root.pos
+            size: root.size
+    canvas:
         Color:
             rgba: GRAPH_CENTER_COLOR
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.whalf,root.pos[0]+self.width*(1-root.marginx),root.whalf]
+            points: [root.pos[0],root.whalf,root.pos[0]+root.width,root.whalf]
             width: 1
             dashes: [2,2]
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.mid,root.pos[0]+self.width*(1-root.marginx),root.mid]
+            points: [root.pos[0],root.mid,root.pos[0]+root.width,root.mid]
             width: 1
             dashes: [4,4]
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.bhalf,root.pos[0]+self.width*(1-root.marginx),root.bhalf]
+            points: [root.pos[0],root.bhalf,root.pos[0]+root.width,root.bhalf]
             width: 1
             dashes: [2,2]
     canvas.after:
         Color:
-            rgba: BLACK
+            rgba: SCORE_COLOR
         Line:
-            points: root.line_points
+            points: root.score_points
+            width: 1.1
+        Color:
+            rgba: WINRATE_COLOR
+        Line:
+            points: root.winrate_points
             width: 1.1
         Color:
             rgba: GRAPH_DOT_COLOR
@@ -507,7 +517,7 @@
     GraphMarkerLabel:
         font_size: 0.1 * root.height
         id: range_label_top
-        pos: root.right_edge - self.width-1, root.pos[1]+root.height*(1-root.marginy) - self.font_size
+        pos: root.right_edge - self.width-1, root.pos[1]+root.height - self.font_size
         text: 'B+' + str(int(root.y_scale))
     GraphMarkerLabel:
         font_size: 0.1 * root.height
@@ -581,6 +591,7 @@
 
 <ControlsPanel>:
     katrain: app.gui
+    button_controls: app.gui and app.gui.button_controls
     orientation: 'vertical'
     players: {'B':B_player,'W':W_player}
     ponder: ponder
@@ -673,10 +684,9 @@
     pos_hint: {'center_y':0.5,'x':0}
     spacing: CP_SMALL_SPACING
 
-<ButtonBoxHolder@MDFloatLayout>:
+<ButtonBoxHolder@MDBoxLayout>:
     button_size: self.parent.button_size
-    size_hint_x: None
-    width: self.parent.width
+    adaptive_width: True
 
 
 <RightButtonControls>:
@@ -686,6 +696,9 @@
     width: self.button_size[0] + 2*CP_PADDING
     padding: CP_PADDING, CP_PADDING
     spacing: CP_SPACING
+    info: info
+    note: note
+    graph: {'winrate': winrate_graph,'score':score_graph,'points':points_graph}
     ButtonBoxHolder:
         size_hint_y: PLAYER_BOX_HEIGHT
         ButtonBox:
@@ -705,15 +718,18 @@
                 text: 'Win %'
                 group: 'graph'
                 color: WINRATE_COLOR
+                id: winrate_graph
             RHSToggleButton:
                 text: 'Score'
                 color: SCORE_COLOR
                 state: "down"
                 group: 'graph'
+                id: score_graph
             RHSToggleButton:
                 text: 'Point Loss'
                 group: 'graph'
                 color: POINTLOSS_COLOR
+                id: points_graph
     ButtonBoxHolder:
         size_hint_y: STATS_BOX_HEIGHT
         ButtonBox:
@@ -733,12 +749,16 @@
         size_hint_y: INFO_BOX_HEIGHT
         ButtonBox:
             RHSToggleButton:
+                id: info
                 text: 'Info'
                 color: RED
                 state: "down"
+                group: "text"
             RHSToggleButton:
+                id: note
                 text: 'Note'
                 color: GREEN
+                group: "text"
 
 
 
@@ -916,6 +936,7 @@
     controls: controls
     board_controls: board_controls
     analysis_controls: analysis_controls
+    button_controls: button_controls
     zen: False
     canvas.before:
         Color:

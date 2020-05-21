@@ -1,6 +1,7 @@
 import time
 
 from kivy.clock import Clock
+from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 
@@ -9,9 +10,12 @@ from katrain.gui.popups import ConfigAIPopup, ConfigTeacherPopup, ConfigTimerPop
 
 
 class ControlsPanel(BoxLayout):
+    katrain = ObjectProperty(None)
+    button_controls = ObjectProperty(None)
+
     def __init__(self, **kwargs):
         super(ControlsPanel, self).__init__(**kwargs)
-        self.status = None
+        self.status_msg = None
         self.status_node = None
         self.ai_settings_popup = None
         self.teacher_settings_popup = None
@@ -22,9 +26,9 @@ class ControlsPanel(BoxLayout):
         Clock.schedule_interval(self.update_timer, 0.07)
 
     def set_status(self, msg, at_node=None):
-        self.status = msg
+        self.status_msg = msg
         self.status_node = at_node or self.katrain and self.katrain.game and self.katrain.game.current_node
-        self.status_label.text = msg
+        self.status.text = msg
         self.update_evaluation()
 
     @property
@@ -49,7 +53,7 @@ class ControlsPanel(BoxLayout):
         current_node = katrain and katrain.game and katrain.game.current_node
 
         if current_node is not self.status_node and not (self.status is not None and self.status_node is None and current_node.is_root):  # startup errors on root
-            self.status_label.text = ""
+            self.status.text = ""
             self.status_node = None
 
         info = ""
