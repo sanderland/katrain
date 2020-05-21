@@ -8,13 +8,11 @@ from kivy.core.text import Label as CoreLabel
 from kivy.core.window import Window
 from kivy.graphics import *
 from kivy.metrics import dp, sp
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty, OptionProperty
 from kivy.uix.behaviors import ToggleButtonBehavior
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
@@ -24,7 +22,8 @@ from kivy.uix.widget import Widget
 #--new
 from kivymd.uix.behaviors import RectangularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDRectangleFlatButton, BaseButton
+from kivymd.uix.button import BaseButton
+from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
@@ -74,7 +73,7 @@ class ScoreGraph(BackgroundLabel):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Clock.schedule_once(self.on_size, 0)
+        self.bind(pos=self.update_graph,size=self.update_graph)
 
     def initialize_from_game(self, root):
         self.nodes = [root]
@@ -84,7 +83,7 @@ class ScoreGraph(BackgroundLabel):
             self.nodes.append(node)
         self.highlighted_index = 0
 
-    def on_size(self, *args):
+    def update_graph(self, *args):
         nodes = self.nodes
         if nodes:
             values = [n.score if n and n.score else math.nan for n in nodes]
@@ -118,7 +117,7 @@ class ScoreGraph(BackgroundLabel):
             while node.children:  # add children back
                 node = node.children[0]
                 self.nodes.append(node)
-        self.on_size()
+        self.update_graph()
 
 
 class ToolTipLabel(MDLabel):
@@ -168,8 +167,10 @@ class MyNavigationDrawer(MDNavigationDrawer):
 
 
 
-class BaseCircleWithText(LightLabel):
-    radius = NumericProperty(0.48)
+class CircleWithText(MDFloatLayout):
+    text = StringProperty("0")
+    player = OptionProperty("Black",options=["Black","White"])
+    min_size = NumericProperty(50)
 
 class ScaledLightLabel(LightLabel, ToolTipBehavior):
     num_lines = NumericProperty(1)
@@ -216,7 +217,7 @@ class StyledSpinner(Spinner):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.fbind("size", lambda s, dt: Clock.schedule_once(self._update_dropdown_size_frac, 0))
+        self.bind(size=self._update_dropdown_size_frac,pos=self._update_dropdown_size_frac)
 
     def _update_dropdown_size_frac(self, *largs):
         if not self.sync_height_frac:

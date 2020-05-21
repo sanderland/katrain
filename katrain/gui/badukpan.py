@@ -8,6 +8,7 @@ from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.menu import MDDropdownMenu
 
 from katrain.core.common import OUTPUT_DEBUG, evaluation_class, PLAYER_AI
@@ -394,7 +395,7 @@ class BadukPanWidget(Widget):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
 
-class BadukPanControls(MDBoxLayout):
+class BadukPanControls(MDFloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.analysis_menu = None
