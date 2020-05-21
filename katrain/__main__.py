@@ -1,4 +1,6 @@
 from kivy.config import Config  # isort:skip
+from kivy.uix.screenmanager import Screen
+
 ICON = "img/icon.png"
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
@@ -32,7 +34,7 @@ from katrain.gui.popups import NewGamePopup, ConfigPopup, LoadSGFPopup
 __version__ = "1.0.6"
 
 
-class KaTrainGui(BoxLayout):
+class KaTrainGui(Screen):
     """Top level class responsible for tying everything together"""
     zen = BooleanProperty(False)
 
@@ -122,26 +124,23 @@ class KaTrainGui(BoxLayout):
 
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
-        top, bot = self.board_controls.black_prisoners.__self__, self.board_controls.white_prisoners.__self__  # no weakref
+        top, bot = [w.__self__ for w in self.board_controls.circles]  # no weakref
         if self.game.next_player == "W":
             top, bot = bot, top
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
-        self.board_controls.black_prisoners.text = str(prisoners["W"])
-        self.board_controls.white_prisoners.text = str(prisoners["B"])
+        self.controls.players['W'].captures = prisoners["W"]
+        self.controls.players['B'].captures = prisoners["B"]
 
         # update engine status dot
         if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
-            self.board_controls.engine_status_col = self.config("board_ui/engine_down_col")
-        elif len(self.engine.queries) >= 4:
-            self.board_controls.engine_status_col = self.config("board_ui/engine_busy_col")
-        elif len(self.engine.queries) >= 2:
-            self.board_controls.engine_status_col = self.config("board_ui/engine_little_busy_col")
+            self.controls.engine_status_col = self.config("board_ui/engine_down_col")
         elif len(self.engine.queries) == 0:
-            self.board_controls.engine_status_col = self.config("board_ui/engine_ready_col")
+            self.controls.engine_status_col = self.config("board_ui/engine_ready_col")
         else:
-            self.board_controls.engine_status_col = self.config("board_ui/engine_almost_done_col")
+            self.controls.engine_status_col = self.config("board_ui/engine_busy_col")
+
         # redraw
         if redraw_board:
             Clock.schedule_once(self.board_gui.draw_board, -1)
@@ -286,7 +285,6 @@ class KaTrainGui(BoxLayout):
             return  # if in new game or load, don't allow keyboard shortcuts
 
         shortcuts = {
-            "q": self.analysis_controls.show_children,
             "w": self.analysis_controls.eval,
             "e": self.analysis_controls.hints,
             "r": self.analysis_controls.ownership,
@@ -310,7 +308,7 @@ class KaTrainGui(BoxLayout):
         elif keycode[1]==            "spacebar":
             self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in ["`", "~", "m"]:
-            self.controls_box.hidden = not self.controls_box.hidden
+            self.zen = not self.zen
         elif keycode[1] in ["up", "z"]:
             self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] in ["down", "x"]:
@@ -337,7 +335,8 @@ class KaTrainApp(MDApp):
         self.gui = KaTrainGui()
         self.title = f"KaTrain v{__version__}"
         self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "DeepPurple"
+        self.theme_cls.primary_palette = "Blue"
+
         Window.bind(on_request_close=self.on_request_close)
         return self.gui
 

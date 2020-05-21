@@ -25,6 +25,11 @@ class ControlsPanel(BoxLayout):
         self.periods_used = {"B": 0, "W": 0}
         Clock.schedule_interval(self.update_timer, 0.07)
 
+    def check_hide_show(self, *_args):
+        pass
+
+
+
     def set_status(self, msg, at_node=None):
         self.status_msg = msg
         self.status_node = at_node or self.katrain and self.katrain.game and self.katrain.game.current_node

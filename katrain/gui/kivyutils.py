@@ -7,6 +7,7 @@ from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
 from kivy.core.window import Window
 from kivy.graphics import *
+from kivy.metrics import dp, sp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.behaviors import ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
@@ -25,19 +26,36 @@ from kivymd.uix.behaviors import RectangularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDRectangleFlatButton, BaseButton
 from kivymd.uix.label import MDLabel
+from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
+
+class BackgroundColor(Widget):
+    background_color = ListProperty([1, 1, 1, 0])
+
+class OutlineColor(Widget):
+    outline_color = ListProperty([1, 1, 1, 0])
+    outline_width = NumericProperty(1)
 
 class RightButtonControls(MDBoxLayout):
     button_size = ListProperty([100,33])
 
-class RHSButton(RectangularRippleBehavior,BaseButton):
-    button_label = BooleanProperty(True)
+class SmallMDFlatButton(RectangularRippleBehavior,BaseButton,BackgroundColor,OutlineColor):
     text = StringProperty("")
+    text_color = ListProperty([1,1,1,1])
     color = ListProperty([1, 1, 1, 1])
-    _color = ListProperty([1,1,1,1])
+    font_size = NumericProperty(sp(20))
+
+class SmallMDFlatToggleButton(SmallMDFlatButton,ToggleButtonBehavior):
+    @property
+    def active(self):
+        return self.state=='down'
 
 class LightLabel(MDLabel):
     pass
+
+class BackgroundLabel(MDLabel,BackgroundColor):
+    pass
+
 
 class CensorableLabel(MDBoxLayout):
     text = StringProperty("")
@@ -45,9 +63,7 @@ class CensorableLabel(MDBoxLayout):
     color = ListProperty([1, 1, 1, 1])
 
 
-
-
-class ScoreGraph(Label):
+class ScoreGraph(BackgroundLabel):
     nodes = ListProperty([])
     score_points = ListProperty([])
     winrate_points = ListProperty([])
@@ -105,13 +121,11 @@ class ScoreGraph(Label):
         self.on_size()
 
 
-# --- not checked
-
-class ToolTipLabel(Label):
+class ToolTipLabel(MDLabel):
     pass
 
 
-class ToolTipBehavior(Widget):
+class ToolTipBehavior(object):
     tooltip_text = StringProperty("")
 
     def __init__(self, **kwargs):
@@ -145,30 +159,36 @@ class ToolTipBehavior(Widget):
         self.tooltip.text = self.tooltip_text
         Window.add_widget(self.tooltip)
 
+class MyNavigationDrawer(MDNavigationDrawer):
+    def on_touch_up(self, touch):
+        if self.status == "opened" and  self.close_on_click and not self.collide_point(touch.ox, touch.oy):
+                self.set_state("close", animation=True)
+                return True
+        return super().on_touch_up(touch)
 
 
+
+class BaseCircleWithText(LightLabel):
+    radius = NumericProperty(0.48)
 
 class ScaledLightLabel(LightLabel, ToolTipBehavior):
     num_lines = NumericProperty(1)
+
+
+# --- not checked
+
+
 
 
 class LightHelpLabel(ScaledLightLabel):
     pass
 
 
-class BackgroundColor(Widget):
-    background = ListProperty([1, 1, 1, 0])
 
-
-class BackgroundLabel(Label, BackgroundColor):
-    pass
-
-
-class ScrollableLabel(ScrollView):
+class ScrollableLabel(ScrollView,BackgroundColor,OutlineColor):
     __events__ = ["on_ref_press"]
     text = StringProperty("")
     markup = BooleanProperty(False)
-    border_color = ListProperty([0, 0, 0, 1])
 
     def on_ref_press(self, ref):
         pass
@@ -264,9 +284,6 @@ class ToggleButtonContainer(GridLayout):
         if self.options:
             return self.options[0]
 
-
-class BaseCircleWithText(LightLabel):
-    radius = NumericProperty(0.48)
 
 
 class LabelledTextInput(TextInput):

@@ -7,6 +7,8 @@ from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.menu import MDDropdownMenu
 
 from katrain.core.common import OUTPUT_DEBUG, evaluation_class, PLAYER_AI
 from katrain.core.game import Move
@@ -306,22 +308,21 @@ class BadukPanWidget(Widget):
             self.active_pv_moves = []
 
             # children of current moves in undo / review
-            if katrain.analysis_controls.show_children.active:
-                alpha = self.ui_config["ghost_alpha"]
-                for child_node in current_node.children:
-                    points_lost = child_node.points_lost
-                    move = child_node.move
-                    if move and move.coords is not None:
-                        if points_lost is None:
-                            evalcol = None
-                        else:
-                            evalcol = copy.copy(self.eval_color(points_lost))
-                            evalcol[3] = alpha
-                        # if ((teaching and child_node.auto_undo) or katrain.controls.play_analyze_mode == "analyze") and child_node.analysis_ready: # TODO:?
-                        if child_node.analysis_ready:
-                            self.active_pv_moves.append((move.coords, child_node.candidate_moves[0]["pv"], child_node))
-                        scale = self.ui_config["child_scale"]
-                        self.draw_stone(move.coords[0], move.coords[1], (*stone_color[move.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
+            alpha = self.ui_config["ghost_alpha"]
+            for child_node in current_node.children:
+                points_lost = child_node.points_lost
+                move = child_node.move
+                if move and move.coords is not None:
+                    if points_lost is None:
+                        evalcol = None
+                    else:
+                        evalcol = copy.copy(self.eval_color(points_lost))
+                        evalcol[3] = alpha
+                    # if ((teaching and child_node.auto_undo) or katrain.controls.play_analyze_mode == "analyze") and child_node.analysis_ready: # TODO:?
+                    if child_node.analysis_ready:
+                        self.active_pv_moves.append((move.coords, child_node.candidate_moves[0]["pv"], child_node))
+                    scale = self.ui_config["child_scale"]
+                    self.draw_stone(move.coords[0], move.coords[1], (*stone_color[move.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
             # hints or PV
             if katrain.analysis_controls.hints.active and not game_ended and not lock_ai:
@@ -393,5 +394,18 @@ class BadukPanWidget(Widget):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
 
-class BadukPanControls(BoxLayout):
-    pass
+class BadukPanControls(MDBoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.analysis_menu = None
+        Clock.schedule_once(self.init_menus,1)
+
+    def init_menus(self,_dt):
+        menu_items = [{"icon": "git", "text": f"Item {i}"} for i in range(5)]
+        self.analysis_menu = MDDropdownMenu(
+            caller=self.analysis_button, items=menu_items, width_mult=4
+        )
+
+    def open_analysis_menu(self):
+        if self.analysis_menu:
+            self.analysis_menu.open()

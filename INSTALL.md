@@ -38,6 +38,16 @@
     * If you prefer not to install, run without installing using `python3 -m katrain`
 * A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.4+ binary.
 
+## Troubleshooting 
+
+Older linux machines may have trouble installing, you can try to manually install dependencies to resolve some issues.
+
+* `sudo apt-get install pkg-config libgl-dev opencl-headers ocl-icd-opencl-dev `
+* `pip3 install -U cython wheel setuptools`
+* `pip3 install kivy==2.0.0rc2 kivymd==1.104.1`
+
+In case KataGo does not start, an alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.
+
 # Configuring the GPU(s) KataGo uses
 
 In most cases KataGo detects your configuration correctly, automatically searching for OpenCL devices and select the highest scoring device. 
