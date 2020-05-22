@@ -1,4 +1,5 @@
 #:kivy 1.11.0
+#:import i18n __main__.i18n
 
 #:set PLAYER_MODES ['Human', 'Teach','AI']
 #:set PLAYER_MODE_VALUES ['human','human+undo','ai']
@@ -331,8 +332,8 @@
         pos_hint: {'x': 0}
         on_press: root.nav_drawer.set_state("open")
     StyledButton:
-        text: 'Pass'
-        tooltip_text: '[space]\nPass'
+        text: i18n._('pass-button-text')
+        tooltip_text: i18n._('pass-button-tooltip')
         id: pass_btn
         size_hint: None, 0.5
         pos_hint: {'x': 0.1,'center_y':0.5}
@@ -833,10 +834,12 @@
 <ContentNavigationDrawer@MDBoxLayout+BackgroundColor>:
     orientation: 'vertical'
     background_color: BOX_BACKGROUND_COLOR
-    Label:
-        text: 'sdafs'
-    Label:
-        text: 'sdafs'
+    MDFlatButton:
+        text: i18n._('Dutch')
+        on_press: app.language = 'nl'
+    MDFlatButton:
+        text: i18n._('English')
+        on_press: app.language = 'en'
     MDFlatButton:
         text: 'size'
         on_press: print(self.size,self.parent.size,self.parent.parent.size,self.parent.parent.parent.size,self.parent.parent.parent.parent.size)

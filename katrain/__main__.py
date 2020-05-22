@@ -29,6 +29,7 @@ from katrain.gui.kivyutils import *
 from katrain.gui.badukpan import BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
 from katrain.gui.popups import NewGamePopup, ConfigPopup, LoadSGFPopup
+from katrain.core.common import Lang
 
 __version__ = "1.1.0"
 
@@ -327,8 +328,11 @@ class KaTrainGui(Screen):
         return True
 
 
+LANGUAGE = "nl"
+i18n = Lang(LANGUAGE)
 class KaTrainApp(MDApp):
     gui = ObjectProperty(None)
+    language = StringProperty(LANGUAGE)
 
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
@@ -339,6 +343,10 @@ class KaTrainApp(MDApp):
 
         Window.bind(on_request_close=self.on_request_close)
         return self.gui
+
+    def on_language(self, _instance, language):
+        self.gui.log(f"Switching language to {language}",OUTPUT_INFO)
+        i18n.switch_lang(language)
 
     def on_start(self):
         self.gui.start()

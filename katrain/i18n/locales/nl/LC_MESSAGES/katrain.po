@@ -1,0 +1,23 @@
+# KaTrain i18n file
+msgid ""
+msgstr ""
+"Language: Nederlands\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Hello World"
+msgstr "Hallo wereld"
+
+msgid "English"
+msgstr "Engels"
+
+msgid "Dutch"
+msgstr "Nederlands"
+
+msgid "pass-button-text"
+msgstr "Pas"
+
+msgid "pass-button-tooltip"
+msgstr "[spatiebalk]\nPas"
+
