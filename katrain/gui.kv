@@ -330,7 +330,7 @@
         size_hint: None, 1
         width: self.height
         pos_hint: {'x': 0}
-        on_press: root.nav_drawer.set_state("open")
+        on_press: app.gui.nav_drawer.set_state("open")
     StyledButton:
         text: i18n._('pass-button-text')
         tooltip_text: i18n._('pass-button-tooltip')
@@ -831,21 +831,94 @@
 
 
 
+<MainMenuItem>
+    size_hint_y: None
+    height: button.height
+    spacing: 4
+    padding: 4,0,0,0
+    Image:
+        id:image
+        source: root.icon
+        mipmap: True
+        size_hint: None,None
+        height: root.height * 0.8
+        width: self.height
+        pos_hint: {'center_y': 0.5}
+    MDFlatButton:
+        id: button
+        text: root.text
+        on_release:
+            app.gui.nav_drawer.set_state("close")
+            if not self.last_touch or self.last_touch.button=="left": root.dispatch('on_release',*args)
+        on_press: print(self.size, root.size, image.size, root.parent.parent, root.parent)
+        halign: 'left'
+        color: WHITE
+    Label:
+        text: root.shortcut
+        halign: 'left'
+        valign: 'middle'
+        size_hint_x: 0.5
+        color: GREY
+
 <ContentNavigationDrawer@MDBoxLayout+BackgroundColor>:
-    orientation: 'vertical'
+    katrain: app.gui
     background_color: BOX_BACKGROUND_COLOR
-    MDFlatButton:
-        text: i18n._('Dutch')
-        on_press: app.language = 'nl'
-    MDFlatButton:
-        text: i18n._('English')
-        on_press: app.language = 'en'
-    MDFlatButton:
-        text: 'size'
-        on_press: print(self.size,self.parent.size,self.parent.parent.size,self.parent.parent.parent.size,self.parent.parent.parent.parent.size)
-    MDFlatButton:
-        text: 'pos'
-        on_press: print(self.pos,self.parent.pos,self.parent.parent.pos,self.parent.parent.parent.pos,self.parent.parent.parent.parent.pos,self.parent.parent.parent.parent)
+    orientation: 'vertical'
+    canvas.after:
+        Color:
+            rgba: YELLOW
+        Line:
+            rectangle:  (*self.pos,*self.size)
+            width: 1
+    MDBoxLayout:
+        adaptive_height: True
+        size_hint_x: 1
+        canvas.before:
+            Color:
+                rgba: RED
+            Line:
+                rectangle:  (*self.pos,*self.size)
+                width: 1
+        MDFlatButton:
+            text: i18n._('Dutch')
+            on_press: app.language = 'nl'
+        MDFlatButton:
+            text: i18n._('English')
+            on_press: app.language = 'en'
+        MDFlatButton:
+            text: i18n._('Ko')
+            on_press: app.language = 'ko'
+    Label:
+    MDBoxLayout:
+        canvas.before:
+            Color:
+                rgba: RED
+            Line:
+                rectangle:  (*self.pos,*self.size)
+                width: 1
+        orientation: 'vertical'
+        adaptive_height: True
+        size_hint_x: 1
+        MainMenuItem:
+            text: 'General Settings'
+            icon: 'img/flaticon/settings.png'
+            on_release: root.katrain('config-popup')
+        MainMenuItem:
+            text: 'Save Game'
+            icon: 'img/flaticon/savegame.png'
+            shortcut: 'Ctrl-S'
+            on_release: root.katrain("analyze-sgf-popup")
+        MainMenuItem:
+            text: 'Load Game'
+            icon: 'img/flaticon/loadgame.png'
+            shortcut: 'Ctrl-L'
+            on_release: root.katrain("analyze-sgf-popup")
+        MainMenuItem:
+            text: 'New Game'
+            icon: 'img/flaticon/newgame.png'
+            size_hint_x: 1
+            shortcut: 'Ctrl-N'
+            on_release: root.katrain("new-game-popup")
 
 
 <KaTrainGui>:
@@ -854,6 +927,7 @@
     board_controls: board_controls
     button_controls: button_controls
     analysis_controls: button_controls
+    nav_drawer: nav_drawer
     zen: False
     NavigationLayout:
         ScreenManager:
@@ -868,7 +942,6 @@
                             id: board_gui
                         BadukPanControls:
                             id: board_controls
-                            nav_drawer: nav_drawer
                             size_hint_y: None
                             height: min(100,self.width / 13.5)
                     ControlsPanel:
@@ -881,11 +954,12 @@
         MyNavigationDrawer:
             id: nav_drawer
             state: "close"
-            width: self.height / 3
             y: board_gui.pos[1]+CP_SPACING
+            size_hint_y: None
+            width: self.height * 0.4
+            height: root.height - self.y
             swipe_edge_width: 0
             ContentNavigationDrawer:
-                nav_drawer: nav_drawer
 
 
 

@@ -180,6 +180,15 @@ class CircleWithText(MDFloatLayout):
 class ScaledLightLabel(LightLabel, ToolTipBehavior):
     num_lines = NumericProperty(1)
 
+class MainMenuItem(MDBoxLayout):
+    icon = StringProperty('')
+    text = StringProperty('')
+    shortcut = StringProperty('')
+    __events__ = ["on_release"]
+
+    def on_release(self, ref):
+        pass
+
 
 # --- not checked
 

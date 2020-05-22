@@ -62,30 +62,31 @@ class ControlsPanel(BoxLayout):
         info = ""
 
         if current_node:
+            hints = katrain.analysis_controls.hints.active
             move = current_node.move
             both_players_are_robots = self.player_mode(current_node.player) == PLAYER_AI and self.player_mode(current_node.next_player) == PLAYER_AI
-            next_player_is_human_or_both_robots = current_node.player and (self.player_mode(current_node.player) == PLAYER_AI or both_players_are_robots)
-            current_player_is_ai_playing_human = (
+            last_player_was_human_or_both_robots = current_node.player and (self.player_mode(current_node.player) != PLAYER_AI or both_players_are_robots)
+            last_player_was_ai_playing_human = (
                 current_node.player and self.player_mode(current_node.player) == PLAYER_AI and self.player_mode(current_node.next_player) != PLAYER_AI
             )
-            if next_player_is_human_or_both_robots and not current_node.is_root and move:
-                info += current_node.comment(teach=self.player_mode(current_node.player) == PLAYER_HUMAN_TEACHING, hints=self.hints.active)
+            if last_player_was_human_or_both_robots and not current_node.is_root and move:
+                info += current_node.comment(teach=self.player_mode(current_node.player) == PLAYER_HUMAN_TEACHING, hints=hints)
                 self.active_comment_node = current_node
-            elif current_player_is_ai_playing_human and current_node.parent:
-                info += current_node.parent.comment(teach=self.player_mode(current_node.next_player) == PLAYER_HUMAN_TEACHING, hints=self.hints.active)
+            elif last_player_was_ai_playing_human and current_node.parent:
+                info += current_node.parent.comment(teach=self.player_mode(current_node.next_player) == PLAYER_HUMAN_TEACHING, hints=hints)
                 self.active_comment_node = current_node.parent
 
             if current_node.analysis_ready:
                 self.stats.score.text = current_node.format_score()
                 self.stats.win_rate.text = current_node.format_win_rate()
-                if move and next_player_is_human_or_both_robots:  # don't immediately hide this when an ai moves comes in
+                if move and last_player_was_human_or_both_robots:  # don't immediately hide this when an ai moves comes in
                     points_lost = current_node.points_lost
                     self.stats.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
                     self.stats.score_change.text = f"{move.player}: {abs(points_lost):.1f}" if points_lost else "-"
-                elif not current_player_is_ai_playing_human:
+                elif not last_player_was_ai_playing_human:
                     self.stats.score_change.label = f"Points lost"
                     self.stats.score_change.text = "-"
-            elif current_player_is_ai_playing_human and current_node.parent and current_node.parent.move:
+            elif last_player_was_ai_playing_human and current_node.parent and current_node.parent.move:
                 points_lost = current_node.parent.points_lost
                 self.stats.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
                 self.stats.score_change.text = f"{current_node.parent.move.player}: {abs(points_lost):.1f}" if points_lost else "-"
