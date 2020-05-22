@@ -1,12 +1,17 @@
 import time
 
 from kivy.clock import Clock
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, ListProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
+from kivymd.uix.boxlayout import MDBoxLayout
 
 from katrain.core.common import PLAYER_HUMAN, PLAYER_AI, PLAYER_HUMAN_TEACHING
 from katrain.gui.popups import ConfigAIPopup, ConfigTeacherPopup, ConfigTimerPopup
+
+
+class RightButtonControls(MDBoxLayout):
+    button_size = ListProperty([100, 33])
 
 
 class ControlsPanel(BoxLayout):

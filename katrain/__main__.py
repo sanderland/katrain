@@ -1,4 +1,6 @@
 from kivy.config import Config  # isort:skip
+from kivy.properties import ObjectProperty
+
 ICON = "img/icon.png"
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
@@ -26,8 +28,9 @@ from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
+from katrain.gui.graph import ScoreGraph
 from katrain.gui.badukpan import BadukPanWidget
-from katrain.gui.controlspanel import ControlsPanel
+from katrain.gui.controlspanel import ControlsPanel, RightButtonControls
 from katrain.gui.popups import NewGamePopup, ConfigPopup, LoadSGFPopup
 from katrain.core.common import Lang
 
@@ -330,6 +333,8 @@ class KaTrainGui(Screen):
 
 LANGUAGE = "nl"
 i18n = Lang(LANGUAGE)
+
+
 class KaTrainApp(MDApp):
     gui = ObjectProperty(None)
     language = StringProperty(LANGUAGE)
@@ -345,7 +350,7 @@ class KaTrainApp(MDApp):
         return self.gui
 
     def on_language(self, _instance, language):
-        self.gui.log(f"Switching language to {language}",OUTPUT_INFO)
+        self.gui.log(f"Switching language to {language}", OUTPUT_INFO)
         i18n.switch_lang(language)
 
     def on_start(self):

@@ -1,17 +1,11 @@
 #:kivy 1.11.0
 #:import i18n __main__.i18n
 
-#:set PLAYER_MODES ['Human', 'Teach','AI']
-#:set PLAYER_MODE_VALUES ['human','human+undo','ai']
-#:set PLAYER_TOOLTIPS ['Normal play mode','Undo Mode, asking you to try and improve on bad moves','Automatic play mode']
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
 #:set TOOLTIP_COLOR [0.43, 0.50, 0.65, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
 #:set ICON_BUTTON_COLOR_DOWN [0.51, 0.58, 0.51, 1]
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
-#:set BLACK [0.05,0.05,0.05,1]
-#:set WHITE [0.95,0.95,0.95,1]
-#:set GREY  [0.5,0.5,0.5,1]
 
 #-- NEW
 #:set BLACK [0.05,0.05,0.05,1]
@@ -27,7 +21,7 @@
 #:set POINTLOSS_COLOR YELLOW
 #:set WINRATE_COLOR GREEN
 
-#:set BUTTON_DISABLED_COLOR (0.5,0.5,0.5,1)
+#:set BUTTON_INACTIVE_COLOR GREY
 #:set BACKGROUND_COLOR      [36/255,48/255,62/255,1]
 #:set BOX_BACKGROUND_COLOR  [46/255,65/255,88/255,1]
 #:set TEXT_COLOR            WHITE
@@ -47,8 +41,9 @@
         Color:
             rgba: root.background_color
         Rectangle:
-            pos: self.pos
             size: self.size
+            pos: self.pos
+
 
 
 <ToolTipLabel>:
@@ -71,29 +66,33 @@
 
 # new widgets
 
-<SmallMDFlatButton>:
-    outline_color: root.color
-    disabled_color: BUTTON_DISABLED_COLOR
-    text_color: root.color
-    background_color: BOX_BACKGROUND_COLOR
+<SizedMDBaseButton>:
     size: (dp(100),dp(33))
-    font_size: sp(20)
+    text_color: WHITE
     MDLabel:
         id: label
         text: root.text
-        font_size: root.font_size
-        font_name: root.font_name if root.font_name is not None else self.font_name
         size_hint_x: None
-        text_size: (None, root.height)
         height: self.texture_size[1]
+        text_size: (None, root.height)
         theme_text_color: 'Custom'
         text_color: root.text_color
+        font_size: root.font_size
+        font_name: root.font_name or self.font_name
         valign: 'middle'
-        halign: 'center'
+        halign: root.halign
 
-<SmallMDFlatToggleButton>:
-    text_color: root.color if self.state=='down' else self.disabled_color
-    outline_color: root.color if self.state=='down' else self.disabled_color
+<SizedMDFlatButton>:
+    ripple_duration_in_slow: 0.6
+
+<SizedMDFlatRectangleButton>:
+    outline_color: root.color
+    text_color: root.color
+
+<SizedMDFlatRectangleToggleButton>:
+    inactive_color: BUTTON_INACTIVE_COLOR
+    text_color: root.color if self.state=='down' else self.inactive_color
+    outline_color: root.color if self.state=='down' else self.inactive_color
 
 <BGMDBoxLayout@MDBoxLayout+BackgroundColor>:
     background_color: BOX_BACKGROUND_COLOR
@@ -217,8 +216,7 @@
     valign: 'middle'
     multiline: True
 
-
-<ClickableLabel@ButtonBehavior+LightLabel>:
+<ClickableLabel>:
     color: WHITE
     halign: 'center'
     valign: 'middle'
@@ -301,17 +299,17 @@
                 id: analyze_extra
                 text: 'Extra'
                 tooltip_text: '[a]\nExtra analysis\nto increase accuracy\nof top move predictions\nand score difference'
-                on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","extra")
+                on_left_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","extra")
             RHSButton:
                 id: analyze_equalize
                 text: 'Equalize'
                 tooltip_text: '[s]\nAnalysis of all\npredicted top moves\nwith the same accuracy'
-                on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","equalize")
+                on_left_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","equalize")
             RHSButton:
                 id: analyze_sweep
                 text: 'Sweep'
                 tooltip_text: '[d]\nFast analysis\nof all legal moves'
-                on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","sweep")
+                on_left_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","sweep")
 
 <NavIconButton@TransparentIconButton>:
     size_hint: 0.06, 0.5
@@ -339,7 +337,7 @@
         pos_hint: {'x': 0.1,'center_y':0.5}
         width: self.height * 2
         font_size: 0.6*self.size[1]
-        on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain("play",None)
+        on_left_release: root.katrain("play",None)
         canvas.before:
             Color:
                 rgba: RED
@@ -694,11 +692,13 @@
             height: min( (len(self._lines)+0.7) * self.line_height, self.parent.height - status.height - 2.7*self.line_height)
 
 
-<RHSButton@SmallMDFlatButton>:
+<RHSButton@SizedMDFlatRectangleButton>:
+    md_bg_color: BOX_BACKGROUND_COLOR
     size: self.parent.button_size
     font_size: self.height * 0.7
 
-<RHSToggleButton@SmallMDFlatToggleButton>:
+<RHSToggleButton@SizedMDFlatRectangleToggleButton>:
+    md_bg_color: BOX_BACKGROUND_COLOR
     size: self.parent.button_size
     font_size: self.height * 0.7
     on_press: app.gui.controls.check_hide_show()
@@ -739,6 +739,7 @@
         ButtonBox:
             RHSButton:
                 text: 'Pass'
+                on_left_press: print('pass?')
     ButtonBoxHolder:
         size_hint_y: TIMER_BOX_HEIGHT
         ButtonBox:
@@ -817,47 +818,47 @@
                 id: analyze_extra
                 text: 'Extra'
                 tooltip_text: '[a]\nExtra analysis\nto increase accuracy\nof top move predictions\nand score difference'
-                on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","extra")
+                on_left_press: root.katrain("analyze-extra","extra")
             RHSButton:
                 id: analyze_equalize
                 text: 'Equalize'
                 tooltip_text: '[s]\nAnalysis of all\npredicted top moves\nwith the same accuracy'
-                on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","equalize")
+                on_left_press: root.katrain("analyze-extra","equalize")
             RHSButton:
                 id: analyze_sweep
                 text: 'Sweep'
                 tooltip_text: '[d]\nFast analysis\nof all legal moves'
-                on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","sweep")
+                on_left_press: root.katrain("analyze-extra","sweep")
 
 
 
 <MainMenuItem>
-    size_hint_y: None
-    height: button.height
-    spacing: 4
-    padding: 4,0,0,0
-    Image:
-        id:image
-        source: root.icon
-        mipmap: True
-        size_hint: None,None
-        height: root.height * 0.8
+    on_press: print(self.size, root.size, image.size, root.parent.parent, root.parent)
+
+    font_size: self.height * 0.5
+    MDFloatLayout:
+        size_hint: None, 1
         width: self.height
-        pos_hint: {'center_y': 0.5}
-    MDFlatButton:
-        id: button
+        Image:
+            id:image
+            source: root.icon
+            mipmap: True
+            size_hint: 0.7,0.7
+            pos_hint: {'center_y': 0.5,'center_x': 0.5}
+    Label:
         text: root.text
-        on_release:
-            app.gui.nav_drawer.set_state("close")
-            if not self.last_touch or self.last_touch.button=="left": root.dispatch('on_release',*args)
-        on_press: print(self.size, root.size, image.size, root.parent.parent, root.parent)
+        text_size: self.size
+        size_hint_x: 1
         halign: 'left'
+        valign: 'middle'
+        font_size: root.font_size
         color: WHITE
     Label:
         text: root.shortcut
         halign: 'left'
         valign: 'middle'
-        size_hint_x: 0.5
+        size_hint_x: 1/3
+        font_size: root.font_size
         color: GREY
 
 <ContentNavigationDrawer@MDBoxLayout+BackgroundColor>:
@@ -871,23 +872,25 @@
             rectangle:  (*self.pos,*self.size)
             width: 1
     MDBoxLayout:
-        adaptive_height: True
-        size_hint_x: 1
+        size_hint: 1, 1/10
         canvas.before:
             Color:
                 rgba: RED
             Line:
                 rectangle:  (*self.pos,*self.size)
                 width: 1
-        MDFlatButton:
+        SizedMDFlatButton:
             text: i18n._('Dutch')
             on_press: app.language = 'nl'
-        MDFlatButton:
+            size_hint: 1/3,1
+        SizedMDFlatButton:
             text: i18n._('English')
             on_press: app.language = 'en'
-        MDFlatButton:
+            size_hint: 1/3,1
+        SizedMDFlatButton:
             text: i18n._('Ko')
             on_press: app.language = 'ko'
+            size_hint: 1/3,1
     Label:
     MDBoxLayout:
         canvas.before:
@@ -897,28 +900,27 @@
                 rectangle:  (*self.pos,*self.size)
                 width: 1
         orientation: 'vertical'
-        adaptive_height: True
-        size_hint_x: 1
+        size_hint: 1, 1/3
         MainMenuItem:
             text: 'General Settings'
             icon: 'img/flaticon/settings.png'
-            on_release: root.katrain('config-popup')
+            on_action: root.katrain('config-popup')
         MainMenuItem:
             text: 'Save Game'
             icon: 'img/flaticon/savegame.png'
             shortcut: 'Ctrl-S'
-            on_release: root.katrain("analyze-sgf-popup")
+            on_action: root.katrain("analyze-sgf-popup")
         MainMenuItem:
             text: 'Load Game'
             icon: 'img/flaticon/loadgame.png'
             shortcut: 'Ctrl-L'
-            on_release: root.katrain("analyze-sgf-popup")
+            on_action: root.katrain("analyze-sgf-popup")
         MainMenuItem:
             text: 'New Game'
             icon: 'img/flaticon/newgame.png'
             size_hint_x: 1
             shortcut: 'Ctrl-N'
-            on_release: root.katrain("new-game-popup")
+            on_action: root.katrain("new-game-popup")
 
 
 <KaTrainGui>:
@@ -1007,7 +1009,7 @@
             size_hint: 0.05,1
 
 <QuickInputButton@StyledButton>
-    on_press: if not self.last_touch or self.last_touch.button=="left": self.parent.parent.children[self.parent.parent.children.index(self.parent)+1].text = self.text # why +1 instead of -1?
+    on_left_press: self.parent.parent.children[self.parent.parent.children.index(self.parent)+1].text = self.text # why +1 instead of -1?
 
 <NewGamePopup>:
     orientation: 'vertical'
@@ -1044,13 +1046,13 @@
             spacing: 1
             QuickInputButton:
                 text: '0'
-                on_press: if not self.last_touch or self.last_touch.button=="left": km.text='6.5'
+                on_left_press: if not self.last_touch or self.last_touch.button=="left": km.text='6.5'
             QuickInputButton:
                 text: '2'
-                on_press: if not self.last_touch or self.last_touch.button=="left": km.text='0.5'
+                on_left_press: if not self.last_touch or self.last_touch.button=="left": km.text='0.5'
             QuickInputButton:
                 text: '9'
-                on_press: if not self.last_touch or self.last_touch.button=="left": km.text='0.5'
+                on_left_press: if not self.last_touch or self.last_touch.button=="left": km.text='0.5'
         ScaledLightLabel:
             text: "Komi"
         LabelledFloatInput:
@@ -1094,4 +1096,4 @@
             halign: 'center'
             text: 'Start\nGame'
             font_size: 0.3 * self.size[1]
-            on_press: if not self.last_touch or self.last_touch.button=="left": root.new_game()
+            on_left_press: if not self.last_touch or self.last_touch.button=="left": root.new_game()

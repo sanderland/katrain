@@ -2,6 +2,7 @@ import os
 from typing import Any, List, Tuple
 from kivy.lang import Observable
 import gettext
+
 try:
     import importlib.resources as pkg_resources
 except:
@@ -77,11 +78,11 @@ class Lang(Observable):
 
     def switch_lang(self, lang):
         # get the right locales directory, and instantiate a gettext
-        i18n_dir,_ = os.path.split(find_package_resource('katrain/i18n/__init__.py'))
-        locale_dir = os.path.join(i18n_dir,'locales')
-        locales = gettext.translation('katrain', locale_dir, languages=[lang])
+        i18n_dir, _ = os.path.split(find_package_resource("katrain/i18n/__init__.py"))
+        locale_dir = os.path.join(i18n_dir, "locales")
+        locales = gettext.translation("katrain", locale_dir, languages=[lang])
         self.ugettext = locales.gettext
 
         # update all the kv rules attached to this text
         for func, args, kwargs in self.observers:
-            func(args[0],None,None)
+            func(args[0], None, None)
