@@ -677,7 +677,7 @@
         ScrollableLabel:
             id: status
             size_hint: 1, None
-            height: 50 #min(self.parent.height*0.66,self.label.text_size[1])
+            height: min(self.parent.height*0.66,self.label.texture_size[1])
             outline_color: RED
         ScrollableLabel:
             id: info
@@ -716,6 +716,7 @@
 
 
 <RightButtonControls>:
+    katrain: app.gui
     orientation: 'vertical'
     button_size: (self.size[1] * 0.08 , self.size[1] * 0.04)
     size_hint_x: None
@@ -728,6 +729,9 @@
     policy: policy
     hints: hints
     ownership: ownership
+    analyze_extra: analyze_extra
+    analyze_equalize: analyze_equalize
+    analyze_sweep: analyze_sweep
     graph: {'winrate': winrate_graph,'score':score_graph,'points':points_graph}
     ButtonBoxHolder:
         size_hint_y: PLAYER_BOX_HEIGHT

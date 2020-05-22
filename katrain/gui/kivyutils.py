@@ -19,7 +19,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 
 
-#--new
+# --new
 from kivymd.uix.behaviors import RectangularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BaseButton
@@ -31,28 +31,34 @@ from kivymd.uix.navigationdrawer import MDNavigationDrawer
 class BackgroundColor(Widget):
     background_color = ListProperty([1, 1, 1, 0])
 
+
 class OutlineColor(Widget):
     outline_color = ListProperty([1, 1, 1, 0])
     outline_width = NumericProperty(1)
 
-class RightButtonControls(MDBoxLayout):
-    button_size = ListProperty([100,33])
 
-class SmallMDFlatButton(RectangularRippleBehavior,BaseButton,BackgroundColor,OutlineColor):
+class RightButtonControls(MDBoxLayout):
+    button_size = ListProperty([100, 33])
+
+
+class SmallMDFlatButton(RectangularRippleBehavior, BaseButton, BackgroundColor, OutlineColor):
     text = StringProperty("")
-    text_color = ListProperty([1,1,1,1])
+    text_color = ListProperty([1, 1, 1, 1])
     color = ListProperty([1, 1, 1, 1])
     font_size = NumericProperty(sp(20))
 
-class SmallMDFlatToggleButton(SmallMDFlatButton,ToggleButtonBehavior):
+
+class SmallMDFlatToggleButton(SmallMDFlatButton, ToggleButtonBehavior):
     @property
     def active(self):
-        return self.state=='down'
+        return self.state == "down"
+
 
 class LightLabel(MDLabel):
     pass
 
-class BackgroundLabel(MDLabel,BackgroundColor):
+
+class BackgroundLabel(MDLabel, BackgroundColor):
     pass
 
 
@@ -73,7 +79,7 @@ class ScoreGraph(BackgroundLabel):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.bind(pos=self.update_graph,size=self.update_graph)
+        self.bind(pos=self.update_graph, size=self.update_graph)
 
     def initialize_from_game(self, root):
         self.nodes = [root]
@@ -94,11 +100,9 @@ class ScoreGraph(BackgroundLabel):
 
             xscale = self.width / max(len(values) - 1, 15)
             available_height = self.height
-            line_points = [
-                [self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.y_scale)] for i, val in enumerate(values)
-            ]
+            line_points = [[self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.y_scale)] for i, val in enumerate(values)]
             self.score_points = sum(line_points, [])
-            self.winrate_points = self.score_points # TODO
+            self.winrate_points = self.score_points  # TODO
 
             if self.highlighted_index is not None:
                 self.highlighted_index = min(self.highlighted_index, len(values) - 1)
@@ -158,19 +162,20 @@ class ToolTipBehavior(object):
         self.tooltip.text = self.tooltip_text
         Window.add_widget(self.tooltip)
 
+
 class MyNavigationDrawer(MDNavigationDrawer):
     def on_touch_up(self, touch):
-        if self.status == "opened" and  self.close_on_click and not self.collide_point(touch.ox, touch.oy):
-                self.set_state("close", animation=True)
-                return True
+        if self.status == "opened" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
+            self.set_state("close", animation=True)
+            return True
         return super().on_touch_up(touch)
-
 
 
 class CircleWithText(MDFloatLayout):
     text = StringProperty("0")
-    player = OptionProperty("Black",options=["Black","White"])
+    player = OptionProperty("Black", options=["Black", "White"])
     min_size = NumericProperty(50)
+
 
 class ScaledLightLabel(LightLabel, ToolTipBehavior):
     num_lines = NumericProperty(1)
@@ -179,14 +184,11 @@ class ScaledLightLabel(LightLabel, ToolTipBehavior):
 # --- not checked
 
 
-
-
 class LightHelpLabel(ScaledLightLabel):
     pass
 
 
-
-class ScrollableLabel(ScrollView,BackgroundColor,OutlineColor):
+class ScrollableLabel(ScrollView, BackgroundColor, OutlineColor):
     __events__ = ["on_ref_press"]
     text = StringProperty("")
     markup = BooleanProperty(False)
@@ -217,7 +219,7 @@ class StyledSpinner(Spinner):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.bind(size=self._update_dropdown_size_frac,pos=self._update_dropdown_size_frac)
+        self.bind(size=self._update_dropdown_size_frac, pos=self._update_dropdown_size_frac)
 
     def _update_dropdown_size_frac(self, *largs):
         if not self.sync_height_frac:
@@ -284,7 +286,6 @@ class ToggleButtonContainer(GridLayout):
                 return tb.value
         if self.options:
             return self.options[0]
-
 
 
 class LabelledTextInput(TextInput):
@@ -356,7 +357,6 @@ class LabelledIntInput(LabelledTextInput):
     @property
     def input_value(self):
         return int(self.text)
-
 
 
 def draw_text(pos, text, **kw):

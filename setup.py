@@ -36,16 +36,17 @@ setup(
     url="https://github.com/sanderland/katrain",
     license="MIT",
     install_requires=[
-        "wheel", "setuptools",
+        "wheel",
+        "setuptools",
         "importlib_resources ;python_version<'3.7'",
-        "cython>=0.24,<=0.29.14,!=0.27,!=0.27.2", # kivy wants this
+        "cython>=0.24,<=0.29.14,!=0.27,!=0.27.2",  # kivy wants this
         "kivy_deps.glew;platform_system=='Windows'",
         "kivy_deps.sdl2;platform_system=='Windows'",
         "kivy_deps.gstreamer;platform_system=='Windows'",
         "kivy>=1.11 ;python_version<'3.8'",
         "kivy>=2.0.0rc2 ;python_version>='3.8'",
         "kivymd>=0.104.0",
-     ],
+    ],
     python_requires=">=3.6, <4",
     entry_points={"console_scripts": ["katrain=katrain.__main__:run_app"]},
     classifiers=["Development Status :: 4 - Beta", "Operating System :: Microsoft :: Windows", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3"],

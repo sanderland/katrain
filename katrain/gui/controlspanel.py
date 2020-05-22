@@ -28,8 +28,6 @@ class ControlsPanel(BoxLayout):
     def check_hide_show(self, *_args):
         pass
 
-
-
     def set_status(self, msg, at_node=None):
         self.status_msg = msg
         self.status_node = at_node or self.katrain and self.katrain.game and self.katrain.game.current_node

@@ -1,6 +1,4 @@
 from kivy.config import Config  # isort:skip
-from kivy.uix.screenmanager import Screen
-
 ICON = "img/icon.png"
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
@@ -20,6 +18,7 @@ from kivymd.app import MDApp
 from kivy.core.clipboard import Clipboard
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
+from kivy.uix.screenmanager import Screen
 
 from katrain.core.ai import ai_move
 from katrain.core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource
@@ -31,11 +30,12 @@ from katrain.gui.badukpan import BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
 from katrain.gui.popups import NewGamePopup, ConfigPopup, LoadSGFPopup
 
-__version__ = "1.0.6"
+__version__ = "1.1.0"
 
 
 class KaTrainGui(Screen):
     """Top level class responsible for tying everything together"""
+
     zen = BooleanProperty(False)
 
     def __init__(self, **kwargs):
@@ -130,8 +130,8 @@ class KaTrainGui(Screen):
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
-        self.controls.players['W'].captures = prisoners["W"]
-        self.controls.players['B'].captures = prisoners["B"]
+        self.controls.players["W"].captures = prisoners["W"]
+        self.controls.players["B"].captures = prisoners["B"]
 
         # update engine status dot
         if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
@@ -305,7 +305,7 @@ class KaTrainGui(Screen):
                 self(*shortcut)
         elif keycode[1] == "tab":
             self.controls.switch_mode()
-        elif keycode[1]==            "spacebar":
+        elif keycode[1] == "spacebar":
             self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in ["`", "~", "m"]:
             self.zen = not self.zen
