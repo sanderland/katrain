@@ -7,8 +7,8 @@ from kivy.uix.popup import Popup
 from kivymd.uix.boxlayout import MDBoxLayout
 
 from katrain.core.common import PLAYER_HUMAN, PLAYER_AI, PLAYER_HUMAN_TEACHING
-from katrain.gui.popups import ConfigAIPopup, ConfigTeacherPopup, ConfigTimerPopup
-
+from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup
+from katrain.gui.ai_settings import ConfigAIPopupContents
 
 class RightButtonControls(MDBoxLayout):
     button_size = ListProperty([100, 33])
@@ -106,7 +106,7 @@ class ControlsPanel(BoxLayout):
     def configure_ais(self):
         if not self.ai_settings_popup:  # persist state of popup etc
             self.ai_settings_popup = Popup(title="Edit AI Settings", size_hint=(0.7, 0.8)).__self__
-            self.ai_settings_popup.add_widget(ConfigAIPopup(self.katrain, self.ai_settings_popup, self.katrain.config("ai")))
+            self.ai_settings_popup.add_widget(ConfigAIPopupContents(self.katrain, self.ai_settings_popup, self.katrain.config("ai")))
         self.ai_settings_popup.open()
 
     def configure_teacher(self):

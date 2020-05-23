@@ -327,7 +327,7 @@ class BadukPanWidget(Widget):
                         evalcol[3] = alpha
                     # if ((teaching and child_node.auto_undo) or katrain.controls.play_analyze_mode == "analyze") and child_node.analysis_ready: # TODO:?
                     if child_node.analysis_ready:
-                        self.active_pv_moves.append((move.coords, child_node.candidate_moves[0]["pv"], child_node))
+                        self.active_pv_moves.append((move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node))
                     scale = self.ui_config["child_scale"]
                     self.draw_stone(move.coords[0], move.coords[1], (*stone_color[move.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 

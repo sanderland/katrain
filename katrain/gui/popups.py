@@ -6,6 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivymd.uix.boxlayout import MDBoxLayout
 
 from katrain.core.common import OUTPUT_DEBUG, OUTPUT_ERROR
 from katrain.core.engine import KataGoEngine
@@ -29,7 +30,7 @@ class InputParseError(Exception):
     pass
 
 
-class QuickConfigGui(BoxLayout):
+class QuickConfigGui(MDBoxLayout):
     def __init__(self, katrain, popup: Popup, initial_values: Dict = None, **kwargs):
         super().__init__(**kwargs)
         self.katrain = katrain
@@ -190,61 +191,6 @@ class ConfigPopup(QuickConfigGui):
 
         self.katrain.debug_level = self.config["debug"]["level"]
         self.katrain.update_state(redraw_board=True)
-
-
-class ConfigAIPopup(QuickConfigGui):
-    def __init__(self, katrain, popup: Popup, settings):
-        super().__init__(katrain, popup, settings)
-        self.settings = settings
-        Clock.schedule_once(self.build, 0)
-
-    def build(self, _):
-        ais = list(self.settings.keys())
-
-        top_bl = BoxLayout()
-        top_bl.add_widget(ScaledLightLabel(text="Select AI to configure:"))
-        ai_spinner = StyledSpinner(values=ais, text=ais[0])
-        ai_spinner.fbind("text", lambda _, text: self.build_ai_options(text))
-        top_bl.add_widget(ai_spinner)
-        self.add_widget(top_bl)
-        self.options_grid = GridLayout(cols=2, rows=max(len(v) for v in self.settings.values()) - 1, size_hint=(1, 7.5), spacing=1)  # -1 for help in 1 col
-        bottom_bl = BoxLayout(spacing=2)
-        self.info_label = Label()
-        bottom_bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
-        bottom_bl.add_widget(self.info_label)
-        bottom_bl.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
-        self.add_widget(self.options_grid)
-        self.add_widget(bottom_bl)
-        self.build_ai_options(ais[0])
-
-    def build_ai_options(self, mode):
-        mode_settings = self.settings[mode]
-        self.options_grid.clear_widgets()
-        self.options_grid.add_widget(LightHelpLabel(size_hint=(1, 4), padding=(2, 2), text=mode_settings.get("_help_left", "")))
-        self.options_grid.add_widget(LightHelpLabel(size_hint=(1, 4), padding=(2, 2), text=mode_settings.get("_help_right", "")))
-        for k, v in mode_settings.items():
-            if not k.startswith("_"):
-                self.options_grid.add_widget(ScaledLightLabel(text=f"{k}"))
-                self.options_grid.add_widget(ConfigPopup.type_to_widget_class(v)(text=str(v), input_property=f"{mode}/{k}"))
-        for _ in range(self.options_grid.rows * self.options_grid.cols - len(self.options_grid.children)):
-            self.options_grid.add_widget(ScaledLightLabel(text=f""))
-        self.set_properties(self, self.settings)
-
-    def update_config(self, save_to_file=False):
-        try:
-            for k, v in self.collect_properties(self).items():
-                k1, k2 = k.split("/")
-                if self.settings[k1][k2] != v:
-                    self.settings[k1][k2] = v
-                    self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
-            if save_to_file:
-                self.katrain.save_config()
-            self.popup.dismiss()
-        except InputParseError as e:
-            self.info_label.text = str(e)
-            self.katrain.log(e, OUTPUT_ERROR)
-            return
-        self.popup.dismiss()
 
 
 class ConfigTeacherPopup(QuickConfigGui):
