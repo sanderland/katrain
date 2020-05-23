@@ -6,7 +6,7 @@ from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
 from kivy.core.window import Window
 from kivy.graphics import *
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty, StringProperty, OptionProperty
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, StringProperty, OptionProperty, ObjectProperty
 from kivy.uix.behaviors import ToggleButtonBehavior, ButtonBehavior
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
@@ -43,17 +43,14 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
         super().__init__(**kwargs)
 
     def on_touch_down(self, touch):
-        print('touch!',self.collide_point(touch.x, touch.y))
         return super().on_touch_down(touch)
 
     def on_release(self):
-        print("RElease!")
         if not self.last_touch or self.last_touch.button == "left":
             self.dispatch("on_left_release")
         return super().on_release()
 
     def on_press(self):
-        print("press!")
         if not self.last_touch or self.last_touch.button == "left":
             self.dispatch("on_left_press")
         return super().on_press()
@@ -69,7 +66,8 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
 class SizedMDBaseButton(BasePressedButton, BaseFlatButton, LeftButtonBehavior):  # avoid baserectangular for sizing
     text = StringProperty("")
     halign = OptionProperty("center", options=["left", "center", "right", "justify", "auto"])
-
+    label = ObjectProperty(None)
+    height = NumericProperty(33)
 
 class SizedMDFlatButton(RectangularRippleBehavior, SizedMDBaseButton):
     pass
@@ -85,6 +83,10 @@ class SizedMDFlatRectangleToggleButton(SizedMDFlatRectangleButton, ToggleButtonB
     @property
     def active(self):
         return self.state == "down"
+
+
+class AutoSizedMDFlatRectangleToggleButton(SizedMDFlatRectangleToggleButton):
+    hor_padding = NumericProperty(3)
 
 
 # -- basic styles
@@ -104,9 +106,7 @@ class CensorableLabel(MDBoxLayout):
 
 class MyNavigationDrawer(MDNavigationDrawer):  # in PR
     def on_touch_down(self, touch):
-        sup = super().on_touch_down(touch)
-        print('touchhere?',sup)
-        return sup
+        return super().on_touch_down(touch)
 
     def on_touch_up(self, touch):
         if self.status == "opened" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
@@ -124,18 +124,56 @@ class CircleWithText(MDFloatLayout):
 # -- gui elements
 
 
-class MainMenuItem(RectangularRippleBehavior,LeftButtonBehavior,MDBoxLayout):
+class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout):
     __events__ = ["on_action"]
     icon = StringProperty("")
     text = StringProperty("")
     shortcut = StringProperty("")
 
     def on_left_release(self):
-        self.anim_complete() # kill ripple
+        self.anim_complete()  # kill ripple
         MDApp.get_running_app().gui.nav_drawer.set_state("close")
         self.dispatch("on_action")
 
     def on_action(self):
+        pass
+
+
+class CollapsablePanel(MDBoxLayout):
+    __events__ = ["on_option_select"]
+    options = ListProperty([])
+    options_height = NumericProperty(25)
+    option_active = ListProperty([])
+    option_colors = ListProperty([])
+
+    def __init__(self, **kwargs):
+        self.contents = None
+        super().__init__(**kwargs)
+        self.orientation = "vertical"
+        self.bind(options=self.build, option_colors=self.build, options_height=self.build, option_active=self.build)
+
+    def build(self, *args, **kwargs):
+        print(args, kwargs, "b")
+        self.clear_widgets()
+        header = MDBoxLayout(adaptive_height=True, padding=[4, 0, 0, 0],spacing=2)
+        option_colors = self.option_colors
+        for opt, opt_col, active in zip(self.options, option_colors, self.option_active):
+            header.add_widget(AutoSizedMDFlatRectangleToggleButton(text=opt, color=opt_col,
+                                                                   height=self.options_height,
+                                                                   on_press=lambda _:print(self.size,_.size),
+                                                                   state="down" if active else "normal"))
+        header.add_widget(SizedMDFlatRectangleButton(text="x",height=self.options_height))
+        super().add_widget(header)
+        if self.contents:
+            super().add_widget(self.contents)
+
+    def add_widget(self, widget, index=0, **_kwargs):
+        if self.contents:
+            raise ValueError("CollapsablePanel can only have one child")
+        self.contents = widget
+        self.build()
+
+    def on_option_select(self, states):
         pass
 
 
@@ -184,9 +222,9 @@ class ToolTipBehavior(object):  # TODO restyle
 class ScaledLightLabel(LightLabel, ToolTipBehavior):
     num_lines = NumericProperty(1)
 
-class ClickableLabel(LightLabel,LeftButtonBehavior):
-    pass
 
+class ClickableLabel(LightLabel, LeftButtonBehavior):
+    pass
 
 
 class LightHelpLabel(ScaledLightLabel):

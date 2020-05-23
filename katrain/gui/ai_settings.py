@@ -5,10 +5,10 @@ from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.label import MDLabel
 
 from katrain.core.common import OUTPUT_DEBUG, OUTPUT_ERROR
-from katrain.gui.kivyutils import SizedMDFlatButton, LightHelpLabel, ScaledLightLabel
+from katrain.gui.kivyutils import SizedMDFlatButton, LightHelpLabel, ScaledLightLabel, StyledSpinner
 from katrain.gui.popups import QuickConfigGui, ConfigPopup, InputParseError
 
-KV='''
+KV = """
 <ConfigAIPopupContents>:
     orientation: 'vertical'
     rules_spinner: rules_spinner
@@ -96,14 +96,13 @@ KV='''
             font_size: 0.3 * self.size[1]
             on_left_press: if not self.last_touch or self.last_touch.button=="left": root.new_game()
 
-'''
-
+"""
 
 
 class ConfigAIPopupContents(QuickConfigGui):
     def __init__(self, katrain, popup: Popup):
-        self.settings = {'engine': katrain.config('engine')}
-        super().__init__(katrain, popup, settings = self.settings)
+        self.settings = {"engine": katrain.config("engine")}
+        super().__init__(katrain, popup, settings=self.settings)
         Clock.schedule_once(self.build, 0)
 
     def build(self, _):
@@ -153,4 +152,3 @@ class ConfigAIPopupContents(QuickConfigGui):
             self.katrain.log(e, OUTPUT_ERROR)
             return
         self.popup.dismiss()
-

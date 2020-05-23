@@ -10,6 +10,7 @@ from katrain.core.common import PLAYER_HUMAN, PLAYER_AI, PLAYER_HUMAN_TEACHING
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup
 from katrain.gui.ai_settings import ConfigAIPopupContents
 
+
 class RightButtonControls(MDBoxLayout):
     button_size = ListProperty([100, 33])
 

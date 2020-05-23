@@ -45,8 +45,7 @@
             pos: self.pos
 
 
-
-<ToolTipLabel>:
+<ToolTipLabel>: # TODO
     size_hint: None, None
     size: self.texture_size
     tooltip_font_size: dp(14)
@@ -67,19 +66,15 @@
 # new widgets
 
 <SizedMDBaseButton>:
-    size: (dp(100),dp(33))
     text_color: WHITE
-    MDLabel:
+    label: label
+    Label:
         id: label
         text: root.text
         size_hint_x: None
-        height: self.texture_size[1]
-        text_size: (None, root.height)
-        theme_text_color: 'Custom'
-        text_color: root.text_color
+        color: root.text_color
         font_size: root.font_size
         font_name: root.font_name or self.font_name
-        valign: 'middle'
         halign: root.halign
 
 <SizedMDFlatButton>:
@@ -94,8 +89,14 @@
     text_color: root.color if self.state=='down' else self.inactive_color
     outline_color: root.color if self.state=='down' else self.inactive_color
 
+<AutoSizedMDFlatRectangleToggleButton>: # only wants height
+    width: self.label.texture_size[0] + self.hor_padding * 2
+    font_size: self.height * 0.8
+
+
 <BGMDBoxLayout@MDBoxLayout+BackgroundColor>:
     background_color: BOX_BACKGROUND_COLOR
+
 
 # -- old widgets
 
@@ -645,6 +646,7 @@
     status: status
     padding: CP_PADDING
     spacing: CP_SPACING
+    tab_option_height: 20
     BoxLayout: # -- Players
         size_hint_y: PLAYER_BOX_HEIGHT
         PlayerInfo:
@@ -663,9 +665,14 @@
         Timer:
             id: timer
             size_hint_x: 0.7
-    ScoreGraph:
+    CollapsablePanel:
         size_hint_y: GRAPH_BOX_HEIGHT
-        id: graph
+        options: ['Score','Win Rate','Points Lost']
+        option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
+        option_active: [True,False,False]
+        options_height: root.tab_option_height
+        ScoreGraph:
+            id: graph
     BoxLayout:
         size_hint_y: STATS_BOX_HEIGHT
         StatsBox:
