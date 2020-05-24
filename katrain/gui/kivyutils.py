@@ -26,7 +26,12 @@ from kivymd.uix.button import BasePressedButton, BaseFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
+from katrain.core.common import i18n
+
 # --- new mixins
+
+
+
 class BackgroundColor(Widget):
     background_color = ListProperty([1, 1, 1, 0])
 
@@ -86,6 +91,8 @@ class SizedMDFlatRectangleToggleButton(SizedMDFlatRectangleButton, ToggleButtonB
         return self.state == "down"
         return self.state == "down"
 
+class AutoSizedMDFlatRectangleButton(SizedMDFlatRectangleButton):
+    hor_padding = NumericProperty(3)
 
 class AutoSizedMDFlatRectangleToggleButton(SizedMDFlatRectangleToggleButton):
     hor_padding = NumericProperty(3)
@@ -143,42 +150,73 @@ class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout):
 
 
 class CollapsablePanel(MDBoxLayout):
-    __events__ = ["on_option_select"]
+    __events__ = ["on_option_state"]
+
     options = ListProperty([])
     options_height = NumericProperty(25)
-    option_active = ListProperty([])
+    options_left_padding = NumericProperty(6)
+    option_labels = ListProperty([])
+    option_default_active = ListProperty([])
     option_colors = ListProperty([])
+    closed_label = StringProperty('Closed Panel')
+
+    size_hint_y_open = NumericProperty(1)
+    height_open = NumericProperty(None)
+
     state = OptionProperty("open", options=["open", "close"])
-    close_icon = "img/flaticon/previous999.png"
-    open_icon = "img/flaticon/next999.png"
+    close_icon = "img/flaticon/previous5.png"
+    open_icon = "img/flaticon/next5.png"
 
     def __init__(self, **kwargs):
-        self.contents = None
-        self.header = MDBoxLayout(adaptive_height=True, padding=[4, 0, 0, 0], spacing=2)
+        self.header, self.contents, self.open_close_button = None, None, None
         self.option_buttons = []
         super().__init__(**kwargs)
         self.orientation = "vertical"
-        self.bind(options=self.build, option_colors=self.build, options_height=self.build, option_active=self.build)
+        self.bind(options=self.build_options, option_colors=self.build_options, options_height=self.build_options,
+                  option_default_active=self.build_options,options_left_padding=self.build_options)
+        self.bind(state=self.build,size_hint_y_open=self.build,height_open=self.build)
+        self.build_options()
 
-    def build(self, *args, **kwargs):
-        print(args, kwargs, "b",self.size,self.pos)
-        self.clear_widgets()
-
-        self.header.clear_widgets()
+    def build_options(self, *args, **kwargs):
+        self.header = MDBoxLayout(height=self.options_height,size_hint_y=None,
+                                  padding=[self.options_left_padding, 0, 0, 0], spacing=2)
         self.option_buttons = []
-        for opt, opt_col, active in zip(self.options, self.option_colors, self.option_active):
-            button = AutoSizedMDFlatRectangleToggleButton(text=opt, color=opt_col, height=self.options_height, on_press=self.trigger_select, state="down" if active else "normal")
+        option_labels = self.option_labels or [i18n._(opt) for opt in self.options]
+        for lbl, opt_col, active in zip(option_labels, self.option_colors, self.option_default_active):
+            button = AutoSizedMDFlatRectangleToggleButton(text=lbl,color=opt_col, height=self.options_height,
+                                                          on_press=self.trigger_select, state="down" if active else "normal")
             self.option_buttons.append(button)
-            self.header.add_widget(button)
-        self.header.add_widget(Label())  # spacer
-        open_close_button = TransparentIconButton( # <<  / >> collapse button
+        self.open_close_button = TransparentIconButton( # <<  / >> collapse button
             icon=self.open_close_icon(),
             icon_size=[0.5 * self.options_height, 0.5 * self.options_height],
-            size=[0.6 * self.options_height, self.options_height],
-            on_press=self.set_state,
+            width=0.75*self.options_height,size_hint_x=None,
+            on_press=lambda *_args: self.set_state('toggle'),
         )
-        #self.bind(state=lambda _: open_close_button.setter("icon")(self.open_close_icon()))
-        #self.header.add_widget(open_close_button)
+        self.bind(state=lambda *_args: self.open_close_button.setter("icon")(None,self.open_close_icon()))
+        self.build()
+
+    def build(self, *args, **kwargs):
+        self.header.clear_widgets()
+        if self.state=='open':
+            for button in self.option_buttons:
+                self.header.add_widget(button)
+            self.header.add_widget(Label()) # spacer
+        else:
+            self.header.add_widget(Label(text=i18n._(self.closed_label),halign='right',height=self.options_height))
+        self.header.add_widget(self.open_close_button)
+
+        super().clear_widgets()
+        super().add_widget(self.header)
+        height, size_hint_y = 1, None
+        if self.state=='open' and self.contents:
+            super().add_widget(self.contents)
+            if self.height_open:
+                height = self.height_open
+            else:
+                size_hint_y = self.size_hint_y_open
+        else:
+            height = self.header.height
+        self.height, self.size_hint_y = height,size_hint_y
 
     def open_close_icon(self):
         return self.open_icon if self.state == "open" else self.close_icon
@@ -187,23 +225,24 @@ class CollapsablePanel(MDBoxLayout):
         if self.contents:
             raise ValueError("CollapsablePanel can only have one child")
         self.contents = widget
-        super().add_widget(self.header)
-        super().add_widget(self.contents)
-        print(self.children,"CHILDREN!",self.size,self.pos)
+        self.build()
 
     def set_state(self, state="toggle"):
+        print("SS",state)
         if state == "toggle":
             state = "close" if self.state == "open" else "open"
         self.state = state
+        self.build()
         if self.state == "open":
             self.trigger_select()
 
     def trigger_select(self, *_args):
         if self.state == "open":
-            self.on_option_select({opt: btn.state == "down" for opt, btn in zip(self.options, self.option_buttons)})
+            self.on_option_state({opt:btn.state == "down" for opt,btn in zip(self.options,self.option_buttons)})
 
-    def on_option_select(self, options):
+    def on_option_state(self, options):
         pass
+
 
 
 # --- not checked

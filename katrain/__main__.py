@@ -23,7 +23,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 
 from katrain.core.ai import ai_move
-from katrain.core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource
+from katrain.core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource, LANGUAGE
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
@@ -330,9 +330,6 @@ class KaTrainGui(Screen):
             self.load_sgf_from_clipboard()
         return True
 
-
-LANGUAGE = "nl"
-i18n = Lang(LANGUAGE)
 
 
 class KaTrainApp(MDApp):

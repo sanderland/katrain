@@ -86,3 +86,7 @@ class Lang(Observable):
         # update all the kv rules attached to this text
         for func, args, kwargs in self.observers:
             func(args[0], None, None)
+
+LANGUAGE = "nl"
+i18n = Lang(LANGUAGE)
+

@@ -89,9 +89,11 @@
     text_color: root.color if self.state=='down' else self.inactive_color
     outline_color: root.color if self.state=='down' else self.inactive_color
 
+<AutoSizedMDFlatRectangleButton>: # only wants height
+    width: self.label.texture_size[0] + self.hor_padding * 2
+
 <AutoSizedMDFlatRectangleToggleButton>: # only wants height
     width: self.label.texture_size[0] + self.hor_padding * 2
-    font_size: self.height * 0.8
 
 
 <BGMDBoxLayout@MDBoxLayout+BackgroundColor>:
@@ -185,7 +187,9 @@
     background_normal: ''
     background_color: (0,0,0,0)
     icon_size: self.icon_size or [min(self.size[0],self.size[1]),min(self.size[0],self.size[1])]
+    image: image
     Image:
+        id: image
         size: root.icon_size
         pos: [root.pos[i] + (root.size[i] - root.icon_size[i])/2 for i in [0,1]]
         source: root.icon
@@ -633,7 +637,6 @@
 
 <ControlsPanel>:
     katrain: app.gui
-    button_controls: app.gui and app.gui.button_controls
     orientation: 'vertical'
     players: {'B':B_player,'W':W_player}
     engine_status_col: [1,1,1,1]
@@ -665,73 +668,66 @@
             id: timer
             size_hint_x: 0.7
     CollapsablePanel:
-        size_hint_y: GRAPH_BOX_HEIGHT
+        size_hint_y_open: GRAPH_BOX_HEIGHT
+        closed_label: 'Score Graph'
         options: ['Score','Win Rate','PtLoss']
         option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
-        option_active: [True,False,False]
+        option_default_active: [True,False,False]
         options_height: root.tab_option_height
         ScoreGraph:
             id: graph
-    BoxLayout:
-        size_hint_y: STATS_BOX_HEIGHT
+    CollapsablePanel:
+        size_hint_y_open: STATS_BOX_HEIGHT
+        closed_label: 'Move Stats'
+        options: ['Score','Win Rate','PtLoss']
+        option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
+        option_default_active: [True,True,True]
+        options_height: root.tab_option_height
         StatsBox:
             id: stats
-    BoxLayout:
+    CollapsablePanel:
         size_hint_y: INFO_BOX_HEIGHT
-        orientation: 'vertical'
-        ScrollableLabel:
-            id: status
-            size_hint: 1, None
-            height: min(self.parent.height*0.66,self.label.texture_size[1])
-            outline_color: RED
-        ScrollableLabel:
-            id: info
-            markup: True
-            on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
-            size_hint: 1, None
-            height: self.parent.height - status.height - note.height - 1
-        TextInput:
-            id: note
-            size_hint: 1, None
-            on_text: root.katrain.set_note(self.text)
-            hint_text: 'Your SGF notes for this position here.'
-            height: min( (len(self._lines)+0.7) * self.line_height, self.parent.height - status.height - 2.7*self.line_height)
+        closed_label: 'Move Info & Notes'
+        options: ['Info','Notes']
+        option_colors: [RED,GREEN]
+        option_default_active: [True,False]
+        options_height: root.tab_option_height
+        MDBoxLayout:
+            orientation: 'vertical'
+            ScrollableLabel:
+                id: status
+                size_hint: 1, None
+                height: min(self.parent.height*0.66,self.label.texture_size[1])
+                outline_color: RED
+            ScrollableLabel:
+                id: info
+                markup: True
+                on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
+                size_hint: 1, None
+                height: self.parent.height - status.height - note.height - 1
+            TextInput:
+                id: note
+                size_hint: 1, None
+                on_text: root.katrain.set_note(self.text)
+                hint_text: 'Your SGF notes for this position here.'
+                height: min( (len(self._lines)+0.7) * self.line_height, self.parent.height - status.height - 2.7*self.line_height)
 
 
-<RHSButton@SizedMDFlatRectangleButton>:
+<RHSButton@AutoSizedMDFlatRectangleButton>:
     md_bg_color: BOX_BACKGROUND_COLOR
-    size: self.parent.button_size
-    font_size: self.height * 0.7
+    size_hint_y: 1
 
-<RHSToggleButton@SizedMDFlatRectangleToggleButton>:
+<RHSToggleButton@AutoSizedMDFlatRectangleToggleButton>:
     md_bg_color: BOX_BACKGROUND_COLOR
-    size: self.parent.button_size
-    font_size: self.height * 0.7
-    on_press: app.gui.controls.check_hide_show()
+    on_press: app.gui.update_state()
+    size_hint_y: 1
 
-
-<ButtonBox@MDBoxLayout>
-    orientation: 'vertical'
-    button_size: self.parent.button_size
-    adaptive_size: True
-    pos_hint: {'center_y':0.5,'x':0}
-    spacing: CP_SMALL_SPACING
-
-<ButtonBoxHolder@MDBoxLayout>:
-    button_size: self.parent.button_size
-    adaptive_width: True
-
-
-<RightButtonControls>:
+<AnalysisControls@MDBoxLayout>:
     katrain: app.gui
-    orientation: 'vertical'
-    button_size: (self.size[1] * 0.08 , self.size[1] * 0.04)
-    size_hint_x: None
-    width: self.minimum_width # if not self.parent.zen else 1
+    orientation: 'horizontal'
     padding: CP_PADDING, CP_PADDING
     spacing: CP_SPACING
-    info: info
-    note: note
+    show_children: show_children
     eval: eval
     policy: policy
     hints: hints
@@ -739,102 +735,42 @@
     analyze_extra: analyze_extra
     analyze_equalize: analyze_equalize
     analyze_sweep: analyze_sweep
-    graph: {'winrate': winrate_graph,'score':score_graph,'points':points_graph}
-    ButtonBoxHolder:
-        size_hint_y: PLAYER_BOX_HEIGHT
-        ButtonBox:
-            RHSButton:
-                text: 'Pass'
-                on_left_press: print('pass?')
-    ButtonBoxHolder:
-        size_hint_y: TIMER_BOX_HEIGHT
-        ButtonBox:
-            RHSToggleButton:
-                text: 'MAN'
-            RHSToggleButton:
-                text: 'BYO'
-    ButtonBoxHolder:
-        size_hint_y: GRAPH_BOX_HEIGHT
-        ButtonBox:
-            RHSToggleButton:
-                text: 'Win %'
-                group: 'graph'
-                color: WINRATE_COLOR
-                id: winrate_graph
-            RHSToggleButton:
-                text: 'Score'
-                color: SCORE_COLOR
-                state: "down"
-                group: 'graph'
-                id: score_graph
-            RHSToggleButton:
-                text: 'Loss'
-                group: 'graph'
-                color: POINTLOSS_COLOR
-                id: points_graph
-    ButtonBoxHolder:
-        size_hint_y: STATS_BOX_HEIGHT
-        ButtonBox:
-            RHSToggleButton:
-                text: 'Win %'
-                color: WINRATE_COLOR
-                state: "down"
-            RHSToggleButton:
-                text: 'Score'
-                color: SCORE_COLOR
-                state: "down"
-            RHSToggleButton:
-                text: 'Loss'
-                color: POINTLOSS_COLOR
-                state: "down"
-    ButtonBoxHolder:
-        size_hint_y: INFO_BOX_HEIGHT
-        ButtonBox:
-            RHSToggleButton:
-                id: info
-                text: 'Info'
-                color: RED
-                state: "down"
-                group: "text"
-            RHSToggleButton:
-                id: note
-                text: 'Note'
-                color: GREEN
-                group: "text"
-    ButtonBoxHolder:
-        size_hint_y: INFO_BOX_HEIGHT * 0.01
-        ButtonBox:
-            RHSToggleButton:
-                id: eval
-                text: 'Dots'
-                color: WHITE
-            RHSToggleButton:
-                id: ownership
-                text: 'Territory'
-                color: WHITE
-            RHSToggleButton:
-                id: policy
-                text: 'Policy'
-                color: WHITE
-            RHSToggleButton:
-                id: hints
-                text: 'Top Moves'
-                color: WHITE
-            RHSButton:
-                id: analyze_extra
-                text: 'Extra'
-                tooltip_text: '[a]\nExtra analysis\nto increase accuracy\nof top move predictions\nand score difference'
-                on_left_press: root.katrain("analyze-extra","extra")
-            RHSButton:
-                id: analyze_equalize
-                text: 'Equalize'
-                tooltip_text: '[s]\nAnalysis of all\npredicted top moves\nwith the same accuracy'
-                on_left_press: root.katrain("analyze-extra","equalize")
-            RHSButton:
-                id: analyze_sweep
-                text: 'Sweep'
-                tooltip_text: '[d]\nFast analysis\nof all legal moves'
-                on_left_press: root.katrain("analyze-extra","sweep")
+    RHSToggleButton:
+        id: show_children
+        text: 'Next\nMoves'
+        color: WHITE
+        state: 'down'
+    RHSToggleButton:
+        id: eval
+        text: 'Evaluation\nDots'
+        color: WHITE
+    RHSToggleButton:
+        id: ownership
+        text: 'Expected\nTerritory'
+        color: WHITE
+    RHSToggleButton:
+        id: policy
+        text: 'Policy\nMoves'
+        color: WHITE
+    RHSToggleButton:
+        id: hints
+        text: 'Top\nMoves'
+        color: WHITE
+    RHSButton:
+        id: analyze_extra
+        text: 'Extra'
+        tooltip_text: '[a]\nExtra analysis\nto increase accuracy\nof top move predictions\nand score difference'
+        on_left_press: root.katrain("analyze-extra","extra")
+    RHSButton:
+        id: analyze_equalize
+        text: 'Equalize'
+        tooltip_text: '[s]\nAnalysis of all\npredicted top moves\nwith the same accuracy'
+        on_left_press: root.katrain("analyze-extra","equalize")
+    RHSButton:
+        id: analyze_sweep
+        text: 'Sweep'
+        tooltip_text: '[d]\nFast analysis\nof all legal moves'
+        on_left_press: root.katrain("analyze-extra","sweep")
 
 
 
@@ -933,8 +869,7 @@
     board_gui: board_gui
     controls: controls
     board_controls: board_controls
-    button_controls: button_controls
-    analysis_controls: button_controls
+    analysis_controls: analysis_controls
     nav_drawer: nav_drawer
     zen: False
     NavigationLayout:
@@ -946,6 +881,10 @@
                     MDBoxLayout:
                         orientation: 'vertical'
                         padding: CP_PADDING, CP_PADDING, CP_PADDING, 0
+                        AnalysisControls:
+                            id: analysis_controls
+                            size_hint_y: None
+                            height: min(100,self.width / 13.5) if not root.zen else 1
                         BadukPanWidget:
                             id: board_gui
                         BadukPanControls:
@@ -957,8 +896,6 @@
                         size_hint_x: None
                         width: 0 if root.zen else self.height * 0.35
                         opacity: 0 if root.zen else 1
-                    RightButtonControls:
-                        id: button_controls
         MyNavigationDrawer:
             id: nav_drawer
             state: "close"

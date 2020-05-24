@@ -316,20 +316,21 @@ class BadukPanWidget(Widget):
 
             # children of current moves in undo / review
             alpha = self.ui_config["ghost_alpha"]
-            for child_node in current_node.children:
-                points_lost = child_node.points_lost
-                move = child_node.move
-                if move and move.coords is not None:
-                    if points_lost is None:
-                        evalcol = None
-                    else:
-                        evalcol = copy.copy(self.eval_color(points_lost))
-                        evalcol[3] = alpha
-                    # if ((teaching and child_node.auto_undo) or katrain.controls.play_analyze_mode == "analyze") and child_node.analysis_ready: # TODO:?
-                    if child_node.analysis_ready:
-                        self.active_pv_moves.append((move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node))
-                    scale = self.ui_config["child_scale"]
-                    self.draw_stone(move.coords[0], move.coords[1], (*stone_color[move.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
+            if katrain.analysis_controls.show_children.active:
+                for child_node in current_node.children:
+                    points_lost = child_node.points_lost
+                    move = child_node.move
+                    if move and move.coords is not None:
+                        if points_lost is None:
+                            evalcol = None
+                        else:
+                            evalcol = copy.copy(self.eval_color(points_lost))
+                            evalcol[3] = alpha
+                        # if ((teaching and child_node.auto_undo) or katrain.controls.play_analyze_mode == "analyze") and child_node.analysis_ready: # TODO:?
+                        if child_node.analysis_ready:
+                            self.active_pv_moves.append((move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node))
+                        scale = self.ui_config["child_scale"]
+                        self.draw_stone(move.coords[0], move.coords[1], (*stone_color[move.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
 
             # hints or PV
             if katrain.analysis_controls.hints.active and not game_ended and not lock_ai:
