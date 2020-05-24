@@ -12,7 +12,7 @@ from katrain.core.common import OUTPUT_DEBUG, OUTPUT_ERROR
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, GameNode
 from katrain.gui.kivyutils import (
-    BackgroundLabel,
+    BackgroundColor,
     LabelledCheckBox,
     LabelledFloatInput,
     LabelledIntInput,
@@ -215,7 +215,7 @@ class ConfigTeacherPopup(QuickConfigGui):
         for i, (thr, undos, color) in enumerate(zip(thresholds, undos, colors)):
             thrbox.add_widget(LabelledFloatInput(text=str(thr), input_property=f"eval_thresholds::{i}"))
             thrbox.add_widget(LabelledFloatInput(text=str(undos), input_property=f"num_undo_prompts::{i}"))
-            thrbox.add_widget(BackgroundLabel(background_color=color[:3]))
+            thrbox.add_widget(BackgroundColor(background_color=color[:3]))
             thrbox.add_widget(LabelledCheckBox(text=str(color[3] == 1), input_property=f"alpha::{i}"))
             thrbox.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.sgf_settings["save_feedback"][i]), input_property=f"save_feedback::{i}"))
         self.add_widget(thrbox)

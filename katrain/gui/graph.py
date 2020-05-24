@@ -2,10 +2,10 @@ import math
 
 from kivy.properties import ListProperty, NumericProperty
 
-from katrain.gui.kivyutils import BackgroundLabel
+from katrain.gui.kivyutils import BackgroundColor
 
 
-class ScoreGraph(BackgroundLabel):
+class ScoreGraph(BackgroundColor):
     nodes = ListProperty([])
     score_points = ListProperty([])
     winrate_points = ListProperty([])

@@ -181,14 +181,13 @@
         mipmap: True
 
 
-<TransparentIconButton@Button>:
+<TransparentIconButton>:
     background_normal: ''
     background_color: (0,0,0,0)
-    icon_size: min(self.size[0],self.size[1])
-    icon: ''
+    icon_size: self.icon_size or [min(self.size[0],self.size[1]),min(self.size[0],self.size[1])]
     Image:
-        size: (root.icon_size or 0,root.icon_size or 0)  # square
-        pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
+        size: root.icon_size
+        pos: [root.pos[i] + (root.size[i] - root.icon_size[i])/2 for i in [0,1]]
         source: root.icon
         mipmap: True
 
@@ -232,11 +231,10 @@
         text: root.label
         font_size: self.size[1] * 0.8
         on_press: value.opacity =  1 if  value.opacity==0 else 0
-    MDLabel:
+    Label:
         size_hint: 0.4,1
         text: root.text
-        theme_text_color: 'Custom'
-        text_color: root.color
+        color: root.color
         font_size: desc.font_size
         id: value
         bold: True
@@ -250,7 +248,7 @@
         size: (root.min_size,root.min_size)
         source: 'img/white.png' if root.player=='White' else 'img/black.png'
         mipmap: True
-    MDLabel:
+    Label:
         text: root.text
         bold: True
         color: BLACK if root.player=='White' else WHITE
@@ -315,6 +313,7 @@
 <NavIconButton@TransparentIconButton>:
     size_hint: 0.06, 0.5
     pos_hint: {'center_y': 0.5}
+
 
 <BadukPanControls>:
     katrain: app.gui
@@ -667,7 +666,7 @@
             size_hint_x: 0.7
     CollapsablePanel:
         size_hint_y: GRAPH_BOX_HEIGHT
-        options: ['Score','Win Rate','Points Lost']
+        options: ['Score','Win Rate','PtLoss']
         option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
         option_active: [True,False,False]
         options_height: root.tab_option_height

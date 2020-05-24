@@ -4,6 +4,7 @@ import re
 
 from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
+from kivy.uix.label import Label
 from kivy.core.window import Window
 from kivy.graphics import *
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, StringProperty, OptionProperty, ObjectProperty
@@ -23,7 +24,6 @@ from kivymd.uix.behaviors import RectangularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BasePressedButton, BaseFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.label import MDLabel
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
 # --- new mixins
@@ -69,6 +69,7 @@ class SizedMDBaseButton(BasePressedButton, BaseFlatButton, LeftButtonBehavior): 
     label = ObjectProperty(None)
     height = NumericProperty(33)
 
+
 class SizedMDFlatButton(RectangularRippleBehavior, SizedMDBaseButton):
     pass
 
@@ -83,18 +84,20 @@ class SizedMDFlatRectangleToggleButton(SizedMDFlatRectangleButton, ToggleButtonB
     @property
     def active(self):
         return self.state == "down"
+        return self.state == "down"
 
 
 class AutoSizedMDFlatRectangleToggleButton(SizedMDFlatRectangleToggleButton):
     hor_padding = NumericProperty(3)
 
 
+class TransparentIconButton(Button):
+    icon_size = ListProperty([25, 25])
+    icon = StringProperty("")
+
+
 # -- basic styles
-class LightLabel(MDLabel):
-    pass
-
-
-class BackgroundLabel(MDLabel, BackgroundColor):
+class LightLabel(Label):
     pass
 
 
@@ -104,7 +107,7 @@ class CensorableLabel(MDBoxLayout):
     color = ListProperty([1, 1, 1, 1])
 
 
-class MyNavigationDrawer(MDNavigationDrawer):  # in PR
+class MyNavigationDrawer(MDNavigationDrawer):  # in PR - closes NavDrawer on any outside click
     def on_touch_down(self, touch):
         return super().on_touch_down(touch)
 
@@ -121,7 +124,7 @@ class CircleWithText(MDFloatLayout):
     min_size = NumericProperty(50)
 
 
-# -- gui elements
+# -- new gui elements
 
 
 class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout):
@@ -145,42 +148,68 @@ class CollapsablePanel(MDBoxLayout):
     options_height = NumericProperty(25)
     option_active = ListProperty([])
     option_colors = ListProperty([])
+    state = OptionProperty("open", options=["open", "close"])
+    close_icon = "img/flaticon/previous999.png"
+    open_icon = "img/flaticon/next999.png"
 
     def __init__(self, **kwargs):
         self.contents = None
+        self.header = MDBoxLayout(adaptive_height=True, padding=[4, 0, 0, 0], spacing=2)
+        self.option_buttons = []
         super().__init__(**kwargs)
         self.orientation = "vertical"
         self.bind(options=self.build, option_colors=self.build, options_height=self.build, option_active=self.build)
 
     def build(self, *args, **kwargs):
-        print(args, kwargs, "b")
+        print(args, kwargs, "b",self.size,self.pos)
         self.clear_widgets()
-        header = MDBoxLayout(adaptive_height=True, padding=[4, 0, 0, 0],spacing=2)
-        option_colors = self.option_colors
-        for opt, opt_col, active in zip(self.options, option_colors, self.option_active):
-            header.add_widget(AutoSizedMDFlatRectangleToggleButton(text=opt, color=opt_col,
-                                                                   height=self.options_height,
-                                                                   on_press=lambda _:print(self.size,_.size),
-                                                                   state="down" if active else "normal"))
-        header.add_widget(SizedMDFlatRectangleButton(text="x",height=self.options_height))
-        super().add_widget(header)
-        if self.contents:
-            super().add_widget(self.contents)
+
+        self.header.clear_widgets()
+        self.option_buttons = []
+        for opt, opt_col, active in zip(self.options, self.option_colors, self.option_active):
+            button = AutoSizedMDFlatRectangleToggleButton(text=opt, color=opt_col, height=self.options_height, on_press=self.trigger_select, state="down" if active else "normal")
+            self.option_buttons.append(button)
+            self.header.add_widget(button)
+        self.header.add_widget(Label())  # spacer
+        open_close_button = TransparentIconButton( # <<  / >> collapse button
+            icon=self.open_close_icon(),
+            icon_size=[0.5 * self.options_height, 0.5 * self.options_height],
+            size=[0.6 * self.options_height, self.options_height],
+            on_press=self.set_state,
+        )
+        #self.bind(state=lambda _: open_close_button.setter("icon")(self.open_close_icon()))
+        #self.header.add_widget(open_close_button)
+
+    def open_close_icon(self):
+        return self.open_icon if self.state == "open" else self.close_icon
 
     def add_widget(self, widget, index=0, **_kwargs):
         if self.contents:
             raise ValueError("CollapsablePanel can only have one child")
         self.contents = widget
-        self.build()
+        super().add_widget(self.header)
+        super().add_widget(self.contents)
+        print(self.children,"CHILDREN!",self.size,self.pos)
 
-    def on_option_select(self, states):
+    def set_state(self, state="toggle"):
+        if state == "toggle":
+            state = "close" if self.state == "open" else "open"
+        self.state = state
+        if self.state == "open":
+            self.trigger_select()
+
+    def trigger_select(self, *_args):
+        if self.state == "open":
+            self.on_option_select({opt: btn.state == "down" for opt, btn in zip(self.options, self.option_buttons)})
+
+    def on_option_select(self, options):
         pass
 
 
 # --- not checked
 
 
-class ToolTipLabel(MDLabel):
+class ToolTipLabel(Label):
     pass
 
 
