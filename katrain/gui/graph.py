@@ -1,18 +1,25 @@
 import math
 
-from kivy.properties import ListProperty, NumericProperty
+from kivy.properties import ListProperty, NumericProperty, BooleanProperty
 
 from katrain.gui.kivyutils import BackgroundColor
 
 
 class ScoreGraph(BackgroundColor):
+    show_score = BooleanProperty(True)
+    show_winrate = BooleanProperty(True)
+    show_pointloss = BooleanProperty(True)
+
     nodes = ListProperty([])
     score_points = ListProperty([])
     winrate_points = ListProperty([])
+
     dot_pos = ListProperty([0, 0])
     highlighted_index = NumericProperty(None)
-    y_scale = NumericProperty(5)
     highlight_size = NumericProperty(5)
+
+    score_scale = NumericProperty(5)
+    winrate_scale = NumericProperty(5)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -26,26 +33,41 @@ class ScoreGraph(BackgroundColor):
             self.nodes.append(node)
         self.highlighted_index = 0
 
+    def show_graphs(self,keys):
+        self.show_score = keys['score']
+        self.show_winrate = keys['winrate']
+        self.show_pointloss = keys['points']
+
     def update_graph(self, *args):
         nodes = self.nodes
         if nodes:
-            values = [n.score if n and n.score else math.nan for n in nodes]
-            nn_values = [n.score for n in nodes if n and n.score]
-            val_range = min(nn_values or [0]), max(nn_values or [0])
+            score_values = [n.score if n and n.score else math.nan for n in nodes]
+            score_nn_values = [n.score for n in nodes if n and n.score]
+            score_values_range = min(score_nn_values or [0]), max(score_nn_values or [0])
 
-            self.y_scale = math.ceil(max(5, max(-val_range[0], val_range[1])) / 5) * 5
+            winrate_values = [(n.winrate-0.5)*100 if n and n.winrate else math.nan for n in nodes]
+            winrate_nn_values = [(n.winrate-0.5)*100 for n in nodes if n and n.winrate]
+            winrate_values_range = min(winrate_nn_values or [0]), max(winrate_nn_values or [0])
 
-            xscale = self.width / max(len(values) - 1, 15)
+            score_granularity = 5
+            winrate_granularity = 10
+            self.score_scale = max(math.ceil( max(-score_values_range[0], score_values_range[1]) / score_granularity),1) * score_granularity
+            self.winrate_scale = max(math.ceil(max(-winrate_values_range[0], winrate_values_range[1]) / winrate_granularity), 1) * winrate_granularity
+
+            print(self.score_scale,score_values_range,score_values)
+
+            xscale = self.width / max(len(score_values) - 1, 15)
             available_height = self.height
-            line_points = [[self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.y_scale)] for i, val in enumerate(values)]
-            self.score_points = sum(line_points, [])
-            self.winrate_points = self.score_points  # TODO
+            score_line_points = [[self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.score_scale)] for i, val in enumerate(score_values)]
+            winrate_line_points = [[self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.winrate_scale)] for i, val in enumerate(winrate_values)]
+            self.score_points = sum(score_line_points, [])
+            self.winrate_points = sum(winrate_line_points,[])
 
             if self.highlighted_index is not None:
-                self.highlighted_index = min(self.highlighted_index, len(values) - 1)
-                dot_point = line_points[self.highlighted_index]
+                self.highlighted_index = min(self.highlighted_index, len(score_values) - 1)
+                dot_point = score_line_points[self.highlighted_index]
                 if math.isnan(dot_point[1]):
-                    dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((nn_values or [0])[-1] / self.y_scale)
+                    dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((score_nn_values or [0])[-1] / self.score_scale)
                 self.dot_pos = [c - self.highlight_size / 2 for c in dot_point]
 
     def update_value(self, node):

@@ -22,6 +22,31 @@ msgid "pass-button-text"
 msgstr "Pass"
 
 msgid "pass-button-tooltip"
-msgstr "[space]\nPass"
+msgstr ""
+"[space]\n"
+"Pass"
+
+msgid "tab:score"
+msgstr "Score"
+
+msgid "tab:winrate"
+msgstr "Win Rate"
+
+msgid "tab:points"
+msgstr "Point Loss"
+
+msgid "tab:info"
+msgstr "Info"
+
+msgid "tab:notes"
+msgstr "Notes"
+
+msgid 'closedlabel:scoregraph'
+msgstr 'Score Graph'
 
 
+msgid 'closedlabel:movestats'
+msgstr 'Move Stats'
+
+msgid 'closedlabel:info&notes'
+msgstr 'Move Info & Notes'

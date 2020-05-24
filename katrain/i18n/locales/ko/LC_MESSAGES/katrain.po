@@ -7,54 +7,53 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "Hello World"
-msgstr "Hallo wereld"
+msgstr "안녕하세요 여러분"
 
 msgid "English"
-msgstr "Engels"
+msgstr "영어"
 
 msgid "Dutch"
-msgstr "Nederlands"
+msgstr "네덜란드어"
 
 msgid "pass-button-text"
-msgstr "Pas"
+msgstr "페스"
 
 msgid "pass-button-tooltip"
 msgstr ""
-"[spatiebalk]\n"
-"Pas"
+"[스페이스 바]\n"
+"페스"
 
-#. TODO
 msgid "KataGo"
-msgstr "KataGo"
+msgstr "카타고"
 
 #. TODO
 msgid "tab:winrate"
 msgstr "Win Rate"
 
 #. TODO
-msgid "tab:points"
-msgstr "Point Loss"
+msgid "tab:info"
+msgstr "Info"
 
 #. TODO
-msgid "tab:score"
-msgstr "Score"
+msgid "tab:points"
+msgstr "Point Loss"
 
 #. TODO
 msgid "tab:notes"
 msgstr "Notes"
 
 #. TODO
-msgid "tab:info"
-msgstr "Info"
-
-#. TODO
 msgid "closedlabel:scoregraph"
 msgstr "Score Graph"
 
 #. TODO
-msgid "closedlabel:info&notes"
-msgstr "Move Info & Notes"
-
-#. TODO
 msgid "closedlabel:movestats"
 msgstr "Move Stats"
+
+#. TODO
+msgid "tab:score"
+msgstr "Score"
+
+#. TODO
+msgid "closedlabel:info&notes"
+msgstr "Move Info & Notes"

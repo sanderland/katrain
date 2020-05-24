@@ -84,7 +84,7 @@ class ControlsPanel(BoxLayout):
 
             if current_node.analysis_ready:
                 self.stats.score.text = current_node.format_score()
-                self.stats.win_rate.text = current_node.format_win_rate()
+                self.stats.winrate.text = current_node.format_winrate()
                 if move and last_player_was_human_or_both_robots:  # don't immediately hide this when an ai moves comes in
                     points_lost = current_node.points_lost
                     self.stats.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
@@ -98,7 +98,7 @@ class ControlsPanel(BoxLayout):
                 self.stats.score_change.text = f"{current_node.parent.move.player}: {abs(points_lost):.1f}" if points_lost else "-"
             elif both_players_are_robots and current_node.parent and current_node.parent.analysis_ready:
                 self.stats.score.text = current_node.parent.format_score()
-                self.stats.win_rate.text = current_node.parent.format_win_rate()
+                self.stats.winrate.text = current_node.parent.format_winrate()
 
             self.graph.update_value(current_node)
             self.note.text = current_node.note

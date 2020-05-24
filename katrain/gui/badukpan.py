@@ -401,17 +401,18 @@ class BadukPanWidget(Widget):
     def show_pv_from_comments(self, pv_str):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
-
-class BadukPanControls(MDFloatLayout):
+class AnalysisControls(MDBoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.analysis_menu = None
-        Clock.schedule_once(self.init_menus, 1)
+        self.analysis_menu=None
+        Clock.schedule_once(self.build_menu,0)
 
-    def init_menus(self, _dt):
+    def build_menu(self,_dt):
         menu_items = [{"icon": "git", "text": f"Item {i}"} for i in range(5)]
         self.analysis_menu = MDDropdownMenu(caller=self.analysis_button, items=menu_items, width_mult=4)
 
     def open_analysis_menu(self):
-        if self.analysis_menu:
-            self.analysis_menu.open()
+        self.analysis_menu.open()
+
+class BadukPanControls(MDFloatLayout):
+    pass

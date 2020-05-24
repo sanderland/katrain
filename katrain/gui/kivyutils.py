@@ -20,7 +20,7 @@ from kivy.uix.widget import Widget
 
 # --new
 from kivymd.app import MDApp
-from kivymd.uix.behaviors import RectangularRippleBehavior
+from kivymd.uix.behaviors import RectangularRippleBehavior, CircularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BasePressedButton, BaseFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
@@ -98,7 +98,7 @@ class AutoSizedMDFlatRectangleToggleButton(SizedMDFlatRectangleToggleButton):
     hor_padding = NumericProperty(3)
 
 
-class TransparentIconButton(Button):
+class TransparentIconButton(CircularRippleBehavior,Button):
     icon_size = ListProperty([25, 25])
     icon = StringProperty("")
 
@@ -179,9 +179,9 @@ class CollapsablePanel(MDBoxLayout):
 
     def build_options(self, *args, **kwargs):
         self.header = MDBoxLayout(height=self.options_height,size_hint_y=None,
-                                  padding=[self.options_left_padding, 0, 0, 0], spacing=2)
+                                  padding=[self.options_left_padding, 0, 0, 0], spacing=3)
         self.option_buttons = []
-        option_labels = self.option_labels or [i18n._(opt) for opt in self.options]
+        option_labels = self.option_labels or [i18n._(f"tab:{opt}") for opt in self.options]
         for lbl, opt_col, active in zip(option_labels, self.option_colors, self.option_default_active):
             button = AutoSizedMDFlatRectangleToggleButton(text=lbl,color=opt_col, height=self.options_height,
                                                           on_press=self.trigger_select, state="down" if active else "normal")
@@ -228,7 +228,6 @@ class CollapsablePanel(MDBoxLayout):
         self.build()
 
     def set_state(self, state="toggle"):
-        print("SS",state)
         if state == "toggle":
             state = "close" if self.state == "open" else "open"
         self.state = state
@@ -238,7 +237,7 @@ class CollapsablePanel(MDBoxLayout):
 
     def trigger_select(self, *_args):
         if self.state == "open":
-            self.on_option_state({opt:btn.state == "down" for opt,btn in zip(self.options,self.option_buttons)})
+            self.dispatch("on_option_state",{opt:btn.state == "down" for opt,btn in zip(self.options,self.option_buttons)})
 
     def on_option_state(self, options):
         pass

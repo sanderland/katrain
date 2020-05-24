@@ -29,7 +29,7 @@ from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
 from katrain.gui.graph import ScoreGraph
-from katrain.gui.badukpan import BadukPanWidget
+from katrain.gui.badukpan import BadukPanWidget, AnalysisControls, BadukPanControls
 from katrain.gui.controlspanel import ControlsPanel, RightButtonControls
 from katrain.gui.popups import NewGamePopup, ConfigPopup, LoadSGFPopup
 from katrain.core.common import Lang
@@ -294,9 +294,9 @@ class KaTrainGui(Screen):
             "r": self.analysis_controls.ownership,
             "t": self.analysis_controls.policy,
             "enter": ("ai-move",),
-            "a": self.analysis_controls.analyze_extra,
-            "s": self.analysis_controls.analyze_equalize,
-            "d": self.analysis_controls.analyze_sweep,
+            "a": ("analyze-extra", "extra"),
+            "s": ("analyze-extra", "equalize"),
+            "d": ("analyze-extra", "sweep"),
             "p": ("play", None),
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),

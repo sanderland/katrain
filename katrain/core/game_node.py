@@ -94,13 +94,24 @@ class GameNode(SGFNode):
     def analysis_ready(self):
         return self.analysis["root"] is not None
 
+
+    @property
+    def score(self) -> Optional[float]:
+        if self.analysis_ready:
+            return self.analysis["root"].get("scoreLead")
+
     def format_score(self, score=None):
         score = score or self.score
         if score is not None:
             return f"{'B' if score >= 0 else 'W'}+{abs(score):.1f}"
 
-    def format_win_rate(self, win_rate=None):
-        win_rate = win_rate or self.analysis["root"].get("winrate")
+    @property
+    def winrate(self) -> Optional[float]:
+        if self.analysis_ready:
+            return self.analysis["root"].get("winrate")
+
+    def format_winrate(self, win_rate=None):
+        win_rate = win_rate or self.winrate
         if win_rate is not None:
             return f"{'B' if win_rate > 0.5 else 'W'} {max(win_rate,1-win_rate):.1%}"
 
@@ -120,7 +131,7 @@ class GameNode(SGFNode):
             score = self.score
             if sgf:
                 text += f"Score: {self.format_score(score)}\n"
-                text += f"Win Rate: {self.format_win_rate()}\n"
+                text += f"Win Rate: {self.format_winrate()}\n"
             if self.parent and self.parent.analysis_ready:
                 previous_top_move = self.parent.candidate_moves[0]
                 if sgf or hints:
@@ -168,10 +179,6 @@ class GameNode(SGFNode):
             score = self.score
             return self.player_sign(single_move.player) * (score - parent_parent_score)
 
-    @property
-    def score(self) -> Optional[float]:
-        if self.analysis_ready:
-            return self.analysis["root"]["scoreLead"]
 
     @staticmethod
     def player_sign(player):
