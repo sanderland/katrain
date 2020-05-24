@@ -12,9 +12,10 @@ lang_to_strings = defaultdict(set)
 DEFAULT_LANG = "en"
 
 po = {}
+pofile = {}
 for lang in locales:
-    pofile = os.path.join(localedir, lang, 'LC_MESSAGES', 'katrain.po')
-    po[lang] = polib.pofile(pofile)
+    pofile[lang] = os.path.join(localedir, lang, 'LC_MESSAGES', 'katrain.po')
+    po[lang] = polib.pofile(pofile[lang])
     for entry in po[lang].translated_entries():
         if 'TODO' in  entry.comment:
             print(lang,'/',entry.msgid,'is TODO')
@@ -33,8 +34,8 @@ for lang in locales:
             po[lang].append(entry)
         else:
             print(f"MISSING IN DEFAULT AND {lang}",strings_to_langs[msgid])
-    po[lang].save(pofile)
-    mofile = pofile.replace('.po', '.mo')
+    po[lang].save(pofile[lang])
+    mofile = pofile[lang].replace('.po', '.mo')
     po[lang].save_as_mofile(mofile)
-    print('Fixed',pofile,'and converted ->',mofile)
+    print('Fixed',pofile[lang],'and converted ->',mofile)
 

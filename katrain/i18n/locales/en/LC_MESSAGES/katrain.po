@@ -6,6 +6,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#. This is the font used, files ONLY relative to 'katrain' directory
+msgid "Roboto"
+msgstr "Roboto"
+
 msgid "Hello World"
 msgstr "Hello World"
 
@@ -17,6 +21,9 @@ msgstr "English"
 
 msgid "Dutch"
 msgstr "Dutch"
+
+msgid "Korean"
+msgstr "Korean"
 
 msgid "pass-button-text"
 msgstr "Pass"
@@ -41,12 +48,19 @@ msgstr "Info"
 msgid "tab:notes"
 msgstr "Notes"
 
-msgid 'closedlabel:scoregraph'
-msgstr 'Score Graph'
+msgid "closedlabel:scoregraph"
+msgstr "Score Graph"
 
+msgid "closedlabel:movestats"
+msgstr "Move Stats"
 
-msgid 'closedlabel:movestats'
-msgstr 'Move Stats'
+msgid "closedlabel:info&notes"
+msgstr "Move Info & Notes"
 
-msgid 'closedlabel:info&notes'
-msgstr 'Move Info & Notes'
+msgid "board-pass"
+msgstr "pass"
+
+msgid "board-game-end"
+msgstr ""
+"game\n"
+"end"

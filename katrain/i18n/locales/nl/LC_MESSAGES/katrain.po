@@ -6,6 +6,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#. This is the font used, files ONLY relative to 'katrain' directory
+msgid "Roboto"
+msgstr "Roboto"
+
 msgid "Hello World"
 msgstr "Hallo wereld"
 
@@ -14,6 +18,9 @@ msgstr "Engels"
 
 msgid "Dutch"
 msgstr "Nederlands"
+
+msgid "Korean"
+msgstr "Koreaans"
 
 msgid "pass-button-text"
 msgstr "Pas"
@@ -58,3 +65,13 @@ msgstr "Move Info & Notes"
 #. TODO
 msgid "closedlabel:movestats"
 msgstr "Move Stats"
+
+#. TODO
+msgid "board-game-end"
+msgstr ""
+"einde\n"
+"partij"
+
+#. TODO
+msgid "board-pass"
+msgstr "pas"

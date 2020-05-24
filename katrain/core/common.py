@@ -2,6 +2,9 @@ import os
 from typing import Any, List, Tuple
 from kivy.lang import Observable
 import gettext
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.core.text import Label as CoreLabel
 
 try:
     import importlib.resources as pkg_resources
@@ -71,6 +74,7 @@ class Lang(Observable):
     def funbind(self, name, func, *args, **kwargs):
         if name == "_":
             key = (func, args, kwargs)
+            print('funbind',key in self.observers)
             if key in self.observers:
                 self.observers.remove(key)
         else:
@@ -85,8 +89,19 @@ class Lang(Observable):
 
         # update all the kv rules attached to this text
         for func, args, kwargs in self.observers:
-            func(args[0], None, None)
+            try:
+                func(args[0], None, None)
+            except ReferenceError:
+                pass # proxy no longer exists
 
 LANGUAGE = "nl"
 i18n = Lang(LANGUAGE)
 
+class I18NLabel(Label):
+    pass
+
+class I18NCoreLabel(CoreLabel):
+    pass
+
+class I18NTextInput(TextInput):
+    pass

@@ -11,7 +11,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.menu import MDDropdownMenu
 
-from katrain.core.common import OUTPUT_DEBUG, evaluation_class, PLAYER_AI
+from katrain.core.common import OUTPUT_DEBUG, evaluation_class, PLAYER_AI, i18n
 from katrain.core.game import Move
 from katrain.gui.kivyutils import draw_circle, draw_text
 from katrain.core.common import var_to_grid
@@ -288,9 +288,9 @@ class BadukPanWidget(Widget):
             passed = len(nodes) > 1 and current_node.is_pass
             if passed:
                 if game_ended:
-                    text = katrain.game.manual_score or "game\nend"
+                    text = katrain.game.manual_score or i18n._("board-game-end")
                 else:
-                    text = "pass"
+                    text = i18n._("board-pass")
                 Color(0.45, 0.05, 0.45, 0.7)
                 center = (self.gridpos_x[int(board_size_x / 2)], self.gridpos_y[int(board_size_y / 2)])
                 size = min(self.width, self.height) * 0.22

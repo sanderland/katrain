@@ -1,5 +1,6 @@
 #:kivy 1.11.0
 #:import i18n __main__.i18n
+#:import find_package_resource __main__.find_package_resource
 
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
 #:set TOOLTIP_COLOR [0.43, 0.50, 0.65, 1]
@@ -26,6 +27,14 @@
 #:set BOX_BACKGROUND_COLOR  [46/255,65/255,88/255,1]
 #:set TEXT_COLOR            WHITE
 
+<I18NLabel>:
+    font_name: i18n._('Roboto')
+
+<I18NCoreLabel>:
+    font_name: i18n._('Roboto')
+
+<I18NTextInput>:
+    font_name: i18n._('Roboto')
 
 # mixins
 <OutlineColor>:
@@ -69,7 +78,7 @@
     text_color: WHITE
     md_bg_color: BOX_BACKGROUND_COLOR
     label: label
-    Label:
+    I18NLabel:
         id: label
         text: root.text
         size_hint_x: None
@@ -231,7 +240,7 @@
         text: root.label
         font_size: self.size[1] * 0.8
         on_press: value.opacity =  1 if  value.opacity==0 else 0
-    Label:
+    I18NLabel:
         size_hint: 0.4,1
         text: root.text
         color: root.color
@@ -248,7 +257,7 @@
         size: (root.min_size,root.min_size)
         source: 'img/white.png' if root.player=='White' else 'img/black.png'
         mipmap: True
-    Label:
+    I18NLabel:
         text: root.text
         bold: True
         color: BLACK if root.player=='White' else WHITE
@@ -392,9 +401,9 @@
     MDBoxLayout:
         size_hint: 0.75, 1
         orientation: 'vertical'
-        Label:
+        I18NLabel:
             text: root.name
-        Label:
+        I18NLabel:
             text: root.description
 
 
@@ -459,7 +468,7 @@
 #:set GRAPH_CENTER_COLOR GREY
 
 
-<GraphMarkerLabel@Label>:
+<GraphMarkerLabel@I18NLabel>:
     valign: 'bottom'
     halign: 'left'
     text: '+0'
@@ -569,7 +578,7 @@
     bar_width: 5
     bar_color: BUTTON_COLOR
     label: label
-    Label:
+    I18NLabel:
         id: label
         markup: root.markup
         padding: 5, 5
@@ -775,15 +784,15 @@
                 rectangle:  (*self.pos,*self.size)
                 width: 1
         SizedMDFlatButton:
-            text: i18n._('Dutch')
-            on_press: app.language = 'nl'
-            size_hint: 1/3,1
-        SizedMDFlatButton:
             text: i18n._('English')
             on_press: app.language = 'en'
             size_hint: 1/3,1
         SizedMDFlatButton:
-            text: i18n._('Ko')
+            text: i18n._('Dutch')
+            on_press: app.language = 'nl'
+            size_hint: 1/3,1
+        SizedMDFlatButton:
+            text: i18n._('Korean')
             on_press: app.language = 'ko'
             size_hint: 1/3,1
     Label:

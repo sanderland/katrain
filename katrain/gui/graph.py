@@ -54,8 +54,6 @@ class ScoreGraph(BackgroundColor):
             self.score_scale = max(math.ceil( max(-score_values_range[0], score_values_range[1]) / score_granularity),1) * score_granularity
             self.winrate_scale = max(math.ceil(max(-winrate_values_range[0], winrate_values_range[1]) / winrate_granularity), 1) * winrate_granularity
 
-            print(self.score_scale,score_values_range,score_values)
-
             xscale = self.width / max(len(score_values) - 1, 15)
             available_height = self.height
             score_line_points = [[self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.score_scale)] for i, val in enumerate(score_values)]

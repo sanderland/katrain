@@ -3,8 +3,6 @@ import random
 import re
 
 from kivy.clock import Clock
-from kivy.core.text import Label as CoreLabel
-from kivy.uix.label import Label
 from kivy.core.window import Window
 from kivy.graphics import *
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, StringProperty, OptionProperty, ObjectProperty
@@ -12,9 +10,9 @@ from kivy.uix.behaviors import ToggleButtonBehavior, ButtonBehavior
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
-from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 
 
@@ -26,11 +24,11 @@ from kivymd.uix.button import BasePressedButton, BaseFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
-from katrain.core.common import i18n
+from katrain.core.common import i18n, I18NLabel, I18NTextInput, I18NCoreLabel
+
+#
 
 # --- new mixins
-
-
 
 class BackgroundColor(Widget):
     background_color = ListProperty([1, 1, 1, 0])
@@ -104,7 +102,7 @@ class TransparentIconButton(CircularRippleBehavior,Button):
 
 
 # -- basic styles
-class LightLabel(Label):
+class LightLabel(I18NLabel):
     pass
 
 
@@ -201,8 +199,9 @@ class CollapsablePanel(MDBoxLayout):
             for button in self.option_buttons:
                 self.header.add_widget(button)
             self.header.add_widget(Label()) # spacer
+            self.trigger_select()
         else:
-            self.header.add_widget(Label(text=i18n._(self.closed_label),halign='right',height=self.options_height))
+            self.header.add_widget(I18NLabel(text=i18n._(self.closed_I18NLabel),halign='right',height=self.options_height))
         self.header.add_widget(self.open_close_button)
 
         super().clear_widgets()
@@ -247,7 +246,7 @@ class CollapsablePanel(MDBoxLayout):
 # --- not checked
 
 
-class ToolTipLabel(Label):
+class ToolTipLabel(I18NLabel):
     pass
 
 
@@ -398,7 +397,7 @@ class ToggleButtonContainer(GridLayout):
             return self.options[0]
 
 
-class LabelledTextInput(TextInput):
+class LabelledTextInput(I18NTextInput):
     input_property = StringProperty("")
     multiline = BooleanProperty(False)
 
@@ -470,7 +469,7 @@ class LabelledIntInput(LabelledTextInput):
 
 
 def draw_text(pos, text, **kw):
-    label = CoreLabel(text=text, bold=True, **kw)
+    label = I18NCoreLabel(text=text, bold=True, **kw)
     label.refresh()
     Rectangle(texture=label.texture, pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2), size=label.texture.size)
 
