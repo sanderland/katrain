@@ -1,4 +1,8 @@
 from kivy.config import Config  # isort:skip
+ICON = "img/icon.png" # isort:skip  # set icon
+Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
+Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
+
 import os
 import signal
 import sys
@@ -24,22 +28,18 @@ from katrain.core.common import (
     OUTPUT_EXTRA_DEBUG,
     OUTPUT_INFO,
     OUTPUT_KATAGO_STDERR,
-    Lang,
-    find_package_resource,
+    find_package_resource,i18n
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
-from katrain.gui.controlspanel import ControlsPanel, RightButtonControls
+from katrain.gui.controlspanel import ControlsPanel
 from katrain.gui.graph import ScoreGraph
 from katrain.gui.kivyutils import *
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
 
-ICON = "img/icon.png"
-Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
-Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
 
 
 __version__ = "1.1.0"
@@ -229,7 +229,7 @@ class KaTrainGui(Screen):
                 try:
                     move_tree = KaTrainSGF.parse_file(files[0])
                 except ParseError as e:
-                    self.log(f"Failed to load SGF. Parse Error: {e}", OUTPUT_ERROR)
+                    self.log(i18n._("Failed to load SGF").format(error=e), OUTPUT_ERROR)
                     return
                 self._do_new_game(move_tree=move_tree, analyze_fast=popup_contents.fast.active)
                 if not popup_contents.rewind.active:
@@ -276,7 +276,7 @@ class KaTrainGui(Screen):
         try:
             move_tree = KaTrainSGF.parse(clipboard)
         except Exception as e:
-            self.controls.set_status(f"Failed to imported game from clipboard: {e}\nClipboard contents: {clipboard[:50]}...")
+            self.controls.set_status(i18n._("Failed to import from clipboard").format(error=e,contents=clipboard[:50]))
             return
         move_tree.nodes_in_tree[-1].analyze(self.engine, analyze_fast=False)  # speed up result for looking at end of game
         self._do_new_game(move_tree=move_tree, analyze_fast=True)
@@ -332,7 +332,7 @@ class KaTrainGui(Screen):
             self("output-sgf")
         elif keycode[1] == "c" and "ctrl" in modifiers:
             Clipboard.copy(self.game.root.sgf())
-            self.controls.set_status("Copied SGF to clipboard.")
+            self.controls.set_status(i18n._("Copied SGF to clipboard."))
         elif keycode[1] == "v" and "ctrl" in modifiers:
             self.load_sgf_from_clipboard()
         return True

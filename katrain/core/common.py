@@ -1,10 +1,10 @@
 import os
+import sys
 from typing import Any, List, Tuple
 from kivy.lang import Observable
 import gettext
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
-from kivy.core.text import Label as CoreLabel
 
 try:
     import importlib.resources as pkg_resources
@@ -44,7 +44,7 @@ def find_package_resource(path):
             with pkg_resources.path(".".join(parts[:-1]), parts[-1]) as path_obj:
                 return str(path_obj)  # this will clean up if egg etc, but these don't work anyway
         except (ModuleNotFoundError, FileNotFoundError) as e:
-            print(f"File {path} not found, installation possibly broken")
+            print(f"File {path} not found, installation possibly broken",file=sys.stderr)
             return f"FILENOTFOUND::{path}"
     else:
         return path  # absolute path
@@ -100,11 +100,6 @@ i18n = Lang(LANGUAGE)
 
 class I18NLabel(Label):
     pass
-
-
-class I18NCoreLabel(CoreLabel):
-    pass
-
 
 class I18NTextInput(TextInput):
     pass

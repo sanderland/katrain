@@ -6,7 +6,7 @@ import threading
 import time
 from typing import Callable, Optional
 
-from katrain.core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource
+from katrain.core.common import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource, i18n
 from katrain.core.game_node import GameNode
 
 
@@ -56,16 +56,11 @@ class KataGoEngine:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
             self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except (FileNotFoundError, PermissionError, OSError) as e:
-            if self.config["katago"].strip():
-                self.katrain.log(
-                    f"Starting kata with command '{self.command}' failed with error {e}. If on MacOS, see the manual on how to use brew to install katago first, and add it to your path or 'engine/katago' setting.",
-                    OUTPUT_ERROR,
+            if not self.config["katago"].strip():
+                self.katrain.log(                    i18n._("Starting default Kata failed").format(command=self.comment,error=e),                    OUTPUT_ERROR,
                 )
             else:
-                self.katrain.log(
-                    f"Starting kata with command '{self.command}' failed with error {e}. Please make sure the 'katago' value under 'engine' in settings points to the correct KataGo executable.",
-                    OUTPUT_ERROR,
-                )
+                self.katrain.log( i18n._("Starting Kata failed").format(command=self.comment,error=e)                   ,                    OUTPUT_ERROR,                )
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
         self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
 
@@ -108,7 +103,7 @@ class KataGoEngine:
             try:
                 line = self.katago_process.stdout.readline()
             except OSError as e:
-                raise EngineDiedException(f"Engine died unexpectedly without sending output, possibly due to out of memory: {e}")
+                raise EngineDiedException(i18n("Engine died unexpectedly").format(error=e))
             if b"Uncaught exception" in line:
                 self.katrain.log(f"KataGo Engine Failed: {line.decode()}", OUTPUT_ERROR)
                 return
@@ -152,7 +147,7 @@ class KataGoEngine:
                 self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
                 self.katago_process.stdin.flush()
             except OSError as e:
-                self.katrain.log(f"Engine died unexpectedly, possibly due to out of memory: {e}", OUTPUT_ERROR)
+                self.katrain.log(i18n._("Engine died unexpectedly").format(error=e), OUTPUT_ERROR)
                 return  # do not raise, since there's nothing to catch it
 
     def request_analysis(

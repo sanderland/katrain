@@ -30,9 +30,6 @@ msgstr ""
 "[스페이스 바]\n"
 "페스"
 
-msgid "KataGo"
-msgstr "카타고"
-
 #. TODO
 msgid "tab:winrate"
 msgstr "Win Rate"
