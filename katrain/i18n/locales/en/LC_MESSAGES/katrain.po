@@ -10,10 +10,6 @@ msgstr ""
 msgid "Roboto"
 msgstr "Roboto"
 
-msgid "Hello World"
-msgstr "Hello World"
-
-#.
 msgid "English"
 msgstr "English"
 
@@ -25,11 +21,6 @@ msgstr "Korean"
 
 msgid "pass-button-text"
 msgstr "Pass"
-
-msgid "pass-button-tooltip"
-msgstr ""
-"[space]\n"
-"Pass"
 
 #. tabs and labels on the right panel
 msgid "tab:score"
@@ -65,27 +56,55 @@ msgstr ""
 "game\n"
 "end"
 
+#. Select mode
+msgid "btn:Play"
+msgstr "Play"
+
+msgid "btn:Analysis"
+msgstr "Analysis"
+
+msgid "stats:winrate"
+msgstr "Win Rate"
+
+msgid "stats:score"
+msgstr "Estimated Score"
+
+msgid "stats:pointslost"
+msgstr "Points Lost"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "Points Gained"
+
 #. SGF and move comment messages
 msgid "SGF start message"
-msgstr "Moves marked 'X' indicate the top move according to KataGo, those with a square are moves that lose less than 0.5 points.
+msgstr ""
+"Moves marked 'X' indicate the top move according to KataGo, those with a "
+"square are moves that lose less than 0.5 points"
+
+msgid "Info:score"
+msgstr "Score: {score}"
+
+msgid "Info:winrate"
+msgstr "Win rate: {winrate}"
 
 msgid "Info:point loss"
 msgstr "Estimated point loss: {points_lost:.1f}"
 
 msgid "Info:top move"
-msgid "Predicted top move was {top_move} ({score})."
+msgstr "Predicted top move was {top_move} ({score})."
 
 msgid "Info:best move"
-msgstr "Move was predicted best move.
+msgstr "Move was predicted best move"
 
 msgid "Info:PV"
-msgstr "PV"
+msgstr "PV: {pv}"
 
 msgid "Info:policy rank"
 msgstr "Move was #{rank} according to policy  ({probability:.2%})."
 
 msgid "Info:policy best"
-msgstr "Top policy move was {move} ({policy_ranking[0][0]:.1%})."
+msgstr "Top policy move was {move} ({probability:.1%})."
 
 msgid "Info:teaching undo"
 msgstr "Move was automatically undone in teaching mode."
@@ -102,21 +121,34 @@ msgstr "No analysis available"
 msgid "Analyzing move..."
 msgstr "Analyzing move..."
 
-#.misc errors and info messages
+msgid "SGF Notes Hint"
+msgstr "Your SGF notes for this position here."
+
+#. misc errors and info messages
 msgid "Copied SGF to clipboard."
 msgstr "Copied SGF to clipboard."
 
 msgid "Failed to import from clipboard"
-msgstr "Failed to import game from clipboard: {error}\nClipboard contents: {contents}..."
+msgstr ""
+"Failed to import game from clipboard: {error}\n"
+"Clipboard contents: {contents}..."
 
 msgid "Failed to load SGF"
 msgstr "Failed to load SGF. Parse Error: {error}"
 
 msgid "Starting default Kata failed"
-msgstr "Starting KataGo with command '{command}' failed with error {error}. If on MacOS, see the manual on how to use brew to install katago first, and add it to your path or 'engine/katago' setting."
+msgstr ""
+"Starting KataGo with command '{command}' failed with error {error}. If on "
+"MacOS, see the manual on how to use brew to install katago first, and add it"
+" to your path or 'engine/katago' setting."
 
 msgid "Starting Kata failed"
-msgstr "Starting kata with command '{command}' failed with error {error}. Please make sure the 'katago' value under 'engine' in settings points to the correct KataGo executable."
+msgstr ""
+"Starting kata with command '{command}' failed with error {error}. Please "
+"make sure the 'katago' value under 'engine' in settings points to the "
+"correct KataGo executable."
 
 msgid "Engine died unexpectedly"
-msgstr "Engine died unexpectedly without sending output, possibly due to out of memory: {e}"
+msgstr ""
+"Engine died unexpectedly without sending output, possibly due to out of "
+"memory: {e}"

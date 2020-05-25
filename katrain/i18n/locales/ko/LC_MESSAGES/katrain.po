@@ -1,7 +1,7 @@
 # KaTrain i18n file
 msgid ""
 msgstr ""
-"Language: Nederlands\n"
+"Language: Korean\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -9,9 +9,6 @@ msgstr ""
 #. This is the font used, files ONLY relative to 'katrain' directory
 msgid "Roboto"
 msgstr "fonts/NotoSansKR-Regular.otf"
-
-msgid "Hello World"
-msgstr "안녕하세요 여러분"
 
 msgid "English"
 msgstr "영어"
@@ -23,51 +20,133 @@ msgid "Korean"
 msgstr "한국어"
 
 msgid "pass-button-text"
-msgstr "페스"
+msgstr "착수 넘김"
 
-msgid "pass-button-tooltip"
-msgstr ""
-"[스페이스 바]\n"
-"페스"
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "점수"
 
-#. TODO
 msgid "tab:winrate"
-msgstr "Win Rate"
+msgstr "승리 확률"
 
-#. TODO
-msgid "tab:info"
-msgstr "Info"
-
-#. TODO
 msgid "tab:points"
 msgstr "Point Loss"
 
-#. TODO
+msgid "tab:info"
+msgstr "Info"
+
 msgid "tab:notes"
 msgstr "Notes"
 
-#. TODO
 msgid "closedlabel:scoregraph"
-msgstr "Score Graph"
+msgstr "점수/확률 그래프"
 
-#. TODO
 msgid "closedlabel:movestats"
-msgstr "Move Stats"
+msgstr "수의 통계"
 
-#. TODO
-msgid "tab:score"
-msgstr "Score"
-
-#. TODO
 msgid "closedlabel:info&notes"
-msgstr "Move Info & Notes"
+msgstr "수의 정보 & 메모"
 
-#. TODO
-msgid "board-game-end"
-msgstr ""
-"게임\n"
-"끝났다"
-
-#. TODO
+#. on board in circle
 msgid "board-pass"
-msgstr "페스"
+msgstr "착수\n넘김"
+
+msgid "board-game-end"
+msgstr "게임\n끝났다"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "게임하기"
+
+msgid "btn:Analysis"
+msgstr "분석하기"
+
+msgid "stats:winrate"
+msgstr "승리 확률"
+
+msgid "stats:score"
+msgstr "예상 점수"
+
+msgid "stats:pointslost"
+msgstr "Points Lost"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "Points Gained"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr ""
+"Moves marked 'X' indicate the top move according to KataGo, those with a "
+"square are moves that lose less than 0.5 points"
+
+msgid "Info:score"
+msgstr "예상 점수: {score}"
+
+msgid "Info:winrate"
+msgstr "승리 확률: {winrate}"
+
+msgid "Info:point loss"
+msgstr "Estimated point loss: {points_lost:.1f}"
+
+msgid "Info:top move"
+msgstr "Predicted top move was {top_move} ({score})."
+
+msgid "Info:best move"
+msgstr "Move was predicted best move"
+
+msgid "Info:PV"
+msgstr "PV: {pv}"
+
+msgid "Info:policy rank"
+msgstr "Move was #{rank} according to policy  ({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "Top policy move was {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr "Move was automatically undone in teaching mode."
+
+msgid "Info:undo predicted PV"
+msgstr "Predicted follow-up: {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "AI thought process: {thoughts}"
+
+msgid "No analysis available"
+msgstr "No analysis available"
+
+msgid "Analyzing move..."
+msgstr "Analyzing move..."
+
+msgid "SGF Notes Hint"
+msgstr "Your SGF notes for this position here."
+
+#. misc errors and info messages
+msgid "Copied SGF to clipboard."
+msgstr "Copied SGF to clipboard."
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"Failed to import game from clipboard: {error}\n"
+"Clipboard contents: {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "Failed to load SGF. Parse Error: {error}"
+
+msgid "Starting default Kata failed"
+msgstr ""
+"Starting KataGo with command '{command}' failed with error {error}. If on "
+"MacOS, see the manual on how to use brew to install katago first, and add it"
+" to your path or 'engine/katago' setting."
+
+msgid "Starting Kata failed"
+msgstr ""
+"Starting kata with command '{command}' failed with error {error}. Please "
+"make sure the 'katago' value under 'engine' in settings points to the "
+"correct KataGo executable."
+
+msgid "Engine died unexpectedly"
+msgstr ""
+"Engine died unexpectedly without sending output, possibly due to out of "
+"memory: {e}"

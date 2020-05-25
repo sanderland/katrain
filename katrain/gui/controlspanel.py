@@ -11,7 +11,6 @@ from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup
 from katrain.gui.ai_settings import ConfigAIPopupContents
 
 
-
 class ControlsPanel(BoxLayout):
     katrain = ObjectProperty(None)
     button_controls = ObjectProperty(None)

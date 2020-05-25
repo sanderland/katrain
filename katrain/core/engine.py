@@ -57,10 +57,13 @@ class KataGoEngine:
             self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except (FileNotFoundError, PermissionError, OSError) as e:
             if not self.config["katago"].strip():
-                self.katrain.log(                    i18n._("Starting default Kata failed").format(command=self.comment,error=e),                    OUTPUT_ERROR,
+                self.katrain.log(
+                    i18n._("Starting default Kata failed").format(command=self.comment, error=e), OUTPUT_ERROR,
                 )
             else:
-                self.katrain.log( i18n._("Starting Kata failed").format(command=self.comment,error=e)                   ,                    OUTPUT_ERROR,                )
+                self.katrain.log(
+                    i18n._("Starting Kata failed").format(command=self.comment, error=e), OUTPUT_ERROR,
+                )
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
         self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
 

@@ -9,11 +9,13 @@
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 
 #-- NEW
+#:import RED __main__.RED
+
+
 #:set BLACK [0.05,0.05,0.05,1]
 #:set WHITE [0.95,0.95,0.95,1]
 #:set GREY  [0.5,0.5,0.5,1]
 #:set GREEN  [0.1,0.8,0.1,1]
-#:set RED    [0.8,0.1,0.1,1]
 #:set LIGHTBLUE  [0.3,0.7,0.9,1]
 #:set YELLOW [0.8,0.8,0.1,1]
 
@@ -86,6 +88,11 @@
 <SizedMDFlatButton>:
     ripple_duration_in_slow: 0.6
 
+<SizedMDFlatToggleButton>:
+    inactive_color: BACKGROUND_COLOR
+    active_color: BOX_BACKGROUND_COLOR
+    md_bg_color: self.active_color if self.state=='down' else self.inactive_color
+
 <SizedMDFlatRectangleButton>:
     outline_color: root.color
     text_color: root.color
@@ -109,8 +116,9 @@
 <TransparentIconButton>:
     background_normal: ''
     background_color: (0,0,0,0)
-    icon_size: self.icon_size or [min(self.size[0],self.size[1]),min(self.size[0],self.size[1])]
+    image: image
     Image:
+        id: image
         size: root.icon_size
         pos: [root.pos[i] + (root.size[i] - root.icon_size[i])/2 for i in [0,1]]
         source: root.icon
@@ -228,24 +236,6 @@
     valign: 'middle'
     size: self.texture_size
 
-<CensorableLabel>:
-    value : value
-    orientation: 'horizontal'
-    ClickableLabel:
-        size_hint: 0.6,1
-        id: desc
-        text: root.label
-        font_size: self.size[1] * 0.8
-        on_press: value.opacity =  1 if  value.opacity==0 else 0
-    I18NLabel:
-        size_hint: 0.4,1
-        text: root.text
-        color: root.color
-        font_size: desc.font_size
-        id: value
-        bold: True
-
-
 
 <CircleWithText>:
     min_size: min(self.height,self.width)
@@ -260,7 +250,7 @@
         text: root.text
         bold: True
         color: BLACK if root.player=='White' else WHITE
-        pos: (image.x, image.y+2)
+        pos: (image.x, image.y)
         size: image.size
         font_size: root.min_size * 1.2 / (1 + 1 * len(self.text))
 
@@ -270,11 +260,10 @@
     size: self.parent.height, self.parent.height
     katrain: app.gui
 
-<BoardControlsButton@MDFillRoundFlatIconButton>:
-
 
 <NavIconButton@TransparentIconButton>:
-    size_hint: 0.06, 0.5
+    size_hint: 0.06, 0.4
+    icon_size: [min(self.size[0],self.size[1]),min(self.size[0],self.size[1])]
     pos_hint: {'center_y': 0.5}
 
 <BadukPanControls>:
@@ -293,59 +282,28 @@
     SizedMDFlatRectangleButton:
         id: pass_btn
         text: i18n._('pass-button-text')
-        tooltip_text: i18n._('pass-button-tooltip')
         size_hint: None, 0.5
         width: 2*self.height
         pos_hint: {'x': 0.1,'center_y':0.5}
         on_left_release: root.katrain("play",None)
-        canvas.before:
-            Color:
-                rgba: RED
-            Line:
-                rectangle:  (*self.pos,*self.size)
-                width: 1
     BoxLayout:
         size_hint: None, 1
         width: 8 * self.height
         pos_hint: {'center_x': 0.5,'center_y':0.5}
-        canvas.before:
-            Color:
-                rgba: RED
-            Line:
-                rectangle:  (*self.pos,*self.size)
-                width: 1
         Label:
-            size_hint: 0.06, 0.5
+            size_hint: 0.075, 0.5
         NavIconButton:
             icon: 'img/flaticon/previous999.png'
-            on_press: root.katrain('undo',999)
-            canvas.before:
-                Color:
-                    rgba: RED
-                Line:
-                    rectangle:  (*self.pos,*self.size)
-                    width: 1
+            on_press: print(self.size,self.image.size,self.parent.size,self.icon_size) #root.katrain('undo',999)
         NavIconButton:
             icon: 'img/flaticon/previous5.png'
             on_press: root.katrain('undo',5)
         NavIconButton:
             icon: 'img/flaticon/previous.png'
             on_press: root.katrain('undo')
-            canvas.before:
-                Color:
-                    rgba: RED
-                Line:
-                    rectangle:  (*self.pos,*self.size)
-                    width: 1
         MDFloatLayout:
-            size_hint: 0.075, 1
+            size_hint: 0.065, 1
             id: mid_circles_container
-            canvas.before:
-                Color:
-                    rgba: RED
-                Line:
-                    rectangle:  (*self.pos,*self.size)
-                    width: 1
             CircleWithText:
                 size_hint: 5/8, 1
                 pos_hint: {'center_x': 0.5-3/16}
@@ -361,12 +319,6 @@
         NavIconButton:
             icon: 'img/flaticon/next.png'
             on_press: root.katrain('redo')
-            canvas.before:
-                Color:
-                    rgba: RED
-                Line:
-                    rectangle:  (*self.pos,*self.size)
-                    width: 1
         NavIconButton:
             icon: 'img/flaticon/next5.png'
             on_press: root.katrain('redo',5)
@@ -387,6 +339,7 @@
 <PlayerInfo@MDBoxLayout>:
     captures: 0
     name: 'Player'
+    outline_color: RED
     player: 'Black'
     description: '...'
     CircleWithText:
@@ -543,23 +496,39 @@
         opacity: int(root.show_winrate)
 
 
+<StatsLabel>:
+    value : value
+    orientation: 'horizontal'
+    I18NLabel:
+        size_hint: 0.6,1
+        id: desc
+        text: root.label if not root.hidden else ''
+        font_size: self.size[1] * 0.8
+    I18NLabel:
+        size_hint: 0.4,1
+        text: root.text if not root.hidden else ''
+        color: root.color
+        font_size: desc.font_size
+        id: value
+        bold: True
+
 <StatsBox>
     orientation: 'vertical'
     background_color: BOX_BACKGROUND_COLOR
     labels: {'score':score_label,'winrate':winrate_label,'points':pointloss_label}
-    CensorableLabel:
+    StatsLabel:
         id: winrate_label
-        label: 'Win rate'
+        label: i18n._('stats:winrate')
         text: root.winrate
         color: WINRATE_COLOR
-    CensorableLabel:
+    StatsLabel:
         id: score_label
-        label: 'Score'
+        label: i18n._('stats:score')
         text: root.score
         color: SCORE_COLOR
-    CensorableLabel:
+    StatsLabel:
         id: pointloss_label
-        label: 'Points Lost' if root.points_lost is None or root.points_lost > 0 else 'Points gained'
+        label: i18n._('stats:pointslost') if root.points_lost is None or root.points_lost > 0 else i18n._('stats:pointsgained')
         text: '{}: {:.1f}'.format(root.player,abs(root.points_lost)) if root.points_lost is not None else '...'
         color: POINTLOSS_COLOR
 
@@ -635,9 +604,9 @@
     CollapsablePanel:
         height_open: root.graph_box_height
         closed_label: 'closedlabel:scoregraph'
-        options: ['score','winrate','points']
-        option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
-        option_default_active: [True,False,False]
+        options: ['score','winrate']
+        option_colors: [SCORE_COLOR,WINRATE_COLOR]
+        option_default_active: [True,False]
         options_height: root.tab_option_height
         on_option_state: graph.show_graphs(args[1])
         ScoreGraph:
@@ -649,6 +618,7 @@
         option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
         option_default_active: [True,True,True]
         options_height: root.tab_option_height
+        on_option_state: for k, v in args[1].items(): stats.labels[k].hidden = not v
         StatsBox:
             id: stats
     CollapsablePanel:
@@ -657,6 +627,11 @@
         options: ['info','notes']
         option_colors: [RED,GREEN]
         option_default_active: [True,False]
+        on_option_state:
+            info.size_hint_y = int(args[1]['info'])+1e-9
+            info.opacity =  int(args[1]['info'])
+            note.size_hint_y = int(args[1]['notes'])+1e-9
+            note.opacity = int(args[1]['notes'])
         options_height: root.tab_option_height
         MDBoxLayout:
             orientation: 'vertical'
@@ -669,14 +644,13 @@
                 id: info
                 markup: True
                 on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
-                size_hint: 1, None
+                size_hint: 1, 1
                 height: self.parent.height - status.height - note.height - 1
             I18NTextInput:
                 id: note
-                size_hint: 1, None
+                size_hint: 1, 1
                 on_text: root.katrain.set_note(self.text)
-                hint_text: 'Your SGF notes for this position here.'
-                height: min( (len(self._lines)+0.7) * self.line_height, self.parent.height - status.height - 2.7*self.line_height)
+                hint_text: i18n._('SGF Notes Hint')
     Label:
         size_hint_y: 1e-9 # takes up remaining space if info is closed
 
@@ -821,11 +795,37 @@
             shortcut: 'Ctrl-N'
             on_action: root.katrain("new-game-popup")
 
+<OutlineBox@MDBoxLayout+OutlineColor>:
+
+
+<PlayAnalyzeButton@SizedMDFlatToggleButton>:
+    inactive_color: BACKGROUND_COLOR
+    active_color: YELLOW
+    ripple_color: BACKGROUND_COLOR
+    md_bg_color: self.active_color if self.state=='down' else self.inactive_color
+    text_color:  self.inactive_color if self.state=='down' else self.active_color
+    size_hint: 0.5,1
+    group: 'play_analyze'
+    allow_no_selection: False
+
+<PlayAnalyzeSelect@MDFloatLayout>
+    OutlineBox:
+        outline_color: WHITE
+        size_hint: 0.7,0.7
+        pos_hint: {'center_x':0.5,'center_y':0.45}
+        PlayAnalyzeButton:
+            text: i18n._('btn:Play')
+            id: play
+        PlayAnalyzeButton:
+            text: i18n._('btn:Analysis')
+            id: analyze
+            state: 'down'
 
 <KaTrainGui>:
     board_gui: board_gui
     controls: controls
     board_controls: board_controls
+    play_mode: play_mode
     analysis_controls: analysis_controls
     nav_drawer: nav_drawer
     zen: False
@@ -854,11 +854,10 @@
                         width: 0 if root.zen else self.height * 0.4
                         opacity: 0 if root.zen else 1
                         orientation: 'vertical'
-                        MDBoxLayout:
+                        PlayAnalyzeSelect:
+                            id: play_mode
                             size_hint_y: None
                             height: analysis_controls.height
-                            Label:
-                                text: 'BlaBla'
                         ControlsPanel:
                             id: controls
         MyNavigationDrawer:

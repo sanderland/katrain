@@ -1,5 +1,6 @@
 from kivy.config import Config  # isort:skip
-ICON = "img/icon.png" # isort:skip  # set icon
+
+ICON = "img/icon.png"  # isort:skip  # set icon
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
 
@@ -21,15 +22,7 @@ from kivy.uix.screenmanager import Screen
 from kivymd.app import MDApp
 
 from katrain.core.ai import ai_move
-from katrain.core.common import (
-    LANGUAGE,
-    OUTPUT_DEBUG,
-    OUTPUT_ERROR,
-    OUTPUT_EXTRA_DEBUG,
-    OUTPUT_INFO,
-    OUTPUT_KATAGO_STDERR,
-    find_package_resource,i18n
-)
+from katrain.core.common import LANGUAGE, OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO, OUTPUT_KATAGO_STDERR, find_package_resource, i18n
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
@@ -39,8 +32,7 @@ from katrain.gui.graph import ScoreGraph
 from katrain.gui.kivyutils import *
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
-
-
+from katrain.gui.style import *
 
 __version__ = "1.1.0"
 
@@ -136,7 +128,7 @@ class KaTrainGui(Screen):
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
         top, bot = [w.__self__ for w in self.board_controls.circles]  # no weakref
-        if self.game.next_player == "W":
+        if self.game.next_player.player == "W":
             top, bot = bot, top
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
@@ -276,7 +268,7 @@ class KaTrainGui(Screen):
         try:
             move_tree = KaTrainSGF.parse(clipboard)
         except Exception as e:
-            self.controls.set_status(i18n._("Failed to import from clipboard").format(error=e,contents=clipboard[:50]))
+            self.controls.set_status(i18n._("Failed to import from clipboard").format(error=e, contents=clipboard[:50]))
             return
         move_tree.nodes_in_tree[-1].analyze(self.engine, analyze_fast=False)  # speed up result for looking at end of game
         self._do_new_game(move_tree=move_tree, analyze_fast=True)

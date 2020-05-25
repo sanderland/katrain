@@ -10,9 +10,6 @@ msgstr ""
 msgid "Roboto"
 msgstr "Roboto"
 
-msgid "Hello World"
-msgstr "Hallo wereld"
-
 msgid "English"
 msgstr "Engels"
 
@@ -25,53 +22,164 @@ msgstr "Koreaans"
 msgid "pass-button-text"
 msgstr "Pas"
 
-msgid "pass-button-tooltip"
-msgstr ""
-"[spatiebalk]\n"
-"Pas"
-
-#. TODO
-msgid "KataGo"
-msgstr "KataGo"
-
-#. TODO
-msgid "tab:winrate"
-msgstr "Win Rate"
-
-#. TODO
-msgid "tab:points"
-msgstr "Point Loss"
-
-#. TODO
-msgid "tab:score"
-msgstr "Score"
-
-#. TODO
-msgid "tab:notes"
-msgstr "Notes"
-
 #. TODO
 msgid "tab:info"
 msgstr "Info"
+
+#. TODO
+msgid "Info:PV"
+msgstr "PV: {pv}"
+
+#. TODO
+msgid "board-pass"
+msgstr "pass"
 
 #. TODO
 msgid "closedlabel:scoregraph"
 msgstr "Score Graph"
 
 #. TODO
-msgid "closedlabel:info&notes"
-msgstr "Move Info & Notes"
+msgid "Starting default Kata failed"
+msgstr ""
+"Starting KataGo with command '{command}' failed with error {error}. If on "
+"MacOS, see the manual on how to use brew to install katago first, and add it"
+" to your path or 'engine/katago' setting."
+
+#. TODO
+msgid "Failed to load SGF"
+msgstr "Failed to load SGF. Parse Error: {error}"
+
+#. TODO
+msgid "Info:AI thoughts"
+msgstr "AI thought process: {thoughts}"
+
+#. TODO
+msgid "tab:winrate"
+msgstr "Win Rate"
+
+#. TODO
+msgid "Info:undo predicted PV"
+msgstr "Predicted follow-up: {pv}"
+
+#. TODO
+msgid "tab:notes"
+msgstr "Notes"
+
+#. TODO
+msgid "SGF start message"
+msgstr ""
+"Moves marked 'X' indicate the top move according to KataGo, those with a "
+"square are moves that lose less than 0.5 points"
+
+#. TODO
+msgid "Info:teaching undo"
+msgstr "Move was automatically undone in teaching mode."
+
+#. TODO
+msgid "Failed to import from clipboard"
+msgstr ""
+"Failed to import game from clipboard: {error}\n"
+"Clipboard contents: {contents}..."
+
+#. TODO
+msgid "Info:policy best"
+msgstr "Top policy move was {move} ({probability:.1%})."
+
+#. TODO
+msgid "Info:policy rank"
+msgstr "Move was #{rank} according to policy  ({probability:.2%})."
+
+#. TODO
+msgid "Analyzing move..."
+msgstr "Analyzing move..."
+
+#. TODO
+msgid "Copied SGF to clipboard."
+msgstr "Copied SGF to clipboard."
+
+#. TODO
+msgid "Engine died unexpectedly"
+msgstr ""
+"Engine died unexpectedly without sending output, possibly due to out of "
+"memory: {e}"
+
+#. TODO
+msgid "board-game-end"
+msgstr ""
+"game\n"
+"end"
+
+#. TODO
+msgid "Starting Kata failed"
+msgstr ""
+"Starting kata with command '{command}' failed with error {error}. Please "
+"make sure the 'katago' value under 'engine' in settings points to the "
+"correct KataGo executable."
 
 #. TODO
 msgid "closedlabel:movestats"
 msgstr "Move Stats"
 
 #. TODO
-msgid "board-game-end"
-msgstr ""
-"einde\n"
-"partij"
+msgid "Info:top move"
+msgstr "Predicted top move was {top_move} ({score})."
 
 #. TODO
-msgid "board-pass"
-msgstr "pas"
+msgid "Info:score"
+msgstr "Score: {score}"
+
+#. TODO
+msgid "Info:point loss"
+msgstr "Estimated point loss: {points_lost:.1f}"
+
+#. TODO
+msgid "No analysis available"
+msgstr "No analysis available"
+
+#. TODO
+msgid "tab:score"
+msgstr "Score"
+
+#. TODO
+msgid "Info:best move"
+msgstr "Move was predicted best move"
+
+#. TODO
+msgid "tab:points"
+msgstr "Point Loss"
+
+#. TODO
+msgid "Info:winrate"
+msgstr "Win rate: {winrate}"
+
+#. TODO
+msgid "closedlabel:info&notes"
+msgstr "Move Info & Notes"
+
+#. TODO
+msgid "btn:Analysis"
+msgstr "Analysis"
+
+#. TODO
+msgid "btn:Play"
+msgstr "Play"
+
+#. TODO
+msgid "stats:winrate"
+msgstr "Win Rate"
+
+#. TODO
+msgid "stats:pointslost"
+msgstr "Points Lost"
+
+#. TODO
+msgid "stats:score"
+msgstr "Estimated Score"
+
+#. TODO
+msgid "stats:pointsgained"
+msgstr "Points Gained"
+
+#. TODO
+msgid "SGF Notes Hint"
+msgstr "Your SGF notes for this position here."

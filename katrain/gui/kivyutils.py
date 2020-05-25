@@ -78,6 +78,11 @@ class SizedMDFlatButton(RectangularRippleBehavior, SizedMDBaseButton):
     pass
 
 
+class SizedMDFlatToggleButton(SizedMDFlatButton, ToggleButtonBehavior):
+    inactive_color = ListProperty([0.5, 0.5, 0.5, 1])
+    active_color = ListProperty([1, 1, 1, 1])
+
+
 class SizedMDFlatRectangleButton(SizedMDFlatButton, OutlineColor):
     color = ListProperty([1, 1, 1, 1])
 
@@ -87,7 +92,6 @@ class SizedMDFlatRectangleToggleButton(SizedMDFlatRectangleButton, ToggleButtonB
 
     @property
     def active(self):
-        return self.state == "down"
         return self.state == "down"
 
 
@@ -109,10 +113,11 @@ class LightLabel(I18NLabel):
     pass
 
 
-class CensorableLabel(MDBoxLayout):
+class StatsLabel(MDBoxLayout):
     text = StringProperty("")
     label = StringProperty("")
     color = ListProperty([1, 1, 1, 1])
+    hidden = BooleanProperty(False)
 
 
 class MyNavigationDrawer(MDNavigationDrawer):  # in PR - closes NavDrawer on any outside click

@@ -8,7 +8,6 @@ from katrain.gui.kivyutils import BackgroundColor
 class ScoreGraph(BackgroundColor):
     show_score = BooleanProperty(True)
     show_winrate = BooleanProperty(True)
-    show_pointloss = BooleanProperty(True)
 
     nodes = ListProperty([])
     score_points = ListProperty([])
@@ -36,7 +35,6 @@ class ScoreGraph(BackgroundColor):
     def show_graphs(self, keys):
         self.show_score = keys["score"]
         self.show_winrate = keys["winrate"]
-        self.show_pointloss = keys["points"]
 
     def update_graph(self, *args):
         nodes = self.nodes

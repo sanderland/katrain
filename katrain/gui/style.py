@@ -1,3 +1,10 @@
+def to_hexcol(kivycol):
+    return "#" + "".join(f"{round(c * 255):02x}" for c in kivycol[:3])
+
+
+# basic color definitions
+RED = [0.8, 0.1, 0.1, 1]
+
 # eval dots
 EVAL_COLORS = [
     [0.447, 0.129, 0.42, 1],
@@ -23,7 +30,10 @@ GHOST_ALPHA = 0.5
 TOP_MOVE_ALPHA = 0.3
 CHILD_SCALE = 0.95
 
-# ponder dot
+# ponder light
 ENGINE_DOWN_COL = [0.8, 0, 0, 1]
 ENGINE_BUSY_COL = [0.9, 0.4, 0.1, 1]
 ENGINE_READY_COL = [0.117, 0.588, 0, 1]
+
+# info
+PV_COLOR = to_hexcol(RED)
