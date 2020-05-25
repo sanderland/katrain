@@ -1,38 +1,46 @@
 from kivy.config import Config  # isort:skip
-from kivy.properties import ObjectProperty
-
-ICON = "img/icon.png"
-Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
-Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
-
-import signal
 import os
+import signal
 import sys
 import threading
 import traceback
 from queue import Queue
 
-from kivy.lang import Builder
-from kivy.resources import resource_add_path
-
 from kivy.app import App
-from kivymd.app import MDApp
 from kivy.core.clipboard import Clipboard
+from kivy.lang import Builder
+from kivy.properties import ObjectProperty
+from kivy.resources import resource_add_path
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
+from kivymd.app import MDApp
 
 from katrain.core.ai import ai_move
-from katrain.core.common import OUTPUT_INFO, OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, find_package_resource, LANGUAGE
+from katrain.core.common import (
+    LANGUAGE,
+    OUTPUT_DEBUG,
+    OUTPUT_ERROR,
+    OUTPUT_EXTRA_DEBUG,
+    OUTPUT_INFO,
+    OUTPUT_KATAGO_STDERR,
+    Lang,
+    find_package_resource,
+)
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
-from katrain.gui.kivyutils import *
-from katrain.gui.graph import ScoreGraph
-from katrain.gui.badukpan import BadukPanWidget, AnalysisControls, BadukPanControls
+from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel, RightButtonControls
-from katrain.gui.popups import NewGamePopup, ConfigPopup, LoadSGFPopup
-from katrain.core.common import Lang
+from katrain.gui.graph import ScoreGraph
+from katrain.gui.kivyutils import *
+from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup
+from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
+
+ICON = "img/icon.png"
+Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
+Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
+
 
 __version__ = "1.1.0"
 
@@ -105,7 +113,6 @@ class KaTrainGui(Screen):
         if self.engine:
             return
         self.board_gui.trainer_config = self.config("trainer")
-        self.board_gui.ui_config = self.config("board_ui")
         self.engine = KataGoEngine(self, self.config("engine"))
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
         self._do_new_game()
@@ -139,11 +146,11 @@ class KaTrainGui(Screen):
 
         # update engine status dot
         if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
-            self.controls.engine_status_col = self.config("board_ui/engine_down_col")
+            self.controls.engine_status_col = ENGINE_DOWN_COL
         elif len(self.engine.queries) == 0:
-            self.controls.engine_status_col = self.config("board_ui/engine_ready_col")
+            self.controls.engine_status_col = ENGINE_READY_COL
         else:
-            self.controls.engine_status_col = self.config("board_ui/engine_busy_col")
+            self.controls.engine_status_col = ENGINE_BUSY_COL
 
         # redraw
         if redraw_board:
@@ -203,7 +210,7 @@ class KaTrainGui(Screen):
     def _do_play(self, coords):
         self.board_gui.animating_pv = None
         try:
-            self.game.play(Move(coords, player=self.game.next_player))
+            self.game.play(Move(coords, player=self.game.next_player.player))
         except IllegalMoveException as e:
             self.controls.set_status(f"Illegal Move: {str(e)}")
 
@@ -329,7 +336,6 @@ class KaTrainGui(Screen):
         elif keycode[1] == "v" and "ctrl" in modifiers:
             self.load_sgf_from_clipboard()
         return True
-
 
 
 class KaTrainApp(MDApp):

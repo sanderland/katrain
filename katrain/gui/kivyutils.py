@@ -23,12 +23,13 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BasePressedButton, BaseFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
-
-from katrain.core.common import i18n, I18NLabel, I18NTextInput, I18NCoreLabel
+from kivy.core.text import Label as CoreLabel
+from katrain.core.common import i18n, I18NTextInput, I18NLabel
 
 #
 
 # --- new mixins
+
 
 class BackgroundColor(Widget):
     background_color = ListProperty([1, 1, 1, 0])
@@ -89,14 +90,16 @@ class SizedMDFlatRectangleToggleButton(SizedMDFlatRectangleButton, ToggleButtonB
         return self.state == "down"
         return self.state == "down"
 
+
 class AutoSizedMDFlatRectangleButton(SizedMDFlatRectangleButton):
     hor_padding = NumericProperty(3)
+
 
 class AutoSizedMDFlatRectangleToggleButton(SizedMDFlatRectangleToggleButton):
     hor_padding = NumericProperty(3)
 
 
-class TransparentIconButton(CircularRippleBehavior,Button):
+class TransparentIconButton(CircularRippleBehavior, Button):
     icon_size = ListProperty([25, 25])
     icon = StringProperty("")
 
@@ -123,7 +126,7 @@ class MyNavigationDrawer(MDNavigationDrawer):  # in PR - closes NavDrawer on any
         return super().on_touch_up(touch)
 
 
-class CircleWithText(MDFloatLayout):
+class CircleWithText(Widget):
     text = StringProperty("0")
     player = OptionProperty("Black", options=["Black", "White"])
     min_size = NumericProperty(50)
@@ -156,7 +159,7 @@ class CollapsablePanel(MDBoxLayout):
     option_labels = ListProperty([])
     option_default_active = ListProperty([])
     option_colors = ListProperty([])
-    closed_label = StringProperty('Closed Panel')
+    closed_label = StringProperty("Closed Panel")
 
     size_hint_y_open = NumericProperty(1)
     height_open = NumericProperty(None)
@@ -170,44 +173,48 @@ class CollapsablePanel(MDBoxLayout):
         self.option_buttons = []
         super().__init__(**kwargs)
         self.orientation = "vertical"
-        self.bind(options=self.build_options, option_colors=self.build_options, options_height=self.build_options,
-                  option_default_active=self.build_options,options_left_padding=self.build_options)
-        self.bind(state=self.build,size_hint_y_open=self.build,height_open=self.build)
+        self.bind(
+            options=self.build_options,
+            option_colors=self.build_options,
+            options_height=self.build_options,
+            option_default_active=self.build_options,
+            options_left_padding=self.build_options,
+        )
+        self.bind(state=self.build, size_hint_y_open=self.build, height_open=self.build)
         self.build_options()
 
     def build_options(self, *args, **kwargs):
-        self.header = MDBoxLayout(height=self.options_height,size_hint_y=None,
-                                  padding=[self.options_left_padding, 0, 0, 0], spacing=3)
+        self.header = MDBoxLayout(height=self.options_height, size_hint_y=None, padding=[self.options_left_padding, 0, 0, 0], spacing=3)
         self.option_buttons = []
         option_labels = self.option_labels or [i18n._(f"tab:{opt}") for opt in self.options]
         for lbl, opt_col, active in zip(option_labels, self.option_colors, self.option_default_active):
-            button = AutoSizedMDFlatRectangleToggleButton(text=lbl,color=opt_col, height=self.options_height,
-                                                          on_press=self.trigger_select, state="down" if active else "normal")
+            button = AutoSizedMDFlatRectangleToggleButton(text=lbl, color=opt_col, height=self.options_height, on_press=self.trigger_select, state="down" if active else "normal")
             self.option_buttons.append(button)
-        self.open_close_button = TransparentIconButton( # <<  / >> collapse button
+        self.open_close_button = TransparentIconButton(  # <<  / >> collapse button
             icon=self.open_close_icon(),
             icon_size=[0.5 * self.options_height, 0.5 * self.options_height],
-            width=0.75*self.options_height,size_hint_x=None,
-            on_press=lambda *_args: self.set_state('toggle'),
+            width=0.75 * self.options_height,
+            size_hint_x=None,
+            on_press=lambda *_args: self.set_state("toggle"),
         )
-        self.bind(state=lambda *_args: self.open_close_button.setter("icon")(None,self.open_close_icon()))
+        self.bind(state=lambda *_args: self.open_close_button.setter("icon")(None, self.open_close_icon()))
         self.build()
 
     def build(self, *args, **kwargs):
         self.header.clear_widgets()
-        if self.state=='open':
+        if self.state == "open":
             for button in self.option_buttons:
                 self.header.add_widget(button)
-            self.header.add_widget(Label()) # spacer
+            self.header.add_widget(Label())  # spacer
             self.trigger_select()
         else:
-            self.header.add_widget(I18NLabel(text=i18n._(self.closed_I18NLabel),halign='right',height=self.options_height))
+            self.header.add_widget(I18NLabel(text=i18n._(self.closed_label), halign="right", height=self.options_height))
         self.header.add_widget(self.open_close_button)
 
         super().clear_widgets()
         super().add_widget(self.header)
         height, size_hint_y = 1, None
-        if self.state=='open' and self.contents:
+        if self.state == "open" and self.contents:
             super().add_widget(self.contents)
             if self.height_open:
                 height = self.height_open
@@ -215,7 +222,7 @@ class CollapsablePanel(MDBoxLayout):
                 size_hint_y = self.size_hint_y_open
         else:
             height = self.header.height
-        self.height, self.size_hint_y = height,size_hint_y
+        self.height, self.size_hint_y = height, size_hint_y
 
     def open_close_icon(self):
         return self.open_icon if self.state == "open" else self.close_icon
@@ -236,11 +243,17 @@ class CollapsablePanel(MDBoxLayout):
 
     def trigger_select(self, *_args):
         if self.state == "open":
-            self.dispatch("on_option_state",{opt:btn.state == "down" for opt,btn in zip(self.options,self.option_buttons)})
+            self.dispatch("on_option_state", {opt: btn.state == "down" for opt, btn in zip(self.options, self.option_buttons)})
 
     def on_option_state(self, options):
         pass
 
+
+class StatsBox(MDBoxLayout, BackgroundColor):
+    winrate = StringProperty("...")
+    score = StringProperty("...")
+    points_lost = NumericProperty(None, allownone=True)
+    player = StringProperty("")
 
 
 # --- not checked
@@ -469,7 +482,7 @@ class LabelledIntInput(LabelledTextInput):
 
 
 def draw_text(pos, text, **kw):
-    label = I18NCoreLabel(text=text, bold=True, **kw)
+    label = CoreLabel(text=text, bold=True, font_name=i18n._("Roboto"), **kw)  #
     label.refresh()
     Rectangle(texture=label.texture, pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2), size=label.texture.size)
 

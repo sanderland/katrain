@@ -33,10 +33,10 @@ class ScoreGraph(BackgroundColor):
             self.nodes.append(node)
         self.highlighted_index = 0
 
-    def show_graphs(self,keys):
-        self.show_score = keys['score']
-        self.show_winrate = keys['winrate']
-        self.show_pointloss = keys['points']
+    def show_graphs(self, keys):
+        self.show_score = keys["score"]
+        self.show_winrate = keys["winrate"]
+        self.show_pointloss = keys["points"]
 
     def update_graph(self, *args):
         nodes = self.nodes
@@ -45,21 +45,23 @@ class ScoreGraph(BackgroundColor):
             score_nn_values = [n.score for n in nodes if n and n.score]
             score_values_range = min(score_nn_values or [0]), max(score_nn_values or [0])
 
-            winrate_values = [(n.winrate-0.5)*100 if n and n.winrate else math.nan for n in nodes]
-            winrate_nn_values = [(n.winrate-0.5)*100 for n in nodes if n and n.winrate]
+            winrate_values = [(n.winrate - 0.5) * 100 if n and n.winrate else math.nan for n in nodes]
+            winrate_nn_values = [(n.winrate - 0.5) * 100 for n in nodes if n and n.winrate]
             winrate_values_range = min(winrate_nn_values or [0]), max(winrate_nn_values or [0])
 
             score_granularity = 5
             winrate_granularity = 10
-            self.score_scale = max(math.ceil( max(-score_values_range[0], score_values_range[1]) / score_granularity),1) * score_granularity
+            self.score_scale = max(math.ceil(max(-score_values_range[0], score_values_range[1]) / score_granularity), 1) * score_granularity
             self.winrate_scale = max(math.ceil(max(-winrate_values_range[0], winrate_values_range[1]) / winrate_granularity), 1) * winrate_granularity
 
             xscale = self.width / max(len(score_values) - 1, 15)
             available_height = self.height
             score_line_points = [[self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.score_scale)] for i, val in enumerate(score_values)]
-            winrate_line_points = [[self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.winrate_scale)] for i, val in enumerate(winrate_values)]
+            winrate_line_points = [
+                [self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.winrate_scale)] for i, val in enumerate(winrate_values)
+            ]
             self.score_points = sum(score_line_points, [])
-            self.winrate_points = sum(winrate_line_points,[])
+            self.winrate_points = sum(winrate_line_points, [])
 
             if self.highlighted_index is not None:
                 self.highlighted_index = min(self.highlighted_index, len(score_values) - 1)

@@ -6,7 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivymd.uix.boxlayout import MDBoxLayout
 
-from katrain.core.common import PLAYER_HUMAN, PLAYER_AI, PLAYER_HUMAN_TEACHING
+from katrain.core.common import MODE_PLAY, MODE_ANALYZE
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup
 from katrain.gui.ai_settings import ConfigAIPopupContents
 
@@ -28,7 +28,6 @@ class ControlsPanel(BoxLayout):
         self.active_comment_node = None
         self.timer_settings_popup = None
         self.last_timer_update = (None, 0)
-        self.periods_used = {"B": 0, "W": 0}
         Clock.schedule_interval(self.update_timer, 0.07)
 
     def check_hide_show(self, *_args):
@@ -42,66 +41,47 @@ class ControlsPanel(BoxLayout):
 
     @property
     def play_analyze_mode(self):
-        return "analyze"  # ??
-
-    def player_mode(self, player):
-        return PLAYER_HUMAN
-
-    def ai_mode(self, player):
-        return self.ai_mode_groups[player].text
-
-    def teaching_mode_enabled(self):
-        return PLAYER_HUMAN_TEACHING in [self.player_mode("B"), self.player_mode("W")]
-
-    def on_size(self, *args):
-        self.update_evaluation()
+        return MODE_ANALYZE  # ??
 
     # handles showing completed analysis and score graph
     def update_evaluation(self):
         katrain = self.katrain
-        current_node = katrain and katrain.game and katrain.game.current_node
-
-        if current_node is not self.status_node and not (self.status is not None and self.status_node is None and current_node.is_root):  # startup errors on root
+        game = katrain and katrain.game
+        if not game:
+            return
+        current_node, move = game.current_node, game.current_node.move
+        if game.current_node is not self.status_node and not (self.status is not None and self.status_node is None and game.current_node.is_root):  # startup errors on root
             self.status.text = ""
             self.status_node = None
 
-        info = ""
+        both_players_are_robots = all(p.ai for p in game.players.values())
+        last_player_was_ai_playing_human = game.last_player.ai and game.next_player.human
 
-        if current_node:
-            hints = katrain.analysis_controls.hints.active
-            move = current_node.move
-            both_players_are_robots = self.player_mode(current_node.player) == PLAYER_AI and self.player_mode(current_node.next_player) == PLAYER_AI
-            last_player_was_human_or_both_robots = current_node.player and (self.player_mode(current_node.player) != PLAYER_AI or both_players_are_robots)
-            last_player_was_ai_playing_human = (
-                current_node.player and self.player_mode(current_node.player) == PLAYER_AI and self.player_mode(current_node.next_player) != PLAYER_AI
-            )
-            if last_player_was_human_or_both_robots and not current_node.is_root and move:
-                info += current_node.comment(teach=self.player_mode(current_node.player) == PLAYER_HUMAN_TEACHING, hints=hints)
-                self.active_comment_node = current_node
-            elif last_player_was_ai_playing_human and current_node.parent:
-                info += current_node.parent.comment(teach=self.player_mode(current_node.next_player) == PLAYER_HUMAN_TEACHING, hints=hints)
+        self.active_comment_node = current_node
+        if self.play_analyze_mode == MODE_PLAY and last_player_was_ai_playing_human:
+            if game.next_player.being_taught and current_node.children and current_node.children.auto_undo:
+                self.active_comment_node = current_node.children[-1]
+            elif current_node.parent:
                 self.active_comment_node = current_node.parent
 
-            if current_node.analysis_ready:
-                self.stats.score.text = current_node.format_score()
-                self.stats.winrate.text = current_node.format_winrate()
-                if move and last_player_was_human_or_both_robots:  # don't immediately hide this when an ai moves comes in
-                    points_lost = current_node.points_lost
-                    self.stats.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
-                    self.stats.score_change.text = f"{move.player}: {abs(points_lost):.1f}" if points_lost else "-"
-                elif not last_player_was_ai_playing_human:
-                    self.stats.score_change.label = f"Points lost"
-                    self.stats.score_change.text = "-"
-            elif last_player_was_ai_playing_human and current_node.parent and current_node.parent.move:
-                points_lost = current_node.parent.points_lost
-                self.stats.score_change.label = f"Points lost" if points_lost and points_lost > 0 else f"Points gained"
-                self.stats.score_change.text = f"{current_node.parent.move.player}: {abs(points_lost):.1f}" if points_lost else "-"
-            elif both_players_are_robots and current_node.parent and current_node.parent.analysis_ready:
-                self.stats.score.text = current_node.parent.format_score()
-                self.stats.winrate.text = current_node.parent.format_winrate()
+        hints = katrain.analysis_controls.hints.active
+        info = ""
+        if current_node.move and not current_node.is_root:
+            info = self.active_comment_node.comment(teach=game.players[self.active_comment_node.player].being_taught, hints=hints)
 
-            self.graph.update_value(current_node)
-            self.note.text = current_node.note
+        if self.active_comment_node.analysis_ready:
+            self.stats.score = self.active_comment_node.format_score() or ""
+            self.stats.winrate = self.active_comment_node.format_winrate() or ""
+            self.stats.points_lost = self.active_comment_node.points_lost
+            self.stats.player = self.active_comment_node.player
+        else:
+            self.stats.score = ""
+            self.stats.winrate = ""
+            self.stats.points_lost = None
+            self.stats.player = ""
+
+        self.graph.update_value(current_node)
+        self.note.text = current_node.note
         self.info.text = info
 
     def configure_ais(self):
@@ -122,10 +102,10 @@ class ControlsPanel(BoxLayout):
             last_update_node, last_update_time = self.last_timer_update
             now = time.time()
             self.last_timer_update = (current_node, now)
-            player = current_node.next_player
             byo_len = max(1, self.katrain.config("timer/byo_length"))
             byo_num = max(1, self.katrain.config("timer/byo_num"))
-            ai = self.player_mode(player) == PLAYER_AI
+            player = self.katrain.game.next_player
+            ai = player.ai
             if not self.timer.paused and not ai:
                 if last_update_node == current_node and not current_node.children:
                     current_node.time_used += now - last_update_time
@@ -135,9 +115,9 @@ class ControlsPanel(BoxLayout):
                 while time_remaining < 0:
                     current_node.time_used -= byo_len
                     time_remaining += byo_len
-                    self.periods_used[player] += 1
+                    player.periods_used += 1
             time_remaining = byo_len - current_node.time_used
-            periods_rem = byo_num - self.periods_used[player]
+            periods_rem = byo_num - player.periods_used
             self.timer.state = (time_remaining, periods_rem, ai)
 
     def configure_timer(self):

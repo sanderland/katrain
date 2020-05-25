@@ -17,9 +17,7 @@ OUTPUT_INFO = 0
 OUTPUT_DEBUG = 1
 OUTPUT_EXTRA_DEBUG = 2
 
-PLAYER_HUMAN = 0
-PLAYER_HUMAN_TEACHING = 1
-PLAYER_AI = 2
+MODE_PLAY, MODE_ANALYZE = "play", "analyze"
 
 
 def var_to_grid(array_var: List[Any], size: Tuple[int, int]) -> List[List[Any]]:
@@ -63,7 +61,8 @@ class Lang(Observable):
         self.switch_lang(self.lang)
 
     def _(self, text):
-        return self.ugettext(text)
+        str = self.ugettext(text)
+        return str
 
     def fbind(self, name, func, *args, **kwargs):
         if name == "_":
@@ -74,7 +73,7 @@ class Lang(Observable):
     def funbind(self, name, func, *args, **kwargs):
         if name == "_":
             key = (func, args, kwargs)
-            print('funbind',key in self.observers)
+            print("funbind", key in self.observers)
             if key in self.observers:
                 self.observers.remove(key)
         else:
@@ -92,16 +91,20 @@ class Lang(Observable):
             try:
                 func(args[0], None, None)
             except ReferenceError:
-                pass # proxy no longer exists
+                pass  # proxy no longer exists
+
 
 LANGUAGE = "nl"
 i18n = Lang(LANGUAGE)
 
+
 class I18NLabel(Label):
     pass
 
+
 class I18NCoreLabel(CoreLabel):
     pass
+
 
 class I18NTextInput(TextInput):
     pass

@@ -94,7 +94,6 @@ class GameNode(SGFNode):
     def analysis_ready(self):
         return self.analysis["root"] is not None
 
-
     @property
     def score(self) -> Optional[float]:
         if self.analysis_ready:
@@ -178,7 +177,6 @@ class GameNode(SGFNode):
             parent_parent_score = self.parent.parent.score
             score = self.score
             return self.player_sign(single_move.player) * (score - parent_parent_score)
-
 
     @staticmethod
     def player_sign(player):

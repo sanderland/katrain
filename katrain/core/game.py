@@ -19,15 +19,47 @@ class KaTrainSGF(SGF):
     _NODE_CLASS = GameNode
 
 
+PLAYER_HUMAN, PLAYER_AI = "Player", "AI"
+PLAYING_NORMAL, PLAYING_TEACHING = "Normal game", "Teaching game"
+AI_DEFAULT = "default"
+
+
+class Player:
+    def __init__(self, player="B", player_type=PLAYER_HUMAN, player_subtype=PLAYING_NORMAL, periods_used=0):
+        self.player = player
+        self.player_type = player_type
+        self.player_subtype = player_subtype
+        self.periods_used = periods_used
+
+    @property
+    def ai(self):
+        return self.player_type == PLAYER_AI
+
+    @property
+    def human(self):
+        return self.player_type == PLAYER_HUMAN
+
+    @property
+    def being_taught(self):
+        return self.player_type == PLAYER_HUMAN and self.player_subtype == PLAYING_TEACHING
+
+    def strategy(self):
+        return self.player_subtype if self.ai else AI_DEFAULT
+
+    def __str__(self):
+        return f"{self.player_type} ({self.player_subtype})"
+
+
 class Game:
     """Represents a game of go, including an implementation of capture rules."""
 
     DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "RU": "JP", "AP": "KaTrain:https://github.com/sanderland/katrain"}
 
-    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], config: Dict, move_tree: GameNode = None, analyze_fast=False):
+    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], config: Dict, move_tree: GameNode = None, players: Dict = None, analyze_fast=False):
         self.katrain = katrain
         if not isinstance(engine, Dict):
             engine = {"B": engine, "W": engine}
+        self.players = players or {"B": Player("B"), "W": Player("W")}
         self.engines = engine
         self.config = config
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
@@ -42,9 +74,19 @@ class Game:
             board_size = config.get("init_size", 19)
             self.komi = self.config.get("init_komi", 6.5)
             self.root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}})
+            self.root.set_property("PW", str(self.players["W"]))
+            self.root.set_property("PB", str(self.players["B"]))
 
         self.set_current_node(self.root)
         threading.Thread(target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast), daemon=True).start()  # return faster, but bypass Kivy Clock
+
+    @property
+    def last_player(self) -> Player:
+        return self.players[self.current_node.player]
+
+    @property
+    def next_player(self) -> Player:
+        return self.players[self.current_node.next_player]
 
     def analyze_all_nodes(self, priority=0, analyze_fast=False):
         for node in self.root.nodes_in_tree:
@@ -180,10 +222,6 @@ class Game:
     @property
     def board_size(self):
         return self.root.board_size
-
-    @property
-    def next_player(self):
-        return self.current_node.next_player
 
     @property
     def stones(self):
