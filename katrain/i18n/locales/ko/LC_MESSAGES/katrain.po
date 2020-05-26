@@ -20,7 +20,7 @@ msgid "Korean"
 msgstr "한국어"
 
 msgid "pass-button-text"
-msgstr "착수 넘김"
+msgstr "패스"
 
 #. tabs and labels on the right panel
 msgid "tab:score"
@@ -49,7 +49,7 @@ msgstr "수의 정보 & 메모"
 
 #. on board in circle
 msgid "board-pass"
-msgstr "착수\n넘김"
+msgstr "패스"
 
 msgid "board-game-end"
 msgstr "게임\n끝났다"

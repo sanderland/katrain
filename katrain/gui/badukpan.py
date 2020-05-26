@@ -11,10 +11,10 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.menu import MDDropdownMenu
 
-from katrain.core.common import OUTPUT_DEBUG, evaluation_class, i18n, MODE_PLAY
+from katrain.core.utils import OUTPUT_DEBUG, evaluation_class, i18n, MODE_PLAY
 from katrain.core.game import Move
 from katrain.gui.kivyutils import draw_circle, draw_text
-from katrain.core.common import var_to_grid
+from katrain.core.utils import var_to_grid
 from kivy.core.window import Window
 
 from katrain.gui.style import (
@@ -409,7 +409,7 @@ class BadukPanWidget(Widget):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
 
-class AnalysisControls(MDBoxLayout):
+class AnalysisControls(MDFloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.analysis_menu = None

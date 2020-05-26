@@ -2,7 +2,7 @@ import copy
 import random
 from typing import Dict, List, Optional, Tuple
 
-from katrain.core.common import evaluation_class, var_to_grid, i18n
+from katrain.core.utils import evaluation_class, var_to_grid, i18n
 from katrain.core.sgf_parser import Move, SGFNode
 from katrain.gui.style import PV_COLOR
 

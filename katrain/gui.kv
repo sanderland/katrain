@@ -29,6 +29,8 @@
 #:set BOX_BACKGROUND_COLOR  [46/255,65/255,88/255,1]
 #:set TEXT_COLOR            WHITE
 
+#:set NOTES_FONT_SIZE dp(18)
+
 <I18NLabel>:
     font_name: i18n._('Roboto')
 
@@ -104,11 +106,12 @@
 
 <AutoSizedMDFlatRectangleButton>: # only wants height
     width: self.label.texture_size[0] + self.hor_padding * 2
-    font_size: 0.8 * self.height / len(self.label.text.split('\n'))
+    font_size: 0.75 * self.height / len(self.label.text.split('\n'))
 
 <AutoSizedMDFlatRectangleToggleButton>: # only wants height
     width: self.label.texture_size[0] + self.hor_padding * 2
     font_size: 0.8 * self.height / len(self.label.text.split('\n'))
+
 
 <BGMDBoxLayout@MDBoxLayout+BackgroundColor>:
     background_color: BOX_BACKGROUND_COLOR
@@ -218,7 +221,7 @@
     valign: 'middle'
     markup: True
     multiline: False
-    font_name: 'img/fonts/digital-7.ttf'
+    font_name: 'fonts/digital-7.ttf'
 
 <ScaledLightLabel>: # popups
     color: TEXT_COLOR
@@ -271,14 +274,7 @@
     circles: [black_circle,white_circle]
     mid_circles_container: mid_circles_container
     pass_btn: pass_btn
-    hamburger: hamburger
     adaptive_height: True
-    HamburgerButton:
-        id: hamburger
-        size_hint: None, 1
-        width: self.height
-        pos_hint: {'x': 0}
-        on_press: app.gui.nav_drawer.set_state("open")
     SizedMDFlatRectangleButton:
         id: pass_btn
         text: i18n._('pass-button-text')
@@ -544,7 +540,7 @@
         id: label
         markup: root.markup
         padding: 5, 5
-        font_size: dp(18)
+        font_size: NOTES_FONT_SIZE
         color: WHITE
         size_hint_y: None
         height: self.texture_size[1]
@@ -562,6 +558,14 @@
 #:set CP_SPACING 6
 #:set CP_SMALL_SPACING 3
 #:set CP_PADDING 6
+
+<CollapsablePanelHeader>:
+    canvas.after:
+        Color:
+            rgba: BOX_BACKGROUND_COLOR
+        Line:
+            width: 1
+            points: (*self.pos,self.x+self.width,self.y)
 
 <ControlsPanel>:
     katrain: app.gui
@@ -648,20 +652,33 @@
                 height: self.parent.height - status.height - note.height - 1
             I18NTextInput:
                 id: note
+                font_size: NOTES_FONT_SIZE
                 size_hint: 1, 1
                 on_text: root.katrain.set_note(self.text)
                 hint_text: i18n._('SGF Notes Hint')
     Label:
         size_hint_y: 1e-9 # takes up remaining space if info is closed
 
-<RHSButton@AutoSizedMDFlatRectangleButton>:
-    md_bg_color: BOX_BACKGROUND_COLOR
-    size_hint_y: 1
 
-<RHSToggleButton@AutoSizedMDFlatRectangleToggleButton>:
-    md_bg_color: BOX_BACKGROUND_COLOR
-    on_press: app.gui.update_state()
-    size_hint_y: 1
+<AnalysisToggle@MDBoxLayout>:
+    adaptive_width: True
+    size_hint: None, 0.7
+    pos_hint: {'center_y':0.5}
+    I18NLabel:
+        id: label
+        text: root.text
+        halign: 'center'
+        font_size: root.height / 3
+        size_hint_x: None
+        width: self.texture_size[0] + 4
+    MDCheckbox:
+        size_hint: None,0.5
+        pos_hint: {'center_y': 0.5}
+        width: self.height
+        active: root.active
+        selected_color: WHITE
+        unselected_color: WHITE
+        on_active: print(label.size,label.texture_size) #if app.gui: app.gui.update_state()
 
 <AnalysisControls>:
     katrain: app.gui
@@ -674,33 +691,42 @@
     hints: hints
     ownership: ownership
     analysis_button: analysis_button
-    Label:
-    RHSToggleButton:
-        id: show_children
-        text: 'Next\nMoves'
-        color: WHITE
-        state: 'down'
-    RHSToggleButton:
-        id: eval
-        text: 'Evaluation\nDots'
-        color: WHITE
-    RHSToggleButton:
-        id: ownership
-        text: 'Expected\nTerritory'
-        color: WHITE
-    RHSToggleButton:
-        id: policy
-        text: 'Policy\nMoves'
-        color: WHITE
-    RHSToggleButton:
-        id: hints
-        text: 'Top\nMoves'
-        color: WHITE
-    RHSButton:
-        id: analysis_button
-        on_press: root.open_analysis_menu()
-        text: 'Analysis'
-    Label:
+    hamburger: hamburger
+    HamburgerButton:
+        id: hamburger
+        size_hint: None, 1
+        width: self.height
+        pos_hint: {'top': 0}
+        on_press: app.gui.nav_drawer.set_state("open")
+    MDBoxLayout:
+        pos_hint: {'center_x': 0.5,'center_y': 0.5}
+        size_hint: None, 1
+        adaptive_width: True
+        spacing: 8
+        AnalysisToggle:
+            id: show_children
+            text: 'Next\nMoves'
+            active: True
+        AnalysisToggle:
+            id: eval
+            text: 'Evaluation\nDots'
+        AnalysisToggle:
+            id: ownership
+            text: 'Expected\nTerritory'
+        AnalysisToggle:
+            id: policy
+            text: 'Policy\nMoves'
+        AnalysisToggle:
+            id: hints
+            text: 'Top\nMoves'
+        AutoSizedMDFlatRectangleButton:
+            md_bg_color: BOX_BACKGROUND_COLOR
+            size_hint_y: 0.7
+            id: analysis_button
+            on_press: root.open_analysis_menu()
+            text: 'Analysis'
+            pos_hint: {'center_y':0.5}
+
 
 
 <MainMenuItem>
@@ -863,10 +889,10 @@
         MyNavigationDrawer:
             id: nav_drawer
             state: "close"
-            y: board_gui.pos[1]+CP_SPACING
+            y: 0
             size_hint_y: None
-            width: self.height * 0.4
-            height: root.height - self.y
+            width: self.height * 0.5
+            height: root.height - analysis_controls.height
             swipe_edge_width: 0
             ContentNavigationDrawer:
 

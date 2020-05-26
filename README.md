@@ -74,17 +74,21 @@ Available AIs, with strength indicating an estimate for the default settings bas
 
 * **[9p+]** **Default** is full KataGo, above professional level.
 * **(RECOMMENDED)** **[~5k]**  **ScoreLoss** is KataGo making moves with probability `~ e^(-strength * points lost)`, playing a varied style with small mistakes.
-* **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points.
+* **Balance** is KataGo occasionally making weaker moves, attempting to win by ~2 points. It can still win by more if you make too many mistakes.
 * **Jigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
 * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading), should be around high dan level depending on the model used. There is a setting to increase variety in the opening, but otherwise it plays deterministically.
-* **(RECOMMENDED)** **[~3k]**: **P:Weighted** picks a random move weighted by the policy, as long as it's above `lower_bound`. `weaken_fac` uses `policy^(1/weaken_fac)`, increasing the chance for weaker moves.
-* **[~7k]**: **P:Pick** picks `pick_n + pick_frac *  <number of legal moves>` moves at random, and play the best move among them.
+* **(RECOMMENDED)** **[~3k]**: **P:Weighted** picks a random move weighted by the policy, 
+  as long as it's above `lower_bound`. Increasing `weaken_fac`, increases the chance for weaker moves.
+* **[~7k]**: **P:Pick** picks `pick_n + pick_frac *  <number of legal moves>` moves at random,
+   and play the best move among them.
    The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
-   This, along with 'Weighted' are probably the best choice for kyu players who want a chance of winning without playing the sillier bots below. Variants of this strategy include:
-    * **[~3k]**: **P:Local** will pick such moves biased towards the last move with probability related to `local_stddev`.
+   This, along with 'ScoreLoss' and 'Weighted' are probably the best choice for kyu players who want a chance of winning without playing the sillier bots below. Variants of this strategy include:
+    * **[~3k]**: **P:Local** will pick such moves close to the last move. The setting `local_stddev` determines how close.
     * **[~5k]**: **P:Tenuki** is biased in the opposite way as P:Local, using the same setting. After about half the board is filled, it stops and plays like P:Pick.
-    * **[~6k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight.
-    * **[~8k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting. Both of these also stop the strategy in endgame and revert to P:Pick.
+    * **[~6k]**: **P:Influence** is biased towards 4th+ line moves, with every line below that dividing both the chance
+        of considering the move and the policy value by `influence_weight`. Consider setting `pick_frac=1.0` to only affect the policy weight.
+    * **[~8k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves, using the same setting.
+        Both of these also stop the strategy in endgame and revert to P:Pick.
 
 The Engine based AIs (Default, ScoreLoss, Balance, Jigo) are affected by both the model and choice of max_visits/max_time,
  while the Policy net based AIs (Policy, P:...) are affected by the choice of model file, but work identically with 'max_visits' set to 1. 

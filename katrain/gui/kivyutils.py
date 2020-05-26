@@ -24,7 +24,7 @@ from kivymd.uix.button import BasePressedButton, BaseFlatButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 from kivy.core.text import Label as CoreLabel
-from katrain.core.common import i18n, I18NTextInput, I18NLabel
+from katrain.core.utils import i18n, I18NTextInput, I18NLabel
 
 #
 
@@ -82,6 +82,11 @@ class SizedMDFlatToggleButton(SizedMDFlatButton, ToggleButtonBehavior):
     inactive_color = ListProperty([0.5, 0.5, 0.5, 1])
     active_color = ListProperty([1, 1, 1, 1])
 
+    @property
+    def active(self):
+        return self.state == "down"
+
+
 
 class SizedMDFlatRectangleButton(SizedMDFlatButton, OutlineColor):
     color = ListProperty([1, 1, 1, 1])
@@ -96,11 +101,13 @@ class SizedMDFlatRectangleToggleButton(SizedMDFlatRectangleButton, ToggleButtonB
 
 
 class AutoSizedMDFlatRectangleButton(SizedMDFlatRectangleButton):
-    hor_padding = NumericProperty(3)
+    hor_padding = NumericProperty(4)
 
 
 class AutoSizedMDFlatRectangleToggleButton(SizedMDFlatRectangleToggleButton):
-    hor_padding = NumericProperty(3)
+    hor_padding = NumericProperty(4)
+
+
 
 
 class TransparentIconButton(CircularRippleBehavior, Button):
@@ -139,6 +146,9 @@ class CircleWithText(Widget):
 
 # -- new gui elements
 
+class AnalysisToggle(MDBoxLayout):
+    text = StringProperty('')
+    active = BooleanProperty(False)
 
 class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout):
     __events__ = ["on_action"]
@@ -154,6 +164,8 @@ class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout):
     def on_action(self):
         pass
 
+class CollapsablePanelHeader(MDBoxLayout):
+    pass
 
 class CollapsablePanel(MDBoxLayout):
     __events__ = ["on_option_state"]
@@ -189,7 +201,7 @@ class CollapsablePanel(MDBoxLayout):
         self.build_options()
 
     def build_options(self, *args, **kwargs):
-        self.header = MDBoxLayout(height=self.options_height, size_hint_y=None, padding=[self.options_left_padding, 0, 0, 0], spacing=3)
+        self.header = CollapsablePanelHeader(height=self.options_height, size_hint_y=None, padding=[self.options_left_padding, 0, 0, 0], spacing=3)
         self.option_buttons = []
         option_labels = self.option_labels or [i18n._(f"tab:{opt}") for opt in self.options]
         for lbl, opt_col, active in zip(option_labels, self.option_colors, self.option_default_active):

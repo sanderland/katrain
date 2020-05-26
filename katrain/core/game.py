@@ -5,7 +5,7 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Union
 
-from katrain.core.common import var_to_grid, OUTPUT_INFO, OUTPUT_DEBUG
+from katrain.core.utils import var_to_grid, OUTPUT_INFO, OUTPUT_DEBUG
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
 from katrain.core.sgf_parser import SGF, Move

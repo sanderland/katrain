@@ -8,7 +8,7 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivymd.uix.boxlayout import MDBoxLayout
 
-from katrain.core.common import OUTPUT_DEBUG, OUTPUT_ERROR
+from katrain.core.utils import OUTPUT_DEBUG, OUTPUT_ERROR
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, GameNode
 from katrain.gui.kivyutils import (

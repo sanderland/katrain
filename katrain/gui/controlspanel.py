@@ -6,7 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivymd.uix.boxlayout import MDBoxLayout
 
-from katrain.core.common import MODE_PLAY, MODE_ANALYZE
+from katrain.core.utils import MODE_PLAY, MODE_ANALYZE
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup
 from katrain.gui.ai_settings import ConfigAIPopupContents
 

@@ -4,7 +4,7 @@ import random
 import time
 from typing import Dict, List, Tuple
 
-from katrain.core.common import OUTPUT_DEBUG, OUTPUT_INFO, var_to_grid
+from katrain.core.utils import OUTPUT_DEBUG, OUTPUT_INFO, var_to_grid
 from katrain.core.engine import EngineDiedException
 from katrain.core.game import Game, GameNode, Move
 
