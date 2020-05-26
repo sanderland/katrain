@@ -5,10 +5,26 @@ from kivy.properties import ObjectProperty, ListProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.floatlayout import MDFloatLayout
 
 from katrain.core.utils import MODE_PLAY, MODE_ANALYZE
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup
 from katrain.gui.ai_settings import ConfigAIPopupContents
+
+
+class PlayAnalyzeSelect(MDFloatLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    @property
+    def play_analyze_mode(self):
+        return MODE_PLAY if self.play_mode.play.status == "down" else MODE_ANALYZE
+
+    def switch_mode(self):  # TODO: load settings
+        if self.play_analyze_mode == MODE_PLAY:
+            self.play.trigger_action(duration=0)
+        else:
+            self.analyze.trigger_action(duration=0)
 
 
 class ControlsPanel(BoxLayout):
@@ -35,10 +51,6 @@ class ControlsPanel(BoxLayout):
         self.status.text = msg
         self.update_evaluation()
 
-    @property
-    def play_analyze_mode(self):
-        return MODE_ANALYZE  # ??
-
     # handles showing completed analysis and score graph
     def update_evaluation(self):
         katrain = self.katrain
@@ -54,7 +66,7 @@ class ControlsPanel(BoxLayout):
         last_player_was_ai_playing_human = game.last_player.ai and game.next_player.human
 
         self.active_comment_node = current_node
-        if self.play_analyze_mode == MODE_PLAY and last_player_was_ai_playing_human:
+        if katrain.play_analyze_mode == MODE_PLAY and last_player_was_ai_playing_human:
             if game.next_player.being_taught and current_node.children and current_node.children.auto_undo:
                 self.active_comment_node = current_node.children[-1]
             elif current_node.parent:

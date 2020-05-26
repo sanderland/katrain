@@ -33,7 +33,7 @@
 #:set NOTES_FONT_SIZE dp(18)
 
 <I18NLabel>:
-    font_name: i18n._('Roboto')
+    font_name: i18n._('LANG_FONT')
     canvas.before:
         Color:
             rgba: RED
@@ -42,7 +42,7 @@
             width: 1
 
 <I18NTextInput>:
-    font_name: i18n._('Roboto')
+    font_name: i18n._('LANG_FONT')
 
 # mixins
 <OutlineColor>:
@@ -692,7 +692,18 @@
         on_active: if app.gui: app.gui.update_state()
 
 <AnalysisDropdownMenu>:
+    background_color: BOX_BACKGROUND_COLOR
+    opening_time: 0.1
+    width_mult: 1.25
 
+<AnalysisDropdownMenuRightContent>:
+    width: 0
+    I18NLabel:
+        id: label
+        size: dp(30)
+        font_size: root.font_size
+        text: root.text
+        color: LIGHTGREY
 
 
 <AnalysisControls>:
@@ -845,7 +856,7 @@
     group: 'play_analyze'
     allow_no_selection: False
 
-<PlayAnalyzeSelect@MDFloatLayout>
+<PlayAnalyzeSelect>:
     OutlineBox:
         outline_color: WHITE
         size_hint: 0.7,0.7

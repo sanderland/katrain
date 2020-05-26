@@ -3,8 +3,8 @@ from kivy.config import Config  # isort:skip
 ICON = "img/icon.png"  # isort:skip  # set icon
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
-Config.set('graphics', 'width', 1400)
-Config.set('graphics', 'height', 1000)
+Config.set("graphics", "width", 1400)
+Config.set("graphics", "height", 1000)
 
 import os
 import signal
@@ -24,7 +24,7 @@ from kivy.uix.screenmanager import Screen
 from kivymd.app import MDApp
 
 from katrain.core.ai import ai_move
-from katrain.core.utils import LANGUAGE, OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO, OUTPUT_KATAGO_STDERR, find_package_resource, i18n
+from katrain.core.utils import LANGUAGE, OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO, OUTPUT_KATAGO_STDERR, find_package_resource, i18n, MODE_PLAY
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
@@ -103,6 +103,9 @@ class KaTrainGui(Screen):
         except KeyError:
             self.log(f"Missing configuration option {setting}", OUTPUT_ERROR)
 
+    def play_analyze_mode(self):
+        return self.play_mode.play_analyze_mode
+
     def start(self):
         if self.engine:
             return
@@ -114,7 +117,7 @@ class KaTrainGui(Screen):
     def update_state(self, redraw_board=False):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
-        if self.controls.play_analyze_mode == "play":
+        if self.play_analyze_mode == MODE_PLAY:
             auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
             if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready and not cn.children and not self.game.ended:
                 self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
@@ -132,11 +135,11 @@ class KaTrainGui(Screen):
         top, bot = [w.__self__ for w in self.board_controls.circles]  # no weakref
         if self.game.next_player.player == "W":
             top, bot = bot, top
-            self.controls.players['W'].active = True
-            self.controls.players['B'].active = False
+            self.controls.players["W"].active = True
+            self.controls.players["B"].active = False
         else:
-            self.controls.players['W'].active = False
-            self.controls.players['B'].active = True
+            self.controls.players["W"].active = False
+            self.controls.players["B"].active = True
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
@@ -180,9 +183,9 @@ class KaTrainGui(Screen):
             self.message_queue.put([self.game.game_id, message, *args])
 
     def update_players(self):
-        for player in 'BW':
+        for player in "BW":
             self.controls.players[player].player_type = self.game.players[player].player_type
-            self.game.players[player].player_subtype =  self.game.players[player].player_subtype
+            self.game.players[player].player_subtype = self.game.players[player].player_subtype
 
     def _do_new_game(self, move_tree=None, analyze_fast=False):
         self.board_gui.animating_pv = None
@@ -320,7 +323,7 @@ class KaTrainGui(Screen):
             else:
                 self(*shortcut)
         elif keycode[1] == "tab":
-            self.controls.switch_mode()
+            self.play_mode.switch_mode()
         elif keycode[1] == "spacebar":
             self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in ["`", "~", "m"]:

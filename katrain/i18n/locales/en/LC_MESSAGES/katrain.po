@@ -7,7 +7,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. This is the font used, files ONLY relative to 'katrain' directory
-msgid "Roboto"
+msgid "LANG_FONT"
 msgstr "fonts/NotoSans-Regular.ttf"
 
 #. main hamburger menu
@@ -54,6 +54,19 @@ msgid "analysis:territory"
 msgstr ""
 "Expected\n"
 "Territory"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "Deeper analysis"
+
+msgid "analysis:equalize"
+msgstr "Equalize visits of potential moves"
+
+msgid "analysis:sweep"
+msgstr "Fast analysis of all moves"
+
+msgid "analysis:aimove"
+msgstr "Force AI Move"
 
 #. right panel buttons and below board
 msgid "pass-button-text"

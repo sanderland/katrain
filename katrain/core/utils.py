@@ -93,6 +93,10 @@ class Lang(Observable):
             except ReferenceError:
                 pass  # proxy no longer exists
 
+    @property
+    def font(self):
+        return self._("LANG_FONT")
+
 
 LANGUAGE = "en"
 i18n = Lang(LANGUAGE)

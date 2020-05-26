@@ -7,7 +7,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. This is the font used, files ONLY relative to 'katrain' directory
-msgid "Roboto"
+msgid "LANG_FONT"
 msgstr "fonts/NotoSansKR-Regular.otf"
 
 msgid "English"
@@ -213,3 +213,19 @@ msgstr "General Settings"
 #. TODO
 msgid "menu:playersetup"
 msgstr "Player Setup"
+
+#. TODO
+msgid "analysis:sweep"
+msgstr "Fast analysis of all moves"
+
+#. TODO
+msgid "analysis:equalize"
+msgstr "Equalize visits of potential moves"
+
+#. TODO
+msgid "analysis:aimove"
+msgstr "Force AI Move"
+
+#. TODO
+msgid "analysis:extra"
+msgstr "Deeper analysis"

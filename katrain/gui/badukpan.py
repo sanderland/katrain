@@ -5,16 +5,17 @@ import time
 from kivy.clock import Clock
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
-from kivy.properties import ListProperty
+from kivy.metrics import sp
+from kivy.properties import ListProperty, StringProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.menu import MDDropdownMenu, RightContent
 
 from katrain.core.utils import OUTPUT_DEBUG, evaluation_class, i18n, MODE_PLAY
 from katrain.core.game import Move
-from katrain.gui.kivyutils import draw_circle, draw_text, AnalysisDropdownMenu
+from katrain.gui.kivyutils import draw_circle, draw_text, BackgroundColor
 from katrain.core.utils import var_to_grid
 from kivy.core.window import Window
 
@@ -32,7 +33,8 @@ from katrain.gui.style import (
     BOARD_COLOR,
     STARPOINT_SIZE,
     STONE_SIZE,
-    VISITS_FRAC_SMALL, ENGINE_DOWN_COL,
+    VISITS_FRAC_SMALL,
+    ENGINE_DOWN_COL,
 )
 
 
@@ -410,9 +412,18 @@ class BadukPanWidget(Widget):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
 
+class AnalysisDropdownMenuRightContent(RightContent):
+    font_size = NumericProperty(sp(16))
+
+
+class AnalysisDropdownMenu(MDDropdownMenu):
+    pass
+
+
 class AnalysisControls(MDFloatLayout):
-    ANALYSIS_ICONS = ["git","git","git","git"    ]
-    ANALYSIS_OPTIONS = ['analysis:extra','analysis:equalize','analysis:sweep','analysis:aimove']
+    ANALYSIS_ICONS = ["img/icons/prev.png", "git", "git", "git"]
+    ANALYSIS_OPTIONS = ["analysis:extra", "analysis:equalize", "analysis:sweep", "analysis:aimove"]
+    ANALYSIS_SHORTCUTS = ["a", "s", "d", "Enter"]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -420,10 +431,22 @@ class AnalysisControls(MDFloatLayout):
         Clock.schedule_once(self.build_menu, 0)
 
     def build_menu(self, _dt):
-        menu_items = [{"icon": icon, "text": i18n._(text)} for text,icon in zip(self.ANALYSIS_ICONS,self.ANALYSIS_OPTIONS)]
-        self.analysis_menu = AnalysisDropdownMenu(caller=self.analysis_button, items=menu_items, width_mult=4)
+        menu_items = [
+            {"icon": icon, "text": i18n._(text)}  # , "right_content_cls": AnalysisDropdownMenuRightContent(text=shortcut)}
+            for icon, text, shortcut in zip(self.ANALYSIS_ICONS, self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS)
+        ]
+        self.analysis_menu = AnalysisDropdownMenu(
+            caller=self.analysis_button,
+            items=menu_items,
+            width_mult=5,
+            use_icon_item=False,
+            callback=lambda item: print(item, item.icon, item.text, item.children[-1].children, item.ids),
+        )
+        print(self.analysis_menu.use_icon_item)
 
     def open_analysis_menu(self):
+        while not self.analysis_menu:
+            time.sleep(0.01)
         self.analysis_menu.open()
 
 

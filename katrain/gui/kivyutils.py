@@ -76,20 +76,25 @@ class SizedMDButton(LeftButtonBehavior, RectangularRippleBehavior, BasePressedBu
     label = ObjectProperty(None)
     height = NumericProperty(33)
 
+
 class SizedMDToggleButton(ToggleButtonBehavior, SizedMDButton):
     inactive_outline_color = ListProperty([0.5, 0.5, 0.5, 0])
     active_outline_color = ListProperty([1, 1, 1, 0])
     inactive_background_color = ListProperty([0.5, 0.5, 0.5, 1])
     active_background_color = ListProperty([1, 1, 1, 1])
 
+
 class SizedMDRectangleButton(SizedMDButton):
     pass
+
 
 class SizedMDRectangleToggleButton(SizedMDToggleButton):
     pass
 
+
 class AutoSizedMDRectangleButton(SizedMDRectangleButton):
     hor_padding = NumericProperty(6)
+
 
 class AutoSizedMDRectangleToggleButton(SizedMDRectangleToggleButton):
     hor_padding = NumericProperty(6)
@@ -131,22 +136,21 @@ class CircleWithText(Widget):
 
 # -- new gui elements
 
-class PlayerInfo(MDBoxLayout,BackgroundColor,OutlineColor):
+
+class PlayerInfo(MDBoxLayout, BackgroundColor, OutlineColor):
     captures = NumericProperty(0)
     player = OptionProperty("Black", options=["Black", "White"])
-    player_type= StringProperty('Player')
-    player_subtype = StringProperty('')
+    player_type = StringProperty("Player")
+    player_subtype = StringProperty("")
     active = BooleanProperty(True)
-
-class AnalysisDropdownMenu(MDDropdownMenu):
-    pass
 
 
 class AnalysisToggle(MDBoxLayout):
-    text = StringProperty('')
+    text = StringProperty("")
     active = BooleanProperty(False)
 
-class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout,BackgroundColor):
+
+class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, BackgroundColor):
     __events__ = ["on_action"]
     icon = StringProperty("")
     text = StringProperty("")
@@ -160,11 +164,14 @@ class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout,Ba
     def on_action(self):
         pass
 
+
 class CollapsablePanelHeader(MDBoxLayout):
     pass
 
+
 class CollapsablePanelTab(AutoSizedMDRectangleToggleButton):
     pass
+
 
 class CollapsablePanel(MDBoxLayout):
     __events__ = ["on_option_state"]
@@ -200,7 +207,7 @@ class CollapsablePanel(MDBoxLayout):
         self.build_options()
 
     def build_options(self, *args, **kwargs):
-        self.header = CollapsablePanelHeader(height=self.options_height, size_hint_y=None, spacing=self.options_spacing)
+        self.header = CollapsablePanelHeader(height=self.options_height, size_hint_y=None, spacing=self.options_spacing, padding=[1, 0, 0, 0])
         self.option_buttons = []
         option_labels = self.option_labels or [i18n._(f"tab:{opt}") for opt in self.options]
         for lbl, opt_col, active in zip(option_labels, self.option_colors, self.option_default_active):
@@ -318,7 +325,7 @@ class ScaledLightLabel(LightLabel, ToolTipBehavior):
     num_lines = NumericProperty(1)
 
 
-class ClickableLabel(LeftButtonBehavior,I18NLabel):
+class ClickableLabel(LeftButtonBehavior, I18NLabel):
     pass
 
 
@@ -328,7 +335,7 @@ class LightHelpLabel(ScaledLightLabel):
 
 class ScrollableLabel(ScrollView, BackgroundColor):
     __events__ = ["on_ref_press"]
-    outline_color = ListProperty([0, 0, 0, 0]) # mixin not working for some reason
+    outline_color = ListProperty([0, 0, 0, 0])  # mixin not working for some reason
     text = StringProperty("")
     markup = BooleanProperty(False)
 
