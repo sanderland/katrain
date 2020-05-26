@@ -221,15 +221,6 @@
     halign: 'center'
     valign: 'middle'
 
-<TimerLabel@Label>
-    color: GREEN
-    font_size: 0.85*self.size[1]
-    halign: 'right'
-    valign: 'middle'
-    markup: True
-    multiline: False
-    font_name: 'fonts/digital-7.ttf'
-
 <ScaledLightLabel>: # popups
     color: TEXT_COLOR
     font_size: 0.45*self.size[1]/self.num_lines
@@ -385,6 +376,13 @@
     height: self.width
     size_hint: 1, None
 
+
+<TimerLabel@I18NLabel>
+    color: GREEN
+    markup: True
+    multiline: False
+    font_name: 'fonts/digital-7.ttf'
+
 <Timer@BGMDBoxLayout>:
     state: (30,5,1)
     spacing: CP_SPACING
@@ -393,16 +391,17 @@
     TimerLabel:
         size_hint: 0.5,1
         id: timer
+        halign: 'right'
+        valign: 'middle'
+        font_size: 0.85*self.size[1]
         text: f"{root.state[0]//60}:{int(root.state[0] % 60):02d}"
-    LightLabel:
-        size_hint: 0.1,1
+    TimerLabel:
+        size_hint: 0.2,1
         id: periods
-        markup: True
         text: f"x{root.state[1]}"
-        font_size: self.width*0.75
+        font_size: self.width*0.45
         multiline: False
         valign: 'top'
-        halign: 'left'
     MDBoxLayout:
         size_hint: 0.2,1
         PauseButton:
@@ -589,7 +588,7 @@
     padding: CP_PADDING
     spacing: CP_SPACING
     player_box_height: max(50, 0.075 * root.height)
-    timer_box_height:  max(50, 0.125 * root.height)
+    timer_box_height:  max(50, 0.1 * root.height)
     graph_box_height:  max(100, 0.2 * root.height)
     stats_box_height: max(50, 0.125 * root.height)
     tab_option_height: max(15,root.height / 30)

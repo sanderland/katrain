@@ -421,7 +421,6 @@ class AnalysisDropdownMenu(MDDropdownMenu):
 
 
 class AnalysisControls(MDFloatLayout):
-    ANALYSIS_ICONS = ["img/icons/prev.png", "git", "git", "git"]
     ANALYSIS_OPTIONS = ["analysis:extra", "analysis:equalize", "analysis:sweep", "analysis:aimove"]
     ANALYSIS_SHORTCUTS = ["a", "s", "d", "Enter"]
 
@@ -432,8 +431,8 @@ class AnalysisControls(MDFloatLayout):
 
     def build_menu(self, _dt):
         menu_items = [
-            {"icon": icon, "text": i18n._(text)}  # , "right_content_cls": AnalysisDropdownMenuRightContent(text=shortcut)}
-            for icon, text, shortcut in zip(self.ANALYSIS_ICONS, self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS)
+            {"text": i18n._(text) + f"  ({shortcut})"}  # , "right_content_cls": AnalysisDropdownMenuRightContent(text=shortcut)}
+            for text, shortcut in zip(self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS)
         ]
         self.analysis_menu = AnalysisDropdownMenu(
             caller=self.analysis_button,
