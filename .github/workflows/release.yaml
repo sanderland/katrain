@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip3 install -e .
-        pip3 install pytest wheel twine
+        pip3 install pytest wheel twine polib
 
     - name: Run tests
       run: pytest -v tests
