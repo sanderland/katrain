@@ -29,6 +29,9 @@ jobs:
     - name: Run tests
       run: pytest tests
 
+    - name: Run I18N conversion
+      run: python i18n.py
+
     - name: Build
       run: |
         python3 setup.py sdist

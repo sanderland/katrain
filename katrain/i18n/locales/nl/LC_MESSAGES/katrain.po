@@ -183,3 +183,64 @@ msgstr "Points Gained"
 #. TODO
 msgid "SGF Notes Hint"
 msgstr "Your SGF notes for this position here."
+
+#. TODO
+msgid "analysis:territory"
+msgstr ""
+"Expected\n"
+"Territory"
+
+#. TODO
+msgid "analysis:topmoves"
+msgstr ""
+"Top\n"
+"Moves"
+
+#. TODO
+msgid "analysis:dots"
+msgstr ""
+"Show\n"
+"Dots"
+
+#. TODO
+msgid "analysis:nextmoves"
+msgstr ""
+"Next\n"
+"Moves"
+
+#. TODO
+msgid "analysis:policy"
+msgstr ""
+"Policy\n"
+"Moves"
+
+#. TODO
+msgid "ai-ponder"
+msgstr ""
+"This simply indicates the Engine status, going from green (idle) to orange "
+"(processing queries). It turns red when the engine has crashed or fails to "
+"start."
+
+#. TODO
+msgid "menu:newgame"
+msgstr "New Game"
+
+#. TODO
+msgid "menu:load"
+msgstr "Load Game"
+
+#. TODO
+msgid "menu:save"
+msgstr "Save Game"
+
+#. TODO
+msgid "menu:lang"
+msgstr "Language"
+
+#. TODO
+msgid "menu:settings"
+msgstr "General Settings"
+
+#. TODO
+msgid "menu:playersetup"
+msgstr "Player Setup"

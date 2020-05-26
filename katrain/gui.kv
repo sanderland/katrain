@@ -10,10 +10,11 @@
 
 #-- NEW
 #:import RED __main__.RED
+#:import WHITE __main__.WHITE
 
+#:set LIGHTGREY [0.7,0.7,0.7,1]
 
 #:set BLACK [0.05,0.05,0.05,1]
-#:set WHITE [0.95,0.95,0.95,1]
 #:set GREY  [0.5,0.5,0.5,1]
 #:set GREEN  [0.1,0.8,0.1,1]
 #:set LIGHTBLUE  [0.3,0.7,0.9,1]
@@ -24,7 +25,7 @@
 #:set POINTLOSS_COLOR YELLOW
 #:set WINRATE_COLOR GREEN
 
-#:set BUTTON_INACTIVE_COLOR GREY
+#:set BUTTON_INACTIVE_COLOR LIGHTGREY
 #:set BACKGROUND_COLOR      [36/255,48/255,62/255,1]
 #:set BOX_BACKGROUND_COLOR  [46/255,65/255,88/255,1]
 #:set TEXT_COLOR            WHITE
@@ -33,6 +34,12 @@
 
 <I18NLabel>:
     font_name: i18n._('Roboto')
+    canvas.before:
+        Color:
+            rgba: RED
+        Line:
+            rectangle:  (*self.pos,*self.size)
+            width: 1
 
 <I18NTextInput>:
     font_name: i18n._('Roboto')
@@ -75,42 +82,42 @@
 
 # new widgets
 
-<SizedMDBaseButton>:
+<SizedMDButton>:
+    ripple_duration_in_slow: 0.6
     text_color: WHITE
-    md_bg_color: BOX_BACKGROUND_COLOR
+    background_color: BOX_BACKGROUND_COLOR
     label: label
     I18NLabel:
         id: label
         text: root.text
+        size: self.texture_size
         size_hint_x: None
         color: root.text_color
         font_size: root.font_size
         halign: root.halign
 
-<SizedMDFlatButton>:
-    ripple_duration_in_slow: 0.6
+<SizedMDToggleButton>
+    inactive_background_color: BACKGROUND_COLOR
+    active_background_color: BOX_BACKGROUND_COLOR
+    background_color: self.active_background_color if self.state=='down' else self.inactive_background_color
+    outline_color: self.active_outline_color if self.state=='down' else self.inactive_outline_color
 
-<SizedMDFlatToggleButton>:
-    inactive_color: BACKGROUND_COLOR
-    active_color: BOX_BACKGROUND_COLOR
-    md_bg_color: self.active_color if self.state=='down' else self.inactive_color
+<SizedMDRectangleButton>:
+    outline_color: WHITE
+    text_color: self.outline_color
 
-<SizedMDFlatRectangleButton>:
-    outline_color: root.color
-    text_color: root.color
+<SizedMDRectangleToggleButton>:
+    inactive_outline_color: BUTTON_INACTIVE_COLOR
+    active_outline_color: WHITE
+    text_color: self.outline_color
 
-<SizedMDFlatRectangleToggleButton>:
-    inactive_color: BUTTON_INACTIVE_COLOR
-    text_color: root.color if self.state=='down' else self.inactive_color
-    outline_color: root.color if self.state=='down' else self.inactive_color
-
-<AutoSizedMDFlatRectangleButton>: # only wants height
+<AutoSizedMDRectangleButton>: # only wants height
     width: self.label.texture_size[0] + self.hor_padding * 2
-    font_size: 0.75 * self.height / len(self.label.text.split('\n'))
+    font_size: 0.7 * self.height / len(self.label.text.split('\n'))
 
-<AutoSizedMDFlatRectangleToggleButton>: # only wants height
+<AutoSizedMDRectangleToggleButton>: # only wants height
     width: self.label.texture_size[0] + self.hor_padding * 2
-    font_size: 0.8 * self.height / len(self.label.text.split('\n'))
+    font_size: 0.7 * self.height / len(self.label.text.split('\n'))
 
 
 <BGMDBoxLayout@MDBoxLayout+BackgroundColor>:
@@ -275,12 +282,11 @@
     mid_circles_container: mid_circles_container
     pass_btn: pass_btn
     adaptive_height: True
-    SizedMDFlatRectangleButton:
+    AutoSizedMDRectangleButton:
         id: pass_btn
         text: i18n._('pass-button-text')
         size_hint: None, 0.5
-        width: 2*self.height
-        pos_hint: {'x': 0.1,'center_y':0.5}
+        pos_hint: {'center_x': 0.15,'center_y':0.5}
         on_left_release: root.katrain("play",None)
     BoxLayout:
         size_hint: None, 1
@@ -290,7 +296,7 @@
             size_hint: 0.075, 0.5
         NavIconButton:
             icon: 'img/flaticon/previous999.png'
-            on_press: print(self.size,self.image.size,self.parent.size,self.icon_size) #root.katrain('undo',999)
+            on_press: root.katrain('undo',999)
         NavIconButton:
             icon: 'img/flaticon/previous5.png'
             on_press: root.katrain('undo',5)
@@ -323,21 +329,40 @@
             on_press: root.katrain('redo',999)
         NavIconButton:
             icon: 'img/flaticon/route.png'
+    ClickableLabel:
+        pos_hint: {'center_x': 0.85,'center_y':0.5}
+        size_hint: None, 1
+        width: self.height
+        canvas:
+            Color:
+                rgba: root.engine_status_col
+            Ellipse:
+                pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
+                size: self.width/3, self.width/3
+            Color:
+                rgba: BLACK
+            Line:
+                circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.width/6
+                width: 1
+        on_press: app.gui.controls.set_status(i18n._('ai-ponder'))
+
 
 <HamburgerButton@TransparentIconButton>:
     icon: 'img/hamburger.png'
-    size_hint: None, 1
     width: self.height
     icon_size: [self.height * 0.8, self.height * 0.8]
 
 # ---------- components of right pane -------
 
-<PlayerInfo@MDBoxLayout>:
+<PlayerInfo>:
     captures: 0
-    name: 'Player'
-    outline_color: RED
     player: 'Black'
-    description: '...'
+    player_type: 'Player'
+    player_subtype: 'Normal game'
+    background_color: BOX_BACKGROUND_COLOR if self.active else BACKGROUND_COLOR
+    outline_color: BOX_BACKGROUND_COLOR
+    outline_width: 2
+    padding: [2*CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING]
     CircleWithText:
         player: root.player
         text: str(root.captures)
@@ -345,37 +370,15 @@
     MDBoxLayout:
         size_hint: 0.75, 1
         orientation: 'vertical'
+        spacing: CP_SPACING
         I18NLabel:
-            text: root.name
+            text: root.player_type
+            size_hint: 1,0.55
+            font_size: 0.8 * self.height
         I18NLabel:
-            text: root.description
-
-
-<PonderInfo@BGMDBoxLayout>:
-    engine_status_col: [1,1,1,1]
-    MDBoxLayout:
-        orientation: 'vertical'
-        LightLabel:
-            size_hint: 1, 0.5
-            text: 'AI\nStatus'
-            font_size: self.height/3
-            halign: 'center'
-            valign: 'middle'
-        ClickableLabel:
-            size_hint: 1, 0.5
-            canvas:
-                Color:
-                    rgba: root.engine_status_col
-                Ellipse:
-                    pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
-                    size: self.width/3, self.width/3
-                Color:
-                    rgba: BLACK
-                Line:
-                    circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.width/6
-                    width: 1
-            on_press: app.gui.controls.set_status("This simply indicates the Engine status, going from green (idle) to orange (processing queries). It turns red when the engine has crashed or fails to start.")
-
+            text: root.player_subtype
+            size_hint: 1,0.45
+            font_size: 0.7 * self.height
 
 <PauseButton@MDFloatingActionButton+ToggleButtonBehavior>:
     icon: 'img/flaticon/pause.png'
@@ -530,12 +533,17 @@
 
 <ScrollableLabel>:
     background_color: BOX_BACKGROUND_COLOR
-    outline_color: [0,0,0,0]
     do_scroll_x: False
     scroll_type: ['bars']
     bar_width: 5
     bar_color: BUTTON_COLOR
     label: label
+    canvas.before:
+        Color:
+            rgba: root.outline_color
+        Line:
+            rectangle:  (*self.pos,*self.size)
+            width: 1
     I18NLabel:
         id: label
         markup: root.markup
@@ -580,7 +588,7 @@
     status: status
     padding: CP_PADDING
     spacing: CP_SPACING
-    player_box_height: max(50, 0.1 * root.height)
+    player_box_height: max(50, 0.075 * root.height)
     timer_box_height:  max(50, 0.125 * root.height)
     graph_box_height:  max(100, 0.2 * root.height)
     stats_box_height: max(50, 0.125 * root.height)
@@ -598,13 +606,13 @@
         size_hint_y: None
         height: root.timer_box_height
         spacing: CP_SPACING
-        PonderInfo:
-            id: ponder
-            engine_status_col: root.engine_status_col
-            size_hint_x: 0.2
         Timer:
             id: timer
             size_hint_x: 0.7
+        BoxLayout:
+            size_hint_x: 0.3
+            Label:
+                text: '??'
     CollapsablePanel:
         height_open: root.graph_box_height
         closed_label: 'closedlabel:scoregraph'
@@ -629,7 +637,7 @@
         size_hint_y_open: 1
         closed_label: 'closedlabel:info&notes'
         options: ['info','notes']
-        option_colors: [RED,GREEN]
+        option_colors: [SCORE_COLOR,WINRATE_COLOR]
         option_default_active: [True,False]
         on_option_state:
             info.size_hint_y = int(args[1]['info'])+1e-9
@@ -662,6 +670,7 @@
 
 <AnalysisToggle@MDBoxLayout>:
     adaptive_width: True
+    spacing: CP_SPACING
     size_hint: None, 0.7
     pos_hint: {'center_y':0.5}
     I18NLabel:
@@ -669,16 +678,22 @@
         text: root.text
         halign: 'center'
         font_size: root.height / 3
+        color: checkbox.selected_color if checkbox.active else checkbox.unselected_color
         size_hint_x: None
         width: self.texture_size[0] + 4
     MDCheckbox:
+        id: checkbox
         size_hint: None,0.5
         pos_hint: {'center_y': 0.5}
         width: self.height
         active: root.active
         selected_color: WHITE
-        unselected_color: WHITE
-        on_active: print(label.size,label.texture_size) #if app.gui: app.gui.update_state()
+        unselected_color: LIGHTGREY
+        on_active: if app.gui: app.gui.update_state()
+
+<AnalysisDropdownMenu>:
+
+
 
 <AnalysisControls>:
     katrain: app.gui
@@ -695,44 +710,42 @@
     HamburgerButton:
         id: hamburger
         size_hint: None, 1
-        width: self.height
-        pos_hint: {'top': 0}
+        pos_hint: {'center_y': 0.5,'left': 0}
         on_press: app.gui.nav_drawer.set_state("open")
     MDBoxLayout:
         pos_hint: {'center_x': 0.5,'center_y': 0.5}
         size_hint: None, 1
         adaptive_width: True
-        spacing: 8
+        spacing: show_children.width/4
         AnalysisToggle:
             id: show_children
-            text: 'Next\nMoves'
+            text: i18n._("analysis:nextmoves")
             active: True
         AnalysisToggle:
             id: eval
-            text: 'Evaluation\nDots'
+            text: i18n._("analysis:dots")
         AnalysisToggle:
             id: ownership
-            text: 'Expected\nTerritory'
+            text: i18n._('analysis:territory')
         AnalysisToggle:
             id: policy
-            text: 'Policy\nMoves'
+            text: i18n._("analysis:policy")
         AnalysisToggle:
             id: hints
             text: 'Top\nMoves'
-        AutoSizedMDFlatRectangleButton:
-            md_bg_color: BOX_BACKGROUND_COLOR
-            size_hint_y: 0.7
+        AutoSizedMDRectangleButton:
+            background_color: BOX_BACKGROUND_COLOR
+            size_hint_y: 0.5
             id: analysis_button
             on_press: root.open_analysis_menu()
             text: 'Analysis'
             pos_hint: {'center_y':0.5}
 
-
-
 <MainMenuItem>
-    on_press: print(self.size, root.size, image.size, root.parent.parent, root.parent)
-
     font_size: self.height * 0.5
+    size_hint_y: None
+    height: self.parent.item_height or 50
+    background_color: BOX_BACKGROUND_COLOR
     MDFloatLayout:
         size_hint: None, 1
         width: self.height
@@ -742,7 +755,7 @@
             mipmap: True
             size_hint: 0.7,0.7
             pos_hint: {'center_y': 0.5,'center_x': 0.5}
-    Label:
+    I18NLabel:
         text: root.text
         text_size: self.size
         size_hint_x: 1
@@ -750,87 +763,85 @@
         valign: 'middle'
         font_size: root.font_size
         color: WHITE
-    Label:
+    I18NLabel:
         text: root.shortcut
         halign: 'left'
         valign: 'middle'
         size_hint_x: 1/3
         font_size: root.font_size
-        color: GREY
+        color: LIGHTGREY
 
 
-<LangButton@SizedMDFlatRectangleButton>
+<LangButton@TransparentIconButton>
     size_hint: 1,1
-    font_size: 0.4 * self.height
+    icon_size: self.height * 0.9, self.height  * 0.9
+
+<MenuLabel@I18NLabel+BackgroundColor>:
+    background_color: BACKGROUND_COLOR
+    font_size: self.height * 0.5
+    height: self.parent.item_height or 50
+    size_hint: 1,None
 
 <ContentNavigationDrawer@MDBoxLayout+BackgroundColor>:
     katrain: app.gui
     background_color: BOX_BACKGROUND_COLOR
     orientation: 'vertical'
-    canvas.after:
-        Color:
-            rgba: YELLOW
-        Line:
-            rectangle:  (*self.pos,*self.size)
-            width: 1
-    MDBoxLayout:
-        size_hint: 1, 1/10
-        canvas.before:
-            Color:
-                rgba: RED
-            Line:
-                rectangle:  (*self.pos,*self.size)
-                width: 1
-        LangButton:
-            text: i18n._('English')
-            on_press: app.language = 'en'
-        LangButton:
-            text: i18n._('Dutch')
-            on_press: app.language = 'nl'
-        LangButton:
-            text: i18n._('Korean')
-            on_press: app.language = 'ko'
+    item_height: self.height/20
+    MenuLabel:
+        text: i18n._('menu:playersetup')
     Label:
+    MenuLabel:
     MDBoxLayout:
-        canvas.before:
-            Color:
-                rgba: RED
-            Line:
-                rectangle:  (*self.pos,*self.size)
-                width: 1
         orientation: 'vertical'
-        size_hint: 1, 1/3
+        size_hint: 1, None
+        adaptive_height: True
+        item_height: root.item_height
         MainMenuItem:
-            text: 'General Settings'
-            icon: 'img/flaticon/settings.png'
-            on_action: root.katrain('config-popup')
+            text: i18n._('menu:newgame')
+            icon: 'img/flaticon/newgame.png'
+            shortcut: 'Ctrl-N'
+            on_action: root.katrain("new-game-popup")
+            height: root.item_height
         MainMenuItem:
-            text: 'Save Game'
+            text: i18n._('menu:save')
             icon: 'img/flaticon/savegame.png'
             shortcut: 'Ctrl-S'
             on_action: root.katrain("analyze-sgf-popup")
         MainMenuItem:
-            text: 'Load Game'
+            text: i18n._('menu:load')
             icon: 'img/flaticon/loadgame.png'
             shortcut: 'Ctrl-L'
             on_action: root.katrain("analyze-sgf-popup")
         MainMenuItem:
-            text: 'New Game'
-            icon: 'img/flaticon/newgame.png'
-            size_hint_x: 1
-            shortcut: 'Ctrl-N'
-            on_action: root.katrain("new-game-popup")
+            text: i18n._('menu:settings')
+            icon: 'img/flaticon/settings.png'
+            on_action: root.katrain('config-popup')
+    MenuLabel:
+        text: i18n._('menu:lang')
+        size_hint_y: None
+    MDBoxLayout:
+        size_hint: 1, None
+        height: 1.5 * root.item_height
+        LangButton:
+            icon: 'img/flaticon/flag-uk.png'
+            on_press: app.language = 'en'
+        LangButton:
+            icon: 'img/flaticon/flag-nl.png'
+            on_press: app.language = 'nl'
+        LangButton:
+            icon: 'img/flaticon/flag-ko.png'
+            on_press: app.language = 'ko'
 
 <OutlineBox@MDBoxLayout+OutlineColor>:
 
 
-<PlayAnalyzeButton@SizedMDFlatToggleButton>:
-    inactive_color: BACKGROUND_COLOR
-    active_color: YELLOW
+<PlayAnalyzeButton@SizedMDToggleButton>:
+    inactive_background_color: BOX_BACKGROUND_COLOR
+    active_background_color: YELLOW
     ripple_color: BACKGROUND_COLOR
-    md_bg_color: self.active_color if self.state=='down' else self.inactive_color
-    text_color:  self.inactive_color if self.state=='down' else self.active_color
+    text_color:  self.inactive_background_color if self.state=='down' else self.active_background_color
     size_hint: 0.5,1
+    font_size: self.height * 0.5
     group: 'play_analyze'
     allow_no_selection: False
 
@@ -863,7 +874,6 @@
                     background_color: BACKGROUND_COLOR
                     MDBoxLayout:
                         orientation: 'vertical'
-                        padding: CP_PADDING, CP_PADDING, CP_PADDING, 0
                         AnalysisControls:
                             id: analysis_controls
                             size_hint_y: None

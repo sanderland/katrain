@@ -1,4 +1,4 @@
-# KaTrain i18n file
+# KaTrain localization file
 msgid ""
 msgstr ""
 "Language: English\n"
@@ -8,19 +8,62 @@ msgstr ""
 
 #. This is the font used, files ONLY relative to 'katrain' directory
 msgid "Roboto"
-msgstr "Roboto"
+msgstr "fonts/NotoSans-Regular.ttf"
 
-msgid "English"
-msgstr "English"
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "Player Setup"
 
-msgid "Dutch"
-msgstr "Dutch"
+msgid "menu:newgame"
+msgstr "New Game"
 
-msgid "Korean"
-msgstr "Korean"
+msgid "menu:save"
+msgstr "Save Game"
 
+msgid "menu:load"
+msgstr "Load Game"
+
+msgid "menu:settings"
+msgstr "General Settings"
+
+msgid "menu:lang"
+msgstr "Language"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"Next\n"
+"Moves"
+
+msgid "analysis:dots"
+msgstr ""
+"Show\n"
+"Dots"
+
+msgid "analysis:topmoves"
+msgstr ""
+"Top\n"
+"Moves"
+
+msgid "analysis:policy"
+msgstr ""
+"Policy\n"
+"Moves"
+
+msgid "analysis:territory"
+msgstr ""
+"Expected\n"
+"Territory"
+
+#. right panel buttons and below board
 msgid "pass-button-text"
 msgstr "Pass"
+
+msgid "ai-ponder"
+msgstr ""
+"This simply indicates the Engine status, going from green (idle) to orange "
+"(processing queries). It turns red when the engine has crashed or fails to "
+"start."
 
 #. tabs and labels on the right panel
 msgid "tab:score"
@@ -47,7 +90,7 @@ msgstr "Move Stats"
 msgid "closedlabel:info&notes"
 msgstr "Move Info & Notes"
 
-#. on the board after pass
+#. on the board after passing once/twice
 msgid "board-pass"
 msgstr "pass"
 

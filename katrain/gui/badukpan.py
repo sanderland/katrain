@@ -5,6 +5,7 @@ import time
 from kivy.clock import Clock
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
+from kivy.properties import ListProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -13,7 +14,7 @@ from kivymd.uix.menu import MDDropdownMenu
 
 from katrain.core.utils import OUTPUT_DEBUG, evaluation_class, i18n, MODE_PLAY
 from katrain.core.game import Move
-from katrain.gui.kivyutils import draw_circle, draw_text
+from katrain.gui.kivyutils import draw_circle, draw_text, AnalysisDropdownMenu
 from katrain.core.utils import var_to_grid
 from kivy.core.window import Window
 
@@ -31,7 +32,7 @@ from katrain.gui.style import (
     BOARD_COLOR,
     STARPOINT_SIZE,
     STONE_SIZE,
-    VISITS_FRAC_SMALL,
+    VISITS_FRAC_SMALL, ENGINE_DOWN_COL,
 )
 
 
@@ -410,18 +411,21 @@ class BadukPanWidget(Widget):
 
 
 class AnalysisControls(MDFloatLayout):
+    ANALYSIS_ICONS = ["git","git","git","git"    ]
+    ANALYSIS_OPTIONS = ['analysis:extra','analysis:equalize','analysis:sweep','analysis:aimove']
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.analysis_menu = None
         Clock.schedule_once(self.build_menu, 0)
 
     def build_menu(self, _dt):
-        menu_items = [{"icon": "git", "text": f"Item {i}"} for i in range(5)]
-        self.analysis_menu = MDDropdownMenu(caller=self.analysis_button, items=menu_items, width_mult=4)
+        menu_items = [{"icon": icon, "text": i18n._(text)} for text,icon in zip(self.ANALYSIS_ICONS,self.ANALYSIS_OPTIONS)]
+        self.analysis_menu = AnalysisDropdownMenu(caller=self.analysis_button, items=menu_items, width_mult=4)
 
     def open_analysis_menu(self):
         self.analysis_menu.open()
 
 
 class BadukPanControls(MDFloatLayout):
-    pass
+    engine_status_col = ListProperty(ENGINE_DOWN_COL)

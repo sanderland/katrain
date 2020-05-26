@@ -94,7 +94,7 @@ class Lang(Observable):
                 pass  # proxy no longer exists
 
 
-LANGUAGE = "nl"
+LANGUAGE = "en"
 i18n = Lang(LANGUAGE)
 
 

@@ -132,6 +132,11 @@ class KaTrainGui(Screen):
         top, bot = [w.__self__ for w in self.board_controls.circles]  # no weakref
         if self.game.next_player.player == "W":
             top, bot = bot, top
+            self.controls.players['W'].active = True
+            self.controls.players['B'].active = False
+        else:
+            self.controls.players['W'].active = False
+            self.controls.players['B'].active = True
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
@@ -140,11 +145,11 @@ class KaTrainGui(Screen):
 
         # update engine status dot
         if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
-            self.controls.engine_status_col = ENGINE_DOWN_COL
+            self.board_controls.engine_status_col = ENGINE_DOWN_COL
         elif len(self.engine.queries) == 0:
-            self.controls.engine_status_col = ENGINE_READY_COL
+            self.board_controls.engine_status_col = ENGINE_READY_COL
         else:
-            self.controls.engine_status_col = ENGINE_BUSY_COL
+            self.board_controls.engine_status_col = ENGINE_BUSY_COL
 
         # redraw
         if redraw_board:
@@ -174,6 +179,11 @@ class KaTrainGui(Screen):
         if self.game:
             self.message_queue.put([self.game.game_id, message, *args])
 
+    def update_players(self):
+        for player in 'BW':
+            self.controls.players[player].player_type = self.game.players[player].player_type
+            self.game.players[player].player_subtype =  self.game.players[player].player_subtype
+
     def _do_new_game(self, move_tree=None, analyze_fast=False):
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
@@ -181,6 +191,7 @@ class KaTrainGui(Screen):
         self.controls.graph.initialize_from_game(self.game.root)
         self.controls.periods_used = {"B": 0, "W": 0}
         self.update_state(redraw_board=True)
+        self.update_players()
 
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:

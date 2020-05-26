@@ -1,5 +1,6 @@
 import os
 import polib
+import sys
 from collections import defaultdict
 
 localedir = "katrain/i18n/locales"
@@ -10,6 +11,8 @@ strings_to_langs = defaultdict(dict)
 lang_to_strings = defaultdict(set)
 
 DEFAULT_LANG = "en"
+
+errors = False
 
 po = {}
 pofile = {}
@@ -28,13 +31,19 @@ for lang in locales:
     for msgid in strings_to_langs.keys() - lang_to_strings[lang]:
         if lang == DEFAULT_LANG:
             print("Message id", msgid, "found as ", strings_to_langs[msgid], "but missing in default", DEFAULT_LANG)
+            errors = True
         elif DEFAULT_LANG in strings_to_langs[msgid]:
             print("Message id", msgid, "missing in ", lang, "-> Adding it from", DEFAULT_LANG)
             entry = polib.POEntry(msgid=msgid, msgstr=strings_to_langs[msgid][DEFAULT_LANG], comment="TODO")
             po[lang].append(entry)
+            errors = True
         else:
             print(f"MISSING IN DEFAULT AND {lang}", strings_to_langs[msgid])
+            errors = True
     po[lang].save(pofile[lang])
     mofile = pofile[lang].replace(".po", ".mo")
     po[lang].save_as_mofile(mofile)
     print("Fixed", pofile[lang], "and converted ->", mofile)
+
+
+sys.exit(int(errors))
