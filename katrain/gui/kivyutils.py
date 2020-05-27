@@ -14,6 +14,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
+from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 
 
@@ -24,7 +25,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BasePressedButton, BaseFlatButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 from kivy.core.text import Label as CoreLabel
-from katrain.core.utils import i18n, I18NTextInput, I18NLabel
+from katrain.core.utils import i18n
 
 #
 
@@ -37,7 +38,6 @@ class BackgroundMixin(Widget):
     background_radius = NumericProperty(0)
     outline_color = ListProperty([0, 0, 0, 0])
     outline_width = NumericProperty(1)
-    background_radius = NumericProperty(0)
 
 
 class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on right click
@@ -113,9 +113,23 @@ class TransparentIconButton(CircularRippleBehavior, Button):
     icon_size = ListProperty([25, 25])
     icon = StringProperty("")
 
+class PauseButton(CircularRippleBehavior,LeftButtonBehavior,Widget):
+    active = BooleanProperty(True)
+    active_line_color = ListProperty([0.5, 0.5, 0.8, 1])
+    inactive_line_color = ListProperty([1, 1, 1, 1])
+    active_fill_color = ListProperty([0.5, 0.5, 0.5, 1])
+    inactive_fill_color = ListProperty([1, 1, 1, 0])
+    line_width = NumericProperty(5)
+    fill_color = ListProperty([0.5, 0.5, 0.5, 1])
+    line_color = ListProperty([0.5, 0.5, 0.5, 1])
+    min_size = NumericProperty(100)
+
+    def on_left_press(self):
+        self.active = not self.active
+
 
 # -- basic styles
-class LightLabel(I18NLabel):
+class LightLabel(Label):
     pass
 
 
@@ -247,7 +261,7 @@ class CollapsablePanel(MDBoxLayout):
             self.header.add_widget(Label())  # spacer
             self.trigger_select()
         else:
-            self.header.add_widget(I18NLabel(text=i18n._(self.closed_label), halign="right", height=self.options_height))
+            self.header.add_widget(Label(text=i18n._(self.closed_label), halign="right", height=self.options_height))
         self.header.add_widget(self.open_close_button)
 
         super().clear_widgets()
@@ -297,7 +311,7 @@ class StatsBox(MDBoxLayout, BackgroundMixin):
 # --- not checked
 
 
-class ToolTipLabel(I18NLabel):
+class ToolTipLabel(Label):
     pass
 
 
@@ -340,7 +354,7 @@ class ScaledLightLabel(LightLabel, ToolTipBehavior):
     num_lines = NumericProperty(1)
 
 
-class ClickableLabel(LeftButtonBehavior, I18NLabel):
+class ClickableLabel(LeftButtonBehavior, Label):
     pass
 
 
@@ -449,7 +463,7 @@ class ToggleButtonContainer(GridLayout):
             return self.options[0]
 
 
-class LabelledTextInput(I18NTextInput):
+class LabelledTextInput(TextInput):
     input_property = StringProperty("")
     multiline = BooleanProperty(False)
 

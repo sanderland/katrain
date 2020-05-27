@@ -1,8 +1,12 @@
 import os
 import sys
 from typing import Any, List, Tuple
+
+from kivy.event import EventDispatcher
 from kivy.lang import Observable
 import gettext
+
+from kivy.properties import StringProperty
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 
@@ -50,19 +54,32 @@ def find_package_resource(path):
         return path  # absolute path
 
 
+class LangFont(EventDispatcher):
+    font_name = StringProperty('')
+
+
+    DEFAULT_FONT = "fonts/NotoSans-Regular.ttf"
+    FONTS = {'ko': "fonts/NotoSansKR-Regular.otf"}
+    font_name = StringProperty('')
+    def __init__(self,lang,**kwargs):
+        super().__init__(**kwargs)
+        self.switch_lang(lang)
+
+    def switch_lang(self,lang):
+        self.lang = lang
+        self.font_name = self.FONTS.get(lang) or self.DEFAULT_FONT
+
 class Lang(Observable):
     observers = []
-    lang = None
 
-    def __init__(self, defaultlang):
+    def __init__(self, lang):
         super(Lang, self).__init__()
         self.ugettext = None
-        self.lang = defaultlang
-        self.switch_lang(self.lang)
+        self.font = None
+        self.switch_lang(lang)
 
     def _(self, text):
-        str = self.ugettext(text)
-        return str
+        return self.ugettext(text)
 
     def fbind(self, name, func, *args, **kwargs):
         if name == "_":
@@ -81,6 +98,7 @@ class Lang(Observable):
 
     def switch_lang(self, lang):
         # get the right locales directory, and instantiate a gettext
+        self.lang = lang
         i18n_dir, _ = os.path.split(find_package_resource("katrain/i18n/__init__.py"))
         locale_dir = os.path.join(i18n_dir, "locales")
         locales = gettext.translation("katrain", locale_dir, languages=[lang])
@@ -93,18 +111,12 @@ class Lang(Observable):
             except ReferenceError:
                 pass  # proxy no longer exists
 
-    @property
-    def font(self):
-        return self._("LANG_FONT")
 
 
-LANGUAGE = "en"
-i18n = Lang(LANGUAGE)
+DEFAULT_LANGUAGE = "en"
+i18n = Lang(DEFAULT_LANGUAGE)
+i18n_font = LangFont(DEFAULT_LANGUAGE)
 
-
-class I18NLabel(Label):
-    pass
-
-
-class I18NTextInput(TextInput):
-    pass
+def switch_lang(lang):
+    i18n.switch_lang(lang)
+    i18n_font.switch_lang(lang)

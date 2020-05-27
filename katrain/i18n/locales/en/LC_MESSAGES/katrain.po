@@ -6,9 +6,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. This is the font used, files ONLY relative to 'katrain' directory
-msgid "LANG_FONT"
-msgstr "fonts/NotoSans-Regular.ttf"
 
 #. main hamburger menu
 msgid "menu:playersetup"

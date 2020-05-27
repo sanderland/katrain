@@ -24,7 +24,7 @@ from kivy.uix.screenmanager import Screen
 from kivymd.app import MDApp
 
 from katrain.core.ai import ai_move
-from katrain.core.utils import LANGUAGE, OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO, OUTPUT_KATAGO_STDERR, find_package_resource, i18n, MODE_PLAY
+from katrain.core.utils import DEFAULT_LANGUAGE, OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO, OUTPUT_KATAGO_STDERR, find_package_resource, i18n, MODE_PLAY, switch_lang, i18n_font
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
@@ -356,7 +356,7 @@ class KaTrainGui(Screen):
 
 class KaTrainApp(MDApp):
     gui = ObjectProperty(None)
-    language = StringProperty(LANGUAGE)
+    language = StringProperty(DEFAULT_LANGUAGE)
 
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
@@ -370,7 +370,7 @@ class KaTrainApp(MDApp):
 
     def on_language(self, _instance, language):
         self.gui.log(f"Switching language to {language}", OUTPUT_INFO)
-        i18n.switch_lang(language)
+        switch_lang(language)
 
     def on_start(self):
         self.gui.start()

@@ -36,7 +36,6 @@ class BackgroundMixin(Widget):
     background_radius = NumericProperty(0)
     outline_color = ListProperty([0, 0, 0, 0])
     outline_width = NumericProperty(1)
-    background_radius = NumericProperty(0)
 
 
 class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on right click
