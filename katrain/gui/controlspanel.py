@@ -7,9 +7,7 @@ from kivy.uix.popup import Popup
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.utils import MODE_PLAY, MODE_ANALYZE
-from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup
-from katrain.gui.ai_settings import ConfigAIPopupContents
+from katrain.core.utils import MODE_PLAY, MODE_ANALYZE, i18n
 
 
 class PlayAnalyzeSelect(MDFloatLayout):
@@ -18,13 +16,13 @@ class PlayAnalyzeSelect(MDFloatLayout):
 
     @property
     def play_analyze_mode(self):
-        return MODE_PLAY if self.play_mode.play.status == "down" else MODE_ANALYZE
+        return MODE_PLAY if self.play.active else MODE_ANALYZE
 
     def switch_mode(self):  # TODO: load settings
         if self.play_analyze_mode == MODE_PLAY:
-            self.play.trigger_action(duration=0)
-        else:
             self.analyze.trigger_action(duration=0)
+        else:
+            self.play.trigger_action(duration=0)
 
 
 class ControlsPanel(BoxLayout):
@@ -35,15 +33,14 @@ class ControlsPanel(BoxLayout):
         super(ControlsPanel, self).__init__(**kwargs)
         self.status_msg = None
         self.status_node = None
-        self.ai_settings_popup = None
-        self.teacher_settings_popup = None
         self.active_comment_node = None
-        self.timer_settings_popup = None
         self.last_timer_update = (None, 0)
         Clock.schedule_interval(self.update_timer, 0.07)
 
-    def check_hide_show(self, *_args):
-        pass
+    def update_players(self, *_args):
+        for player, info in self.katrain.game.players.items():
+            self.players[player].player_type = i18n._(info.player_type)
+            self.players[player].player_subtype = i18n._(info.player_subtype)
 
     def set_status(self, msg, at_node=None):
         self.status_msg = msg
@@ -62,7 +59,6 @@ class ControlsPanel(BoxLayout):
             self.status.text = ""
             self.status_node = None
 
-        both_players_are_robots = all(p.ai for p in game.players.values())
         last_player_was_ai_playing_human = game.last_player.ai and game.next_player.human
 
         self.active_comment_node = current_node
@@ -92,18 +88,6 @@ class ControlsPanel(BoxLayout):
         self.note.text = current_node.note
         self.info.text = info
 
-    def configure_ais(self):
-        if not self.ai_settings_popup:  # persist state of popup etc
-            self.ai_settings_popup = Popup(title="Edit AI Settings", size_hint=(0.7, 0.8)).__self__
-            self.ai_settings_popup.add_widget(ConfigAIPopupContents(self.katrain, self.ai_settings_popup, self.katrain.config("ai")))
-        self.ai_settings_popup.open()
-
-    def configure_teacher(self):
-        if not self.teacher_settings_popup:
-            self.teacher_settings_popup = Popup(title="Edit Teacher Settings", size_hint=(0.7, 0.8)).__self__
-            self.teacher_settings_popup.add_widget(ConfigTeacherPopup(self.katrain, self.teacher_settings_popup))
-        self.teacher_settings_popup.open()
-
     def update_timer(self, _dt):
         current_node = self.katrain and self.katrain.game and self.katrain.game.current_node
         if current_node:
@@ -127,10 +111,3 @@ class ControlsPanel(BoxLayout):
             time_remaining = byo_len - current_node.time_used
             periods_rem = byo_num - player.periods_used
             self.timer.state = (time_remaining, periods_rem, ai)
-
-    def configure_timer(self):
-        self.pause.state = "down"
-        if not self.timer_settings_popup:
-            self.timer_settings_popup = Popup(title="Edit Timer Settings", size_hint=(0.4, 0.4)).__self__
-            self.timer_settings_popup.add_widget(ConfigTimerPopup(self.katrain, self.timer_settings_popup))
-        self.timer_settings_popup.open()

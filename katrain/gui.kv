@@ -9,6 +9,7 @@
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 
 #-- NEW
+#:import PLAYER_TYPES __main__.PLAYER_TYPES
 #:import RED __main__.RED
 #:import WHITE __main__.WHITE
 
@@ -124,8 +125,7 @@
 <AutoSizedRoundedRectangleButton@AutoSizedRectangleButton>:
     background_radius: self.height/3.5
 
-
-<BGMDBoxLayout@MDBoxLayout+BackgroundMixin>:
+<BGMDBoxLayout>:
     background_color: BOX_BACKGROUND_COLOR
 
 <TransparentIconButton>:
@@ -140,14 +140,35 @@
         mipmap: True
 
 
+<StyledSpinnerOption@SpinnerOption>:
+    background_color: BACKGROUND_COLOR
+    background_normal: ''
+    lang_change_tracking: i18n._('') # for font
+    color: WHITE
+    canvas.after:
+        Color:
+            rgba: LIGHTGREY
+        Line
+            points: self.pos[0],self.pos[1],self.pos[0]+self.width,self.pos[1]
+            width: 1
+
+<StyledSpinner>:
+    text: self.values[0] if self.values else ''
+    font_size: self.height * 0.5
+    sync_height_frac: 1.0
+    background_color: [*[c*255/88 for c in BACKGROUND_COLOR[:3]], 1] # compensate for texture
+    option_cls: 'StyledSpinnerOption'
+
+
+
 # -- old widgets
 
 
 
 <StyledButton>:
     color: WHITE
-    font_size: self.size[1] * 0.45
-    radius: (self.size[1]/7,)
+    font_size: self.height * 0.45
+    radius: (self.height/7,)
     button_color: BUTTON_COLOR
     button_color_down: [0.105, 0.14, 0.155, 1]
     button_color_highlight: [(a+b)/2 for a,b in zip(self.button_color,self.button_color_down)]
@@ -157,27 +178,10 @@
         Color:
             rgba: self.button_color if root.state=='normal' else self.button_color_down
         RoundedRectangle:
-            size: self.size[0],self.size[1]
+            size: self.size[0],self.height
             pos: (self.pos[0],self.pos[1])
             radius: root.radius
 
-<StyledSpinnerOption@SpinnerOption>:
-    background_color: BUTTON_COLOR
-    background_normal: ''
-    color: WHITE
-    canvas.after:
-        Color:
-            rgba: WHITE
-        Line
-            points: self.pos[0],self.pos[1],self.pos[0]+self.width,self.pos[1]
-            width: 1
-
-<StyledSpinner>:
-    text: self.values[0] if self.values else ''
-    font_size: self.size[1] * 0.33
-    sync_height_frac: 0.7
-    background_color: [*[c*255/88 for c in BUTTON_COLOR[:3]], 1] # compensate for texture
-    option_cls: 'StyledSpinnerOption'
 
 <StyledToggleButton>:
     max_lines: 1
@@ -185,19 +189,19 @@
 <ToggleButtonContainer>:
 
 <LabelledTextInput>:
-    padding: 3, 0.27*self.size[1]
-    font_size: 0.4*self.size[1]
+    padding: 3, 0.27*self.height
+    font_size: 0.4*self.height
 
 <LabelledIntInput>:
-    font_size: 0.5*self.size[1]
-    padding: 7, 0.2*self.size[1]
+    font_size: 0.5*self.height
+    padding: 7, 0.2*self.height
 
 <LabelledFloatInput>:
-    font_size: 0.5*self.size[1]
-    padding: 7, 0.2*self.size[1]
+    font_size: 0.5*self.height
+    padding: 7, 0.2*self.height
 
 <LabelledTextArea>
-    font_size: 0.2*self.size[1]
+    font_size: 0.2*self.height
 
 <CheckBox>:
     color: BLACK
@@ -211,7 +215,7 @@
     button_color_down: ICON_BUTTON_COLOR_DOWN
     icon_margin: 0.15 * self.size[0]
     icon: ''
-    icon_size: min(self.size[0]-2*self.icon_margin,self.size[1]-2*self.icon_margin)
+    icon_size: min(self.size[0]-2*self.icon_margin,self.height-2*self.icon_margin)
     Image:
         size: (root.icon_size or 0,root.icon_size or 0)  # square
         pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
@@ -228,10 +232,10 @@
 
 <ScaledLightLabel>: # popups
     color: TEXT_COLOR
-    font_size: 0.45*self.size[1]/self.num_lines
+    font_size: 0.45*self.height/self.num_lines
 
 <LightHelpLabel>:
-    font_size: self.size[1]/10
+    font_size: self.height/10
     halign: 'center'
     valign: 'middle'
     multiline: True
@@ -249,7 +253,7 @@
         id: image
         pos: (root.pos[0] + (root.width - root.min_size)/2,root.pos[1] + (root.height - root.min_size)/2)
         size: (root.min_size,root.min_size)
-        source: 'img/white.png' if root.player=='White' else 'img/black.png'
+        source: 'img/white.png' if root.player=='W' else 'img/black.png'
         mipmap: True
     Label:
         id: lbl
@@ -257,7 +261,7 @@
         text_size: None, root.min_size
         bold: True
         valign: 'center'
-        color: BLACK if root.player=='White' else WHITE
+        color: BLACK if root.player=='W' else WHITE
         pos: (image.x, image.y)
         size: image.size
         font_size: root.min_size * 1.2 / (1 + 1 * len(self.text))
@@ -271,7 +275,7 @@
 
 <NavIconButton@TransparentIconButton>:
     size_hint: 0.06, 0.4
-    icon_size: [min(self.size[0],self.size[1]),min(self.size[0],self.size[1])]
+    icon_size: [min(self.size[0],self.height),min(self.size[0],self.height)]
     pos_hint: {'center_y': 0.5}
 
 <BadukPanControls>:
@@ -308,13 +312,13 @@
                 size_hint: 5/8, 1
                 pos_hint: {'center_x': 0.5-3/16}
                 id: black_circle
-                player: 'Black'
+                player: 'B'
                 text: ''
             CircleWithText:
                 size_hint: 5/8, 1
                 pos_hint: {'center_x': 0.5+3/16}
                 id: white_circle
-                player: 'White'
+                player: 'W'
                 text: ''
         NavIconButton:
             icon: 'img/flaticon/next.png'
@@ -326,7 +330,7 @@
             icon: 'img/flaticon/next999.png'
             on_press: root.katrain('redo',999)
         NavIconButton:
-            icon: 'img/flaticon/route.png'
+            icon: 'img/forward_-_child.png'
             on_press: root.katrain('switch-branch',1)
     ClickableLabel:
         pos_hint: {'center_x': 0.85,'center_y':0.5}
@@ -349,13 +353,13 @@
 <HamburgerButton@TransparentIconButton>:
     icon: 'img/hamburger.png'
     width: self.height
-    icon_size: [self.height * 0.8, self.height * 0.8]
+    icon_size: [self.height * 0.6, self.height * 0.6]
 
 # ---------- components of right pane -------
 
 <PlayerInfo>:
     captures: 0
-    player: 'Black'
+    player: 'B'
     player_type: 'Player'
     player_subtype: 'Normal game'
     background_color: BOX_BACKGROUND_COLOR if self.active else BACKGROUND_COLOR
@@ -420,23 +424,38 @@
     color: GREEN
     markup: True
     multiline: False
-    font_name: 'fonts/digital-7.ttf'
+    font_name: 'fonts/digital-7 (mono).ttf'
 
-<Timer@BGMDBoxLayout>:
-    state: (30,5,1)
+<Timer>:
     spacing: CP_SPACING
     padding: CP_PADDING * 4, CP_PADDING * 2
     paused: True
     MDBoxLayout:
         size_hint: 0.7,1
-        TimerLabel:
+        MDFloatLayout:
+            canvas.before:
+                Color:
+                    rgba: GREEN
+                Line:
+                    rectangle:  (*self.pos,*self.size)
+                    width: 1
             size_hint: 0.4,1
-            id: timer
-            text_size: self.size
-            halign: 'right'
-            valign: 'middle'
-            font_size: 0.85*self.size[1]
-            text: f"{root.state[0]//60}:{int(root.state[0] % 60):02d}"
+            TimerLabel:
+                color: BACKGROUND_COLOR
+                text: '8:88'
+                text_size: self.size
+                font_size: 0.85*self.height
+                pos_hint: {'right':1,'center_y':0.5}
+                halign: 'right'
+                valign: 'middle'
+            TimerLabel:
+                id: timer
+                text: "{:01d}:{:02d}".format(int(root.state[0])//60,int(root.state[0] % 60) )
+                text_size: self.size
+                font_size: 0.85*self.height
+                pos_hint: {'right':1,'center_y':0.5}
+                halign: 'right'
+                valign: 'middle'
         TimerLabel:
             size_hint: 0.05,1
             text: "x"
@@ -552,7 +571,7 @@
         size_hint: 0.6,1
         id: desc
         text: root.label if not root.hidden else ''
-        font_size: self.size[1] * 0.7
+        font_size: self.height * 0.7
         font_name: root.font_name
         text_size: self.size
         valign: 'middle'
@@ -658,10 +677,10 @@
         height: root.player_box_height
         PlayerInfo:
             id: B_player
-            player: 'Black'
+            player: 'B'
         PlayerInfo:
             id: W_player
-            player: 'White'
+            player: 'W'
     BoxLayout:
         size_hint_y: None
         height: root.timer_box_height
@@ -867,22 +886,54 @@
     size_hint: 1,None
 
 
-<PlayerSetup@MDBoxLayout>:
+<PlayerSetup>:
     orientation: 'horizontal'
-    CircleWithText:
-        text: root.player[0]
-        player: root.player
-    Label:
-        text: 'type'
-    Label:
-        text: 'subtype'
+    spacing: CP_SPACING
+    padding: 0, CP_PADDING
+    player_type: player_type
+    player_subtype: player_subtype
+    player_subtype_label: player_subtype_label
+    MDBoxLayout:
+        size_hint: 0.25, 1
+        CircleWithText:
+            size_hint: 0.8, 0.8
+            pos_hint: {'center_x':0.5,'center_y':0.5}
+            text: root.player[0]
+            player: root.player
+    MDBoxLayout:
+        size_hint: 0.5, 1
+        orientation: 'vertical'
+        spacing: CP_SPACING
+        Label:
+            text: i18n._('player:type')
+            font_size: self.height * 0.5            
+        StyledSpinner:
+            id: player_type
+            value_refs: PLAYER_TYPES
+            on_text: root.setup_options(*args)
+    MDBoxLayout:
+        size_hint: 0.5, 1
+        orientation: 'vertical'
+        spacing: CP_SPACING
+        Label:
+            text: 'Player Type'
+            id: player_subtype_label
+            font_size: self.height * 0.5
+        StyledSpinner:
+            id: player_subtype
+            value_refs: []
+            on_text: root.set_player()
 
 <PlayerSetupBlock@MDBoxLayout>:
     orientation: 'vertical'
+    size_hint_y: None
+    spacing: 3*CP_SPACING
+    padding: CP_PADDING
+    height: (self.parent.item_height or 50) * 5
     PlayerSetup:
-        player: 'Black'
+        player: 'B'
     PlayerSetup:
-        player: 'White'
+        player: 'W'
 
 <ContentNavigationDrawer@MDBoxLayout+BackgroundMixin>:
     katrain: app.gui
@@ -892,6 +943,8 @@
     MenuLabel:
         text: i18n._('menu:playersetup')
     PlayerSetupBlock:
+    MenuLabel:
+        size_hint: 1,1
     MenuLabel:
     MDBoxLayout:
         orientation: 'vertical'
@@ -906,17 +959,33 @@
             height: root.item_height
         MainMenuItem:
             text: i18n._('menu:save')
-            icon: 'img/flaticon/savegame.png'
+            icon: 'img/flaticon/floppy-disk.png'
             shortcut: 'Ctrl-S'
             on_action: root.katrain("analyze-sgf-popup")
         MainMenuItem:
             text: i18n._('menu:load')
-            icon: 'img/flaticon/loadgame.png'
+            icon: 'img/flaticon/folder.png'
             shortcut: 'Ctrl-L'
             on_action: root.katrain("analyze-sgf-popup")
         MainMenuItem:
+            text: i18n._('menu:clocksettings')
+            icon: 'img/flaticon/cogwheel.png'
+            shortcut: 'F5'
+            on_action: root.katrain('timer-popup')
+        MainMenuItem:
+            text: i18n._('menu:teachsettings')
+            icon: 'img/flaticon/graduate.png'
+            shortcut: 'F6'
+            on_action: root.katrain('teacher-popup')
+        MainMenuItem:
+            text: i18n._('menu:aisettings')
+            icon: 'img/flaticon/ai.png'
+            shortcut: 'F7'
+            on_action: root.katrain('ai-popup')
+        MainMenuItem:
             text: i18n._('menu:settings')
             icon: 'img/flaticon/settings.png'
+            shortcut: 'F8'
             on_action: root.katrain('config-popup')
     MenuLabel:
         text: i18n._('menu:lang')
@@ -949,6 +1018,8 @@
     allow_no_selection: False
 
 <PlayAnalyzeSelect>:
+    play: play
+    analyze: analyze
     OutlineBox:
         outline_color: WHITE
         size_hint: 0.7,0.7
@@ -1072,8 +1143,8 @@
             text: "Size"
         LabelledTextInput:
             text: '19'
-            font_size: 0.5*self.size[1]
-            padding: 7, 0.2*self.size[1]
+            font_size: 0.5*self.height
+            padding: 7, 0.2*self.height
             input_property: 'SZ'
         BoxLayout:
             spacing: 1
@@ -1125,21 +1196,21 @@
             color: WHITE
             id: restart
         ScaledLightLabel:
-            font_size: 0.35*self.size[1]
+            font_size: 0.35*self.height
             text: 'avoids replaying\nidentical games'
         LightHelpLabel:
             text: "Use x:y (e.g. 19:9) to play on a non-square board."
             size_hint: 1,2
             text_size: self.width-6, None
-            font_size: self.size[1]/6
+            font_size: self.height/6
             id: info
         LightHelpLabel:
             text: "Note that handicaps above 9 are not supported on non-square boards."
-            font_size: self.size[1]/6
+            font_size: self.height/6
             text_size: self.width-6, None
             id: info
         StyledButton:
             halign: 'center'
             text: 'Start\nGame'
-            font_size: 0.3 * self.size[1]
+            font_size: 0.3 * self.height
             on_left_press: if not self.last_touch or self.last_touch.button=="left": root.new_game()

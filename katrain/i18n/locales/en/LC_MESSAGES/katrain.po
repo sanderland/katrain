@@ -22,11 +22,42 @@ msgstr "Load Game"
 msgid "menu:settings"
 msgstr "General Settings"
 
+msgid "menu:clocksettings"
+msgstr "Timer Settings"
+
+msgid "menu:teachsettings"
+msgstr "Teaching Game Settings"
+
+msgid "menu:aisettings"
+msgstr "AI Settings"
+
 msgid "menu:lang"
 msgstr "Language"
 
 msgid "menu:support"
 msgstr "Support or Contribute"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "Player"
+
+msgid "player:human"
+msgstr "Human"
+
+msgid "player:ai"
+msgstr "AI"
+
+msgid "aistrategy"
+msgstr "AI Strategy"
+
+msgid "gametype"
+msgstr "Game Type"
+
+msgid "game:normal"
+msgstr "Normal Game"
+
+msgid "game:teach"
+msgstr "Teaching Game"
 
 #. buttons at the top - should all include a line break
 msgid "analysis:nextmoves"

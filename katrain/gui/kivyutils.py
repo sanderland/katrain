@@ -13,7 +13,7 @@ from kivy.uix.filechooser import FileChooserLayout, FileChooserListLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
-from kivy.uix.spinner import Spinner
+from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 
@@ -25,6 +25,8 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BasePressedButton, BaseFlatButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 from kivy.core.text import Label as CoreLabel
+
+from katrain.core.constants import GAME_TYPES
 from katrain.core.utils import i18n
 
 #
@@ -97,6 +99,10 @@ class ToggleButtonMixin(ToggleButtonBehavior):
     inactive_background_color = ListProperty([0.5, 0.5, 0.5, 1])
     active_background_color = ListProperty([1, 1, 1, 1])
 
+    @property
+    def active(self):
+        return self.state == "down"
+
 
 class SizedToggleButton(ToggleButtonMixin, SizedButton):
     pass
@@ -156,22 +162,99 @@ class MyNavigationDrawer(MDNavigationDrawer):  # in PR - closes NavDrawer on any
 
 class CircleWithText(Widget):
     text = StringProperty("0")
-    player = OptionProperty("Black", options=["Black", "White"])
+    player = OptionProperty("B", options=["B", "W"])
     min_size = NumericProperty(50)
+
+
+class BGMDBoxLayout(MDBoxLayout, BackgroundMixin):
+    pass
 
 
 # -- new gui elements
 
+
+class StyledSpinner(Spinner):
+    sync_height_frac = NumericProperty(1.0)
+    value_refs = ListProperty()
+    font_name = StringProperty(DEFAULT_FONT)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bind(size=self.update_dropdown_props, pos=self.update_dropdown_props, value_refs=self.i18n_values)
+        self.i18n_values()
+
+    @property
+    def selected(self):
+        try:
+            selected = self.values.index(self.text)
+            return selected, self.value_refs[selected], self.values[selected]
+        except (ValueError, IndexError):
+            return 0, "", ""
+
+    def i18n_values(self, *_args):
+        if self.value_refs:
+            selected = self.selected[0]
+            self.values = [i18n._(ref) for ref in self.value_refs]
+            print(self.selected, self.values, self.value_refs)
+            self.text = self.values[selected]
+            self.font_name = i18n.font_name
+            self.update_dropdown_props()
+
+    def update_dropdown_props(self, *largs):
+        if not self.sync_height_frac:
+            return
+        dp = self._dropdown
+        if not dp:
+            return
+        container = dp.container
+        if not container:
+            return
+        h = self.height
+        fsz = self.font_size
+        for item in container.children[:]:
+            item.height = h * self.sync_height_frac
+            item.font_size = fsz
+            item.font_name = self.font_name
+
+
 class PlayerSetup(MDBoxLayout):
-    player = OptionProperty("Black", options=["Black", "White"])
+    player = OptionProperty("B", options=["B", "W"])
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Clock.schedule_once(self.setup_options, 0)
+
+    def setup_options(self, *_args):
+        self.player_subtype.clear_widgets()
+        if self.player_type.selected[0] == 0:  # human
+            self.player_subtype_label.text = i18n._("gametype")
+            self.player_subtype.value_refs = GAME_TYPES
+        else:
+            self.player_subtype_label.text = i18n._("aistrategy")
+            self.player_subtype.value_refs = MDApp.get_running_app().gui.ai_strategies  # TODO:
+        self.player_subtype.text = self.player_subtype.values[0]
+        self.set_player()
+
+    def set_player(self):
+        katrain = MDApp.get_running_app().gui
+        game = katrain and katrain.game
+        if game:
+            game.players[self.player].player_type = self.player_type.selected[1]
+            game.players[self.player].player_subtype = self.player_subtype.selected[1]
+            katrain.controls.update_players()
+            katrain.update_state()
 
 
 class PlayerInfo(MDBoxLayout, BackgroundMixin):
     captures = NumericProperty(0)
-    player = OptionProperty("Black", options=["Black", "White"])
+    player = OptionProperty("B", options=["B", "W"])
     player_type = StringProperty("Player")
     player_subtype = StringProperty("")
     active = BooleanProperty(True)
+
+
+class Timer(BGMDBoxLayout):
+    state = ListProperty([30, 5, 1])
 
 
 class AnalysisToggle(MDBoxLayout):
@@ -398,29 +481,6 @@ class StyledToggleButton(StyledButton, ToggleButtonBehavior, ToolTipBehavior):
         self.state = "normal" if self.state == "down" else "down"
 
 
-class StyledSpinner(Spinner):
-    sync_height_frac = NumericProperty(1.0)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.bind(size=self._update_dropdown_size_frac, pos=self._update_dropdown_size_frac)
-
-    def _update_dropdown_size_frac(self, *largs):
-        if not self.sync_height_frac:
-            return
-        dp = self._dropdown
-        if not dp:
-            return
-        container = dp.container
-        if not container:
-            return
-        h = self.height
-        fsz = self.font_size
-        for item in container.children[:]:
-            item.height = h * self.sync_height_frac
-            item.font_size = fsz
-
-
 class ToggleButtonContainer(GridLayout):
     __events__ = ("on_selection",)
 
@@ -544,7 +604,7 @@ class LabelledIntInput(LabelledTextInput):
 
 
 def draw_text(pos, text, font_name=None, **kw):
-    label = CoreLabel(text=text, bold=True, font_name=font_name or i18n.font, **kw)  #
+    label = CoreLabel(text=text, bold=True, font_name=font_name or i18n.font_name, **kw)  #
     label.refresh()
     Rectangle(texture=label.texture, pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2), size=label.texture.size)
 

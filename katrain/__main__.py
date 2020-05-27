@@ -22,7 +22,7 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivymd.app import MDApp
-
+from katrain.core.constants import *
 from katrain.core.ai import ai_move
 from katrain.core.utils import (
     DEFAULT_LANGUAGE,
@@ -36,6 +36,8 @@ from katrain.core.utils import (
     MODE_PLAY,
     switch_lang,
 )
+from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup
+from katrain.gui.ai_settings import ConfigAIPopupContents
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
@@ -60,9 +62,14 @@ class KaTrainGui(Screen):
         self.debug_level = 0
         self.engine = None
         self.game = None
+
         self.new_game_popup = None
         self.fileselect_popup = None
         self.config_popup = None
+        self.ai_settings_popup = None
+        self.teacher_settings_popup = None
+        self.timer_settings_popup = None
+
         self.logger = lambda message, level=OUTPUT_INFO: self.log(message, level)
         self.config_file = self._load_config()
 
@@ -114,8 +121,13 @@ class KaTrainGui(Screen):
         except KeyError:
             self.log(f"Missing configuration option {setting}", OUTPUT_ERROR)
 
+    @property
     def play_analyze_mode(self):
         return self.play_mode.play_analyze_mode
+
+    @property
+    def ai_strategies(self):
+        return list(self.config("ai").keys())
 
     def start(self):
         if self.engine:
@@ -262,6 +274,7 @@ class KaTrainGui(Screen):
         self.fileselect_popup.open()
 
     def _do_new_game_popup(self):
+        self.controls.timer.paused = True
         if not self.new_game_popup:
             self.new_game_popup = Popup(title="New Game", size_hint=(0.5, 0.6)).__self__
             popup_contents = NewGamePopup(self, self.new_game_popup, {k: v[0] for k, v in self.game.root.properties.items() if len(v) == 1})
@@ -269,11 +282,33 @@ class KaTrainGui(Screen):
         self.new_game_popup.open()
 
     def _do_config_popup(self):
+        self.controls.timer.paused = True
         if not self.config_popup:
             self.config_popup = Popup(title=f"Edit Settings - {self.config_file}", size_hint=(0.9, 0.9)).__self__
             popup_contents = ConfigPopup(self, self.config_popup, dict(self._config), ignore_cats=("trainer", "ai"))
             self.config_popup.add_widget(popup_contents)
         self.config_popup.open()
+
+    def _do_ai_popup(self):
+        self.controls.timer.paused = True
+        if not self.ai_settings_popup:  # persist state of popup etc
+            self.ai_settings_popup = Popup(title="Edit AI Settings", size_hint=(0.7, 0.8)).__self__
+            self.ai_settings_popup.add_widget(ConfigAIPopupContents(self, self.ai_settings_popup))
+        self.ai_settings_popup.open()
+
+    def _do_teacher_popup(self):
+        self.controls.timer.paused = True
+        if not self.teacher_settings_popup:
+            self.teacher_settings_popup = Popup(title="Edit Teacher Settings", size_hint=(0.7, 0.8)).__self__
+            self.teacher_settings_popup.add_widget(ConfigTeacherPopup(self, self.teacher_settings_popup))
+        self.teacher_settings_popup.open()
+
+    def _do_timer_popup(self):
+        self.controls.timer.paused = True
+        if not self.timer_settings_popup:
+            self.timer_settings_popup = Popup(title="Edit Timer Settings", size_hint=(0.4, 0.4)).__self__
+            self.timer_settings_popup.add_widget(ConfigTimerPopup(self, self.timer_settings_popup))
+        self.timer_settings_popup.open()
 
     def _do_output_sgf(self):
         for pl in Move.PLAYERS:
@@ -329,6 +364,10 @@ class KaTrainGui(Screen):
             "p": ("play", None),
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),
+            "f5": ("timer-popup",),
+            "f6": ("teacher-popup",),
+            "f7": ("ai-popup",),
+            "f8": ("config-popup",),
         }
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):

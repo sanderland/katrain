@@ -57,8 +57,6 @@ def find_package_resource(path):
         return path  # absolute path
 
 
-
-
 class Lang(Observable):
     observers = []
     callbacks = []
@@ -69,8 +67,8 @@ class Lang(Observable):
         self.switch_lang(lang)
 
     def _(self, text):
-        if text=='':
-            return '' # just for font change
+        if text == "":
+            return ""  # just for font change
         return self.ugettext(text)
 
     def fbind(self, name, func, *args):
@@ -90,9 +88,8 @@ class Lang(Observable):
         else:
             return super(Lang, self).funbind(name, func, *args)
 
-    def add_callback(self,callback_fn: Callable):
+    def add_callback(self, callback_fn: Callable):
         self.callbacks.append(callback_fn)
-        print("ADDING CB")
 
     def switch_lang(self, lang):
         # get the right locales directory, and instantiate a gettext
@@ -113,9 +110,8 @@ class Lang(Observable):
         for cb in self.callbacks:
             try:
                 cb(self)
-                print("CALLING CB")
             except Exception as e:
-                print(f"Failed callback on language change: {e}",file=sys.stderr)
+                print(f"Failed callback on language change: {e}", file=sys.stderr)
 
 
 DEFAULT_LANGUAGE = "en"

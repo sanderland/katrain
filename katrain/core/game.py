@@ -9,6 +9,7 @@ from katrain.core.utils import var_to_grid, OUTPUT_INFO, OUTPUT_DEBUG, i18n
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
 from katrain.core.sgf_parser import SGF, Move
+from katrain.core.constants import *
 
 
 class IllegalMoveException(Exception):
@@ -17,11 +18,6 @@ class IllegalMoveException(Exception):
 
 class KaTrainSGF(SGF):
     _NODE_CLASS = GameNode
-
-
-PLAYER_HUMAN, PLAYER_AI = "Player", "AI"
-PLAYING_NORMAL, PLAYING_TEACHING = "Normal game", "Teaching game"
-AI_DEFAULT = "default"
 
 
 class Player:

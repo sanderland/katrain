@@ -1,0 +1,7 @@
+PLAYER_HUMAN, PLAYER_AI = "player:human", "player:ai"
+PLAYER_TYPES = [PLAYER_HUMAN, PLAYER_AI]
+
+PLAYING_NORMAL, PLAYING_TEACHING = "game:normal", "game:teach"
+GAME_TYPES = [PLAYING_NORMAL, PLAYING_TEACHING]
+
+AI_DEFAULT = "default"

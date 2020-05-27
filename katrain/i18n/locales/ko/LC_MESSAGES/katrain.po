@@ -227,3 +227,47 @@ msgstr "Support or Contribute"
 #. TODO
 msgid "wait-before-equalize"
 msgstr "Wait for initial analysis to complete before requesting a refinement."
+
+#. TODO
+msgid "game:teaching"
+msgstr "Teaching Game"
+
+#. TODO
+msgid "aistrategy"
+msgstr "AI Strategy"
+
+#. TODO
+msgid "game:normal"
+msgstr "Normal Game"
+
+#. TODO
+msgid "player:human"
+msgstr "AI"
+
+#. TODO
+msgid "player:type"
+msgstr "Player"
+
+#. TODO
+msgid "gametype"
+msgstr "Game Type"
+
+#. TODO
+msgid "player:ai"
+msgstr "AI"
+
+#. TODO
+msgid "game:teach"
+msgstr "Teaching Game"
+
+#. TODO
+msgid "menu:clocksettings"
+msgstr "Timer Settings"
+
+#. TODO
+msgid "menu:teachsettings"
+msgstr "Teaching Game Settings"
+
+#. TODO
+msgid "menu:aisettings"
+msgstr "AI Settings"
