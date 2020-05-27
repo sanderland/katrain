@@ -9,13 +9,14 @@ from kivy.metrics import sp
 from kivy.properties import ListProperty, StringProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.widget import Widget
+from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.menu import MDDropdownMenu, RightContent
 
 from katrain.core.utils import OUTPUT_DEBUG, evaluation_class, i18n, MODE_PLAY
 from katrain.core.game import Move
-from katrain.gui.kivyutils import draw_circle, draw_text, BackgroundColor
+from katrain.gui.kivyutils import draw_circle, draw_text
 from katrain.core.utils import var_to_grid
 from kivy.core.window import Window
 
@@ -205,9 +206,9 @@ class BadukPanWidget(Widget):
             Color(0.25, 0.25, 0.25)
             coord_offset = self.grid_size * 1.5 / 2
             for i in range(board_size_x):
-                draw_text(pos=(self.gridpos_x[i], self.gridpos_y[0] - coord_offset), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5)
+                draw_text(pos=(self.gridpos_x[i], self.gridpos_y[0] - coord_offset), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5, font_name="Roboto")
             for i in range(board_size_y):
-                draw_text(pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]), text=str(i + 1), font_size=self.grid_size / 1.5)
+                draw_text(pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]), text=str(i + 1), font_size=self.grid_size / 1.5, font_name="Roboto")
 
     def draw_board_contents(self, *_args):
         if not (self.katrain and self.katrain.game):
@@ -402,7 +403,7 @@ class BadukPanWidget(Widget):
 
             draw_circle(board_coords, self.stone_size, stone_color[move_player])
             Color(*stone_color[opp_player])
-            draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size / 1.45)
+            draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):
         if node is not None and (not self.animating_pv or not (self.animating_pv[0] == pv and self.animating_pv[1] == node)):
@@ -422,7 +423,7 @@ class AnalysisDropdownMenu(MDDropdownMenu):
 
 class AnalysisControls(MDFloatLayout):
     ANALYSIS_OPTIONS = ["analysis:extra", "analysis:equalize", "analysis:sweep", "analysis:aimove"]
-    ANALYSIS_SHORTCUTS = ["a", "s", "d", "Enter"]
+    ANALYSIS_SHORTCUTS = ["a", "s", "d", "enter"]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -434,14 +435,14 @@ class AnalysisControls(MDFloatLayout):
             {"text": i18n._(text) + f"  ({shortcut})"}  # , "right_content_cls": AnalysisDropdownMenuRightContent(text=shortcut)}
             for text, shortcut in zip(self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS)
         ]
-        self.analysis_menu = AnalysisDropdownMenu(
-            caller=self.analysis_button,
-            items=menu_items,
-            width_mult=5,
-            use_icon_item=False,
-            callback=lambda item: print(item, item.icon, item.text, item.children[-1].children, item.ids),
-        )
-        print(self.analysis_menu.use_icon_item)
+        self.analysis_menu = AnalysisDropdownMenu(caller=self.analysis_button, items=menu_items, width_mult=5, use_icon_item=False, callback=self.action)
+
+    def action(self, item):
+        katrain = MDApp.get_running_app().gui
+        shortcuts = katrain.shortcuts
+        for text, shortcut in zip(self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS):
+            if item.text.startswith(i18n._(text)):
+                katrain(*shortcuts[shortcut])
 
     def open_analysis_menu(self):
         while not self.analysis_menu:

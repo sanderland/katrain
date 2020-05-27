@@ -9,6 +9,7 @@ from kivy.properties import BooleanProperty, ListProperty, NumericProperty, Stri
 from kivy.uix.behaviors import ToggleButtonBehavior, ButtonBehavior
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
+from kivy.uix.filechooser import FileChooserLayout, FileChooserListLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
@@ -31,12 +32,10 @@ from katrain.core.utils import i18n, I18NTextInput, I18NLabel
 from katrain.gui.style import WHITE
 
 
-class BackgroundColor(Widget):
-    background_color = ListProperty([1, 1, 1, 0])
+class BackgroundMixin(Widget):
+    background_color = ListProperty([0, 0, 0, 0])
     background_radius = NumericProperty(0)
-
-class OutlineColor(Widget):
-    outline_color = ListProperty([1, 1, 1, 0])
+    outline_color = ListProperty([0, 0, 0, 0])
     outline_width = NumericProperty(1)
     background_radius = NumericProperty(0)
 
@@ -68,35 +67,46 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
 
 
 # -- resizeable buttons
-class SizedMDButton(LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundColor, OutlineColor):  # avoid baserectangular for sizing
+class SizedButton(LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin):  # avoid baserectangular for sizing
     text = StringProperty("")
     text_color = ListProperty(WHITE)
+    text_size = ListProperty([100, 100])
     halign = OptionProperty("center", options=["left", "center", "right", "justify", "auto"])
     label = ObjectProperty(None)
-    height = NumericProperty(33)
+    padding_x = NumericProperty(6)
+    padding_y = NumericProperty(0)
+    _font_size = NumericProperty(None)
 
 
-class SizedMDToggleButton(ToggleButtonBehavior, SizedMDButton):
+class AutoSizedButton(SizedButton):
+    pass
+
+
+class SizedRectangleButton(SizedButton):
+    pass
+
+
+class AutoSizedRectangleButton(AutoSizedButton):
+    pass
+
+
+class ToggleButtonMixin(ToggleButtonBehavior):
     inactive_outline_color = ListProperty([0.5, 0.5, 0.5, 0])
     active_outline_color = ListProperty([1, 1, 1, 0])
     inactive_background_color = ListProperty([0.5, 0.5, 0.5, 1])
     active_background_color = ListProperty([1, 1, 1, 1])
 
 
-class SizedMDRectangleButton(SizedMDButton):
+class SizedToggleButton(ToggleButtonMixin, SizedButton):
     pass
 
 
-class SizedMDRectangleToggleButton(SizedMDToggleButton):
+class SizedRectangleToggleButton(ToggleButtonMixin, SizedRectangleButton):
     pass
 
 
-class AutoSizedMDRectangleButton(SizedMDRectangleButton):
-    hor_padding = NumericProperty(6)
-
-
-class AutoSizedMDRectangleToggleButton(SizedMDRectangleToggleButton):
-    hor_padding = NumericProperty(6)
+class AutoSizedRectangleToggleButton(ToggleButtonMixin, AutoSizedRectangleButton):
+    pass
 
 
 class TransparentIconButton(CircularRippleBehavior, Button):
@@ -136,7 +146,7 @@ class CircleWithText(Widget):
 # -- new gui elements
 
 
-class PlayerInfo(MDBoxLayout, BackgroundColor, OutlineColor):
+class PlayerInfo(MDBoxLayout, BackgroundMixin):
     captures = NumericProperty(0)
     player = OptionProperty("Black", options=["Black", "White"])
     player_type = StringProperty("Player")
@@ -146,10 +156,17 @@ class PlayerInfo(MDBoxLayout, BackgroundColor, OutlineColor):
 
 class AnalysisToggle(MDBoxLayout):
     text = StringProperty("")
-    active = BooleanProperty(False)
+    default_active = BooleanProperty(False)
+
+    def trigger_action(self, *args, **kwargs):
+        return self.checkbox.trigger_action(*args, **kwargs)
+
+    @property
+    def active(self):
+        return self.checkbox.active
 
 
-class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, BackgroundColor):
+class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, BackgroundMixin):
     __events__ = ["on_action"]
     icon = StringProperty("")
     text = StringProperty("")
@@ -168,7 +185,7 @@ class CollapsablePanelHeader(MDBoxLayout):
     pass
 
 
-class CollapsablePanelTab(AutoSizedMDRectangleToggleButton):
+class CollapsablePanelTab(AutoSizedRectangleToggleButton):
     pass
 
 
@@ -271,12 +288,11 @@ class CollapsablePanel(MDBoxLayout):
         pass
 
 
-class StatsBox(MDBoxLayout, BackgroundColor):
+class StatsBox(MDBoxLayout, BackgroundMixin):
     winrate = StringProperty("...")
     score = StringProperty("...")
     points_lost = NumericProperty(None, allownone=True)
     player = StringProperty("")
-
 
 # --- not checked
 
@@ -332,7 +348,7 @@ class LightHelpLabel(ScaledLightLabel):
     pass
 
 
-class ScrollableLabel(ScrollView, BackgroundColor):
+class ScrollableLabel(ScrollView, BackgroundMixin):
     __events__ = ["on_ref_press"]
     outline_color = ListProperty([0, 0, 0, 0])  # mixin not working for some reason
     text = StringProperty("")
@@ -504,8 +520,8 @@ class LabelledIntInput(LabelledTextInput):
         return int(self.text)
 
 
-def draw_text(pos, text, **kw):
-    label = CoreLabel(text=text, bold=True, font_name=i18n._("Roboto"), **kw)  #
+def draw_text(pos, text, font_name=None, **kw):
+    label = CoreLabel(text=text, bold=True, font_name=font_name or i18n.font, **kw)  #
     label.refresh()
     Rectangle(texture=label.texture, pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2), size=label.texture.size)
 

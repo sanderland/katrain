@@ -5,7 +5,7 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Union
 
-from katrain.core.utils import var_to_grid, OUTPUT_INFO, OUTPUT_DEBUG
+from katrain.core.utils import var_to_grid, OUTPUT_INFO, OUTPUT_DEBUG, i18n
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
 from katrain.core.sgf_parser import SGF, Move
@@ -291,32 +291,36 @@ class Game:
     def analyze_extra(self, mode):
         stones = {s.coords for s in self.stones}
         cn = self.current_node
-        if not cn.analysis_ready:
-            self.katrain.controls.set_status("Wait for initial analysis to complete before doing a board-sweep or refinement", self.current_node)
-            return
 
         engine = self.engines[cn.next_player]
         if mode == "extra":
-            visits = cn.analysis["root"]["visits"] + engine.config["max_visits"]
+            visits = cn.analysis_visits_requested + engine.config["max_visits"]
             self.katrain.controls.set_status(f"Performing additional analysis to {visits} visits")
             cn.analyze(engine, visits=visits, priority=-1_000, time_limit=False)
             return
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
-            policy_grid = var_to_grid(self.current_node.policy, size=(board_size_x, board_size_y)) if self.current_node.policy else None
-            analyze_moves = sorted(
-                [
-                    Move(coords=(x, y), player=cn.next_player)
-                    for x in range(board_size_x)
-                    for y in range(board_size_y)
-                    if (policy_grid is None and (x, y) not in stones) or policy_grid[y][x] >= 0
-                ],
-                key=lambda mv: -policy_grid[mv.coords[1]][mv.coords[0]],
-            )
+            if cn.analysis_ready:
+                policy_grid = var_to_grid(self.current_node.policy, size=(board_size_x, board_size_y)) if self.current_node.policy else None
+                analyze_moves = sorted(
+                    [
+                        Move(coords=(x, y), player=cn.next_player)
+                        for x in range(board_size_x)
+                        for y in range(board_size_y)
+                        if (policy_grid is None and (x, y) not in stones) or policy_grid[y][x] >= 0
+                    ],
+                    key=lambda mv: -policy_grid[mv.coords[1]][mv.coords[0]],
+                )
+            else:
+                analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(board_size_x) for y in range(board_size_y) if (x, y) not in stones]
             visits = engine.config["fast_visits"]
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
             priority = -1_000_000_000
         else:  # mode=='equalize':
+            if not cn.analysis_ready:
+                self.katrain.controls.set_status(i18n._("wait-before-equalize"), self.current_node)
+                return
+
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
             visits = max(d["visits"] for d in cn.analysis["moves"].values())
             self.katrain.controls.set_status(f"Equalizing analysis of candidate moves to {visits} visits")

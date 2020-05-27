@@ -2,10 +2,10 @@ import math
 
 from kivy.properties import ListProperty, NumericProperty, BooleanProperty
 
-from katrain.gui.kivyutils import BackgroundColor
+from katrain.gui.kivyutils import BackgroundMixin
 
 
-class ScoreGraph(BackgroundColor):
+class ScoreGraph(BackgroundMixin):
     show_score = BooleanProperty(True)
     show_winrate = BooleanProperty(True)
 

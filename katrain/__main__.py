@@ -204,6 +204,10 @@ class KaTrainGui(Screen):
                 ai_move(self.game, mode, settings)
 
     def _do_undo(self, n_times=1):
+        if n_times == "smart":
+            n_times = 1
+            if self.play_analyze_mode == "play" and self.game.last_player.ai and self.game.next_player.human:
+                n_times = 2
         self.board_gui.animating_pv = None
         self.game.undo(n_times)
 
@@ -299,15 +303,14 @@ class KaTrainGui(Screen):
                 self("undo")
         return super().on_touch_up(touch)
 
-    def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
-        if isinstance(App.get_running_app().root_window.children[0], Popup) or self.controls.note.focus:
-            return  # if in new game or load, don't allow keyboard shortcuts
-
-        shortcuts = {
+    @property
+    def shortcuts(self):
+        return {
+            "q": self.analysis_controls.show_children,
             "w": self.analysis_controls.eval,
             "e": self.analysis_controls.hints,
-            "r": self.analysis_controls.ownership,
-            "t": self.analysis_controls.policy,
+            "t": self.analysis_controls.ownership,
+            "r": self.analysis_controls.policy,
             "enter": ("ai-move",),
             "a": ("analyze-extra", "extra"),
             "s": ("analyze-extra", "equalize"),
@@ -316,6 +319,11 @@ class KaTrainGui(Screen):
             "right": ("switch-branch", 1),
             "left": ("switch-branch", -1),
         }
+
+    def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
+        if isinstance(App.get_running_app().root_window.children[0], Popup) or self.controls.note.focus:
+            return  # if in new game or load, don't allow keyboard shortcuts
+        shortcuts = self.shortcuts
         if keycode[1] in shortcuts.keys():
             shortcut = shortcuts[keycode[1]]
             if isinstance(shortcut, Widget):

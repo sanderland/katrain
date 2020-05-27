@@ -29,6 +29,9 @@ msgstr "General Settings"
 msgid "menu:lang"
 msgstr "Language"
 
+msgid "menu:support"
+msgstr "Support or Contribute"
+
 #. buttons at the top - should all include a line break
 msgid "analysis:nextmoves"
 msgstr ""
@@ -77,6 +80,10 @@ msgstr ""
 "This simply indicates the Engine status, going from green (idle) to orange "
 "(processing queries). It turns red when the engine has crashed or fails to "
 "start."
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "Undo"
 
 #. tabs and labels on the right panel
 msgid "tab:score"
@@ -181,6 +188,9 @@ msgid "SGF Notes Hint"
 msgstr "Your SGF notes for this position here."
 
 #. misc errors and info messages
+msgid "wait-before-equalize"
+msgstr "Wait for initial analysis to complete before requesting a refinement."
+
 msgid "Copied SGF to clipboard."
 msgstr "Copied SGF to clipboard."
 
@@ -200,7 +210,7 @@ msgstr ""
 
 msgid "Starting Kata failed"
 msgstr ""
-"Starting kata with command '{command}' failed with error {error}. Please "
+"Starting KataGo with command '{command}' failed with error {error}. Please "
 "make sure the 'katago' value under 'engine' in settings points to the "
 "correct KataGo executable."
 

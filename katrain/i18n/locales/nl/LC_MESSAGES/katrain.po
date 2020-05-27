@@ -7,17 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #. This is the font used, files ONLY relative to 'katrain' directory
-msgid "Roboto"
-msgstr "Roboto"
-
-msgid "English"
-msgstr "Engels"
-
-msgid "Dutch"
-msgstr "Nederlands"
-
-msgid "Korean"
-msgstr "Koreaans"
+msgid "LANG_FONT"
+msgstr "fonts/NotoSans-Regular.ttf"
 
 msgid "pass-button-text"
 msgstr "Pas"
@@ -262,5 +253,13 @@ msgid "analysis:extra"
 msgstr "Deeper analysis"
 
 #. TODO
-msgid "LANG_FONT"
-msgstr "fonts/NotoSans-Regular.ttf"
+msgid "undo-button-text"
+msgstr "Undo"
+
+#. TODO
+msgid "menu:support"
+msgstr "Support or Contribute"
+
+#. TODO
+msgid "wait-before-equalize"
+msgstr "Wait for initial analysis to complete before requesting a refinement."

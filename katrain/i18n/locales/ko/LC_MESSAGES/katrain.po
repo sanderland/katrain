@@ -10,15 +10,6 @@ msgstr ""
 msgid "LANG_FONT"
 msgstr "fonts/NotoSansKR-Regular.otf"
 
-msgid "English"
-msgstr "영어"
-
-msgid "Dutch"
-msgstr "네덜란드어"
-
-msgid "Korean"
-msgstr "한국어"
-
 msgid "pass-button-text"
 msgstr "패스"
 
@@ -229,3 +220,15 @@ msgstr "Force AI Move"
 #. TODO
 msgid "analysis:extra"
 msgstr "Deeper analysis"
+
+#. TODO
+msgid "undo-button-text"
+msgstr "Undo"
+
+#. TODO
+msgid "menu:support"
+msgstr "Support or Contribute"
+
+#. TODO
+msgid "wait-before-equalize"
+msgstr "Wait for initial analysis to complete before requesting a refinement."

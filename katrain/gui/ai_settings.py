@@ -5,7 +5,7 @@ from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.label import MDLabel
 
 from katrain.core.utils import OUTPUT_DEBUG, OUTPUT_ERROR
-from katrain.gui.kivyutils import SizedMDButton, LightHelpLabel, ScaledLightLabel, StyledSpinner
+from katrain.gui.kivyutils import SizedButton, LightHelpLabel, ScaledLightLabel, StyledSpinner
 from katrain.gui.popups import QuickConfigGui, ConfigPopup, InputParseError
 
 KV = """
@@ -117,9 +117,9 @@ class ConfigAIPopupContents(QuickConfigGui):
         self.options_grid = MDGridLayout(cols=2, rows=max(len(v) for v in self.settings.values()) - 1, size_hint=(1, 7.5), spacing=1)  # -1 for help in 1 col
         bottom_bl = MDBoxLayout(spacing=2)
         self.info_label = MDLabel()
-        bottom_bl.add_widget(SizedMDButton(text=f"Apply", on_press=lambda _: self.update_config(False)))  # raised?
+        bottom_bl.add_widget(SizedButton(text=f"Apply", on_press=lambda _: self.update_config(False)))  # raised?
         bottom_bl.add_widget(self.info_label)
-        bottom_bl.add_widget(SizedMDButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
+        bottom_bl.add_widget(SizedButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
         self.add_widget(self.options_grid)
         self.add_widget(bottom_bl)
         self.build_ai_options(ais[0])

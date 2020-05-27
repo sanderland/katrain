@@ -20,6 +20,7 @@ class GameNode(SGFNode):
         self.note = ""
         self.move_number = 0
         self.time_used = 0
+        self.analysis_visits_requested = 0
         self.undo_threshold = random.random()  # for fractional undos, store the random threshold in the move itself for consistency
         self._favourite_child = None
 
@@ -62,6 +63,8 @@ class GameNode(SGFNode):
 
     # various analysis functions
     def analyze(self, engine, priority=0, visits=None, time_limit=True, refine_move=None, analyze_fast=False):
+        if visits and not refine_move:
+            self.analysis_visits_requested = max(self.analysis_visits_requested, engine.config["max_visits"])
         engine.request_analysis(
             self, lambda result: self.set_analysis(result, refine_move), priority=priority, visits=visits, analyze_fast=analyze_fast, time_limit=time_limit, next_move=refine_move
         )

@@ -102,10 +102,10 @@ Keyboard shortcuts are shown with **[key]**.
     * **[w]**: All dots: Show all evaluation dots instead of the last few.
         * You can configure how many are shown with this setting off, and whether they are shown for AIs under 'Play/Configure Teacher'.
     * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. Small dots indicate high uncertainty. Hover over any of them to see the principal variation.
-    * **[r]**: Show owner: Show expected ownership of each intersection.
-    * **[t]**: NN Policy: Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, and in the absence of any 'reading'.
+    * **[r]**: NN Policy: Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, and in the absence of any 'reading'.
+    * **[t]**: Show owner: Show expected ownership of each intersection.
 
-* The analysis buttons are used for:
+* The analysis options are used for deeper evaluation of the position:
     * **[a]**: Extra: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
     * **[s]**: Equalize: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
     * **[d]**: Sweep: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but the result is nothing if not colourful.
@@ -114,7 +114,7 @@ Keyboard shortcuts are shown with **[key]**.
 
 In addition to shortcuts mentioned above, there are:
 
-* **[Tab]**: to switch between analysis and play modes. (NB. keyboard shortcuts function regardless)
+* **[Tab]**: to switch between analysis and play modes.
 * **[~]** or **[`]** or **[m]**: Hide side panel UI and only show the board.
 * **[enter]**: AI Move
 * **[p]**: Pass
@@ -130,7 +130,7 @@ In addition to shortcuts mentioned above, there are:
 * **[Ctrl-l]**: Load SGF from file and do a normal analysis.
 * **[Ctrl-s]**: Save SGF with automated review to file.
 * **[Ctrl-n]**: Load SGF from clipboard
-
+* **[F5]**: Open settings
 
 ## Configuration
 
