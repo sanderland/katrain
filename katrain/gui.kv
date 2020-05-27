@@ -51,15 +51,17 @@
             rgba: root.outline_color
         Line:
             rectangle:  (*self.pos,*self.size)
+            rounded_rectangle: (*self.pos,*self.size,root.background_radius,root.background_radius,root.background_radius,root.background_radius,self.height)
             width: root.outline_width
 
 <BackgroundColor>:
     canvas.before:
         Color:
             rgba: root.background_color
-        Rectangle:
+        RoundedRectangle:
             size: self.size
             pos: self.pos
+            radius: [root.background_radius, ]
 
 
 <ToolTipLabel>: # TODO
@@ -276,6 +278,7 @@
     AutoSizedMDRectangleButton:
         id: pass_btn
         text: i18n._('pass-button-text')
+        background_radius: 10
         size_hint: None, 0.5
         pos_hint: {'center_x': 0.15,'center_y':0.5}
         on_left_release: root.katrain("play",None)

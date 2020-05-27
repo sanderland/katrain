@@ -21,8 +21,6 @@ from kivymd.app import MDApp
 from kivymd.uix.behaviors import RectangularRippleBehavior, CircularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BasePressedButton, BaseFlatButton
-from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 from kivy.core.text import Label as CoreLabel
 from katrain.core.utils import i18n, I18NTextInput, I18NLabel
@@ -35,11 +33,12 @@ from katrain.gui.style import WHITE
 
 class BackgroundColor(Widget):
     background_color = ListProperty([1, 1, 1, 0])
-
+    background_radius = NumericProperty(0)
 
 class OutlineColor(Widget):
     outline_color = ListProperty([1, 1, 1, 0])
     outline_width = NumericProperty(1)
+    background_radius = NumericProperty(0)
 
 
 class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on right click
