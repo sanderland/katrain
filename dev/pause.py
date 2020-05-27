@@ -31,7 +31,6 @@ class TestBox(GridLayout):
     pass
 
 
-
 class BackgroundMixin(Widget):
     background_color = ListProperty([0, 0, 0, 0])
     background_radius = NumericProperty(0)
@@ -64,7 +63,8 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
     def on_left_press(self):
         pass
 
-class PauseButton(LeftButtonBehavior,Widget):
+
+class PauseButton(LeftButtonBehavior, Widget):
     active = BooleanProperty(True)
     active_line_color = WHITE
     inactive_line_color = WHITE
@@ -77,6 +77,7 @@ class PauseButton(LeftButtonBehavior,Widget):
 
     def on_left_press(self):
         self.active = not self.active
+
 
 KV = """
 #:set LIGHTGREY [0.7,0.7,0.7,1]

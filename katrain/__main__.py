@@ -24,7 +24,18 @@ from kivy.uix.screenmanager import Screen
 from kivymd.app import MDApp
 
 from katrain.core.ai import ai_move
-from katrain.core.utils import DEFAULT_LANGUAGE, OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_INFO, OUTPUT_KATAGO_STDERR, find_package_resource, i18n, MODE_PLAY, switch_lang, i18n_font
+from katrain.core.utils import (
+    DEFAULT_LANGUAGE,
+    OUTPUT_DEBUG,
+    OUTPUT_ERROR,
+    OUTPUT_EXTRA_DEBUG,
+    OUTPUT_INFO,
+    OUTPUT_KATAGO_STDERR,
+    find_package_resource,
+    i18n,
+    MODE_PLAY,
+    switch_lang,
+)
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError

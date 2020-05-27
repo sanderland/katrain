@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Callable
 
 from kivy.event import EventDispatcher
 from kivy.lang import Observable
@@ -9,6 +9,9 @@ import gettext
 from kivy.properties import StringProperty
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
+from kivymd.uix.label import MDIcon
+
+from katrain.gui.style import DEFAULT_FONT
 
 try:
     import importlib.resources as pkg_resources
@@ -54,69 +57,70 @@ def find_package_resource(path):
         return path  # absolute path
 
 
-class LangFont(EventDispatcher):
-    font_name = StringProperty('')
 
-
-    DEFAULT_FONT = "fonts/NotoSans-Regular.ttf"
-    FONTS = {'ko': "fonts/NotoSansKR-Regular.otf"}
-    font_name = StringProperty('')
-    def __init__(self,lang,**kwargs):
-        super().__init__(**kwargs)
-        self.switch_lang(lang)
-
-    def switch_lang(self,lang):
-        self.lang = lang
-        self.font_name = self.FONTS.get(lang) or self.DEFAULT_FONT
 
 class Lang(Observable):
     observers = []
+    callbacks = []
+    FONTS = {"ko": "fonts/NotoSansKR-Regular.otf"}
 
     def __init__(self, lang):
         super(Lang, self).__init__()
-        self.ugettext = None
-        self.font = None
         self.switch_lang(lang)
 
     def _(self, text):
+        if text=='':
+            return '' # just for font change
         return self.ugettext(text)
 
-    def fbind(self, name, func, *args, **kwargs):
+    def fbind(self, name, func, *args):
         if name == "_":
-            self.observers.append((func, args, kwargs))
+            widget, property, *_ = args[0]
+            self.observers.append((widget, func, args))
+            widget.font_name = self.font_name
         else:
-            return super(Lang, self).fbind(name, func, *args, **kwargs)
+            return super(Lang, self).fbind(name, func, *args)
 
-    def funbind(self, name, func, *args, **kwargs):
+    def funbind(self, name, func, *args):
         if name == "_":
-            key = (func, args, kwargs)
-            print("funbind", key in self.observers)
+            widget, *_ = args[0]
+            key = (widget, func, args)
             if key in self.observers:
                 self.observers.remove(key)
         else:
-            return super(Lang, self).funbind(name, func, *args, **kwargs)
+            return super(Lang, self).funbind(name, func, *args)
+
+    def add_callback(self,callback_fn: Callable):
+        self.callbacks.append(callback_fn)
+        print("ADDING CB")
 
     def switch_lang(self, lang):
         # get the right locales directory, and instantiate a gettext
         self.lang = lang
+        self.font_name = self.FONTS.get(lang) or DEFAULT_FONT
         i18n_dir, _ = os.path.split(find_package_resource("katrain/i18n/__init__.py"))
         locale_dir = os.path.join(i18n_dir, "locales")
         locales = gettext.translation("katrain", locale_dir, languages=[lang])
         self.ugettext = locales.gettext
 
         # update all the kv rules attached to this text
-        for func, args, kwargs in self.observers:
+        for widget, func, args in self.observers:
             try:
                 func(args[0], None, None)
+                widget.font_name = self.font_name
             except ReferenceError:
                 pass  # proxy no longer exists
-
+        for cb in self.callbacks:
+            try:
+                cb(self)
+                print("CALLING CB")
+            except Exception as e:
+                print(f"Failed callback on language change: {e}",file=sys.stderr)
 
 
 DEFAULT_LANGUAGE = "en"
 i18n = Lang(DEFAULT_LANGUAGE)
-i18n_font = LangFont(DEFAULT_LANGUAGE)
+
 
 def switch_lang(lang):
     i18n.switch_lang(lang)
-    i18n_font.switch_lang(lang)

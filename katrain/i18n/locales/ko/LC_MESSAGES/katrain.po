@@ -6,7 +6,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
 msgid "pass-button-text"
 msgstr "패스"
 
@@ -162,8 +161,8 @@ msgstr ""
 #. TODO
 msgid "analysis:nextmoves"
 msgstr ""
-"Next\n"
-"Moves"
+"다음 수\n"
+"보기"
 
 #. TODO
 msgid "analysis:policy"
@@ -174,9 +173,8 @@ msgstr ""
 #. TODO
 msgid "ai-ponder"
 msgstr ""
-"This simply indicates the Engine status, going from green (idle) to orange "
-"(processing queries). It turns red when the engine has crashed or fails to "
-"start."
+"이것은 Engine status이에요, going from green (idle) to orange (processing "
+"queries). It turns red when the engine has crashed or fails to start."
 
 #. TODO
 msgid "menu:newgame"
@@ -204,7 +202,7 @@ msgstr "Player Setup"
 
 #. TODO
 msgid "analysis:sweep"
-msgstr "Fast analysis of all moves"
+msgstr "Fast analysis of all mㅇves"
 
 #. TODO
 msgid "analysis:equalize"

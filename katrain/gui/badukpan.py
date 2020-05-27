@@ -428,6 +428,7 @@ class AnalysisControls(MDFloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.analysis_menu = None
+        i18n.add_callback(lambda _lang: self.build_menu(0))
         Clock.schedule_once(self.build_menu, 0)
 
     def build_menu(self, _dt):

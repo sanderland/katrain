@@ -30,7 +30,7 @@ from katrain.core.utils import i18n
 #
 
 # --- new mixins
-from katrain.gui.style import WHITE
+from katrain.gui.style import WHITE, DEFAULT_FONT
 
 
 class BackgroundMixin(Widget):
@@ -76,6 +76,7 @@ class SizedButton(LeftButtonBehavior, RectangularRippleBehavior, BasePressedButt
     padding_x = NumericProperty(6)
     padding_y = NumericProperty(0)
     _font_size = NumericProperty(None)
+    font_name = StringProperty(DEFAULT_FONT)
 
 
 class AutoSizedButton(SizedButton):
@@ -113,7 +114,8 @@ class TransparentIconButton(CircularRippleBehavior, Button):
     icon_size = ListProperty([25, 25])
     icon = StringProperty("")
 
-class PauseButton(CircularRippleBehavior,LeftButtonBehavior,Widget):
+
+class PauseButton(CircularRippleBehavior, LeftButtonBehavior, Widget):
     active = BooleanProperty(True)
     active_line_color = ListProperty([0.5, 0.5, 0.8, 1])
     inactive_line_color = ListProperty([1, 1, 1, 1])
@@ -138,6 +140,7 @@ class StatsLabel(MDBoxLayout):
     label = StringProperty("")
     color = ListProperty([1, 1, 1, 1])
     hidden = BooleanProperty(False)
+    font_name = StringProperty(DEFAULT_FONT)
 
 
 class MyNavigationDrawer(MDNavigationDrawer):  # in PR - closes NavDrawer on any outside click
@@ -159,6 +162,9 @@ class CircleWithText(Widget):
 
 # -- new gui elements
 
+class PlayerSetup(MDBoxLayout):
+    player = OptionProperty("Black", options=["Black", "White"])
+
 
 class PlayerInfo(MDBoxLayout, BackgroundMixin):
     captures = NumericProperty(0)
@@ -171,6 +177,7 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
 class AnalysisToggle(MDBoxLayout):
     text = StringProperty("")
     default_active = BooleanProperty(False)
+    font_name = StringProperty(DEFAULT_FONT)
 
     def trigger_action(self, *args, **kwargs):
         return self.checkbox.trigger_action(*args, **kwargs)
@@ -185,6 +192,7 @@ class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, B
     icon = StringProperty("")
     text = StringProperty("")
     shortcut = StringProperty("")
+    font_name = StringProperty(DEFAULT_FONT)
 
     def on_left_release(self):
         self.anim_complete()  # kill ripple
@@ -307,6 +315,7 @@ class StatsBox(MDBoxLayout, BackgroundMixin):
     score = StringProperty("...")
     points_lost = NumericProperty(None, allownone=True)
     player = StringProperty("")
+
 
 # --- not checked
 

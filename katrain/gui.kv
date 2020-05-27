@@ -1,6 +1,5 @@
 #:kivy 1.11.0
 #:import i18n __main__.i18n
-#:import i18n_font __main__.i18n_font
 #:import find_package_resource __main__.find_package_resource
 
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
@@ -34,16 +33,12 @@
 #:set NOTES_FONT_SIZE dp(18)
 
 <Label>:
-    font_name: i18n_font.font_name
     canvas.before:
         Color:
             rgba: RED
         Line:
             rectangle:  (*self.pos,*self.size)
             width: 1
-
-<TextInput>:
-    font_name: i18n_font.font_name
 
 # mixins
 <BackgroundMixin>:
@@ -91,6 +86,7 @@
         id: label
         padding: [root.padding_x,root.padding_y]
         color: root.text_color
+        font_name: root.font_name
         font_size: 0.6 * self.height / len(self.text.split('\\n')) if root._font_size is None else root._font_size
         halign: root.halign
         text: root.text
@@ -390,8 +386,8 @@
     min_size: min(self.height,self.width)
     inactive_line_color: WHITE
     inactive_fill_color: [1,1,1,0]
-    active_line_color: RED
-    active_fill_color: LIGHTGREY
+    active_line_color: [242/255,96/255,34/255,1]
+    active_fill_color: [1,1,1,0]
     line_width: max(1.1,self.min_size/20)
     line_color: root.active_line_color if self.active else root.inactive_line_color
     fill_color: root.active_fill_color if self.active else root.inactive_fill_color
@@ -403,16 +399,20 @@
             pos: root.x + root.width/2 - root.min_size/2, root.y  + root.height/2 - root.min_size/2
             size: root.min_size,root.min_size
         Color:
-            rgba: root.line_color
+            rgba: root.inactive_line_color
         Line:
             circle: root.x + root.width/2, root.y + root.height/2, root.min_size/2 - root.line_width/2
             width: root.line_width
+        Color:
+            rgba: root.line_color
         Line:
             points: root.x + root.width/2 - root.min_size/8, root.y + root.height/2 - root.min_size/6, root.x + root.width/2 - root.min_size/8, root.y + root.height/2 + root.min_size/6
             width: root.line_width
+            cap: 'square'
         Line:
             points: root.x + root.width/2 + root.min_size/8, root.y + root.height/2 - root.min_size/6, root.x + root.width/2 + root.min_size/8, root.y + root.height/2 + root.min_size/6
             width: root.line_width
+            cap: 'square'
 
 
 
@@ -553,6 +553,7 @@
         id: desc
         text: root.label if not root.hidden else ''
         font_size: self.size[1] * 0.7
+        font_name: root.font_name
         text_size: self.size
         valign: 'middle'
         halign: 'center'
@@ -561,6 +562,7 @@
         text: root.text if not root.hidden else ''
         color: root.color
         font_size: desc.font_size
+        font_name: root.font_name
         text_size: self.size
         valign: 'middle'
         halign: 'center'
@@ -602,6 +604,7 @@
             width: 1
     Label:
         id: label
+        lang_change_tracking: i18n._('')
         markup: root.markup
         padding: 5, 5
         font_size: NOTES_FONT_SIZE
@@ -703,7 +706,7 @@
         size_hint_y_open: 1
         closed_label: 'closedlabel:info&notes'
         options: ['info','notes']
-        option_colors: [SCORE_COLOR,WINRATE_COLOR]
+        option_colors: [WHITE,WHITE]
         option_default_active: [True,False]
         on_option_state:
             info.size_hint_y = int(args[1]['info'])+1e-9
@@ -745,6 +748,7 @@
         text: root.text
         halign: 'center'
         font_size: root.height / 3
+        font_name: root.font_name
         color: checkbox.selected_color if checkbox.active else checkbox.unselected_color
         size_hint_x: None
         width: self.texture_size[0] + 4
@@ -840,6 +844,7 @@
         halign: 'left'
         valign: 'middle'
         font_size: root.font_size
+        font_name: root.font_name
         color: WHITE
     Label:
         text: root.shortcut
@@ -847,6 +852,7 @@
         valign: 'middle'
         size_hint_x: 1/3
         font_size: root.font_size
+        font_name: root.font_name
         color: LIGHTGREY
 
 
@@ -860,6 +866,24 @@
     height: self.parent.item_height or 50
     size_hint: 1,None
 
+
+<PlayerSetup@MDBoxLayout>:
+    orientation: 'horizontal'
+    CircleWithText:
+        text: root.player[0]
+        player: root.player
+    Label:
+        text: 'type'
+    Label:
+        text: 'subtype'
+
+<PlayerSetupBlock@MDBoxLayout>:
+    orientation: 'vertical'
+    PlayerSetup:
+        player: 'Black'
+    PlayerSetup:
+        player: 'White'
+
 <ContentNavigationDrawer@MDBoxLayout+BackgroundMixin>:
     katrain: app.gui
     background_color: BOX_BACKGROUND_COLOR
@@ -867,7 +891,7 @@
     item_height: self.height/20
     MenuLabel:
         text: i18n._('menu:playersetup')
-    Label:
+    PlayerSetupBlock:
     MenuLabel:
     MDBoxLayout:
         orientation: 'vertical'

@@ -2,6 +2,8 @@ def to_hexcol(kivycol):
     return "#" + "".join(f"{round(c * 255):02x}" for c in kivycol[:3])
 
 
+DEFAULT_FONT = "fonts/NotoSans-Regular.ttf"
+
 # basic color definitions
 RED = [0.8, 0.1, 0.1, 1]
 WHITE = [0.95, 0.95, 0.95, 1]
