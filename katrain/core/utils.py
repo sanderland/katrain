@@ -67,8 +67,6 @@ class Lang(Observable):
         self.switch_lang(lang)
 
     def _(self, text):
-        if text == "":
-            return ""  # just for font change
         return self.ugettext(text)
 
     def fbind(self, name, func, *args):

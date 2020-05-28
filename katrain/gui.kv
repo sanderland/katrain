@@ -1,6 +1,5 @@
 #:kivy 1.11.0
-#:import i18n __main__.i18n
-#:import find_package_resource __main__.find_package_resource
+#:import i18n katrain.core.utils.i18n
 
 #:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
 #:set TOOLTIP_COLOR [0.43, 0.50, 0.65, 1]
@@ -9,12 +8,22 @@
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 
 #-- NEW
-#:import PLAYER_TYPES __main__.PLAYER_TYPES
-#:import RED __main__.RED
-#:import WHITE __main__.WHITE
+
+# TODO: refactor
+
+#:set CP_SPACING 6
+#:set CP_SMALL_SPACING 3
+#:set CP_PADDING 6
+
+#:import PLAYER_TYPES katrain.core.constants.PLAYER_TYPES
+#:import RED katrain.gui.style.RED
+#:import WHITE katrain.gui.style.WHITE
+#:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
+#:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
+#:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
+
 
 #:set LIGHTGREY [0.7,0.7,0.7,1]
-
 #:set BLACK [0.05,0.05,0.05,1]
 #:set GREY  [0.5,0.5,0.5,1]
 #:set GREEN  [0.1,0.8,0.1,1]
@@ -27,12 +36,13 @@
 #:set WINRATE_COLOR GREEN
 
 #:set BUTTON_INACTIVE_COLOR LIGHTGREY
-#:set BACKGROUND_COLOR      [36/255,48/255,62/255,1]
-#:set BOX_BACKGROUND_COLOR  [46/255,65/255,88/255,1]
-#:set TEXT_COLOR            WHITE
+
 
 #:set NOTES_FONT_SIZE dp(18)
 
+
+
+# for sizing help
 <Label>:
     canvas.before:
         Color:
@@ -57,29 +67,12 @@
             width: root.outline_width or 1
 
 
-<ToolTipLabel>: # TODO
-    size_hint: None, None
-    size: self.texture_size
-    tooltip_font_size: dp(14)
-    padding: (2,2)
-    halign: 'center'
-    canvas.before:
-        Color:
-            rgba: TOOLTIP_COLOR
-        Rectangle:
-            size: self.size
-            pos: self.pos
-        Color:
-            rgba: BUTTON_COLOR
-        Line:
-            width: 1.1
-            rectangle: (*self.pos,*self.size)
 
 # new widgets
 
 <SizedButton>:
     ripple_duration_in_slow: 0.6
-    text_color: WHITE
+    text_color: TEXT_COLOR
     background_color: BOX_BACKGROUND_COLOR
     label: label
     text_size: root.size
@@ -139,7 +132,6 @@
         source: root.icon
         mipmap: True
 
-
 <StyledSpinnerOption@SpinnerOption>:
     background_color: BACKGROUND_COLOR
     background_normal: ''
@@ -160,54 +152,46 @@
     option_cls: 'StyledSpinnerOption'
 
 
+<CircleWithText>:
+    min_size: min(self.height,self.width)
+    Image:
+        id: image
+        pos: (root.pos[0] + (root.width - root.min_size)/2,root.pos[1] + (root.height - root.min_size)/2)
+        size: (root.min_size,root.min_size)
+        source: 'img/white.png' if root.player=='W' else 'img/black.png'
+        mipmap: True
+    Label:
+        id: lbl
+        text: root.text
+        text_size: None, root.min_size
+        bold: True
+        valign: 'center'
+        color: BLACK if root.player=='W' else WHITE
+        pos: (image.x, image.y)
+        size: image.size
+        font_size: root.min_size * 1.2 / (1 + 1 * len(self.text))
 
-# -- old widgets
 
+# -- old widgets TODO: remove
 
-
-<StyledButton>:
-    color: WHITE
-    font_size: self.height * 0.45
-    radius: (self.height/7,)
-    button_color: BUTTON_COLOR
-    button_color_down: [0.105, 0.14, 0.155, 1]
-    button_color_highlight: [(a+b)/2 for a,b in zip(self.button_color,self.button_color_down)]
-    background_color: 0,0,0,0
-    background_normal: ''
+<ToolTipLabel>: # TODO update/remove
+    size_hint: None, None
+    size: self.texture_size
+    tooltip_font_size: dp(14)
+    padding: (2,2)
+    halign: 'center'
     canvas.before:
         Color:
-            rgba: self.button_color if root.state=='normal' else self.button_color_down
-        RoundedRectangle:
-            size: self.size[0],self.height
-            pos: (self.pos[0],self.pos[1])
-            radius: root.radius
+            rgba: TOOLTIP_COLOR
+        Rectangle:
+            size: self.size
+            pos: self.pos
+        Color:
+            rgba: BUTTON_COLOR
+        Line:
+            width: 1.1
+            rectangle: (*self.pos,*self.size)
 
-
-<StyledToggleButton>:
-    max_lines: 1
-
-<ToggleButtonContainer>:
-
-<LabelledTextInput>:
-    padding: 3, 0.27*self.height
-    font_size: 0.4*self.height
-
-<LabelledIntInput>:
-    font_size: 0.5*self.height
-    padding: 7, 0.2*self.height
-
-<LabelledFloatInput>:
-    font_size: 0.5*self.height
-    padding: 7, 0.2*self.height
-
-<LabelledTextArea>
-    font_size: 0.2*self.height
-
-<CheckBox>:
-    color: BLACK
-
-<LabelledCheckBox>:
-    color: WHITE
 
 
 <StyledIconButton@StyledButton>:
@@ -246,25 +230,6 @@
     valign: 'middle'
     size: self.texture_size
 
-
-<CircleWithText>:
-    min_size: min(self.height,self.width)
-    Image:
-        id: image
-        pos: (root.pos[0] + (root.width - root.min_size)/2,root.pos[1] + (root.height - root.min_size)/2)
-        size: (root.min_size,root.min_size)
-        source: 'img/white.png' if root.player=='W' else 'img/black.png'
-        mipmap: True
-    Label:
-        id: lbl
-        text: root.text
-        text_size: None, root.min_size
-        bold: True
-        valign: 'center'
-        color: BLACK if root.player=='W' else WHITE
-        pos: (image.x, image.y)
-        size: image.size
-        font_size: root.min_size * 1.2 / (1 + 1 * len(self.text))
 
 # UI components
 
@@ -477,8 +442,8 @@
         PauseButton:
             pos_hint: {'center_y':0.5}
             id: pause
-            state: 'down' if root.paused else 'normal'
-            on_press: root.paused = not root.paused
+            active: root.paused
+            on_left_press: root.paused = not root.paused
 
 
 #:set GRAPH_CENTER_COLOR GREY
@@ -627,7 +592,7 @@
         markup: root.markup
         padding: 5, 5
         font_size: NOTES_FONT_SIZE
-        color: WHITE
+        color: TEXT_COLOR
         size_hint_y: None
         height: self.texture_size[1]
         text_size: self.width, None
@@ -640,10 +605,6 @@
 #:set graph_box_height  0.37
 #:set STATS_BOX_HEIGHT  0.27
 #:set INFO_BOX_HEIGHT   1
-
-#:set CP_SPACING 6
-#:set CP_SMALL_SPACING 3
-#:set CP_PADDING 6
 
 
 <CollapsablePanelHeader>:
@@ -1083,134 +1044,3 @@
 
 
 
-<LoadSGFPopup>:
-    fast: fast
-    rewind: rewind
-    filesel: filesel
-    orientation: 'vertical'
-    Label:
-        text: root.filesel.path
-        size_hint: 1,0.05
-        halign: 'left'
-    FileChooserListView:
-        id: filesel
-        multiselect: False
-        filters: ["*.sgf"]
-        path: "."
-        size_hint: 1,0.88
-    BoxLayout:
-        orientation: 'horizontal'
-        size_hint: 1,0.07
-        canvas.before:
-            Color:
-                rgb: 0.4, 0.4, 0.4
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Label:
-            text: "Analyze Extra Fast"
-            size_hint: 0.45,1
-            halign: 'right'
-        CheckBox:
-            id: fast
-            color: (0.95, 0.95, 0.95)
-            size_hint: 0.05,1
-        Label:
-            text: "Rewind to Start"
-            halign: 'right'
-            size_hint: 0.45,1
-        CheckBox:
-            id: rewind
-            active: True
-            color: (0.95, 0.95, 0.95)
-            size_hint: 0.05,1
-
-<QuickInputButton@StyledButton>
-    on_left_press: self.parent.parent.children[self.parent.parent.children.index(self.parent)+1].text = self.text # why +1 instead of -1?
-
-<NewGamePopup>:
-    orientation: 'vertical'
-    rules_spinner: rules_spinner
-    info: info
-    restart: restart
-    GridLayout:
-        size_hint: 1, 0.8
-        rows: 6
-        cols: 3
-        spacing: 2
-        padding: 2
-        ScaledLightLabel:
-            text: "Size"
-        LabelledTextInput:
-            text: '19'
-            font_size: 0.5*self.height
-            padding: 7, 0.2*self.height
-            input_property: 'SZ'
-        BoxLayout:
-            spacing: 1
-            QuickInputButton:
-                text: '9'
-            QuickInputButton:
-                text: '13'
-            QuickInputButton:
-                text: '19'
-        ScaledLightLabel:
-            text: "Handicap"
-        LabelledIntInput:
-            text: '0'
-            input_property: 'HA'
-        BoxLayout:
-            spacing: 1
-            QuickInputButton:
-                text: '0'
-                on_left_press: if not self.last_touch or self.last_touch.button=="left": km.text='6.5'
-            QuickInputButton:
-                text: '2'
-                on_left_press: if not self.last_touch or self.last_touch.button=="left": km.text='0.5'
-            QuickInputButton:
-                text: '9'
-                on_left_press: if not self.last_touch or self.last_touch.button=="left": km.text='0.5'
-        ScaledLightLabel:
-            text: "Komi"
-        LabelledFloatInput:
-            text: '6.5'
-            id: km
-            input_property: 'KM'
-        BoxLayout:
-            spacing: 1
-            QuickInputButton:
-                text: '0.5'
-            QuickInputButton:
-                text: '5.5'
-            QuickInputButton:
-                text: '6.5'
-        ScaledLightLabel:
-            text: "Ruleset"
-        LabelledSpinner:
-            input_property: 'RU'
-            id: rules_spinner
-        Label:
-        ScaledLightLabel:
-            text: 'Clear cache'
-        CheckBox:
-            color: WHITE
-            id: restart
-        ScaledLightLabel:
-            font_size: 0.35*self.height
-            text: 'avoids replaying\nidentical games'
-        LightHelpLabel:
-            text: "Use x:y (e.g. 19:9) to play on a non-square board."
-            size_hint: 1,2
-            text_size: self.width-6, None
-            font_size: self.height/6
-            id: info
-        LightHelpLabel:
-            text: "Note that handicaps above 9 are not supported on non-square boards."
-            font_size: self.height/6
-            text_size: self.width-6, None
-            id: info
-        StyledButton:
-            halign: 'center'
-            text: 'Start\nGame'
-            font_size: 0.3 * self.height
-            on_left_press: if not self.last_touch or self.last_touch.button=="left": root.new_game()

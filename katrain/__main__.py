@@ -6,6 +6,7 @@ Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no r
 Config.set("graphics", "width", 1400)
 Config.set("graphics", "height", 1000)
 
+
 import os
 import signal
 import sys
@@ -36,8 +37,9 @@ from katrain.core.utils import (
     MODE_PLAY,
     switch_lang,
 )
-from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup
+from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
 from katrain.gui.ai_settings import ConfigAIPopupContents
+from katrain.core.settings_and_logging import KaTrainSettings
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
@@ -47,19 +49,17 @@ from katrain.gui.graph import ScoreGraph
 from katrain.gui.kivyutils import *
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
-from katrain.gui.style import *
 
 __version__ = "1.1.0"
 
 
-class KaTrainGui(Screen):
+class KaTrainGui(Screen, KaTrainSettings):
     """Top level class responsible for tying everything together"""
 
     zen = BooleanProperty(False)
 
     def __init__(self, **kwargs):
-        super(KaTrainGui, self).__init__(**kwargs)
-        self.debug_level = 0
+        super().__init__(**kwargs)
         self.engine = None
         self.game = None
 
@@ -70,16 +70,13 @@ class KaTrainGui(Screen):
         self.teacher_settings_popup = None
         self.timer_settings_popup = None
 
-        self.logger = lambda message, level=OUTPUT_INFO: self.log(message, level)
-        self.config_file = self._load_config()
-
-        self.debug_level = self.config("debug/level", OUTPUT_INFO)
         self.message_queue = Queue()
 
         self._keyboard = Window.request_keyboard(None, self, "")
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def log(self, message, level=OUTPUT_INFO):
+        super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status_label.text:
             if "starting" in message.lower():
                 self.controls.set_status(f"KataGo engine starting...")
@@ -92,34 +89,6 @@ class KaTrainGui(Screen):
                 self.controls.set_status(f"KataGo engine ready.")
         if level == OUTPUT_ERROR or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower()):
             self.controls.set_status(f"ERROR: {message}")
-            print(f"ERROR: {message}")
-        elif self.debug_level >= level:
-            print(message)
-
-    def _load_config(self):
-        config_file = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else find_package_resource("katrain/config.json"))
-        try:
-            self.log(f"Using config file {config_file}", OUTPUT_INFO)
-            self._config_store = JsonStore(config_file, indent=4)
-            self._config = dict(self._config_store)
-            return config_file
-        except Exception as e:
-            self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
-            sys.exit(1)
-
-    def save_config(self):
-        for k, v in self._config.items():
-            self._config_store.put(k, **v)
-
-    def config(self, setting, default=None):
-        try:
-            if "/" in setting:
-                cat, key = setting.split("/")
-                return self._config[cat].get(key, default)
-            else:
-                return self._config[setting]
-        except KeyError:
-            self.log(f"Missing configuration option {setting}", OUTPUT_ERROR)
 
     @property
     def play_analyze_mode(self):
@@ -141,15 +110,15 @@ class KaTrainGui(Screen):
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
         if self.play_analyze_mode == MODE_PLAY:
-            auto_undo = cn.player and "undo" in self.controls.player_mode(cn.player)
-            if auto_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready and not cn.children and not self.game.ended:
-                self.game.analyze_undo(cn, self.config("trainer"))  # not via message loop
+            teaching_undo = cn.player and self.game.players[cn.player].being_taught
+            if teaching_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready and not cn.children and not self.game.ended:
+                self.game.analyze_undo(cn)  # not via message loop
             if (
                 cn.analysis_ready
                 and "ai" in self.controls.player_mode(cn.next_player).lower()
                 and not cn.children
                 and not self.game.ended
-                and not (auto_undo and cn.auto_undo is None)
+                and not (teaching_undo and cn.auto_undo is None)
             ):
                 self._do_ai_move(cn)  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
 
@@ -213,7 +182,7 @@ class KaTrainGui(Screen):
     def _do_new_game(self, move_tree=None, analyze_fast=False):
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
-        self.game = Game(self, self.engine, self.config("game"), move_tree=move_tree, analyze_fast=analyze_fast)
+        self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast)
         self.controls.graph.initialize_from_game(self.game.root)
         self.controls.periods_used = {"B": 0, "W": 0}
         self.update_state(redraw_board=True)
@@ -252,6 +221,22 @@ class KaTrainGui(Screen):
     def _do_analyze_extra(self, mode):
         self.game.analyze_extra(mode)
 
+    def _do_new_game_popup(self):
+        self.controls.timer.paused = True
+        if not self.new_game_popup:
+            self.new_game_popup = I18NPopup(title_key="New Game title", size_hint=(0.5, 0.6), content=NewGamePopup(self)).__self__
+            self.new_game_popup.content.popup = self.new_game_popup
+        self.new_game_popup.open()
+
+    def _do_timer_popup(self):
+        self.controls.timer.paused = True
+        if not self.timer_settings_popup:
+            self.timer_settings_popup = I18NPopup(title_key="timer settings", size=[450, 450], content=ConfigTimerPopup(self)).__self__
+            self.timer_settings_popup.content.popup = self.timer_settings_popup
+        self.timer_settings_popup.open()
+
+    # todo pop
+
     def _do_analyze_sgf_popup(self):
         if not self.fileselect_popup:
             self.fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8)).__self__
@@ -273,14 +258,6 @@ class KaTrainGui(Screen):
             popup_contents.filesel.on_submit = readfile
         self.fileselect_popup.open()
 
-    def _do_new_game_popup(self):
-        self.controls.timer.paused = True
-        if not self.new_game_popup:
-            self.new_game_popup = Popup(title="New Game", size_hint=(0.5, 0.6)).__self__
-            popup_contents = NewGamePopup(self, self.new_game_popup, {k: v[0] for k, v in self.game.root.properties.items() if len(v) == 1})
-            self.new_game_popup.add_widget(popup_contents)
-        self.new_game_popup.open()
-
     def _do_config_popup(self):
         self.controls.timer.paused = True
         if not self.config_popup:
@@ -299,16 +276,9 @@ class KaTrainGui(Screen):
     def _do_teacher_popup(self):
         self.controls.timer.paused = True
         if not self.teacher_settings_popup:
-            self.teacher_settings_popup = Popup(title="Edit Teacher Settings", size_hint=(0.7, 0.8)).__self__
+            self.teacher_settings_popup = I18NPopup(title_key="Edit Teacher Settings", size_hint=(0.7, 0.8)).__self__
             self.teacher_settings_popup.add_widget(ConfigTeacherPopup(self, self.teacher_settings_popup))
         self.teacher_settings_popup.open()
-
-    def _do_timer_popup(self):
-        self.controls.timer.paused = True
-        if not self.timer_settings_popup:
-            self.timer_settings_popup = Popup(title="Edit Timer Settings", size_hint=(0.4, 0.4)).__self__
-            self.timer_settings_popup.add_widget(ConfigTimerPopup(self, self.timer_settings_popup))
-        self.timer_settings_popup.open()
 
     def _do_output_sgf(self):
         for pl in Move.PLAYERS:
@@ -444,13 +414,16 @@ class KaTrainApp(MDApp):
 
 def run_app():
     kv_file = find_package_resource("katrain/gui.kv")
+    popup_kv_file = find_package_resource("katrain/popups.kv")
     resource_add_path(os.path.split(kv_file)[0])
     Builder.load_file(kv_file)
+    Builder.load_file(popup_kv_file)
     app = KaTrainApp()
     signal.signal(signal.SIGINT, app.signal_handler)
     try:
         app.run()
-    except Exception:
+    except Exception as e:
+        print(e)
         app.on_request_close()
         raise
 

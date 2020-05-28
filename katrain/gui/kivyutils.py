@@ -5,7 +5,14 @@ import re
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics import *
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty, StringProperty, OptionProperty, ObjectProperty
+from kivy.properties import (
+    BooleanProperty,
+    ListProperty,
+    NumericProperty,
+    StringProperty,
+    OptionProperty,
+    ObjectProperty,
+)
 from kivy.uix.behaviors import ToggleButtonBehavior, ButtonBehavior
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
@@ -13,7 +20,7 @@ from kivy.uix.filechooser import FileChooserLayout, FileChooserListLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
-from kivy.uix.spinner import Spinner, SpinnerOption
+from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 
@@ -131,9 +138,6 @@ class PauseButton(CircularRippleBehavior, LeftButtonBehavior, Widget):
     fill_color = ListProperty([0.5, 0.5, 0.5, 1])
     line_color = ListProperty([0.5, 0.5, 0.5, 1])
     min_size = NumericProperty(100)
-
-    def on_left_press(self):
-        self.active = not self.active
 
 
 # -- basic styles
@@ -332,7 +336,7 @@ class CollapsablePanel(MDBoxLayout):
         self.option_buttons = []
         option_labels = self.option_labels or [i18n._(f"tab:{opt}") for opt in self.options]
         for lbl, opt_col, active in zip(option_labels, self.option_colors, self.option_default_active):
-            button = CollapsablePanelTab(text=lbl, active_outline_color=opt_col, height=self.options_height, on_press=self.trigger_select, state="down" if active else "normal")
+            button = CollapsablePanelTab(text=lbl, active_outline_color=opt_col, height=self.options_height, on_press=self.trigger_select, state="down" if active else "normal",)
             self.option_buttons.append(button)
         self.open_close_button = TransparentIconButton(  # <<  / >> collapse button
             icon=self.open_close_icon(),
@@ -515,7 +519,7 @@ class ToggleButtonContainer(GridLayout):
         for i, opt in enumerate(self.options):
             state = "down" if opt == self.selected else "normal"
             tooltip = self.tooltips[i] if self.tooltips else None
-            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, on_press=state_handler, tooltip_text=tooltip))
+            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, on_press=state_handler, tooltip_text=tooltip,))
         Clock.schedule_once(self._size, 0)
 
     def _size(self, _dt):
@@ -532,81 +536,12 @@ class ToggleButtonContainer(GridLayout):
             return self.options[0]
 
 
-class LabelledTextInput(TextInput):
-    input_property = StringProperty("")
-    multiline = BooleanProperty(False)
-
-    @property
-    def input_value(self):
-        return self.text
-
-
-class LabelledObjectInputArea(LabelledTextInput):
-    multiline = BooleanProperty(True)
-
-    @property
-    def input_value(self):
-        return json.loads(self.text.replace("'", '"').replace("True", "true").replace("False", "false"))
-
-
-class LabelledCheckBox(CheckBox):
-    input_property = StringProperty("")
-
-    def __init__(self, text=None, **kwargs):
-        if text is not None:
-            kwargs["active"] = text.lower() == "true"
-        super().__init__(**kwargs)
-
-    @property
-    def input_value(self):
-        return bool(self.active)
-
-
-class LabelledSpinner(StyledSpinner):
-    input_property = StringProperty("")
-
-    @property
-    def input_value(self):
-        return self.text
-
-
-class LabelledFloatInput(LabelledTextInput):
-    signed = BooleanProperty(True)
-    pat = re.compile("[^0-9-]")
-
-    def insert_text(self, substring, from_undo=False):
-        pat = self.pat
-        if "." in self.text:
-            s = re.sub(pat, "", substring)
-        else:
-            s = ".".join([re.sub(pat, "", s) for s in substring.split(".", 1)])
-        r = super().insert_text(s, from_undo=from_undo)
-        if not self.signed and "-" in self.text:
-            self.text = self.text.replace("-", "")
-        elif self.text and "-" in self.text[1:]:
-            self.text = self.text[0] + self.text[1:].replace("-", "")
-        return r
-
-    @property
-    def input_value(self):
-        return float(self.text)
-
-
-class LabelledIntInput(LabelledTextInput):
-    pat = re.compile("[^0-9]")
-
-    def insert_text(self, substring, from_undo=False):
-        return super().insert_text(re.sub(self.pat, "", substring), from_undo=from_undo)
-
-    @property
-    def input_value(self):
-        return int(self.text)
-
-
 def draw_text(pos, text, font_name=None, **kw):
     label = CoreLabel(text=text, bold=True, font_name=font_name or i18n.font_name, **kw)  #
     label.refresh()
-    Rectangle(texture=label.texture, pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2), size=label.texture.size)
+    Rectangle(
+        texture=label.texture, pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2), size=label.texture.size,
+    )
 
 
 def draw_circle(pos, r, col):

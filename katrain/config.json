@@ -13,24 +13,22 @@
         "_enable_ownership": true
     },
     "timer": {
-      "byo_length": 30,
-      "byo_num": 5
+        "byo_length": 30,
+        "byo_periods": 5
     },
-    "sgf": {
+    "general": {
         "sgf_load": "~/Downloads",
         "sgf_save": "./sgfout",
-        "save_feedback": [
-            true,
-            true,
-            true,
-            true,
-            true,
-            true
-        ]
+        "anim_pv_time": 0.5,
+        "debug_level": 3,
+        "language": "en"
     },
     "game": {
-        "init_size": 19,
-        "init_komi": 6.5
+        "size": "13",
+        "komi": 0.5,
+        "handicap": 2,
+        "rules": "chinese",
+        "clear_cache": true
     },
     "trainer": {
         "num_undo_prompts": [
@@ -49,10 +47,17 @@
             0.5,
             0
         ],
+        "save_feedback": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+        ],
         "eval_off_show_last": 3,
         "eval_show_ai": true,
-        "lock_ai": false,
-        "anim_pv_time": 0.5
+        "lock_ai": false
     },
     "ai": {
         "Default": {
@@ -133,9 +138,5 @@
             "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to below the `threshold` line.",
             "_help_right": "Increase `line_weight` to penalize moves closer to the center more.  Stops strategy after the 'endgame' fraction of the board is filled."
         }
-    },
-    "debug": {
-        "level": 1,
-        "_hint_level": "0: Little console output.\n1: Some extra output\nfor error reporting."
     }
 }

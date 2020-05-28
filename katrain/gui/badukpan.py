@@ -254,7 +254,7 @@ class BadukPanWidget(Widget):
                         self.draw_stone(m.coords[0], m.coords[1], stone_color[m.player], outline_color[m.player], inner, evalcol, evalsize)
                 realized_points_lost = node.parent_realized_points_lost
 
-            if katrain.game.current_node.is_root and katrain.config("debug/level") >= 3:  # secret ;)
+            if katrain.game.current_node.is_root and katrain.debug_level >= 3:  # secret ;)
                 for y in range(0, board_size_y):
                     evalcol = self.eval_color(16 * y / board_size_y)
                     self.draw_stone(0, y, stone_color["B"], outline_color["B"], None, evalcol, y / (board_size_y - 1))

@@ -8,6 +8,12 @@ DEFAULT_FONT = "fonts/NotoSans-Regular.ttf"
 RED = [0.8, 0.1, 0.1, 1]
 WHITE = [0.95, 0.95, 0.95, 1]
 
+# gui colors
+
+BACKGROUND_COLOR = [36 / 255, 48 / 255, 62 / 255, 1]
+BOX_BACKGROUND_COLOR = [46 / 255, 65 / 255, 88 / 255, 1]
+TEXT_COLOR = WHITE
+
 # eval dots
 EVAL_COLORS = [
     [0.447, 0.129, 0.42, 1],
@@ -34,9 +40,9 @@ TOP_MOVE_ALPHA = 0.4
 CHILD_SCALE = 0.95
 
 # ponder light
-ENGINE_DOWN_COL = [0.8, 0, 0, 1]
-ENGINE_BUSY_COL = [0.9, 0.4, 0.1, 1]
-ENGINE_READY_COL = [0.117, 0.588, 0, 1]
+ENGINE_DOWN_COL = EVAL_COLORS[1]
+ENGINE_BUSY_COL = EVAL_COLORS[2]
+ENGINE_READY_COL = EVAL_COLORS[-1]
 
 # info
-PV_COLOR = to_hexcol(RED)
+INFO_PV_COLOR = to_hexcol(RED)

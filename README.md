@@ -125,19 +125,12 @@ In addition to shortcuts mentioned above, there are:
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
 * **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
 * **[double-click on a move]**: Navigate directly to that point in the game.
-* **[Ctrl-v]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
-* **[Ctrl-c]**: Save SGF to clipboard.
-* **[Ctrl-l]**: Load SGF from file and do a normal analysis.
-* **[Ctrl-s]**: Save SGF with automated review to file.
-* **[Ctrl-n]**: Load SGF from clipboard
-* **[F5]**: Open settings
-
-## Configuration
-
-Configuration is stored in `config.json`. Most settings are now available to edit in the program, but some advanced options are not.
-You can use `python katrain.py your_config_file.json` to use another config file instead.
-
-If you ever need to reset to the original settings, simply re-download the `config.json` file in this repository.
+* **[Ctrl-V]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
+* **[Ctrl-C]**: Save SGF to clipboard.
+* **[Ctrl-L]**: Load SGF from file and do a normal analysis.
+* **[Ctrl-S]**: Save SGF with automated review to file.
+* **[Ctrl-N]**: Load SGF from clipboard
+* **[F5]**: Open general settings
 
 ### Settings Panel
 

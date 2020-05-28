@@ -95,7 +95,7 @@ class ControlsPanel(BoxLayout):
             now = time.time()
             self.last_timer_update = (current_node, now)
             byo_len = max(1, self.katrain.config("timer/byo_length"))
-            byo_num = max(1, self.katrain.config("timer/byo_num"))
+            byo_num = max(1, self.katrain.config("timer/byo_periods"))
             player = self.katrain.game.next_player
             ai = player.ai
             if not self.timer.paused and not ai:

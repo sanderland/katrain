@@ -49,7 +49,7 @@ setup(
     ],
     python_requires=">=3.6, <4",
     entry_points={"console_scripts": ["katrain=katrain.__main__:run_app"]},
-    classifiers=["Development Status :: 4 - Beta", "Operating System :: Microsoft :: Windows", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3"],
+    classifiers=["Development Status :: 4 - Beta", "Operating System :: Microsoft :: Windows", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3",],
     packages=packages,
     package_data=package_data,
 )

@@ -54,9 +54,9 @@ class ScoreGraph(BackgroundMixin):
 
             xscale = self.width / max(len(score_values) - 1, 15)
             available_height = self.height
-            score_line_points = [[self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.score_scale)] for i, val in enumerate(score_values)]
+            score_line_points = [[self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.score_scale),] for i, val in enumerate(score_values)]
             winrate_line_points = [
-                [self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.winrate_scale)] for i, val in enumerate(winrate_values)
+                [self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.winrate_scale),] for i, val in enumerate(winrate_values)
             ]
             self.score_points = sum(score_line_points, [])
             self.winrate_points = sum(winrate_line_points, [])

@@ -303,3 +303,77 @@ msgstr "Teaching Game Settings"
 #. TODO
 msgid "menu:aisettings"
 msgstr "AI Settings"
+
+#. TODO
+msgid "timer settings"
+msgstr "Adjust Timer Settings"
+
+#. TODO
+msgid "update timer"
+msgstr "Update Timer Settings"
+
+#. TODO
+msgid "byoyomi length"
+msgstr "Time per Byo-yomi Period"
+
+#. TODO
+msgid "byoyomi periods"
+msgstr "Number of Periods"
+
+#. TODO
+msgid "japanese"
+msgstr "Japanese Rules"
+
+#. TODO
+msgid "aga"
+msgstr "American Go Association Rules"
+
+#. TODO
+msgid "new game"
+msgstr "Start New Game"
+
+#. TODO
+msgid "board size"
+msgstr "Board size"
+
+#. TODO
+msgid "ruleset"
+msgstr "Rules"
+
+#. TODO
+msgid "komi"
+msgstr "Komi"
+
+#. TODO
+msgid "avoids replaying"
+msgstr ""
+"'avoids replaying\n"
+"identical games"
+
+#. TODO
+msgid "clear cache"
+msgstr "Clear Cache"
+
+#. TODO
+msgid "korean"
+msgstr "Korean Rules"
+
+#. TODO
+msgid "chinese"
+msgstr "Chinese Rules"
+
+#. TODO
+msgid "non square board hint"
+msgstr "Use x:y (e.g. 19:9) to play on a non-square board."
+
+#. TODO
+msgid "handicap"
+msgstr "Handicap"
+
+#. TODO
+msgid "handicap hint"
+msgstr "Note that handicaps above 9 are not supported on non-square boards."
+
+#. TODO
+msgid "New Game title"
+msgstr "Setup New Game"

@@ -18,8 +18,8 @@ class KataGoEngine:
     """Starts and communicates with the KataGO analysis engine"""
 
     # TODO: we don't support suicide in game.py, so no  "tt": "tromp-taylor", "nz": "new-zealand"
-    RULESETS = {"jp": "japanese", "cn": "chinese", "ko": "korean", "aga": "aga"}
-    RULESETS.update({v: v for v in RULESETS.values()})
+    RULESETS_ABBR = [("jp", "japanese"), ("cn", "chinese"), ("ko", "korean"), ("aga", "aga")]
+    RULESETS = {fromkey: name for abbr, name in RULESETS_ABBR for fromkey in [abbr, name]}
 
     @staticmethod
     def get_rules(node):

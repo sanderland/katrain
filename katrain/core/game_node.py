@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Tuple
 
 from katrain.core.utils import evaluation_class, var_to_grid, i18n
 from katrain.core.sgf_parser import Move, SGFNode
-from katrain.gui.style import PV_COLOR
+from katrain.gui.style import INFO_PV_COLOR
 
 
 class GameNode(SGFNode):
@@ -117,7 +117,7 @@ class GameNode(SGFNode):
     def make_pv(self, player, pv, interactive):
         pvtext = f"{player}{' '.join(pv)}"
         if interactive:
-            pvtext = f"[u][ref={pvtext}][color={PV_COLOR}]{pvtext}[/color][/ref][/u]"
+            pvtext = f"[u][ref={pvtext}][color={INFO_PV_COLOR}]{pvtext}[/color][/ref][/u]"
         return pvtext
 
     def comment(self, sgf=False, teach=False, hints=False, interactive=True):

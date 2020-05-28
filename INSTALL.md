@@ -74,7 +74,7 @@ As you can see it scores about twice as high as the Intel UHD chip and KataGo ha
 openclDeviceToUseThread0 = 1
 openclDeviceToUseThread1 = 2
 ```
-* Run `python3 katrain.py` and confirm that KataGo is now using both devices, by 
+* Run `python3 -m katrain` and confirm that KataGo is now using both devices, by 
  checking the output from the terminal, which should indicate two devices being used. For example:
 ```
   Found 3 device(s) on platform 0 with type CPU or GPU or Accelerator

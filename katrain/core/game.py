@@ -49,15 +49,14 @@ class Player:
 class Game:
     """Represents a game of go, including an implementation of capture rules."""
 
-    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "RU": "JP", "AP": "KaTrain:https://github.com/sanderland/katrain"}
+    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": "KaTrain:https://github.com/sanderland/katrain"}
 
-    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], config: Dict, move_tree: GameNode = None, players: Dict = None, analyze_fast=False):
+    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], move_tree: GameNode = None, players: Dict = None, analyze_fast=False):
         self.katrain = katrain
         if not isinstance(engine, Dict):
             engine = {"B": engine, "W": engine}
         self.players = players or {"B": Player("B"), "W": Player("W")}
         self.engines = engine
-        self.config = config
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
 
         if move_tree:
@@ -67,11 +66,17 @@ class Game:
             if handicap and not self.root.placements:
                 self.place_handicap_stones(handicap)
         else:
-            board_size = config.get("init_size", 19)
-            self.komi = self.config.get("init_komi", 6.5)
+            board_size = katrain.config("game/size")
+            self.komi = katrain.config("game/komi")
             self.root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}})
+            handicap = katrain.config("game/handicap")
+            if handicap:
+                self.place_handicap_stones(handicap)
             self.root.set_property("PW", str(self.players["W"]))
             self.root.set_property("PB", str(self.players["B"]))
+
+        if not self.root.get_property("RU"):
+            self.root.set_property("RU", katrain.config("game/rules"))
 
         self.set_current_node(self.root)
         threading.Thread(target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast), daemon=True).start()  # return faster, but bypass Kivy Clock
@@ -324,7 +329,8 @@ class Game:
         for move in analyze_moves:
             cn.analyze(engine, priority, visits=visits, refine_move=move, time_limit=False)  # explicitly requested so take as long as you need
 
-    def analyze_undo(self, node, train_config):
+    def analyze_undo(self, node):
+        train_config = self.katrain.config("trainer")
         move = node.move
         if node != self.current_node or node.auto_undo is not None or not node.analysis_ready or not move:
             return

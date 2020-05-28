@@ -28,7 +28,7 @@ class MenuOpener(BoxLayout):
             {"icon": icon, "text": text, "right_content_cls": AnalysisDropdownMenuRightContent(text=shortcut)}
             for icon, text, shortcut in zip(ANALYSIS_ICONS, ANALYSIS_OPTIONS, ANALYSIS_SHORTCUTS)
         ]
-        self.analysis_menu = AnalysisDropdownMenu(caller=self.analysis_button, items=menu_items, width_mult=6, use_icon_item=False, callback=lambda _: print(_))
+        self.analysis_menu = AnalysisDropdownMenu(caller=self.analysis_button, items=menu_items, width_mult=6, use_icon_item=False, callback=lambda _: print(_),)
 
     #        self.analysis_menu.create_menu_items()
     #        for item in self.analysis_menu.menu.ids.box.children:

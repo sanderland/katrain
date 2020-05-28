@@ -35,7 +35,30 @@ def test_alphago():
 def test_pandanet():
     file = os.path.join(os.path.dirname(__file__), "data/panda1.sgf")
     root = SGF.parse_file(file)
-    root_props = {"GM", "EV", "US", "CoPyright", "GN", "RE", "PW", "WR", "NW", "PB", "BR", "NB", "PC", "DT", "SZ", "TM", "KM", "LT", "RR", "HA", "AB", "C"}
+    root_props = {
+        "GM",
+        "EV",
+        "US",
+        "CoPyright",
+        "GN",
+        "RE",
+        "PW",
+        "WR",
+        "NW",
+        "PB",
+        "BR",
+        "NB",
+        "PC",
+        "DT",
+        "SZ",
+        "TM",
+        "KM",
+        "LT",
+        "RR",
+        "HA",
+        "AB",
+        "C",
+    }
     assert root_props == root.properties.keys()
 
     move = root
