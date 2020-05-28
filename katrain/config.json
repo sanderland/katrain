@@ -20,15 +20,15 @@
         "sgf_load": "~/Downloads",
         "sgf_save": "./sgfout",
         "anim_pv_time": 0.5,
-        "debug_level": 3,
+        "debug_level": 1,
         "language": "en"
     },
     "game": {
-        "size": "13",
-        "komi": 0.5,
-        "handicap": 2,
-        "rules": "chinese",
-        "clear_cache": true
+        "size": "19",
+        "komi": 6.5,
+        "handicap": 0,
+        "rules": "japanese",
+        "clear_cache": false
     },
     "trainer": {
         "num_undo_prompts": [
@@ -60,32 +60,20 @@
         "lock_ai": false
     },
     "ai": {
-        "Default": {
+        "default": {
             "_help_right": "No settings available for Default KataGo AI, strength is mainly affected by `max_visits` and `model` in the main settings `engine` section.",
             "_help_left": ""
         },
-        "Balance": {
-            "target_score": 2,
-            "random_loss": 1,
-            "max_loss": 5,
-            "min_visits": 20,
-            "_help_left": "Will try to win by `target_score`, lose at most `random_loss` when behind and `max_loss` when ahead.",
-            "_help_right": "Never plays moves with less than `min_visits` visits, so also check engine settings."
-        },
-        "Jigo": {
+        "jigo": {
             "target_score": 0.5,
             "_help_left": "Will try to win by `target_score`, without further restrictions.",
             "_help_right": "Also affected by engine settings such as `max_visits`."
         },
-        "ScoreLoss": {
-            "strength": 0.5,
-            "_help_left": "Plays moves weighted inversely by point loss.",
-            "_help_right": "Also affected by engine settings such as `max_visits`, likely to play more varied/weaker with higher visits."
+        "scoreloss": {
+            "strength": 0.5
         },
         "Policy": {
-            "opening_moves": 0.05,
-            "_help_left": "Strength is mainly affected by `model` in engine settings, but should be high dan regardless.",
-            "_help_right": "Plays the P:Weighted strategy during the first `opening_moves` * <number of intersections> moves to allow variety."
+            "opening_moves": 20
         },
         "P:Weighted": {
             "_help_right": "pick_override` determines when top move is chosen without randomness, and `lower_bound` determines the lower bound policy value that is allowed.",

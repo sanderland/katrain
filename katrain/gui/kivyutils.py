@@ -239,12 +239,15 @@ class PlayerSetup(MDBoxLayout):
         self.player_subtype.text = self.player_subtype.values[0]
         self.set_player()
 
+    @property
+    def player_def(self):
+        return {"player_type": self.player_type.selected[1], "player_subtype": self.player_subtype.selected[1]}
+
     def set_player(self):
         katrain = MDApp.get_running_app().gui
         game = katrain and katrain.game
         if game:
-            game.players[self.player].player_type = self.player_type.selected[1]
-            game.players[self.player].player_subtype = self.player_subtype.selected[1]
+            game.players[self.player].update(**self.player_def)
             katrain.controls.update_players()
             katrain.update_state()
 

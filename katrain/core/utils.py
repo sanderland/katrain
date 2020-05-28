@@ -1,15 +1,11 @@
 import os
 import sys
-from typing import Any, List, Tuple, Callable
-
-from kivy.event import EventDispatcher
+from numbers import Number
+from typing import List, Tuple, Callable
 from kivy.lang import Observable
 import gettext
 
-from kivy.properties import StringProperty
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivymd.uix.label import MDIcon
+from kivymd.uix.textfield import MDTextField
 
 from katrain.gui.style import DEFAULT_FONT
 
@@ -27,7 +23,7 @@ OUTPUT_EXTRA_DEBUG = 2
 MODE_PLAY, MODE_ANALYZE = "play", "analyze"
 
 
-def var_to_grid(array_var: List[Any], size: Tuple[int, int]) -> List[List[Any]]:
+def var_to_grid(array_var: List[Number], size: Tuple[int, int]) -> List[List[Number]]:
     """convert ownership/policy to grid format such that grid[y][x] is for move with coords x,y"""
     ix = 0
     grid = [[]] * size[1]
@@ -103,6 +99,9 @@ class Lang(Observable):
             try:
                 func(args[0], None, None)
                 widget.font_name = self.font_name
+                for sub_widget in [getattr(widget, "_hint_lbl", None), getattr(widget, "_msg_lbl", None)]:  # MDText
+                    if sub_widget:
+                        sub_widget.font_name = self.font_name
             except ReferenceError:
                 pass  # proxy no longer exists
         for cb in self.callbacks:

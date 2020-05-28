@@ -87,7 +87,7 @@ class KaTrainGui(Screen, KaTrainSettings):
                 self.controls.set_status(f"KataGo engine ready.")
             if "ready" in message.lower():
                 self.controls.set_status(f"KataGo engine ready.")
-        if level == OUTPUT_ERROR or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower()):
+        if (level == OUTPUT_ERROR or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower())) and getattr(self, "controls", None):
             self.controls.set_status(f"ERROR: {message}")
 
     @property
@@ -109,17 +109,12 @@ class KaTrainGui(Screen, KaTrainSettings):
     def update_state(self, redraw_board=False):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
+        last_player, next_player = self.game.players[cn.player], self.game.players[cn.next_player]
         if self.play_analyze_mode == MODE_PLAY:
-            teaching_undo = cn.player and self.game.players[cn.player].being_taught
+            teaching_undo = cn.player and last_player.being_taught
             if teaching_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready and not cn.children and not self.game.ended:
                 self.game.analyze_undo(cn)  # not via message loop
-            if (
-                cn.analysis_ready
-                and "ai" in self.controls.player_mode(cn.next_player).lower()
-                and not cn.children
-                and not self.game.ended
-                and not (teaching_undo and cn.auto_undo is None)
-            ):
+            if cn.analysis_ready and next_player.ai and not cn.children and not self.game.ended and not (teaching_undo and cn.auto_undo is None):
                 self._do_ai_move(cn)  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
 
         # Handle prisoners and next player display
@@ -174,26 +169,23 @@ class KaTrainGui(Screen, KaTrainSettings):
         if self.game:
             self.message_queue.put([self.game.game_id, message, *args])
 
-    def update_players(self):
-        for player in "BW":
-            self.controls.players[player].player_type = self.game.players[player].player_type
-            self.game.players[player].player_subtype = self.game.players[player].player_subtype
-
     def _do_new_game(self, move_tree=None, analyze_fast=False):
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
         self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast)
+        for bw, player_widget in self.nav_drawer_contents.player_setup.players.items():
+            self.game.players[bw].update(**player_widget.player_def)
         self.controls.graph.initialize_from_game(self.game.root)
-        self.controls.periods_used = {"B": 0, "W": 0}
         self.update_state(redraw_board=True)
-        self.update_players()
 
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
-            mode = self.controls.ai_mode(self.game.current_node.next_player)
+            mode = self.game.next_player.strategy
             settings = self.config(f"ai/{mode}")
             if settings:
                 ai_move(self.game, mode, settings)
+            else:
+                self.log(f"AI Mode {mode} not found!", OUTPUT_ERROR)
 
     def _do_undo(self, n_times=1):
         if n_times == "smart":
@@ -287,12 +279,7 @@ class KaTrainGui(Screen, KaTrainSettings):
                 self.game.root.set_property(
                     f"P{pl}", f"AI {self.controls.ai_mode(pl)} (KataGo { os.path.splitext(model_file)[0]})" if "ai" in self.controls.player_mode(pl) else "Player"
                 )
-        msg = self.game.write_sgf(
-            self.config("sgf/sgf_save"),
-            trainer_config=self.config("trainer"),
-            save_feedback=self.config("sgf/save_feedback"),
-            eval_thresholds=self.config("trainer/eval_thresholds"),
-        )
+        msg = self.game.write_sgf(self.config("general/sgf_save"))
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)
 

@@ -29,6 +29,7 @@
 #:set GREEN  [0.1,0.8,0.1,1]
 #:set LIGHTBLUE  [0.3,0.7,0.9,1]
 #:set YELLOW [0.8,0.8,0.1,1]
+#:set DARKRED  [0.3,0.1,0.1,1]
 
 
 #:set SCORE_COLOR LIGHTBLUE
@@ -691,28 +692,39 @@
         on_option_state:
             info.size_hint_y = int(args[1]['info'])+1e-9
             info.opacity =  int(args[1]['info'])
-            note.size_hint_y = int(args[1]['notes'])+1e-9
-            note.opacity = int(args[1]['notes'])
+            notebox.size_hint_y = int(args[1]['notes'])*0.66+1e-9
+            notebox.opacity = int(args[1]['notes'])
         options_height: root.tab_option_height
-        MDBoxLayout:
+        BGMDBoxLayout:
+            background_color: BOX_BACKGROUND_COLOR
             orientation: 'vertical'
             ScrollableLabel:
                 id: status
                 size_hint: 1, None
                 height: min(self.parent.height*0.66,self.label.texture_size[1])
                 outline_color: RED
+                background_color: DARKRED
             ScrollableLabel:
                 id: info
                 markup: True
                 on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
                 size_hint: 1, 1
                 height: self.parent.height - status.height - note.height - 1
-            TextInput:
-                id: note
-                font_size: NOTES_FONT_SIZE
-                size_hint: 1, 1
-                on_text: root.katrain.set_note(self.text)
-                hint_text: i18n._('SGF Notes Hint')
+            AnchorLayout:
+                padding: 0
+                id: notebox
+                size_hint: 1,0
+                MDTextField:
+                    id: note
+                    font_size: NOTES_FONT_SIZE
+                    multiline: True
+                    on_text: root.katrain.set_note(self.text)
+                    hint_text: i18n._('SGF Notes Hint')
+                    color_mode: 'custom'
+                    line_color_focus: TEXT_COLOR
+                    size_hint: 1, 1
+#                    mode: "rectangle"
+#                    width: info.width - dp(26)
     Label:
         size_hint_y: 1e-9 # takes up remaining space if info is closed
 
@@ -891,19 +903,24 @@
     spacing: 3*CP_SPACING
     padding: CP_PADDING
     height: (self.parent.item_height or 50) * 5
+    players: {'B':black,'W':white}
     PlayerSetup:
         player: 'B'
+        id: black
     PlayerSetup:
         player: 'W'
+        id: white
 
-<ContentNavigationDrawer@MDBoxLayout+BackgroundMixin>:
+<HamburgerMenuContents@MDBoxLayout+BackgroundMixin>:
     katrain: app.gui
+    player_setup: player_setup
     background_color: BOX_BACKGROUND_COLOR
     orientation: 'vertical'
     item_height: self.height/20
     MenuLabel:
         text: i18n._('menu:playersetup')
     PlayerSetupBlock:
+        id: player_setup
     MenuLabel:
         size_hint: 1,1
     MenuLabel:
@@ -988,10 +1005,10 @@
         PlayAnalyzeButton:
             text: i18n._('btn:Play')
             id: play
+            state: 'down'
         PlayAnalyzeButton:
             text: i18n._('btn:Analysis')
             id: analyze
-            state: 'down'
 
 <KaTrainGui>:
     board_gui: board_gui
@@ -1000,6 +1017,7 @@
     play_mode: play_mode
     analysis_controls: analysis_controls
     nav_drawer: nav_drawer
+    nav_drawer_contents: nav_drawer_contents
     zen: False
     NavigationLayout:
         ScreenManager:
@@ -1039,7 +1057,8 @@
             width: self.height * 0.5
             height: root.height - analysis_controls.height
             swipe_edge_width: 0
-            ContentNavigationDrawer:
+            HamburgerMenuContents:
+                id: nav_drawer_contents
 
 
 

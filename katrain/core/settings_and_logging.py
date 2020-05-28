@@ -32,7 +32,7 @@ class KaTrainSettings:
 
     def log(self, message, level=OUTPUT_INFO):
         if level == OUTPUT_ERROR:
-            print(f"ERROR: {message}", sys.stderr)
+            print(f"ERROR: {message}", file=sys.stderr)
         elif self.debug_level >= level:
             print(message)
 

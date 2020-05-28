@@ -3,7 +3,7 @@ import os
 import re
 import threading
 from datetime import datetime
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 from katrain.core.utils import var_to_grid, OUTPUT_INFO, OUTPUT_DEBUG, i18n
 from katrain.core.engine import KataGoEngine
@@ -23,9 +23,12 @@ class KaTrainSGF(SGF):
 class Player:
     def __init__(self, player="B", player_type=PLAYER_HUMAN, player_subtype=PLAYING_NORMAL, periods_used=0):
         self.player = player
+        self.update(player_type, player_subtype)
+        self.periods_used = periods_used
+
+    def update(self, player_type, player_subtype):
         self.player_type = player_type
         self.player_subtype = player_subtype
-        self.periods_used = periods_used
 
     @property
     def ai(self):
@@ -39,6 +42,7 @@ class Player:
     def being_taught(self):
         return self.player_type == PLAYER_HUMAN and self.player_subtype == PLAYING_TEACHING
 
+    @property
     def strategy(self):
         return self.player_subtype if self.ai else AI_DEFAULT
 
@@ -275,7 +279,14 @@ class Game:
     def __repr__(self):
         return "\n".join("".join(self.chains[c][0].player if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
 
-    def write_sgf(self, path=None, trainer_config={}, save_feedback=(True,), eval_thresholds=(0,)):
+    def write_sgf(self, path: str, trainer_config: Optional[Dict] = None, save_feedback: Optional[List] = None, eval_thresholds: Optional[List] = None):
+        if trainer_config is None:
+            trainer_config = self.katrain.config("trainer")
+        if save_feedback is None:
+            save_feedback = self.katrain.config("trainer/save_feedback")
+        if eval_thresholds is None:
+            eval_thresholds = self.katrain.config("trainer/eval_thresholds")
+
         black, white = self.root.get_property("PB"), self.root.get_property("PW")
         black = re.sub(r"['<>:\"/\\|?*]", "", black or "Black")
         white = re.sub(r"['<>:\"/\\|?*]", "", white or "White")
@@ -283,11 +294,11 @@ class Game:
         file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
-        show_dots_for = {p: trainer_config.get("eval_show_ai", True) or "ai" not in self.katrain.controls.player_mode(p) for p in Move.PLAYERS}
+        show_dots_for = {bw: trainer_config.get("eval_show_ai", True) or pl.human for bw, pl in self.players.items()}
         sgf = self.root.sgf(save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=eval_thresholds)
         with open(file_name, "w") as f:
             f.write(sgf)
-        return f"SGF with analysis written to {file_name}"
+        return i18n._("sgf written").format(file_name=file_name)
 
     def analyze_extra(self, mode):
         stones = {s.coords for s in self.stones}

@@ -377,3 +377,56 @@ msgstr "Note that handicaps above 9 are not supported on non-square boards."
 #. TODO
 msgid "New Game title"
 msgstr "Setup New Game"
+
+#. TODO
+msgid "sgf written"
+msgstr "SGF with analysis written to {file_name}"
+
+#. TODO
+msgid "ainame:jigo"
+msgstr "KataJigo"
+
+#. TODO
+msgid "aihelp:policy"
+msgstr ""
+"Plays the top move from the policy network, without any reading. Strength is"
+" mainly affected by `model` in engine settings. The opening moves setting "
+"affects how many moves in the opening are more random."
+
+#. TODO
+msgid "ainame:policy"
+msgstr "Policy"
+
+#. TODO
+msgid "ainame:scoreloss"
+msgstr "Score Loss"
+
+#. TODO
+msgid "aihelp:default"
+msgstr ""
+"Full strength KataGo AI. Strength is mainly affected by `max_visits` and "
+"`model` in the general settings `engine` section."
+
+#. TODO
+msgid "aihelp:jigo"
+msgstr ""
+"Will try to win by a set amount of points (default 0.5), without further "
+"restrictions."
+
+#. TODO
+msgid "aihelp:scoreloss"
+msgstr ""
+"Plays moves that lead to more points lost with lower probability. Likely to "
+"play more varied/weaker with higher visits settings."
+
+#. TODO
+msgid "ainame:default"
+msgstr "KataGo"
+
+#. TODO
+msgid "strength:kyu"
+msgstr "k"
+
+#. TODO
+msgid "strength:dan"
+msgstr "d"

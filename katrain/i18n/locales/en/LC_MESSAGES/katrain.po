@@ -279,6 +279,9 @@ msgid "new game"
 msgstr "Start New Game"
 
 #. misc errors and info messages
+msgid "sgf written"
+msgstr "SGF with analysis written to {file_name}"
+
 msgid "wait-before-equalize"
 msgstr "Wait for initial analysis to complete before requesting a refinement."
 
@@ -309,3 +312,51 @@ msgid "Engine died unexpectedly"
 msgstr ""
 "Engine died unexpectedly without sending output, possibly due to out of "
 "memory: {e}"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "k"
+
+msgid "strength:dan"
+msgstr "d"
+
+msgid "ainame:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"Full strength KataGo AI. Strength is mainly affected by `max_visits` and "
+"`model` in the general settings `engine` section."
+
+msgid "ainame:jigo"
+msgstr "KataJigo"
+
+msgid "aihelp:jigo"
+msgstr ""
+"Will try to win by a set amount of points (default 0.5), without further "
+"restrictions."
+
+msgid "ainame:jigo"
+msgstr "KataJigo"
+
+msgid "aihelp:jigo"
+msgstr ""
+"Will try to win by a set amount of points (default 0.5), without further "
+"restrictions."
+
+msgid "ainame:scoreloss"
+msgstr "Score Loss"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"Plays moves that lead to more points lost with lower probability. Likely to "
+"play more varied/weaker with higher visits settings."
+
+msgid "ainame:policy"
+msgstr "Policy"
+
+msgid "aihelp:policy"
+msgstr ""
+"Plays the top move from the policy network, without any reading. Strength is"
+" mainly affected by `model` in engine settings. The opening moves setting "
+"affects how many moves in the opening are more random."

@@ -43,7 +43,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         policy_grid = var_to_grid(cn.policy, size)  # type: List[List[float]]
         top_policy_move = policy_moves[0][1]
         ai_thoughts += f"Using policy based strategy, base top 5 moves are {fmt_moves(policy_moves[:5])}. "
-        if "policy" in ai_mode and cn.depth <= int(ai_settings["opening_moves"] * (game.board_size[0] * game.board_size[1])):
+        if "policy" in ai_mode and cn.depth <= ai_settings["opening_moves"]:
             ai_mode = "p:weighted"
             ai_thoughts += f"Switching to weighted strategy in the opening {int(ai_settings['opening_moves'] * (game.board_size[0]*game.board_size[1]))} moves. "
             ai_settings = {"pick_override": 0.9, "weaken_fac": 1, "lower_bound": 0.02}
@@ -151,7 +151,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             aimove = top_cand
             ai_thoughts += f"Top move is pass, so passing regardless of strategy."
         else:
-            if "balance" in ai_mode:
+            if "balance" in ai_mode:  # deprecated
                 sign = cn.player_sign(cn.next_player)
                 sel_moves = [  # top move, or anything not too bad, or anything that makes you still ahead
                     move
