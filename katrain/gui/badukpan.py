@@ -1,6 +1,7 @@
 import copy
 import math
 import time
+from typing import List, Optional
 
 from kivy.clock import Clock
 from kivy.graphics.context_instructions import Color
@@ -136,7 +137,7 @@ class BadukPanWidget(Widget):
         self.draw_hover_contents()  # remove ghost
 
     # drawing functions
-    def redraw(self,*_args):
+    def redraw(self, *_args):
         self.draw_board()
         self.draw_board_contents()
 
@@ -155,10 +156,10 @@ class BadukPanWidget(Widget):
             Color(*innercol)
             Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size * 0.475 / 0.85), width=0.1 * stone_size)
 
-    def eval_color(self, points_lost):
-        colors = EVAL_COLORS
+    def eval_color(self, points_lost, show_dots_for_class: List[bool] = None) -> Optional[List[float]]:
         i = evaluation_class(points_lost, self.trainer_config["eval_thresholds"])
-        return colors[i]
+        if show_dots_for_class is None or show_dots_for_class[i]:
+            return EVAL_COLORS[i]
 
     def draw_board(self, *_args):
         if not (self.katrain and self.katrain.game):
@@ -236,8 +237,11 @@ class BadukPanWidget(Widget):
                 has_stone[m.coords] = m.player
 
             show_dots_for = {p: self.trainer_config["eval_show_ai"] or katrain.game.players[p].human for p in Move.PLAYERS}
+            show_dots_for_class = self.trainer_config["show_dots"]
             nodes = katrain.game.current_node.nodes_from_root
             realized_points_lost = None
+
+            katrain.config("teacher/show_dots")
             for i, node in enumerate(nodes[::-1]):  # reverse order!
                 points_lost = node.points_lost
                 evalsize = 1
@@ -250,7 +254,7 @@ class BadukPanWidget(Widget):
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
                         move_eval_on = show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
                         if move_eval_on and points_lost is not None:
-                            evalcol = self.eval_color(points_lost)
+                            evalcol = self.eval_color(points_lost, show_dots_for_class)
                         else:
                             evalcol = None
                         inner = stone_color[m.opponent] if i == 0 else None

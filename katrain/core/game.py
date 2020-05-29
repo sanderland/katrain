@@ -246,7 +246,7 @@ class Game:
         if eval_thresholds is None:
             eval_thresholds = self.katrain.config("trainer/eval_thresholds")
 
-        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P"+bw) or  str(self.katrain.players_info[bw])) for bw in "BW" }
+        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw) or str(self.katrain.players_info[bw])) for bw in "BW"}
         game_name = f"katrain_{player_names['B']} vs {player_names['W']} {self.game_id}"
         file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
         os.makedirs(os.path.dirname(file_name), exist_ok=True)

@@ -90,7 +90,6 @@ class KaTrainBase:
         except KeyError:
             self.log(f"Missing configuration option {setting}", OUTPUT_ERROR)
 
-
     def update_player(self, bw, **kwargs):
         self.players_info[bw].update(**kwargs)
 
@@ -100,7 +99,6 @@ class KaTrainBase:
         for v in self.players_info.values():
             v.periods_used = 0
 
-
     @property
     def last_player_info(self) -> Player:
         return self.players_info[self.game.current_node.player]
@@ -108,4 +106,3 @@ class KaTrainBase:
     @property
     def next_player_info(self) -> Player:
         return self.players_info[self.game.current_node.next_player]
-

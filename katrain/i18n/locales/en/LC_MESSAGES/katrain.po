@@ -20,7 +20,7 @@ msgid "menu:load"
 msgstr "Load Game"
 
 msgid "menu:settings"
-msgstr "General Settings"
+msgstr "General & Engine Settings"
 
 msgid "menu:clocksettings"
 msgstr "Timer Settings"
@@ -277,6 +277,46 @@ msgstr "Note that handicaps above 9 are not supported on non-square boards."
 #. submit new game
 msgid "new game"
 msgstr "Start New Game"
+
+
+# teacher settings from here
+msgstr "teacher settings"
+msgid "Edit Teacher Settings"
+
+msgid "point loss threshold"
+msgstr "Point loss greater than"
+
+msgid "num undos"
+msgstr "Number of undos"
+
+msgid "num undos"
+msgstr "Number of undos"
+
+msgid "dot color"
+msgstr "Colour (fixed)"
+
+msgid "show dots"
+msgstr "Show dots"
+
+msgid "save dots"
+msgstr "Save in SGF"
+
+msgid "show last n dots"
+msgstr "Show dots for the last <this many> moves"
+
+msgid "show ai dots"
+msgstr "Show dots/SGF comments for AI players"
+
+msgid "lock ai when teaching"
+msgstr "Disable analysis while in teach mode"
+
+#. submit button
+msgid "update teacher"
+msgstr "Update Teaching Game Settings"
+
+#main config settings
+msgid "restarting engine"
+msgstr "Restarting Engine after Settings Change."
 
 #. misc errors and info messages
 msgid "sgf written"

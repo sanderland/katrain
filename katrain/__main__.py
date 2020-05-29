@@ -147,7 +147,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.update_players()
             self.update_state()
         for player_setup_block in PlayerSetupBlock.INSTANCES:
-            player_setup_block.update_players(bw,self.players_info[bw])
+            player_setup_block.update_players(bw, self.players_info[bw])
 
     def set_note(self, note):
         self.game.current_node.note = note
@@ -215,7 +215,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_new_game_popup(self):
         self.controls.timer.paused = True
         if not self.new_game_popup:
-            self.new_game_popup = I18NPopup(title_key="New Game title", size_hint=(0.5, 0.6), content=NewGamePopup(self)).__self__
+            self.new_game_popup = I18NPopup(title_key="New Game title", size=[800, 800], content=NewGamePopup(self)).__self__
             self.new_game_popup.content.popup = self.new_game_popup
         self.new_game_popup.open()
 
@@ -225,6 +225,13 @@ class KaTrainGui(Screen, KaTrainBase):
             self.timer_settings_popup = I18NPopup(title_key="timer settings", size=[450, 450], content=ConfigTimerPopup(self)).__self__
             self.timer_settings_popup.content.popup = self.timer_settings_popup
         self.timer_settings_popup.open()
+
+    def _do_teacher_popup(self):
+        self.controls.timer.paused = True
+        if not self.teacher_settings_popup:
+            self.teacher_settings_popup = I18NPopup(title_key="teacher settings", size=[800, 800], content=ConfigTeacherPopup(self)).__self__
+            self.teacher_settings_popup.content.popup = self.teacher_settings_popup
+        self.teacher_settings_popup.open()
 
     # todo pop
 
@@ -263,13 +270,6 @@ class KaTrainGui(Screen, KaTrainBase):
             self.ai_settings_popup = Popup(title="Edit AI Settings", size_hint=(0.7, 0.8)).__self__
             self.ai_settings_popup.add_widget(ConfigAIPopupContents(self, self.ai_settings_popup))
         self.ai_settings_popup.open()
-
-    def _do_teacher_popup(self):
-        self.controls.timer.paused = True
-        if not self.teacher_settings_popup:
-            self.teacher_settings_popup = I18NPopup(title_key="Edit Teacher Settings", size_hint=(0.7, 0.8)).__self__
-            self.teacher_settings_popup.add_widget(ConfigTeacherPopup(self, self.teacher_settings_popup))
-        self.teacher_settings_popup.open()
 
     def _do_output_sgf(self):
         for pl in Move.PLAYERS:

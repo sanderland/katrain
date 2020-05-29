@@ -903,13 +903,7 @@
     spacing: 3*CP_SPACING
     padding: CP_PADDING
     height: (self.parent.item_height or 50) * 5
-    players: {'B':black,'W':white}
-    PlayerSetup:
-        player: 'B'
-        id: black
-    PlayerSetup:
-        player: 'W'
-        id: white
+
 
 <HamburgerMenuContents@MDBoxLayout+BackgroundMixin>:
     katrain: app.gui
@@ -921,6 +915,7 @@
         text: i18n._('menu:playersetup')
     PlayerSetupBlock:
         id: player_setup
+        update_global: True
     MenuLabel:
         size_hint: 1,1
     MenuLabel:

@@ -12,16 +12,16 @@
         "_hint_wide_root_noise": "A higher value here (typically 0.05-0.1)\nmakes the analysis explore more moves\nat the cost of some strength.",
         "_enable_ownership": true
     },
-    "timer": {
-        "byo_length": 30,
-        "byo_periods": 5
-    },
     "general": {
         "sgf_load": "~/Downloads",
         "sgf_save": "./sgfout",
         "anim_pv_time": 0.5,
         "debug_level": 1,
         "language": "en"
+    },
+    "timer": {
+        "byo_length": 30,
+        "byo_periods": 5
     },
     "game": {
         "size": "19",
@@ -48,6 +48,14 @@
             0
         ],
         "save_feedback": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+        ],
+        "show_dots": [
             true,
             true,
             true,

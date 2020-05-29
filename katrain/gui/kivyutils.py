@@ -228,18 +228,6 @@ class StyledSpinner(Spinner):
             item.font_name = self.font_name
 
 
-class PlayerSetupBlock(MDBoxLayout):
-    players = ObjectProperty(None)
-    INSTANCES = []
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        PlayerSetupBlock.INSTANCES.append(self)
-
-    def update_players(self, bw, player_info):  # update sub widget based on gui state change
-        self.players[bw].update_widget(player_type=player_info.player_type, player_subtype=player_info.player_subtype)
-
-
 class PlayerSetup(MDBoxLayout):
     player = OptionProperty("B", options=["B", "W"])
 
@@ -267,9 +255,30 @@ class PlayerSetup(MDBoxLayout):
         self.player_subtype.select_key(player_subtype)  # should trigger setup options
 
     def update_global_player_info(self):
-        katrain = MDApp.get_running_app().gui
-        if katrain.game and katrain.game.current_node:
-            katrain.update_player(self.player, **self.player_type_dump)
+        if self.parent and self.parent.update_global:
+            katrain = MDApp.get_running_app().gui
+            if katrain.game and katrain.game.current_node:
+                katrain.update_player(self.player, **self.player_type_dump)
+
+
+class PlayerSetupBlock(MDBoxLayout):
+    players = ObjectProperty(None)
+    black = ObjectProperty(None)
+    white = ObjectProperty(None)
+    update_global = BooleanProperty(False)
+    INSTANCES = []
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.black = PlayerSetup(player="B")
+        self.white = PlayerSetup(player="W")
+        self.players = {"B": self.black, "W": self.white}
+        self.add_widget(self.black)
+        self.add_widget(self.white)
+        PlayerSetupBlock.INSTANCES.append(self)
+
+    def update_players(self, bw, player_info):  # update sub widget based on gui state change
+        self.players[bw].update_widget(player_type=player_info.player_type, player_subtype=player_info.player_subtype)
 
 
 class PlayerInfo(MDBoxLayout, BackgroundMixin):

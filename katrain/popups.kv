@@ -43,7 +43,7 @@
     font_size: DESC_FONT_SIZE
 
 <I18NPopup>:
-    background_color: [*[c*255/66 for c in BACKGROUND_COLOR[:3]], 1]
+    #background_color: [*[c*255/66 for c in BACKGROUND_COLOR[:3]], 1]
     title: i18n._(self.title_key)
     title_size: DESC_FONT_SIZE
     title_font: self.font_name
@@ -64,6 +64,144 @@
 
 <SmallDescriptionLabel@DescriptionLabel>
     font_size: DESC_FONT_SIZE * 0.66
+
+<ConfigPopup>:
+    BoxLayout:
+        orientation: 'horizontal'
+        GridLayout:
+            cols: 2
+            rows: 9
+            spacing: CP_SPACING
+            Label:
+            Label:
+                text: 'engine'
+            DescriptionLabel:
+                text: i18n._("general:sgf_load")
+            AnchorLayout:
+                LabelledTextInput:
+                    input_property: "general/sgf_load" # just last load dir?
+            DescriptionLabel:
+                text: i18n._("general:sgf_save")
+            AnchorLayout:
+                LabelledTextInput:
+                    input_property: "general/sgf_save"
+            DescriptionLabel:
+                text: i18n._("general:anim_pv_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "general/anim_pv_time"
+            DescriptionLabel:
+                text: i18n._("general:debug_level")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "general/debug_level"
+        BackgroundMixing:
+            background_color: LIGHTGREY
+            size_hint: None, 1
+            width: 2
+        GridLayout:
+            cols: 2
+            rows: 9
+            spacing: CP_SPACING
+            Label:
+            Label:
+                text: 'engine'
+            DescriptionLabel:
+                text: i18n._("engine:katago")
+            AnchorLayout:
+                LabelledTextInput:
+                    input_property: "engine/katago"
+            DescriptionLabel:
+                text: i18n._("engine:model")
+            AnchorLayout:
+                LabelledTextInput:
+                    input_property: "engine/model"
+            DescriptionLabel:
+                text: i18n._("engine:config")
+            AnchorLayout:
+                LabelledTextInput:
+                    input_property: "engine/config"
+            DescriptionLabel:
+                text: i18n._("engine:max_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/max_visits"
+            DescriptionLabel:
+                text: i18n._("engine:max_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/fast_visits"
+            DescriptionLabel:
+                text: i18n._("engine:fast_visits")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/max_time"
+            DescriptionLabel:
+                text: i18n._("engine:threads")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/threads"
+            DescriptionLabel:
+                text: i18n._("engine:wide_root_noise")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/wide_root_noise"
+    AnchorLayout:
+        size_hint: 1,1
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("update settings")
+            on_press: root.update_config(True)
+
+<ConfigTeacherPopup>
+    options_grid: options_grid
+    GridLayout:
+        cols: 5
+        rows: 7
+        size_hint: 1, 7
+        id: options_grid
+        DescriptionLabel:
+            text: i18n._("dot color")
+        DescriptionLabel:
+            text: i18n._("point loss threshold")
+        DescriptionLabel:
+            text: i18n._("num undos")
+        DescriptionLabel:
+            text: i18n._("show dots")
+        DescriptionLabel:
+            text: i18n._("save dots")
+    GridLayout:
+        cols: 2
+        rows: 3
+        size_hint: 1, 3
+        DescriptionLabel:
+            text: i18n._("show last n dots")
+        AnchorLayout:
+            LabelledIntInput:
+                input_property: "trainer/eval_off_show_last"
+        DescriptionLabel:
+            text: i18n._("show ai dots")
+        AnchorLayout:
+            LabelledIntInput:
+                input_property: "trainer/eval_off_show_last"
+        DescriptionLabel:
+            text: i18n._("show last n dots")
+        AnchorLayout:
+            LabelledIntInput:
+                input_property: "trainer/eval_show_ai"
+        DescriptionLabel:
+            text: i18n._("lock ai when teaching")
+        AnchorLayout:
+            LabelledCheckBox:
+                input_property: "trainer/lock_ai"
+    AnchorLayout:
+        size_hint: 1,1
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("update teacher")
+            on_press: root.update_config(True)
 
 
 <ConfigTimerPopup>:
@@ -103,6 +241,10 @@
 <NewGamePopup>:
     restart: restart
     rules_spinner: rules_spinner
+    player_setup: player_setup
+    PlayerSetupBlock:
+        size_hint: 1, 2
+        id: player_setup
     GridLayout:
         rows: 6
         cols: 3
@@ -198,6 +340,9 @@
             text: i18n._("new game")
             on_press: root.update_config(True)
 
+
+<NewLoadSGFPopup>:
+    FileBrowser:
 
 # old
 
