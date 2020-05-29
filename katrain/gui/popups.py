@@ -1,5 +1,5 @@
 from collections import defaultdict
-import re
+import re, os
 from typing import Dict, Tuple, Any, Union, List
 
 from kivy.clock import Clock
@@ -13,7 +13,7 @@ from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_INFO
 from katrain.core.engine import KataGoEngine
-from katrain.core.utils import i18n
+from katrain.core.utils import i18n, find_package_resource
 from katrain.gui.kivyutils import StyledSpinner, BackgroundMixin
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
 
@@ -30,6 +30,16 @@ class LabelledTextInput(MDTextField):
     @property
     def input_value(self):
         return self.text
+
+
+class LabelledPathInput(LabelledTextInput):
+    def on_text(self, widget, text, **kwargs):
+        self.error = not os.path.exists(find_package_resource(self.input_value))
+        return super().on_text(widget, text, **kwargs)
+
+    @property
+    def input_value(self):
+        return self.text.strip().replace("\n", " ").replace("\r", " ")
 
 
 class LabelledCheckBox(MDCheckbox):
@@ -110,7 +120,7 @@ class QuickConfigGui(MDBoxLayout):
                 ret[k] = v
         return ret
 
-    def get_setting(self, key) -> Tuple[Any,Union[Dict,List],str]:
+    def get_setting(self, key) -> Tuple[Any, Union[Dict, List], str]:
         keys = key.split("/")
         config = self.katrain._config
         for k in keys[:-1]:
@@ -196,14 +206,14 @@ def wrap_anchor(widget):
 
 class ConfigTeacherPopup(QuickConfigGui):
     def __init__(self, katrain):
-        self.build()
         super().__init__(katrain)
+        Clock.schedule_once(self.build, 0)
 
     def add_option_widgets(self, widgets):
         for widget in widgets:
             self.options_grid.add_widget(wrap_anchor(widget))
 
-    def build(self):
+    def build(self, _dt):
         undos = self.katrain.config("trainer/num_undo_prompts")
         thresholds = self.katrain.config("trainer/eval_thresholds")
         savesgfs = self.katrain.config("trainer/save_feedback")
@@ -212,13 +222,14 @@ class ConfigTeacherPopup(QuickConfigGui):
         for i, (color, threshold, undo, show_dot, savesgf) in enumerate(zip(EVAL_COLORS, thresholds, undos, show_dots, savesgfs)):
             self.add_option_widgets(
                 [
-                    BackgroundMixin(background_color=color[:3]),
+                    BackgroundMixin(background_color=color, size_hint=[0.9, 0.9]),
                     LabelledFloatInput(text=str(threshold), input_property=f"trainer/eval_thresholds::{i}"),
                     LabelledFloatInput(text=str(undo), input_property=f"trainer/num_undo_prompts::{i}"),
                     LabelledCheckBox(text=str(show_dot), input_property=f"trainer/show_dots::{i}"),
                     LabelledCheckBox(text=str(savesgf), input_property=f"trainer/save_feedback::{i}"),
                 ]
             )
+        self.set_properties(self)
 
 
 class ConfigPopup(QuickConfigGui):

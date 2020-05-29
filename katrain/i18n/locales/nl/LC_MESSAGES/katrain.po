@@ -514,3 +514,123 @@ msgstr ""
 #. TODO
 msgid "ai:p:territory"
 msgstr "Respond Locally"
+
+#. TODO
+msgid "save dots"
+msgstr "Save in SGF"
+
+#. TODO
+msgid "num undos"
+msgstr "Number of undos"
+
+#. TODO
+msgid "teacher settings"
+msgstr "Edit Teacher Settings"
+
+#. TODO
+msgid "show dots"
+msgstr "Show dots"
+
+#. TODO
+msgid "point loss threshold"
+msgstr "Point loss greater than"
+
+#. TODO
+msgid "dot color"
+msgstr "Colour (fixed)"
+
+#. TODO
+msgid "show ai dots"
+msgstr "Show dots/SGF comments for AI players"
+
+#. TODO
+msgid "restarting engine"
+msgstr "Restarting Engine after Settings Change."
+
+#. TODO
+msgid "lock ai when teaching"
+msgstr "Disable analysis while in teach mode"
+
+#. TODO
+msgid "show last n dots"
+msgstr "Show dots for the last <this many> moves"
+
+#. TODO
+msgid "update teacher"
+msgstr "Update Teaching Game Settings"
+
+#. TODO
+msgid "engine:max_visits"
+msgstr "Maximum number of visits in analysis"
+
+#. TODO
+msgid "general settings"
+msgstr "General Settings"
+
+#. TODO
+msgid "update settings"
+msgstr "Update Settings"
+
+#. TODO
+msgid "engine:max_time"
+msgstr "Maximum time for analysis"
+
+#. TODO
+msgid "engine:fast_visits"
+msgstr "Maximum number of visits in fast analysis"
+
+#. TODO
+msgid "engine:config"
+msgstr "Path to KataGo config file"
+
+#. TODO
+msgid "general:sgf_save"
+msgstr "Path for saving SGF files"
+
+#. TODO
+msgid "general:sgf_load"
+msgstr "Path for loading SGF files"
+
+#. TODO
+msgid "general:debug_level"
+msgstr "Debug level in the console"
+
+#. TODO
+msgid "general settings title"
+msgstr "General and Engine Settings"
+
+#. TODO
+msgid "engine settings"
+msgstr "KataGo Engine Settings"
+
+#. TODO
+msgid "engine:model"
+msgstr "Path to KataGo model file"
+
+#. TODO
+msgid "general:anim_pv_time"
+msgstr "Time between moves when animating a sequence"
+
+#. TODO
+msgid "engine:katago"
+msgstr "Path to KataGo executable"
+
+#. TODO
+msgid "general:debug_level:hint"
+msgstr "Use 0 for little output, 1 for getting details when reporting errors"
+
+#. TODO
+msgid "engine:max_time:hint"
+msgstr "Time in seconds"
+
+#. TODO
+msgid "engine:time:hint"
+msgstr "Time in seconds"
+
+#. TODO
+msgid "engine:katago:hint"
+msgstr "Leave blank to use included executable"
+
+#. TODO
+msgid "file not found"
+msgstr "Path does not exist"

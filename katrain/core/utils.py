@@ -40,7 +40,7 @@ def find_package_resource(path):
             print(f"File {path} not found, installation possibly broken", file=sys.stderr)
             return f"FILENOTFOUND::{path}"
     else:
-        return path  # absolute path
+        return os.path.abspath(os.path.expanduser(path))  # absolute path
 
 
 class Lang(Observable):

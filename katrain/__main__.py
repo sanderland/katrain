@@ -222,7 +222,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_timer_popup(self):
         self.controls.timer.paused = True
         if not self.timer_settings_popup:
-            self.timer_settings_popup = I18NPopup(title_key="timer settings", size=[450, 450], content=ConfigTimerPopup(self)).__self__
+            self.timer_settings_popup = I18NPopup(title_key="timer settings", size=[350, 350], content=ConfigTimerPopup(self)).__self__
             self.timer_settings_popup.content.popup = self.timer_settings_popup
         self.timer_settings_popup.open()
 
@@ -232,6 +232,13 @@ class KaTrainGui(Screen, KaTrainBase):
             self.teacher_settings_popup = I18NPopup(title_key="teacher settings", size=[800, 800], content=ConfigTeacherPopup(self)).__self__
             self.teacher_settings_popup.content.popup = self.teacher_settings_popup
         self.teacher_settings_popup.open()
+
+    def _do_config_popup(self):
+        self.controls.timer.paused = True
+        if not self.config_popup:
+            self.config_popup = I18NPopup(title_key="general settings title", size=[1200, 800], content=ConfigPopup(self)).__self__
+            self.config_popup.content.popup = self.config_popup
+        self.config_popup.open()
 
     # todo pop
 
@@ -255,14 +262,6 @@ class KaTrainGui(Screen, KaTrainBase):
 
             popup_contents.filesel.on_submit = readfile
         self.fileselect_popup.open()
-
-    def _do_config_popup(self):
-        self.controls.timer.paused = True
-        if not self.config_popup:
-            self.config_popup = Popup(title=f"Edit Settings - {self.config_file}", size_hint=(0.9, 0.9)).__self__
-            popup_contents = ConfigPopup(self, self.config_popup, dict(self._config), ignore_cats=("trainer", "ai"))
-            self.config_popup.add_widget(popup_contents)
-        self.config_popup.open()
 
     def _do_ai_popup(self):
         self.controls.timer.paused = True

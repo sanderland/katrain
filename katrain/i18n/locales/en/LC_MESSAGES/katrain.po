@@ -278,16 +278,15 @@ msgstr "Note that handicaps above 9 are not supported on non-square boards."
 msgid "new game"
 msgstr "Start New Game"
 
-
 # teacher settings from here
-msgstr "teacher settings"
-msgid "Edit Teacher Settings"
+msgid "teacher settings"
+msgstr "Edit Teacher Settings"
 
 msgid "point loss threshold"
 msgstr "Point loss greater than"
 
 msgid "num undos"
-msgstr "Number of undos"
+msgstr "Number of undos per mistake"
 
 msgid "num undos"
 msgstr "Number of undos"
@@ -302,21 +301,85 @@ msgid "save dots"
 msgstr "Save in SGF"
 
 msgid "show last n dots"
-msgstr "Show dots for the last <this many> moves"
+msgstr ""
+"Show dots for the last\n"
+"<this many> moves"
 
 msgid "show ai dots"
-msgstr "Show dots/SGF comments for AI players"
+msgstr ""
+"Show dots/SGF comments\n"
+" for AI players"
 
 msgid "lock ai when teaching"
-msgstr "Disable analysis while in teach mode"
+msgstr ""
+"Disable analysis\n"
+" while in teach mode"
 
 #. submit button
 msgid "update teacher"
-msgstr "Update Teaching Game Settings"
+msgstr "Update Feedback Settings"
 
-#main config settings
+# main config settings
 msgid "restarting engine"
 msgstr "Restarting Engine after Settings Change."
+
+# title
+msgid "general settings title"
+msgstr "General and Engine Settings"
+
+msgid "file not found"
+msgstr "Path does not exist"
+
+msgid "general settings"
+msgstr "General Settings"
+
+msgid "engine settings"
+msgstr "KataGo Engine Settings"
+
+msgid "engine:katago"
+msgstr "Path to KataGo executable"
+
+msgid "engine:katago:hint"
+msgstr "Leave blank to use included executable"
+
+msgid "engine:model"
+msgstr "Path to KataGo model file"
+
+msgid "engine:config"
+msgstr "Path to KataGo config file"
+
+msgid "engine:config"
+msgstr "Path to KataGo config file"
+
+msgid "engine:max_visits"
+msgstr "Maximum number of visits in analysis"
+
+msgid "engine:fast_visits"
+msgstr "Maximum number of visits in fast analysis"
+
+msgid "engine:max_time"
+msgstr "Maximum time for analysis"
+
+msgid "engine:time:hint"
+msgstr "Time in seconds"
+
+msgid "general:sgf_load"
+msgstr "Path for loading SGF files"
+
+msgid "general:sgf_save"
+msgstr "Path for saving SGF files"
+
+msgid "general:anim_pv_time"
+msgstr "Time between moves when animating a sequence"
+
+msgid "general:debug_level"
+msgstr "Debug level in the console"
+
+msgid "general:debug_level:hint"
+msgstr "Set to 1 when reporting errors"
+
+msgid "update settings"
+msgstr "Update Settings"
 
 #. misc errors and info messages
 msgid "sgf written"

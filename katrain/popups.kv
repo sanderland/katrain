@@ -26,11 +26,19 @@
     hint_text: ""
     helper_text: ""
 
+<LabelledPathInput>:
+    font_size: dp(16)
+    multiline: True # just for wrapping
+    helper_text_mode: "on_error"
+
+
 <LabelledIntInput>:
     font_size: INPUT_FONT_SIZE
+    size_hint: 0.5, None
 
 <LabelledFloatInput>:
     font_size: INPUT_FONT_SIZE
+    size_hint: 0.5, None
 
 <LabelledCheckBox>:
     color: WHITE
@@ -43,7 +51,7 @@
     font_size: DESC_FONT_SIZE
 
 <I18NPopup>:
-    #background_color: [*[c*255/66 for c in BACKGROUND_COLOR[:3]], 1]
+    background_color: [*[c*255/66 for c in BACKGROUND_COLOR[:3]], 1]
     title: i18n._(self.title_key)
     title_size: DESC_FONT_SIZE
     title_font: self.font_name
@@ -67,6 +75,7 @@
 
 <ConfigPopup>:
     BoxLayout:
+        size_hint: 1,9
         orientation: 'horizontal'
         GridLayout:
             cols: 2
@@ -74,28 +83,44 @@
             spacing: CP_SPACING
             Label:
             Label:
-                text: 'engine'
+                text: i18n._('General Settings')
             DescriptionLabel:
                 text: i18n._("general:sgf_load")
+                multiline: True
+                font_size: DESC_FONT_SIZE * 0.8
             AnchorLayout:
-                LabelledTextInput:
+                LabelledPathInput:
                     input_property: "general/sgf_load" # just last load dir?
+                    multiline: True
+                    font_size: DESC_FONT_SIZE * 0.8
             DescriptionLabel:
                 text: i18n._("general:sgf_save")
             AnchorLayout:
-                LabelledTextInput:
+                LabelledPathInput:
                     input_property: "general/sgf_save"
+                    multiline: True
+                    font_size: DESC_FONT_SIZE * 0.8
             DescriptionLabel:
                 text: i18n._("general:anim_pv_time")
             AnchorLayout:
                 LabelledFloatInput:
                     input_property: "general/anim_pv_time"
+                    helper_text: i18n._("engine:time:hint")
             DescriptionLabel:
                 text: i18n._("general:debug_level")
             AnchorLayout:
                 LabelledIntInput:
                     input_property: "general/debug_level"
-        BackgroundMixing:
+                    helper_text: i18n._("general:debug_level:hint")
+            Label:
+            Label:
+            Label:
+            Label:
+            Label:
+            Label:
+            Label:
+            Label:
+        BackgroundMixin:
             background_color: LIGHTGREY
             size_hint: None, 1
             width: 2
@@ -105,21 +130,23 @@
             spacing: CP_SPACING
             Label:
             Label:
-                text: 'engine'
+                text: i18n._('Engine Settings')
             DescriptionLabel:
                 text: i18n._("engine:katago")
             AnchorLayout:
-                LabelledTextInput:
+                LabelledPathInput:
                     input_property: "engine/katago"
+                    hint_text: i18n._("engine:katago:hint")
+                    helper_text: i18n._("file not found")
             DescriptionLabel:
                 text: i18n._("engine:model")
             AnchorLayout:
-                LabelledTextInput:
+                LabelledPathInput:
                     input_property: "engine/model"
             DescriptionLabel:
                 text: i18n._("engine:config")
             AnchorLayout:
-                LabelledTextInput:
+                LabelledPathInput:
                     input_property: "engine/config"
             DescriptionLabel:
                 text: i18n._("engine:max_visits")
@@ -127,15 +154,17 @@
                 LabelledIntInput:
                     input_property: "engine/max_visits"
             DescriptionLabel:
+                text: i18n._("engine:fast_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/fast_visits"
+            DescriptionLabel:
                 text: i18n._("engine:max_time")
             AnchorLayout:
                 LabelledFloatInput:
-                    input_property: "engine/fast_visits"
-            DescriptionLabel:
-                text: i18n._("engine:fast_visits")
-            AnchorLayout:
-                LabelledFloatInput:
                     input_property: "engine/max_time"
+                    helper_text: i18n._("engine:time:hint")
+                    helper_text_mode: "on_focus"
             DescriptionLabel:
                 text: i18n._("engine:threads")
             AnchorLayout:
@@ -147,7 +176,7 @@
                 LabelledFloatInput:
                     input_property: "engine/wide_root_noise"
     AnchorLayout:
-        size_hint: 1,1
+        size_hint: 1,1.5
         AutoSizedRoundedRectangleButton:
             padding_x: 15
             size_hint: None,0.5
@@ -171,32 +200,34 @@
             text: i18n._("show dots")
         DescriptionLabel:
             text: i18n._("save dots")
-    GridLayout:
-        cols: 2
-        rows: 3
-        size_hint: 1, 3
-        DescriptionLabel:
-            text: i18n._("show last n dots")
-        AnchorLayout:
-            LabelledIntInput:
-                input_property: "trainer/eval_off_show_last"
-        DescriptionLabel:
-            text: i18n._("show ai dots")
-        AnchorLayout:
-            LabelledIntInput:
-                input_property: "trainer/eval_off_show_last"
-        DescriptionLabel:
-            text: i18n._("show last n dots")
-        AnchorLayout:
-            LabelledIntInput:
-                input_property: "trainer/eval_show_ai"
-        DescriptionLabel:
-            text: i18n._("lock ai when teaching")
-        AnchorLayout:
-            LabelledCheckBox:
-                input_property: "trainer/lock_ai"
     AnchorLayout:
-        size_hint: 1,1
+        size_hint: 1, 3
+        GridLayout:
+            cols: 2
+            rows: 3
+            padding: 4
+            size_hint: 0.66, 1
+            DescriptionLabel:
+                text: i18n._("show last n dots")
+                size_hint: 2,1
+            AnchorLayout:
+                LabelledIntInput:
+                    size_hint: 0.33, 1
+                    input_property: "trainer/eval_off_show_last"
+            DescriptionLabel:
+                size_hint: 2,1
+                text: i18n._("show ai dots")
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/eval_show_ai"
+            DescriptionLabel:
+                size_hint: 2,1
+                text: i18n._("lock ai when teaching")
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/lock_ai"
+    AnchorLayout:
+        size_hint: 1,1.5
         AutoSizedRoundedRectangleButton:
             padding_x: 15
             size_hint: None,0.5
@@ -207,7 +238,7 @@
 <ConfigTimerPopup>:
     MDGridLayout:
         cols: 2
-        rows: 3
+        rows: 2
         spacing: CP_SPACING
         size_hint: 1,2
         DescriptionLabel:
@@ -222,13 +253,6 @@
             LabelledIntInput:
                 text: "5"
                 input_property: "timer/byo_periods"
-        DescriptionLabel:
-            text: 'test'
-        AnchorLayout:
-            LabelledTextInput:
-                value: i18n._('byoyomi periods')
-                hint_text: i18n._('byoyomi periods')
-                helper_text:  i18n._('byoyomi length')
     AnchorLayout:
         size_hint: 1,1
         AutoSizedRoundedRectangleButton:
@@ -258,6 +282,7 @@
                 text: '19'
                 id: boardsize
                 input_property: 'game/size'
+                size_hint: 0.5, None
         AnchorLayout:
             MDBoxLayout:
                 adaptive_size: True

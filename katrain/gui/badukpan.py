@@ -241,7 +241,7 @@ class BadukPanWidget(Widget):
             nodes = katrain.game.current_node.nodes_from_root
             realized_points_lost = None
 
-            katrain.config("teacher/show_dots")
+            katrain.config("trainer/show_dots")
             for i, node in enumerate(nodes[::-1]):  # reverse order!
                 points_lost = node.points_lost
                 evalsize = 1
