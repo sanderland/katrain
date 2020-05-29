@@ -66,8 +66,9 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
 
     def on_press(self):
         if not self.last_touch or self.last_touch.button == "left":
-            self.dispatch("on_left_press")
-        return super().on_press()
+            r = self.dispatch("on_left_press")
+        return   super().on_press()
+
 
     def on_left_release(self):
         pass
@@ -337,8 +338,9 @@ class CollapsablePanel(MDBoxLayout):
     options_height = NumericProperty(25)
     options_spacing = NumericProperty(6)
     option_labels = ListProperty([])
-    option_default_active = ListProperty([])
+    option_active = ListProperty([])
     option_colors = ListProperty([])
+
     closed_label = StringProperty("Closed Panel")
 
     size_hint_y_open = NumericProperty(1)
@@ -357,7 +359,7 @@ class CollapsablePanel(MDBoxLayout):
             options=self.build_options,
             option_colors=self.build_options,
             options_height=self.build_options,
-            option_default_active=self.build_options,
+            option_active=self.build_options,
             options_spacing=self.build_options,
         )
         self.bind(state=self.build, size_hint_y_open=self.build, height_open=self.build)
@@ -367,9 +369,11 @@ class CollapsablePanel(MDBoxLayout):
         self.header = CollapsablePanelHeader(height=self.options_height, size_hint_y=None, spacing=self.options_spacing, padding=[1, 0, 0, 0])
         self.option_buttons = []
         option_labels = self.option_labels or [i18n._(f"tab:{opt}") for opt in self.options]
-        for lbl, opt_col, active in zip(option_labels, self.option_colors, self.option_default_active):
-            button = CollapsablePanelTab(text=lbl, active_outline_color=opt_col, height=self.options_height, on_press=self.trigger_select, state="down" if active else "normal",)
+        for ix,(lbl, opt_col, active) in enumerate(zip(option_labels, self.option_colors, self.option_active)):
+            button = CollapsablePanelTab(text=lbl, active_outline_color=opt_col, height=self.options_height,
+                                         state="down" if active else "normal")
             self.option_buttons.append(button)
+            button.bind(state = lambda *_args,_ix = ix: self.trigger_select(_ix) )
         self.open_close_button = TransparentIconButton(  # <<  / >> collapse button
             icon=self.open_close_icon(),
             icon_size=[0.5 * self.options_height, 0.5 * self.options_height],
@@ -377,7 +381,7 @@ class CollapsablePanel(MDBoxLayout):
             size_hint_x=None,
             on_press=lambda *_args: self.set_state("toggle"),
         )
-        self.bind(state=lambda *_args: self.open_close_button.setter("icon")(None, self.open_close_icon()))
+        self.bind()
         self.build()
 
     def build(self, *args, **kwargs):
@@ -386,7 +390,7 @@ class CollapsablePanel(MDBoxLayout):
             for button in self.option_buttons:
                 self.header.add_widget(button)
             self.header.add_widget(Label())  # spacer
-            self.trigger_select()
+            self.trigger_select(ix=None)
         else:
             self.header.add_widget(Label(text=i18n._(self.closed_label), halign="right", height=self.options_height))
         self.header.add_widget(self.open_close_button)
@@ -419,11 +423,14 @@ class CollapsablePanel(MDBoxLayout):
         self.state = state
         self.build()
         if self.state == "open":
-            self.trigger_select()
+            self.trigger_select(ix=None)
 
-    def trigger_select(self, *_args):
+    def trigger_select(self, ix):
+        if ix is not None and self.option_buttons:
+            self.option_active[ix] = (self.option_buttons[ix].state =='down')
         if self.state == "open":
-            self.dispatch("on_option_state", {opt: btn.state == "down" for opt, btn in zip(self.options, self.option_buttons)})
+            self.dispatch("on_option_state", {opt: btn.active for opt, btn in zip(self.options, self.option_buttons)})
+        return False
 
     def on_option_state(self, options):
         pass

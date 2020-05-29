@@ -674,7 +674,7 @@
         closed_label: 'closedlabel:scoregraph'
         options: ['score','winrate']
         option_colors: [SCORE_COLOR,WINRATE_COLOR]
-        option_default_active: [True,False]
+        option_active: [True,False]
         options_height: root.tab_option_height
         on_option_state: graph.show_graphs(args[1])
         ScoreGraph:
@@ -684,7 +684,7 @@
         closed_label: 'closedlabel:movestats'
         options: ['score','winrate','points']
         option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
-        option_default_active: [True,True,True]
+        option_active: [True,True,True]
         options_height: root.tab_option_height
         on_option_state: for k, v in args[1].items(): stats.labels[k].hidden = not v
         StatsBox:
@@ -694,7 +694,7 @@
         closed_label: 'closedlabel:info&notes'
         options: ['info','notes']
         option_colors: [WHITE,WHITE]
-        option_default_active: [True,False]
+        option_active: [True,False]
         on_option_state:
             info.size_hint_y = int(args[1]['info'])+1e-9
             info.opacity =  int(args[1]['info'])
