@@ -5,22 +5,12 @@ from typing import List, Tuple, Callable
 from kivy.lang import Observable
 import gettext
 
-from kivymd.uix.textfield import MDTextField
-
 from katrain.gui.style import DEFAULT_FONT
 
 try:
     import importlib.resources as pkg_resources
 except:
     import importlib_resources as pkg_resources
-
-OUTPUT_ERROR = -1
-OUTPUT_KATAGO_STDERR = -0.5
-OUTPUT_INFO = 0
-OUTPUT_DEBUG = 1
-OUTPUT_EXTRA_DEBUG = 2
-
-MODE_PLAY, MODE_ANALYZE = "play", "analyze"
 
 
 def var_to_grid(array_var: List[Number], size: Tuple[int, int]) -> List[List[Number]]:
@@ -113,7 +103,3 @@ class Lang(Observable):
 
 DEFAULT_LANGUAGE = "en"
 i18n = Lang(DEFAULT_LANGUAGE)
-
-
-def switch_lang(lang):
-    i18n.switch_lang(lang)

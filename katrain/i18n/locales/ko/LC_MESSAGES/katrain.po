@@ -398,3 +398,87 @@ msgstr "k"
 #. TODO
 msgid "strength:dan"
 msgstr "d"
+
+#. TODO
+msgid "aihelp:p:weighted"
+msgstr ""
+"Plays moves according to policy probability, with `weaken_fac` influencing "
+"how much more likely weaker moves are played. A high negative value plays "
+"like the `Policy` AI.`pick_override` determines when top move is chosen "
+"without randomness, and `lower_bound` determines the lower bound policy "
+"value that is allowed."
+
+#. TODO
+msgid "aihelp:p:pick"
+msgstr ""
+"Picks `pick_n + pick_frac * <number of legal moves>` at random and plays the"
+" best one. For `pick_frac=1` plays like the `Policy` AI. Plays top move if "
+"policy value is above `pick_override` to avoid obvious mistakes."
+
+#. TODO
+msgid "ai:p:influence"
+msgstr "Influential Style"
+
+#. TODO
+msgid "ai:p:local"
+msgstr "Respond Locally"
+
+#. TODO
+msgid "aihelp:p:tenuki"
+msgstr ""
+"Picks `pick_n + pick_frac * <number of legal moves>` weighted away from the "
+"last move and plays the best one. Plays top move if policy value is above "
+"`pick_override` to avoid obvious mistakes."
+
+#. TODO
+msgid "ai:scoreloss"
+msgstr "Score Loss"
+
+#. TODO
+msgid "aihelp:p:influence"
+msgstr ""
+"Picks moves biased above the `threshold` line and plays the best "
+"one.Increase `line_weight` to penalize moves near the edge more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."
+
+#. TODO
+msgid "ai:default"
+msgstr "KataGo"
+
+#. TODO
+msgid "ai:p:tenuki"
+msgstr "Tenuki Style"
+
+#. TODO
+msgid "ai:p:pick"
+msgstr "Blinded Policy"
+
+#. TODO
+msgid "ai:p:weighted"
+msgstr "Policy Weighted"
+
+#. TODO
+msgid "ai:policy"
+msgstr "Policy"
+
+#. TODO
+msgid "ai:jigo"
+msgstr "KataJigo"
+
+#. TODO
+msgid "aihelp:p:local"
+msgstr ""
+"Picks moves biased below the `threshold` line and plays the best "
+"one.Increase `line_weight` to penalize moves near the center more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."
+
+#. TODO
+msgid "aihelp:p:territory"
+msgstr ""
+"Picks moves biased below the `threshold` line and plays the best "
+"one.Increase `line_weight` to penalize moves near the center more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."
+
+#. TODO
+msgid "ai:p:territory"
+msgstr "Respond Locally"

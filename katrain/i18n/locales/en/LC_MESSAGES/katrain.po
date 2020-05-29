@@ -311,7 +311,7 @@ msgstr ""
 msgid "Engine died unexpectedly"
 msgstr ""
 "Engine died unexpectedly without sending output, possibly due to out of "
-"memory: {e}"
+"memory: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -320,7 +320,7 @@ msgstr "k"
 msgid "strength:dan"
 msgstr "d"
 
-msgid "ainame:default"
+msgid "ai:default"
 msgstr "KataGo"
 
 msgid "aihelp:default"
@@ -328,7 +328,7 @@ msgstr ""
 "Full strength KataGo AI. Strength is mainly affected by `max_visits` and "
 "`model` in the general settings `engine` section."
 
-msgid "ainame:jigo"
+msgid "ai:jigo"
 msgstr "KataJigo"
 
 msgid "aihelp:jigo"
@@ -336,7 +336,7 @@ msgstr ""
 "Will try to win by a set amount of points (default 0.5), without further "
 "restrictions."
 
-msgid "ainame:jigo"
+msgid "ai:jigo"
 msgstr "KataJigo"
 
 msgid "aihelp:jigo"
@@ -344,7 +344,7 @@ msgstr ""
 "Will try to win by a set amount of points (default 0.5), without further "
 "restrictions."
 
-msgid "ainame:scoreloss"
+msgid "ai:scoreloss"
 msgstr "Score Loss"
 
 msgid "aihelp:scoreloss"
@@ -352,7 +352,7 @@ msgstr ""
 "Plays moves that lead to more points lost with lower probability. Likely to "
 "play more varied/weaker with higher visits settings."
 
-msgid "ainame:policy"
+msgid "ai:policy"
 msgstr "Policy"
 
 msgid "aihelp:policy"
@@ -360,3 +360,59 @@ msgstr ""
 "Plays the top move from the policy network, without any reading. Strength is"
 " mainly affected by `model` in engine settings. The opening moves setting "
 "affects how many moves in the opening are more random."
+
+msgid "ai:p:weighted"
+msgstr "Policy Weighted"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"Plays moves according to policy probability, with `weaken_fac` influencing "
+"how much more likely weaker moves are played. A high negative value plays "
+"like the `Policy` AI.`pick_override` determines when top move is chosen "
+"without randomness, and `lower_bound` determines the lower bound policy "
+"value that is allowed."
+
+msgid "ai:p:pick"
+msgstr "Blinded Policy"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"Picks `pick_n + pick_frac * <number of legal moves>` at random and plays the"
+" best one. For `pick_frac=1` plays like the `Policy` AI. Plays top move if "
+"policy value is above `pick_override` to avoid obvious mistakes."
+
+msgid "ai:p:local"
+msgstr "Local Response Style"
+
+msgid "aihelp:p:local"
+msgstr ""
+"Picks `pick_n + pick_frac * <number of legal moves>` weighted towards the "
+"last move and plays the best one. Plays top move if policy value is above "
+"`pick_override` to avoid obvious mistakes."
+
+msgid "ai:p:tenuki"
+msgstr "Tenuki Style"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"Picks `pick_n + pick_frac * <number of legal moves>` weighted away from the "
+"last move and plays the best one. Plays top move if policy value is above "
+"`pick_override` to avoid obvious mistakes."
+
+msgid "ai:p:influence"
+msgstr "Influential Style"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"Picks moves biased above the `threshold` line and plays the best "
+"one.Increase `line_weight` to penalize moves near the edge more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."
+
+msgid "ai:p:territory"
+msgstr "Respond Locally"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"Picks moves biased below the `threshold` line and plays the best "
+"one.Increase `line_weight` to penalize moves near the center more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."

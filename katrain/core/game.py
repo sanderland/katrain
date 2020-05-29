@@ -5,11 +5,11 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Union, Optional
 
-from katrain.core.utils import var_to_grid, OUTPUT_INFO, OUTPUT_DEBUG, i18n
+from katrain.core.utils import var_to_grid, i18n
+from katrain.core.constants import OUTPUT_INFO, OUTPUT_DEBUG, HOMEPAGE
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
 from katrain.core.sgf_parser import SGF, Move
-from katrain.core.constants import *
 
 
 class IllegalMoveException(Exception):
@@ -20,46 +20,15 @@ class KaTrainSGF(SGF):
     _NODE_CLASS = GameNode
 
 
-class Player:
-    def __init__(self, player="B", player_type=PLAYER_HUMAN, player_subtype=PLAYING_NORMAL, periods_used=0):
-        self.player = player
-        self.update(player_type, player_subtype)
-        self.periods_used = periods_used
-
-    def update(self, player_type, player_subtype):
-        self.player_type = player_type
-        self.player_subtype = player_subtype
-
-    @property
-    def ai(self):
-        return self.player_type == PLAYER_AI
-
-    @property
-    def human(self):
-        return self.player_type == PLAYER_HUMAN
-
-    @property
-    def being_taught(self):
-        return self.player_type == PLAYER_HUMAN and self.player_subtype == PLAYING_TEACHING
-
-    @property
-    def strategy(self):
-        return self.player_subtype if self.ai else AI_DEFAULT
-
-    def __str__(self):
-        return f"{self.player_type} ({self.player_subtype})"
-
-
 class Game:
     """Represents a game of go, including an implementation of capture rules."""
 
-    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": "KaTrain:https://github.com/sanderland/katrain"}
+    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": f"KaTrain:{HOMEPAGE}"}
 
-    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], move_tree: GameNode = None, players: Dict = None, analyze_fast=False):
+    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], move_tree: GameNode = None, analyze_fast=False):
         self.katrain = katrain
         if not isinstance(engine, Dict):
             engine = {"B": engine, "W": engine}
-        self.players = players or {"B": Player("B"), "W": Player("W")}
         self.engines = engine
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
 
@@ -76,22 +45,12 @@ class Game:
             handicap = katrain.config("game/handicap")
             if handicap:
                 self.place_handicap_stones(handicap)
-            self.root.set_property("PW", str(self.players["W"]))
-            self.root.set_property("PB", str(self.players["B"]))
 
         if not self.root.get_property("RU"):
             self.root.set_property("RU", katrain.config("game/rules"))
 
         self.set_current_node(self.root)
         threading.Thread(target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast), daemon=True).start()  # return faster, but bypass Kivy Clock
-
-    @property
-    def last_player(self) -> Player:
-        return self.players[self.current_node.player]
-
-    @property
-    def next_player(self) -> Player:
-        return self.players[self.current_node.next_player]
 
     def analyze_all_nodes(self, priority=0, analyze_fast=False):
         for node in self.root.nodes_in_tree:
@@ -287,10 +246,8 @@ class Game:
         if eval_thresholds is None:
             eval_thresholds = self.katrain.config("trainer/eval_thresholds")
 
-        black, white = self.root.get_property("PB"), self.root.get_property("PW")
-        black = re.sub(r"['<>:\"/\\|?*]", "", black or "Black")
-        white = re.sub(r"['<>:\"/\\|?*]", "", white or "White")
-        game_name = f"katrain_{black} vs {white} {self.game_id}"
+        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P"+bw) or  str(self.katrain.players_info[bw])) for bw in "BW" }
+        game_name = f"katrain_{player_names['B']} vs {player_names['W']} {self.game_id}"
         file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 

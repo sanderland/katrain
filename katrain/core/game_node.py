@@ -142,7 +142,6 @@ class GameNode(SGFNode):
                     else:
                         text += i18n._("Info:best move") + "\n"
                     if previous_top_move.get("pv") and (sgf or hints):
-                        print("PREV", previous_top_move)
                         text += i18n._("Info:PV").format(pv=self.make_pv(single_move.player, previous_top_move["pv"], interactive)) + "\n"
 
                 if sgf or hints or teach:

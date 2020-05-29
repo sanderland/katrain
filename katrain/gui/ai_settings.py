@@ -4,7 +4,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.label import MDLabel
 
-from katrain.core.utils import OUTPUT_DEBUG, OUTPUT_ERROR
+from katrain.core.constants import OUTPUT_ERROR, OUTPUT_DEBUG
 from katrain.gui.kivyutils import SizedButton, LightHelpLabel, ScaledLightLabel, StyledSpinner
 from katrain.gui.popups import QuickConfigGui, ConfigPopup, InputParseError
 

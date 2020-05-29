@@ -12,7 +12,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
-from katrain.core.utils import OUTPUT_DEBUG, OUTPUT_ERROR
+from katrain.core.constants import OUTPUT_ERROR, OUTPUT_DEBUG
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, GameNode
 from katrain.gui.kivyutils import StyledSpinner
@@ -163,7 +163,7 @@ class ConfigTimerPopup(QuickConfigGui):
 
     def update_config(self, save_to_file=True):
         super().update_config(save_to_file=save_to_file)
-        for p in self.katrain.game.players.values():
+        for p in self.katrain.players_info.values():
             p.periods_used = 0
         self.katrain.controls.timer.paused = True
         self.katrain.game.current_node.time_used = 0
@@ -182,6 +182,9 @@ class NewGamePopup(QuickConfigGui):
             self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
             self.katrain.engine.restart()
         self.katrain("new-game")
+
+        # for bw, player_widget in self.nav_drawer_contents.player_setup.players.items():
+        #    self.players[bw].update(**player_widget.player_def)
 
 
 class ConfigPopup(QuickConfigGui):

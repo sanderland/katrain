@@ -60,71 +60,59 @@
         "lock_ai": false
     },
     "ai": {
-        "default": {
+        "ai:default": {
             "_help_right": "No settings available for Default KataGo AI, strength is mainly affected by `max_visits` and `model` in the main settings `engine` section.",
             "_help_left": ""
         },
-        "jigo": {
+        "ai:jigo": {
             "target_score": 0.5,
             "_help_left": "Will try to win by `target_score`, without further restrictions.",
             "_help_right": "Also affected by engine settings such as `max_visits`."
         },
-        "scoreloss": {
+        "ai:scoreloss": {
             "strength": 0.5
         },
-        "Policy": {
+        "ai:policy": {
             "opening_moves": 20
         },
-        "P:Weighted": {
-            "_help_right": "pick_override` determines when top move is chosen without randomness, and `lower_bound` determines the lower bound policy value that is allowed.",
-            "_help_left": "Plays move with probability=policy^(1/weaken_fac),i.e. `weaken_fac` influences how much more likely weaker moves are picked.",
+        "ai:p:weighted": {
             "pick_override": 1.0,
             "lower_bound": 0.001,
             "weaken_fac": 1.25
         },
-        "P:Pick": {
+        "ai:p:pick": {
             "pick_override": 0.95,
             "pick_n": 5,
-            "pick_frac": 0.33,
-            "_help_left": "Picks `pick_n + pick_frac * <number of legal moves>` at random and plays the best one. Change `pick_frac` to make it see more moves.",
-            "_help_right": "Plays top move if policy value is above `pick_override` to avoid obvious mistakes."
+            "pick_frac": 0.33
         },
-        "P:Local": {
+        "ai:p:local": {
             "pick_override": 0.95,
             "stddev": 1.5,
             "pick_n": 15,
-            "pick_frac": 0.0,
-            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` near the last move and plays the best one.",
-            "_help_right": "Lower `stddev` makes it prefer closer moves."
+            "pick_frac": 0.0
         },
-        "P:Tenuki": {
+        "ai:p:tenuki": {
             "pick_override": 0.85,
             "stddev": 7.5,
             "pick_n": 5,
             "pick_frac": 0.5,
-            "endgame": 0.45,
-            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` away from the last move and plays the best one.",
-            "_help_right": "Increase `stddev` makes it prefer moves further away. Stops tenukiing after the 'endgame' fraction of the board is filled."
+            "endgame": 0.45
         },
-        "P:Influence": {
+        "ai:p:influence": {
             "pick_override": 0.95,
             "pick_n": 5,
             "pick_frac": 0.4,
             "threshold": 3.5,
             "line_weight": 10,
-            "endgame": 0.4,
-            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to above the `threshold` line.",
-            "_help_right": "Increase `line_weight` to penalize moves near the edge more. Stops strategy after the 'endgame' fraction of the board is filled."
+            "endgame": 0.4
         },
-        "P:Territory": {
+        "ai:p:territory": {
             "pick_override": 0.95,
             "pick_n": 5,
             "pick_frac": 0.4,
             "threshold": 3.5,
             "line_weight": 2,
-            "endgame": 0.4,
-            "_help_left": "Samples `pick_n + pick_frac * <number of legal moves>` and plays the best one, biased to below the `threshold` line.",
-            "_help_right": "Increase `line_weight` to penalize moves closer to the center more.  Stops strategy after the 'endgame' fraction of the board is filled."
+            "endgame": 0.4
         }
     }
 }

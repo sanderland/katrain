@@ -14,7 +14,8 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.menu import MDDropdownMenu, RightContent
 
-from katrain.core.utils import OUTPUT_DEBUG, evaluation_class, i18n, MODE_PLAY
+from katrain.core.utils import evaluation_class, i18n
+from katrain.core.constants import OUTPUT_DEBUG, MODE_PLAY
 from katrain.core.game import Move
 from katrain.gui.kivyutils import draw_circle, draw_text
 from katrain.core.utils import var_to_grid
@@ -50,9 +51,12 @@ class BadukPanWidget(Widget):
         self.stone_size = 0
         self.active_pv_moves = []
         self.animating_pv = None
-        self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents)
         self.last_mouse_pos = (0, 0)
         Window.bind(mouse_pos=self.on_mouse_pos)
+
+        self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents)
+        self.redraw_trigger = Clock.create_trigger(self.redraw)
+        self.bind(size=self.redraw_trigger)
         Clock.schedule_interval(self.animate_pv, 0.1)
 
     # stone placement functions
@@ -132,7 +136,7 @@ class BadukPanWidget(Widget):
         self.draw_hover_contents()  # remove ghost
 
     # drawing functions
-    def on_size(self, *_args):
+    def redraw(self,*_args):
         self.draw_board()
         self.draw_board_contents()
 
@@ -276,7 +280,7 @@ class BadukPanWidget(Widget):
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
 
             policy = current_node.policy
-            if not policy and current_node.parent and current_node.parent.policy and katrain.game.last_player.ai and katrain.game.next_player.ai:
+            if not policy and current_node.parent and current_node.parent.policy and katrain.last_player_info.ai and katrain.next_player_info.ai:
                 policy = current_node.parent.policy  # in the case of AI self-play we allow the policy to be one step out of date
 
             pass_btn = katrain.board_controls.pass_btn

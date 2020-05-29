@@ -7,7 +7,8 @@ from kivy.uix.popup import Popup
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.utils import MODE_PLAY, MODE_ANALYZE, i18n
+from katrain.core.utils import i18n
+from katrain.core.constants import MODE_PLAY, MODE_ANALYZE
 
 
 class PlayAnalyzeSelect(MDFloatLayout):
@@ -38,9 +39,9 @@ class ControlsPanel(BoxLayout):
         Clock.schedule_interval(self.update_timer, 0.07)
 
     def update_players(self, *_args):
-        for player, info in self.katrain.game.players.items():
-            self.players[player].player_type = i18n._(info.player_type)
-            self.players[player].player_subtype = i18n._(info.player_subtype)
+        for bw, player_info in self.katrain.players_info.items():
+            self.players[bw].player_type = i18n._(player_info.player_type)
+            self.players[bw].player_subtype = i18n._(player_info.player_subtype)
 
     def set_status(self, msg, at_node=None):
         self.status_msg = msg
@@ -59,11 +60,11 @@ class ControlsPanel(BoxLayout):
             self.status.text = ""
             self.status_node = None
 
-        last_player_was_ai_playing_human = game.last_player.ai and game.next_player.human
+        last_player_was_ai_playing_human = katrain.last_player_info.ai and katrain.next_player_info.human
 
         self.active_comment_node = current_node
         if katrain.play_analyze_mode == MODE_PLAY and last_player_was_ai_playing_human:
-            if game.next_player.being_taught and current_node.children and current_node.children.auto_undo:
+            if katrain.next_player_info.being_taught and current_node.children and current_node.children.auto_undo:
                 self.active_comment_node = current_node.children[-1]
             elif current_node.parent:
                 self.active_comment_node = current_node.parent
@@ -71,7 +72,7 @@ class ControlsPanel(BoxLayout):
         hints = katrain.analysis_controls.hints.active
         info = ""
         if current_node.move and not current_node.is_root:
-            info = self.active_comment_node.comment(teach=game.players[self.active_comment_node.player].being_taught, hints=hints)
+            info = self.active_comment_node.comment(teach=katrain.players_info[self.active_comment_node.player].being_taught, hints=hints)
 
         if self.active_comment_node.analysis_ready:
             self.stats.score = self.active_comment_node.format_score() or ""
@@ -96,7 +97,7 @@ class ControlsPanel(BoxLayout):
             self.last_timer_update = (current_node, now)
             byo_len = max(1, self.katrain.config("timer/byo_length"))
             byo_num = max(1, self.katrain.config("timer/byo_periods"))
-            player = self.katrain.game.next_player
+            player = self.katrain.next_player_info
             ai = player.ai
             if not self.timer.paused and not ai:
                 if last_update_node == current_node and not current_node.children:

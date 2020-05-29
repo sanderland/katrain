@@ -14,6 +14,7 @@ from kivy.properties import (
     ObjectProperty,
 )
 from kivy.uix.behaviors import ToggleButtonBehavior, ButtonBehavior
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.filechooser import FileChooserLayout, FileChooserListLayout
@@ -170,7 +171,7 @@ class CircleWithText(Widget):
     min_size = NumericProperty(50)
 
 
-class BGMDBoxLayout(MDBoxLayout, BackgroundMixin):
+class BGBoxLayout(BoxLayout, BackgroundMixin):
     pass
 
 
@@ -195,11 +196,17 @@ class StyledSpinner(Spinner):
         except (ValueError, IndexError):
             return 0, "", ""
 
+    def select_key(self, key):
+        try:
+            ix = self.value_refs.index(key)
+            self.text = self.values[ix]
+        except:
+            pass
+
     def i18n_values(self, *_args):
         if self.value_refs:
             selected = self.selected[0]
             self.values = [i18n._(ref) for ref in self.value_refs]
-            print(self.selected, self.values, self.value_refs)
             self.text = self.values[selected]
             self.font_name = i18n.font_name
             self.update_dropdown_props()
@@ -221,6 +228,18 @@ class StyledSpinner(Spinner):
             item.font_name = self.font_name
 
 
+class PlayerSetupBlock(MDBoxLayout):
+    players = ObjectProperty(None)
+    INSTANCES = []
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        PlayerSetupBlock.INSTANCES.append(self)
+
+    def update_players(self, bw, player_info):  # update sub widget based on gui state change
+        self.players[bw].update_widget(player_type=player_info.player_type, player_subtype=player_info.player_subtype)
+
+
 class PlayerSetup(MDBoxLayout):
     player = OptionProperty("B", options=["B", "W"])
 
@@ -237,19 +256,20 @@ class PlayerSetup(MDBoxLayout):
             self.player_subtype_label.text = i18n._("aistrategy")
             self.player_subtype.value_refs = MDApp.get_running_app().gui.ai_strategies  # TODO:
         self.player_subtype.text = self.player_subtype.values[0]
-        self.set_player()
+        self.update_global_player_info()
 
     @property
-    def player_def(self):
+    def player_type_dump(self):
         return {"player_type": self.player_type.selected[1], "player_subtype": self.player_subtype.selected[1]}
 
-    def set_player(self):
+    def update_widget(self, player_type, player_subtype):
+        self.player_type.select_key(player_type)  # should trigger setup options
+        self.player_subtype.select_key(player_subtype)  # should trigger setup options
+
+    def update_global_player_info(self):
         katrain = MDApp.get_running_app().gui
-        game = katrain and katrain.game
-        if game:
-            game.players[self.player].update(**self.player_def)
-            katrain.controls.update_players()
-            katrain.update_state()
+        if katrain.game and katrain.game.current_node:
+            katrain.update_player(self.player, **self.player_type_dump)
 
 
 class PlayerInfo(MDBoxLayout, BackgroundMixin):
@@ -260,7 +280,7 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     active = BooleanProperty(True)
 
 
-class Timer(BGMDBoxLayout):
+class Timer(BGBoxLayout):
     state = ListProperty([30, 5, 1])
 
 

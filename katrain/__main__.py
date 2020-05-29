@@ -23,23 +23,16 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivymd.app import MDApp
-from katrain.core.constants import *
 from katrain.core.ai import ai_move
 from katrain.core.utils import (
     DEFAULT_LANGUAGE,
-    OUTPUT_DEBUG,
-    OUTPUT_ERROR,
-    OUTPUT_EXTRA_DEBUG,
-    OUTPUT_INFO,
-    OUTPUT_KATAGO_STDERR,
     find_package_resource,
     i18n,
-    MODE_PLAY,
-    switch_lang,
 )
+from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, MODE_PLAY
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
 from katrain.gui.ai_settings import ConfigAIPopupContents
-from katrain.core.settings_and_logging import KaTrainSettings
+from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
@@ -53,15 +46,15 @@ from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
 __version__ = "1.1.0"
 
 
-class KaTrainGui(Screen, KaTrainSettings):
+class KaTrainGui(Screen, KaTrainBase):
     """Top level class responsible for tying everything together"""
 
     zen = BooleanProperty(False)
+    controls = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.engine = None
-        self.game = None
 
         self.new_game_popup = None
         self.fileselect_popup = None
@@ -109,7 +102,7 @@ class KaTrainGui(Screen, KaTrainSettings):
     def update_state(self, redraw_board=False):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
-        last_player, next_player = self.game.players[cn.player], self.game.players[cn.next_player]
+        last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
         if self.play_analyze_mode == MODE_PLAY:
             teaching_undo = cn.player and last_player.being_taught
             if teaching_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready and not cn.children and not self.game.ended:
@@ -120,7 +113,7 @@ class KaTrainGui(Screen, KaTrainSettings):
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
         top, bot = [w.__self__ for w in self.board_controls.circles]  # no weakref
-        if self.game.next_player.player == "W":
+        if self.next_player_info.player == "W":
             top, bot = bot, top
             self.controls.players["W"].active = True
             self.controls.players["B"].active = False
@@ -148,6 +141,14 @@ class KaTrainGui(Screen, KaTrainSettings):
         self.controls.update_evaluation()
         self.controls.update_timer(1)
 
+    def update_player(self, bw, **kwargs):
+        super().update_player(bw, **kwargs)
+        if self.controls:
+            self.controls.update_players()
+            self.update_state()
+        for player_setup_block in PlayerSetupBlock.INSTANCES:
+            player_setup_block.update_players(bw,self.players_info[bw])
+
     def set_note(self, note):
         self.game.current_node.note = note
 
@@ -173,14 +174,12 @@ class KaTrainGui(Screen, KaTrainSettings):
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
         self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast)
-        for bw, player_widget in self.nav_drawer_contents.player_setup.players.items():
-            self.game.players[bw].update(**player_widget.player_def)
         self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
-            mode = self.game.next_player.strategy
+            mode = self.next_player_info.strategy
             settings = self.config(f"ai/{mode}")
             if settings:
                 ai_move(self.game, mode, settings)
@@ -190,7 +189,7 @@ class KaTrainGui(Screen, KaTrainSettings):
     def _do_undo(self, n_times=1):
         if n_times == "smart":
             n_times = 1
-            if self.play_analyze_mode == "play" and self.game.last_player.ai and self.game.next_player.human:
+            if self.play_analyze_mode == "play" and self.last_player_info.ai and self.next_player_info.human:
                 n_times = 2
         self.board_gui.animating_pv = None
         self.game.undo(n_times)
@@ -206,7 +205,7 @@ class KaTrainGui(Screen, KaTrainSettings):
     def _do_play(self, coords):
         self.board_gui.animating_pv = None
         try:
-            self.game.play(Move(coords, player=self.game.next_player.player))
+            self.game.play(Move(coords, player=self.next_player_info.player))
         except IllegalMoveException as e:
             self.controls.set_status(f"Illegal Move: {str(e)}")
 
@@ -377,7 +376,7 @@ class KaTrainApp(MDApp):
 
     def on_language(self, _instance, language):
         self.gui.log(f"Switching language to {language}", OUTPUT_INFO)
-        switch_lang(language)
+        i18n.switch_lang(language)
 
     def on_start(self):
         self.gui.start()

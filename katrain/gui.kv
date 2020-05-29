@@ -119,7 +119,7 @@
 <AutoSizedRoundedRectangleButton@AutoSizedRectangleButton>:
     background_radius: self.height/3.5
 
-<BGMDBoxLayout>:
+<BGBoxLayout>:
     background_color: BOX_BACKGROUND_COLOR
 
 <TransparentIconButton>:
@@ -695,7 +695,7 @@
             notebox.size_hint_y = int(args[1]['notes'])*0.66+1e-9
             notebox.opacity = int(args[1]['notes'])
         options_height: root.tab_option_height
-        BGMDBoxLayout:
+        BGBoxLayout:
             background_color: BOX_BACKGROUND_COLOR
             orientation: 'vertical'
             ScrollableLabel:
@@ -895,9 +895,9 @@
         StyledSpinner:
             id: player_subtype
             value_refs: []
-            on_text: root.set_player()
+            on_text: root.update_global_player_info()
 
-<PlayerSetupBlock@MDBoxLayout>:
+<PlayerSetupBlock>:
     orientation: 'vertical'
     size_hint_y: None
     spacing: 3*CP_SPACING
@@ -1023,7 +1023,7 @@
         ScreenManager:
             Screen:
                 name: 'gui'
-                BGMDBoxLayout:
+                BGBoxLayout:
                     background_color: BACKGROUND_COLOR
                     MDBoxLayout:
                         orientation: 'vertical'
