@@ -729,8 +729,12 @@
                     color_mode: 'custom'
                     line_color_focus: TEXT_COLOR
                     size_hint: 1, 1
-#                    mode: "rectangle"
-#                    width: info.width - dp(26)
+                    canvas.before:
+                        Color:
+                            rgba: LIGHTGREY
+                        Line:
+                            points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
+                            width: 1
     Label:
         size_hint_y: 1e-9 # takes up remaining space if info is closed
 
