@@ -13,9 +13,10 @@ class ScoreGraph(BackgroundMixin):
     score_points = ListProperty([])
     winrate_points = ListProperty([])
 
-    dot_pos = ListProperty([0, 0])
+    score_dot_pos = ListProperty([0, 0])
+    winrate_dot_pos = ListProperty([0, 0])
     highlighted_index = NumericProperty(None)
-    highlight_size = NumericProperty(5)
+    highlight_size = NumericProperty(6)
 
     score_scale = NumericProperty(5)
     winrate_scale = NumericProperty(5)
@@ -63,10 +64,14 @@ class ScoreGraph(BackgroundMixin):
 
             if self.highlighted_index is not None:
                 self.highlighted_index = min(self.highlighted_index, len(score_values) - 1)
-                dot_point = score_line_points[self.highlighted_index]
-                if math.isnan(dot_point[1]):
-                    dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((score_nn_values or [0])[-1] / self.score_scale)
-                self.dot_pos = [c - self.highlight_size / 2 for c in dot_point]
+                score_dot_point = score_line_points[self.highlighted_index]
+                winrate_dot_point = winrate_line_points[self.highlighted_index]
+                if math.isnan(score_dot_point[1]):
+                    score_dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((score_nn_values or [0])[-1] / self.score_scale)
+                self.score_dot_pos = [c - self.highlight_size / 2 for c in winrate_dot_point]
+                if math.isnan(winrate_dot_point[1]):
+                    winrate_dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((winrate_nn_values or [0])[-1] / self.winrate_scale)
+                self.winrate_dot_pos = [c - self.highlight_size / 2 for c in score_dot_point]
 
     def update_value(self, node):
         self.highlighted_index = index = node.depth

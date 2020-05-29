@@ -30,6 +30,7 @@
     font_size: dp(16)
     multiline: True # just for wrapping
     helper_text_mode: "on_error"
+    helper_text: i18n._("file not found")
 
 
 <LabelledIntInput>:
@@ -79,27 +80,22 @@
         orientation: 'horizontal'
         GridLayout:
             cols: 2
-            rows: 9
+            rows: 8
             spacing: CP_SPACING
             Label:
-            Label:
+            DescriptionLabel:
                 text: i18n._('General Settings')
+                font_size: DESC_FONT_SIZE * 1.5
             DescriptionLabel:
                 text: i18n._("general:sgf_load")
-                multiline: True
-                font_size: DESC_FONT_SIZE * 0.8
             AnchorLayout:
                 LabelledPathInput:
                     input_property: "general/sgf_load" # just last load dir?
-                    multiline: True
-                    font_size: DESC_FONT_SIZE * 0.8
             DescriptionLabel:
                 text: i18n._("general:sgf_save")
             AnchorLayout:
                 LabelledPathInput:
                     input_property: "general/sgf_save"
-                    multiline: True
-                    font_size: DESC_FONT_SIZE * 0.8
             DescriptionLabel:
                 text: i18n._("general:anim_pv_time")
             AnchorLayout:
@@ -118,18 +114,17 @@
             Label:
             Label:
             Label:
-            Label:
-            Label:
         BackgroundMixin:
             background_color: LIGHTGREY
             size_hint: None, 1
             width: 2
         GridLayout:
             cols: 2
-            rows: 9
+            rows: 8
             spacing: CP_SPACING
             Label:
-            Label:
+            DescriptionLabel:
+                font_size: DESC_FONT_SIZE * 1.5
                 text: i18n._('Engine Settings')
             DescriptionLabel:
                 text: i18n._("engine:katago")
@@ -137,7 +132,6 @@
                 LabelledPathInput:
                     input_property: "engine/katago"
                     hint_text: i18n._("engine:katago:hint")
-                    helper_text: i18n._("file not found")
             DescriptionLabel:
                 text: i18n._("engine:model")
             AnchorLayout:
@@ -164,17 +158,12 @@
                 LabelledFloatInput:
                     input_property: "engine/max_time"
                     helper_text: i18n._("engine:time:hint")
-                    helper_text_mode: "on_focus"
-            DescriptionLabel:
-                text: i18n._("engine:threads")
-            AnchorLayout:
-                LabelledIntInput:
-                    input_property: "engine/threads"
             DescriptionLabel:
                 text: i18n._("engine:wide_root_noise")
             AnchorLayout:
                 LabelledFloatInput:
                     input_property: "engine/wide_root_noise"
+                    hint_text: i18n._("engine:wide_root_noise:hint")
     AnchorLayout:
         size_hint: 1,1.5
         AutoSizedRoundedRectangleButton:
@@ -222,7 +211,7 @@
                     input_property: "trainer/eval_show_ai"
             DescriptionLabel:
                 size_hint: 2,1
-                text: i18n._("lock ai when teaching")
+                text: i18n._("lock ai when playing")
             AnchorLayout:
                 LabelledCheckBox:
                     input_property: "trainer/lock_ai"
@@ -272,7 +261,7 @@
     GridLayout:
         rows: 6
         cols: 3
-        size_hint: 1, 3
+        size_hint: 1, 2.5
         spacing: CP_SPACING
         padding: CP_PADDING
         DescriptionLabel:
@@ -283,6 +272,7 @@
                 id: boardsize
                 input_property: 'game/size'
                 size_hint: 0.5, None
+                hint_text:i18n._("non square board hint")
         AnchorLayout:
             MDBoxLayout:
                 adaptive_size: True
@@ -353,10 +343,6 @@
                 input_property: 'game/clear_cache'
         SmallDescriptionLabel:
             text: i18n._('avoids replaying')
-        SmallDescriptionLabel:
-            text: i18n._("non square board hint")
-        SmallDescriptionLabel:
-            text: i18n._("handicap hint")
     AnchorLayout:
         size_hint: 1,1
         AutoSizedRoundedRectangleButton:

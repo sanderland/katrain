@@ -5,10 +5,10 @@
         "model": "katrain/models/g170e-b15c192-s1672170752-d466197061.bin.gz",
         "config": "katrain/KataGo/analysis_config.cfg",
         "threads": 16,
-        "max_visits": 500,
+        "max_visits": 750,
         "fast_visits": 50,
         "max_time": 3.0,
-        "wide_root_noise": 0.0,
+        "wide_root_noise": 0.01,
         "_hint_wide_root_noise": "A higher value here (typically 0.05-0.1)\nmakes the analysis explore more moves\nat the cost of some strength.",
         "_enable_ownership": true
     },
@@ -52,8 +52,8 @@
             true,
             true,
             true,
-            true,
-            true
+            false,
+            false
         ],
         "show_dots": [
             true,
@@ -65,7 +65,7 @@
         ],
         "eval_off_show_last": 3,
         "eval_show_ai": true,
-        "lock_ai": false
+        "lock_ai": true
     },
     "ai": {
         "ai:default": {

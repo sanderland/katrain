@@ -222,7 +222,7 @@ class BadukPanWidget(Widget):
         outline_color = OUTLINE_COLORS
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
-        lock_ai = self.trainer_config.get("lock_ai", False) and katrain.controls.teaching_mode_enabled()
+        lock_ai = self.trainer_config["lock_ai"] and self.katrain.play_analyze_mode == MODE_PLAY
         show_n_eval = self.trainer_config["eval_off_show_last"]
 
         self.canvas.clear()
@@ -328,7 +328,7 @@ class BadukPanWidget(Widget):
         current_node = katrain.game.current_node
         player, next_player = current_node.player, current_node.next_player
         stone_color = STONE_COLORS
-        lock_ai = self.trainer_config.get("lock_ai", False) and self.katrain.controls.play_analyze_mode == MODE_PLAY
+        lock_ai = self.trainer_config["lock_ai"] and self.katrain.play_analyze_mode == MODE_PLAY
 
         self.canvas.after.clear()
         with self.canvas.after:

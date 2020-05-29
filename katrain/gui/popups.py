@@ -33,8 +33,15 @@ class LabelledTextInput(MDTextField):
 
 
 class LabelledPathInput(LabelledTextInput):
-    def on_text(self, widget, text, **kwargs):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Clock.schedule_once(self.check_error, 0)
+
+    def check_error(self, _dt=None):
         self.error = not os.path.exists(find_package_resource(self.input_value))
+
+    def on_text(self, widget, text, **kwargs):
+        self.check_error()
         return super().on_text(widget, text, **kwargs)
 
     @property
@@ -130,8 +137,9 @@ class QuickConfigGui(MDBoxLayout):
 
         if "::" in keys[-1]:
             arraykey, ix = keys[-1].split("::")
+            ix = int(ix)
             array = config[arraykey]
-            return array[int(ix)], array, ix
+            return array[ix], array, ix
         else:
             if keys[-1] not in config:
                 config[keys[-1]] = ""
@@ -249,7 +257,7 @@ class ConfigPopup(QuickConfigGui):
                 old_proc = old_engine.katago_process
                 if old_proc:
                     old_engine.shutdown(finish=False)
-                new_engine = KataGoEngine(self.katrain, self.config["engine"])
+                new_engine = KataGoEngine(self.katrain, self.katrain.config("engine"))
                 self.katrain.engine = new_engine
                 self.katrain.game.engines = {"B": new_engine, "W": new_engine}
                 self.katrain.game.analyze_all_nodes()  # old engine was possibly broken, so make sure we redo any failures

@@ -602,3 +602,19 @@ msgstr "Leave blank to use included executable"
 #. TODO
 msgid "file not found"
 msgstr "Path does not exist"
+
+#. TODO
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"Use a value of 0.02-0.1 to show more possible moves, at the cost of "
+"weakening analysis."
+
+#. TODO
+msgid "engine:wide_root_noise"
+msgstr "Wide root noise (increases variety of moves considered)"
+
+#. TODO
+msgid "lock ai when playing"
+msgstr ""
+"Disable analysis\n"
+" while in play mode"

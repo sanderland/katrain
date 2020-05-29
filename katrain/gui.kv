@@ -5,7 +5,6 @@
 #:set TOOLTIP_COLOR [0.43, 0.50, 0.65, 1]
 #:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
 #:set ICON_BUTTON_COLOR_DOWN [0.51, 0.58, 0.51, 1]
-#:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 
 #-- NEW
 
@@ -35,6 +34,8 @@
 #:set SCORE_COLOR LIGHTBLUE
 #:set POINTLOSS_COLOR YELLOW
 #:set WINRATE_COLOR GREEN
+#:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
+
 
 #:set BUTTON_INACTIVE_COLOR LIGHTGREY
 
@@ -469,15 +470,15 @@
         Line:
             points: [root.pos[0],root.whalf,root.pos[0]+root.width,root.whalf]
             width: 1
-#            dashes: [2,2]
+            dashes: [2,2]
         Line:
             points: [root.pos[0],root.mid,root.pos[0]+root.width,root.mid]
             width: 1
-#            dashes: [4,4]
+            dashes: [4,4]
         Line:
             points: [root.pos[0],root.bhalf,root.pos[0]+root.width,root.bhalf]
             width: 1
-#            dashes: [2,2]
+            dashes: [2,2]
     canvas.after:
         Color:
             rgba: SCORE_COLOR
@@ -489,13 +490,18 @@
         Line:
             points: root.winrate_points if root.show_winrate else []
             width: 1.1
-
         Color:
             rgba: GRAPH_DOT_COLOR
         Ellipse:
-            id: dot
-            pos: root.dot_pos
-            size: self.highlight_size,self.highlight_size
+            id: score_dot
+            pos: root.score_dot_pos
+            size: (self.highlight_size,self.highlight_size) if root.show_score else (0.0001,0.0001)
+        Color:
+            rgba: GRAPH_DOT_COLOR
+        Ellipse:
+            id: winrate_dot
+            pos: root.winrate_dot_pos
+            size: (self.highlight_size,self.highlight_size) if root.show_winrate else (0.0001,0.0001)
     # score ticks
     GraphMarkerLabel:
         font_size: root.marker_font_size
@@ -1001,9 +1007,11 @@
             text: i18n._('btn:Play')
             id: play
             state: 'down'
+            on_state: app.gui.update_state()
         PlayAnalyzeButton:
             text: i18n._('btn:Analysis')
             id: analyze
+            on_state: app.gui.update_state()
 
 <KaTrainGui>:
     board_gui: board_gui

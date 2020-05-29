@@ -17,17 +17,13 @@ from queue import Queue
 from kivy.app import App
 from kivy.core.clipboard import Clipboard
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty
 from kivy.resources import resource_add_path
-from kivy.storage.jsonstore import JsonStore
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
-from kivymd.app import MDApp
 from katrain.core.ai import ai_move
 from katrain.core.utils import (
     DEFAULT_LANGUAGE,
     find_package_resource,
-    i18n,
 )
 from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, MODE_PLAY
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
@@ -36,10 +32,10 @@ from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
+from katrain.gui.kivyutils import *
+from katrain.gui.widgets.graph import ScoreGraph
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
-from katrain.gui.graph import ScoreGraph
-from katrain.gui.kivyutils import *
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
 
@@ -240,6 +236,13 @@ class KaTrainGui(Screen, KaTrainBase):
             self.config_popup.content.popup = self.config_popup
         self.config_popup.open()
 
+    def _do_ai_popup(self):
+        self.controls.timer.paused = True
+        if not self.ai_settings_popup:
+            self.ai_settings_popup = I18NPopup(title_key="ai settings", size=[800, 800], content=ConfigAIPopupContents(self, self.ai_settings_popup)).__self__
+            self.ai_settings_popup.content.popup = self.ai_settings_popup
+        self.ai_settings_popup.open()
+
     # todo pop
 
     def _do_analyze_sgf_popup(self):
@@ -262,13 +265,6 @@ class KaTrainGui(Screen, KaTrainBase):
 
             popup_contents.filesel.on_submit = readfile
         self.fileselect_popup.open()
-
-    def _do_ai_popup(self):
-        self.controls.timer.paused = True
-        if not self.ai_settings_popup:  # persist state of popup etc
-            self.ai_settings_popup = Popup(title="Edit AI Settings", size_hint=(0.7, 0.8)).__self__
-            self.ai_settings_popup.add_widget(ConfigAIPopupContents(self, self.ai_settings_popup))
-        self.ai_settings_popup.open()
 
     def _do_output_sgf(self):
         for pl in Move.PLAYERS:
@@ -326,8 +322,14 @@ class KaTrainGui(Screen, KaTrainBase):
         }
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
-        if isinstance(App.get_running_app().root_window.children[0], Popup) or self.controls.note.focus:
-            return  # if in new game or load, don't allow keyboard shortcuts
+        if self.controls.note.focus:
+            return  # when making notes, don't allow keyboard shortcuts
+        first_child = App.get_running_app().root_window.children[0]
+        if isinstance(first_child, Popup):
+            if keycode[1] not in ["f5", "f6", "f7", "f8"]:
+                return
+            first_child.dismiss()
+
         shortcuts = self.shortcuts
         if keycode[1] in shortcuts.keys():
             shortcut = shortcuts[keycode[1]]
@@ -337,6 +339,8 @@ class KaTrainGui(Screen, KaTrainBase):
                 self(*shortcut)
         elif keycode[1] == "tab":
             self.play_mode.switch_mode()
+        elif keycode[1] == "shift":
+            self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
             self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in ["`", "~", "m"]:
