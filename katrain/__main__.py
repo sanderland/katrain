@@ -3,7 +3,7 @@ import os  # isort:skip
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")  # isort:skip surpress info output
 from kivy.config import Config  # isort:skip
 
-ICON = "img/icon.png"  # isort:skip  # set icon
+ICON = "img/icon.ico"  # isort:skip  # set icon
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
 Config.set("graphics", "width", 1300)  # isort:skip
@@ -27,7 +27,7 @@ from katrain.core.utils import (
     DEFAULT_LANGUAGE,
     find_package_resource,
 )
-from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, MODE_PLAY, AI_STRATEGIES_RECOMMENDED_ORDER, HOMEPAGE
+from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, MODE_PLAY, HOMEPAGE, VERSION
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
@@ -41,7 +41,6 @@ from katrain.gui.controlspanel import ControlsPanel
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
 
-__version__ = "1.1.0"
 
 
 class KaTrainGui(Screen, KaTrainBase):
@@ -367,7 +366,7 @@ class KaTrainApp(MDApp):
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
         self.gui = KaTrainGui()
-        self.title = f"KaTrain v{__version__}"
+        self.title = f"KaTrain v{VERSION}"
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Blue"
 

@@ -17,7 +17,8 @@
         "sgf_save": "./sgfout",
         "anim_pv_time": 0.5,
         "debug_level": 0,
-        "lang": "en"
+        "lang": "en",
+        "version": "1.1.0"
     },
     "timer": {
         "byo_length": 30,
@@ -64,7 +65,7 @@
             true
         ],
         "eval_off_show_last": 3,
-        "eval_show_ai": false,
+        "eval_show_ai": true,
         "lock_ai": true
     },
     "ai": {

@@ -1,7 +1,7 @@
 from kivy import Config
 from kivy.properties import ObjectProperty
 from kivy.storage.jsonstore import JsonStore
-import os, sys
+import os, sys, shutil
 from katrain.core.constants import *
 
 from katrain.core.utils import find_package_resource
@@ -38,7 +38,8 @@ class Player:
 
 
 class KaTrainBase:
-    CONFIG_FILE = "katrain/config.json"
+    USER_CONFIG_FILE = os.path.expanduser("~/.katrain/config.json")
+    PACKAGE_CONFIG_FILE = "katrain/config.json"
 
     """Settings, logging, and players functionality, so other classes like bots who need a katrain instance can be used without a GUI"""
 
@@ -66,15 +67,38 @@ class KaTrainBase:
             print(message)
 
     def _load_config(self):
-        config_file = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].endswith(".json") else find_package_resource(self.CONFIG_FILE))
+        if len(sys.argv) > 1 and sys.argv[1].endswith(".json"):
+            config_file = os.path.abspath(sys.argv[1])
+            self.log(f"Using command line config file {config_file}", OUTPUT_INFO)
+        else:
+            user_config_file = find_package_resource(self.USER_CONFIG_FILE)
+            package_config_file = find_package_resource(self.PACKAGE_CONFIG_FILE)
+            try:
+                if not os.path.exists(user_config_file):
+                    os.makedirs(os.path.split(user_config_file)[0], exist_ok=True)
+                    shutil.copyfile(package_config_file,user_config_file)
+                    config_file = user_config_file
+                    self.log(f"Copied package config to local file {config_file}", OUTPUT_INFO)
+                else: # user file exists
+                    version = JsonStore(user_config_file, indent=4).get("general")["version"]
+                    if version != VERSION:
+                        backup = user_config_file+f".{version}.backup"
+                        shutil.copyfile(user_config_file,backup)
+                        shutil.copyfile(package_config_file, user_config_file)
+                        self.log(f"Copied package config file to {user_config_file} as user file is outdated (<{VERSION}). Old version stored as {backup}", OUTPUT_INFO)
+                    config_file = user_config_file
+                    self.log(f"Using user config file {config_file}", OUTPUT_INFO)
+            except Exception as e:
+                config_file = package_config_file
+                self.log(f"Using package config file {config_file} (exception {e} occurred when finding or creating user config)", OUTPUT_INFO)
         try:
-            self.log(f"Using config file {config_file}", OUTPUT_INFO)
             self._config_store = JsonStore(config_file, indent=4)
-            self._config = dict(self._config_store)
-            return config_file
         except Exception as e:
             self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
             sys.exit(1)
+        self._config = dict(self._config_store)
+        return config_file
+
 
     def save_config(self):
         for k, v in self._config.items():
