@@ -552,7 +552,7 @@ msgstr ""
 "strategy after the 'endgame' fraction of the board is filled."
 
 msgid "ai:p:territory"
-msgstr "Respond Locally"
+msgstr "Territorial Style"
 
 msgid "aihelp:p:territory"
 msgstr ""

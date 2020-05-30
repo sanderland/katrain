@@ -38,6 +38,7 @@ but has since grown to include a wide range of features, including:
 ### Play
 * Select the players in the main menu, or under 'New Game'.
 * In a teaching game, KaTrain will analyze your moves and automatically undo those that are sufficiently bad.
+* When playing against AI, note that the "Undo" button will undo both the AI's last move as well as yours.
 
 #### Instant feedback while playing.
 

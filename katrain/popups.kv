@@ -390,24 +390,26 @@
     rewind: rewind
     filesel: filesel
     orientation: 'vertical'
-    BoxLayout:
-        orientation: 'horizontal'
+    AnchorLayout:
         size_hint: 1,1
-        DescriptionLabel:
-            text: i18n._("load sgf fast analysis")
-            size_hint: 0.45,1
-            halign: 'right'
-        LabelledCheckBox:
-            id: fast
-            size_hint: 0.05,1
-        DescriptionLabel:
-            text: i18n._("load sgf rewind")
-            halign: 'right'
-            size_hint: 0.45,1
-        LabelledCheckBox:
-            id: rewind
-            active: True
-            size_hint: 0.05,1
+        BoxLayout:
+            size_hint: 0.5,1
+            orientation: 'horizontal'
+            DescriptionLabel:
+                text: i18n._("load sgf fast analysis")
+                size_hint: 0.45,1
+                halign: 'right'
+            LabelledCheckBox:
+                id: fast
+                size_hint: 0.05,1
+            DescriptionLabel:
+                text: i18n._("load sgf rewind")
+                halign: 'right'
+                size_hint: 0.45,1
+            LabelledCheckBox:
+                id: rewind
+                active: True
+                size_hint: 0.05,1
     I18NFileBrowser:
         id: filesel
         multiselect: False
