@@ -793,7 +793,14 @@
 
 <LangButton@TransparentIconButton>
     size_hint: 1,1
-    icon_size: self.height * 0.9, self.height  * 0.9
+    icon_size: self.height * 0.8, self.height  * 0.8
+    canvas.before:
+        Color:
+            rgba: RED
+        Line:
+            rectangle:  (*self.pos,*self.size)
+            width: 1
+
 
 <MenuLabel@Label+BackgroundMixin>:
     background_color: BACKGROUND_COLOR
@@ -933,7 +940,8 @@
             icon: 'img/flaticon/flag-ko.png'
             on_press: app.language = 'ko'
     BoxLayout:
-        size_hint: 1,1
+        size_hint: 1,None
+        height: root.item_height
         item_height: root.item_height
         MenuLabel:
             text: i18n._('menu:manual')
