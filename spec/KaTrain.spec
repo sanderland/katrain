@@ -3,6 +3,7 @@ from kivy_deps import sdl2, glew
 from kivymd import hooks_path as kivymd_hooks_path
 
 block_cipher = None
+console = True
 
 # pyinstaller spec/katrain.spec --noconfirm
 # --upx-dir my
@@ -53,7 +54,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=False,
+    console=console,
     icon="C:\\icon.ico",
 )
 
@@ -80,6 +81,6 @@ exe = EXE(
     strip=False,
     upx=True,
     name="KaTrain",
-    console=False,
+    console=console,
     icon="C:\\icon.ico",
 )
