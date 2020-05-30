@@ -48,6 +48,7 @@ import string
 from os.path import sep, dirname, expanduser, isdir, join, getmtime
 from os import walk
 from functools import partial
+import warnings
 
 from katrain.gui.style import DEFAULT_FONT
 
@@ -112,9 +113,9 @@ class I18NFileChooserListLayout(FileChooserListLayout):
     _ENTRY_TEMPLATE = "I18NFileListEntry"
 
 
-Builder.load_string(
-    """
-#:kivy 1.0
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    Builder.load_string("""
 [I18NFileListEntry@FloatLayout+TreeViewNode]:
     locked: False
     entries: []
@@ -149,13 +150,10 @@ Builder.load_string(
     I18NFileChooserListLayout:
         id: layout
         controller: root            
-    """
-)
-
+    """)
 
 Builder.load_string(
     """
-#:kivy 1.2.0
 #:import metrics kivy.metrics
 #:import abspath os.path.abspath
 #:import i18n katrain.core.utils.i18n
