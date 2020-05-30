@@ -96,7 +96,8 @@ class BadukPanWidget(Widget):
                 near_move = [
                     (pv, node)
                     for move, pv, node in self.active_pv_moves
-                    if abs(rel_pos[0] - self.gridpos_x[move[0]]) < self.grid_size / 2 and abs(rel_pos[1] - self.gridpos_y[move[1]]) < self.grid_size / 2
+                    if abs(rel_pos[0] - self.gridpos_x[move[0]]) < self.grid_size / 2
+                    and abs(rel_pos[1] - self.gridpos_y[move[1]]) < self.grid_size / 2
                 ]
                 if near_move:
                     self.set_animating_pv(near_move[0][0], near_move[0][1])
@@ -120,7 +121,9 @@ class BadukPanWidget(Widget):
             xd, xp = self._find_closest(touch.x, self.gridpos_x)
             yd, yp = self._find_closest(touch.y, self.gridpos_y)
 
-            nodes_here = [node for node in katrain.game.current_node.nodes_from_root if node.move and node.move.coords == (xp, yp)]
+            nodes_here = [
+                node for node in katrain.game.current_node.nodes_from_root if node.move and node.move.coords == (xp, yp)
+            ]
             if nodes_here and max(yd, xd) < self.grid_size / 2:  # load old comment
                 if touch.is_double_tap:  # navigate to move
                     katrain.game.set_current_node(nodes_here[-1])
@@ -181,12 +184,19 @@ class BadukPanWidget(Widget):
             extra_px_margin_y = (self.height - board_height_with_margins) / 2
             self.stone_size = self.grid_size * STONE_SIZE
 
-            self.gridpos_x = [self.pos[0] + extra_px_margin_x + math.floor((grid_spaces_margin_x[0] + i) * self.grid_size + 0.5) for i in range(board_size_x)]
-            self.gridpos_y = [self.pos[1] + extra_px_margin_y + math.floor((grid_spaces_margin_y[0] + i) * self.grid_size + 0.5) for i in range(board_size_y)]
+            self.gridpos_x = [
+                self.pos[0] + extra_px_margin_x + math.floor((grid_spaces_margin_x[0] + i) * self.grid_size + 0.5)
+                for i in range(board_size_x)
+            ]
+            self.gridpos_y = [
+                self.pos[1] + extra_px_margin_y + math.floor((grid_spaces_margin_y[0] + i) * self.grid_size + 0.5)
+                for i in range(board_size_y)
+            ]
 
             Color(*BOARD_COLOR)
             Rectangle(
-                pos=(self.gridpos_x[0] - self.grid_size * 1.5, self.gridpos_y[0] - self.grid_size * 1.5), size=(self.grid_size * x_grid_spaces, self.grid_size * y_grid_spaces)
+                pos=(self.gridpos_x[0] - self.grid_size * 1.5, self.gridpos_y[0] - self.grid_size * 1.5),
+                size=(self.grid_size * x_grid_spaces, self.grid_size * y_grid_spaces),
             )
 
             Color(*LINE_COLOR)
@@ -200,7 +210,9 @@ class BadukPanWidget(Widget):
                 star_point_pos = 3 if size <= 11 else 4
                 if size < 7:
                     return []
-                return [star_point_pos - 1, size - star_point_pos] + ([int(size / 2)] if size % 2 == 1 and size > 7 else [])
+                return [star_point_pos - 1, size - star_point_pos] + (
+                    [int(size / 2)] if size % 2 == 1 and size > 7 else []
+                )
 
             starpt_size = self.grid_size * STARPOINT_SIZE
             for x in star_point_coords(board_size_x):
@@ -211,9 +223,19 @@ class BadukPanWidget(Widget):
             Color(0.25, 0.25, 0.25)
             coord_offset = self.grid_size * 1.5 / 2
             for i in range(board_size_x):
-                draw_text(pos=(self.gridpos_x[i], self.gridpos_y[0] - coord_offset), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5, font_name="Roboto")
+                draw_text(
+                    pos=(self.gridpos_x[i], self.gridpos_y[0] - coord_offset),
+                    text=Move.GTP_COORD[i],
+                    font_size=self.grid_size / 1.5,
+                    font_name="Roboto",
+                )
             for i in range(board_size_y):
-                draw_text(pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]), text=str(i + 1), font_size=self.grid_size / 1.5, font_name="Roboto")
+                draw_text(
+                    pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]),
+                    text=str(i + 1),
+                    font_size=self.grid_size / 1.5,
+                    font_name="Roboto",
+                )
 
     def draw_board_contents(self, *_args):
         if not (self.katrain and self.katrain.game):
@@ -236,7 +258,9 @@ class BadukPanWidget(Widget):
             for m in katrain.game.stones:
                 has_stone[m.coords] = m.player
 
-            show_dots_for = {p: self.trainer_config["eval_show_ai"] or katrain.players_info[p].human for p in Move.PLAYERS}
+            show_dots_for = {
+                p: self.trainer_config["eval_show_ai"] or katrain.players_info[p].human for p in Move.PLAYERS
+            }
             show_dots_for_class = self.trainer_config["show_dots"]
             nodes = katrain.game.current_node.nodes_from_root
             realized_points_lost = None
@@ -259,7 +283,15 @@ class BadukPanWidget(Widget):
                             evalcol = None
                         inner = stone_color[m.opponent] if i == 0 else None
                         drawn_stone[m.coords] = m.player
-                        self.draw_stone(m.coords[0], m.coords[1], stone_color[m.player], outline_color[m.player], inner, evalcol, evalsize)
+                        self.draw_stone(
+                            m.coords[0],
+                            m.coords[1],
+                            stone_color[m.player],
+                            outline_color[m.player],
+                            inner,
+                            evalcol,
+                            evalsize,
+                        )
                 realized_points_lost = node.parent_realized_points_lost
 
             if katrain.game.current_node.is_root and katrain.debug_level >= 3:  # secret ;)
@@ -284,8 +316,16 @@ class BadukPanWidget(Widget):
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
 
             policy = current_node.policy
-            if not policy and current_node.parent and current_node.parent.policy and katrain.last_player_info.ai and katrain.next_player_info.ai:
-                policy = current_node.parent.policy  # in the case of AI self-play we allow the policy to be one step out of date
+            if (
+                not policy
+                and current_node.parent
+                and current_node.parent.policy
+                and katrain.last_player_info.ai
+                and katrain.next_player_info.ai
+            ):
+                policy = (
+                    current_node.parent.policy
+                )  # in the case of AI self-play we allow the policy to be one step out of date
 
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
@@ -303,7 +343,11 @@ class BadukPanWidget(Widget):
                             self.draw_stone(x, y, policy_circle_color, scale=polsize)
                 polsize = math.sqrt(policy[-1])
                 with pass_btn.canvas.after:
-                    draw_circle((pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2), polsize * pass_btn.height / 2, POLICY_COLOR)
+                    draw_circle(
+                        (pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2),
+                        polsize * pass_btn.height / 2,
+                        POLICY_COLOR,
+                    )
 
             # pass circle
             passed = len(nodes) > 1 and current_node.is_pass
@@ -317,7 +361,9 @@ class BadukPanWidget(Widget):
                 size = min(self.width, self.height) * 0.22
                 Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
                 Color(0.85, 0.85, 0.85)
-                draw_text(pos=center, text=text, font_size=size * 0.25, halign="center", outline_color=[0.95, 0.95, 0.95])
+                draw_text(
+                    pos=center, text=text, font_size=size * 0.25, halign="center", outline_color=[0.95, 0.95, 0.95]
+                )
 
         self.draw_hover_contents()
 
@@ -347,9 +393,20 @@ class BadukPanWidget(Widget):
                             evalcol = copy.copy(self.eval_color(points_lost))
                             evalcol[3] = alpha
                         if child_node.analysis_ready:
-                            self.active_pv_moves.append((move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node))
+                            self.active_pv_moves.append(
+                                (move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node)
+                            )
                         scale = CHILD_SCALE
-                        self.draw_stone(move.coords[0], move.coords[1], (*stone_color[move.player][:3], alpha), None, None, evalcol, evalscale=scale, scale=scale)
+                        self.draw_stone(
+                            move.coords[0],
+                            move.coords[1],
+                            (*stone_color[move.player][:3], alpha),
+                            None,
+                            None,
+                            evalcol,
+                            evalscale=scale,
+                            scale=scale,
+                        )
 
             # hints or PV
             if katrain.analysis_controls.hints.active and not game_ended and not lock_ai:
@@ -366,7 +423,12 @@ class BadukPanWidget(Widget):
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:
                             katrain.log(f"PV missing for move_dict {move_dict}", OUTPUT_DEBUG)
-                        self.draw_stone(move.coords[0], move.coords[1], [*self.eval_color(move_dict["pointsLost"])[:3], alpha], scale=scale)
+                        self.draw_stone(
+                            move.coords[0],
+                            move.coords[1],
+                            [*self.eval_color(move_dict["pointsLost"])[:3], alpha],
+                            scale=scale,
+                        )
 
             # hover next move ghost stone
             if self.ghost_stone:
@@ -403,7 +465,9 @@ class BadukPanWidget(Widget):
             if coords is None:  # tee-hee
                 sizefac = katrain.board_controls.pass_btn.size[1] / 2 / self.stone_size
                 board_coords = [
-                    katrain.board_controls.pass_btn.pos[0] + katrain.board_controls.pass_btn.size[0] + self.stone_size * sizefac,
+                    katrain.board_controls.pass_btn.pos[0]
+                    + katrain.board_controls.pass_btn.size[0]
+                    + self.stone_size * sizefac,
                     katrain.board_controls.pass_btn.pos[1] + katrain.board_controls.pass_btn.size[1] / 2,
                 ]
             else:
@@ -414,7 +478,9 @@ class BadukPanWidget(Widget):
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):
-        if node is not None and (not self.animating_pv or not (self.animating_pv[0] == pv and self.animating_pv[1] == node)):
+        if node is not None and (
+            not self.animating_pv or not (self.animating_pv[0] == pv and self.animating_pv[1] == node)
+        ):
             self.animating_pv = (pv, node, time.time(), self.last_mouse_pos)
 
     def show_pv_from_comments(self, pv_str):
@@ -441,10 +507,14 @@ class AnalysisControls(MDFloatLayout):
 
     def build_menu(self, _dt):
         menu_items = [
-            {"text": i18n._(text) + f"  ({shortcut})"}  # , "right_content_cls": AnalysisDropdownMenuRightContent(text=shortcut)}
+            {
+                "text": i18n._(text) + f"  ({shortcut})"
+            }  # , "right_content_cls": AnalysisDropdownMenuRightContent(text=shortcut)}
             for text, shortcut in zip(self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS)
         ]
-        self.analysis_menu = AnalysisDropdownMenu(caller=self.analysis_button, items=menu_items, width_mult=5, use_icon_item=False, callback=self.action)
+        self.analysis_menu = AnalysisDropdownMenu(
+            caller=self.analysis_button, items=menu_items, width_mult=5, use_icon_item=False, callback=self.action
+        )
 
     def action(self, item):
         katrain = MDApp.get_running_app().gui

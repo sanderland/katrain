@@ -27,7 +27,16 @@ from katrain.core.utils import (
     DEFAULT_LANGUAGE,
     find_package_resource,
 )
-from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, MODE_PLAY, HOMEPAGE, VERSION
+from katrain.core.constants import (
+    OUTPUT_ERROR,
+    OUTPUT_KATAGO_STDERR,
+    OUTPUT_INFO,
+    OUTPUT_DEBUG,
+    OUTPUT_EXTRA_DEBUG,
+    MODE_PLAY,
+    HOMEPAGE,
+    VERSION,
+)
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
@@ -40,7 +49,6 @@ from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWid
 from katrain.gui.controlspanel import ControlsPanel
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
-
 
 
 class KaTrainGui(Screen, KaTrainBase):
@@ -75,7 +83,9 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
             if "ready" in message.lower():
                 self.controls.set_status(f"KataGo engine ready.")
-        if (level == OUTPUT_ERROR or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower())) and getattr(self, "controls", None):
+        if (level == OUTPUT_ERROR or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower())) and getattr(
+            self, "controls", None
+        ):
             self.controls.set_status(f"ERROR: {message}")
 
     @property
@@ -90,16 +100,33 @@ class KaTrainGui(Screen, KaTrainBase):
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
         self._do_new_game()
 
-    def update_state(self, redraw_board=False):  # is called after every message and on receiving analyses and config changes
+    def update_state(
+        self, redraw_board=False
+    ):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
         cn = self.game.current_node
         last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
         if self.play_analyze_mode == MODE_PLAY:
             teaching_undo = cn.player and last_player.being_taught
-            if teaching_undo and cn.analysis_ready and cn.parent and cn.parent.analysis_ready and not cn.children and not self.game.ended:
+            if (
+                teaching_undo
+                and cn.analysis_ready
+                and cn.parent
+                and cn.parent.analysis_ready
+                and not cn.children
+                and not self.game.ended
+            ):
                 self.game.analyze_undo(cn)  # not via message loop
-            if cn.analysis_ready and next_player.ai and not cn.children and not self.game.ended and not (teaching_undo and cn.auto_undo is None):
-                self._do_ai_move(cn)  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
+            if (
+                cn.analysis_ready
+                and next_player.ai
+                and not cn.children
+                and not self.game.ended
+                and not (teaching_undo and cn.auto_undo is None)
+            ):
+                self._do_ai_move(
+                    cn
+                )  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
 
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
@@ -149,7 +176,9 @@ class KaTrainGui(Screen, KaTrainBase):
             try:
                 self.log(f"Message Loop Received {msg}: {args} for Game {game}", OUTPUT_EXTRA_DEBUG)
                 if game != self.game.game_id:
-                    self.log(f"Message skipped as it is outdated (current game is {self.game.game_id}", OUTPUT_EXTRA_DEBUG)
+                    self.log(
+                        f"Message skipped as it is outdated (current game is {self.game.game_id}", OUTPUT_EXTRA_DEBUG
+                    )
                     continue
                 fn = getattr(self, f"_do_{msg.replace('-','_')}")
                 fn(*args)
@@ -211,28 +240,36 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_new_game_popup(self):
         self.controls.timer.paused = True
         if not self.new_game_popup:
-            self.new_game_popup = I18NPopup(title_key="New Game title", size=[800, 800], content=NewGamePopup(self)).__self__
+            self.new_game_popup = I18NPopup(
+                title_key="New Game title", size=[800, 800], content=NewGamePopup(self)
+            ).__self__
             self.new_game_popup.content.popup = self.new_game_popup
         self.new_game_popup.open()
 
     def _do_timer_popup(self):
         self.controls.timer.paused = True
         if not self.timer_settings_popup:
-            self.timer_settings_popup = I18NPopup(title_key="timer settings", size=[350, 350], content=ConfigTimerPopup(self)).__self__
+            self.timer_settings_popup = I18NPopup(
+                title_key="timer settings", size=[350, 350], content=ConfigTimerPopup(self)
+            ).__self__
             self.timer_settings_popup.content.popup = self.timer_settings_popup
         self.timer_settings_popup.open()
 
     def _do_teacher_popup(self):
         self.controls.timer.paused = True
         if not self.teacher_settings_popup:
-            self.teacher_settings_popup = I18NPopup(title_key="teacher settings", size=[800, 800], content=ConfigTeacherPopup(self)).__self__
+            self.teacher_settings_popup = I18NPopup(
+                title_key="teacher settings", size=[800, 800], content=ConfigTeacherPopup(self)
+            ).__self__
             self.teacher_settings_popup.content.popup = self.teacher_settings_popup
         self.teacher_settings_popup.open()
 
     def _do_config_popup(self):
         self.controls.timer.paused = True
         if not self.config_popup:
-            self.config_popup = I18NPopup(title_key="general settings title", size=[1200, 800], content=ConfigPopup(self)).__self__
+            self.config_popup = I18NPopup(
+                title_key="general settings title", size=[1200, 800], content=ConfigPopup(self)
+            ).__self__
             self.config_popup.content.popup = self.config_popup
         self.config_popup.open()
 
@@ -247,7 +284,9 @@ class KaTrainGui(Screen, KaTrainBase):
         if not self.fileselect_popup:
             popup_contents = LoadSGFPopup()
             popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
-            self.fileselect_popup = I18NPopup(title_key="load sgf title", size=[1200, 800], content=popup_contents).__self__
+            self.fileselect_popup = I18NPopup(
+                title_key="load sgf title", size=[1200, 800], content=popup_contents
+            ).__self__
 
             def readfile(*args):
                 files = popup_contents.filesel.selection
@@ -280,7 +319,9 @@ class KaTrainGui(Screen, KaTrainBase):
         except Exception as e:
             self.controls.set_status(i18n._("Failed to import from clipboard").format(error=e, contents=clipboard[:50]))
             return
-        move_tree.nodes_in_tree[-1].analyze(self.engine, analyze_fast=False)  # speed up result for looking at end of game
+        move_tree.nodes_in_tree[-1].analyze(
+            self.engine, analyze_fast=False
+        )  # speed up result for looking at end of game
         self._do_new_game(move_tree=move_tree, analyze_fast=True)
         self("redo", 999)
         self.log("Imported game from clipboard.", OUTPUT_INFO)

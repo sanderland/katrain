@@ -77,7 +77,9 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
 
 
 # -- resizeable buttons
-class SizedButton(LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin):  # avoid baserectangular for sizing
+class SizedButton(
+    LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin
+):  # avoid baserectangular for sizing
     text = StringProperty("")
     text_color = ListProperty(WHITE)
     text_size = ListProperty([100, 100])
@@ -263,7 +265,10 @@ class PlayerSetup(MDBoxLayout):
         if self.mode == PLAYER_AI:
             return {"player_type": self.player_type.selected[1], "player_subtype": self.player_subtype_ai.selected[1]}
         else:
-            return {"player_type": self.player_type.selected[1], "player_subtype": self.player_subtype_human.selected[1]}
+            return {
+                "player_type": self.player_type.selected[1],
+                "player_subtype": self.player_subtype_human.selected[1],
+            }
 
     def update_widget(self, player_type, player_subtype):
         self.player_type.select_key(player_type)  # should trigger setup options
@@ -373,18 +378,30 @@ class CollapsablePanel(MDBoxLayout):
         super().__init__(**kwargs)
         self.orientation = "vertical"
         self.bind(
-            options=self.build_options, option_colors=self.build_options, options_height=self.build_options, option_active=self.build_options, options_spacing=self.build_options,
+            options=self.build_options,
+            option_colors=self.build_options,
+            options_height=self.build_options,
+            option_active=self.build_options,
+            options_spacing=self.build_options,
         )
         self.bind(state=self.build, size_hint_y_open=self.build, height_open=self.build)
         MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
         self.build_options()
 
     def build_options(self, *args, **kwargs):
-        self.header = CollapsablePanelHeader(height=self.options_height, size_hint_y=None, spacing=self.options_spacing, padding=[1, 0, 0, 0])
+        self.header = CollapsablePanelHeader(
+            height=self.options_height, size_hint_y=None, spacing=self.options_spacing, padding=[1, 0, 0, 0]
+        )
         self.option_buttons = []
         option_labels = self.option_labels or [i18n._(f"tab:{opt}") for opt in self.options]
         for ix, (lbl, opt_col, active) in enumerate(zip(option_labels, self.option_colors, self.option_active)):
-            button = CollapsablePanelTab(text=lbl, font_name=i18n.font_name, active_outline_color=opt_col, height=self.options_height, state="down" if active else "normal")
+            button = CollapsablePanelTab(
+                text=lbl,
+                font_name=i18n.font_name,
+                active_outline_color=opt_col,
+                height=self.options_height,
+                state="down" if active else "normal",
+            )
             self.option_buttons.append(button)
             button.bind(state=lambda *_args, _ix=ix: self.trigger_select(_ix))
         self.open_close_button = TransparentIconButton(  # <<  / >> collapse button
@@ -405,7 +422,11 @@ class CollapsablePanel(MDBoxLayout):
             self.header.add_widget(Label())  # spacer
             self.trigger_select(ix=None)
         else:
-            self.header.add_widget(Label(text=i18n._(self.closed_label), font_name=i18n.font_name, halign="right", height=self.options_height))
+            self.header.add_widget(
+                Label(
+                    text=i18n._(self.closed_label), font_name=i18n.font_name, halign="right", height=self.options_height
+                )
+            )
         self.header.add_widget(self.open_close_button)
 
         super().clear_widgets()
@@ -474,7 +495,9 @@ def draw_text(pos, text, font_name=None, **kw):
     label = CoreLabel(text=text, bold=True, font_name=font_name or i18n.font_name, **kw)  #
     label.refresh()
     Rectangle(
-        texture=label.texture, pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2), size=label.texture.size,
+        texture=label.texture,
+        pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2),
+        size=label.texture.size,
     )
 
 

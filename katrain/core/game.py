@@ -41,7 +41,9 @@ class Game:
         else:
             board_size = katrain.config("game/size")
             self.komi = katrain.config("game/komi")
-            self.root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}})
+            self.root = GameNode(
+                properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}}
+            )
             handicap = katrain.config("game/handicap")
             if handicap:
                 self.place_handicap_stones(handicap)
@@ -50,7 +52,9 @@ class Game:
             self.root.set_property("RU", katrain.config("game/rules"))
 
         self.set_current_node(self.root)
-        threading.Thread(target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast), daemon=True).start()  # return faster, but bypass Kivy Clock
+        threading.Thread(
+            target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast), daemon=True
+        ).start()  # return faster, but bypass Kivy Clock
 
     def analyze_all_nodes(self, priority=0, analyze_fast=False):
         for node in self.root.nodes_in_tree:
@@ -59,7 +63,9 @@ class Game:
     # -- move tree functions --
     def _calculate_groups(self):
         board_size_x, board_size_y = self.board_size
-        self.board = [[-1 for _x in range(board_size_x)] for _y in range(board_size_y)]  # type: List[List[int]]  #  board pos -> chain id
+        self.board = [
+            [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
+        ]  # type: List[List[int]]  #  board pos -> chain id
         self.chains = []  # type: List[List[Move]]  #   chain id -> chain
         self.prisoners = []  # type: List[Move]
         self.last_capture = []  # type: List[Move]
@@ -94,7 +100,9 @@ class Game:
         nb_chains = list({c for c in neighbours([move]) if c >= 0 and self.chains[c][0].player == move.player})
         if nb_chains:
             this_chain = nb_chains[0]
-            self.board = [[nb_chains[0] if sq in nb_chains else sq for sq in line] for line in self.board]  # merge chains connected by this move
+            self.board = [
+                [nb_chains[0] if sq in nb_chains else sq for sq in line] for line in self.board
+            ]  # merge chains connected by this move
             for oc in nb_chains[1:]:
                 self.chains[nb_chains[0]] += self.chains[oc]
                 self.chains[oc] = []
@@ -175,13 +183,18 @@ class Game:
                 near_x -= 1
                 spacing = (far_x - near_x) / (stones_per_row - 1)
             coords = list({math.floor(0.5 + near_x + i * spacing) for i in range(stones_per_row)})
-            stones = sorted([(x, y) for x in coords for y in coords], key=lambda xy: -((xy[0] - (board_size_x - 1) / 2) ** 2 + (xy[1] - (board_size_y - 1) / 2) ** 2))
+            stones = sorted(
+                [(x, y) for x in coords for y in coords],
+                key=lambda xy: -((xy[0] - (board_size_x - 1) / 2) ** 2 + (xy[1] - (board_size_y - 1) / 2) ** 2),
+            )
         else:  # max 9
             stones = [(far_x, far_y), (near_x, near_y), (far_x, near_y), (near_x, far_y)]
             if n_handicaps % 2 == 1:
                 stones.append((middle_x, middle_y))
             stones += [(near_x, middle_y), (far_x, middle_y), (middle_x, near_y), (middle_x, far_y)]
-        self.root.set_property("AB", list({Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]}))
+        self.root.set_property(
+            "AB", list({Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]})
+        )
 
     @property
     def board_size(self):
@@ -196,7 +209,9 @@ class Game:
         return self.current_node.parent and self.current_node.is_pass and self.current_node.parent.is_pass
 
     @property
-    def prisoner_count(self) -> Dict:  # returns prisoners that are of a certain colour as {B: black stones captures, W: white stones captures}
+    def prisoner_count(
+        self,
+    ) -> Dict:  # returns prisoners that are of a certain colour as {B: black stones captures, W: white stones captures}
         return {player: sum([m.player == player for m in self.prisoners]) for player in Move.PLAYERS}
 
     @property
@@ -205,7 +220,10 @@ class Game:
         if not self.current_node.ownership or rules != "japanese":
             if not self.current_node.score:
                 return None
-            self.katrain.log(f"rules '{rules}' are not japanese, or no ownership available ({not self.current_node.ownership}) -> no manual score available", OUTPUT_DEBUG)
+            self.katrain.log(
+                f"rules '{rules}' are not japanese, or no ownership available ({not self.current_node.ownership}) -> no manual score available",
+                OUTPUT_DEBUG,
+            )
             return self.current_node.format_score(round(2 * self.current_node.score) / 2) + "?"
         board_size_x, board_size_y = self.board_size
         ownership_grid = var_to_grid(self.current_node.ownership, (board_size_x, board_size_y))
@@ -217,7 +235,11 @@ class Game:
 
         def japanese_score_square(square, owner):
             player = stones.get(square, None)
-            if (player == "B" and owner > hi_threshold) or (player == "W" and owner < -hi_threshold) or abs(owner) < lo_threshold:
+            if (
+                (player == "B" and owner > hi_threshold)
+                or (player == "W" and owner < -hi_threshold)
+                or abs(owner) < lo_threshold
+            ):
                 return 0  # dame or own stones
             if player is None and abs(owner) >= hi_threshold:
                 return round(owner)  # surrounded empty intersection
@@ -225,20 +247,36 @@ class Game:
                 return 2 * round(owner)  # captured stone
             return math.nan  # unknown!
 
-        scored_squares = [japanese_score_square((x, y), ownership_grid[y][x]) for y in range(board_size_y) for x in range(board_size_x)]
+        scored_squares = [
+            japanese_score_square((x, y), ownership_grid[y][x])
+            for y in range(board_size_y)
+            for x in range(board_size_x)
+        ]
         num_sq = {t: sum([s == t for s in scored_squares]) for t in [-2, -1, 0, 1, 2]}
         num_unkn = sum(math.isnan(s) for s in scored_squares)
         prisoners = self.prisoner_count
         score = sum([t * n for t, n in num_sq.items()]) + prisoners["W"] - prisoners["B"] - self.komi
-        self.katrain.log(f"Manual Scoring: {num_sq} score by square with {num_unkn} unknown, {prisoners} captures, and {self.komi} komi -> score = {score}", OUTPUT_INFO)
+        self.katrain.log(
+            f"Manual Scoring: {num_sq} score by square with {num_unkn} unknown, {prisoners} captures, and {self.komi} komi -> score = {score}",
+            OUTPUT_DEBUG,
+        )
         if num_unkn > max_unknown or (num_sq[0] - len(stones)) > max_dame:
             return None
         return self.current_node.format_score(score)
 
     def __repr__(self):
-        return "\n".join("".join(self.chains[c][0].player if c >= 0 else "-" for c in line) for line in self.board) + f"\ncaptures: {self.prisoner_count}"
+        return (
+            "\n".join("".join(self.chains[c][0].player if c >= 0 else "-" for c in line) for line in self.board)
+            + f"\ncaptures: {self.prisoner_count}"
+        )
 
-    def write_sgf(self, path: str, trainer_config: Optional[Dict] = None, save_feedback: Optional[List] = None, eval_thresholds: Optional[List] = None):
+    def write_sgf(
+        self,
+        path: str,
+        trainer_config: Optional[Dict] = None,
+        save_feedback: Optional[List] = None,
+        eval_thresholds: Optional[List] = None,
+    ):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer")
         if save_feedback is None:
@@ -249,13 +287,22 @@ class Game:
         def player_name(player_info):
             return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
 
-        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw) or player_name(self.katrain.players_info[bw])) for bw in "BW"}
+        player_names = {
+            bw: re.sub(
+                r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw) or player_name(self.katrain.players_info[bw])
+            )
+            for bw in "BW"
+        }
         game_name = f"katrain_{player_names['B']} vs {player_names['W']} {self.game_id}"
         file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
-        show_dots_for = {bw: trainer_config.get("eval_show_ai", True) or pl.human for bw, pl in self.katrain.players_info.items()}
-        sgf = self.root.sgf(save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=eval_thresholds)
+        show_dots_for = {
+            bw: trainer_config.get("eval_show_ai", True) or pl.human for bw, pl in self.katrain.players_info.items()
+        }
+        sgf = self.root.sgf(
+            save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=eval_thresholds
+        )
         with open(file_name, "w") as f:
             f.write(sgf)
         return i18n._("sgf written").format(file_name=file_name)
@@ -273,7 +320,11 @@ class Game:
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
             if cn.analysis_ready:
-                policy_grid = var_to_grid(self.current_node.policy, size=(board_size_x, board_size_y)) if self.current_node.policy else None
+                policy_grid = (
+                    var_to_grid(self.current_node.policy, size=(board_size_x, board_size_y))
+                    if self.current_node.policy
+                    else None
+                )
                 analyze_moves = sorted(
                     [
                         Move(coords=(x, y), player=cn.next_player)
@@ -284,7 +335,12 @@ class Game:
                     key=lambda mv: -policy_grid[mv.coords[1]][mv.coords[0]],
                 )
             else:
-                analyze_moves = [Move(coords=(x, y), player=cn.next_player) for x in range(board_size_x) for y in range(board_size_y) if (x, y) not in stones]
+                analyze_moves = [
+                    Move(coords=(x, y), player=cn.next_player)
+                    for x in range(board_size_x)
+                    for y in range(board_size_y)
+                    if (x, y) not in stones
+                ]
             visits = engine.config["fast_visits"]
             self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
             priority = -1_000_000_000
@@ -298,7 +354,9 @@ class Game:
             self.katrain.controls.set_status(f"Equalizing analysis of candidate moves to {visits} visits")
             priority = -1_000
         for move in analyze_moves:
-            cn.analyze(engine, priority, visits=visits, refine_move=move, time_limit=False)  # explicitly requested so take as long as you need
+            cn.analyze(
+                engine, priority, visits=visits, refine_move=move, time_limit=False
+            )  # explicitly requested so take as long as you need
 
     def analyze_undo(self, node):
         train_config = self.katrain.config("trainer")
@@ -325,5 +383,7 @@ class Game:
         node.auto_undo = undo
         if undo:
             self.undo(1)
-            self.katrain.controls.set_status(f"Undid move {move.gtp()} as it lost {points_lost:.1f} points{xmsg}. Hover over the move to see expected refutation.")
+            self.katrain.controls.set_status(
+                f"Undid move {move.gtp()} as it lost {points_lost:.1f} points{xmsg}. Hover over the move to see expected refutation."
+            )
             self.katrain.update_state()

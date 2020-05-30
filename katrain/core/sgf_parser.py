@@ -11,7 +11,9 @@ class ParseError(Exception):
 
 
 class Move:
-    GTP_COORD = list("ABCDEFGHJKLMNOPQRSTUVWXYZ") + [xa + c for xa in "AB" for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"]  # board size 52+ support
+    GTP_COORD = list("ABCDEFGHJKLMNOPQRSTUVWXYZ") + [
+        xa + c for xa in "AB" for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"
+    ]  # board size 52+ support
     PLAYERS = "BW"
     SGF_COORD = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ".lower()) + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")  # sgf goes to 52
 
@@ -28,7 +30,10 @@ class Move:
         """Initialize a move from SGF coordinates and player"""
         if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size[0]:  # some servers use [tt] for pass
             return cls(coords=None, player=player)
-        return cls(coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[1] - Move.SGF_COORD.index(sgf_coords[1]) - 1), player=player)
+        return cls(
+            coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[1] - Move.SGF_COORD.index(sgf_coords[1]) - 1),
+            player=player,
+        )
 
     def __init__(self, coords: Optional[Tuple[int, int]] = None, player: str = "B"):
         """Initialize a move from zero-based coordinates and player"""
@@ -90,7 +95,13 @@ class SGFNode:
         """Generates an SGF, calling sgf_properties on each node with the given xargs, so it can filter relevant properties if needed."""
 
         def node_sgf_str(node):
-            return ";" + "".join([prop + "".join(f"[{v}]" for v in values) for prop, values in node.sgf_properties(**xargs).items() if values])
+            return ";" + "".join(
+                [
+                    prop + "".join(f"[{v}]" for v in values)
+                    for prop, values in node.sgf_properties(**xargs).items()
+                    if values
+                ]
+            )
 
         stack = [")", self, "("]
         sgf_str = ""
@@ -177,12 +188,20 @@ class SGFNode:
     @property
     def moves(self) -> List[Move]:
         """Returns all moves in the node - typically 'move' will be better."""
-        return [Move.from_sgf(move, player=pl, board_size=self.board_size) for pl in Move.PLAYERS for move in self.get_list_property(pl, [])]
+        return [
+            Move.from_sgf(move, player=pl, board_size=self.board_size)
+            for pl in Move.PLAYERS
+            for move in self.get_list_property(pl, [])
+        ]
 
     @property
     def placements(self) -> List[Move]:
         """Returns all placements (AB/AW) in the node."""
-        return [Move.from_sgf(sgf_coords, player=pl, board_size=self.board_size) for pl in Move.PLAYERS for sgf_coords in self.get_list_property("A" + pl, [])]
+        return [
+            Move.from_sgf(sgf_coords, player=pl, board_size=self.board_size)
+            for pl in Move.PLAYERS
+            for sgf_coords in self.get_list_property("A" + pl, [])
+        ]
 
     @property
     def move_with_placements(self) -> List[Move]:

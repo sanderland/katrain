@@ -37,8 +37,14 @@ class KataGoEngine:
             else:  # e.g. MacOS after brewing
                 executable = "katago"
 
-        modelfile, configfile, exefile = find_package_resource(config["model"]), find_package_resource(config["config"]), find_package_resource(executable)
-        self.command = f'{exefile} analysis -model "{modelfile}" -config "{configfile}" -analysis-threads {config["threads"]}'
+        modelfile, configfile, exefile = (
+            find_package_resource(config["model"]),
+            find_package_resource(config["config"]),
+            find_package_resource(executable),
+        )
+        self.command = (
+            f'{exefile} analysis -model "{modelfile}" -config "{configfile}" -analysis-threads {config["threads"]}'
+        )
         if not sys.platform.startswith("win"):
             self.command = shlex.split(self.command)
         self.queries = {}  # outstanding query id -> start time and callback
@@ -56,9 +62,9 @@ class KataGoEngine:
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
 
-            self.katago_process = subprocess.Popen(self.command, stdin=subprocess.PIPE,
-                                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                                   shell=True)
+            self.katago_process = subprocess.Popen(
+                self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+            )
         except (FileNotFoundError, PermissionError, OSError) as e:
             if not self.config["katago"].strip():
                 self.katrain.log(
@@ -133,7 +139,9 @@ class KataGoEngine:
             else:
                 del self.queries[query_id]
                 time_taken = time.time() - start_time
-                self.katrain.log(f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG)
+                self.katrain.log(
+                    f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG
+                )
                 self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                 try:
                     callback(analysis)

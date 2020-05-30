@@ -12,7 +12,14 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
-from katrain.core.constants import OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_INFO, AI_DEFAULT, AI_CONFIG_DEFAULT, AI_STRATEGIES_RECOMMENDED_ORDER
+from katrain.core.constants import (
+    OUTPUT_ERROR,
+    OUTPUT_DEBUG,
+    OUTPUT_INFO,
+    AI_DEFAULT,
+    AI_CONFIG_DEFAULT,
+    AI_STRATEGIES_RECOMMENDED_ORDER,
+)
 from katrain.core.engine import KataGoEngine
 from katrain.core.utils import i18n, find_package_resource
 from katrain.gui.kivyutils import I18NSpinner, BackgroundMixin
@@ -116,11 +123,15 @@ class QuickConfigGui(MDBoxLayout):
         Clock.schedule_once(lambda _dt: self.set_properties(self))
 
     def collect_properties(self, widget) -> Dict:
-        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(widget, "input_property", None):
+        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
+            widget, "input_property", None
+        ):
             try:
                 ret = {widget.input_property: widget.input_value}
             except Exception as e:
-                raise InputParseError(f"Could not parse value for {widget.input_property} ({widget.__class__}): {e}")  # TODO : on widget!
+                raise InputParseError(
+                    f"Could not parse value for {widget.input_property} ({widget.__class__}): {e}"
+                )  # TODO : on widget!
         else:
             ret = {}
         for c in widget.children:
@@ -144,11 +155,16 @@ class QuickConfigGui(MDBoxLayout):
         else:
             if keys[-1] not in config:
                 config[keys[-1]] = ""
-                self.katrain.log(f"Configuration setting {repr(key)} was missing, created it, but this likely indicates a broken config file.", OUTPUT_ERROR)
+                self.katrain.log(
+                    f"Configuration setting {repr(key)} was missing, created it, but this likely indicates a broken config file.",
+                    OUTPUT_ERROR,
+                )
             return config[keys[-1]], config, keys[-1]
 
     def set_properties(self, widget):
-        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(widget, "input_property", None):
+        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
+            widget, "input_property", None
+        ):
             value = self.get_setting(widget.input_property)[0]
             if isinstance(widget, LabelledCheckBox):
                 widget.active = value is True
@@ -228,7 +244,9 @@ class ConfigTeacherPopup(QuickConfigGui):
         savesgfs = self.katrain.config("trainer/save_feedback")
         show_dots = self.katrain.config("trainer/show_dots")
 
-        for i, (color, threshold, undo, show_dot, savesgf) in enumerate(zip(EVAL_COLORS, thresholds, undos, show_dots, savesgfs)):
+        for i, (color, threshold, undo, show_dot, savesgf) in enumerate(
+            zip(EVAL_COLORS, thresholds, undos, show_dots, savesgfs)
+        ):
             self.add_option_widgets(
                 [
                     BackgroundMixin(background_color=color, size_hint=[0.9, 0.9]),
@@ -264,7 +282,9 @@ class AIPopup(QuickConfigGui):
         self.help_label.text = i18n._(strategy.replace("ai:", "aihelp:"))
         for k, v in sorted(mode_settings.items(), key=lambda kv: kv[0]):
             self.options_grid.add_widget(DescriptionLabel(text=k))
-            self.options_grid.add_widget(wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"ai/{strategy}/{k}")))
+            self.options_grid.add_widget(
+                wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"ai/{strategy}/{k}"))
+            )
         for _ in range((self.max_options - len(mode_settings)) * 2):
             self.options_grid.add_widget(Label())
 
@@ -299,7 +319,10 @@ class LoadSGFPopup(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         app = MDApp.get_running_app()
-        self.filesel.favorites = [(os.path.abspath(app.gui.config("general/sgf_load")), "SGF Load Dir"), (os.path.abspath(app.gui.config("general/sgf_save")), "SGF Save Dir")]
+        self.filesel.favorites = [
+            (os.path.abspath(app.gui.config("general/sgf_load")), "SGF Load Dir"),
+            (os.path.abspath(app.gui.config("general/sgf_save")), "SGF Save Dir"),
+        ]
         self.filesel.path = os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load")))
         print(os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load"))))
         self.filesel.select_string = i18n._("Load File")

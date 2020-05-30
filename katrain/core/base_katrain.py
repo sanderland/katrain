@@ -76,21 +76,27 @@ class KaTrainBase:
             try:
                 if not os.path.exists(user_config_file):
                     os.makedirs(os.path.split(user_config_file)[0], exist_ok=True)
-                    shutil.copyfile(package_config_file,user_config_file)
+                    shutil.copyfile(package_config_file, user_config_file)
                     config_file = user_config_file
                     self.log(f"Copied package config to local file {config_file}", OUTPUT_INFO)
-                else: # user file exists
+                else:  # user file exists
                     version = JsonStore(user_config_file, indent=4).get("general")["version"]
                     if version != VERSION:
-                        backup = user_config_file+f".{version}.backup"
-                        shutil.copyfile(user_config_file,backup)
+                        backup = user_config_file + f".{version}.backup"
+                        shutil.copyfile(user_config_file, backup)
                         shutil.copyfile(package_config_file, user_config_file)
-                        self.log(f"Copied package config file to {user_config_file} as user file is outdated (<{VERSION}). Old version stored as {backup}", OUTPUT_INFO)
+                        self.log(
+                            f"Copied package config file to {user_config_file} as user file is outdated (<{VERSION}). Old version stored as {backup}",
+                            OUTPUT_INFO,
+                        )
                     config_file = user_config_file
                     self.log(f"Using user config file {config_file}", OUTPUT_INFO)
             except Exception as e:
                 config_file = package_config_file
-                self.log(f"Using package config file {config_file} (exception {e} occurred when finding or creating user config)", OUTPUT_INFO)
+                self.log(
+                    f"Using package config file {config_file} (exception {e} occurred when finding or creating user config)",
+                    OUTPUT_INFO,
+                )
         try:
             self._config_store = JsonStore(config_file, indent=4)
         except Exception as e:
@@ -98,7 +104,6 @@ class KaTrainBase:
             sys.exit(1)
         self._config = dict(self._config_store)
         return config_file
-
 
     def save_config(self):
         for k, v in self._config.items():

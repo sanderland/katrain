@@ -37,8 +37,16 @@ for lang in locales:
 for lang in locales:
     if lang != DEFAULT_LANG:
         for msgid in lang_to_strings[lang]:
-            if DEFAULT_LANG in strings_to_keys[msgid] and strings_to_keys[msgid][lang] != strings_to_keys[msgid][DEFAULT_LANG]:
-                print(f"{msgid} has inconstent formatting keys for {lang}: ", strings_to_keys[msgid][lang], "is different from default", strings_to_keys[msgid][DEFAULT_LANG])
+            if (
+                DEFAULT_LANG in strings_to_keys[msgid]
+                and strings_to_keys[msgid][lang] != strings_to_keys[msgid][DEFAULT_LANG]
+            ):
+                print(
+                    f"{msgid} has inconstent formatting keys for {lang}: ",
+                    strings_to_keys[msgid][lang],
+                    "is different from default",
+                    strings_to_keys[msgid][DEFAULT_LANG],
+                )
                 errors = True
 
     for msgid in strings_to_langs.keys() - lang_to_strings[lang]:

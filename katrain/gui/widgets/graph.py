@@ -50,14 +50,30 @@ class ScoreGraph(BackgroundMixin):
 
             score_granularity = 5
             winrate_granularity = 10
-            self.score_scale = max(math.ceil(max(-score_values_range[0], score_values_range[1]) / score_granularity), 1) * score_granularity
-            self.winrate_scale = max(math.ceil(max(-winrate_values_range[0], winrate_values_range[1]) / winrate_granularity), 1) * winrate_granularity
+            self.score_scale = (
+                max(math.ceil(max(-score_values_range[0], score_values_range[1]) / score_granularity), 1)
+                * score_granularity
+            )
+            self.winrate_scale = (
+                max(math.ceil(max(-winrate_values_range[0], winrate_values_range[1]) / winrate_granularity), 1)
+                * winrate_granularity
+            )
 
             xscale = self.width / max(len(score_values) - 1, 15)
             available_height = self.height
-            score_line_points = [[self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.score_scale),] for i, val in enumerate(score_values)]
+            score_line_points = [
+                [
+                    self.pos[0] + i * xscale,
+                    self.pos[1] + self.height / 2 + available_height / 2 * (val / self.score_scale),
+                ]
+                for i, val in enumerate(score_values)
+            ]
             winrate_line_points = [
-                [self.pos[0] + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.winrate_scale),] for i, val in enumerate(winrate_values)
+                [
+                    self.pos[0] + i * xscale,
+                    self.pos[1] + self.height / 2 + available_height / 2 * (val / self.winrate_scale),
+                ]
+                for i, val in enumerate(winrate_values)
             ]
             self.score_points = sum(score_line_points, [])
             self.winrate_points = sum(winrate_line_points, [])
@@ -67,10 +83,18 @@ class ScoreGraph(BackgroundMixin):
                 score_dot_point = score_line_points[self.highlighted_index]
                 winrate_dot_point = winrate_line_points[self.highlighted_index]
                 if math.isnan(score_dot_point[1]):
-                    score_dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((score_nn_values or [0])[-1] / self.score_scale)
+                    score_dot_point[1] = (
+                        self.pos[1]
+                        + self.height / 2
+                        + available_height / 2 * ((score_nn_values or [0])[-1] / self.score_scale)
+                    )
                 self.score_dot_pos = [c - self.highlight_size / 2 for c in score_dot_point]
                 if math.isnan(winrate_dot_point[1]):
-                    winrate_dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((winrate_nn_values or [0])[-1] / self.winrate_scale)
+                    winrate_dot_point[1] = (
+                        self.pos[1]
+                        + self.height / 2
+                        + available_height / 2 * ((winrate_nn_values or [0])[-1] / self.winrate_scale)
+                    )
                 self.winrate_dot_pos = [c - self.highlight_size / 2 for c in winrate_dot_point]
 
     def update_value(self, node):

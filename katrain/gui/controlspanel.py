@@ -56,11 +56,14 @@ class ControlsPanel(BoxLayout):
         if not game:
             return
         current_node, move = game.current_node, game.current_node.move
-        if game.current_node is not self.status_node and not (self.status is not None and self.status_node is None and game.current_node.is_root):  # startup errors on root
+        if game.current_node is not self.status_node and not (
+            self.status is not None and self.status_node is None and game.current_node.is_root
+        ):  # startup errors on root
             self.status.text = ""
             self.status_node = None
 
         last_player_was_ai_playing_human = katrain.last_player_info.ai and katrain.next_player_info.human
+        both_players_are_robots = katrain.last_player_info.ai and katrain.next_player_info.ai
 
         self.active_comment_node = current_node
         if katrain.play_analyze_mode == MODE_PLAY and last_player_was_ai_playing_human:
@@ -68,11 +71,15 @@ class ControlsPanel(BoxLayout):
                 self.active_comment_node = current_node.children[-1]
             elif current_node.parent:
                 self.active_comment_node = current_node.parent
+        elif both_players_are_robots and not current_node.analysis_ready and current_node.parent:
+            self.active_comment_node = current_node.parent
 
         hints = katrain.analysis_controls.hints.active
         info = ""
         if current_node.move and not current_node.is_root:
-            info = self.active_comment_node.comment(teach=katrain.players_info[self.active_comment_node.player].being_taught, hints=hints)
+            info = self.active_comment_node.comment(
+                teach=katrain.players_info[self.active_comment_node.player].being_taught, hints=hints
+            )
 
         if self.active_comment_node.analysis_ready:
             self.stats.score = self.active_comment_node.format_score() or ""

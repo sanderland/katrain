@@ -5,7 +5,17 @@ import time
 from typing import Dict, List, Tuple
 
 from katrain.core.utils import var_to_grid
-from katrain.core.constants import OUTPUT_INFO, OUTPUT_DEBUG, AI_STRATEGIES_POLICY, AI_POLICY, AI_WEIGHTED, AI_STRATEGIES_PICK, AI_JIGO, AI_SCORELOSS, AI_DEFAULT
+from katrain.core.constants import (
+    OUTPUT_INFO,
+    OUTPUT_DEBUG,
+    AI_STRATEGIES_POLICY,
+    AI_POLICY,
+    AI_WEIGHTED,
+    AI_STRATEGIES_PICK,
+    AI_JIGO,
+    AI_SCORELOSS,
+    AI_DEFAULT,
+)
 from katrain.core.engine import EngineDiedException
 from katrain.core.game import Game, GameNode, Move
 
@@ -37,7 +47,9 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
     if (ai_mode in AI_STRATEGIES_POLICY) and cn.policy:  # pure policy based move
         policy_moves = cn.policy_ranking
         pass_policy = cn.policy[-1]
-        top_5_pass = any([polmove[1].is_pass for polmove in policy_moves[:5]])  # dont make it jump around for the last few sensible non pass moves
+        top_5_pass = any(
+            [polmove[1].is_pass for polmove in policy_moves[:5]]
+        )  # dont make it jump around for the last few sensible non pass moves
 
         size = game.board_size
         policy_grid = var_to_grid(cn.policy, size)  # type: List[List[float]]
@@ -55,7 +67,9 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             ai_thoughts += f"Playing top policy move {aimove.gtp()}."
         elif policy_moves[0][0] > ai_settings["pick_override"]:
             aimove = top_policy_move
-            ai_thoughts += f"Top policy move has weight > {ai_settings['pick_override']:.1%}, so overriding other strategies."
+            ai_thoughts += (
+                f"Top policy move has weight > {ai_settings['pick_override']:.1%}, so overriding other strategies."
+            )
         elif ai_mode == AI_WEIGHTED:
             lower_bound = max(0, ai_settings["lower_bound"]) * 2  # compensate for first halving in loop
             weaken_fac = max(0.01, ai_settings["weaken_fac"])
@@ -63,7 +77,10 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             while not weighted_coords and lower_bound > 1e-6:  # fix edge case where no moves are > lb
                 lower_bound /= 2
                 weighted_coords = [
-                    (policy_grid[y][x], policy_grid[y][x] ** (1 / weaken_fac), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > lower_bound
+                    (policy_grid[y][x], policy_grid[y][x] ** (1 / weaken_fac), x, y)
+                    for x in range(size[0])
+                    for y in range(size[1])
+                    if policy_grid[y][x] > lower_bound
                 ]
             top = weighted_selection_without_replacement(weighted_coords, 1)
             if top:
@@ -75,7 +92,9 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                 coords = None
             aimove = Move(coords, player=cn.next_player)  # just take a random move by policy w/o noise
             ai_thoughts += f"Playing policy-weighted random move {aimove.gtp()} ({policy_value:.1%})" + (
-                " because no other moves were found." if not top else f" because strategy is weighted (lower bound={lower_bound:.2%}, num moves > lb={len(weighted_coords)})."
+                " because no other moves were found."
+                if not top
+                else f" because strategy is weighted (lower bound={lower_bound:.2%}, num moves > lb={len(weighted_coords)})."
             )
         elif ai_mode in AI_STRATEGIES_PICK:
             legal_policy_moves = [(pol, mv) for pol, mv in policy_moves if not mv.is_pass if pol > 0]
@@ -84,14 +103,30 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
 
                 thr_line = ai_settings["threshold"] - 1  # zero-based
                 if cn.depth >= ai_settings["endgame"] * size[0] * size[1]:
-                    weighted_coords = [(policy_grid[y][x], 1, x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
-                    ai_thoughts += f"Generated equal weights as move number >= {ai_settings['endgame'] * size[0] * size[1]}. "
+                    weighted_coords = [
+                        (policy_grid[y][x], 1, x, y)
+                        for x in range(size[0])
+                        for y in range(size[1])
+                        if policy_grid[y][x] > 0
+                    ]
+                    ai_thoughts += (
+                        f"Generated equal weights as move number >= {ai_settings['endgame'] * size[0] * size[1]}. "
+                    )
                 else:
                     if "influence" in ai_mode:
-                        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (max(0, thr_line - min(size[0] - 1 - x, x)) + max(0, thr_line - min(size[1] - 1 - y, y)))
+                        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (
+                            max(0, thr_line - min(size[0] - 1 - x, x)) + max(0, thr_line - min(size[1] - 1 - y, y))
+                        )
                     else:
-                        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (max(0, min(size[0] - 1 - x, x, size[1] - 1 - y, y) - thr_line))
-                    weighted_coords = [(policy_grid[y][x] * weight(x, y), weight(x, y), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
+                        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (
+                            max(0, min(size[0] - 1 - x, x, size[1] - 1 - y, y) - thr_line)
+                        )
+                    weighted_coords = [
+                        (policy_grid[y][x] * weight(x, y), weight(x, y), x, y)
+                        for x in range(size[0])
+                        for y in range(size[1])
+                        if policy_grid[y][x] > 0
+                    ]
                     ai_thoughts += f"Generated weights for {ai_mode} according to weight factor {ai_settings['line_weight']} and distance from {thr_line+1}th line. "
             elif "local" in ai_mode or "tenuki" in ai_mode:
                 var = ai_settings["stddev"] ** 2
@@ -101,7 +136,10 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                 else:
                     mx, my = cn.move.coords
                     weighted_coords = [
-                        (policy_grid[y][x], math.exp(-0.5 * ((x - mx) ** 2 + (y - my) ** 2) / var), x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0
+                        (policy_grid[y][x], math.exp(-0.5 * ((x - mx) ** 2 + (y - my) ** 2) / var), x, y)
+                        for x in range(size[0])
+                        for y in range(size[1])
+                        if policy_grid[y][x] > 0
                     ]
                     if "tenuki" in ai_mode:
                         if cn.depth < ai_settings["endgame"] * size[0] * size[1]:
@@ -111,9 +149,16 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                             weighted_coords = [(p, 1, x, y) for p, w, x, y in weighted_coords]
                             ai_thoughts += f"Generated equal weights as move number >= {ai_settings['endgame'] * size[0] * size[1]}. "
                     else:
-                        ai_thoughts += f"Generated weights based on gaussian with variance {var} around coordinates {mx},{my}. "
+                        ai_thoughts += (
+                            f"Generated weights based on gaussian with variance {var} around coordinates {mx},{my}. "
+                        )
             elif "pick" in ai_mode:
-                weighted_coords = [(policy_grid[y][x], 1, x, y) for x in range(size[0]) for y in range(size[1]) if policy_grid[y][x] > 0]
+                weighted_coords = [
+                    (policy_grid[y][x], 1, x, y)
+                    for x in range(size[0])
+                    for y in range(size[1])
+                    if policy_grid[y][x] > 0
+                ]
             else:
                 raise ValueError(f"Unknown AI mode {ai_mode}")
             pick_moves = weighted_selection_without_replacement(weighted_coords, n_moves)
@@ -139,12 +184,21 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         else:
             if ai_mode == AI_JIGO:
                 sign = cn.player_sign(cn.next_player)
-                jigo_move = min(candidate_ai_moves, key=lambda move: abs(sign * move["scoreLead"] - ai_settings["target_score"]))
+                jigo_move = min(
+                    candidate_ai_moves, key=lambda move: abs(sign * move["scoreLead"] - ai_settings["target_score"])
+                )
                 aimove = Move.from_gtp(jigo_move["move"], player=cn.next_player)
                 ai_thoughts += f"Jigo strategy found {len(candidate_ai_moves)} candidate moves (best {top_cand.gtp()}) and chose {aimove.gtp()} as closest to 0.5 point win"
             elif ai_mode == AI_SCORELOSS:
                 c = ai_settings["strength"]
-                moves = [(d["pointsLost"], math.exp(min(200, -c * max(0, d["pointsLost"]))), Move.from_gtp(d["move"], player=cn.next_player)) for d in candidate_ai_moves]
+                moves = [
+                    (
+                        d["pointsLost"],
+                        math.exp(min(200, -c * max(0, d["pointsLost"]))),
+                        Move.from_gtp(d["move"], player=cn.next_player),
+                    )
+                    for d in candidate_ai_moves
+                ]
                 topmove = weighted_selection_without_replacement(moves, 1)[0]
                 aimove = topmove[2]
                 ai_thoughts += f"ScoreLoss strategy found {len(candidate_ai_moves)} candidate moves (best {top_cand.gtp()}) and chose {aimove.gtp()} (weight {topmove[1]:.3f}, point loss {topmove[0]:.1f}) based on score weights."

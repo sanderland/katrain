@@ -58,7 +58,9 @@ if platform == "win":
 
 
 def last_modified_first(files, filesystem):
-    return sorted(f for f in files if filesystem.is_dir(f)) + sorted([f for f in files if not filesystem.is_dir(f)], key=lambda f: -getmtime(f))
+    return sorted(f for f in files if filesystem.is_dir(f)) + sorted(
+        [f for f in files if not filesystem.is_dir(f)], key=lambda f: -getmtime(f)
+    )
 
 
 def get_home_directory():
