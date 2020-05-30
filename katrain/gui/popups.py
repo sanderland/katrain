@@ -246,6 +246,7 @@ class DescriptionLabel(Label):
 
 class AIPopup(QuickConfigGui):
     max_options = NumericProperty(6)
+
     def __init__(self, katrain):
         super().__init__(katrain)
         self.ai_select.bind(text=self.build_ai_options)
@@ -261,8 +262,8 @@ class AIPopup(QuickConfigGui):
         for k, v in mode_settings.items():
             self.options_grid.add_widget(DescriptionLabel(text=k))
             self.options_grid.add_widget(wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"{k}/{v}")))
-        for _ in range((self.max_options - len(mode_settings) )*2 ):
-            print(_,self.options_grid.rows,self.options_grid.cols,len(self.options_grid.children))
+        for _ in range((self.max_options - len(mode_settings)) * 2):
+            print(_, self.options_grid.rows, self.options_grid.cols, len(self.options_grid.children))
             self.options_grid.add_widget(Label())
 
 
