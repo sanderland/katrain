@@ -383,52 +383,41 @@
             on_press: root.update_config(True)
 
 
-
-
-<NewLoadSGFPopup>:
-    FileBrowser:
-
-# old
-
 <LoadSGFPopup>:
     fast: fast
     rewind: rewind
     filesel: filesel
     orientation: 'vertical'
-    Label:
-        text: root.filesel.path
-        size_hint: 1,0.05
-        halign: 'left'
-    FileChooserListView:
+    I18NFileChooserListView:
         id: filesel
         multiselect: False
         filters: ["*.sgf"]
         path: "."
-        size_hint: 1,0.88
+        size_hint: 1,7
     BoxLayout:
         orientation: 'horizontal'
-        size_hint: 1,0.07
-        canvas.before:
-            Color:
-                rgb: 0.4, 0.4, 0.4
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Label:
-            text: "Analyze Extra Fast"
+        size_hint: 1,1
+        DescriptionLabel:
+            text: i18n._("load sgf fast analysis")
             size_hint: 0.45,1
             halign: 'right'
-        CheckBox:
+        LabelledCheckBox:
             id: fast
             color: (0.95, 0.95, 0.95)
             size_hint: 0.05,1
-        Label:
-            text: "Rewind to Start"
+        DescriptionLabel:
+            text: i18n._("load sgf rewind")
             halign: 'right'
             size_hint: 0.45,1
-        CheckBox:
+        LabelledCheckBox:
             id: rewind
             active: True
             color: (0.95, 0.95, 0.95)
             size_hint: 0.05,1
+    AnchorLayout:
+        size_hint: 1,1.5
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("Load File")
 

@@ -153,6 +153,9 @@ msgstr "Play"
 msgid "btn:Analysis"
 msgstr "Analysis"
 
+msgid "btn:Analyze"
+msgstr "Analyze"
+
 msgid "stats:winrate"
 msgstr "Win Rate"
 
@@ -214,7 +217,16 @@ msgstr "Analyzing move..."
 msgid "SGF Notes Hint"
 msgstr "Your SGF notes for this position here."
 
-#. popup title
+# sgf load popup
+msgid "load sgf title"
+msgstr "Load SGF File to Analyze"
+
+msgid "load sgf fast analysis"
+msgstr "Use fast analysis"
+
+msgid "load sgf rewind"
+msgstr "Rewind to start"
+
 # timer settings from here
 msgid "timer settings"
 msgstr "Adjust Timer Settings"

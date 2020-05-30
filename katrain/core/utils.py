@@ -46,7 +46,7 @@ def find_package_resource(path):
 class Lang(Observable):
     observers = []
     callbacks = []
-    FONTS = {"ko": "fonts/NotoSansKR-Regular.otf"}
+    FONTS = {"ko": "fonts/NotoSansKR-Regular.otf", "haha": "fonts/NotoSansKR-Regular.otf"}
 
     def __init__(self, lang):
         super(Lang, self).__init__()
@@ -88,7 +88,7 @@ class Lang(Observable):
         for widget, func, args in self.observers:
             try:
                 func(args[0], None, None)
-                print('setting',widget,widget.font_name,'->',self.font_name)
+                print("setting", widget, widget.font_name, "->", self.font_name)
                 widget.font_name = self.font_name
                 for sub_widget in [getattr(widget, "_hint_lbl", None), getattr(widget, "_msg_lbl", None)]:  # MDText
                     if sub_widget:

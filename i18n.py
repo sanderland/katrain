@@ -1,6 +1,7 @@
 import os
 import polib
 import sys
+import re
 from collections import defaultdict
 
 localedir = "katrain/i18n/locales"
@@ -34,7 +35,10 @@ for lang in locales:
             errors = True
         elif DEFAULT_LANG in strings_to_langs[msgid]:
             print("Message id", msgid, "missing in ", lang, "-> Adding it from", DEFAULT_LANG)
-            entry = polib.POEntry(msgid=msgid, msgstr=strings_to_langs[msgid][DEFAULT_LANG], comment="TODO")
+            copied_msg = strings_to_langs[msgid][DEFAULT_LANG]
+            if lang == "haha":
+                copied_msg = re.sub(r"[a-zA-Z]{1,2}", "ㅋ", copied_msg)
+            entry = polib.POEntry(msgid=msgid, msgstr=copied_msg, comment="TODO")
             po[lang].append(entry)
             errors = True
         else:

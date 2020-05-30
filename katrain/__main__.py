@@ -33,6 +33,7 @@ from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
 from katrain.gui.widgets.graph import ScoreGraph
+from katrain.gui.widgets.filebrowser import I18NFileChooserListView
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
@@ -246,10 +247,9 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_analyze_sgf_popup(self):
         if not self.fileselect_popup:
-            self.fileselect_popup = Popup(title="Double Click SGF file to analyze", size_hint=(0.8, 0.8)).__self__
             popup_contents = LoadSGFPopup()
-            self.fileselect_popup.add_widget(popup_contents)
-            popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("sgf/sgf_load")))
+            popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
+            self.fileselect_popup = I18NPopup(title_key="load sgf title", size=[1200, 800], content=popup_contents).__self__
 
             def readfile(files, _mouse):
                 self.fileselect_popup.dismiss()
@@ -323,7 +323,8 @@ class KaTrainGui(Screen, KaTrainBase):
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
-        first_child = App.get_running_app().root_window.children[0]
+        app = App.get_running_app()
+        first_child = app.root_window.children[0]
         if isinstance(first_child, Popup):
             if keycode[1] not in ["f5", "f6", "f7", "f8"]:
                 return
@@ -352,6 +353,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self("new-game-popup")
         elif keycode[1] == "l" and "ctrl" in modifiers:
             self("analyze-sgf-popup")
+        elif keycode[1] == "f12" and "ctrl" in modifiers:
+            app.language = "haha"
         elif keycode[1] == "s" and "ctrl" in modifiers:
             self("output-sgf")
         elif keycode[1] == "c" and "ctrl" in modifiers:

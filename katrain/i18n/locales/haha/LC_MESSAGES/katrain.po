@@ -1,0 +1,634 @@
+# KaTrain i18n file
+msgid ""
+msgstr ""
+"Language: ㅋㅋㅋ\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. TODO
+msgid "ruleset"
+msgstr "ㅋㅋㅋ"
+
+#. TODO
+msgid "pass-button-text"
+msgstr "ㅋㅋ"
+
+#. TODO
+msgid "Analyzing move..."
+msgstr "ㅋㅋㅋㅋㅋ ㅋㅋ..."
+
+#. TODO
+msgid "chinese"
+msgstr "ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "menu:aisettings"
+msgstr "ㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "ai:scoreloss"
+msgstr "ㅋㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "Select AI"
+msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋㅋ ㅋ ㅋㅋㅋㅋㅋ"
+
+#. TODO
+msgid "engine:katago"
+msgstr "ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ"
+
+#. TODO
+msgid "aihelp:scoreloss"
+msgstr ""
+"ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋㅋ. ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ/ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋ "
+"ㅋㅋㅋㅋ."
+
+#. TODO
+msgid "general settings title"
+msgstr "ㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "general:sgf_load"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "engine:fast_visits"
+msgstr "ㅋㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "ai:p:weighted"
+msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "wait-before-equalize"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ ㅋ ㅋㅋㅋㅋㅋ."
+
+#. TODO
+msgid "save dots"
+msgstr "ㅋㅋ ㅋ ㅋㅋ"
+
+#. TODO
+msgid "menu:clocksettings"
+msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "Starting default Kata failed"
+msgstr ""
+"ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ '{ㅋㅋㅋㅋ}' ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ {ㅋㅋㅋ}. ㅋ ㅋ ㅋㅋㅋ, ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋ ㅋㅋ ㅋㅋ "
+"ㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ, ㅋㅋ ㅋㅋ ㅋ ㅋ ㅋㅋ ㅋㅋ ㅋ 'ㅋㅋㅋ/ㅋㅋㅋ' ㅋㅋㅋㅋ."
+
+#. TODO
+msgid "teacher settings"
+msgstr "ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "gametype"
+msgstr "ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "dot color"
+msgstr "ㅋㅋㅋ (ㅋㅋㅋ)"
+
+#. TODO
+msgid "tab:notes"
+msgstr "ㅋㅋㅋ"
+
+#. TODO
+msgid "komi"
+msgstr "ㅋㅋ"
+
+#. TODO
+msgid "menu:settings"
+msgstr "ㅋㅋㅋㅋ & ㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "general:debug_level"
+msgstr "ㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "korean"
+msgstr "ㅋㅋㅋ"
+
+#. TODO
+msgid "ai:policy"
+msgstr "ㅋㅋㅋ"
+
+#. TODO
+msgid "ai:p:pick"
+msgstr "ㅋㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "handicap"
+msgstr "ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"ㅋㅋ 0.02-0.1 ㅋ ㅋㅋ\n"
+"ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "player:type"
+msgstr "ㅋㅋㅋ"
+
+#. TODO
+msgid "general:debug_level:hint"
+msgstr "ㅋㅋ ㅋ 1 ㅋㅋ ㅋㅋㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "engine:config"
+msgstr "ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "Info:score"
+msgstr "ㅋㅋㅋ: {ㅋㅋㅋ}"
+
+#. TODO
+msgid "Info:AI thoughts"
+msgstr "ㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ: {ㅋㅋㅋㅋ}"
+
+#. TODO
+msgid "update ai settings"
+msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "num undos"
+msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "ai:default"
+msgstr "ㅋㅋㅋ"
+
+#. TODO
+msgid "Info:point loss"
+msgstr "ㅋㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ: {ㅋㅋㅋ_ㅋㅋ:.1ㅋ}"
+
+#. TODO
+msgid "ai:p:tenuki"
+msgstr "ㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "menu:save"
+msgstr "ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "analysis:sweep"
+msgstr "ㅋㅋ ㅋㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "update settings"
+msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "board size"
+msgstr "ㅋㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "tab:points"
+msgstr "ㅋㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "aihelp:p:weighted"
+msgstr ""
+"ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋㅋ, ㅋㅋ `ㅋㅋㅋ_ㅋㅋ` ㅋㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ. "
+"ㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ `ㅋㅋㅋ` ㅋ.`ㅋㅋ_ㅋㅋㅋㅋ` ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋㅋ, "
+"ㅋㅋ `ㅋㅋㅋ_ㅋㅋㅋ` ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋㅋ."
+
+#. TODO
+msgid "engine:katago:hint"
+msgstr "ㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋㅋ"
+
+#. TODO
+msgid "Info:best move"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "menu:support"
+msgstr "ㅋㅋㅋㅋ ㅋ ㅋㅋㅋㅋㅋ"
+
+#. TODO
+msgid "menu:lang"
+msgstr "ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "aistrategy"
+msgstr "ㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "load sgf title"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "aihelp:p:local"
+msgstr ""
+"ㅋㅋㅋ `ㅋㅋ_ㅋ + ㅋㅋ_ㅋㅋ * <ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ>` ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ. ㅋㅋㅋ"
+" ㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ `ㅋㅋ_ㅋㅋㅋㅋ` ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ."
+
+#. TODO
+msgid "analysis:policy"
+msgstr ""
+"ㅋㅋㅋ\n"
+"ㅋㅋㅋ"
+
+#. TODO
+msgid "Info:top move"
+msgstr "ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ {ㅋㅋ_ㅋㅋ} ({ㅋㅋㅋ})."
+
+#. TODO
+msgid "Info:policy rank"
+msgstr "ㅋㅋ ㅋㅋ #{ㅋㅋ} ㅋㅋㅋㅋㅋ ㅋ ㅋㅋㅋ  ({ㅋㅋㅋㅋㅋㅋ:.2%})."
+
+#. TODO
+msgid "analysis:equalize"
+msgstr "ㅋㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "No analysis available"
+msgstr "ㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋㅋ"
+
+#. TODO
+msgid "show last n dots"
+msgstr ""
+"ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ\n"
+"<ㅋㅋ ㅋㅋ> ㅋㅋㅋ"
+
+#. TODO
+msgid "stats:pointsgained"
+msgstr "ㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "Info:policy best"
+msgstr "ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ {ㅋㅋ} ({ㅋㅋㅋㅋㅋㅋ:.1%})."
+
+#. TODO
+msgid "tab:score"
+msgstr "ㅋㅋㅋ"
+
+#. TODO
+msgid "Copied SGF to clipboard."
+msgstr "ㅋㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋㅋㅋ."
+
+#. TODO
+msgid "ai:p:territory"
+msgstr "ㅋㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "btn:Play"
+msgstr "ㅋㅋ"
+
+#. TODO
+msgid "Failed to load SGF"
+msgstr "ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋ. ㅋㅋㅋ ㅋㅋㅋ: {ㅋㅋㅋ}"
+
+#. TODO
+msgid "sgf written"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋ {ㅋㅋ_ㅋㅋ}"
+
+#. TODO
+msgid "tab:winrate"
+msgstr "ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "point loss threshold"
+msgstr "ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "player:human"
+msgstr "ㅋㅋㅋ"
+
+#. TODO
+msgid "ai:jigo"
+msgstr "ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "closedlabel:info&notes"
+msgstr "ㅋㅋ ㅋㅋ & ㅋㅋㅋ"
+
+#. TODO
+msgid "SGF start message"
+msgstr ""
+"ㅋㅋㅋ ㅋㅋㅋ 'ㅋ' ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋ ㅋ ㅋㅋㅋ, ㅋㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ 0.5 "
+"ㅋㅋㅋ"
+
+#. TODO
+msgid "engine:max_time"
+msgstr "ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "aga"
+msgstr "ㅋㅋ"
+
+#. TODO
+msgid "engine:time:hint"
+msgstr "ㅋㅋ ㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "update timer"
+msgstr "ㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "game:teach"
+msgstr "ㅋㅋㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "byoyomi length"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋ-ㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "new game"
+msgstr "ㅋㅋㅋ ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "japanese"
+msgstr "ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "menu:teachsettings"
+msgstr "ㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "closedlabel:scoregraph"
+msgstr "ㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "engine settings"
+msgstr "ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "stats:score"
+msgstr "ㅋㅋㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "engine:wide_root_noise"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋ (ㅋㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ)"
+
+#. TODO
+msgid "btn:Analysis"
+msgstr "ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "Info:PV"
+msgstr "ㅋ: {ㅋ}"
+
+#. TODO
+msgid "ai:p:local"
+msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "analysis:dots"
+msgstr ""
+"ㅋㅋ\n"
+"ㅋㅋ"
+
+#. TODO
+msgid "show ai dots"
+msgstr ""
+"ㅋㅋ ㅋㅋ/ㅋㅋ ㅋㅋㅋㅋ\n"
+" ㅋㅋ ㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "board-game-end"
+msgstr ""
+"ㅋㅋ\n"
+"ㅋㅋ"
+
+#. TODO
+msgid "SGF Notes Hint"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋ."
+
+#. TODO
+msgid "file not found"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "general:anim_pv_time"
+msgstr "ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋ ㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "menu:newgame"
+msgstr "ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "analysis:topmoves"
+msgstr ""
+"ㅋㅋ\n"
+"ㅋㅋㅋ"
+
+#. TODO
+msgid "menu:playersetup"
+msgstr "ㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "restarting engine"
+msgstr "ㅋㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ."
+
+#. TODO
+msgid "ai-ponder"
+msgstr ""
+"ㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋ, ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ (ㅋㅋ) ㅋ ㅋㅋㅋ (ㅋㅋㅋㅋㅋ ㅋㅋㅋㅋ). ㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ "
+"ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ."
+
+#. TODO
+msgid "stats:pointslost"
+msgstr "ㅋㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "byoyomi periods"
+msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "closedlabel:movestats"
+msgstr "ㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "avoids replaying"
+msgstr ""
+"ㅋㅋㅋ ㅋㅋㅋㅋㅋ\n"
+"ㅋㅋㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "player:ai"
+msgstr "ㅋ"
+
+#. TODO
+msgid "menu:load"
+msgstr "ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "load sgf fast analysis"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "analysis:territory"
+msgstr ""
+"ㅋㅋㅋㅋ\n"
+"ㅋㅋㅋㅋㅋ"
+
+#. TODO
+msgid "aihelp:p:pick"
+msgstr ""
+"ㅋㅋㅋ `ㅋㅋ_ㅋ + ㅋㅋ_ㅋㅋ * <ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ>` ㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ. ㅋㅋ `ㅋㅋ_ㅋㅋ=1` ㅋㅋㅋ"
+" ㅋㅋ ㅋㅋ `ㅋㅋㅋ` ㅋ. ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ `ㅋㅋ_ㅋㅋㅋㅋ` ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ."
+
+#. TODO
+msgid "tab:info"
+msgstr "ㅋㅋ"
+
+#. TODO
+msgid "engine:model"
+msgstr "ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "board-pass"
+msgstr "ㅋㅋ"
+
+#. TODO
+msgid "show dots"
+msgstr "ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "aihelp:default"
+msgstr ""
+"ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋ. ㅋㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋ `ㅋㅋ_ㅋㅋㅋ` ㅋㅋ `ㅋㅋㅋ` ㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ `ㅋㅋㅋ` "
+"ㅋㅋㅋㅋ."
+
+#. TODO
+msgid "timer settings"
+msgstr "ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "game:normal"
+msgstr "ㅋㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "non square board hint"
+msgstr "ㅋㅋ ㅋ:ㅋ (ㅋ.ㅋ. 19:9) ㅋㅋ ㅋㅋ-ㅋㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "ai:p:influence"
+msgstr "ㅋㅋㅋㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "analysis:aimove"
+msgstr "ㅋㅋㅋ ㅋ ㅋㅋ"
+
+#. TODO
+msgid "stats:winrate"
+msgstr "ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "analysis:nextmoves"
+msgstr ""
+"ㅋㅋ\n"
+"ㅋㅋㅋ"
+
+#. TODO
+msgid "undo-button-text"
+msgstr "ㅋㅋ"
+
+#. TODO
+msgid "Engine died unexpectedly"
+msgstr "ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ, ㅋㅋㅋㅋ ㅋㅋ ㅋ ㅋㅋ ㅋ ㅋㅋㅋ: {ㅋㅋㅋ}"
+
+#. TODO
+msgid "Info:winrate"
+msgstr "ㅋㅋ ㅋㅋ: {ㅋㅋㅋㅋ}"
+
+#. TODO
+msgid "aihelp:policy"
+msgstr ""
+"ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ, ㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ. ㅋㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋ `ㅋㅋㅋ` ㅋ ㅋㅋㅋ "
+"ㅋㅋㅋㅋ. ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ."
+
+#. TODO
+msgid "New Game title"
+msgstr "ㅋㅋㅋ ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "aihelp:p:tenuki"
+msgstr ""
+"ㅋㅋㅋ `ㅋㅋ_ㅋ + ㅋㅋ_ㅋㅋ * <ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ>` ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ. "
+"ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ `ㅋㅋ_ㅋㅋㅋㅋ` ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ."
+
+#. TODO
+msgid "Info:undo predicted PV"
+msgstr "ㅋㅋㅋㅋㅋ ㅋㅋㅋ-ㅋ: {ㅋ}"
+
+#. TODO
+msgid "engine:max_visits"
+msgstr "ㅋㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "general:sgf_save"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "strength:kyu"
+msgstr "ㅋ"
+
+#. TODO
+msgid "general settings"
+msgstr "ㅋㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "aihelp:jigo"
+msgstr "ㅋㅋ ㅋㅋ ㅋ ㅋㅋ ㅋ ㅋ ㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ (ㅋㅋㅋㅋ 0.5), ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋㅋㅋ."
+
+#. TODO
+msgid "Info:teaching undo"
+msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋㅋ ㅋㅋ."
+
+#. TODO
+msgid "strength:dan"
+msgstr "ㅋ"
+
+#. TODO
+msgid "lock ai when playing"
+msgstr ""
+"ㅋㅋㅋㅋ ㅋㅋㅋㅋ\n"
+" ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋ"
+
+#. TODO
+msgid "aihelp:p:influence"
+msgstr ""
+"ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ `ㅋㅋㅋㅋㅋ` ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ.ㅋㅋㅋㅋ `ㅋㅋ_ㅋㅋㅋ` ㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ"
+" ㅋㅋ ㅋㅋ. ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ 'ㅋㅋㅋㅋ' ㅋㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ."
+
+#. TODO
+msgid "Starting Kata failed"
+msgstr ""
+"ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ '{ㅋㅋㅋㅋ}' ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ {ㅋㅋㅋ}. ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ 'ㅋㅋㅋ' ㅋㅋㅋ ㅋㅋㅋ 'ㅋㅋㅋ'"
+" ㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ."
+
+#. TODO
+msgid "update teacher"
+msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "clear cache"
+msgstr "ㅋㅋㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "Failed to import from clipboard"
+msgstr ""
+"ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋ: {ㅋㅋㅋ}\n"
+"ㅋㅋㅋㅋㅋ ㅋㅋㅋㅋ: {ㅋㅋㅋㅋ}..."
+
+#. TODO
+msgid "aihelp:p:territory"
+msgstr ""
+"ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ `ㅋㅋㅋㅋㅋ` ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ.ㅋㅋㅋㅋ `ㅋㅋ_ㅋㅋㅋ` ㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ"
+" ㅋㅋㅋ ㅋㅋ. ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ 'ㅋㅋㅋㅋ' ㅋㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ."
+
+#. TODO
+msgid "analysis:extra"
+msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "load sgf rewind"
+msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋ"
+
+#. TODO
+msgid "btn:Analyze"
+msgstr "ㅋㅋㅋㅋ"

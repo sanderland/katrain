@@ -37,9 +37,7 @@ a shortcut to the Documents directory added to the favorites bar::
 .. image:: _static/filebrowser.png
     :align: right
 """
-from kivy.resources import resource_add_path
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
 from kivy.uix.treeview import TreeViewLabel, TreeView
 from kivy.uix.filechooser import FileChooserListView, FileChooserListLayout
 from kivy.properties import ObjectProperty, StringProperty, OptionProperty, ListProperty, BooleanProperty
@@ -51,13 +49,10 @@ from os.path import sep, dirname, expanduser, isdir, join
 from os import walk
 from functools import partial
 
-from katrain.core.utils import i18n
+from katrain.gui.style import DEFAULT_FONT
 
 if platform == "win":
     from ctypes import windll, create_unicode_buffer
-
-
-resource_add_path("katrain/")
 
 
 def last_modified_first(files, filesystem):
@@ -109,7 +104,8 @@ def get_drives():
 
 
 class I18NFileChooserListView(FileChooserListView):
-    font_name = StringProperty("")
+    font_name = StringProperty(DEFAULT_FONT)
+    show_hidden = BooleanProperty(True)  # avoid errors
 
 
 class I18NFileChooserListLayout(FileChooserListLayout):
@@ -126,7 +122,7 @@ Builder.load_string(
     is_selected: self.path in ctx.controller().selection
     orientation: 'horizontal'
     size_hint_y: None
-    height: '24dp' # '48dp' if dp(1) > 1 else '24dp'
+    height: '24dp'
     # Don't allow expansion of the ../ node
     is_leaf: not ctx.isdir or ctx.name.endswith('..' + ctx.sep) or self.locked
     on_touch_down: self.collide_point(*args[1].pos) and ctx.controller().entry_touched(self, args[1])
@@ -467,26 +463,3 @@ class FileBrowser(BoxLayout):
 
     def _attr_callback(self, attr, obj, value):
         setattr(self, attr, getattr(obj, attr))
-
-
-if __name__ == "__main__":
-    import os
-    from kivy.app import App
-
-    class TestApp(App):
-        def build(self):
-            user_path = os.path.join(get_home_directory(), "Documents")
-            browser = FileBrowser(select_string="Select", favorites=[(user_path, "Documents")])
-            browser.bind(on_success=self._fbrowser_success, on_submit=self._fbrowser_submit)
-            box = BoxLayout(orientation="vertical")
-            box.add_widget(browser)
-            box.add_widget(Button(text="한국어 할 수 있나요?", on_press=lambda *_: i18n.switch_lang("ko"), size_hint=(1, 0.2)))
-            return box
-
-        def _fbrowser_success(self, instance):
-            print(instance.selection)
-
-        def _fbrowser_submit(self, instance):
-            print(instance.selection)
-
-    TestApp().run()

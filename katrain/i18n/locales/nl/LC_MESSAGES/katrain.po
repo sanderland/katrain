@@ -658,3 +658,19 @@ msgstr "Update AI Settings"
 #. TODO
 msgid "Select AI"
 msgstr "Select AI strategy to configure"
+
+#. TODO
+msgid "load sgf rewind"
+msgstr "Rewind to start"
+
+#. TODO
+msgid "load sgf fast analysis"
+msgstr "Use fast analysis"
+
+#. TODO
+msgid "load sgf title"
+msgstr "Load SGF File to Analyze"
+
+#. TODO
+msgid "btn:Analyze"
+msgstr "Analyze"
