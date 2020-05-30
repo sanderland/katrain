@@ -35,7 +35,10 @@ msgid "menu:lang"
 msgstr "Language"
 
 msgid "menu:support"
-msgstr "Support or Contribute"
+msgstr "Support"
+
+msgid "menu:manual"
+msgstr "Manual"
 
 #. player options in the setup and on the right
 msgid "player:type"
@@ -399,6 +402,10 @@ msgid "update settings"
 msgstr "Update Settings"
 
 # ai settings from here
+
+msgid "ai settings"
+msgstr "Advanced AI Settings"
+
 msgid "Select AI"
 msgstr "Select AI strategy to configure"
 
@@ -452,8 +459,8 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"Full strength KataGo AI. Strength is mainly affected by `max_visits` and "
-"`model` in the general settings `engine` section."
+"Full strength KataGo AI. Strength is  affected by `max_visits` and "
+"`model` in the general settings `engine` section and engine configuration file. No options are available here."
 
 msgid "ai:jigo"
 msgstr "KataJigo"

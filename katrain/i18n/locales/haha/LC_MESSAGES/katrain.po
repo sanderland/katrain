@@ -205,7 +205,7 @@ msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋ"
 
 #. TODO
 msgid "menu:support"
-msgstr "ㅋㅋㅋㅋ ㅋ ㅋㅋㅋㅋㅋ"
+msgstr "ㅋㅋㅋㅋ"
 
 #. TODO
 msgid "menu:lang"
@@ -632,3 +632,11 @@ msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋ"
 #. TODO
 msgid "btn:Analyze"
 msgstr "ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "menu:homepage"
+msgstr "ㅋㅋㅋㅋ"
+
+#. TODO
+msgid "menu:manual"
+msgstr "ㅋㅋㅋ"

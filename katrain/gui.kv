@@ -984,8 +984,14 @@
         LangButton:
             icon: 'img/flaticon/flag-ko.png'
             on_press: app.language = 'ko'
-    MenuLabel:
-        text: i18n._('menu:support')
+    BoxLayout:
+        size_hint: 1,1
+        item_height: root.item_height
+        MenuLabel:
+            text: i18n._('menu:manual')
+        MenuLabel:
+            text: i18n._('menu:support')
+
 
 <OutlineBox@MDBoxLayout+BackgroundMixin>:
 

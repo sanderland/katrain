@@ -74,8 +74,6 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
             if "ready" in message.lower():
                 self.controls.set_status(f"KataGo engine ready.")
-            if "ready" in message.lower():
-                self.controls.set_status(f"KataGo engine ready.")
         if (level == OUTPUT_ERROR or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower())) and getattr(self, "controls", None):
             self.controls.set_status(f"ERROR: {message}")
 
@@ -156,7 +154,8 @@ class KaTrainGui(Screen, KaTrainBase):
                 if game != self.game.game_id:
                     self.log(f"Message skipped as it is outdated (current game is {self.game.game_id}", OUTPUT_EXTRA_DEBUG)
                     continue
-                getattr(self, f"_do_{msg.replace('-','_')}")(*args)
+                fn = getattr(self, f"_do_{msg.replace('-','_')}")
+                fn(*args)
                 self.update_state()
             except Exception as e:
                 self.log(f"Exception in processing message {msg} {args}: {e}", OUTPUT_ERROR)
@@ -164,7 +163,11 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def __call__(self, message, *args):
         if self.game:
-            self.message_queue.put([self.game.game_id, message, *args])
+            if message.endswith('popup'):  # gui code needs to run in main kivy thread.
+                fn = getattr(self, f"_do_{message.replace('-', '_')}")
+                Clock.schedule_once(lambda _dt: fn(*args), -1)
+            else: # game related actions
+                self.message_queue.put([self.game.game_id, message, *args])
 
     def _do_new_game(self, move_tree=None, analyze_fast=False):
         self.board_gui.animating_pv = None
@@ -242,8 +245,6 @@ class KaTrainGui(Screen, KaTrainBase):
             self.ai_settings_popup = I18NPopup(title_key="ai settings", size=[600, 600], content=AIPopup(self)).__self__
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
-
-    # todo pop
 
     def _do_analyze_sgf_popup(self):
         if not self.fileselect_popup:

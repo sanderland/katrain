@@ -358,6 +358,7 @@ class CollapsablePanel(MDBoxLayout):
             options=self.build_options, option_colors=self.build_options, options_height=self.build_options, option_active=self.build_options, options_spacing=self.build_options,
         )
         self.bind(state=self.build, size_hint_y_open=self.build, height_open=self.build)
+        MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options,0))
         self.build_options()
 
     def build_options(self, *args, **kwargs):
@@ -365,7 +366,7 @@ class CollapsablePanel(MDBoxLayout):
         self.option_buttons = []
         option_labels = self.option_labels or [i18n._(f"tab:{opt}") for opt in self.options]
         for ix, (lbl, opt_col, active) in enumerate(zip(option_labels, self.option_colors, self.option_active)):
-            button = CollapsablePanelTab(text=lbl, active_outline_color=opt_col, height=self.options_height, state="down" if active else "normal")
+            button = CollapsablePanelTab(text=lbl, font_name=i18n.font_name, active_outline_color=opt_col, height=self.options_height, state="down" if active else "normal")
             self.option_buttons.append(button)
             button.bind(state=lambda *_args, _ix=ix: self.trigger_select(_ix))
         self.open_close_button = TransparentIconButton(  # <<  / >> collapse button

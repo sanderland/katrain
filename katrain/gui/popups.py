@@ -215,13 +215,13 @@ def wrap_anchor(widget):
 class ConfigTeacherPopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
-        Clock.schedule_once(self.build, 0)
+        self.build()
 
     def add_option_widgets(self, widgets):
         for widget in widgets:
             self.options_grid.add_widget(wrap_anchor(widget))
 
-    def build(self, _dt):
+    def build(self):
         undos = self.katrain.config("trainer/num_undo_prompts")
         thresholds = self.katrain.config("trainer/eval_thresholds")
         savesgfs = self.katrain.config("trainer/save_feedback")
@@ -251,9 +251,9 @@ class AIPopup(QuickConfigGui):
         super().__init__(katrain)
         self.ai_select.bind(text=self.build_ai_options)
         self.ai_select.value_refs = katrain.ai_strategies
-        Clock.schedule_once(self.build_ai_options, 0)
+        self.build_ai_options()
 
-    def build_ai_options(self, *_args):
+    def build_ai_options(self,*_args):
         strategy = self.ai_select.selected[1]
         print(strategy, "=strat", _args)
         mode_settings = self.katrain.config(f"ai/{strategy}")

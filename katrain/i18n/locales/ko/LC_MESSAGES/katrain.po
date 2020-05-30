@@ -642,3 +642,11 @@ msgstr "Load SGF File to Analyze"
 #. TODO
 msgid "btn:Analyze"
 msgstr "Analyze"
+
+#. TODO
+msgid "menu:homepage"
+msgstr "Homepage"
+
+#. TODO
+msgid "menu:manual"
+msgstr "Manual"
