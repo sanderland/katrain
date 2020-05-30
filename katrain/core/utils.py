@@ -52,6 +52,7 @@ class Lang(Observable):
 
     def __init__(self, lang):
         super(Lang, self).__init__()
+        self.lang = None
         self.switch_lang(lang)
 
     def _(self, text):
@@ -88,6 +89,8 @@ class Lang(Observable):
         self.callbacks.append(callback_fn)
 
     def switch_lang(self, lang):
+        if lang == self.lang:
+            return
         # get the right locales directory, and instantiate a gettext
         self.lang = lang
         self.font_name = self.FONTS.get(lang) or DEFAULT_FONT

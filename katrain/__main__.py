@@ -1,18 +1,20 @@
+import os  # isort:skip
+
+os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")  # isort:skip surpress info output
 from kivy.config import Config  # isort:skip
 
 ICON = "img/icon.png"  # isort:skip  # set icon
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
-Config.set("graphics", "width", 1300)
-Config.set("graphics", "height", 1000)
+Config.set("graphics", "width", 1300)  # isort:skip
+Config.set("graphics", "height", 1000)  # isort:skip
 
-
-import os
 import signal
 import sys
 import threading
 import traceback
 from queue import Queue
+import webbrowser
 
 from kivy.app import App
 from kivy.core.clipboard import Clipboard
@@ -25,7 +27,7 @@ from katrain.core.utils import (
     DEFAULT_LANGUAGE,
     find_package_resource,
 )
-from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, MODE_PLAY, AI_STRATEGIES_RECOMMENDED_ORDER
+from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, MODE_PLAY, AI_STRATEGIES_RECOMMENDED_ORDER, HOMEPAGE
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
@@ -374,9 +376,17 @@ class KaTrainApp(MDApp):
 
     def on_language(self, _instance, language):
         self.gui.log(f"Switching language to {language}", OUTPUT_INFO)
+        self.gui._config["general"]["lang"] = language
+        self.gui.save_config()
         i18n.switch_lang(language)
 
+    def webbrowser(self, site_key):
+        WEBSITES = {"homepage": HOMEPAGE, "support": HOMEPAGE + "#support"}
+        if site_key in WEBSITES:
+            webbrowser.open(WEBSITES[site_key])
+
     def on_start(self):
+        self.language = self.gui.config("general/lang")
         self.gui.start()
 
     def on_request_close(self, *_args):

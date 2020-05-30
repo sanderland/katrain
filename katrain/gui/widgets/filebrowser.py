@@ -37,6 +37,7 @@ a shortcut to the Documents directory added to the favorites bar::
 .. image:: _static/filebrowser.png
     :align: right
 """
+from kivy import Config
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.treeview import TreeViewLabel, TreeView
 from kivy.uix.filechooser import FileChooserListView, FileChooserListLayout
@@ -113,9 +114,10 @@ class I18NFileChooserListLayout(FileChooserListLayout):
     _ENTRY_TEMPLATE = "I18NFileListEntry"
 
 
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    Builder.load_string("""
+log_level = Config.get("kivy", "log_level")
+Config.set("kivy", "log_level", "error")
+Builder.load_string(
+    """
 [I18NFileListEntry@FloatLayout+TreeViewNode]:
     locked: False
     entries: []
@@ -150,7 +152,9 @@ with warnings.catch_warnings():
     I18NFileChooserListLayout:
         id: layout
         controller: root            
-    """)
+    """
+)
+Config.set("kivy", "log_level", log_level)
 
 Builder.load_string(
     """

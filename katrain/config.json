@@ -16,8 +16,8 @@
         "sgf_load": "~/Downloads",
         "sgf_save": "./sgfout",
         "anim_pv_time": 0.5,
-        "debug_level": 1,
-        "language": "en"
+        "debug_level": 0,
+        "lang": "en"
     },
     "timer": {
         "byo_length": 30,

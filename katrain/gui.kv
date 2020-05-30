@@ -802,6 +802,10 @@
     height: self.parent.item_height or 50
     size_hint: 1,None
 
+<MenuLink@ButtonBehavior+MenuLabel>:
+    site_key: ''
+    underline: True
+    on_press: app.webbrowser(self.site_key)
 
 <PlayerSetup>:
     orientation: 'horizontal'
@@ -937,10 +941,12 @@
         size_hint: 1,None
         height: root.item_height
         item_height: root.item_height
-        MenuLabel:
+        MenuLink:
             text: i18n._('menu:manual')
-        MenuLabel:
+            site_key: 'homepage'
+        MenuLink:
             text: i18n._('menu:support')
+            site_key: 'support'
 
 
 <OutlineBox@MDBoxLayout+BackgroundMixin>:

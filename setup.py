@@ -4,7 +4,7 @@ import os
 from setuptools import find_packages, setup
 
 package_data = {"": ["*.json", "*.kv"], "katrain": [], "tests": []}
-packages = find_packages(exclude=["bots", "tests"])
+packages = find_packages(exclude=["tests"])
 version = re.search('^__version__\s*=\s*"(.*)"', open("katrain/__main__.py").read(), re.M).group(1)
 
 

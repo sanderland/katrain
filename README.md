@@ -128,10 +128,14 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * How can I play on larger boards?
   * For windows, change the `katago` setting to `katrain\KataGo\katago-bs52.exe`. For other operating systems, you need to compile your own KataGo version with higher limits.
 
-## Contributing
 
-* Feedback and pull requests are both very welcome. I would also be happy to host translations of this manual into languages where English fluency is typically lower.
-* For suggestions and planned improvements, see the 'issues' tab on github.
-* You can also contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) or [Reddit](http://reddit.com/u/sanderbaduk) to give feedback, or simply show your appreciation.
-* Some people have also asked me how to donate. Something go-related such as a book or teaching time is highly appreciated.
+## <a name="support"></a> Support / Contribute
+
+* You can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
+ or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
+* Ideas, feedback, and contributions to code or translations are all very welcome.
+    * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github.
+    * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
+
+
 
