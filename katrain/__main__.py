@@ -27,7 +27,6 @@ from katrain.core.utils import (
 )
 from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, MODE_PLAY
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
-from katrain.gui.ai_settings import ConfigAIPopupContents
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
@@ -36,7 +35,7 @@ from katrain.gui.kivyutils import *
 from katrain.gui.widgets.graph import ScoreGraph
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
-from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup
+from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
 
 __version__ = "1.1.0"
@@ -239,7 +238,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_ai_popup(self):
         self.controls.timer.paused = True
         if not self.ai_settings_popup:
-            self.ai_settings_popup = I18NPopup(title_key="ai settings", size=[800, 800], content=ConfigAIPopupContents(self, self.ai_settings_popup)).__self__
+            self.ai_settings_popup = I18NPopup(title_key="ai settings", size=[600, 600], content=AIPopup(self)).__self__
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 

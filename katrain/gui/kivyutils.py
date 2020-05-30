@@ -178,7 +178,7 @@ class BGBoxLayout(BoxLayout, BackgroundMixin):
 # -- new gui elements
 
 
-class StyledSpinner(Spinner):
+class I18NSpinner(Spinner):
     sync_height_frac = NumericProperty(1.0)
     value_refs = ListProperty()
     font_name = StringProperty(DEFAULT_FONT)

@@ -69,13 +69,9 @@
     },
     "ai": {
         "ai:default": {
-            "_help_right": "No settings available for Default KataGo AI, strength is mainly affected by `max_visits` and `model` in the main settings `engine` section.",
-            "_help_left": ""
         },
         "ai:jigo": {
-            "target_score": 0.5,
-            "_help_left": "Will try to win by `target_score`, without further restrictions.",
-            "_help_right": "Also affected by engine settings such as `max_visits`."
+            "target_score": 0.5
         },
         "ai:scoreloss": {
             "strength": 0.5

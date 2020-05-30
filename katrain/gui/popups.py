@@ -1,11 +1,11 @@
-from collections import defaultdict
 import re, os
 from typing import Dict, Tuple, Any, Union, List
 
 from kivy.clock import Clock
-from kivy.properties import StringProperty, BooleanProperty
+from kivy.properties import StringProperty, BooleanProperty, NumericProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
@@ -14,7 +14,7 @@ from kivymd.uix.textfield import MDTextField
 from katrain.core.constants import OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_INFO
 from katrain.core.engine import KataGoEngine
 from katrain.core.utils import i18n, find_package_resource
-from katrain.gui.kivyutils import StyledSpinner, BackgroundMixin
+from katrain.gui.kivyutils import I18NSpinner, BackgroundMixin
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
 
 
@@ -40,9 +40,9 @@ class LabelledPathInput(LabelledTextInput):
     def check_error(self, _dt=None):
         self.error = not os.path.exists(find_package_resource(self.input_value))
 
-    def on_text(self, widget, text, **kwargs):
+    def on_text(self, widget, text):
         self.check_error()
-        return super().on_text(widget, text, **kwargs)
+        return super().on_text(widget, text)
 
     @property
     def input_value(self):
@@ -62,7 +62,7 @@ class LabelledCheckBox(MDCheckbox):
         return bool(self.active)
 
 
-class LabelledSpinner(StyledSpinner):
+class LabelledSpinner(I18NSpinner):
     input_property = StringProperty("")
 
     @property
@@ -127,7 +127,7 @@ class QuickConfigGui(MDBoxLayout):
                 ret[k] = v
         return ret
 
-    def get_setting(self, key) -> Tuple[Any, Union[Dict, List], str]:
+    def get_setting(self, key) -> Union[Tuple[Any, Dict, str], Tuple[Any, List, int]]:
         keys = key.split("/")
         config = self.katrain._config
         for k in keys[:-1]:
@@ -136,9 +136,9 @@ class QuickConfigGui(MDBoxLayout):
             config = config[k]
 
         if "::" in keys[-1]:
-            arraykey, ix = keys[-1].split("::")
+            array_key, ix = keys[-1].split("::")
             ix = int(ix)
-            array = config[arraykey]
+            array = config[array_key]
             return array[ix], array, ix
         else:
             if keys[-1] not in config:
@@ -238,6 +238,32 @@ class ConfigTeacherPopup(QuickConfigGui):
                 ]
             )
         self.set_properties(self)
+
+
+class DescriptionLabel(Label):
+    pass
+
+
+class AIPopup(QuickConfigGui):
+    max_options = NumericProperty(6)
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        self.ai_select.bind(text=self.build_ai_options)
+        self.ai_select.value_refs = katrain.ai_strategies
+        Clock.schedule_once(self.build_ai_options, 0)
+
+    def build_ai_options(self, *_args):
+        strategy = self.ai_select.selected[1]
+        print(strategy, "=strat", _args)
+        mode_settings = self.katrain.config(f"ai/{strategy}")
+        self.options_grid.clear_widgets()
+        self.help_label.text = i18n._(strategy.replace("ai:", "aihelp:"))
+        for k, v in mode_settings.items():
+            self.options_grid.add_widget(DescriptionLabel(text=k))
+            self.options_grid.add_widget(wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"{k}/{v}")))
+        for _ in range((self.max_options - len(mode_settings) )*2 ):
+            print(_,self.options_grid.rows,self.options_grid.cols,len(self.options_grid.children))
+            self.options_grid.add_widget(Label())
 
 
 class ConfigPopup(QuickConfigGui):

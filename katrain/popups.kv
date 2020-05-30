@@ -64,7 +64,7 @@
     spacing: CP_SPACING
     padding: 4*CP_PADDING,CP_PADDING, 4*CP_PADDING, CP_PADDING
 
-<DescriptionLabel@Label>:
+<DescriptionLabel>:
     font_size: DESC_FONT_SIZE
     multiline: True
     text_size: self.size
@@ -350,6 +350,39 @@
             size_hint: None,0.5
             text: i18n._("new game")
             on_press: root.update_config(True)
+
+
+
+<AIPopup>
+    options_grid: options_grid
+    help_label: help_label
+    ai_select: ai_select
+    BoxLayout:
+        size_hint: 1,1
+        DescriptionLabel:
+            font_size: 1.25*DESC_FONT_SIZE
+            text: i18n._('Select AI')
+        AnchorLayout:
+            I18NSpinner:
+                size_hint: 1, 0.5
+                id: ai_select
+    SmallDescriptionLabel:
+        id: help_label
+        size_hint: 1,1.25
+    GridLayout:
+        size_hint: 1,4
+        id: options_grid
+        rows: root.max_options
+        cols: 2
+    AnchorLayout:
+        size_hint: 1,1.5
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("update ai settings")
+            on_press: root.update_config(True)
+
+
 
 
 <NewLoadSGFPopup>:

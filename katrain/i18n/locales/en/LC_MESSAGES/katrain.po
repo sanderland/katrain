@@ -386,6 +386,13 @@ msgstr "Set to 1 when reporting errors"
 msgid "update settings"
 msgstr "Update Settings"
 
+# ai settings from here
+msgid "Select AI"
+msgstr "Select AI strategy to configure"
+
+msgid "update ai settings"
+msgstr "Update AI Settings"
+
 #. misc errors and info messages
 msgid "sgf written"
 msgstr "SGF with analysis written to {file_name}"

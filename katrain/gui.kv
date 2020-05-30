@@ -134,7 +134,7 @@
         source: root.icon
         mipmap: True
 
-<StyledSpinnerOption@SpinnerOption>:
+<I18NSpinnerOption@SpinnerOption>:
     background_color: BACKGROUND_COLOR
     background_normal: ''
     lang_change_tracking: i18n._('') # for font
@@ -146,12 +146,12 @@
             points: self.pos[0],self.pos[1],self.pos[0]+self.width,self.pos[1]
             width: 1
 
-<StyledSpinner>:
+<I18NSpinner>:
     text: self.values[0] if self.values else ''
     font_size: self.height * 0.5
     sync_height_frac: 1.0
     background_color: [*[c*255/88 for c in BACKGROUND_COLOR[:3]], 1] # compensate for texture
-    option_cls: 'StyledSpinnerOption'
+    option_cls: 'I18NSpinnerOption'
 
 
 <CircleWithText>:
@@ -890,7 +890,7 @@
         Label:
             text: i18n._('player:type')
             font_size: self.height * 0.5            
-        StyledSpinner:
+        I18NSpinner:
             id: player_type
             value_refs: PLAYER_TYPES
             on_text: root.setup_options(*args)
@@ -902,7 +902,7 @@
             text: 'Player Type'
             id: player_subtype_label
             font_size: self.height * 0.5
-        StyledSpinner:
+        I18NSpinner:
             id: player_subtype
             value_refs: []
             on_text: root.update_global_player_info()

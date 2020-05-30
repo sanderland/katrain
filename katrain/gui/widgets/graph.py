@@ -68,10 +68,10 @@ class ScoreGraph(BackgroundMixin):
                 winrate_dot_point = winrate_line_points[self.highlighted_index]
                 if math.isnan(score_dot_point[1]):
                     score_dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((score_nn_values or [0])[-1] / self.score_scale)
-                self.score_dot_pos = [c - self.highlight_size / 2 for c in winrate_dot_point]
+                self.score_dot_pos = [c - self.highlight_size / 2 for c in score_dot_point]
                 if math.isnan(winrate_dot_point[1]):
                     winrate_dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((winrate_nn_values or [0])[-1] / self.winrate_scale)
-                self.winrate_dot_pos = [c - self.highlight_size / 2 for c in score_dot_point]
+                self.winrate_dot_pos = [c - self.highlight_size / 2 for c in winrate_dot_point]
 
     def update_value(self, node):
         self.highlighted_index = index = node.depth

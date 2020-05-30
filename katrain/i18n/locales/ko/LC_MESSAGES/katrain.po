@@ -618,3 +618,11 @@ msgid "lock ai when playing"
 msgstr ""
 "Disable analysis\n"
 " while in play mode"
+
+#. TODO
+msgid "update ai settings"
+msgstr "Update AI Settings"
+
+#. TODO
+msgid "Select AI"
+msgstr "Select AI strategy to configure"
