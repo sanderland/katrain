@@ -13,7 +13,7 @@
         "_enable_ownership": true
     },
     "general": {
-        "sgf_load": "~/Downloads",
+        "sgf_load": "~/",
         "sgf_save": "./sgfout",
         "anim_pv_time": 0.5,
         "debug_level": 1,
@@ -68,8 +68,7 @@
         "lock_ai": true
     },
     "ai": {
-        "ai:default": {
-        },
+        "ai:default": {},
         "ai:jigo": {
             "target_score": 0.5
         },
@@ -77,7 +76,7 @@
             "strength": 0.5
         },
         "ai:policy": {
-            "opening_moves": 20
+            "opening_moves": 22.0
         },
         "ai:p:weighted": {
             "pick_override": 1.0,

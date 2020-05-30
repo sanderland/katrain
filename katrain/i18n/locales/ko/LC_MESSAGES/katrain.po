@@ -138,7 +138,7 @@ msgstr ""
 msgid "Engine died unexpectedly"
 msgstr ""
 "Engine died unexpectedly without sending output, possibly due to out of "
-"memory: {e}"
+"memory: {error}"
 
 #. TODO
 msgid "analysis:territory"
@@ -236,29 +236,23 @@ msgstr "Teaching Game"
 msgid "aistrategy"
 msgstr "AI Strategy"
 
-#. TODO
 msgid "game:normal"
-msgstr "Normal Game"
+msgstr "일반 게임"
 
-#. TODO
 msgid "player:human"
-msgstr "AI"
+msgstr "인간"
 
-#. TODO
 msgid "player:type"
-msgstr "Player"
+msgstr "인간/인곡지능"
 
-#. TODO
 msgid "gametype"
-msgstr "Game Type"
+msgstr "게임 종류"
 
-#. TODO
 msgid "player:ai"
-msgstr "AI"
+msgstr "인곡지능"
 
-#. TODO
 msgid "game:teach"
-msgstr "Teaching Game"
+msgstr "교직 게임"
 
 #. TODO
 msgid "menu:clocksettings"
@@ -650,3 +644,7 @@ msgstr "Homepage"
 #. TODO
 msgid "menu:manual"
 msgstr "Manual"
+
+#. TODO
+msgid "ai settings"
+msgstr "Advanced AI Settings"

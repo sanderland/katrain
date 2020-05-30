@@ -40,8 +40,8 @@ class ControlsPanel(BoxLayout):
 
     def update_players(self, *_args):
         for bw, player_info in self.katrain.players_info.items():
-            self.players[bw].player_type = i18n._(player_info.player_type)
-            self.players[bw].player_subtype = i18n._(player_info.player_subtype)
+            self.players[bw].player_type = player_info.player_type
+            self.players[bw].player_subtype = player_info.player_subtype
 
     def set_status(self, msg, at_node=None):
         self.status_msg = msg
@@ -64,7 +64,7 @@ class ControlsPanel(BoxLayout):
 
         self.active_comment_node = current_node
         if katrain.play_analyze_mode == MODE_PLAY and last_player_was_ai_playing_human:
-            if katrain.next_player_info.being_taught and current_node.children and current_node.children.auto_undo:
+            if katrain.next_player_info.being_taught and current_node.children and current_node.children[-1].auto_undo:
                 self.active_comment_node = current_node.children[-1]
             elif current_node.parent:
                 self.active_comment_node = current_node.parent

@@ -6,637 +6,509 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. TODO
-msgid "ruleset"
-msgstr "ㅋㅋㅋ"
+msgid "load sgf rewind"
+msgstr "ㅋㅋRewind to start"
 
-#. TODO
-msgid "pass-button-text"
-msgstr "ㅋㅋ"
-
-#. TODO
 msgid "Analyzing move..."
-msgstr "ㅋㅋㅋㅋㅋ ㅋㅋ..."
+msgstr "ㅋㅋAnalyzing move..."
 
-#. TODO
-msgid "chinese"
-msgstr "ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "menu:aisettings"
-msgstr "ㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "ai:scoreloss"
-msgstr "ㅋㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "Select AI"
-msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋㅋ ㅋ ㅋㅋㅋㅋㅋ"
-
-#. TODO
-msgid "engine:katago"
-msgstr "ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ"
-
-#. TODO
-msgid "aihelp:scoreloss"
-msgstr ""
-"ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋㅋ. ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ/ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋ "
-"ㅋㅋㅋㅋ."
-
-#. TODO
-msgid "general settings title"
-msgstr "ㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "general:sgf_load"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "engine:fast_visits"
-msgstr "ㅋㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "ai:p:weighted"
-msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "wait-before-equalize"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ ㅋ ㅋㅋㅋㅋㅋ."
-
-#. TODO
-msgid "save dots"
-msgstr "ㅋㅋ ㅋ ㅋㅋ"
-
-#. TODO
-msgid "menu:clocksettings"
-msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "Starting default Kata failed"
-msgstr ""
-"ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ '{ㅋㅋㅋㅋ}' ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ {ㅋㅋㅋ}. ㅋ ㅋ ㅋㅋㅋ, ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋ ㅋㅋ ㅋㅋ "
-"ㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ, ㅋㅋ ㅋㅋ ㅋ ㅋ ㅋㅋ ㅋㅋ ㅋ 'ㅋㅋㅋ/ㅋㅋㅋ' ㅋㅋㅋㅋ."
-
-#. TODO
-msgid "teacher settings"
-msgstr "ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "gametype"
-msgstr "ㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "dot color"
-msgstr "ㅋㅋㅋ (ㅋㅋㅋ)"
-
-#. TODO
-msgid "tab:notes"
-msgstr "ㅋㅋㅋ"
-
-#. TODO
-msgid "komi"
-msgstr "ㅋㅋ"
-
-#. TODO
-msgid "menu:settings"
-msgstr "ㅋㅋㅋㅋ & ㅋㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "general:debug_level"
-msgstr "ㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "korean"
-msgstr "ㅋㅋㅋ"
-
-#. TODO
-msgid "ai:policy"
-msgstr "ㅋㅋㅋ"
-
-#. TODO
-msgid "ai:p:pick"
-msgstr "ㅋㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "handicap"
-msgstr "ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "engine:wide_root_noise:hint"
-msgstr ""
-"ㅋㅋ 0.02-0.1 ㅋ ㅋㅋ\n"
-"ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "player:type"
-msgstr "ㅋㅋㅋ"
-
-#. TODO
-msgid "general:debug_level:hint"
-msgstr "ㅋㅋ ㅋ 1 ㅋㅋ ㅋㅋㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "engine:config"
-msgstr "ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "Info:score"
-msgstr "ㅋㅋㅋ: {ㅋㅋㅋ}"
-
-#. TODO
-msgid "Info:AI thoughts"
-msgstr "ㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ: {ㅋㅋㅋㅋ}"
-
-#. TODO
-msgid "update ai settings"
-msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "num undos"
-msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "ai:default"
-msgstr "ㅋㅋㅋ"
-
-#. TODO
-msgid "Info:point loss"
-msgstr "ㅋㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ: {ㅋㅋㅋ_ㅋㅋ:.1ㅋ}"
-
-#. TODO
-msgid "ai:p:tenuki"
-msgstr "ㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "menu:save"
-msgstr "ㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "analysis:sweep"
-msgstr "ㅋㅋ ㅋㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "update settings"
-msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "board size"
-msgstr "ㅋㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "tab:points"
-msgstr "ㅋㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "aihelp:p:weighted"
-msgstr ""
-"ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋㅋ, ㅋㅋ `ㅋㅋㅋ_ㅋㅋ` ㅋㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ. "
-"ㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ `ㅋㅋㅋ` ㅋ.`ㅋㅋ_ㅋㅋㅋㅋ` ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋㅋ, "
-"ㅋㅋ `ㅋㅋㅋ_ㅋㅋㅋ` ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋㅋ."
-
-#. TODO
-msgid "engine:katago:hint"
-msgstr "ㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋㅋ"
-
-#. TODO
-msgid "Info:best move"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "menu:support"
-msgstr "ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "menu:lang"
-msgstr "ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "aistrategy"
-msgstr "ㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "load sgf title"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "aihelp:p:local"
-msgstr ""
-"ㅋㅋㅋ `ㅋㅋ_ㅋ + ㅋㅋ_ㅋㅋ * <ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ>` ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ. ㅋㅋㅋ"
-" ㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ `ㅋㅋ_ㅋㅋㅋㅋ` ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ."
-
-#. TODO
-msgid "analysis:policy"
-msgstr ""
-"ㅋㅋㅋ\n"
-"ㅋㅋㅋ"
-
-#. TODO
-msgid "Info:top move"
-msgstr "ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ {ㅋㅋ_ㅋㅋ} ({ㅋㅋㅋ})."
-
-#. TODO
-msgid "Info:policy rank"
-msgstr "ㅋㅋ ㅋㅋ #{ㅋㅋ} ㅋㅋㅋㅋㅋ ㅋ ㅋㅋㅋ  ({ㅋㅋㅋㅋㅋㅋ:.2%})."
-
-#. TODO
-msgid "analysis:equalize"
-msgstr "ㅋㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "No analysis available"
-msgstr "ㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋㅋ"
-
-#. TODO
-msgid "show last n dots"
-msgstr ""
-"ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ\n"
-"<ㅋㅋ ㅋㅋ> ㅋㅋㅋ"
-
-#. TODO
-msgid "stats:pointsgained"
-msgstr "ㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "Info:policy best"
-msgstr "ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ {ㅋㅋ} ({ㅋㅋㅋㅋㅋㅋ:.1%})."
-
-#. TODO
-msgid "tab:score"
-msgstr "ㅋㅋㅋ"
-
-#. TODO
-msgid "Copied SGF to clipboard."
-msgstr "ㅋㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋㅋㅋ."
-
-#. TODO
-msgid "ai:p:territory"
-msgstr "ㅋㅋㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "btn:Play"
-msgstr "ㅋㅋ"
-
-#. TODO
-msgid "Failed to load SGF"
-msgstr "ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋ. ㅋㅋㅋ ㅋㅋㅋ: {ㅋㅋㅋ}"
-
-#. TODO
-msgid "sgf written"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋ {ㅋㅋ_ㅋㅋ}"
-
-#. TODO
-msgid "tab:winrate"
-msgstr "ㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "point loss threshold"
-msgstr "ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "player:human"
-msgstr "ㅋㅋㅋ"
-
-#. TODO
-msgid "ai:jigo"
-msgstr "ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "closedlabel:info&notes"
-msgstr "ㅋㅋ ㅋㅋ & ㅋㅋㅋ"
-
-#. TODO
-msgid "SGF start message"
-msgstr ""
-"ㅋㅋㅋ ㅋㅋㅋ 'ㅋ' ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋ ㅋ ㅋㅋㅋ, ㅋㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ 0.5 "
-"ㅋㅋㅋ"
-
-#. TODO
-msgid "engine:max_time"
-msgstr "ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "aga"
-msgstr "ㅋㅋ"
-
-#. TODO
-msgid "engine:time:hint"
-msgstr "ㅋㅋ ㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "update timer"
-msgstr "ㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "game:teach"
-msgstr "ㅋㅋㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "byoyomi length"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋ-ㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "new game"
-msgstr "ㅋㅋㅋ ㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "japanese"
-msgstr "ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "menu:teachsettings"
-msgstr "ㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "closedlabel:scoregraph"
-msgstr "ㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "engine settings"
-msgstr "ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "stats:score"
-msgstr "ㅋㅋㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "engine:wide_root_noise"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋ (ㅋㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ)"
-
-#. TODO
-msgid "btn:Analysis"
-msgstr "ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "Info:PV"
-msgstr "ㅋ: {ㅋ}"
-
-#. TODO
-msgid "ai:p:local"
-msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "analysis:dots"
-msgstr ""
-"ㅋㅋ\n"
-"ㅋㅋ"
-
-#. TODO
-msgid "show ai dots"
-msgstr ""
-"ㅋㅋ ㅋㅋ/ㅋㅋ ㅋㅋㅋㅋ\n"
-" ㅋㅋ ㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "board-game-end"
-msgstr ""
-"ㅋㅋ\n"
-"ㅋㅋ"
-
-#. TODO
-msgid "SGF Notes Hint"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋ."
-
-#. TODO
-msgid "file not found"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "general:anim_pv_time"
-msgstr "ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋ ㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "menu:newgame"
-msgstr "ㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "analysis:topmoves"
-msgstr ""
-"ㅋㅋ\n"
-"ㅋㅋㅋ"
-
-#. TODO
-msgid "menu:playersetup"
-msgstr "ㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "restarting engine"
-msgstr "ㅋㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ."
-
-#. TODO
-msgid "ai-ponder"
-msgstr ""
-"ㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋ, ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ (ㅋㅋ) ㅋ ㅋㅋㅋ (ㅋㅋㅋㅋㅋ ㅋㅋㅋㅋ). ㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ "
-"ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ."
-
-#. TODO
-msgid "stats:pointslost"
-msgstr "ㅋㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "byoyomi periods"
-msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "closedlabel:movestats"
-msgstr "ㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "avoids replaying"
-msgstr ""
-"ㅋㅋㅋ ㅋㅋㅋㅋㅋ\n"
-"ㅋㅋㅋㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "player:ai"
-msgstr "ㅋ"
-
-#. TODO
-msgid "menu:load"
-msgstr "ㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "load sgf fast analysis"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "analysis:territory"
-msgstr ""
-"ㅋㅋㅋㅋ\n"
-"ㅋㅋㅋㅋㅋ"
-
-#. TODO
-msgid "aihelp:p:pick"
-msgstr ""
-"ㅋㅋㅋ `ㅋㅋ_ㅋ + ㅋㅋ_ㅋㅋ * <ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ>` ㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ. ㅋㅋ `ㅋㅋ_ㅋㅋ=1` ㅋㅋㅋ"
-" ㅋㅋ ㅋㅋ `ㅋㅋㅋ` ㅋ. ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ `ㅋㅋ_ㅋㅋㅋㅋ` ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ."
-
-#. TODO
-msgid "tab:info"
-msgstr "ㅋㅋ"
-
-#. TODO
-msgid "engine:model"
-msgstr "ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "board-pass"
-msgstr "ㅋㅋ"
-
-#. TODO
-msgid "show dots"
-msgstr "ㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "aihelp:default"
-msgstr ""
-"ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋ. ㅋㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋ `ㅋㅋ_ㅋㅋㅋ` ㅋㅋ `ㅋㅋㅋ` ㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ `ㅋㅋㅋ` "
-"ㅋㅋㅋㅋ."
-
-#. TODO
-msgid "timer settings"
-msgstr "ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "game:normal"
-msgstr "ㅋㅋㅋ ㅋㅋ"
-
-#. TODO
-msgid "non square board hint"
-msgstr "ㅋㅋ ㅋ:ㅋ (ㅋ.ㅋ. 19:9) ㅋㅋ ㅋㅋ-ㅋㅋㅋ ㅋㅋ"
-
-#. TODO
 msgid "ai:p:influence"
-msgstr "ㅋㅋㅋㅋㅋㅋ ㅋㅋㅋ"
+msgstr "ㅋㅋInfluential Style"
 
-#. TODO
-msgid "analysis:aimove"
-msgstr "ㅋㅋㅋ ㅋ ㅋㅋ"
+msgid "timer settings"
+msgstr "ㅋㅋAdjust Timer Settings"
 
-#. TODO
-msgid "stats:winrate"
-msgstr "ㅋㅋ ㅋㅋ"
-
-#. TODO
 msgid "analysis:nextmoves"
 msgstr ""
-"ㅋㅋ\n"
-"ㅋㅋㅋ"
+"ㅋㅋNext\n"
+"Moves"
 
-#. TODO
-msgid "undo-button-text"
-msgstr "ㅋㅋ"
+msgid "dot color"
+msgstr "ㅋㅋColour (fixed)"
 
-#. TODO
-msgid "Engine died unexpectedly"
-msgstr "ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ, ㅋㅋㅋㅋ ㅋㅋ ㅋ ㅋㅋ ㅋ ㅋㅋㅋ: {ㅋㅋㅋ}"
+msgid "ai:p:pick"
+msgstr "ㅋㅋBlinded Policy"
 
-#. TODO
-msgid "Info:winrate"
-msgstr "ㅋㅋ ㅋㅋ: {ㅋㅋㅋㅋ}"
+msgid "engine:fast_visits"
+msgstr "ㅋㅋMaximum number of visits in fast analysis"
 
-#. TODO
-msgid "aihelp:policy"
-msgstr ""
-"ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ, ㅋㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ. ㅋㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋ `ㅋㅋㅋ` ㅋ ㅋㅋㅋ "
-"ㅋㅋㅋㅋ. ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ."
+msgid "Failed to load SGF"
+msgstr "ㅋㅋFailed to load SGF. Parse Error: {error}"
 
-#. TODO
-msgid "New Game title"
-msgstr "ㅋㅋㅋ ㅋㅋ ㅋㅋ"
+msgid "board-pass"
+msgstr "ㅋㅋpass"
 
-#. TODO
-msgid "aihelp:p:tenuki"
-msgstr ""
-"ㅋㅋㅋ `ㅋㅋ_ㅋ + ㅋㅋ_ㅋㅋ * <ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ>` ㅋㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ. "
-"ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ `ㅋㅋ_ㅋㅋㅋㅋ` ㅋ ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ."
+msgid "general settings title"
+msgstr "ㅋㅋGeneral and Engine Settings"
 
-#. TODO
-msgid "Info:undo predicted PV"
-msgstr "ㅋㅋㅋㅋㅋ ㅋㅋㅋ-ㅋ: {ㅋ}"
-
-#. TODO
-msgid "engine:max_visits"
-msgstr "ㅋㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "general:sgf_save"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ"
-
-#. TODO
-msgid "strength:kyu"
-msgstr "ㅋ"
-
-#. TODO
-msgid "general settings"
-msgstr "ㅋㅋㅋㅋ ㅋㅋㅋㅋ"
-
-#. TODO
-msgid "aihelp:jigo"
-msgstr "ㅋㅋ ㅋㅋ ㅋ ㅋㅋ ㅋ ㅋ ㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ (ㅋㅋㅋㅋ 0.5), ㅋㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋㅋㅋ."
-
-#. TODO
-msgid "Info:teaching undo"
-msgstr "ㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋㅋ ㅋㅋ."
-
-#. TODO
-msgid "strength:dan"
-msgstr "ㅋ"
-
-#. TODO
-msgid "lock ai when playing"
-msgstr ""
-"ㅋㅋㅋㅋ ㅋㅋㅋㅋ\n"
-" ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋ"
-
-#. TODO
 msgid "aihelp:p:influence"
 msgstr ""
-"ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ `ㅋㅋㅋㅋㅋ` ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ.ㅋㅋㅋㅋ `ㅋㅋ_ㅋㅋㅋ` ㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ"
-" ㅋㅋ ㅋㅋ. ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ 'ㅋㅋㅋㅋ' ㅋㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ."
+"ㅋㅋPicks moves biased above the `threshold` line and plays the best "
+"one.Increase `line_weight` to penalize moves near the edge more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."
 
-#. TODO
-msgid "Starting Kata failed"
-msgstr ""
-"ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋㅋㅋ '{ㅋㅋㅋㅋ}' ㅋㅋㅋ ㅋㅋ ㅋㅋㅋ {ㅋㅋㅋ}. ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ 'ㅋㅋㅋ' ㅋㅋㅋ ㅋㅋㅋ 'ㅋㅋㅋ'"
-" ㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋㅋㅋ."
+msgid "player:human"
+msgstr "ㅋㅋHuman"
 
-#. TODO
-msgid "update teacher"
-msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋㅋ"
+msgid "komi"
+msgstr "ㅋㅋKomi"
 
-#. TODO
+msgid "Info:teaching undo"
+msgstr "ㅋㅋMove was automatically undone in teaching mode."
+
+msgid "file not found"
+msgstr "ㅋㅋPath does not exist"
+
+msgid "analysis:sweep"
+msgstr "ㅋㅋFast analysis of all moves"
+
+msgid "sgf written"
+msgstr "ㅋㅋSGF with analysis written to {file_name}"
+
+msgid "analysis:equalize"
+msgstr "ㅋㅋEqualize visits of potential moves"
+
+msgid "menu:load"
+msgstr "ㅋㅋLoad Game"
+
+msgid "ai:policy"
+msgstr "ㅋㅋPolicy"
+
+msgid "ruleset"
+msgstr "ㅋㅋRules"
+
+msgid "Info:point loss"
+msgstr "ㅋㅋEstimated point loss: {points_lost:.1f}"
+
+msgid "menu:support"
+msgstr "ㅋㅋSupport"
+
+msgid "point loss threshold"
+msgstr "ㅋㅋPoint loss greater than"
+
+msgid "engine:max_visits"
+msgstr "ㅋㅋMaximum number of visits in analysis"
+
+msgid "ai:default"
+msgstr "ㅋㅋKataGo"
+
+msgid "general:anim_pv_time"
+msgstr "ㅋㅋTime between moves when animating a sequence"
+
+msgid "tab:info"
+msgstr "ㅋㅋInfo"
+
+msgid "player:type"
+msgstr "ㅋㅋPlayer"
+
 msgid "clear cache"
-msgstr "ㅋㅋㅋ ㅋㅋㅋ"
+msgstr "ㅋㅋClear Cache"
 
-#. TODO
+msgid "ai:jigo"
+msgstr "ㅋㅋKataJigo"
+
+msgid "Info:policy best"
+msgstr "ㅋㅋTop policy move was {move} ({probability:.1%})."
+
+msgid "Info:undo predicted PV"
+msgstr "ㅋㅋPredicted follow-up: {pv}"
+
+msgid "menu:manual"
+msgstr "ㅋㅋManual"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"ㅋㅋPicks `pick_n + pick_frac * <number of legal moves>` weighted away from "
+"the last move and plays the best one. Plays top move if policy value is "
+"above `pick_override` to avoid obvious mistakes. A higher `stddev` makes it "
+"play further away."
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"ㅋㅋPlays moves according to policy probability, with `weaken_fac` influencing"
+" how much more likely weaker moves are played. A high negative value plays "
+"like the `Policy` AI.`pick_override` determines when top move is chosen "
+"without randomness, and `lower_bound` determines the lower bound policy "
+"value that is allowed."
+
+msgid "No analysis available"
+msgstr "ㅋㅋNo analysis available"
+
+msgid "korean"
+msgstr "ㅋㅋKorean"
+
+msgid "menu:newgame"
+msgstr "ㅋㅋNew Game"
+
+msgid "closedlabel:info&notes"
+msgstr "ㅋㅋMove Info & Notes"
+
+msgid "update timer"
+msgstr "ㅋㅋUpdate Timer"
+
+msgid "general:debug_level:hint"
+msgstr "ㅋㅋSet to 1 when reporting errors"
+
+msgid "menu:playersetup"
+msgstr "ㅋㅋPlayer Setup"
+
+msgid "engine:katago:hint"
+msgstr "ㅋㅋLeave blank to use included executable"
+
+msgid "update teacher"
+msgstr "ㅋㅋUpdate Feedback Settings"
+
+msgid "tab:score"
+msgstr "ㅋㅋScore"
+
+msgid "avoids replaying"
+msgstr ""
+"ㅋㅋAvoids replaying\n"
+"identical games"
+
+msgid "engine:katago"
+msgstr "ㅋㅋPath to KataGo executable"
+
+msgid "gametype"
+msgstr "ㅋㅋGame Type"
+
+msgid "analysis:extra"
+msgstr "ㅋㅋDeeper analysis"
+
+msgid "aihelp:policy"
+msgstr ""
+"ㅋㅋPlays the top move from the policy network, without any reading. Strength "
+"is mainly affected by `model` in engine settings. The opening moves setting "
+"affects how many moves in the opening are more random."
+
+msgid "show last n dots"
+msgstr ""
+"ㅋㅋShow dots for the last\n"
+"<this many> moves"
+
+msgid "ai:p:territory"
+msgstr "ㅋㅋRespond Locally"
+
+msgid "lock ai when playing"
+msgstr ""
+"ㅋㅋDisable analysis\n"
+" while in play mode"
+
+msgid "stats:pointslost"
+msgstr "ㅋㅋPoints Lost"
+
+msgid "Select AI"
+msgstr "ㅋㅋSelect AI strategy to configure"
+
+msgid "ai:scoreloss"
+msgstr "ㅋㅋScore Loss"
+
+msgid "closedlabel:scoregraph"
+msgstr "ㅋㅋScore Graph"
+
+msgid "menu:save"
+msgstr "ㅋㅋSave Game"
+
+msgid "analysis:policy"
+msgstr ""
+"ㅋㅋPolicy\n"
+"Moves"
+
+msgid "show ai dots"
+msgstr ""
+"ㅋㅋShow dots/SGF comments\n"
+" for AI players"
+
+msgid "board-game-end"
+msgstr ""
+"ㅋㅋgame\n"
+"end"
+
+msgid "new game"
+msgstr "ㅋㅋStart New Game"
+
+msgid "teacher settings"
+msgstr "ㅋㅋEdit Teacher Settings"
+
+msgid "tab:points"
+msgstr "ㅋㅋPoint Loss"
+
+msgid "menu:lang"
+msgstr "ㅋㅋLanguage"
+
+msgid "engine settings"
+msgstr "ㅋㅋKataGo Engine Settings"
+
+msgid "show dots"
+msgstr "ㅋㅋShow dots"
+
+msgid "aihelp:jigo"
+msgstr ""
+"ㅋㅋWill try to win by a set amount of points (default 0.5), without further "
+"restrictions."
+
+msgid "btn:Analysis"
+msgstr "ㅋㅋAnalysis"
+
+msgid "num undos"
+msgstr "ㅋㅋNumber of undos"
+
+msgid "Engine died unexpectedly"
+msgstr ""
+"ㅋㅋEngine died unexpectedly without sending output, possibly due to out of "
+"memory: {error}"
+
+msgid "analysis:topmoves"
+msgstr ""
+"ㅋㅋTop\n"
+"Moves"
+
+msgid "engine:config"
+msgstr "ㅋㅋPath to KataGo config file"
+
+msgid "menu:aisettings"
+msgstr "ㅋㅋAI Settings"
+
+msgid "ai:p:tenuki"
+msgstr "ㅋㅋTenuki Style"
+
+msgid "Starting default Kata failed"
+msgstr ""
+"ㅋㅋStarting KataGo with command '{command}' failed with error {error}. If on "
+"MacOS, see the manual on how to use brew to install katago first, and add it"
+" to your path or 'engine/katago' setting."
+
+msgid "player:ai"
+msgstr "ㅋㅋAI"
+
+msgid "stats:winrate"
+msgstr "ㅋㅋWin Rate"
+
+msgid "chinese"
+msgstr "ㅋㅋChinese"
+
+msgid "handicap"
+msgstr "ㅋㅋHandicap"
+
+msgid "btn:Analyze"
+msgstr "ㅋㅋAnalyze"
+
+msgid "tab:notes"
+msgstr "ㅋㅋNotes"
+
+msgid "Info:top move"
+msgstr "ㅋㅋPredicted top move was {top_move} ({score})."
+
+msgid "board size"
+msgstr "ㅋㅋBoard size"
+
+msgid "byoyomi periods"
+msgstr "ㅋㅋNumber of Periods"
+
+msgid "aga"
+msgstr "ㅋㅋAGA"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"ㅋㅋUse 0.02-0.1 to show\n"
+"more possible moves"
+
+msgid "ai settings"
+msgstr "ㅋㅋAdvanced AI Settings"
+
+msgid "Info:AI thoughts"
+msgstr "ㅋㅋAI thought process: {thoughts}"
+
+msgid "Info:score"
+msgstr "ㅋㅋScore: {score}"
+
+msgid "SGF start message"
+msgstr ""
+"ㅋㅋMoves marked 'X' indicate the top move according to KataGo, those with a "
+"square are moves that lose less than 0.5 points"
+
+msgid "New Game title"
+msgstr "ㅋㅋSetup New Game"
+
+msgid "general:sgf_save"
+msgstr "ㅋㅋPath for saving SGF files"
+
+msgid "update ai settings"
+msgstr "ㅋㅋUpdate AI Settings"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"ㅋㅋPicks `pick_n + pick_frac * <number of legal moves>` at random and plays "
+"the best one. For `pick_frac=1` plays like the `Policy` AI. Plays top move "
+"if policy value is above `pick_override` to avoid obvious mistakes."
+
 msgid "Failed to import from clipboard"
 msgstr ""
-"ㅋㅋㅋ ㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋㅋㅋㅋ: {ㅋㅋㅋ}\n"
-"ㅋㅋㅋㅋㅋ ㅋㅋㅋㅋ: {ㅋㅋㅋㅋ}..."
+"ㅋㅋFailed to import game from clipboard: {error}\n"
+"Clipboard contents: {contents}..."
 
-#. TODO
+msgid "ai:p:local"
+msgstr "ㅋㅋLocal Style"
+
+msgid "strength:kyu"
+msgstr "ㅋㅋk"
+
+msgid "analysis:aimove"
+msgstr "ㅋㅋForce AI Move"
+
+msgid "Info:PV"
+msgstr "ㅋㅋPV: {pv}"
+
+msgid "Starting Kata failed"
+msgstr ""
+"ㅋㅋStarting KataGo with command '{command}' failed with error {error}. Please"
+" make sure the 'katago' value under 'engine' in settings points to the "
+"correct KataGo executable."
+
+msgid "restarting engine"
+msgstr "ㅋㅋRestarting Engine after Settings Change."
+
+msgid "ai:p:weighted"
+msgstr "ㅋㅋPolicy Weighted"
+
+msgid "tab:winrate"
+msgstr "ㅋㅋWin Rate"
+
+msgid "engine:time:hint"
+msgstr "ㅋㅋTime in seconds"
+
+msgid "save dots"
+msgstr "ㅋㅋSave in SGF"
+
+msgid "stats:pointsgained"
+msgstr "ㅋㅋPoints Gained"
+
+msgid "game:teach"
+msgstr "ㅋㅋTeaching Game"
+
+msgid "load sgf title"
+msgstr "ㅋㅋLoad SGF File to Analyze"
+
+msgid "ai-ponder"
+msgstr ""
+"ㅋㅋThis simply indicates the Engine status, going from green (idle) to orange"
+" (processing queries). It turns red when the engine has crashed or fails to "
+"start."
+
+msgid "analysis:dots"
+msgstr ""
+"ㅋㅋShow\n"
+"Dots"
+
 msgid "aihelp:p:territory"
 msgstr ""
-"ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋㅋ ㅋㅋ `ㅋㅋㅋㅋㅋ` ㅋㅋ ㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ ㅋㅋ.ㅋㅋㅋㅋ `ㅋㅋ_ㅋㅋㅋ` ㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ ㅋㅋ"
-" ㅋㅋㅋ ㅋㅋ. ㅋㅋㅋ ㅋㅋㅋㅋ ㅋㅋㅋ ㅋㅋ 'ㅋㅋㅋㅋ' ㅋㅋㅋㅋ ㅋ ㅋㅋ ㅋㅋㅋ ㅋ ㅋㅋㅋ."
+"ㅋㅋPicks moves biased below the `threshold` line and plays the best "
+"one.Increase `line_weight` to penalize moves near the center more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."
 
-#. TODO
-msgid "analysis:extra"
-msgstr "ㅋㅋㅋ ㅋㅋㅋㅋ"
+msgid "menu:teachsettings"
+msgstr "ㅋㅋTeaching Game Settings"
 
-#. TODO
-msgid "load sgf rewind"
-msgstr "ㅋㅋㅋ ㅋ ㅋㅋㅋ"
+msgid "closedlabel:movestats"
+msgstr "ㅋㅋMove Stats"
 
-#. TODO
-msgid "btn:Analyze"
-msgstr "ㅋㅋㅋㅋ"
+msgid "aihelp:default"
+msgstr ""
+"ㅋㅋFull strength KataGo AI. Strength is  affected by `max_visits` and `model`"
+" in the general settings `engine` section and engine configuration file. No "
+"options are available here."
 
-#. TODO
-msgid "menu:homepage"
-msgstr "ㅋㅋㅋㅋ"
+msgid "stats:score"
+msgstr "ㅋㅋEstimated Score"
 
-#. TODO
-msgid "menu:manual"
-msgstr "ㅋㅋㅋ"
+msgid "byoyomi length"
+msgstr "ㅋㅋTime per Byo-yomi Period"
+
+msgid "aihelp:p:local"
+msgstr ""
+"ㅋㅋPicks `pick_n + pick_frac * <number of legal moves>` weighted towards the "
+"last move and plays the best one. Plays top move if policy value is above "
+"`pick_override` to avoid obvious mistakes."
+
+msgid "Info:best move"
+msgstr "ㅋㅋMove was predicted best move"
+
+msgid "general:debug_level"
+msgstr "ㅋㅋDebug level in the console"
+
+msgid "Info:policy rank"
+msgstr "ㅋㅋMove was #{rank} according to policy  ({probability:.2%})."
+
+msgid "menu:clocksettings"
+msgstr "ㅋㅋTimer Settings"
+
+msgid "game:normal"
+msgstr "ㅋㅋNormal Game"
+
+msgid "engine:max_time"
+msgstr "ㅋㅋMaximum time for analysis"
+
+msgid "analysis:territory"
+msgstr ""
+"ㅋㅋExpected\n"
+"Territory"
+
+msgid "japanese"
+msgstr "ㅋㅋJapanese"
+
+msgid "aistrategy"
+msgstr "ㅋㅋAI Strategy"
+
+msgid "wait-before-equalize"
+msgstr ""
+"ㅋㅋWait for initial analysis to complete before requesting a refinement."
+
+msgid "non square board hint"
+msgstr "ㅋㅋUse x:y (e.g. 19:9) for non-square size"
+
+msgid "menu:settings"
+msgstr "ㅋㅋGeneral & Engine Settings"
+
+msgid "engine:model"
+msgstr "ㅋㅋPath to KataGo model file"
+
+msgid "general:sgf_load"
+msgstr "ㅋㅋPath for loading SGF files"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"ㅋㅋPlays moves that lead to more points lost with lower probability. Likely "
+"to play more varied/weaker with higher visits settings."
+
+msgid "general settings"
+msgstr "ㅋㅋGeneral Settings"
+
+msgid "btn:Play"
+msgstr "ㅋㅋPlay"
+
+msgid "engine:wide_root_noise"
+msgstr "ㅋㅋWide root noise (increases variety of moves considered)"
+
+msgid "Info:winrate"
+msgstr "ㅋㅋWin rate: {winrate}"
+
+msgid "Copied SGF to clipboard."
+msgstr "ㅋㅋCopied SGF to clipboard."
+
+msgid "strength:dan"
+msgstr "ㅋㅋd"
+
+msgid "update settings"
+msgstr "ㅋㅋUpdate Settings"
+
+msgid "load sgf fast analysis"
+msgstr "ㅋㅋUse fast analysis"
+
+msgid "undo-button-text"
+msgstr "ㅋㅋUndo"
+
+msgid "SGF Notes Hint"
+msgstr "ㅋㅋYour SGF notes for this position here."
+
+msgid "pass-button-text"
+msgstr "ㅋㅋPass"

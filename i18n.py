@@ -17,15 +17,19 @@ errors = False
 
 po = {}
 pofile = {}
+num_todo = defaultdict(int)
+
 for lang in locales:
     pofile[lang] = os.path.join(localedir, lang, "LC_MESSAGES", "katrain.po")
     po[lang] = polib.pofile(pofile[lang])
     for entry in po[lang].translated_entries():
         if "TODO" in entry.comment:
-            print(lang, "/", entry.msgid, "is TODO")
+            num_todo[lang] += 1
         else:
             strings_to_langs[entry.msgid][lang] = entry.msgstr
         lang_to_strings[lang].add(entry.msgid)
+    if num_todo[lang]:
+        print(f"{lang} has {num_todo[lang]} TODO entries")
 
 
 for lang in locales:
@@ -34,11 +38,12 @@ for lang in locales:
             print("Message id", msgid, "found as ", strings_to_langs[msgid], "but missing in default", DEFAULT_LANG)
             errors = True
         elif DEFAULT_LANG in strings_to_langs[msgid]:
-            print("Message id", msgid, "missing in ", lang, "-> Adding it from", DEFAULT_LANG)
             copied_msg = strings_to_langs[msgid][DEFAULT_LANG]
             if lang == "haha":
-                copied_msg = re.sub(r"[a-zA-Z]{1,2}", "ㅋ", copied_msg)
-            entry = polib.POEntry(msgid=msgid, msgstr=copied_msg, comment="TODO")
+                entry = polib.POEntry(msgid=msgid, msgstr="ㅋㅋ" + copied_msg)
+            else:
+                print("Message id", msgid, "missing in ", lang, "-> Adding it from", DEFAULT_LANG)
+                entry = polib.POEntry(msgid=msgid, msgstr=copied_msg, comment="TODO")
             po[lang].append(entry)
             errors = True
         else:

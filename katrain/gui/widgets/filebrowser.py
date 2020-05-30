@@ -45,7 +45,7 @@ from kivy.lang import Builder
 from kivy.utils import platform
 from kivy.clock import Clock
 import string
-from os.path import sep, dirname, expanduser, isdir, join
+from os.path import sep, dirname, expanduser, isdir, join, getmtime
 from os import walk
 from functools import partial
 
@@ -56,7 +56,7 @@ if platform == "win":
 
 
 def last_modified_first(files, filesystem):
-    return sorted(f for f in files if filesystem.is_dir(f)) + sorted([f for f in files if not filesystem.is_dir(f)], key=lambda f: -os.path.getmtime(f))
+    return sorted(f for f in files if filesystem.is_dir(f)) + sorted([f for f in files if not filesystem.is_dir(f)], key=lambda f: -getmtime(f))
 
 
 def get_home_directory():
@@ -168,7 +168,7 @@ Builder.load_string(
         self.parent.browser.path = self.path if self.collide_point(*args[1].pos) and self.path else self.parent.browser.path
     on_is_open: self.is_open and self.parent.trigger_populate(self)
 
-<FileBrowser>:
+<I18NFileBrowser>:
     orientation: 'vertical'
     spacing: 5
     padding: [6, 6, 6, 6]
@@ -224,12 +224,14 @@ Builder.load_string(
         TextInput:
             id: file_text
             text: (root.selection and (root._shorten_filenames(root.selection) if root.multiselect else root.selection[0])) or ''
-            hint_text: 'Filename'
+            hint_text: i18n._('Filename')
             multiline: False
-        Button:
+            height: '40dp'
+        AutoSizedRoundedRectangleButton:
             id: select_button
+            padding_x: 15
+            height: '40dp'
             size_hint_x: None
-            width: metrics.dp(100)
             text: root.select_string
             on_release: root.dispatch('on_success')
 """
@@ -312,8 +314,8 @@ class LinkTree(TreeView):
                 self.add_node(TreeLabel(text=path, path=parent + sep + path), node)
 
 
-class FileBrowser(BoxLayout):
-    """FileBrowser class, see module documentation for more information.
+class I18NFileBrowser(BoxLayout):
+    """I18NFileBrowser class, see module documentation for more information.
     """
 
     __events__ = ("on_success", "on_submit")
@@ -436,7 +438,7 @@ class FileBrowser(BoxLayout):
         pass
 
     def __init__(self, **kwargs):
-        super(FileBrowser, self).__init__(**kwargs)
+        super(I18NFileBrowser, self).__init__(**kwargs)
         Clock.schedule_once(self._post_init)
 
     def _post_init(self, *largs):

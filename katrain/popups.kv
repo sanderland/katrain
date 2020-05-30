@@ -1,6 +1,7 @@
 #:kivy 1.11.0
 #:import i18n katrain.core.utils.i18n
-
+#:import expanduser os.path.expanduser
+#:import abspath os.path.abspath
 
 #:set CP_SPACING 6
 #:set CP_SMALL_SPACING 3
@@ -14,7 +15,7 @@
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
 
 
-#MDTextField:
+# MDTextField:
 #    hint_text: "Helper text on focus"
 #    helper_text: "This will disappear when you click off"
 #    helper_text_mode: "on_focus"
@@ -22,7 +23,7 @@
 
 <LabelledTextInput>:
     font_size: INPUT_FONT_SIZE
-    helper_text_mode: "on_focus"
+    helper_text_mode: "none"
     hint_text: ""
     helper_text: ""
 
@@ -31,7 +32,6 @@
     multiline: True # just for wrapping
     helper_text_mode: "on_error"
     helper_text: i18n._("file not found")
-
 
 <LabelledIntInput>:
     font_size: INPUT_FONT_SIZE
@@ -67,7 +67,7 @@
 <DescriptionLabel>:
     font_size: DESC_FONT_SIZE
     multiline: True
-    text_size: self.size
+    text_size: self.width, None
     halign: 'center'
     valign: 'center'
 
@@ -101,13 +101,14 @@
             AnchorLayout:
                 LabelledFloatInput:
                     input_property: "general/anim_pv_time"
-                    helper_text: i18n._("engine:time:hint")
+                    hint_text: i18n._("engine:time:hint")
             DescriptionLabel:
                 text: i18n._("general:debug_level")
             AnchorLayout:
                 LabelledIntInput:
                     input_property: "general/debug_level"
                     helper_text: i18n._("general:debug_level:hint")
+                    helper_text_mode: "on_focus"
             Label:
             Label:
             Label:
@@ -157,7 +158,7 @@
             AnchorLayout:
                 LabelledFloatInput:
                     input_property: "engine/max_time"
-                    helper_text: i18n._("engine:time:hint")
+                    hint_text: i18n._("engine:time:hint")
             DescriptionLabel:
                 text: i18n._("engine:wide_root_noise")
             AnchorLayout:
@@ -272,7 +273,7 @@
                 id: boardsize
                 input_property: 'game/size'
                 size_hint: 0.5, None
-                hint_text:i18n._("non square board hint")
+                hint_text: i18n._("non square board hint")
         AnchorLayout:
             MDBoxLayout:
                 adaptive_size: True
@@ -360,15 +361,16 @@
     BoxLayout:
         size_hint: 1,1
         DescriptionLabel:
-            font_size: 1.25*DESC_FONT_SIZE
+            font_size: DESC_FONT_SIZE
             text: i18n._('Select AI')
         AnchorLayout:
             I18NSpinner:
-                size_hint: 1, 0.5
+                size_hint: 0.8, 0.5
                 id: ai_select
     SmallDescriptionLabel:
         id: help_label
         size_hint: 1,1.25
+        text: i18n._('')
     GridLayout:
         size_hint: 1,4
         id: options_grid
@@ -388,12 +390,6 @@
     rewind: rewind
     filesel: filesel
     orientation: 'vertical'
-    I18NFileChooserListView:
-        id: filesel
-        multiselect: False
-        filters: ["*.sgf"]
-        path: "."
-        size_hint: 1,7
     BoxLayout:
         orientation: 'horizontal'
         size_hint: 1,1
@@ -403,7 +399,6 @@
             halign: 'right'
         LabelledCheckBox:
             id: fast
-            color: (0.95, 0.95, 0.95)
             size_hint: 0.05,1
         DescriptionLabel:
             text: i18n._("load sgf rewind")
@@ -412,12 +407,10 @@
         LabelledCheckBox:
             id: rewind
             active: True
-            color: (0.95, 0.95, 0.95)
             size_hint: 0.05,1
-    AnchorLayout:
-        size_hint: 1,1.5
-        AutoSizedRoundedRectangleButton:
-            padding_x: 15
-            size_hint: None,0.5
-            text: i18n._("Load File")
-
+    I18NFileBrowser:
+        id: filesel
+        multiselect: False
+        filters: ["*.sgf"]
+        path: "."
+        size_hint: 1,7

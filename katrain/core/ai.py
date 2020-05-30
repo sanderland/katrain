@@ -5,7 +5,7 @@ import time
 from typing import Dict, List, Tuple
 
 from katrain.core.utils import var_to_grid
-from katrain.core.constants import OUTPUT_INFO, OUTPUT_DEBUG
+from katrain.core.constants import OUTPUT_INFO, OUTPUT_DEBUG, AI_STRATEGIES_POLICY, AI_POLICY, AI_WEIGHTED
 from katrain.core.engine import EngineDiedException
 from katrain.core.game import Game, GameNode, Move
 
@@ -33,9 +33,8 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         engine = game.engines[cn.next_player]
         if engine.katago_process.poll() is not None:  # TODO: clean up
             raise EngineDiedException(f"Engine for {cn.next_player} ({engine.config}) died")
-    ai_mode = ai_mode.lower()
     ai_thoughts = ""
-    if ("policy" in ai_mode or "p:" in ai_mode) and cn.policy:  # pure policy based move
+    if (ai_mode in AI_STRATEGIES_POLICY) and cn.policy:  # pure policy based move
         policy_moves = cn.policy_ranking
         pass_policy = cn.policy[-1]
         top_5_pass = any([polmove[1].is_pass for polmove in policy_moves[:5]])  # dont make it jump around for the last few sensible non pass moves
@@ -44,20 +43,20 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         policy_grid = var_to_grid(cn.policy, size)  # type: List[List[float]]
         top_policy_move = policy_moves[0][1]
         ai_thoughts += f"Using policy based strategy, base top 5 moves are {fmt_moves(policy_moves[:5])}. "
-        if "policy" in ai_mode and cn.depth <= ai_settings["opening_moves"]:
+        if ai_mode == AI_POLICY and cn.depth <= ai_settings["opening_moves"]:
             ai_mode = "p:weighted"
             ai_thoughts += f"Switching to weighted strategy in the opening {int(ai_settings['opening_moves'] * (game.board_size[0]*game.board_size[1]))} moves. "
             ai_settings = {"pick_override": 0.9, "weaken_fac": 1, "lower_bound": 0.02}
         if top_5_pass:
             aimove = top_policy_move
             ai_thoughts += "Playing top one because one of them is pass."
-        elif "policy" in ai_mode:
+        elif ai_mode == AI_POLICY:
             aimove = top_policy_move
             ai_thoughts += f"Playing top policy move {aimove.gtp()}."
         elif policy_moves[0][0] > ai_settings["pick_override"]:
             aimove = top_policy_move
             ai_thoughts += f"Top policy move has weight > {ai_settings['pick_override']:.1%}, so overriding other strategies."
-        elif "weighted" in ai_mode:
+        elif ai_mode == AI_WEIGHTED:
             lower_bound = max(0, ai_settings["lower_bound"]) * 2  # compensate for first halving in loop
             weaken_fac = max(0.01, ai_settings["weaken_fac"])
             weighted_coords = []

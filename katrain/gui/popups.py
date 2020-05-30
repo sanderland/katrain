@@ -7,11 +7,12 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
-from katrain.core.constants import OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_INFO
+from katrain.core.constants import OUTPUT_ERROR, OUTPUT_DEBUG, OUTPUT_INFO, AI_DEFAULT, AI_CONFIG_DEFAULT, AI_STRATEGIES_RECOMMENDED_ORDER
 from katrain.core.engine import KataGoEngine
 from katrain.core.utils import i18n, find_package_resource
 from katrain.gui.kivyutils import I18NSpinner, BackgroundMixin
@@ -249,21 +250,22 @@ class AIPopup(QuickConfigGui):
 
     def __init__(self, katrain):
         super().__init__(katrain)
-        self.ai_select.bind(text=self.build_ai_options)
-        self.ai_select.value_refs = katrain.ai_strategies
+        self.ai_select.value_refs = AI_STRATEGIES_RECOMMENDED_ORDER
+        selected_strategies = {p.strategy for p in katrain.players_info.values()}
+        config_strategy = list((selected_strategies - {AI_DEFAULT}) or {AI_CONFIG_DEFAULT})[0]
+        self.ai_select.select_key(config_strategy)
         self.build_ai_options()
+        self.ai_select.bind(text=self.build_ai_options)
 
-    def build_ai_options(self,*_args):
+    def build_ai_options(self, *_args):
         strategy = self.ai_select.selected[1]
-        print(strategy, "=strat", _args)
         mode_settings = self.katrain.config(f"ai/{strategy}")
         self.options_grid.clear_widgets()
         self.help_label.text = i18n._(strategy.replace("ai:", "aihelp:"))
-        for k, v in mode_settings.items():
+        for k, v in sorted(mode_settings.items(), key=lambda kv: kv[0]):
             self.options_grid.add_widget(DescriptionLabel(text=k))
-            self.options_grid.add_widget(wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"{k}/{v}")))
+            self.options_grid.add_widget(wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"ai/{strategy}/{k}")))
         for _ in range((self.max_options - len(mode_settings)) * 2):
-            print(_, self.options_grid.rows, self.options_grid.cols, len(self.options_grid.children))
             self.options_grid.add_widget(Label())
 
 
@@ -294,4 +296,8 @@ class ConfigPopup(QuickConfigGui):
 
 
 class LoadSGFPopup(BoxLayout):
-    pass
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        app = MDApp.get_running_app()
+        self.filesel.favorites = [(os.path.abspath(app.gui.config("general/sgf_load")), "SGF Load Dir"), (os.path.abspath(app.gui.config("general/sgf_save")), "SGF Save Dir")]
+        self.filesel.select_string = i18n._("Load File")

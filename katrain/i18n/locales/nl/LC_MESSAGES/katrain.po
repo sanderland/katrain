@@ -274,7 +274,7 @@ msgstr "Normal Game"
 
 #. TODO
 msgid "player:human"
-msgstr "AI"
+msgstr "Mens"
 
 #. TODO
 msgid "player:type"
@@ -682,3 +682,7 @@ msgstr "Homepage"
 #. TODO
 msgid "menu:manual"
 msgstr "Manual"
+
+#. TODO
+msgid "ai settings"
+msgstr "Advanced AI Settings"

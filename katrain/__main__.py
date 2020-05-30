@@ -25,7 +25,7 @@ from katrain.core.utils import (
     DEFAULT_LANGUAGE,
     find_package_resource,
 )
-from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, MODE_PLAY
+from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG, MODE_PLAY, AI_STRATEGIES_RECOMMENDED_ORDER
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
@@ -33,7 +33,7 @@ from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
 from katrain.gui.widgets.graph import ScoreGraph
-from katrain.gui.widgets.filebrowser import I18NFileChooserListView
+from katrain.gui.widgets.filebrowser import I18NFileBrowser
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
@@ -80,10 +80,6 @@ class KaTrainGui(Screen, KaTrainBase):
     @property
     def play_analyze_mode(self):
         return self.play_mode.play_analyze_mode
-
-    @property
-    def ai_strategies(self):
-        return list(self.config("ai").keys())
 
     def start(self):
         if self.engine:
@@ -163,10 +159,10 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def __call__(self, message, *args):
         if self.game:
-            if message.endswith('popup'):  # gui code needs to run in main kivy thread.
+            if message.endswith("popup"):  # gui code needs to run in main kivy thread.
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")
                 Clock.schedule_once(lambda _dt: fn(*args), -1)
-            else: # game related actions
+            else:  # game related actions
                 self.message_queue.put([self.game.game_id, message, *args])
 
     def _do_new_game(self, move_tree=None, analyze_fast=False):
@@ -180,7 +176,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if node is None or self.game.current_node == node:
             mode = self.next_player_info.strategy
             settings = self.config(f"ai/{mode}")
-            if settings:
+            if settings is not None:
                 ai_move(self.game, mode, settings)
             else:
                 self.log(f"AI Mode {mode} not found!", OUTPUT_ERROR)
@@ -252,7 +248,8 @@ class KaTrainGui(Screen, KaTrainBase):
             popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
             self.fileselect_popup = I18NPopup(title_key="load sgf title", size=[1200, 800], content=popup_contents).__self__
 
-            def readfile(files, _mouse):
+            def readfile(*args):
+                files = popup_contents.filesel.selection
                 self.fileselect_popup.dismiss()
                 try:
                     move_tree = KaTrainSGF.parse_file(files[0])
@@ -263,6 +260,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 if not popup_contents.rewind.active:
                     self.game.redo(999)
 
+            popup_contents.filesel.on_success = readfile
             popup_contents.filesel.on_submit = readfile
         self.fileselect_popup.open()
 

@@ -66,7 +66,7 @@ class KaTrainBase:
             print(message)
 
     def _load_config(self):
-        config_file = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else find_package_resource(self.CONFIG_FILE))
+        config_file = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].endswith(".json") else find_package_resource(self.CONFIG_FILE))
         try:
             self.log(f"Using config file {config_file}", OUTPUT_INFO)
             self._config_store = JsonStore(config_file, indent=4)

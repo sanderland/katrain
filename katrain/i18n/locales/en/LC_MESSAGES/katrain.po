@@ -402,7 +402,6 @@ msgid "update settings"
 msgstr "Update Settings"
 
 # ai settings from here
-
 msgid "ai settings"
 msgstr "Advanced AI Settings"
 
@@ -459,8 +458,9 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"Full strength KataGo AI. Strength is  affected by `max_visits` and "
-"`model` in the general settings `engine` section and engine configuration file. No options are available here."
+"Full strength KataGo AI. Strength is  affected by `max_visits` and `model` "
+"in the general settings `engine` section and engine configuration file. No "
+"options are available here."
 
 msgid "ai:jigo"
 msgstr "KataJigo"
@@ -516,7 +516,7 @@ msgstr ""
 "policy value is above `pick_override` to avoid obvious mistakes."
 
 msgid "ai:p:local"
-msgstr "Local Response Style"
+msgstr "Local Style"
 
 msgid "aihelp:p:local"
 msgstr ""
@@ -531,7 +531,8 @@ msgid "aihelp:p:tenuki"
 msgstr ""
 "Picks `pick_n + pick_frac * <number of legal moves>` weighted away from the "
 "last move and plays the best one. Plays top move if policy value is above "
-"`pick_override` to avoid obvious mistakes."
+"`pick_override` to avoid obvious mistakes. A higher `stddev` makes it play "
+"further away."
 
 msgid "ai:p:influence"
 msgstr "Influential Style"

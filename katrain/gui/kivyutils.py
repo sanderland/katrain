@@ -34,7 +34,7 @@ from kivymd.uix.button import BasePressedButton, BaseFlatButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 from kivy.core.text import Label as CoreLabel
 
-from katrain.core.constants import GAME_TYPES
+from katrain.core.constants import GAME_TYPES, AI_STRATEGIES_RECOMMENDED_ORDER, PLAYER_HUMAN, PLAYER_AI
 from katrain.core.utils import i18n
 
 #
@@ -179,35 +179,49 @@ class BGBoxLayout(BoxLayout, BackgroundMixin):
 
 
 class I18NSpinner(Spinner):
+    __events__ = ["on_select"]
     sync_height_frac = NumericProperty(1.0)
     value_refs = ListProperty()
+    selected_index = NumericProperty(0)
     font_name = StringProperty(DEFAULT_FONT)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.bind(size=self.update_dropdown_props, pos=self.update_dropdown_props, value_refs=self.i18n_values)
         self.i18n_values()
+        MDApp.get_running_app().bind(language=self.i18n_values)
 
     @property
     def selected(self):
         try:
-            selected = self.values.index(self.text)
+            selected = self.selected_index
             return selected, self.value_refs[selected], self.values[selected]
         except (ValueError, IndexError):
             return 0, "", ""
+
+    def on_text(self, _widget, text):
+        try:
+            new_index = self.values.index(text)
+            if new_index != self.selected_index:
+                self.selected_index = new_index
+                self.dispatch("on_select")
+        except (ValueError, IndexError):
+            pass
+
+    def on_select(self, *args):
+        pass
 
     def select_key(self, key):
         try:
             ix = self.value_refs.index(key)
             self.text = self.values[ix]
-        except:
+        except (ValueError, IndexError):
             pass
 
     def i18n_values(self, *_args):
         if self.value_refs:
-            selected = self.selected[0]
             self.values = [i18n._(ref) for ref in self.value_refs]
-            self.text = self.values[selected]
+            self.text = self.values[self.selected_index]
             self.font_name = i18n.font_name
             self.update_dropdown_props()
 
@@ -230,29 +244,33 @@ class I18NSpinner(Spinner):
 
 class PlayerSetup(MDBoxLayout):
     player = OptionProperty("B", options=["B", "W"])
+    mode = StringProperty("")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Clock.schedule_once(self.setup_options, 0)
+        self.player_subtype_ai.value_refs = AI_STRATEGIES_RECOMMENDED_ORDER
+        self.player_subtype_human.value_refs = GAME_TYPES
+        self.setup_options()
 
     def setup_options(self, *_args):
-        self.player_subtype.clear_widgets()
-        if self.player_type.selected[0] == 0:  # human
-            self.player_subtype_label.text = i18n._("gametype")
-            self.player_subtype.value_refs = GAME_TYPES
-        else:
-            self.player_subtype_label.text = i18n._("aistrategy")
-            self.player_subtype.value_refs = MDApp.get_running_app().gui.ai_strategies  # TODO:
-        self.player_subtype.text = self.player_subtype.values[0]
+        if self.player_type.selected[1] == self.mode:
+            return
+        self.mode = self.player_type.selected[1]
         self.update_global_player_info()
 
     @property
     def player_type_dump(self):
-        return {"player_type": self.player_type.selected[1], "player_subtype": self.player_subtype.selected[1]}
+        if self.mode == PLAYER_AI:
+            return {"player_type": self.player_type.selected[1], "player_subtype": self.player_subtype_ai.selected[1]}
+        else:
+            return {"player_type": self.player_type.selected[1], "player_subtype": self.player_subtype_human.selected[1]}
 
     def update_widget(self, player_type, player_subtype):
         self.player_type.select_key(player_type)  # should trigger setup options
-        self.player_subtype.select_key(player_subtype)  # should trigger setup options
+        if self.mode == PLAYER_AI:
+            self.player_subtype_ai.select_key(player_subtype)  # should trigger setup options
+        else:
+            self.player_subtype_human.select_key(player_subtype)  # should trigger setup options
 
     def update_global_player_info(self):
         if self.parent and self.parent.update_global:
@@ -358,7 +376,7 @@ class CollapsablePanel(MDBoxLayout):
             options=self.build_options, option_colors=self.build_options, options_height=self.build_options, option_active=self.build_options, options_spacing=self.build_options,
         )
         self.bind(state=self.build, size_hint_y_open=self.build, height_open=self.build)
-        MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options,0))
+        MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
         self.build_options()
 
     def build_options(self, *args, **kwargs):
@@ -387,7 +405,7 @@ class CollapsablePanel(MDBoxLayout):
             self.header.add_widget(Label())  # spacer
             self.trigger_select(ix=None)
         else:
-            self.header.add_widget(Label(text=i18n._(self.closed_label), halign="right", height=self.options_height))
+            self.header.add_widget(Label(text=i18n._(self.closed_label), font_name=i18n.font_name, halign="right", height=self.options_height))
         self.header.add_widget(self.open_close_button)
 
         super().clear_widgets()
@@ -438,57 +456,7 @@ class StatsBox(MDBoxLayout, BackgroundMixin):
     player = StringProperty("")
 
 
-# --- not checked
-
-
-class ToolTipLabel(Label):
-    pass
-
-
-class ToolTipBehavior(object):  # TODO restyle
-    tooltip_text = StringProperty("")
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.tooltip = ToolTipLabel()
-        self.open = False
-
-    def on_touch_up(self, touch):
-        inside = self.collide_point(*self.to_widget(*touch.pos))
-        if inside and touch.button == "right" and self.tooltip_text:
-            if not self.open:
-                self.display_tooltip(touch.pos)
-            Clock.schedule_once(lambda _: self.set_position(touch.pos), 0)
-        elif not inside and self.open:
-            self.close_tooltip()
-        return super().on_touch_up(touch)
-
-    def close_tooltip(self):
-        self.open = False
-        Window.remove_widget(self.tooltip)
-
-    def on_size(self, *args):
-        mid = (self.pos[0] + self.width / 2, self.pos[1] + self.height / 2)
-        self.set_position(mid)
-
-    def set_position(self, pos):
-        self.tooltip.pos = (pos[0] - self.tooltip.texture_size[0], pos[1])
-
-    def display_tooltip(self, pos):
-        self.open = True
-        self.tooltip.text = self.tooltip_text
-        Window.add_widget(self.tooltip)
-
-
-class ScaledLightLabel(LightLabel, ToolTipBehavior):
-    num_lines = NumericProperty(1)
-
-
 class ClickableLabel(LeftButtonBehavior, Label):
-    pass
-
-
-class LightHelpLabel(ScaledLightLabel):
     pass
 
 
@@ -500,74 +468,6 @@ class ScrollableLabel(ScrollView, BackgroundMixin):
 
     def on_ref_press(self, ref):
         pass
-
-
-class StyledButton(Button, LeftButtonBehavior, ToolTipBehavior):
-    button_color = ListProperty([])
-    button_color_down = ListProperty([])
-    radius = ListProperty((0,))
-
-
-class StyledToggleButton(StyledButton, ToggleButtonBehavior, ToolTipBehavior):
-    value = StringProperty("")
-    allow_no_selection = BooleanProperty(False)
-
-    def _do_press(self):
-        if (self.last_touch and self.last_touch.button != "left") or (not self.allow_no_selection and self.state == "down"):
-            return
-        self._release_group(self)
-        self.state = "normal" if self.state == "down" else "down"
-
-
-class ToggleButtonContainer(GridLayout):
-    __events__ = ("on_selection",)
-
-    options = ListProperty([])
-    labels = ListProperty([])
-    tooltips = ListProperty(None)
-    selected = StringProperty("")
-    group = StringProperty(None)
-    autosize = BooleanProperty(True)
-    spacing = ListProperty((1, 1))
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.rows = 1
-        self.cols = len(self.options)
-        Clock.schedule_once(self._build, 0)
-
-    def on_selection(self, *args):
-        pass
-
-    def _build(self, _dt):
-        self.cols = len(self.options)
-        self.group = self.group or str(random.random())
-        if not self.selected and self.options:
-            self.selected = self.options[0]
-        if len(self.labels) < len(self.options):
-            self.labels += self.options[len(self.labels) + 1 :]
-
-        def state_handler(*args):
-            self.dispatch("on_selection")
-
-        for i, opt in enumerate(self.options):
-            state = "down" if opt == self.selected else "normal"
-            tooltip = self.tooltips[i] if self.tooltips else None
-            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, on_press=state_handler, tooltip_text=tooltip,))
-        Clock.schedule_once(self._size, 0)
-
-    def _size(self, _dt):
-        if self.autosize:
-            for tb in self.children:
-                tb.size_hint = (tb.texture_size[0] + 10, 1)
-
-    @property
-    def value(self):
-        for tb in self.children:
-            if tb.state == "down":
-                return tb.value
-        if self.options:
-            return self.options[0]
 
 
 def draw_text(pos, text, font_name=None, **kw):
