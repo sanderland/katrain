@@ -134,6 +134,10 @@ msgstr "Notes"
 msgid "closedlabel:scoregraph"
 msgstr "Score Graph"
 
+#. on the graph
+msgid "Jigo"
+msgstr "Jigo"
+
 msgid "closedlabel:movestats"
 msgstr "Move Stats"
 

@@ -515,3 +515,6 @@ msgstr "ㅋㅋPass"
 
 msgid "move"
 msgstr "ㅋㅋMove"
+
+msgid "Jigo"
+msgstr "ㅋㅋJigo"

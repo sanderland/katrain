@@ -652,3 +652,7 @@ msgstr "Advanced AI Settings"
 #. TODO
 msgid "move"
 msgstr "Move"
+
+#. TODO
+msgid "Jigo"
+msgstr "Jigo"

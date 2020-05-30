@@ -3,7 +3,7 @@ from kivy.config import Config  # isort:skip
 ICON = "img/icon.png"  # isort:skip  # set icon
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
-Config.set("graphics", "width", 1400)
+Config.set("graphics", "width", 1300)
 Config.set("graphics", "height", 1000)
 
 

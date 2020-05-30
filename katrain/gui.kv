@@ -450,7 +450,7 @@
         font_size: root.marker_font_size
         color:  SCORE_COLOR
         pos: root.right_edge - self.width-1, root.mid - self.height/2 + 2
-        text: 'Jigo'
+        text: i18n._('Jigo')
         opacity: int(root.show_score)
     GraphMarkerLabel:
         font_size: root.marker_font_size
@@ -995,14 +995,15 @@
                         AnalysisControls:
                             id: analysis_controls
                             size_hint_y: None
-                            height: min(100,self.width / 13.5) if not root.zen else 0
+                            height: min(100,self.width / 13.5) if not root.zen else 1
                             opacity: 0 if root.zen else 1
                         BadukPanWidget:
                             id: board_gui
                         BadukPanControls:
                             id: board_controls
                             size_hint_y: None
-                            height: min(100,self.width / 13.5)
+                            height: min(100,self.width / 13.5) if not root.zen else 1
+                            opacity: 0 if root.zen else 1
                     MDBoxLayout:
                         size_hint_x: None
                         width: 0 if root.zen else self.height * 0.4
