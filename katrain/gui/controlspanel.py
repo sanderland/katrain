@@ -19,6 +19,10 @@ class PlayAnalyzeSelect(MDFloatLayout):
     def play_analyze_mode(self):
         return MODE_PLAY if self.play.active else MODE_ANALYZE
 
+    def select_mode(self, mode):
+        if self.play_analyze_mode != mode:
+            self.switch_mode()
+
     def switch_mode(self):  # TODO: load settings
         if self.play_analyze_mode == MODE_PLAY:
             self.analyze.trigger_action(duration=0)

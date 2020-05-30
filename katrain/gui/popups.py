@@ -324,5 +324,4 @@ class LoadSGFPopup(BoxLayout):
             (os.path.abspath(app.gui.config("general/sgf_save")), "SGF Save Dir"),
         ]
         self.filesel.path = os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load")))
-        print(os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load"))))
         self.filesel.select_string = i18n._("Load File")

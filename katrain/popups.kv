@@ -198,6 +198,7 @@
             padding: 4
             size_hint: 0.66, 1
             DescriptionLabel:
+                font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("show last n dots")
                 size_hint: 2,1
             AnchorLayout:
@@ -206,12 +207,14 @@
                     input_property: "trainer/eval_off_show_last"
             DescriptionLabel:
                 size_hint: 2,1
+                font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("show ai dots")
             AnchorLayout:
                 LabelledCheckBox:
                     input_property: "trainer/eval_show_ai"
             DescriptionLabel:
                 size_hint: 2,1
+                font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("lock ai when playing")
             AnchorLayout:
                 LabelledCheckBox:

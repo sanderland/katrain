@@ -85,7 +85,7 @@ class Lang(Observable):
         else:
             return super(Lang, self).funbind(name, func, *args)
 
-    def add_callback(self, callback_fn: Callable):
+    def add_callback(self, callback_fn: Callable):  # TODO refactor w app
         self.callbacks.append(callback_fn)
 
     def switch_lang(self, lang):

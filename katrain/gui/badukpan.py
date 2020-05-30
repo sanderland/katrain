@@ -487,12 +487,14 @@ class BadukPanWidget(Widget):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
 
-class AnalysisDropdownMenuRightContent(RightContent):
-    font_size = NumericProperty(sp(16))
-
-
 class AnalysisDropdownMenu(MDDropdownMenu):
-    pass
+    def create_menu_items(self):
+        super().create_menu_items()
+        for widget in self.menu.ids.box.children:
+            try:
+                widget.ids._text_container.children[2].font_name = i18n.font_name
+            except:  # TODO not use this terrible widget
+                pass
 
 
 class AnalysisControls(MDFloatLayout):

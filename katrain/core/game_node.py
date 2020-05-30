@@ -80,8 +80,10 @@ class GameNode(SGFNode):
 
     # various analysis functions
     def analyze(self, engine, priority=0, visits=None, time_limit=True, refine_move=None, analyze_fast=False):
+        print(priority, visits, time_limit, refine_move, analyze_fast)
         if visits and not refine_move:
-            self.analysis_visits_requested = max(self.analysis_visits_requested, engine.config["max_visits"])
+            self.analysis_visits_requested = max(visits, engine.config["max_visits"])
+            print("vr", self.analysis_visits_requested)
         engine.request_analysis(
             self,
             lambda result: self.set_analysis(result, refine_move),
@@ -158,7 +160,7 @@ class GameNode(SGFNode):
         if not self.parent or not single_move:  # root
             return ""
 
-        text = f"{i18n._('move')} {self.depth}: {single_move.player} {single_move.gtp()}\n"
+        text = i18n._("move").format(number=self.depth) + ": {single_move.player} {single_move.gtp()}\n"
         if self.analysis_ready:
             score = self.score
             if sgf:
