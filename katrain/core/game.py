@@ -246,12 +246,15 @@ class Game:
         if eval_thresholds is None:
             eval_thresholds = self.katrain.config("trainer/eval_thresholds")
 
-        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw) or str(self.katrain.players_info[bw])) for bw in "BW"}
+        def player_name(player_info):
+            return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
+
+        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw) or player_name(self.katrain.players_info[bw])) for bw in "BW"}
         game_name = f"katrain_{player_names['B']} vs {player_names['W']} {self.game_id}"
         file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
-        show_dots_for = {bw: trainer_config.get("eval_show_ai", True) or pl.human for bw, pl in self.players.items()}
+        show_dots_for = {bw: trainer_config.get("eval_show_ai", True) or pl.human for bw, pl in self.katrain.players_info.items()}
         sgf = self.root.sgf(save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=eval_thresholds)
         with open(file_name, "w") as f:
             f.write(sgf)

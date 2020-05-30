@@ -512,3 +512,6 @@ msgstr "ㅋㅋYour SGF notes for this position here."
 
 msgid "pass-button-text"
 msgstr "ㅋㅋPass"
+
+msgid "move"
+msgstr "ㅋㅋMove"

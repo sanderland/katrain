@@ -648,3 +648,7 @@ msgstr "Manual"
 #. TODO
 msgid "ai settings"
 msgstr "Advanced AI Settings"
+
+#. TODO
+msgid "move"
+msgstr "Move"

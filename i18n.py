@@ -9,6 +9,7 @@ locales = set(os.listdir(localedir))
 print("locales found:", locales)
 
 strings_to_langs = defaultdict(dict)
+strings_to_keys = defaultdict(dict)
 lang_to_strings = defaultdict(set)
 
 DEFAULT_LANG = "en"
@@ -27,12 +28,19 @@ for lang in locales:
             num_todo[lang] += 1
         else:
             strings_to_langs[entry.msgid][lang] = entry.msgstr
+        strings_to_keys[entry.msgid][lang] = set(re.findall("{.*?}",entry.msgstr))
         lang_to_strings[lang].add(entry.msgid)
     if num_todo[lang]:
         print(f"{lang} has {num_todo[lang]} TODO entries")
 
 
 for lang in locales:
+    if lang != DEFAULT_LANG:
+        for msgid in lang_to_strings[lang]:
+            if DEFAULT_LANG in strings_to_keys[msgid] and strings_to_keys[msgid][lang] != strings_to_keys[msgid][DEFAULT_LANG]:
+                print(f"{msgid} has inconstent formatting keys for {lang}: ",strings_to_keys[msgid][lang],'is different from default', strings_to_keys[msgid][DEFAULT_LANG])
+                errors=True
+
     for msgid in strings_to_langs.keys() - lang_to_strings[lang]:
         if lang == DEFAULT_LANG:
             print("Message id", msgid, "found as ", strings_to_langs[msgid], "but missing in default", DEFAULT_LANG)

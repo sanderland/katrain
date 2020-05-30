@@ -236,7 +236,7 @@ class BadukPanWidget(Widget):
             for m in katrain.game.stones:
                 has_stone[m.coords] = m.player
 
-            show_dots_for = {p: self.trainer_config["eval_show_ai"] or katrain.game.players[p].human for p in Move.PLAYERS}
+            show_dots_for = {p: self.trainer_config["eval_show_ai"] or katrain.players_info[p].human for p in Move.PLAYERS}
             show_dots_for_class = self.trainer_config["show_dots"]
             nodes = katrain.game.current_node.nodes_from_root
             realized_points_lost = None

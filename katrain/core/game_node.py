@@ -125,7 +125,7 @@ class GameNode(SGFNode):
         if not self.parent or not single_move:  # root
             return ""
 
-        text = f"Move {self.depth}: {single_move.player} {single_move.gtp()}\n"
+        text = f"{i18n._('move')} {self.depth}: {single_move.player} {single_move.gtp()}\n"
         if self.analysis_ready:
             score = self.score
             if sgf:
@@ -137,7 +137,7 @@ class GameNode(SGFNode):
                     if previous_top_move["move"] != single_move.gtp():
                         points_lost = self.points_lost
                         if sgf and points_lost > 0.5:
-                            text += i18n._("Info:point loss").format(points=points_lost) + "\n"
+                            text += i18n._("Info:point loss").format(points_lost=points_lost) + "\n"
                         text += i18n._("Info:top move").format(top_move=previous_top_move["move"], score=self.format_score(previous_top_move["scoreLead"])) + "\n"
                     else:
                         text += i18n._("Info:best move") + "\n"

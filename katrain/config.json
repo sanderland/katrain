@@ -64,7 +64,7 @@
             true
         ],
         "eval_off_show_last": 3,
-        "eval_show_ai": true,
+        "eval_show_ai": false,
         "lock_ai": true
     },
     "ai": {

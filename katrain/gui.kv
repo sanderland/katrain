@@ -31,22 +31,18 @@
 #:set WINRATE_COLOR GREEN
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 
-
 #:set BUTTON_INACTIVE_COLOR LIGHTGREY
-
-
 #:set NOTES_FONT_SIZE dp(18)
 
 
-
 # for sizing help
-<Label>:
-    canvas.before:
-        Color:
-            rgba: RED
-        Line:
-            rectangle:  (*self.pos,*self.size)
-            width: 1
+#<Label>:
+#    canvas.before:
+#        Color:
+#            rgba: RED
+#        Line:
+#            rectangle:  (*self.pos,*self.size)
+#            width: 1
 
 # mixins
 <BackgroundMixin>:
@@ -903,7 +899,7 @@
             text: i18n._('menu:save')
             icon: 'img/flaticon/floppy-disk.png'
             shortcut: 'Ctrl-S'
-            on_action: root.katrain("analyze-sgf-popup")
+            on_action: root.katrain("output-sgf")
         MainMenuItem:
             text: i18n._('menu:load')
             icon: 'img/flaticon/folder.png'
@@ -937,9 +933,6 @@
         LangButton:
             icon: 'img/flaticon/flag-uk.png'
             on_press: app.language = 'en'
-        LangButton:
-            icon: 'img/flaticon/flag-nl.png'
-            on_press: app.language = 'nl'
         LangButton:
             icon: 'img/flaticon/flag-ko.png'
             on_press: app.language = 'ko'

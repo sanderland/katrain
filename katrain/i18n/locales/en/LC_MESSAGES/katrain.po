@@ -187,6 +187,10 @@ msgstr "Win rate: {winrate}"
 msgid "Info:point loss"
 msgstr "Estimated point loss: {points_lost:.1f}"
 
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "Move"
+
 msgid "Info:top move"
 msgstr "Predicted top move was {top_move} ({score})."
 

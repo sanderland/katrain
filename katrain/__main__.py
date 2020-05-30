@@ -265,12 +265,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.fileselect_popup.open()
 
     def _do_output_sgf(self):
-        for pl in Move.PLAYERS:
-            if not self.game.root.get_property(f"P{pl}"):
-                _, model_file = os.path.split(self.engine.config["model"])
-                self.game.root.set_property(
-                    f"P{pl}", f"AI {self.controls.ai_mode(pl)} (KataGo { os.path.splitext(model_file)[0]})" if "ai" in self.controls.player_mode(pl) else "Player"
-                )
         msg = self.game.write_sgf(self.config("general/sgf_save"))
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg)
@@ -330,13 +324,7 @@ class KaTrainGui(Screen, KaTrainBase):
             first_child.dismiss()
 
         shortcuts = self.shortcuts
-        if keycode[1] in shortcuts.keys():
-            shortcut = shortcuts[keycode[1]]
-            if isinstance(shortcut, Widget):
-                shortcut.trigger_action(duration=0)
-            else:
-                self(*shortcut)
-        elif keycode[1] == "tab":
+        if keycode[1] == "tab":
             self.play_mode.switch_mode()
         elif keycode[1] == "shift":
             self.nav_drawer.set_state("toggle")
@@ -361,6 +349,12 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.set_status(i18n._("Copied SGF to clipboard."))
         elif keycode[1] == "v" and "ctrl" in modifiers:
             self.load_sgf_from_clipboard()
+        elif keycode[1] in shortcuts.keys() and "ctrl" not in modifiers:
+            shortcut = shortcuts[keycode[1]]
+            if isinstance(shortcut, Widget):
+                shortcut.trigger_action(duration=0)
+            else:
+                self(*shortcut)
         return True
 
 
