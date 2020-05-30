@@ -351,7 +351,7 @@ msgid "engine:katago"
 msgstr "KataGo 실행 파일 경로"
 
 msgid "engine:katago:hint"
-msgstr "기본 제공 실행 파일을 사용하려면 비워 두십시오."
+msgstr "비워 두면 내장된 실행 파일을 사용합니다."
 
 msgid "engine:model"
 msgstr "KataGo 신경망 파일 경로"
@@ -369,7 +369,8 @@ msgid "engine:max_time"
 msgstr "최대 분석 시간"
 
 msgid "engine:wide_root_noise"
-msgstr "Wide root noise (더 다양한 수를 고려)"
+"Wide root noise\n"
+"(더 다양한 수를 고려)"
 
 msgid "engine:wide_root_noise:hint"
 msgstr ""

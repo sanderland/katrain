@@ -76,7 +76,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
-        if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status_label.text:
+        if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
             if "starting" in message.lower():
                 self.controls.set_status(f"KataGo engine starting...")
             if message.startswith("Tuning"):
@@ -189,6 +189,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 traceback.print_exc()
 
     def __call__(self, message, *args):
+        print(self.engine.katago_process, "poll:", self.engine.katago_process.poll())
         if self.game:
             if message.endswith("popup"):  # gui code needs to run in main kivy thread.
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")

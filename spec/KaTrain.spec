@@ -34,7 +34,7 @@ a = Analysis(
 print("SCRIPTS", len(a.scripts), "BIN", len(a.binaries), "ZIP", len(a.zipfiles), "DATA", len(a.datas))
 
 EXCLUDE_SUFFIX = ["katago"]
-EXCLUDE = ["KataGoData", "anim_", "screenshot_", "__pycache__", "locales/haha"]
+EXCLUDE = ["KataGoData", "anim_", "screenshot_", "__pycache__"]
 a.datas = [
     (ff, ft, tp)
     for ff, ft, tp in a.datas

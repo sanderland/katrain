@@ -158,7 +158,7 @@ class GameNode(SGFNode):
         if not self.parent or not single_move:  # root
             return ""
 
-        text = i18n._("move").format(number=self.depth) + ": {single_move.player} {single_move.gtp()}\n"
+        text = i18n._("move").format(number=self.depth) + f": {single_move.player} {single_move.gtp()}\n"
         if self.analysis_ready:
             score = self.score
             if sgf:
