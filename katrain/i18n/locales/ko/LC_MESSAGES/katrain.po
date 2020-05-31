@@ -324,7 +324,9 @@ msgstr ""
 "평가를 색으로 표시"
 
 msgid "lock ai when playing"
-msgstr "대국 중에 분석하지 않기"
+msgstr ""
+"대국 중에\n"
+"후보수 분석하지 않기"
 
 #. submit button
 msgid "update teacher"

@@ -162,7 +162,7 @@ Builder.load_string(
     """
 #:import metrics kivy.metrics
 #:import abspath os.path.abspath
-#:import i18n katrain.core.utils.i18n
+#:import i18n katrain.core.lang.i18n
 
 <Button>:
     track_lang: i18n._('')

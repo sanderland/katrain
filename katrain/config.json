@@ -4,7 +4,7 @@
         "_hint_katago": "Path to your katago executable",
         "model": "katrain/models/g170e-b15c192-s1672170752-d466197061.bin.gz",
         "config": "katrain/KataGo/analysis_config.cfg",
-        "threads": 16,
+        "threads": 12,
         "max_visits": 750,
         "fast_visits": 50,
         "max_time": 3.0,

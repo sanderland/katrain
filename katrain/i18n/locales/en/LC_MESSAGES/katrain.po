@@ -329,7 +329,7 @@ msgstr ""
 
 msgid "lock ai when playing"
 msgstr ""
-"Disable analysis\n"
+"Disable top moves\n"
 " while in play mode"
 
 #. submit button

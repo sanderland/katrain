@@ -7,7 +7,7 @@ from kivy.uix.popup import Popup
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.utils import i18n
+from katrain.core.lang import i18n
 from katrain.core.constants import MODE_PLAY, MODE_ANALYZE
 
 

@@ -7,7 +7,8 @@ import threading
 import time
 from typing import Callable, Optional
 from kivy.utils import platform
-from katrain.core.utils import find_package_resource, i18n
+from katrain.core.utils import find_package_resource
+from katrain.core.lang import i18n
 from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG
 from katrain.core.game_node import GameNode
 

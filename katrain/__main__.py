@@ -1,9 +1,10 @@
 import os  # isort:skip
+from katrain.core.utils import find_package_resource  # isort:skip
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")  # isort:skip surpress info output
 from kivy.config import Config  # isort:skip
 
-ICON = "img/icon.ico"  # isort:skip  # set icon
+ICON = find_package_resource("katrain/img/icon.ico")  # isort:skip  # find icon
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
 Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
 Config.set("graphics", "width", 1300)  # isort:skip
@@ -23,10 +24,8 @@ from kivy.resources import resource_add_path
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from katrain.core.ai import ai_move
-from katrain.core.utils import (
-    DEFAULT_LANGUAGE,
-    find_package_resource,
-)
+
+from katrain.core.lang import DEFAULT_LANGUAGE, i18n
 from katrain.core.constants import (
     OUTPUT_ERROR,
     OUTPUT_KATAGO_STDERR,
@@ -44,12 +43,12 @@ from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
+from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
+from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
 from katrain.gui.widgets.graph import ScoreGraph
 from katrain.gui.widgets.filebrowser import I18NFileBrowser
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
-from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
-from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
 
 
 class KaTrainGui(Screen, KaTrainBase):
@@ -422,10 +421,9 @@ class KaTrainApp(MDApp):
     def on_language(self, _instance, language):
         self.gui.log(f"Switching language to {language}", OUTPUT_INFO)
         i18n.switch_lang(language)
-        if language!="haha":
+        if language != "haha":
             self.gui._config["general"]["lang"] = language
             self.gui.save_config()
-
 
     def webbrowser(self, site_key):
         WEBSITES = {"homepage": HOMEPAGE, "support": HOMEPAGE + "#support"}

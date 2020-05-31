@@ -21,7 +21,8 @@ from katrain.core.constants import (
     AI_STRATEGIES_RECOMMENDED_ORDER,
 )
 from katrain.core.engine import KataGoEngine
-from katrain.core.utils import i18n, find_package_resource
+from katrain.core.utils import find_package_resource
+from katrain.core.lang import i18n
 from katrain.gui.kivyutils import I18NSpinner, BackgroundMixin
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
 

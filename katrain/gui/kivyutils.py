@@ -35,7 +35,7 @@ from kivymd.uix.navigationdrawer import MDNavigationDrawer
 from kivy.core.text import Label as CoreLabel
 
 from katrain.core.constants import GAME_TYPES, AI_STRATEGIES_RECOMMENDED_ORDER, PLAYER_HUMAN, PLAYER_AI
-from katrain.core.utils import i18n
+from katrain.core.lang import i18n
 
 #
 

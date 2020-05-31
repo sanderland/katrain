@@ -15,7 +15,8 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.menu import MDDropdownMenu, RightContent
 
-from katrain.core.utils import evaluation_class, i18n
+from katrain.core.utils import evaluation_class
+from katrain.core.lang import i18n
 from katrain.core.constants import OUTPUT_DEBUG, MODE_PLAY
 from katrain.core.game import Move
 from katrain.gui.kivyutils import draw_circle, draw_text
