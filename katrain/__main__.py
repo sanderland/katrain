@@ -421,9 +421,11 @@ class KaTrainApp(MDApp):
 
     def on_language(self, _instance, language):
         self.gui.log(f"Switching language to {language}", OUTPUT_INFO)
-        self.gui._config["general"]["lang"] = language
-        self.gui.save_config()
         i18n.switch_lang(language)
+        if language!="haha":
+            self.gui._config["general"]["lang"] = language
+            self.gui.save_config()
+
 
     def webbrowser(self, site_key):
         WEBSITES = {"homepage": HOMEPAGE, "support": HOMEPAGE + "#support"}
