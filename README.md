@@ -5,6 +5,7 @@
 ![Build Status](https://github.com/sanderland/katrain/workflows/release/badge.svg)
 ![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
+![Liberapay patrons](https://img.shields.io/liberapay/patrons/KaTrain)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
 
 KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
@@ -66,7 +67,7 @@ This section describes the available AIs, with strength based on their current O
     The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
 *  Options that are more on the 'fun and experimenta' side include: 
     * **KataJigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
-    * Variants of **Blinded Policy**, which use the same basic strategy (only before the endgame):
+    * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist.:
         * **[~5k]**: **Local Style** will consider mostly moves close to the last move.
         * **[~8k]**: **Tenuki Style** will consider mostly moves away from the last move.
         * **[~8k]**: **Influential Style** is biased towards 4th+ line moves, with every line below that 
@@ -131,9 +132,10 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 
 ## <a name="support"></a> Support / Contribute
 
-* You can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
+* Donations for improving and promoting KaTrain are taken supported through [Liberapay](https://liberapay.com/KaTrain/).
+* You also can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
  or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
-* Ideas, feedback, and contributions to code or translations are all very welcome.
+ * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github.
     * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
 
