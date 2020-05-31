@@ -65,7 +65,7 @@ class KataGoEngine:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
 
             self.katago_process = subprocess.Popen(
-                self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
             )
         except (FileNotFoundError, PermissionError, OSError) as e:
             if not self.config["katago"].strip():

@@ -516,7 +516,7 @@ class AnalysisControls(MDFloatLayout):
             for text, shortcut in zip(self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS)
         ]
         self.analysis_menu = AnalysisDropdownMenu(
-            caller=self.analysis_button, items=menu_items, width_mult=5, use_icon_item=False, callback=self.action
+            caller=self.analysis_button, items=menu_items, width_mult=6, use_icon_item=False, callback=self.action
         )
 
     def action(self, item):
