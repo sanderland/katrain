@@ -122,4 +122,4 @@ class ControlsPanel(BoxLayout):
                     player.periods_used += 1
             time_remaining = byo_len - current_node.time_used
             periods_rem = byo_num - player.periods_used
-            self.timer.state = (max(0,time_remaining), max(0,periods_rem), ai)
+            self.timer.state = (max(0, time_remaining), max(0, periods_rem), ai)

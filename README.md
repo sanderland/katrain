@@ -1,11 +1,11 @@
+
 # KaTrain v1.1
 [![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
-[![Latest version on PyPI](https://img.shields.io/pypi/v/katrain.svg)](https://pypi.org/project/katrain)
 ![License:MIT](https://img.shields.io/pypi/l/katrain)
 ![Build Status](https://github.com/sanderland/katrain/workflows/release/badge.svg)
 ![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
-![Liberapay patrons](https://img.shields.io/liberapay/patrons/KaTrain)
+![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
 
 KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
@@ -26,8 +26,6 @@ but has since grown to include a wide range of features, including:
 | ![screenshot](screenshots/teaching.gif) | ![screenshot](screenshots/analysis.gif)  |
 
 
-# Documentation
-
 ## Installation
 * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
@@ -35,14 +33,13 @@ but has since grown to include a wide range of features, including:
 * See [here](INSTALL.md#MacPrereq) for detailed instructions for running from source files on Window, Linux and MacOS,
   as well as setting up KataGo to use multiple GPUs.
 
-## Manual
+## Play against AI
 
-### Play
 * Select the players in the main menu, or under 'New Game'.
 * In a teaching game, KaTrain will analyze your moves and automatically undo those that are sufficiently bad.
 * When playing against AI, note that the "Undo" button will undo both the AI's last move as well as yours.
 
-#### Instant feedback while playing.
+### Instant feedback
 
 The dots on the move indicate how many points were lost by that move.
 
@@ -54,7 +51,7 @@ In short, if you are a weaker player you should mostly on large dots that are re
 while stronger players can pay more attention to smaller mistakes. If you want to hide some colours
 on the board or not output details for them in SGFs,you can do so under 'Configure Teacher'.
 
-#### AIs
+### AIs
 
 This section describes the available AIs, with strength based on their current OGS rankings using the default settings.
 
@@ -76,7 +73,7 @@ This section describes the available AIs, with strength based on their current O
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
  while the policy net based AIs are affected by the choice of model file, but work identically with 1 visit.
 
-### Analysis
+## Analysis
 
 AI moves, teaching mode and timers are suspended in analysis mode,
  although analysis options are always available, some information is hidden if the 'Disable analysis while in play mode' is selected. 
@@ -133,7 +130,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * You also can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
  or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
  * Ideas, feedback, and contributions to code or translations are all very welcome.
-    * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github.
+    * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
     * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
 
 
