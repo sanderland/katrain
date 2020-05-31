@@ -42,9 +42,18 @@
 
 Older linux machines may have trouble installing, you can try to manually install dependencies to resolve some issues.
 
-* `sudo apt-get install pkg-config libgl-dev opencl-headers ocl-icd-opencl-dev `
-* `pip3 install -U cython wheel setuptools`
-* `pip3 install kivy==2.0.0rc2 kivymd==1.104.1`
+The following packages may help resolve missing OS packages for Kivy or KataGo.
+```
+sudo apt-get install python3-pip build-essential git python3 python3-dev ffmpeg libsdl2-dev libsdl2-image-dev\
+    libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev \
+    libgstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good\
+    pkg-config libgl-dev opencl-headers ocl-icd-opencl-dev
+```
+Then, try installing python package dependencies using:
+```
+pip3 install -U cython wheel setuptools
+pip3 install kivy==2.0.0rc2 kivymd==1.104.1
+```
 
 In case KataGo does not start, an alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.
 
