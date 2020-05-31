@@ -203,13 +203,13 @@
         Label:
             size_hint: 0.075, 0.5
         NavIconButton:
-            icon: 'img/flaticon/previous999.png'
+            icon: 'img/Previous-End.png'
             on_press: root.katrain('undo',999)
         NavIconButton:
-            icon: 'img/flaticon/previous5.png'
+            icon: 'img/Previous-5.png'
             on_press: root.katrain('undo',5)
         NavIconButton:
-            icon: 'img/flaticon/previous.png'
+            icon: 'img/Previous.png'
             on_press: root.katrain('undo')
         MDFloatLayout:
             size_hint: 0.05, 1
@@ -227,16 +227,16 @@
                 player: 'W'
                 text: ''
         NavIconButton:
-            icon: 'img/flaticon/next.png'
+            icon: 'img/Next.png'
             on_press: root.katrain('redo')
         NavIconButton:
-            icon: 'img/flaticon/next5.png'
+            icon: 'img/Next-5.png'
             on_press: root.katrain('redo',5)
         NavIconButton:
-            icon: 'img/flaticon/next999.png'
+            icon: 'img/Next-End.png'
             on_press: root.katrain('redo',999)
         NavIconButton:
-            icon: 'img/forward_-_child.png'
+            icon: 'img/Branch.png'
             on_press: root.katrain('switch-branch',1)
     ClickableLabel:
         pos_hint: {'center_x': 0.85,'center_y':0.5}
@@ -765,7 +765,7 @@
     background_color: BOX_BACKGROUND_COLOR
     MDFloatLayout:
         size_hint: None, 1
-        width: self.height
+        width: self.height + 16
         Image:
             id:image
             source: root.icon
@@ -892,38 +892,38 @@
         item_height: root.item_height
         MainMenuItem:
             text: i18n._('menu:newgame')
-            icon: 'img/flaticon/newgame.png'
+            icon: 'img/New-Game.png'
             shortcut: 'Ctrl-N'
             on_action: root.katrain("new-game-popup")
             height: root.item_height
         MainMenuItem:
             text: i18n._('menu:save')
-            icon: 'img/flaticon/floppy-disk.png'
+            icon: 'img/Save-Game.png'
             shortcut: 'Ctrl-S'
             on_action: root.katrain("output-sgf")
         MainMenuItem:
             text: i18n._('menu:load')
-            icon: 'img/flaticon/folder.png'
+            icon: 'img/Load-Game.png'
             shortcut: 'Ctrl-L'
             on_action: root.katrain("analyze-sgf-popup")
         MainMenuItem:
             text: i18n._('menu:clocksettings')
-            icon: 'img/flaticon/cogwheel.png'
+            icon: 'img/Time-Settings.png'
             shortcut: 'F5'
             on_action: root.katrain('timer-popup')
         MainMenuItem:
             text: i18n._('menu:teachsettings')
-            icon: 'img/flaticon/graduate.png'
+            icon: 'img/Teaching-Settings.png'
             shortcut: 'F6'
             on_action: root.katrain('teacher-popup')
         MainMenuItem:
             text: i18n._('menu:aisettings')
-            icon: 'img/flaticon/ai.png'
+            icon: 'img/AI-Settings.png'
             shortcut: 'F7'
             on_action: root.katrain('ai-popup')
         MainMenuItem:
             text: i18n._('menu:settings')
-            icon: 'img/flaticon/settings.png'
+            icon: 'img/General-Settings.png'
             shortcut: 'F8'
             on_action: root.katrain('config-popup')
     MenuLabel:

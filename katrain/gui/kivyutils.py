@@ -369,8 +369,8 @@ class CollapsablePanel(MDBoxLayout):
     height_open = NumericProperty(None)
 
     state = OptionProperty("open", options=["open", "close"])
-    close_icon = "img/flaticon/previous5.png"
-    open_icon = "img/flaticon/next5.png"
+    close_icon = "img/Previous-5.png"
+    open_icon = "img/Next-5.png"
 
     def __init__(self, **kwargs):
         self.header, self.contents, self.open_close_button = None, None, None

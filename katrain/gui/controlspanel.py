@@ -116,10 +116,10 @@ class ControlsPanel(BoxLayout):
                 else:
                     current_node.time_used = 0
                 time_remaining = byo_len - current_node.time_used
-                while time_remaining < 0:
+                while time_remaining < 0 and player.periods_used < byo_num:
                     current_node.time_used -= byo_len
                     time_remaining += byo_len
                     player.periods_used += 1
             time_remaining = byo_len - current_node.time_used
             periods_rem = byo_num - player.periods_used
-            self.timer.state = (time_remaining, periods_rem, ai)
+            self.timer.state = (max(0,time_remaining), max(0,periods_rem), ai)
