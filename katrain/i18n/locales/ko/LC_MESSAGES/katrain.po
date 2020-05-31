@@ -369,6 +369,7 @@ msgid "engine:max_time"
 msgstr "최대 분석 시간"
 
 msgid "engine:wide_root_noise"
+msgstr ""
 "Wide root noise\n"
 "(더 다양한 수를 고려)"
 
