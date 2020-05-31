@@ -365,9 +365,6 @@ msgstr "Path to KataGo model file"
 msgid "engine:config"
 msgstr "Path to KataGo config file"
 
-msgid "engine:config"
-msgstr "Path to KataGo config file"
-
 msgid "engine:max_visits"
 msgstr "Maximum number of visits in analysis"
 
