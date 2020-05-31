@@ -350,7 +350,7 @@
                 valign: 'middle'
             TimerLabel:
                 id: timer
-                text: "{:01d}:{:02d}".format(int(root.state[0])//60,int(root.state[0] % 60) )
+                text: "{:01d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
                 text_size: self.size
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
