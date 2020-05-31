@@ -81,6 +81,22 @@ exe = EXE(
     strip=False,
     upx=True,
     name="KaTrain",
-    console=console,
+    console=False,
+    icon="C:\\icon.ico",
+)
+
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
+    debug=False,
+    strip=False,
+    upx=True,
+    name="KaTrainConsole",
+    console=True,
     icon="C:\\icon.ico",
 )

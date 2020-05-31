@@ -455,7 +455,7 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"최대 기력의 KataGo입니다. 기력은 일반 설정-엔진의 `max_visits`와 `model` 및 엔진 설정 파일에 영향을 받습니다. "
+"최대 기력의 KataGo입니다. 기력은 일반 설정-엔진의 `max visits`와 `model` 및 엔진 설정 파일에 영향을 받습니다. "
 "별도의 설정은 없습니다."
 
 msgid "ai:jigo"
