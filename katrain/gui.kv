@@ -58,7 +58,7 @@
         Color:
             rgba: root.outline_color
         Line:
-            rounded_rectangle: (*self.pos,self.width,self.height,root.background_radius,root.background_radius,root.background_radius,root.background_radius,root.height)
+            rounded_rectangle: (*self.pos,self.width,self.height,root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
             width: root.outline_width or 1
 
 
