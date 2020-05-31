@@ -189,7 +189,6 @@ class KaTrainGui(Screen, KaTrainBase):
                 traceback.print_exc()
 
     def __call__(self, message, *args):
-        print(self.engine.katago_process, "poll:", self.engine.katago_process.poll())
         if self.game:
             if message.endswith("popup"):  # gui code needs to run in main kivy thread.
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")
