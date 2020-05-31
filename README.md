@@ -21,9 +21,9 @@ but has since grown to include a wide range of features, including:
 
 ## Animated Screenshots
 
-| Analyze games  | Play against an AI Teacher |
+| Play against an AI Teacher | | Analyze games  | 
 | ------------- | ------------- |
-| ![screenshot](katrain/img/anim_analyze.gif)  | ![screenshot](katrain/img/anim_teach.gif)  |
+| ![screenshot](screenshots/teaching.gif) | ![screenshot](screenshots/analysis.gif)  |
 
 # Documentation
 
@@ -58,26 +58,22 @@ on the board or not output details for them in SGFs,you can do so under 'Configu
 This section describes the available AIs, with strength based on their current OGS rankings using the default settings.
 
 * Recommended options for serious play include:
-* **[9p+]** **KataGo** is full KataGo, above professional level.
+    * **[9p+]** **KataGo** is full KataGo, above professional level. The analysis and feedback given is always based on this full strength KataGo AI.
     * **[~3k]**  **ScoreLoss** is KataGo analyzing as usual, but 
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
     * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
-    * **[~5k]**: **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
-    * **[~8k]**: **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to all moves not picked.
-    The setting `pick_override` determines the minimum value at which this process is bypassed to play the best move instead, preventing obvious blunders.
-*  Options that are more on the 'fun and experimenta' side include: 
-    * **KataJigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
+    * **[~5k]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
+    * **[~8k]** **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn.
+*  Options that are more on the 'fun and experimental' side include: 
     * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist.:
-        * **[~5k]**: **Local Style** will consider mostly moves close to the last move.
-        * **[~8k]**: **Tenuki Style** will consider mostly moves away from the last move.
-        * **[~8k]**: **Influential Style** is biased towards 4th+ line moves, with every line below that 
-           reducing both the chance of considering the move and the policy value.
-        * **[~5k]**: **P:Territory** is biased in the opposite way, towards 1-3rd line moves.
-
+        * **[~5k]** **Local Style** will consider mostly moves close to the last move.
+        * **[~8k]** **Tenuki Style** will consider mostly moves away from the last move.
+        * **[~8k]** **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
+        * **[~5k]** **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
+    * **KataJigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
+    
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
  while the policy net based AIs are affected by the choice of model file, but work identically with 1 visit.
-
-Regardless of the AI chosen, the analysis and feedback given is always based on the full KataGo AI.
 
 ### Analysis
 

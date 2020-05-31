@@ -532,6 +532,7 @@
         markup: root.markup
         padding: 5, 5
         font_size: NOTES_FONT_SIZE
+        line_height: root.line_height
         color: TEXT_COLOR
         size_hint_y: None
         height: self.texture_size[1]
@@ -645,6 +646,7 @@
                 background_color: DARKRED
             ScrollableLabel:
                 id: info
+                line_height: 1.25
                 markup: True
                 on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
                 size_hint: 1, 1

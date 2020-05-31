@@ -485,6 +485,7 @@ class ScrollableLabel(ScrollView, BackgroundMixin):
     __events__ = ["on_ref_press"]
     outline_color = ListProperty([0, 0, 0, 0])  # mixin not working for some reason
     text = StringProperty("")
+    line_height = NumericProperty(1)
     markup = BooleanProperty(False)
 
     def on_ref_press(self, ref):

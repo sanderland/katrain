@@ -201,10 +201,10 @@ msgid "Info:PV"
 msgstr "변화도: {pv}"
 
 msgid "Info:policy rank"
-msgstr "정책망이 고려하는 #{rank}번째 수입니다({probability:.2%})."
+msgstr "정책망이 고려하는 #{rank}번째 수입니다 ({probability:.2%})."
 
 msgid "Info:policy best"
-msgstr "정책망의 일감은 {move}입니다({probability:.1%})."
+msgstr "정책망의 일감은 {move}입니다 ({probability:.1%})."
 
 msgid "Info:teaching undo"
 msgstr "지도대국이므로 자동으로 물렀습니다."
