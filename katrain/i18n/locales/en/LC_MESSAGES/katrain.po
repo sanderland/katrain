@@ -161,7 +161,7 @@ msgid "btn:Analysis"
 msgstr "Analysis"
 
 msgid "btn:Analyze"
-msgstr "Analyze"
+msgstr "Analysis Options"
 
 msgid "stats:winrate"
 msgstr "Win Rate"

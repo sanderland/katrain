@@ -47,7 +47,8 @@ class LabelledPathInput(LabelledTextInput):
         Clock.schedule_once(self.check_error, 0)
 
     def check_error(self, _dt=None):
-        self.error = not os.path.exists(find_package_resource(self.input_value))
+        file = find_package_resource(self.input_value, silent_errors=True)
+        self.error = not (file and os.path.exists(file))
 
     def on_text(self, widget, text):
         self.check_error()

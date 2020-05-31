@@ -27,13 +27,15 @@ def evaluation_class(points_lost: float, eval_thresholds: List[float]):
     return i
 
 
-def find_package_resource(path):
+def find_package_resource(path,silent_errors=False):
     if path.startswith("katrain"):
         parts = path.replace("\\", "/").split("/")
         try:
             with pkg_resources.path(".".join(parts[:-1]), parts[-1]) as path_obj:
                 return str(path_obj)  # this will clean up if egg etc, but these don't work anyway
-        except (ModuleNotFoundError, FileNotFoundError) as e:
+        except (ModuleNotFoundError, FileNotFoundError, ValueError) as e:
+            if silent_errors:
+                return None
             print(f"File {path} not found, installation possibly broken", file=sys.stderr)
             return f"FILENOTFOUND::{path}"
     else:

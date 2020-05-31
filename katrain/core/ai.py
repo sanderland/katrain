@@ -57,7 +57,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         ai_thoughts += f"Using policy based strategy, base top 5 moves are {fmt_moves(policy_moves[:5])}. "
         if ai_mode == AI_POLICY and cn.depth <= ai_settings["opening_moves"]:
             ai_mode = AI_WEIGHTED
-            ai_thoughts += f"Switching to weighted strategy in the opening {int(ai_settings['opening_moves'] * (game.board_size[0]*game.board_size[1]))} moves. "
+            ai_thoughts += f"Switching to weighted strategy in the opening {int(ai_settings['opening_moves'])} moves. "
             ai_settings = {"pick_override": 0.9, "weaken_fac": 1, "lower_bound": 0.02}
         if top_5_pass:
             aimove = top_policy_move

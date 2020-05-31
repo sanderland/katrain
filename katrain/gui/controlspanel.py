@@ -78,7 +78,8 @@ class ControlsPanel(BoxLayout):
         elif both_players_are_robots and not current_node.analysis_ready and current_node.parent:
             self.active_comment_node = current_node.parent
 
-        hints = katrain.analysis_controls.hints.active
+        lock_ai = katrain.config("trainer/lock_ai") and katrain.play_analyze_mode == MODE_PLAY
+        hints = katrain.analysis_controls.hints.active and not lock_ai
         info = ""
         if current_node.move and not current_node.is_root:
             info = self.active_comment_node.comment(
@@ -110,7 +111,7 @@ class ControlsPanel(BoxLayout):
             byo_num = max(1, self.katrain.config("timer/byo_periods"))
             player = self.katrain.next_player_info
             ai = player.ai
-            if not self.timer.paused and not ai:
+            if not self.timer.paused and not ai and self.katrain.play_analyze_mode == MODE_PLAY:
                 if last_update_node == current_node and not current_node.children:
                     current_node.time_used += now - last_update_time
                 else:
@@ -120,6 +121,9 @@ class ControlsPanel(BoxLayout):
                     current_node.time_used -= byo_len
                     time_remaining += byo_len
                     player.periods_used += 1
-            time_remaining = byo_len - current_node.time_used
+            if player.periods_used == byo_num:
+                time_remaining = 0
+            else:
+                time_remaining = byo_len - current_node.time_used
             periods_rem = byo_num - player.periods_used
             self.timer.state = (max(0, time_remaining), max(0, periods_rem), ai)

@@ -306,7 +306,7 @@ class BadukPanWidget(Widget):
 
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
-            if katrain.analysis_controls.ownership.active and ownership:
+            if katrain.analysis_controls.ownership.active and ownership and not lock_ai:
                 ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
                 rsz = self.grid_size * 0.2
                 for y in range(board_size_y - 1, -1, -1):
