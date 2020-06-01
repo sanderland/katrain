@@ -531,4 +531,4 @@ msgstr ""
 
 #. TODO
 msgid "config file path"
-msgstr "All options are saved in {file}"
+msgstr "설정 파일 경로: {file}"

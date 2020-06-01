@@ -45,7 +45,7 @@ class KataGoEngine:
             find_package_resource(executable),
         )
         self.command = (
-            f'{exefile} analysis -model "{modelfile}" -config "{configfile}" -analysis-threads {config["threads"]}'
+            f'"{exefile}" analysis -model "{modelfile}" -config "{configfile}" -analysis-threads {config["threads"]}'
         )
         if not sys.platform.startswith("win"):
             self.command = shlex.split(self.command)
@@ -110,9 +110,9 @@ class KataGoEngine:
                 line = self.katago_process.stderr.readline()
                 if line:
                     try:
-                        self.katrain.log(line.decode().strip(), OUTPUT_KATAGO_STDERR)
+                        self.katrain.log(line.decode(errors="ignore").strip(), OUTPUT_KATAGO_STDERR)
                     except Exception as e:
-                        print("ERROR IN PROCESSING STDERR", e)
+                        print("ERROR in processing KataGo stderr:", line, "Exception", e)
             except:
                 return
 
@@ -123,7 +123,7 @@ class KataGoEngine:
             except OSError as e:
                 raise EngineDiedException(i18n("Engine died unexpectedly").format(error=e))
             if b"Uncaught exception" in line:
-                self.katrain.log(f"KataGo Engine Failed: {line.decode()}", OUTPUT_ERROR)
+                self.katrain.log(f"KataGo Engine Failed: {line.decode(errors='ignore')}", OUTPUT_ERROR)
                 return
             if not line:
                 continue

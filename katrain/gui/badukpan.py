@@ -475,9 +475,9 @@ class BadukPanWidget(Widget):
                 board_coords = (self.gridpos_x[coords[0]], self.gridpos_y[coords[1]])
                 sizefac = 1
 
-            draw_circle(board_coords, self.stone_size*sizefac, stone_color[move_player])
+            draw_circle(board_coords, self.stone_size * sizefac, stone_color[move_player])
             Color(*stone_color[opp_player])
-            draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size*sizefac / 1.45, font_name="Roboto")
+            draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):
         if node is not None and (

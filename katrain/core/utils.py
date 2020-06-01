@@ -27,7 +27,7 @@ def evaluation_class(points_lost: float, eval_thresholds: List[float]):
     return i
 
 
-def find_package_resource(path,silent_errors=False):
+def find_package_resource(path, silent_errors=False):
     if path.startswith("katrain"):
         parts = path.replace("\\", "/").split("/")
         try:
