@@ -18,7 +18,7 @@ from katrain.core.constants import (
     AI_INFLUENCE,
     AI_LOCAL,
     AI_TENUKI,
-    AI_TERRITORY,
+    AI_TERRITORY, AI_PICK,
 )
 from katrain.core.engine import EngineDiedException
 from katrain.core.game import Game, GameNode, Move
