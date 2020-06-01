@@ -475,14 +475,6 @@ msgstr ""
 "Will try to win by a set amount of points (default 0.5), without further "
 "restrictions."
 
-msgid "ai:jigo"
-msgstr "KataJigo"
-
-msgid "aihelp:jigo"
-msgstr ""
-"Will try to win by a set amount of points (default 0.5), without further "
-"restrictions."
-
 msgid "ai:scoreloss"
 msgstr "Score Loss"
 
@@ -544,15 +536,15 @@ msgstr "Influential Style"
 
 msgid "aihelp:p:influence"
 msgstr ""
-"Picks moves biased above the `threshold` line and plays the best "
-"one.Increase `line_weight` to penalize moves near the edge more. Stops "
-"strategy after the 'endgame' fraction of the board is filled."
+"Picks moves biased above the `threshold` line and plays the best one. "
+"Increase `line_weight` to penalize moves near the edge more. Stops strategy "
+"after the 'endgame' fraction of the board is filled."
 
 msgid "ai:p:territory"
 msgstr "Territorial Style"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"Picks moves biased below the `threshold` line and plays the best "
-"one.Increase `line_weight` to penalize moves near the center more. Stops "
+"Picks moves biased below the `threshold` line and plays the best one. "
+"Increase `line_weight` to penalize moves near the center more. Stops "
 "strategy after the 'endgame' fraction of the board is filled."

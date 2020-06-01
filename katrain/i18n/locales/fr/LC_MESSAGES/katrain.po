@@ -8,7 +8,7 @@ msgstr ""
 
 #. main hamburger menu
 msgid "menu:playersetup"
-msgstr "Paramètres de jeu"
+msgstr "MENU PRINCIPAL"
 
 msgid "menu:newgame"
 msgstr "Nouvelle partie"
@@ -23,13 +23,13 @@ msgid "menu:settings"
 msgstr "Paramètres généraux"
 
 msgid "menu:clocksettings"
-msgstr "Temps de jeu"
+msgstr "Pendule"
 
 msgid "menu:teachsettings"
-msgstr "Paramètres d’étude"
+msgstr "Champ d'étude"
 
 msgid "menu:aisettings"
-msgstr "Paramètres d’IA"
+msgstr "Joueurs Artificiels"
 
 msgid "menu:lang"
 msgstr "Langue"
@@ -38,7 +38,7 @@ msgid "menu:support"
 msgstr "Contribution"
 
 msgid "menu:manual"
-msgstr "Manuel"
+msgstr "Mode d'emploi"
 
 #. player options in the setup and on the right
 msgid "player:type"
@@ -48,19 +48,19 @@ msgid "player:human"
 msgstr "Humain"
 
 msgid "player:ai"
-msgstr "IA"
+msgstr "Artificiel"
 
 msgid "aistrategy"
 msgstr "Style de jeu"
 
 msgid "gametype"
-msgstr "Mode de partie"
+msgstr "Mode"
 
 msgid "game:normal"
 msgstr "Normal"
 
 msgid "game:teach"
-msgstr "Pédagogique"
+msgstr "Étudiant"
 
 #. buttons at the top - should all include a line break
 msgid "analysis:nextmoves"
@@ -76,12 +76,12 @@ msgstr ""
 msgid "analysis:topmoves"
 msgstr ""
 "Coups\n"
-"prioritaires"
+"recommandés"
 
 msgid "analysis:policy"
 msgstr ""
-"Penchants\n"
-"spontanés"
+"Coups\n"
+"instinctifs"
 
 msgid "analysis:territory"
 msgstr ""
@@ -93,10 +93,10 @@ msgid "analysis:extra"
 msgstr "Analyser davantage"
 
 msgid "analysis:equalize"
-msgstr "Égaliser l’analyse des coups potentiels"
+msgstr "Égaliser l’analyse des coups"
 
 msgid "analysis:sweep"
-msgstr "Analyser rapidement tous les coups"
+msgstr "Analyser tous les possibles"
 
 msgid "analysis:aimove"
 msgstr "Jouer le coup de l’IA"
@@ -107,8 +107,8 @@ msgstr "Passer"
 
 msgid "ai-ponder"
 msgstr ""
-"Le statut du moteur de jeu est indiqué par la couleur verte (en "
-"veille),orange (“en cours de tâche”) ou rouge (inopérant)"
+"Le statut du moteur de jeu est indiqué par la couleur verte (en veille), "
+"orange (“en cours de tâche”) ou rouge (inopérant)"
 
 #. undo button on the right
 msgid "undo-button-text"
@@ -125,7 +125,7 @@ msgid "tab:points"
 msgstr "Pertes"
 
 msgid "tab:info"
-msgstr "Données"
+msgstr "Diagnostic"
 
 msgid "tab:notes"
 msgstr "Note"
@@ -154,7 +154,7 @@ msgstr ""
 
 #. Select mode
 msgid "btn:Play"
-msgstr "Jouer"
+msgstr "Partie"
 
 msgid "btn:Analysis"
 msgstr "Analyse"
@@ -166,14 +166,14 @@ msgid "stats:winrate"
 msgstr "Pronostic "
 
 msgid "stats:score"
-msgstr "Estimation du score"
+msgstr "Score"
 
 msgid "stats:pointslost"
-msgstr "Points perdus"
+msgstr "Perte"
 
 #. better than expected best move
 msgid "stats:pointsgained"
-msgstr "Points gagnés"
+msgstr "Gain"
 
 #. SGF and move comment messages
 msgid "SGF start message"
@@ -198,18 +198,18 @@ msgid "Info:top move"
 msgstr "Le coup attendu était {top_move} ({score})."
 
 msgid "Info:best move"
-msgstr "Ce coup était jugé le meilleur."
+msgstr "Ce coup était le plus recommandé."
 
 msgid "Info:PV"
 msgstr "Séquence attendue : {pv}"
 
 msgid "Info:policy rank"
 msgstr ""
-"Ce coup était classé le n°{rank} des penchants spontanés "
+"Ce coup était classé n°{rank} d'un point de vue instinctif "
 "({probability:.2%})."
 
 msgid "Info:policy best"
-msgstr "Le premier penchant spontané était {move} ({probability:.1%})."
+msgstr "Le premier instinct était {move} ({probability:.1%})."
 
 msgid "Info:teaching undo"
 msgstr ""
@@ -242,7 +242,7 @@ msgstr "Reprendre au début"
 
 # timer settings from here
 msgid "timer settings"
-msgstr "Paramètres de byo-yomi"
+msgstr "Cadence de jeu"
 
 msgid "byoyomi length"
 msgstr "Secondes par période"
@@ -265,7 +265,7 @@ msgid "handicap"
 msgstr "Handicap"
 
 msgid "komi"
-msgstr "Komi"
+msgstr "Compensation"
 
 msgid "ruleset"
 msgstr "Règles"
@@ -289,12 +289,12 @@ msgstr "Vider le cache"
 #. clear cache help
 msgid "avoids replaying"
 msgstr ""
-"Évite de rejouer\n"
+"Pour éviter de rejouer\n"
 "des parties identiques"
 
 #. hints on new game
 msgid "non square board hint"
-msgstr "Noter x:y (p. ex. 19:9) pour les formes non-carrées"
+msgstr "Noter x:y (p. ex. 19:9) pour les non-carrés"
 
 #. submit new game
 msgid "new game"
@@ -305,10 +305,10 @@ msgid "teacher settings"
 msgstr "Champ d’étude"
 
 msgid "point loss threshold"
-msgstr "Perte de points supérieure à"
+msgstr "Pertes plus larges que"
 
 msgid "num undos"
-msgstr "Essais supplémentaires"
+msgstr "Nouvelles tentatives"
 
 msgid "dot color"
 msgstr "Couleurs"
@@ -317,7 +317,7 @@ msgid "show dots"
 msgstr "Pierres marquées"
 
 msgid "save dots"
-msgstr "Données sauvegardées"
+msgstr "Diagnostics sauvegardés"
 
 msgid "show last n dots"
 msgstr ""
@@ -331,12 +331,12 @@ msgstr ""
 
 msgid "lock ai when playing"
 msgstr ""
-"Empêcher d’analyser \n"
-"en mode “Jouer”"
+"Ne pas recommander de coups \n"
+"en mode “Partie”"
 
 #. submit button
 msgid "update teacher"
-msgstr "Mettre à jour le champ d’étude"
+msgstr "Mettre à jour"
 
 # main config settings
 msgid "restarting engine"
@@ -347,111 +347,133 @@ msgid "general settings title"
 msgstr "Paramètres généraux"
 
 msgid "file not found"
-msgstr "Le chemin d’accès est introuvable"
+msgstr "Chemin d’accès est introuvable"
 
 msgid "general settings"
-msgstr "Paramètres généraux"
+msgstr "Divers"
 
 msgid "engine settings"
-msgstr "KataGo Engine Settings"
+msgstr "Moteur de Jeu (KataGo)"
 
 msgid "engine:katago"
-msgstr "Path to KataGo executable"
+msgstr ""
+"Chemin d'accès de \n"
+"l'exécutable"
 
 msgid "engine:katago:hint"
-msgstr "Leave blank to use included executable"
+msgstr "(Optionnel)"
 
 msgid "engine:model"
-msgstr "Path to KataGo model file"
+msgstr ""
+"Chemin d'accès du \n"
+"réseau neuronal"
 
 msgid "engine:config"
-msgstr "Path to KataGo config file"
-
-msgid "engine:config"
-msgstr "Path to KataGo config file"
+msgstr ""
+"Chemin d'accès du \n"
+"fichier de configuration"
 
 msgid "engine:max_visits"
-msgstr "Maximum number of visits in analysis"
+msgstr ""
+"Maximum de visites \n"
+"durant l'analyse"
 
 msgid "engine:fast_visits"
-msgstr "Maximum number of visits in fast analysis"
+msgstr ""
+"Maximum de visites \n"
+"durant l'analyse rapide"
 
 msgid "engine:max_time"
-msgstr "Maximum time for analysis"
+msgstr ""
+"Durée maximum \n"
+"de l'analyse"
 
 msgid "engine:wide_root_noise"
-msgstr "Wide root noise (increases variety of moves considered)"
+msgstr ""
+"Champ des possibles \n"
+"(0.0 par défaut)"
 
 msgid "engine:wide_root_noise:hint"
 msgstr ""
-"Use 0.02-0.1 to show\n"
-"more possible moves"
+"0.1 considérera PLUS de coups \n"
+"mais MOINS en profondeur"
 
 msgid "engine:time:hint"
-msgstr "Time in seconds"
+msgstr "En secondes"
 
 msgid "general:sgf_load"
-msgstr "Path for loading SGF files"
+msgstr ""
+"Chemin d'accès du \n"
+"fichier SGF à analyser"
 
 msgid "general:sgf_save"
-msgstr "Path for saving SGF files"
+msgstr ""
+"Chemin d'accès du \n"
+"fichier SGF à enregistrer"
 
 msgid "general:anim_pv_time"
-msgstr "Time between moves when animating a sequence"
+msgstr ""
+"Durée entre chaque coup \n"
+"d'une animation"
 
 msgid "general:debug_level"
-msgstr "Debug level in the console"
+msgstr ""
+"Niveau de débogage \n"
+"affiché dans la console"
 
 msgid "general:debug_level:hint"
-msgstr "Set to 1 when reporting errors"
+msgstr ""
+"Afficher 1 pour \n"
+"signaler des erreurs"
 
 msgid "update settings"
-msgstr "Update Settings"
+msgstr "Mettre à jour"
 
 # ai settings from here
 msgid "ai settings"
-msgstr "Advanced AI Settings"
+msgstr "Joueurs artificiels"
 
 msgid "Select AI"
-msgstr "Select AI strategy to configure"
+msgstr "Style de jeu :"
 
 msgid "update ai settings"
-msgstr "Update AI Settings"
+msgstr "Mettre à jour"
 
 #. misc errors and info messages
 msgid "sgf written"
-msgstr "SGF with analysis written to {file_name}"
+msgstr "Analyse SGF rédigée dans {file_name}"
 
 msgid "wait-before-equalize"
-msgstr "Wait for initial analysis to complete before requesting a refinement."
+msgstr "Attendez la fin de l'analyse en cours avant de l'approfondir."
 
 msgid "Copied SGF to clipboard."
-msgstr "Copied SGF to clipboard."
+msgstr "SGF enregistré dans le presse-papier."
 
 msgid "Failed to import from clipboard"
 msgstr ""
-"Failed to import game from clipboard: {error}\n"
-"Clipboard contents: {contents}..."
+"Impossible de charger la partie du presse-papier : {error}\n"
+"Contenu du presse-papier : {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "Failed to load SGF. Parse Error: {error}"
+msgstr "Impossible de charger le SGF. Erreur d'analyse : {error}"
 
 msgid "Starting default Kata failed"
 msgstr ""
-"Starting KataGo with command '{command}' failed with error {error}. If on "
-"MacOS, see the manual on how to use brew to install katago first, and add it"
-" to your path or 'engine/katago' setting."
+"L'Erreur {error} a empêché de lancer KataGo avec la commande '{command}'. "
+"Sur MacOS, consultez le manuel pour savoir comment utiliser BREW pour "
+"installer KataGo, puis ajoutez-le aux paramètres ou au chemin d'accès."
 
 msgid "Starting Kata failed"
 msgstr ""
-"Starting KataGo with command '{command}' failed with error {error}. Please "
-"make sure the 'katago' value under 'engine' in settings points to the "
-"correct KataGo executable."
+"L'Erreur {error} a empêché de lancer KataGo avec la commande '{command}'. "
+"Vérifiez le chemin d'accès de l'exécutable 'katago' dans les paramètres "
+"généraux/Moteur de jeu"
 
 msgid "Engine died unexpectedly"
 msgstr ""
-"Engine died unexpectedly without sending output, possibly due to out of "
-"memory: {error}"
+"Le moteur de jeu est tombé en panne, \n"
+"possiblement pour cause de \n"
+"mémoire insuffisante : {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -465,100 +487,97 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"Full strength KataGo AI. Strength is  affected by `max_visits` and `model` "
-"in the general settings `engine` section and engine configuration file. No "
-"options are available here."
+"Le moteur de jeu joue au mieux de ses capacités. \n"
+"Son niveau dépend de la profondeur d'analyse et du réseau neuronal \n"
+"indiqués dans les Paramètres généraux."
 
 msgid "ai:jigo"
-msgstr "KataJigo"
+msgstr "Truqué"
 
 msgid "aihelp:jigo"
 msgstr ""
-"Will try to win by a set amount of points (default 0.5), without further "
-"restrictions."
-
-msgid "ai:jigo"
-msgstr "KataJigo"
-
-msgid "aihelp:jigo"
-msgstr ""
-"Will try to win by a set amount of points (default 0.5), without further "
-"restrictions."
+"Le moteur de jeu tentera de gagner la partie du nombre de points \n"
+"indiqué dans le champ target_score."
 
 msgid "ai:scoreloss"
-msgstr "Score Loss"
+msgstr "Laxiste"
 
 msgid "aihelp:scoreloss"
 msgstr ""
-"Plays moves that lead to more points lost with lower probability. Likely to "
-"play more varied/weaker with higher visits settings."
+"Le moteur de jeu choisit des coups recommandés, mais pas forcément les meilleurs. \n"
+"Au niveau 0, il joue l'un d'eux au hasard et perd des points régulièrement. \n"
+"Au niveau 5, il évite presque toujours de jouer les coups perdant 1 point et plus, \n"
+"à moins d'augmenter le champ des possibles et/ou le nombre de visites \n"
+"(cf. Paramètres généraux)"
 
 msgid "ai:policy"
-msgstr "Policy"
+msgstr "Instinctif"
 
 msgid "aihelp:policy"
 msgstr ""
-"Plays the top move from the policy network, without any reading. Strength is"
-" mainly affected by `model` in engine settings. The opening moves setting "
-"affects how many moves in the opening are more random."
+"Le niveau de jeu dépend du réseau neuronal (cf. Paramètres généraux), \n"
+"étant donné que son coup favori sera joué sans aucun calcul. \n"
+"Néanmoins, on peut rendre non-déterministes les débuts de partie \n"
+"pour un nombre donné de coups d'ouverture \n"
+"grâce au champ opening_moves"
 
 msgid "ai:p:weighted"
-msgstr "Policy Weighted"
+msgstr "Biaisé"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"Plays moves according to policy probability, with `weaken_fac` influencing "
-"how much more likely weaker moves are played. A high negative value plays "
-"like the `Policy` AI.`pick_override` determines when top move is chosen "
-"without randomness, and `lower_bound` determines the lower bound policy "
-"value that is allowed."
+"Les coups sont joués proportionnellement aux préférences du réseau neuronal \n"
+"Plus la valeur weaken_fac est basse (voire négative) plus le coup favori sera joué. \n"
+"Une valeur pick_override (0.0~1.0) proche de 0.0 tendra à forcer le coup favori, \n"
+"tandis qu'une valeur proche de 1.0 tendra à donner une chance aux autres coups. \n"
+"Une valeur lower_bound (0.0~1.0) proche de 0.0 permettra des coups peu appréciés, \n"
+"tandis qu'une valeur proche de 1.0 préviendra même les coups favoris."
 
 msgid "ai:p:pick"
-msgstr "Blinded Policy"
+msgstr "Mal-voyant"
 
 msgid "aihelp:p:pick"
 msgstr ""
-"Picks `pick_n + pick_frac * <number of legal moves>` at random and plays the"
-" best one. For `pick_frac=1` plays like the `Policy` AI. Plays top move if "
-"policy value is above `pick_override` to avoid obvious mistakes."
+"Le coup joué est le préféré parmi un nombre de coups sélectionnés au hasard. \n"
+"`pick_n + (pick_frac multiplié par le nombre de coups légaux) \n"
+"détermine l'ampleur de l'échantillon \n"
+"Une valeur pick_frac (0.0~1.0) proche de 1.0 tendra à jouer le coup favori. \n"
+"Une valeur pick_override (0.0~1.0) proche de 0.0 tendra à forcer le coup favori. \n"
 
 msgid "ai:p:local"
-msgstr "Local Style"
+msgstr "Local"
 
 msgid "aihelp:p:local"
 msgstr ""
-"Picks `pick_n + pick_frac * <number of legal moves>` weighted towards the "
-"last move and plays the best one. Plays top move if policy value is above "
-"`pick_override` to avoid obvious mistakes."
+"Jouera plutôt près du dernier coup. \n"
+"Picks `pick_n + pick_frac * <number of legal moves>` weighted towards the last move and plays the best one. Plays top move if policy value is above `pick_override` to avoid obvious mistakes."
 
 msgid "ai:p:tenuki"
-msgstr "Tenuki Style"
+msgstr "Dissipé"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
-"Picks `pick_n + pick_frac * <number of legal moves>` weighted away from the "
-"last move and plays the best one. Plays top move if policy value is above "
-"`pick_override` to avoid obvious mistakes. A higher `stddev` makes it play "
-"further away."
+"Jouera plutôt loin du dernier coup. \n"
+"Picks `pick_n + pick_frac * <number of legal moves>` weighted away from the last move and plays the best one. Plays top move if policy value is above `pick_override` to avoid obvious mistakes. A higher `stddev` makes it play further away."
 
 msgid "ai:p:influence"
-msgstr "Influential Style"
+msgstr "Central"
 
 msgid "aihelp:p:influence"
 msgstr ""
-"Picks moves biased above the `threshold` line and plays the best "
-"one.Increase `line_weight` to penalize moves near the edge more. Stops "
-"strategy after the 'endgame' fraction of the board is filled."
+"Jouera plutôt près du centre, sur la 4ème ligne et au delà. \n"
+"Picks moves biased above the `threshold` line and plays the best one.Increase `line_weight` to penalize moves near the edge more. Stops strategy after the 'endgame' fraction of the board is filled."
 
 msgid "ai:p:territory"
-msgstr "Territorial Style"
+msgstr "Territorial"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"Picks moves biased below the `threshold` line and plays the best "
-"one.Increase `line_weight` to penalize moves near the center more. Stops "
-"strategy after the 'endgame' fraction of the board is filled."
+"Jouera plutôt près du bord, sur la 4ème ligne et en deçà. \n"
+"Picks moves biased below the `threshold` line and plays the best one.Increase `line_weight` to penalize moves near the center more. Stops strategy after the 'endgame' fraction of the board is filled."
 
-#. TODO
 msgid "config file path"
-msgstr "All options are saved in {file}"
+msgstr ""
+"TOUTES les options sont \n"
+"sauvegardées dans : \n"
+"{file}"

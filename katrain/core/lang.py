@@ -70,6 +70,8 @@ class Lang(Observable):
                 self.set_widget_font(widget)
             except ReferenceError:
                 pass  # proxy no longer exists
+            except Exception as e:
+                print("Error in switching languages",e)
         for cb in self.callbacks:
             try:
                 cb(self)
