@@ -558,3 +558,7 @@ msgstr ""
 "Picks moves biased below the `threshold` line and plays the best "
 "one.Increase `line_weight` to penalize moves near the center more. Stops "
 "strategy after the 'endgame' fraction of the board is filled."
+
+#. TODO
+msgid "config file path"
+msgstr "All options are saved in {file}"

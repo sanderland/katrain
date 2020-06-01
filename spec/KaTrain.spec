@@ -3,7 +3,6 @@ from kivy_deps import sdl2, glew
 from kivymd import hooks_path as kivymd_hooks_path
 
 block_cipher = None
-console = False
 
 # pyinstaller spec/katrain.spec --noconfirm
 # --upx-dir my
@@ -43,60 +42,50 @@ a.datas = [
 
 print("DATA FILTERED", len(a.datas))
 
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
-exe = EXE(
-    pyz,
-    a.scripts,
-    [],
-    exclude_binaries=True,
-    name="KaTrain",
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=True,
-    console=console,
-    icon="C:\\icon.ico",
-)
+console_names = {True:"KaTrain",False:"KaTrainNC"}
 
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name="KaTrain",
-)
-
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
-    debug=False,
-    strip=False,
-    upx=True,
-    name="KaTrain",
-    console=False,
-    icon="C:\\icon.ico",
-)
+for console, name in console_names.items():
 
 
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
-    debug=False,
-    strip=False,
-    upx=True,
-    name="KaTrainConsole",
-    console=True,
-    icon="C:\\icon.ico",
-)
+    pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+    exe = EXE(
+        pyz,
+        a.scripts,
+        [],
+        exclude_binaries=True,
+        name=name,
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=True,
+        console=console,
+        icon="C:\\icon.ico",
+    )
+
+    coll = COLLECT(
+        exe,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
+        strip=False,
+        upx=True,
+        upx_exclude=[],
+        name=name,
+    )
+
+    exe = EXE(
+        pyz,
+        a.scripts,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
+        debug=False,
+        strip=False,
+        upx=True,
+        name=name,
+        console=False,
+        icon="C:\\icon.ico",
+    )
+

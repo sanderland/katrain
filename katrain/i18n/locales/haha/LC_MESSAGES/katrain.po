@@ -518,3 +518,6 @@ msgid "engine:wide_root_noise:hint"
 msgstr ""
 "ㅋㅋUse 0.02-0.1 to show\n"
 "more possible moves"
+
+msgid "config file path"
+msgstr "ㅋㅋAll options are saved in {file}"

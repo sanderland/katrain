@@ -353,6 +353,9 @@ msgstr "General Settings"
 msgid "engine settings"
 msgstr "KataGo Engine Settings"
 
+msgid "config file path"
+msgstr "All options are saved in {file}"
+
 msgid "engine:katago"
 msgstr "Path to KataGo executable"
 

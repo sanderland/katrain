@@ -75,6 +75,7 @@
     font_size: DESC_FONT_SIZE * 0.66
 
 <ConfigPopup>:
+    configfile: configfile
     BoxLayout:
         size_hint: 1,9
         orientation: 'horizontal'
@@ -84,7 +85,7 @@
             spacing: CP_SPACING
             Label:
             DescriptionLabel:
-                text: i18n._('General Settings')
+                text: i18n._('general settings')
                 font_size: DESC_FONT_SIZE * 1.5
             DescriptionLabel:
                 text: i18n._("general:sgf_load")
@@ -113,7 +114,8 @@
             Label:
             Label:
             Label:
-            Label:
+            SmallDescriptionLabel:
+                id: configfile
             Label:
         BackgroundMixin:
             background_color: LIGHTGREY
@@ -126,7 +128,7 @@
             Label:
             DescriptionLabel:
                 font_size: DESC_FONT_SIZE * 1.5
-                text: i18n._('Engine Settings')
+                text: i18n._('engine settings')
             DescriptionLabel:
                 text: i18n._("engine:katago")
             AnchorLayout:
