@@ -349,6 +349,9 @@ msgstr "일반 설정"
 msgid "engine settings"
 msgstr "KataGo 엔진 설정"
 
+msgid "config file path"
+msgstr "설정 파일 경로: {file}"
+
 msgid "engine:katago"
 msgstr "KataGo 실행 파일 경로"
 
@@ -528,7 +531,3 @@ msgid "aihelp:p:territory"
 msgstr ""
 "`threshold`선 밑의 수를 더 많이 뽑은 후 그 중 최선의 수를 둡니다. `line_weight`을 증가시키면 바둑판 중앙에 있는"
 " 수를 더욱 꺼리게 됩니다. 판이 `endgame` 비율만큼 차면 평범하게 둡니다."
-
-#. TODO
-msgid "config file path"
-msgstr "설정 파일 경로: {file}"

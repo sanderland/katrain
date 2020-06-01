@@ -347,6 +347,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "t": self.analysis_controls.ownership,
             "r": self.analysis_controls.policy,
             "enter": ("ai-move",),
+            "numpadenter": ("ai-move",),
             "a": ("analyze-extra", "extra"),
             "s": ("analyze-extra", "equalize"),
             "d": ("analyze-extra", "sweep"),

@@ -15,6 +15,10 @@ from katrain.core.constants import (
     AI_JIGO,
     AI_SCORELOSS,
     AI_DEFAULT,
+    AI_INFLUENCE,
+    AI_LOCAL,
+    AI_TENUKI,
+    AI_TERRITORY,
 )
 from katrain.core.engine import EngineDiedException
 from katrain.core.game import Game, GameNode, Move
@@ -99,7 +103,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         elif ai_mode in AI_STRATEGIES_PICK:
             legal_policy_moves = [(pol, mv) for pol, mv in policy_moves if not mv.is_pass if pol > 0]
             n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])
-            if "influence" in ai_mode or "territory" in ai_mode:
+            if ai_mode in [AI_INFLUENCE, AI_TERRITORY]:
 
                 thr_line = ai_settings["threshold"] - 1  # zero-based
                 if cn.depth >= ai_settings["endgame"] * size[0] * size[1]:
@@ -113,7 +117,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                         f"Generated equal weights as move number >= {ai_settings['endgame'] * size[0] * size[1]}. "
                     )
                 else:
-                    if "influence" in ai_mode:
+                    if ai_mode == AI_INFLUENCE:
                         weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (
                             max(0, thr_line - min(size[0] - 1 - x, x)) + max(0, thr_line - min(size[1] - 1 - y, y))
                         )
@@ -128,7 +132,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                         if policy_grid[y][x] > 0
                     ]
                     ai_thoughts += f"Generated weights for {ai_mode} according to weight factor {ai_settings['line_weight']} and distance from {thr_line+1}th line. "
-            elif "local" in ai_mode or "tenuki" in ai_mode:
+            elif ai_mode in [AI_LOCAL, AI_TENUKI]:
                 var = ai_settings["stddev"] ** 2
                 if not cn.move or cn.move.coords is None:
                     weighted_coords = [(1, 1, *top_policy_move.coords)]  # if "pick" in ai_mode -> even
@@ -141,7 +145,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                         for y in range(size[1])
                         if policy_grid[y][x] > 0
                     ]
-                    if "tenuki" in ai_mode:
+                    if ai_mode == AI_TENUKI:
                         if cn.depth < ai_settings["endgame"] * size[0] * size[1]:
                             weighted_coords = [(p, 1 - w, x, y) for p, w, x, y in weighted_coords]
                             ai_thoughts += f"Generated weights based on one minus gaussian with variance {var} around coordinates {mx},{my}. "
@@ -152,7 +156,7 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                         ai_thoughts += (
                             f"Generated weights based on gaussian with variance {var} around coordinates {mx},{my}. "
                         )
-            elif "pick" in ai_mode:
+            elif ai_mode == AI_PICK:
                 weighted_coords = [
                     (policy_grid[y][x], 1, x, y)
                     for x in range(size[0])
