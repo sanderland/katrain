@@ -371,20 +371,17 @@ class Game:
         while i < len(thresholds) and points_lost < thresholds[i]:
             i += 1
         num_undos = num_undo_prompts[i] if i < len(num_undo_prompts) else 0
-        xmsg = ". Please try once more"
         if num_undos == 0:
             undo = False
         elif num_undos < 1:  # probability
             undo = int(node.undo_threshold < num_undos) and len(node.parent.children) == 1
         else:
             undo = len(node.parent.children) <= num_undos
-            if len(node.parent.children) < num_undos:
-                xmsg = ". Please try again (multiple tries remaining)."
 
         node.auto_undo = undo
         if undo:
             self.undo(1)
             self.katrain.controls.set_status(
-                f"Undid move {move.gtp()} as it lost {points_lost:.1f} points{xmsg}. Hover over the move to see expected refutation."
+                i18n._("teaching undo message").format(move=move.gtp(), points_lost=points_lost)
             )
             self.katrain.update_state()

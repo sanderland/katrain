@@ -105,6 +105,11 @@ msgstr "Force AI Move"
 msgid "pass-button-text"
 msgstr "Pass"
 
+msgid "teaching undo message"
+msgstr ""
+"Undid move {move} as it lost {points_lost:.1f} points. Hover over the move "
+"to see expected refutation. Please try again."
+
 msgid "ai-ponder"
 msgstr ""
 "This simply indicates the Engine status, going from green (idle) to orange "
