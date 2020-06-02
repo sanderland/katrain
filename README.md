@@ -1,7 +1,7 @@
 
 # KaTrain v1.1
 [![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
-![License:MIT](https://img.shields.io/pypi/l/katrain)
+[![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
 ![Build Status](https://github.com/sanderland/katrain/workflows/release/badge.svg)
 ![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
@@ -128,8 +128,8 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 
 ## <a name="support"></a> Support / Contribute
 
-![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)
-![GitHub contributors](https://img.shields.io/github/contributors/sanderland/katrain?label=github%20contributors)
+[![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/sanderland/katrain?label=github%20contributors)](https://github.com/sanderland/katrain/graphs/contributors)
 [![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)](https://liberapay.com/sanderbaduk/)
 ![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)
 
