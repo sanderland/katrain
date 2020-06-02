@@ -127,6 +127,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 
 
 ## <a name="support"></a> Support / Contribute
+
 ![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)
 ![GitHub contributors](https://img.shields.io/github/contributors/sanderland/katrain?label=github%20contributors)
 ![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)
