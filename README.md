@@ -168,7 +168,7 @@ If you ever need to reset to the original settings, simply re-download the `conf
 * How can I play on larger boards?
   * For windows, change the `katago` setting to `katrain\KataGo\katago-bs52.exe`. For other operating systems, you need to compile your own KataGo version with higher limits.
 
-## Contributing
+## <a name="support"></a> Support / Contribute
 
 * Feedback and pull requests are both very welcome. I would also be happy to host translations of this manual into languages where English fluency is typically lower.
 * For suggestions and planned improvements, see the 'issues' tab on github.
