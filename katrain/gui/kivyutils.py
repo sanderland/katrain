@@ -1,119 +1,220 @@
-import json
-import math
-import random
-import re
-
 from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
-from kivy.core.window import Window
 from kivy.graphics import *
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
-from kivy.uix.behaviors import ToggleButtonBehavior
+from kivy.properties import (
+    BooleanProperty,
+    ListProperty,
+    NumericProperty,
+    ObjectProperty,
+    OptionProperty,
+    StringProperty,
+)
+from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.checkbox import CheckBox
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
-from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
+from kivymd.app import MDApp
+from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.button import BaseFlatButton, BasePressedButton
+from kivymd.uix.navigationdrawer import MDNavigationDrawer
+
+from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, PLAYER_AI
+from katrain.core.lang import i18n
+from katrain.gui.style import DEFAULT_FONT, WHITE
 
 
-class ToolTipLabel(Label):
-    pass
+# -- mixins
 
 
-class ToolTipBehavior(Widget):
-    tooltip_text = StringProperty("")
+class BackgroundMixin(Widget):
+    background_color = ListProperty([0, 0, 0, 0])
+    background_radius = NumericProperty(0)
+    outline_color = ListProperty([0, 0, 0, 0])
+    outline_width = NumericProperty(1)
 
+
+class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on right click
     def __init__(self, **kwargs):
+        self.register_event_type("on_left_release")
+        self.register_event_type("on_left_press")
         super().__init__(**kwargs)
-        self.tooltip = ToolTipLabel()
-        self.open = False
 
-    def on_touch_up(self, touch):
-        inside = self.collide_point(*self.to_widget(*touch.pos))
-        if inside and touch.button == "right" and self.tooltip_text:
-            if not self.open:
-                self.display_tooltip(touch.pos)
-            Clock.schedule_once(lambda _: self.set_position(touch.pos), 0)
-        elif not inside and self.open:
-            self.close_tooltip()
-        return super().on_touch_up(touch)
+    def on_touch_down(self, touch):
+        return super().on_touch_down(touch)
 
-    def close_tooltip(self):
-        self.open = False
-        Window.remove_widget(self.tooltip)
+    def on_release(self):
+        if not self.last_touch or self.last_touch.button == "left":
+            self.dispatch("on_left_release")
+        return super().on_release()
 
-    def on_size(self, *args):
-        mid = (self.pos[0] + self.width / 2, self.pos[1] + self.height / 2)
-        self.set_position(mid)
+    def on_press(self):
+        if not self.last_touch or self.last_touch.button == "left":
+            self.dispatch("on_left_press")
+        return super().on_press()
 
-    def set_position(self, pos):
-        self.tooltip.pos = (pos[0] - self.tooltip.texture_size[0], pos[1])
+    def on_left_release(self):
+        pass
 
-    def display_tooltip(self, pos):
-        self.open = True
-        self.tooltip.text = self.tooltip_text
-        Window.add_widget(self.tooltip)
-
-
-class DarkLabel(Label):
-    pass
-
-
-class ScaledLightLabel(DarkLabel, ToolTipBehavior):
-    num_lines = NumericProperty(1)
-
-
-class LightHelpLabel(ScaledLightLabel):
-    pass
-
-
-class BackgroundColor(Widget):
-    background = ListProperty([1, 1, 1, 0])
-
-
-class BackgroundLabel(Label, BackgroundColor):
-    pass
-
-
-class ScrollableLabel(ScrollView):
-    __events__ = ["on_ref_press"]
-    text = StringProperty("")
-    markup = BooleanProperty(False)
-    border_color = ListProperty([0, 0, 0, 1])
-
-    def on_ref_press(self, ref):
+    def on_left_press(self):
         pass
 
 
-class StyledButton(Button, ToolTipBehavior):
-    button_color = ListProperty([])
-    button_color_down = ListProperty([])
-    radius = ListProperty((0,))
+# -- resizeable buttons
+class SizedButton(
+    LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin
+):  # avoid baserectangular for sizing
+    text = StringProperty("")
+    text_color = ListProperty(WHITE)
+    text_size = ListProperty([100, 100])
+    halign = OptionProperty("center", options=["left", "center", "right", "justify", "auto"])
+    label = ObjectProperty(None)
+    padding_x = NumericProperty(6)
+    padding_y = NumericProperty(0)
+    _font_size = NumericProperty(None)
+    font_name = StringProperty(DEFAULT_FONT)
 
 
-class StyledToggleButton(StyledButton, ToggleButtonBehavior, ToolTipBehavior):
-    value = StringProperty("")
-    allow_no_selection = BooleanProperty(False)
-
-    def _do_press(self):
-        if (self.last_touch and self.last_touch.button != "left") or (not self.allow_no_selection and self.state == "down"):
-            return
-        self._release_group(self)
-        self.state = "normal" if self.state == "down" else "down"
+class AutoSizedButton(SizedButton):
+    pass
 
 
-class StyledSpinner(Spinner):
+class SizedRectangleButton(SizedButton):
+    pass
+
+
+class AutoSizedRectangleButton(AutoSizedButton):
+    pass
+
+
+class ToggleButtonMixin(ToggleButtonBehavior):
+    inactive_outline_color = ListProperty([0.5, 0.5, 0.5, 0])
+    active_outline_color = ListProperty([1, 1, 1, 0])
+    inactive_background_color = ListProperty([0.5, 0.5, 0.5, 1])
+    active_background_color = ListProperty([1, 1, 1, 1])
+
+    @property
+    def active(self):
+        return self.state == "down"
+
+
+class SizedToggleButton(ToggleButtonMixin, SizedButton):
+    pass
+
+
+class SizedRectangleToggleButton(ToggleButtonMixin, SizedRectangleButton):
+    pass
+
+
+class AutoSizedRectangleToggleButton(ToggleButtonMixin, AutoSizedRectangleButton):
+    pass
+
+
+class TransparentIconButton(CircularRippleBehavior, Button):
+    icon_size = ListProperty([25, 25])
+    icon = StringProperty("")
+
+
+class PauseButton(CircularRippleBehavior, LeftButtonBehavior, Widget):
+    active = BooleanProperty(True)
+    active_line_color = ListProperty([0.5, 0.5, 0.8, 1])
+    inactive_line_color = ListProperty([1, 1, 1, 1])
+    active_fill_color = ListProperty([0.5, 0.5, 0.5, 1])
+    inactive_fill_color = ListProperty([1, 1, 1, 0])
+    line_width = NumericProperty(5)
+    fill_color = ListProperty([0.5, 0.5, 0.5, 1])
+    line_color = ListProperty([0.5, 0.5, 0.5, 1])
+    min_size = NumericProperty(100)
+
+
+# -- basic styles
+class LightLabel(Label):
+    pass
+
+
+class StatsLabel(MDBoxLayout):
+    text = StringProperty("")
+    label = StringProperty("")
+    color = ListProperty([1, 1, 1, 1])
+    hidden = BooleanProperty(False)
+    font_name = StringProperty(DEFAULT_FONT)
+
+
+class MyNavigationDrawer(MDNavigationDrawer):  # in PR - closes NavDrawer on any outside click
+    def on_touch_down(self, touch):
+        return super().on_touch_down(touch)
+
+    def on_touch_up(self, touch):
+        if self.status == "opened" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
+            self.set_state("close", animation=True)
+            return True
+        return super().on_touch_up(touch)
+
+
+class CircleWithText(Widget):
+    text = StringProperty("0")
+    player = OptionProperty("B", options=["B", "W"])
+    min_size = NumericProperty(50)
+
+
+class BGBoxLayout(BoxLayout, BackgroundMixin):
+    pass
+
+
+# --  gui elements
+
+
+class I18NSpinner(Spinner):
+    __events__ = ["on_select"]
     sync_height_frac = NumericProperty(1.0)
+    value_refs = ListProperty()
+    selected_index = NumericProperty(0)
+    font_name = StringProperty(DEFAULT_FONT)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.fbind("size", lambda s, dt: Clock.schedule_once(self._update_dropdown_size_frac, 0))
+        self.bind(size=self.update_dropdown_props, pos=self.update_dropdown_props, value_refs=self.i18n_values)
+        self.i18n_values()
+        MDApp.get_running_app().bind(language=self.i18n_values)
 
-    def _update_dropdown_size_frac(self, *largs):
+    @property
+    def selected(self):
+        try:
+            selected = self.selected_index
+            return selected, self.value_refs[selected], self.values[selected]
+        except (ValueError, IndexError):
+            return 0, "", ""
+
+    def on_text(self, _widget, text):
+        try:
+            new_index = self.values.index(text)
+            if new_index != self.selected_index:
+                self.selected_index = new_index
+                self.dispatch("on_select")
+        except (ValueError, IndexError):
+            pass
+
+    def on_select(self, *args):
+        pass
+
+    def select_key(self, key):
+        try:
+            ix = self.value_refs.index(key)
+            self.text = self.values[ix]
+        except (ValueError, IndexError):
+            pass
+
+    def i18n_values(self, *_args):
+        if self.value_refs:
+            self.values = [i18n._(ref) for ref in self.value_refs]
+            self.text = self.values[self.selected_index]
+            self.font_name = i18n.font_name
+            self.update_dropdown_props()
+
+    def update_dropdown_props(self, *largs):
         if not self.sync_height_frac:
             return
         dp = self._dropdown
@@ -127,201 +228,265 @@ class StyledSpinner(Spinner):
         for item in container.children[:]:
             item.height = h * self.sync_height_frac
             item.font_size = fsz
+            item.font_name = self.font_name
 
 
-class ToggleButtonContainer(GridLayout):
-    __events__ = ("on_selection",)
-
-    options = ListProperty([])
-    labels = ListProperty([])
-    tooltips = ListProperty(None)
-    selected = StringProperty("")
-    group = StringProperty(None)
-    autosize = BooleanProperty(True)
-    spacing = ListProperty((1, 1))
+class PlayerSetup(MDBoxLayout):
+    player = OptionProperty("B", options=["B", "W"])
+    mode = StringProperty("")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.rows = 1
-        self.cols = len(self.options)
-        Clock.schedule_once(self._build, 0)
+        self.player_subtype_ai.value_refs = AI_STRATEGIES_RECOMMENDED_ORDER
+        self.player_subtype_human.value_refs = GAME_TYPES
+        self.setup_options()
 
-    def on_selection(self, *args):
+    def setup_options(self, *_args):
+        if self.player_type.selected[1] == self.mode:
+            return
+        self.mode = self.player_type.selected[1]
+        self.update_global_player_info()
+
+    @property
+    def player_type_dump(self):
+        if self.mode == PLAYER_AI:
+            return {"player_type": self.player_type.selected[1], "player_subtype": self.player_subtype_ai.selected[1]}
+        else:
+            return {
+                "player_type": self.player_type.selected[1],
+                "player_subtype": self.player_subtype_human.selected[1],
+            }
+
+    def update_widget(self, player_type, player_subtype):
+        self.player_type.select_key(player_type)  # should trigger setup options
+        if self.mode == PLAYER_AI:
+            self.player_subtype_ai.select_key(player_subtype)  # should trigger setup options
+        else:
+            self.player_subtype_human.select_key(player_subtype)  # should trigger setup options
+
+    def update_global_player_info(self):
+        if self.parent and self.parent.update_global:
+            katrain = MDApp.get_running_app().gui
+            if katrain.game and katrain.game.current_node:
+                katrain.update_player(self.player, **self.player_type_dump)
+
+
+class PlayerSetupBlock(MDBoxLayout):
+    players = ObjectProperty(None)
+    black = ObjectProperty(None)
+    white = ObjectProperty(None)
+    update_global = BooleanProperty(False)
+    INSTANCES = []
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.black = PlayerSetup(player="B")
+        self.white = PlayerSetup(player="W")
+        self.players = {"B": self.black, "W": self.white}
+        self.add_widget(self.black)
+        self.add_widget(self.white)
+        PlayerSetupBlock.INSTANCES.append(self)
+
+    def update_players(self, bw, player_info):  # update sub widget based on gui state change
+        self.players[bw].update_widget(player_type=player_info.player_type, player_subtype=player_info.player_subtype)
+
+
+class PlayerInfo(MDBoxLayout, BackgroundMixin):
+    captures = NumericProperty(0)
+    player = OptionProperty("B", options=["B", "W"])
+    player_type = StringProperty("Player")
+    player_subtype = StringProperty("")
+    active = BooleanProperty(True)
+
+
+class Timer(BGBoxLayout):
+    state = ListProperty([30, 5, 1])
+
+
+class AnalysisToggle(MDBoxLayout):
+    text = StringProperty("")
+    default_active = BooleanProperty(False)
+    font_name = StringProperty(DEFAULT_FONT)
+
+    def trigger_action(self, *args, **kwargs):
+        return self.checkbox.trigger_action(*args, **kwargs)
+
+    @property
+    def active(self):
+        return self.checkbox.active
+
+
+class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, BackgroundMixin):
+    __events__ = ["on_action"]
+    icon = StringProperty("")
+    text = StringProperty("")
+    shortcut = StringProperty("")
+    font_name = StringProperty(DEFAULT_FONT)
+
+    def on_left_release(self):
+        self.anim_complete()  # kill ripple
+        MDApp.get_running_app().gui.nav_drawer.set_state("close")
+        self.dispatch("on_action")
+
+    def on_action(self):
         pass
 
-    def _build(self, _dt):
-        self.cols = len(self.options)
-        self.group = self.group or str(random.random())
-        if not self.selected and self.options:
-            self.selected = self.options[0]
-        if len(self.labels) < len(self.options):
-            self.labels += self.options[len(self.labels) + 1 :]
 
-        def state_handler(*args):
-            self.dispatch("on_selection")
-
-        for i, opt in enumerate(self.options):
-            state = "down" if opt == self.selected else "normal"
-            tooltip = self.tooltips[i] if self.tooltips else None
-            self.add_widget(StyledToggleButton(group=self.group, text=self.labels[i], value=opt, state=state, on_press=state_handler, tooltip_text=tooltip))
-        Clock.schedule_once(self._size, 0)
-
-    def _size(self, _dt):
-        if self.autosize:
-            for tb in self.children:
-                tb.size_hint = (tb.texture_size[0] + 10, 1)
-
-    @property
-    def value(self):
-        for tb in self.children:
-            if tb.state == "down":
-                return tb.value
-        if self.options:
-            return self.options[0]
+class CollapsablePanelHeader(MDBoxLayout):
+    pass
 
 
-class BaseCircleWithText(DarkLabel):
-    radius = NumericProperty(0.48)
+class CollapsablePanelTab(AutoSizedRectangleToggleButton):
+    pass
 
 
-class LabelledTextInput(TextInput):
-    input_property = StringProperty("")
-    multiline = BooleanProperty(False)
+class CollapsablePanel(MDBoxLayout):
+    __events__ = ["on_option_state"]
 
-    @property
-    def input_value(self):
-        return self.text
+    options = ListProperty([])
+    options_height = NumericProperty(25)
+    options_spacing = NumericProperty(6)
+    option_labels = ListProperty([])
+    option_active = ListProperty([])
+    option_colors = ListProperty([])
 
+    closed_label = StringProperty("Closed Panel")
 
-class LabelledObjectInputArea(LabelledTextInput):
-    multiline = BooleanProperty(True)
+    size_hint_y_open = NumericProperty(1)
+    height_open = NumericProperty(None)
 
-    @property
-    def input_value(self):
-        return json.loads(self.text.replace("'", '"').replace("True", "true").replace("False", "false"))
-
-
-class LabelledCheckBox(CheckBox):
-    input_property = StringProperty("")
-
-    def __init__(self, text=None, **kwargs):
-        if text is not None:
-            kwargs["active"] = text.lower() == "true"
-        super().__init__(**kwargs)
-
-    @property
-    def input_value(self):
-        return bool(self.active)
-
-
-class LabelledSpinner(StyledSpinner):
-    input_property = StringProperty("")
-
-    @property
-    def input_value(self):
-        return self.text
-
-
-class LabelledFloatInput(LabelledTextInput):
-    signed = BooleanProperty(True)
-    pat = re.compile("[^0-9-]")
-
-    def insert_text(self, substring, from_undo=False):
-        pat = self.pat
-        if "." in self.text:
-            s = re.sub(pat, "", substring)
-        else:
-            s = ".".join([re.sub(pat, "", s) for s in substring.split(".", 1)])
-        r = super().insert_text(s, from_undo=from_undo)
-        if not self.signed and "-" in self.text:
-            self.text = self.text.replace("-", "")
-        elif self.text and "-" in self.text[1:]:
-            self.text = self.text[0] + self.text[1:].replace("-", "")
-        return r
-
-    @property
-    def input_value(self):
-        return float(self.text)
-
-
-class LabelledIntInput(LabelledTextInput):
-    pat = re.compile("[^0-9]")
-
-    def insert_text(self, substring, from_undo=False):
-        return super().insert_text(re.sub(self.pat, "", substring), from_undo=from_undo)
-
-    @property
-    def input_value(self):
-        return int(self.text)
-
-
-class CensorableLabel(BoxLayout):
-    text = StringProperty("")
-    label = StringProperty("")
-
-
-class ScoreGraph(Label):
-    nodes = ListProperty([])
-    line_points = ListProperty([])
-    dot_pos = ListProperty([0, 0])
-    highlighted_index = NumericProperty(None)
-    y_scale = NumericProperty(5)
-    marginx = NumericProperty(0.015)
-    marginy = NumericProperty(0.01)
-    highlight_size = NumericProperty(5)
+    state = OptionProperty("open", options=["open", "close"])
+    close_icon = "img/Previous-5.png"
+    open_icon = "img/Next-5.png"
 
     def __init__(self, **kwargs):
+        self.header, self.contents, self.open_close_button = None, None, None
+        self.option_buttons = []
         super().__init__(**kwargs)
-        Clock.schedule_once(self.on_size, 0)
+        self.orientation = "vertical"
+        self.bind(
+            options=self.build_options,
+            option_colors=self.build_options,
+            options_height=self.build_options,
+            option_active=self.build_options,
+            options_spacing=self.build_options,
+        )
+        self.bind(state=self.build, size_hint_y_open=self.build, height_open=self.build)
+        MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
+        self.build_options()
 
-    def initialize_from_game(self, root):
-        self.nodes = [root]
-        node = root
-        while node.children:
-            node = node.favourite_child
-            self.nodes.append(node)
-        self.highlighted_index = 0
+    def build_options(self, *args, **kwargs):
+        self.header = CollapsablePanelHeader(
+            height=self.options_height, size_hint_y=None, spacing=self.options_spacing, padding=[1, 0, 0, 0]
+        )
+        self.option_buttons = []
+        option_labels = self.option_labels or [i18n._(f"tab:{opt}") for opt in self.options]
+        for ix, (lbl, opt_col, active) in enumerate(zip(option_labels, self.option_colors, self.option_active)):
+            button = CollapsablePanelTab(
+                text=lbl,
+                font_name=i18n.font_name,
+                active_outline_color=opt_col,
+                height=self.options_height,
+                state="down" if active else "normal",
+            )
+            self.option_buttons.append(button)
+            button.bind(state=lambda *_args, _ix=ix: self.trigger_select(_ix))
+        self.open_close_button = TransparentIconButton(  # <<  / >> collapse button
+            icon=self.open_close_icon(),
+            icon_size=[0.5 * self.options_height, 0.5 * self.options_height],
+            width=0.75 * self.options_height,
+            size_hint_x=None,
+            on_press=lambda *_args: self.set_state("toggle"),
+        )
+        self.bind(state=lambda *_args: self.open_close_button.setter("icon")(None, self.open_close_icon()))
+        self.build()
 
-    def on_size(self, *args):
-        nodes = self.nodes
-        if nodes:
-            values = [n.score if n and n.score else math.nan for n in nodes]
-            nn_values = [n.score for n in nodes if n and n.score]
-            val_range = min(nn_values or [0]), max(nn_values or [0])
+    def build(self, *args, **kwargs):
+        self.header.clear_widgets()
+        if self.state == "open":
+            for button in self.option_buttons:
+                self.header.add_widget(button)
+            self.header.add_widget(Label())  # spacer
+            self.trigger_select(ix=None)
+        else:
+            self.header.add_widget(
+                Label(
+                    text=i18n._(self.closed_label), font_name=i18n.font_name, halign="right", height=self.options_height
+                )
+            )
+        self.header.add_widget(self.open_close_button)
 
-            self.y_scale = math.ceil(max(5, max(-val_range[0], val_range[1])) / 5) * 5
+        super().clear_widgets()
+        super().add_widget(self.header)
+        height, size_hint_y = 1, None
+        if self.state == "open" and self.contents:
+            super().add_widget(self.contents)
+            if self.height_open:
+                height = self.height_open
+            else:
+                size_hint_y = self.size_hint_y_open
+        else:
+            height = self.header.height
+        self.height, self.size_hint_y = height, size_hint_y
 
-            xscale = self.width * (1 - 2 * self.marginx) / max(len(values) - 1, 15)
-            available_height = self.height * (1 - 2 * self.marginy)
-            line_points = [
-                [self.pos[0] + self.marginx * self.width + i * xscale, self.pos[1] + self.height / 2 + available_height / 2 * (val / self.y_scale)] for i, val in enumerate(values)
-            ]
-            self.line_points = sum(line_points, [])
+    def open_close_icon(self):
+        return self.open_icon if self.state == "open" else self.close_icon
 
-            if self.highlighted_index is not None:
-                self.highlighted_index = min(self.highlighted_index, len(values) - 1)
-                dot_point = line_points[self.highlighted_index]
-                if math.isnan(dot_point[1]):
-                    dot_point[1] = self.pos[1] + self.height / 2 + available_height / 2 * ((nn_values or [0])[-1] / self.y_scale)
-                self.dot_pos = [c - self.highlight_size / 2 for c in dot_point]
+    def add_widget(self, widget, index=0, **_kwargs):
+        if self.contents:
+            raise ValueError("CollapsablePanel can only have one child")
+        self.contents = widget
+        self.build()
 
-    def update_value(self, node):
-        self.highlighted_index = index = node.depth
-        self.nodes.extend([None] * max(0, index - (len(self.nodes) - 1)))
-        self.nodes[index] = node
-        if index + 1 < len(self.nodes) and (node is None or self.nodes[index + 1] not in node.children):
-            self.nodes = self.nodes[: index + 1]  # on branch switching, don't show history from other branch
-        if index == len(self.nodes) - 1:  # possibly just switched branch
-            while node.children:  # add children back
-                node = node.children[0]
-                self.nodes.append(node)
-        self.on_size()
+    def set_state(self, state="toggle"):
+        if state == "toggle":
+            state = "close" if self.state == "open" else "open"
+        self.state = state
+        self.build()
+        if self.state == "open":
+            self.trigger_select(ix=None)
+
+    def trigger_select(self, ix):
+        if ix is not None and self.option_buttons:
+            self.option_active[ix] = self.option_buttons[ix].state == "down"
+        if self.state == "open":
+            self.dispatch("on_option_state", {opt: btn.active for opt, btn in zip(self.options, self.option_buttons)})
+        return False
+
+    def on_option_state(self, options):
+        pass
 
 
-def draw_text(pos, text, **kw):
-    label = CoreLabel(text=text, bold=True, **kw)
+class StatsBox(MDBoxLayout, BackgroundMixin):
+    winrate = StringProperty("...")
+    score = StringProperty("...")
+    points_lost = NumericProperty(None, allownone=True)
+    player = StringProperty("")
+
+
+class ClickableLabel(LeftButtonBehavior, Label):
+    pass
+
+
+class ScrollableLabel(ScrollView, BackgroundMixin):
+    __events__ = ["on_ref_press"]
+    outline_color = ListProperty([0, 0, 0, 0])  # mixin not working for some reason
+    text = StringProperty("")
+    line_height = NumericProperty(1)
+    markup = BooleanProperty(False)
+
+    def on_ref_press(self, ref):
+        pass
+
+
+def draw_text(pos, text, font_name=None, **kw):
+    label = CoreLabel(text=text, bold=True, font_name=font_name or i18n.font_name, **kw)  #
     label.refresh()
-    Rectangle(texture=label.texture, pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2), size=label.texture.size)
+    Rectangle(
+        texture=label.texture,
+        pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2),
+        size=label.texture.size,
+    )
 
 
 def draw_circle(pos, r, col):

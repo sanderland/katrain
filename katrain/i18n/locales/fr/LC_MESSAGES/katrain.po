@@ -1,0 +1,596 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: French\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "Paramètres des joueurs"
+
+msgid "menu:newgame"
+msgstr "Nouvelle partie"
+
+msgid "menu:save"
+msgstr "Enregistrer"
+
+msgid "menu:load"
+msgstr "Charger une partie"
+
+msgid "menu:settings"
+msgstr "Paramètres généraux"
+
+msgid "menu:clocksettings"
+msgstr "Pendule"
+
+msgid "menu:teachsettings"
+msgstr "Champ d'étude"
+
+msgid "menu:aisettings"
+msgstr "Joueurs Artificiels"
+
+msgid "menu:lang"
+msgstr "Langue"
+
+msgid "menu:support"
+msgstr "Contribution"
+
+msgid "menu:manual"
+msgstr "Mode d'emploi"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "Joueur"
+
+msgid "player:human"
+msgstr "Humain"
+
+msgid "player:ai"
+msgstr "Artificiel"
+
+msgid "aistrategy"
+msgstr "Style de jeu"
+
+msgid "gametype"
+msgstr "Mode"
+
+msgid "game:normal"
+msgstr "Normal"
+
+msgid "game:teach"
+msgstr "Étudiant"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"Coups\n"
+"suivants"
+
+msgid "analysis:dots"
+msgstr ""
+"Marquer\n"
+"les pierres"
+
+msgid "analysis:topmoves"
+msgstr ""
+"Coups\n"
+"recommandés"
+
+msgid "analysis:policy"
+msgstr ""
+"Coups\n"
+"intuitifs"
+
+msgid "analysis:territory"
+msgstr ""
+"Prévisions\n"
+"territoriales"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "Analyser davantage"
+
+msgid "analysis:equalize"
+msgstr "Égaliser l’analyse des coups"
+
+msgid "analysis:sweep"
+msgstr "Analyser tous les possibles"
+
+msgid "analysis:aimove"
+msgstr "Jouer le coup de l’IA"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "Passer"
+
+msgid "ai-ponder"
+msgstr ""
+"Le statut du moteur de jeu est indiqué par la couleur verte (en veille), "
+"orange (“en cours de tâche”) ou rouge (inopérant)"
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "Annuler"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "Score"
+
+msgid "tab:winrate"
+msgstr "Pronostic"
+
+msgid "tab:points"
+msgstr "Pertes"
+
+msgid "tab:info"
+msgstr "Diagnostic"
+
+msgid "tab:notes"
+msgstr "Note"
+
+msgid "closedlabel:scoregraph"
+msgstr "Graphes"
+
+#. on the graph
+msgid "Jigo"
+msgstr "Jigo"
+
+msgid "closedlabel:movestats"
+msgstr "Évaluation"
+
+msgid "closedlabel:info&notes"
+msgstr "Commentaires"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "passer"
+
+msgid "board-game-end"
+msgstr ""
+"Fin de\n"
+"partie"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "Partie"
+
+msgid "btn:Analysis"
+msgstr "Analyse"
+
+msgid "btn:Analyze"
+msgstr "Analyser"
+
+msgid "stats:winrate"
+msgstr "Pronostic "
+
+msgid "stats:score"
+msgstr "Score"
+
+msgid "stats:pointslost"
+msgstr "Perte"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "Gain"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr ""
+"Les coup préférés de KataGo sont marqué d’un X. En comparaison, ceux perdant"
+" moins de 0.5 points sont marqués d’un carré"
+
+msgid "Info:score"
+msgstr "Score : {score}"
+
+msgid "Info:winrate"
+msgstr "Pronostic : {winrate}"
+
+msgid "Info:point loss"
+msgstr "Estimation des points perdus: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "Coup {number}"
+
+msgid "Info:top move"
+msgstr "Le coup attendu était {top_move} ({score})."
+
+msgid "Info:best move"
+msgstr "Ce coup était le plus recommandé."
+
+msgid "Info:PV"
+msgstr "Séquence attendue : {pv}"
+
+msgid "Info:policy rank"
+msgstr ""
+"Ce coup était classé n°{rank} d'un point de vue intuitif "
+"({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "Le premier instinct était {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr ""
+"Ce coup ayant été joué en mode pédagogique, il a été annulé automatiquement."
+
+msgid "Info:undo predicted PV"
+msgstr "Continuation attendue : {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "Raisonnement de l’IA : {thoughts}"
+
+msgid "No analysis available"
+msgstr "Pas d’analyse disponible"
+
+msgid "Analyzing move..."
+msgstr "Analyse en cours..."
+
+msgid "SGF Notes Hint"
+msgstr "Rédigez une note SGF concernant la position en cours."
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "Charger le fichier SGF à analyser"
+
+msgid "load sgf fast analysis"
+msgstr "Analyse rapide"
+
+msgid "load sgf rewind"
+msgstr "Reprendre au début"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "Cadence de jeu"
+
+msgid "byoyomi length"
+msgstr "Secondes par période"
+
+msgid "byoyomi periods"
+msgstr "Nombre de périodes"
+
+#. submit button
+msgid "update timer"
+msgstr "Confirmer"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "Nouvelle partie"
+
+msgid "board size"
+msgstr "Dimensions"
+
+msgid "handicap"
+msgstr "Handicap"
+
+msgid "komi"
+msgstr "Komi"
+
+msgid "ruleset"
+msgstr "Règles"
+
+#. ruleset names
+msgid "japanese"
+msgstr "Japonaises"
+
+msgid "chinese"
+msgstr "Chinoises"
+
+msgid "korean"
+msgstr "Coréennes"
+
+msgid "aga"
+msgstr "AGA"
+
+msgid "clear cache"
+msgstr "Vider le cache"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"Pour éviter de rejouer\n"
+"des parties identiques"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "Noter x:y (p. ex. 19:9) pour les non-carrés"
+
+#. submit new game
+msgid "new game"
+msgstr "Commencer la partie"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "Champ d’étude"
+
+msgid "point loss threshold"
+msgstr "Pertes plus larges que"
+
+msgid "num undos"
+msgstr "Nouvelles tentatives"
+
+msgid "dot color"
+msgstr "Couleurs"
+
+msgid "show dots"
+msgstr "Pierres marquées"
+
+msgid "save dots"
+msgstr "Diagnostics sauvegardés"
+
+msgid "show last n dots"
+msgstr ""
+"Marquer les <tant> \n"
+"derniers coups"
+
+msgid "show ai dots"
+msgstr ""
+"Marquer/commenter \n"
+"les coups joués par l’IA"
+
+msgid "lock ai when playing"
+msgstr ""
+"Ne pas recommander de coups \n"
+"en mode “Partie”"
+
+#. submit button
+msgid "update teacher"
+msgstr "Mettre à jour"
+
+# main config settings
+msgid "restarting engine"
+msgstr "Restarting Engine after Settings Change."
+
+# title
+msgid "general settings title"
+msgstr "Paramètres généraux"
+
+msgid "file not found"
+msgstr "Chemin d’accès est introuvable"
+
+msgid "general settings"
+msgstr "Divers"
+
+msgid "engine settings"
+msgstr "Moteur de Jeu (KataGo)"
+
+msgid "engine:katago"
+msgstr ""
+"Chemin d'accès de \n"
+"l'exécutable"
+
+msgid "engine:katago:hint"
+msgstr "(Optionnel)"
+
+msgid "engine:model"
+msgstr ""
+"Chemin d'accès du \n"
+"réseau neuronal"
+
+msgid "engine:config"
+msgstr ""
+"Chemin d'accès du \n"
+"fichier de configuration"
+
+msgid "engine:max_visits"
+msgstr ""
+"Maximum de visites \n"
+"durant l'analyse"
+
+msgid "engine:fast_visits"
+msgstr ""
+"Maximum de visites \n"
+"durant l'analyse rapide"
+
+msgid "engine:max_time"
+msgstr ""
+"Durée maximum \n"
+"de l'analyse"
+
+msgid "engine:wide_root_noise"
+msgstr ""
+"Champ des possibles \n"
+"(0.0 par défaut)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"0.1 considérera PLUS de coups \n"
+"mais MOINS en profondeur"
+
+msgid "engine:time:hint"
+msgstr "En secondes"
+
+msgid "general:sgf_load"
+msgstr ""
+"Chemin d'accès du \n"
+"fichier SGF à analyser"
+
+msgid "general:sgf_save"
+msgstr ""
+"Chemin d'accès du \n"
+"fichier SGF à enregistrer"
+
+msgid "general:anim_pv_time"
+msgstr ""
+"Durée entre chaque coup \n"
+"d'une animation"
+
+msgid "general:debug_level"
+msgstr ""
+"Niveau de débogage \n"
+"affiché dans la console"
+
+msgid "general:debug_level:hint"
+msgstr ""
+"Afficher 1 pour \n"
+"signaler des erreurs"
+
+msgid "update settings"
+msgstr "Mettre à jour"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "Joueurs artificiels"
+
+msgid "Select AI"
+msgstr "Style de jeu :"
+
+msgid "update ai settings"
+msgstr "Mettre à jour"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "Analyse SGF rédigée dans {file_name}"
+
+msgid "wait-before-equalize"
+msgstr "Attendez la fin de l'analyse en cours avant de l'approfondir."
+
+msgid "Copied SGF to clipboard."
+msgstr "SGF enregistré dans le presse-papier."
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"Impossible de charger la partie du presse-papier : {error}\n"
+"Contenu du presse-papier : {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "Impossible de charger le SGF. Erreur d'analyse : {error}"
+
+msgid "Starting default Kata failed"
+msgstr ""
+"L'Erreur {error} a empêché de lancer KataGo avec la commande '{command}'. "
+"Sur MacOS, consultez le manuel pour savoir comment utiliser BREW pour "
+"installer KataGo, puis ajoutez-le aux paramètres ou au chemin d'accès."
+
+msgid "Starting Kata failed"
+msgstr ""
+"L'Erreur {error} a empêché de lancer KataGo avec la commande '{command}'. "
+"Vérifiez le chemin d'accès de l'exécutable 'katago' dans les paramètres "
+"généraux/Moteur de jeu"
+
+msgid "Engine died unexpectedly"
+msgstr ""
+"Le moteur de jeu est tombé en panne, \n"
+"possiblement pour cause de \n"
+"mémoire insuffisante : {error}"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "k"
+
+msgid "strength:dan"
+msgstr "d"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"Le moteur de jeu joue au mieux de ses capacités. \n"
+"Son niveau dépend de la profondeur d'analyse et du réseau neuronal \n"
+"indiqués dans les Paramètres généraux."
+
+msgid "ai:jigo"
+msgstr "KataJigo"
+
+msgid "aihelp:jigo"
+msgstr ""
+"Le moteur de jeu tentera de gagner la partie \n"
+"du nombre de points indiqué dans le champ \n"
+"target_score."
+
+msgid "ai:scoreloss"
+msgstr "Décontracté"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"Le moteur de jeu choisit des coups recommandés, mais pas forcément les meilleurs. \n"
+"Au niveau 0, il joue l'un d'eux au hasard et perd des points régulièrement. \n"
+"Au niveau 5, il évite presque toujours de jouer les coups perdant 1 point et plus, \n"
+"à moins d'augmenter le champ des possibles et/ou le nombre de visites \n"
+"(cf. Paramètres généraux)"
+
+msgid "ai:policy"
+msgstr "Intuitif"
+
+msgid "aihelp:policy"
+msgstr ""
+"Le niveau de jeu dépend du réseau neuronal (cf. Paramètres généraux), \n"
+"étant donné que son coup préféré d'instinct sera joué sans calcul. \n"
+"Néanmoins, on peut varier les débuts de partie \n"
+"pour un nombre donné de coups d'ouverture \n"
+"grâce au champ opening_moves."
+
+msgid "ai:p:weighted"
+msgstr "Biaisé"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"Jouera le coup proportionnellement aux préférences instinctives. \n"
+"Plus lower_bound (0~1) est haut, moins les coups bizarres seront joués. \n"
+"Plus pick_override (0~1) est bas, plus le coup naturel sera forcé. \n"
+"Plus weaken_fac est bas (voire négatif) plus le coup naturel pourra être joué."
+
+msgid "ai:p:pick"
+msgstr "Mal-voyant"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"Jouera d'instinct son coup préféré parmi un échantillon sélectionné au hasard. \n"
+"Échantillon = pick_n + (pick_frac multiplié par le nombre de coups légaux). \n"
+"Plus pick_frac (0~1) est haut, plus le coup naturel pourra être joué. \n"
+"Pick_n ajoute un nombre de coups à l'échantillon considéré. \n"
+"Plus pick_override (0~1) est bas, plus le coup naturel sera forcé."
+
+msgid "ai:p:local"
+msgstr "Local"
+
+msgid "aihelp:p:local"
+msgstr ""
+"Tendra à jouer près du dernier coup. \n"
+"Échantillon local = pick_n + (pick_frac multiplié par le nombre de coups légaux) \n"
+"Plus stddev (1~19) est bas, plus le coup joué sera forcément près du dernier. \n"
+"(Se reporter au style précédent pour une explication des autres valeurs)"
+
+msgid "ai:p:tenuki"
+msgstr "Tenuki"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"Tendra à jouer loin du dernier coup. \n"
+"Échantillon éloigné = pick_n + (pick_frac multiplié par le nombre de coups légaux) \n"
+"Endgame indique à partir de quand jouer normalement, entre le début (0) et la fin (1). \n"
+"(Se reporter aux styles précédents pour une explication des autres valeurs)"
+
+msgid "ai:p:influence"
+msgstr "Central"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"Tendra à jouer haut, près du centre. \n"
+"Threshold indique la ligne au-dessus de laquelle le coup tendra à être joué. \n"
+"Plus line_weight (1~10) est haut, plus il sera difficile de jouer en-dessous de treshold \n"
+"(Se reporter aux styles précédents pour une explication des autres valeurs)"
+
+msgid "ai:p:territory"
+msgstr "Territorial"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"Tendra à jouer bas, près du bord. \n"
+"Threshold indique la ligne en-dessous de laquelle le coup tendra à être joué. \n"
+"Plus line_weight (1~10) est haut, plus il sera difficile de jouer au-dessus de treshold \n"
+"(Se reporter aux styles précédents pour une explication des autres valeurs)"
+
+msgid "config file path"
+msgstr ""
+"TOUTES les options sont \n"
+"sauvegardées dans : \n"
+"{file}"
+
+msgid "teaching undo message"
+msgstr ""
+"Le coup {move} a été annulé car il perdait {points_lost:.1f} points. Vous "
+"pouvez survoler le coup pour voir la réfutation. Veuillez jouer un nouveau "
+"coup."

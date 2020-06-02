@@ -1,884 +1,1040 @@
 #:kivy 1.11.0
-#:import ew kivy.uix.effectwidget
+#:import i18n katrain.core.lang.i18n
 
-#:set PLAYER_MODES ['Human', 'Teach','AI']
-#:set PLAYER_MODE_VALUES ['human','human+undo','ai']
-#:set PLAYER_TOOLTIPS ['Normal play mode','Undo Mode, asking you to try and improve on bad moves','Automatic play mode']
-#:set BUTTON_COLOR [0.23, 0.30, 0.35, 1]
-#:set TOOLTIP_COLOR [0.43, 0.50, 0.65, 1]
-#:set ICON_BUTTON_COLOR [0.71, 0.78, 0.81, 1]
-#:set ICON_BUTTON_COLOR_DOWN [0.51, 0.58, 0.51, 1]
-#:set BOARD_COLOR [0.85, 0.68, 0.40,1]
-#:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
+# TODO: refactor
+#:set CP_SPACING 6
+#:set CP_SMALL_SPACING 3
+#:set CP_PADDING 6
+
+#:import PLAYER_TYPES katrain.core.constants.PLAYER_TYPES
+#:import PLAYER_HUMAN katrain.core.constants.PLAYER_HUMAN
+#:import PLAYER_AI    katrain.core.constants.PLAYER_AI
+
+#:import RED katrain.gui.style.RED
+#:import WHITE katrain.gui.style.WHITE
+#:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
+#:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
+#:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
+
+#:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
+#:set SPINNER_OPTION_COLOR [64 / 255, 85 / 255, 110 / 255, 1]
+
+#:set LIGHTGREY [0.7,0.7,0.7,1]
 #:set BLACK [0.05,0.05,0.05,1]
-#:set WHITE [0.95,0.95,0.95,1]
 #:set GREY  [0.5,0.5,0.5,1]
+#:set GREEN  [0.1,0.8,0.1,1]
+#:set LIGHTBLUE  [0.3,0.7,0.9,1]
+#:set YELLOW [0.8,0.8,0.1,1]
+#:set DARKRED  [0.3,0.1,0.1,1]
 
+
+#:set SCORE_COLOR LIGHTBLUE
+#:set POINTLOSS_COLOR YELLOW
+#:set WINRATE_COLOR GREEN
+#:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
+
+#:set BUTTON_INACTIVE_COLOR LIGHTGREY
+#:set NOTES_FONT_SIZE dp(18)
+
+
+# for sizing help
+#<Label>:
+#    canvas.before:
+#        Color:
+#            rgba: RED
+#        Line:
+#            rectangle:  (*self.pos,*self.size)
+#            width: 1
 
 # mixins
-
-<BackgroundColor>:
+<BackgroundMixin>:
     canvas.before:
         Color:
-            rgb: root.background
-        Rectangle:
-            pos: self.pos
-            size: self.size
-
-<ToolTipBehavior>:
-
-<ToolTipLabel>:
-    size_hint: None, None
-    size: self.texture_size
-    tooltip_font_size: dp(14)
-    padding: (2,2)
-    halign: 'center'
-    canvas.before:
-        Color:
-            rgba: TOOLTIP_COLOR
-        Rectangle:
-            size: self.size
-            pos: self.pos
-        Color:
-            rgba: BUTTON_COLOR
-        Line:
-            width: 1.1
-            rectangle: (*self.pos,*self.size)
-
-# widgets
-
-<StyledButton>:
-    color: WHITE
-    font_size: self.size[1] * 0.45
-    radius: (self.size[1]/7,)
-    button_color: BUTTON_COLOR
-    button_color_down: [0.105, 0.14, 0.155, 1]
-    button_color_highlight: [(a+b)/2 for a,b in zip(self.button_color,self.button_color_down)]
-    background_color: 0,0,0,0
-    background_normal: ''
-    canvas.before:
-        Color:
-            rgba: self.button_color if root.state=='normal' else self.button_color_down
+            rgba: root.background_color
         RoundedRectangle:
-            size: self.size[0],self.size[1]
-            pos: (self.pos[0],self.pos[1])
-            radius: root.radius
+            size: self.size
+            pos: self.pos
+            radius: [root.background_radius, ]
+        Color:
+            rgba: root.outline_color
+        Line:
+            rounded_rectangle: (*self.pos,self.width,self.height,root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
+            width: root.outline_width or 1
 
-<StyledSpinnerOption@SpinnerOption>:
-    background_color: BUTTON_COLOR
+
+
+# new widgets
+
+<SizedButton>:
+    ripple_duration_in_slow: 0.6
+    text_color: TEXT_COLOR
+    background_color: BOX_BACKGROUND_COLOR
+    label: label
+    text_size: root.size
+    Label:
+        id: label
+        padding: [root.padding_x,root.padding_y]
+        color: root.text_color
+        font_name: root.font_name
+        font_size: 0.6 * self.height / len(self.text.split('\\n')) if root._font_size is None else root._font_size
+        halign: root.halign
+        text: root.text
+
+<AutoSizedButton>:
+    width: root.label.texture_size[0]
+
+<ToggleButtonMixin>:
+    inactive_background_color: BACKGROUND_COLOR
+    active_background_color: BOX_BACKGROUND_COLOR
+    background_color: self.active_background_color if self.state=='down' else self.inactive_background_color
+    outline_color: self.active_outline_color if self.state=='down' else self.inactive_outline_color
+
+<SizedRectangleButton>:
+    outline_color: WHITE
+    text_color: self.outline_color
+
+<AutoSizedRectangleButton>:
+    outline_color: WHITE
+    text_color: self.outline_color
+
+<SizedRectangleToggleButton>:
+    inactive_outline_color: BUTTON_INACTIVE_COLOR
+    active_outline_color: WHITE
+    text_color: self.outline_color
+
+<AutoSizedRectangleToggleButton>:
+    inactive_outline_color: BUTTON_INACTIVE_COLOR
+    active_outline_color: WHITE
+    text_color: self.outline_color
+
+<SizedRoundedRectangleButton@SizedRectangleButton>:
+    background_radius: self.height/3.5
+
+<AutoSizedRoundedRectangleButton@AutoSizedRectangleButton>:
+    background_radius: self.height/3.5
+
+<BGBoxLayout>:
+    background_color: BOX_BACKGROUND_COLOR
+
+<TransparentIconButton>:
     background_normal: ''
+    background_color: (0,0,0,0)
+    image: image
+    Image:
+        id: image
+        size: root.icon_size
+        pos: [root.pos[i] + (root.size[i] - root.icon_size[i])/2 for i in [0,1]]
+        source: root.icon
+        mipmap: True
+
+<I18NSpinnerOption@SpinnerOption>:
+    background_color: SPINNER_OPTION_COLOR
+    background_normal: ''
+    lang_change_tracking: i18n._('') # for font
     color: WHITE
     canvas.after:
         Color:
-            rgba: WHITE
+            rgba: LIGHTGREY
         Line
             points: self.pos[0],self.pos[1],self.pos[0]+self.width,self.pos[1]
             width: 1
 
-<StyledSpinner>:
-    text: self.values[0] if self.values else ''
-    font_size: self.size[1] * 0.33
-    sync_height_frac: 0.7
-    background_color: [*[c*255/88 for c in BUTTON_COLOR[:3]], 1] # compensate for texture
-    option_cls: 'StyledSpinnerOption'
+<I18NSpinner>:
+    font_size: self.height * 0.5
+    sync_height_frac: 1.0
+    background_color: [*[c*255/88 for c in BACKGROUND_COLOR[:3]], 1] # compensate for texture
+    option_cls: 'I18NSpinnerOption'
 
-<StyledToggleButton>:
-    max_lines: 1
 
-<StyledTabButton@StyledToggleButton>:
-    bold: True
-    radius: (self.size[1]/3,self.size[1]/3,0,0)
+<CircleWithText>:
+    min_size: min(self.height,self.width)
+    Image:
+        id: image
+        pos: (root.pos[0] + (root.width - root.min_size)/2,root.pos[1] + (root.height - root.min_size)/2)
+        size: (root.min_size,root.min_size)
+        source: 'img/white.png' if root.player=='W' else 'img/black.png'
+        mipmap: True
+    Label:
+        id: lbl
+        text: root.text
+        text_size: None, root.min_size
+        bold: True
+        valign: 'center'
+        color: BLACK if root.player=='W' else WHITE
+        pos: (image.x, image.y)
+        size: image.size
+        font_size: root.min_size * 1.2 / (1 + 1 * len(self.text))
 
-<ToggleButtonContainer>:
-
-<LabelledTextInput>:
-    padding: 3, 0.27*self.size[1]
-    font_size: 0.4*self.size[1]
-
-<LabelledIntInput>:
-    font_size: 0.5*self.size[1]
-    padding: 7, 0.2*self.size[1]
-
-<LabelledFloatInput>:
-    font_size: 0.5*self.size[1]
-    padding: 7, 0.2*self.size[1]
-
-<LabelledTextArea>
-    font_size: 0.2*self.size[1]
-
-<CheckBox>:
-    color: BLACK
-
-<LabelledCheckBox>:
+<ClickableLabel>:
     color: WHITE
-
-
-<StyledIconButton@StyledButton>:
-    button_color: ICON_BUTTON_COLOR
-    button_color_down: ICON_BUTTON_COLOR_DOWN
-    icon_margin: 0.15 * self.size[0]
-    icon: ''
-    icon_size: min(self.size[0]-2*self.icon_margin,self.size[1]-2*self.icon_margin)
-    Image:
-        size: (root.icon_size or 0,root.icon_size or 0)  # square
-        pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
-        source: root.icon
-        mipmap: True
-
-<StyledIconStyledToggleButton@StyledIconButton+ToggleButtonBehavior>:
-
-<TransparentIconButton@Button>:
-    background_normal: ''
-    background_color: (0,0,0,0)
-    icon_size: min(self.size[0],self.size[1])
-    icon: ''
-    Image:
-        size: (root.icon_size or 0,root.icon_size or 0)  # square
-        pos: [root.pos[i] + (root.size[i] - root.icon_size)/2 for i in [0,1]] if root.icon_size else [0,0]
-        source: root.icon
-        mipmap: True
-
-<DarkLabel>:
-    color: BLACK
-    text_size: self.size # don't overflow these
     halign: 'center'
-    valign: 'center'
+    valign: 'middle'
+    size: self.texture_size
 
-<LargeLabel@DarkLabel>:
-	bold: True
+
+# UI components
+
+<BadukPanWidget>:
+    size: self.parent.height, self.parent.height
+    katrain: app.gui
+
+
+<NavIconButton@TransparentIconButton>:
+    size_hint: 0.06, 0.4
+    icon_size: [min(self.size[0],self.height),min(self.size[0],self.height)]
+    pos_hint: {'center_y': 0.5}
+
+<BadukPanControls>:
+    katrain: app.gui
+    circles: [black_circle,white_circle]
+    mid_circles_container: mid_circles_container
+    pass_btn: pass_btn
+    adaptive_height: True
+    AutoSizedRoundedRectangleButton:
+        id: pass_btn
+        text: i18n._('pass-button-text')
+        size_hint: None, 0.5
+        pos_hint: {'center_x': 0.15,'center_y':0.5}
+        on_left_release: root.katrain("play",None)
+    BoxLayout:
+        size_hint: None, 1
+        width: 8 * self.height
+        pos_hint: {'center_x': 0.5,'center_y':0.5}
+        Label:
+            size_hint: 0.075, 0.5
+        NavIconButton:
+            icon: 'img/Previous-End.png'
+            on_press: root.katrain('undo',999)
+        NavIconButton:
+            icon: 'img/Previous-5.png'
+            on_press: root.katrain('undo',5)
+        NavIconButton:
+            icon: 'img/Previous.png'
+            on_press: root.katrain('undo')
+        MDFloatLayout:
+            size_hint: 0.05, 1
+            id: mid_circles_container
+            CircleWithText:
+                size_hint: 5/8, 1
+                pos_hint: {'center_x': 0.5-3/16}
+                id: black_circle
+                player: 'B'
+                text: ''
+            CircleWithText:
+                size_hint: 5/8, 1
+                pos_hint: {'center_x': 0.5+3/16}
+                id: white_circle
+                player: 'W'
+                text: ''
+        NavIconButton:
+            icon: 'img/Next.png'
+            on_press: root.katrain('redo')
+        NavIconButton:
+            icon: 'img/Next-5.png'
+            on_press: root.katrain('redo',5)
+        NavIconButton:
+            icon: 'img/Next-End.png'
+            on_press: root.katrain('redo',999)
+        NavIconButton:
+            icon: 'img/Branch.png'
+            on_press: root.katrain('switch-branch',1)
+    ClickableLabel:
+        pos_hint: {'center_x': 0.85,'center_y':0.5}
+        size_hint: None, 1
+        width: self.height
+        canvas:
+            Color:
+                rgba: root.engine_status_col
+            Ellipse:
+                pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
+                size: self.width/3, self.width/3
+            Color:
+                rgba: BLACK
+            Line:
+                circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.width/6
+                width: 1
+        on_press: app.gui.controls.set_status(i18n._('ai-ponder'))
+
+
+<HamburgerButton@TransparentIconButton>:
+    icon: 'img/hamburger.png'
+    width: self.height
+    icon_size: [self.height * 0.6, self.height * 0.6]
+
+# ---------- components of right pane -------
+
+<PlayerInfo>:
+    captures: 0
+    player: 'B'
+    player_type: 'player:human'
+    player_subtype: 'game:normal'
+    background_color: BOX_BACKGROUND_COLOR if self.active else BACKGROUND_COLOR
+    outline_color: BOX_BACKGROUND_COLOR
+    outline_width: 2
+    padding: [2*CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING]
+    CircleWithText:
+        player: root.player
+        text: str(root.captures)
+        size_hint: 0.25, 1
+    MDBoxLayout:
+        size_hint: 0.75, 1
+        orientation: 'vertical'
+        spacing: CP_SPACING
+        Label:
+            text:  i18n._(root.player_type)
+            size_hint: 1,0.55
+            font_size: 0.8 * self.height
+        Label:
+            text:  i18n._(root.player_subtype)
+            size_hint: 1,0.45
+            font_size: 0.7 * self.height
+
+
+<PauseButton>:
+    height: self.width
+    size_hint: 1, None
+    min_size: min(self.height,self.width)
+    inactive_line_color: WHITE
+    inactive_fill_color: [1,1,1,0]
+    active_line_color: [242/255,96/255,34/255,1]
+    active_fill_color: [1,1,1,0]
+    line_width: max(1.1,self.min_size/20)
+    line_color: root.active_line_color if self.active else root.inactive_line_color
+    fill_color: root.active_fill_color if self.active else root.inactive_fill_color
+
+    canvas:
+        Color:
+            rgba: root.fill_color
+        Ellipse:
+            pos: root.x + root.width/2 - root.min_size/2, root.y  + root.height/2 - root.min_size/2
+            size: root.min_size,root.min_size
+        Color:
+            rgba: root.inactive_line_color
+        Line:
+            circle: root.x + root.width/2, root.y + root.height/2, root.min_size/2 - root.line_width/2
+            width: root.line_width
+        Color:
+            rgba: root.line_color
+        Line:
+            points: root.x + root.width/2 - root.min_size/8, root.y + root.height/2 - root.min_size/6, root.x + root.width/2 - root.min_size/8, root.y + root.height/2 + root.min_size/6
+            width: root.line_width
+            cap: 'square'
+        Line:
+            points: root.x + root.width/2 + root.min_size/8, root.y + root.height/2 - root.min_size/6, root.x + root.width/2 + root.min_size/8, root.y + root.height/2 + root.min_size/6
+            width: root.line_width
+            cap: 'square'
+
+
 
 <TimerLabel@Label>
-    color: BLACK
-    font_size: 0.85*self.size[1]
-    halign: 'right'
-    valign: 'middle'
+    color: GREEN
     markup: True
     multiline: False
-    font_name: 'img/fonts/digital-7 (mono).ttf'
+    font_name: 'fonts/digital-7 (mono).ttf'
 
-<ScaledLightLabel>: # popups
-    color: WHITE
-    font_size: 0.45*self.size[1]/self.num_lines
+<Timer>:
+    spacing: CP_SPACING
+    padding: CP_PADDING * 4, CP_PADDING * 2
+    paused: True
+    MDBoxLayout:
+        size_hint: 0.7,1
+        MDFloatLayout:
+            size_hint: 0.4,1
+            TimerLabel:
+                color: BACKGROUND_COLOR
+                text: '8:88'
+                text_size: self.size
+                font_size: 0.85*self.height
+                pos_hint: {'right':1,'center_y':0.5}
+                halign: 'right'
+                valign: 'middle'
+            TimerLabel:
+                id: timer
+                text: "{:01d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
+                text_size: self.size
+                font_size: 0.85*self.height
+                pos_hint: {'right':1,'center_y':0.5}
+                halign: 'right'
+                valign: 'middle'
+        TimerLabel:
+            size_hint: 0.05,1
+            text: "x"
+            font_size: self.height * 0.3
+            text_size: self.width, self.height * 0.95
+            halign: 'right'
+            valign: 'top'
+        TimerLabel:
+            size_hint: 0.1,1
+            font_size: self.height * 0.35
+            text_size: self.size
+            halign: 'left'
+            valign: 'top'
+            id: periods
+            text: str(root.state[1])
+            multiline: False
+    MDBoxLayout:
+        size_hint: 0.2,1
+        PauseButton:
+            pos_hint: {'center_y':0.5}
+            id: pause
+            active: root.paused
+            on_left_press: root.paused = not root.paused
 
-<LightHelpLabel>:
-    font_size: self.size[1]/10
-    halign: 'center'
-    valign: 'center'
-    multiline: True
 
-<BoxedDarkLabel@Label>:
-    halign: 'left'
-    valign: 'top'
-    canvas.before:
-        Color:
-            rgba: BLACK
-        Line:
-            rectangle: [self.pos[0],self.pos[1]+1,self.width-1,self.height]
-            width:1.5
+#:set GRAPH_CENTER_COLOR GREY
 
-<CheckBoxHintLabel@Label+ToolTipBehavior>:
-    font_size: 0.4*self.size[1]
-    color: BLACK
-	halign: 'center'
-	valign: 'center'
-	size: self.texture_size
-
-<ClickableLabel@ButtonBehavior+DarkLabel>:
-    color: BLACK
-	halign: 'center'
-	valign: 'center'
-	size: self.texture_size
-
-<CensorableLabel>:
-    value : value
-	orientation: 'horizontal'
-    ClickableLabel:
-		size_hint: 0.6,1
-		id: desc
-		text: root.label
-		font_size: self.size[1] * 0.8
-		on_press: value.opacity =  1 if  value.opacity==0 else 0
-	DarkLabel:
-		size_hint: 0.4,1
-		text: root.text
-		font_size: desc.font_size
-		id: value
-		bold: True
-
-<BaseCircleWithText>:
-    text: ''
-    color: WHITE
-    font_size: min(self.height,self.width) * 0.6 / (0.5 + 0.5 * len(self.text))
-    halign: 'center'
-    valign: 'center'
-    bold: True
-
-<BlackCircleWithText@BaseCircleWithText>:
-    canvas.before:
-        Color:
-            rgba: BLACK
-        Ellipse:
-            pos: self.pos[0] + self.width/2 - min(self.height,self.width) * root.radius, self.pos[1]  + self.height/2 - min(self.height,self.width)  * root.radius
-            size: min(self.height,self.width) * 2 * root.radius, min(self.height,self.width)  * 2* root.radius
-
-<WhiteCircleWithText@BaseCircleWithText>:
-    color: BLACK
-    outline: True
-    canvas.before:
-        Color:
-            rgba: WHITE
-        Ellipse:
-            pos: self.pos[0] + self.width/2 - min(self.height,self.width) * root.radius, self.pos[1]  + self.height/2 - min(self.height,self.width) * root.radius
-            size: min(self.height,self.width) * 2  * root.radius, min(self.height,self.width) * 2 * root.radius
-    canvas.after:
-        Color:
-            rgba: BLACK
-        Line:
-            circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, min(self.height,self.width) * root.radius - 1
-            width: 1.1 if root.outline else 0.0001
 
 <GraphMarkerLabel@Label>:
     valign: 'bottom'
     halign: 'left'
     text: '+0'
-    color:  BUTTON_COLOR
     size: self.texture_size
 
 <ScoreGraph>:
-    whalf: root.pos[1]+self.height*0.25*(1 + 2 * root.marginy)
-    bhalf: root.pos[1]+self.height*0.75*(1 - 2/3 * root.marginy)
-    mid: root.pos[1]+self.height*0.5
-    right_edge: root.pos[0] + root.width * (1 - root.marginx)
-    canvas.before:
+    background_color:  BOX_BACKGROUND_COLOR
+    whalf: root.pos[1]+self.height*0.25
+    bhalf: root.pos[1]+self.height*0.75
+    mid:  root.pos[1]+self.height*0.5
+    right_edge: root.pos[0] + root.width
+    marker_font_size: 0.1 * root.height
+    canvas:
         Color:
-            rgba: GREY
+            rgba: GRAPH_CENTER_COLOR
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.whalf,root.pos[0]+self.width*(1-root.marginx),root.whalf]
-            width: 1.0
-            dashes: [1,2]
+            points: [root.pos[0],root.whalf,root.pos[0]+root.width,root.whalf]
+            width: 1
+            dashes: [2,2]
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.mid,root.pos[0]+self.width*(1-root.marginx),root.mid]
-            width: 1.0
+            points: [root.pos[0],root.mid,root.pos[0]+root.width,root.mid]
+            width: 1
             dashes: [4,4]
         Line:
-            points: [root.pos[0]+self.width*root.marginx,root.bhalf,root.pos[0]+self.width*(1-root.marginx),root.bhalf]
-            width: 1.0
-            dashes: [1,2]
-        Line:
-            rectangle: [root.pos[0] + root.marginx * self.width, root.pos[1] + root.marginy*self.height, self.width*(1-2*root.marginx), root.height*(1-2*root.marginy)]
+            points: [root.pos[0],root.bhalf,root.pos[0]+root.width,root.bhalf]
+            width: 1
+            dashes: [2,2]
     canvas.after:
         Color:
-            rgba: BLACK
+            rgba: SCORE_COLOR
         Line:
-            points: root.line_points
+            points: root.score_points if root.show_score else []
+            width: 1.1
+        Color:
+            rgba: WINRATE_COLOR
+        Line:
+            points: root.winrate_points if root.show_winrate else []
             width: 1.1
         Color:
             rgba: GRAPH_DOT_COLOR
         Ellipse:
-            id: dot
-            pos: root.dot_pos
-            size: self.highlight_size,self.highlight_size
+            id: score_dot
+            pos: root.score_dot_pos
+            size: (self.highlight_size,self.highlight_size) if root.show_score else (0.0001,0.0001)
+        Color:
+            rgba: GRAPH_DOT_COLOR
+        Ellipse:
+            id: winrate_dot
+            pos: root.winrate_dot_pos
+            size: (self.highlight_size,self.highlight_size) if root.show_winrate else (0.0001,0.0001)
+    # score ticks
     GraphMarkerLabel:
-        font_size: 0.1 * root.height
-        id: range_label_top
-        pos: root.right_edge - self.width-1, root.pos[1]+root.height*(1-root.marginy) - self.font_size
-        text: 'B+' + str(int(root.y_scale))
+        font_size: root.marker_font_size
+        color:  SCORE_COLOR
+        pos: root.right_edge - self.width-1, root.pos[1]+root.height - self.font_size - 1
+        text: 'B+{}'.format(root.score_scale)
+        opacity: int(root.show_score)
     GraphMarkerLabel:
-        font_size: 0.1 * root.height
+        font_size: root.marker_font_size
+        color:  SCORE_COLOR
         pos: root.right_edge - self.width-1, root.mid - self.height/2 + 2
-        text: 'Jigo'
+        text: i18n._('Jigo')
+        opacity: int(root.show_score)
     GraphMarkerLabel:
-        font_size: 0.1 * root.height
+        font_size: root.marker_font_size
+        color:  SCORE_COLOR
         pos: root.right_edge - self.width-1, root.pos[1]
-        text: 'W+' + str(int(root.y_scale))
+        text: 'W+' + str(int(root.score_scale))
+        opacity: int(root.show_score)
+    # wr ticks
+    GraphMarkerLabel:
+        font_size: root.marker_font_size
+        color: WINRATE_COLOR
+        pos: root.pos[0]+1,  root.pos[1]+root.height - self.font_size - 1
+        text: "{}%".format(50 + root.winrate_scale)
+        opacity: int(root.show_winrate)
+    GraphMarkerLabel:
+        font_size: root.marker_font_size
+        color: WINRATE_COLOR
+        pos:root.pos[0]+1, root.pos[1]
+        text: "{}%".format(50 - root.winrate_scale)
+        opacity: int(root.show_winrate)
 
-# UI components
 
-<BadukPanWidget>:
-	size: self.parent.height, self.parent.height
-	katrain: app.gui
+<StatsLabel>:
+    value : value
+    orientation: 'horizontal'
+    Label:
+        size_hint: 0.6,1
+        id: desc
+        text: root.label if not root.hidden else ''
+        font_size: self.height * 0.7
+        font_name: root.font_name
+        text_size: self.size
+        valign: 'middle'
+        halign: 'center'
+    Label:
+        size_hint: 0.4,1
+        text: root.text if not root.hidden else ''
+        color: root.color
+        font_size: desc.font_size
+        font_name: root.font_name
+        text_size: self.size
+        valign: 'middle'
+        halign: 'center'
+        id: value
+        bold: True
 
-<BadukPanControls>:
-    katrain: app.gui
-    black_prisoners: black_prisoners
-    white_prisoners: white_prisoners
-    mid_circles_container: mid_circles_container
-    pass_btn: pass_btn
-    engine_status_col: 0.8,0,0,1
-    Label:
-        size_hint: 0.05, 1
-    BoxLayout:
-        size_hint: 0.2, 1
-        padding: [0.325*self.size[1],0.2*self.size[1]]
-        StyledButton:
-            text: 'Pass'
-            tooltip_text: '[space]\nPass'
-            font_size: 0.6*self.size[1]
-            id: pass_btn
-            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain("play",None)
-    Label:
-        size_hint: 0.05, 1
-    BoxLayout:
-        size_hint: 0.3, 1
-        padding: [0, self.size[1]*0.3]
-        spacing: 0
-        TransparentIconButton:
-            icon: 'img/flaticon/previous999.png'
-            size_hint: 0.1, 1
-            on_press: root.katrain('undo',999)
-        TransparentIconButton:
-            icon: 'img/flaticon/previous5.png'
-            size_hint: 0.1, 1
-            on_press: root.katrain('undo',5)
-        TransparentIconButton:
-            icon: 'img/flaticon/previous.png'
-            size_hint: 0.1, 1
-            on_press: root.katrain('undo')
-    FloatLayout:
-        size_hint: 0.2, 1
-        id: mid_circles_container
-        BlackCircleWithText:
-            id: black_prisoners
-            pos: (self.parent.pos[0]-self.height/3,self.parent.pos[1]) if self.parent else (0,0)
-            radius: 0.4
-        WhiteCircleWithText:
-            id: white_prisoners
-            pos: (self.parent.pos[0]+self.height/3,self.parent.pos[1]) if self.parent else (0,0)
-            radius: 0.4
-    BoxLayout:
-        size_hint: 0.3, 1
-        padding: [0, self.size[1]*0.3]
-        TransparentIconButton:
-            icon: 'img/flaticon/next.png'
-            size_hint: 0.1, 1
-            on_press: root.katrain('redo')
-        TransparentIconButton:
-            icon: 'img/flaticon/next5.png'
-            size_hint: 0.1, 1
-            on_press: root.katrain('redo',5)
-        TransparentIconButton:
-            icon: 'img/flaticon/next999.png'
-            size_hint: 0.1, 1
-            on_press: root.katrain('redo',999)
-    Label:
-        size_hint: 0.05, 1
-    BoxLayout:
-        size_hint: 0.2, 1
-        padding: 0.2 * self.size[1]
-        StyledButton:
-            text: 'AI Move'
-            tooltip_text: '[enter]\nPlay an AI move\nusing the\nselected strategy.'
-            on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("ai-move",None)
-            font_size: 0.6*self.size[1]
-    ClickableLabel:
-        size_hint: 0.025, 1
-        canvas:
-            Color:
-                rgba: root.engine_status_col
-            Ellipse:
-                pos: self.pos[0] + self.width/2 - self.height/5, self.pos[1]  + self.height/2 - self.height/5
-                size: self.height/2.5,self.height/2.5
-            Color:
-                rgba: BLACK
-            Line:
-                circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.height/5 - 1
-                width: 1.1
-        on_press: root.katrain.controls.set_status("This simply indicates the Engine status, going from green (idle) to orange (processing many queries). It turns red when the engine has crashed or fails to start.")
-    Label:
-        size_hint: 0.025, 1
+<StatsBox>
+    orientation: 'vertical'
+    background_color: BOX_BACKGROUND_COLOR
+    labels: {'score':score_label,'winrate':winrate_label,'points':pointloss_label}
+    StatsLabel:
+        id: winrate_label
+        label: i18n._('stats:winrate')
+        text: root.winrate
+        color: WINRATE_COLOR
+    StatsLabel:
+        id: score_label
+        label: i18n._('stats:score')
+        text: root.score
+        color: SCORE_COLOR
+    StatsLabel:
+        id: pointloss_label
+        label: i18n._('stats:pointslost') if root.points_lost is None or root.points_lost > 0 else i18n._('stats:pointsgained')
+        text: '{}: {:.1f}'.format(root.player,abs(root.points_lost)) if root.points_lost is not None else '...'
+        color: POINTLOSS_COLOR
 
 <ScrollableLabel>:
+    background_color: BOX_BACKGROUND_COLOR
     do_scroll_x: False
     scroll_type: ['bars']
     bar_width: 5
-    bar_color: BUTTON_COLOR
+    bar_color: LIGHTGREY
     label: label
     canvas.before:
         Color:
-            rgba: root.border_color
+            rgba: root.outline_color
         Line:
-            rectangle: [self.pos[0],self.pos[1]+1,self.width-1,self.height-2]
-            width:1
-        Color:
-            rgba: [*[(c+1)/2 for c in root.border_color[:3]], root.border_color[3]]
-        Line:
-            rectangle: [self.pos[0]+1,self.pos[1]+2,self.width-3,self.height-3]
-            width:1
+            rectangle:  (*self.pos,*self.size)
+            width: 1
     Label:
         id: label
+        lang_change_tracking: i18n._('')
         markup: root.markup
         padding: 5, 5
-        font_size: dp(18)
-        color: BLACK
+        font_size: NOTES_FONT_SIZE
+        line_height: root.line_height
+        color: TEXT_COLOR
         size_hint_y: None
         height: self.texture_size[1]
         text_size: self.width, None
         text: root.text
         on_ref_press: root.dispatch('on_ref_press',args[1])
 
-<Controls>:
-	orientation: 'vertical'
-	play_tab_button: play_tab_button
-	analyze_tab_button: analyze_tab_button
+
+#:set player_box_height 0.15
+#:set timer_box_height  0.3
+#:set graph_box_height  0.37
+#:set STATS_BOX_HEIGHT  0.27
+#:set INFO_BOX_HEIGHT   1
+
+
+<CollapsablePanelHeader>:
+    canvas.after:
+        Color:
+            rgba: BOX_BACKGROUND_COLOR
+        Line:
+            width: 1
+            points: (*self.pos,self.x+self.width,self.y)
+
+<ControlsPanel>:
+    katrain: app.gui
+    orientation: 'vertical'
+    players: {'B':B_player,'W':W_player}
+    engine_status_col: [1,1,1,1]
+    timer:timer
+    graph: graph
+    stats: stats
     info: info
     note: note
-    status_label: status_label
-	win_rate: win_rate
-	score_change: score_change
-	score: score
-	show_children: show_children
-	hints: hints
-	ownership: ownership
-	policy: policy
+    status: status
+    padding: CP_PADDING
+    spacing: CP_SPACING
+    player_box_height: max(50, 0.075 * root.height)
+    timer_box_height:  max(50, 0.1 * root.height)
+    graph_box_height:  max(100, 0.2 * root.height)
+    stats_box_height: max(50, 0.15 * root.height)
+    tab_option_height: max(15,root.height / 30)
+    BoxLayout: # -- Players
+        size_hint_y: None
+        height: root.player_box_height
+        PlayerInfo:
+            id: B_player
+            player: 'B'
+        PlayerInfo:
+            id: W_player
+            player: 'W'
+    BoxLayout:
+        size_hint_y: None
+        height: root.timer_box_height
+        spacing: CP_SPACING
+        Timer:
+            id: timer
+            size_hint_x: 0.7
+        MDBoxLayout:
+            orientation: 'vertical'
+            padding: 2*CP_PADDING,CP_PADDING
+            spacing: CP_SPACING
+            size_hint_x: 0.3
+            SizedRoundedRectangleButton:
+                text: i18n._('pass-button-text')
+                size_hint: 1, 0.5
+                on_left_release: root.katrain("play",None)
+            SizedRoundedRectangleButton:
+                text: i18n._('undo-button-text')
+                size_hint: 1, 0.5
+                on_left_release: root.katrain("undo","smart")
+    CollapsablePanel:
+        height_open: root.graph_box_height
+        closed_label: 'closedlabel:scoregraph'
+        options: ['score','winrate']
+        option_colors: [SCORE_COLOR,WINRATE_COLOR]
+        option_active: [True,False]
+        options_height: root.tab_option_height
+        on_option_state: graph.show_graphs(args[1])
+        ScoreGraph:
+            id: graph
+    CollapsablePanel:
+        height_open: root.stats_box_height
+        closed_label: 'closedlabel:movestats'
+        options: ['score','winrate','points']
+        option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
+        option_active: [True,True,True]
+        options_height: root.tab_option_height
+        on_option_state: for k, v in args[1].items(): stats.labels[k].hidden = not v
+        StatsBox:
+            id: stats
+    CollapsablePanel:
+        size_hint_y_open: 1
+        closed_label: 'closedlabel:info&notes'
+        options: ['info','notes']
+        option_colors: [WHITE,WHITE]
+        option_active: [True,False]
+        on_option_state:
+            info.size_hint_y = int(args[1]['info'])+1e-9
+            info.opacity =  int(args[1]['info'])
+            notebox.size_hint_y = int(args[1]['notes'])*0.66+1e-9
+            notebox.opacity = int(args[1]['notes'])
+        options_height: root.tab_option_height
+        BGBoxLayout:
+            background_color: BOX_BACKGROUND_COLOR
+            orientation: 'vertical'
+            ScrollableLabel:
+                id: status
+                size_hint: 1, None
+                height: min(self.parent.height*0.66,self.label.texture_size[1])
+                outline_color: RED
+                background_color: DARKRED
+            ScrollableLabel:
+                id: info
+                line_height: 1.25
+                markup: True
+                on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
+                size_hint: 1, 1
+                height: self.parent.height - status.height - note.height - 1
+            AnchorLayout:
+                padding: 0
+                id: notebox
+                size_hint: 1,0
+                MDTextField:
+                    id: note
+                    font_size: NOTES_FONT_SIZE
+                    multiline: True
+                    on_text: root.katrain.set_note(self.text)
+                    hint_text: i18n._('SGF Notes Hint')
+                    color_mode: 'custom'
+                    line_color_focus: TEXT_COLOR
+                    size_hint: 1, 1
+                    canvas.before:
+                        Color:
+                            rgba: LIGHTGREY
+                        Line:
+                            points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
+                            width: 1
+    Label:
+        size_hint_y: 1e-9 # takes up remaining space if info is closed
+
+
+<AnalysisToggle>:
+    adaptive_width: True
+    spacing: CP_SPACING
+    size_hint: None, 0.7
+    pos_hint: {'center_y':0.5}
+    checkbox: checkbox
+    Label:
+        id: label
+        text: root.text
+        halign: 'center'
+        font_size: root.height / 3
+        font_name: root.font_name
+        color: checkbox.selected_color if checkbox.active else checkbox.unselected_color
+        size_hint_x: None
+        width: self.texture_size[0] + 4
+    MDCheckbox:
+        id: checkbox
+        size_hint: None,0.5
+        pos_hint: {'center_y': 0.5}
+        width: self.height
+        active: root.default_active
+        selected_color: WHITE
+        unselected_color: LIGHTGREY
+        on_active: if app.gui: app.gui.update_state()
+
+<AnalysisDropdownMenu>:
+    background_color: BOX_BACKGROUND_COLOR
+    opening_time: 0.1
+    width_mult: 1.25
+
+<AnalysisDropdownMenuRightContent>:
+    width: 0
+    Label:
+        id: label
+        size: dp(30)
+        font_size: root.font_size
+        text: root.text
+        color: LIGHTGREY
+
+
+<AnalysisControls>:
+    katrain: app.gui
+    orientation: 'horizontal'
+    padding: CP_PADDING, CP_PADDING
+    spacing: CP_SPACING
+    show_children: show_children
     eval: eval
-    analyze_extra: analyze_extra
-    analyze_equalize: analyze_equalize
-    analyze_sweep: analyze_sweep
-	player_mode_groups: {'B':B_player_mode,'W':W_player_mode}
-	ai_mode_groups: {'B':B_AI_mode,'W':W_AI_mode}
-	graph: graph
-	timer: timer
-	periods: periods
-	pause: pause
-	katrain: app.gui
-    BoxLayout:
-        size_hint: 1,0.05
-        orientation: 'horizontal'
-        padding: 3,1,3,0
-        spacing: 2
-        StyledTabButton:
-            text: 'Play'
-            group: 'tabs'
-            state: 'down'
-            id: play_tab_button
-            on_press:
-                play_tab.size_hint[0] = 1
-                play_tab.opacity = 1
-                analyze_tab.size_hint_x = None
-                analyze_tab.width = 0
-                analyze_tab.opacity = 0
-                self.state = 'down'
-        StyledTabButton:
-            text: 'Analyze'
-            id: analyze_tab_button
-            group: 'tabs'
-            on_press:
-                analyze_tab.size_hint[0] = 1
-                analyze_tab.opacity = 1
-                play_tab.size_hint_x = None
-                play_tab.width = 0
-                play_tab.opacity = 0
-                self.state = 'down'
-    BoxLayout:
-        size_hint: 1,0.25
-        orientation: 'horizontal'
-        BoxLayout: # ----------- analyze -----------
-            size_hint: 0,1
-            id: analyze_tab
-            padding: [3,3]
-            opacity: 0
-            orientation: 'vertical'
-            GridLayout:
-                cols: 5
-                rows: 2
-                size_hint: 1, 0.3
-                CheckBoxHintLabel:
-                    text: 'next\nmoves'
-                    tooltip_text: '[q]\nShow all next moves\nplayed from the current position'
-                CheckBoxHintLabel:
-                    text: 'all\ndots'
-                    tooltip_text: '[w]\nShow evaluation dots\non stones for all moves'
-                CheckBoxHintLabel:
-                    text: 'top\nmoves'
-                    tooltip_text: '[e]\nShow top\npredicted moves'
-                CheckBoxHintLabel:
-                    text: 'show\nowner'
-                    tooltip_text: '[r]\nShow predicted ownership\nof each intersection'
-                CheckBoxHintLabel:
-                    text: 'NN\npolicy'
-                    tooltip_text: "[t]\nShow Policy top moves\n(i.e. with no 'reading')"
-                CheckBox:
-                    id: show_children
-                    active: True
-                    on_active: root.katrain.update_state()
-                CheckBox:
-                    id: eval
-                    on_active: root.katrain.update_state()
-                CheckBox:
-                    id: hints
-                    on_active: root.katrain.update_state()
-                CheckBox:
-                    id: ownership
-                    on_active: root.katrain.update_state()
-                CheckBox:
-                    id: policy
-                    on_active: root.katrain.update_state()
-            BoxLayout:
-                spacing:1
-                padding: 1,2,1,2
-                size_hint: 1,0.2
-                DarkLabel:
-                    text: 'Analysis'
-                    size_hint: 1, 1
-                    multiline: False
-                    font_size: 0.45*self.size[1]
-                StyledButton:
-                    id: analyze_extra
-                    text: 'Extra'
-                    tooltip_text: '[a]\nExtra analysis\nto increase accuracy\nof top move predictions\nand score difference'
-                    size_hint: 1, 1
-                    on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","extra")
-                StyledButton:
-                    id: analyze_equalize
-                    text: 'Equalize'
-                    tooltip_text: '[s]\nAnalysis of all\npredicted top moves\nwith the same accuracy'
-                    size_hint: 1, 1
-                    on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","equalize")
-                StyledButton:
-                    id: analyze_sweep
-                    text: 'Sweep'
-                    tooltip_text: '[d]\nFast analysis\nof all legal moves'
-                    size_hint: 1, 1
-                    on_press: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-extra","sweep")
-            ScoreGraph:
-                id: graph
-                size_hint: 1,0.7
-            BoxLayout:
-                orientation: 'vertical'
-                size_hint: 1,0.3
-                spacing: 3
-                CensorableLabel:
-                    id: win_rate
-                    size_hint: 1, 0.5
-                    label: 'Win rate'
-                    text: ''
-                CensorableLabel:
-                    id: score
-                    size_hint: 1, 0.5
-                    label: 'Score Estimate'
-                    text: ''
-        BoxLayout: # ----------- play -----------
-            orientation: 'vertical'
-            size_hint: 1,1
-            opacity: 1
-            id: play_tab
-            Label:
-                size_hint: 1,0.02
-            GridLayout:
-                cols: 4
-                rows: 2
-                spacing: 1
-                padding: 1
-                size_hint: 1,0.125
-                BlackCircleWithText:
-                    text: 'B'
-                    size_hint: 0.1, 1
-                ToggleButtonContainer:
-                    size_hint: 0.6, 1
-                    id: B_player_mode
-                    options: PLAYER_MODE_VALUES
-                    labels: PLAYER_MODES
-                    tooltips: PLAYER_TOOLTIPS
-                    on_selection: root.katrain.update_state()
-                StyledSpinner:
-                    id: B_AI_mode
-                    values: ['Default']
-                    size_hint: 0.3, 1
-                    on_text: if B_player_mode.children: B_player_mode.children[0].trigger_action(duration=0)
-                Label:
-                    size_hint: None,1
-                    width: 3
-                WhiteCircleWithText:
-                    text: 'W'
-                    size_hint: 0.1, 1
-                ToggleButtonContainer:
-                    size_hint: 0.6, 1
-                    id: W_player_mode
-                    options: PLAYER_MODE_VALUES
-                    labels: PLAYER_MODES
-                    tooltips: PLAYER_TOOLTIPS
-                    on_selection: root.katrain.update_state()
-                StyledSpinner:
-                    id: W_AI_mode
-                    size_hint: 0.3, 1
-                    values: ['Default']
-                    on_text: if W_player_mode.children: W_player_mode.children[0].trigger_action(duration=0)
-            BoxLayout:
-                size_hint: 1,0.05
-                padding: 5,0
-                spacing: 1
-                StyledButton:
-                    text: 'Configure Teacher'
-                    tooltip_text: "Undos, dots, and\nSGF output settings"
-                    on_release: if not self.last_touch or self.last_touch.button=="left": root.configure_teacher()
-                    size_hint: 1.425, 1
-                StyledButton:
-                    text: 'Configure AIs'
-                    tooltip_text: "Strength Settings per AI"
-                    on_release: if not self.last_touch or self.last_touch.button=="left": root.configure_ais()
-            BoxLayout:
-                size_hint: 1,0.10
-                padding: 5,5
-                spacing: 3
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint: 0.15,1
-                    Label:
-                    StyledIconButton:
-                        height: self.width
-                        size_hint: 1, None
-                        icon: 'img/flaticon/cogwheel.png'
-                        on_release: if not self.last_touch or self.last_touch.button=="left": root.configure_timer()
-                        tooltip_text: "Configure timer"
-                    Label:
-                Label:
-                    size_hint: 0.025, 1
-                TimerLabel:
-                    size_hint: 0.45,1
-                    id: timer
-                    text: '30:00'
-                DarkLabel:
-                    size_hint: 0.125,1
-                    id: periods
-                    markup: True
-                    text: 'x5'
-                    font_size: self.width*0.5
-                    multiline: False
-                    valign: 'top'
-                    halign: 'left'
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint: 0.15,1
-                    Label:
-                    StyledIconStyledToggleButton:
-                        id: pause
-                        height: self.width
-                        size_hint: 1, None
-                        icon_margin: 0.2 * self.size[0]
-                        icon: 'img/flaticon/pause.png'
-                        state: 'down'
-                    Label:
-            Label:
-                size_hint: 1,0.1
-    CensorableLabel:
-        id: score_change
-        size_hint: 1, 0.024
-        label: 'Points Lost'
-        text: '-'
-    BoxLayout:
-        size_hint: 1,0.2
+    policy: policy
+    hints: hints
+    ownership: ownership
+    analysis_button: analysis_button
+    hamburger: hamburger
+    HamburgerButton:
+        id: hamburger
+        size_hint: None, 1
+        pos_hint: {'center_y': 0.5,'left': 0}
+        on_press: app.gui.nav_drawer.set_state("open")
+    MDBoxLayout:
+        pos_hint: {'center_x': 0.5,'center_y': 0.5}
+        size_hint: None, 1
+        adaptive_width: True
+        spacing: show_children.width/4
+        AnalysisToggle:
+            id: show_children
+            text: i18n._("analysis:nextmoves")
+            default_active: True
+        AnalysisToggle:
+            id: eval
+            text: i18n._("analysis:dots")
+        AnalysisToggle:
+            id: hints
+            text: i18n._("analysis:topmoves")
+        AnalysisToggle:
+            id: policy
+            text: i18n._("analysis:policy")
+        AnalysisToggle:
+            id: ownership
+            text: i18n._('analysis:territory')
+        AutoSizedRoundedRectangleButton:
+            background_color: BOX_BACKGROUND_COLOR
+            size_hint_y: 0.5
+            id: analysis_button
+            on_press: root.open_analysis_menu()
+            text: i18n._("btn:Analyze")
+            pos_hint: {'center_y':0.5}
+
+<MainMenuItem>
+    font_size: self.height * 0.5
+    size_hint_y: None
+    height: self.parent.item_height or 50
+    background_color: BOX_BACKGROUND_COLOR
+    MDFloatLayout:
+        size_hint: None, 1
+        width: self.height + 16
+        Image:
+            id:image
+            source: root.icon
+            mipmap: True
+            size_hint: 0.7,0.7
+            pos_hint: {'center_y': 0.5,'center_x': 0.5}
+    Label:
+        text: root.text
+        text_size: self.size
+        size_hint_x: 1
+        halign: 'left'
+        valign: 'middle'
+        font_size: root.font_size
+        font_name: root.font_name
+        color: WHITE
+    Label:
+        text: root.shortcut
+        halign: 'left'
+        valign: 'middle'
+        size_hint_x: 1/3
+        font_size: root.font_size
+        font_name: root.font_name
+        color: LIGHTGREY
+
+
+<LangButton@TransparentIconButton>
+    size_hint: 1,1
+    icon_size: self.height * 0.8, self.height  * 0.8
+
+
+<MenuLabel@Label+BackgroundMixin>:
+    background_color: BACKGROUND_COLOR
+    font_size: self.height * 0.5
+    height: self.parent.item_height or 50
+    size_hint: 1,None
+
+<MenuLink@ButtonBehavior+MenuLabel>:
+    site_key: ''
+    underline: True
+    on_press: app.webbrowser(self.site_key)
+
+<PlayerSetup>:
+    orientation: 'horizontal'
+    spacing: CP_SPACING
+    padding: 0, CP_PADDING
+    player_type: player_type
+    player_subtype_human: player_subtype_human
+    player_subtype_ai: player_subtype_ai
+    MDBoxLayout:
+        size_hint: 0.25, 1
+        CircleWithText:
+            size_hint: 0.8, 0.8
+            pos_hint: {'center_x':0.5,'center_y':0.5}
+            text: root.player[0]
+            player: root.player
+    MDBoxLayout:
+        size_hint: 0.5, 1
         orientation: 'vertical'
-        ScrollableLabel:
-            id: status_label
-            border_color: 0.5,0.1,0.1,1
-            opacity: 1 if self.text else 0
-            text: ''
-            size_hint_y: None
-            height: 0.00001 if not self.text else min(0.66*self.parent.height,self.label.texture_size[1])
-        ScrollableLabel:
-            id: info
-            markup: True
-            on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
-            size_hint: 1, None
-            height: self.parent.height - status_label.height - note.height - 1
-        TextInput:
-            id: note
-            size_hint: 1, None
-            on_text: root.katrain.set_note(self.text)
-            hint_text: 'Your SGF notes for this position here.'
-            height: min( (len(self._lines)+0.7) * self.line_height, self.parent.height - status_label.height - 2.7*self.line_height)
-    BoxLayout:
-        orientation: 'horizontal'
+        spacing: CP_SPACING
+        Label:
+            text: i18n._('player:type')
+            font_size: self.height * 0.5            
+        I18NSpinner:
+            id: player_type
+            value_refs: PLAYER_TYPES
+            on_select: root.setup_options(*args)
+    MDBoxLayout:
+        size_hint: 0.5, 1
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: CP_SPACING
+            size_hint_x: 1 if root.mode != PLAYER_AI else 0.0001
+            opacity:1 if root.mode != PLAYER_AI else 0
+            Label:
+                text:  i18n._("gametype")
+                font_size: self.height * 0.5
+            BoxLayout:
+                I18NSpinner:
+                    id: player_subtype_human
+                    value_refs: []
+                    on_select: if root.mode==PLAYER_HUMAN: root.update_global_player_info()
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: CP_SPACING
+            size_hint_x: 1 if root.mode == PLAYER_AI else 0.0001
+            opacity: 1 if root.mode == PLAYER_AI else 0
+            Label:
+                text: i18n._("aistrategy")
+                font_size: self.height * 0.5
+            BoxLayout:
+                I18NSpinner:
+                    id: player_subtype_ai
+                    value_refs: []
+                    on_select: if root.mode==PLAYER_AI: root.update_global_player_info()
+
+
+
+<PlayerSetupBlock>:
+    orientation: 'vertical'
+    size_hint_y: None
+    spacing: 3*CP_SPACING
+    padding: CP_PADDING
+    height: (self.parent.item_height or 50) * 5
+
+
+<HamburgerMenuContents@MDBoxLayout+BackgroundMixin>:
+    katrain: app.gui
+    player_setup: player_setup
+    background_color: BOX_BACKGROUND_COLOR
+    orientation: 'vertical'
+    item_height: self.height/20
+    MenuLabel:
+        text: i18n._('menu:playersetup')
+    PlayerSetupBlock:
+        id: player_setup
+        update_global: True
+    MenuLabel:
+        size_hint: 1,1
+    MenuLabel:
+    MDBoxLayout:
+        orientation: 'vertical'
         size_hint: 1, None
-        spacing: 2
-        padding: 2
-        height: self.width * 0.25
-        StyledIconButton:
-            icon: 'img/flaticon/go-game.png'
-            tooltip_text: '[Ctrl-N]\nNew Game'
-            size_hint: 0.25, 1
-            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain("new-game-popup")
-        StyledIconButton:
-            icon: 'img/flaticon/open-folder.png'
-            tooltip_text: '[Ctrl-L]\nLoad Game'
-            size_hint: 0.25, 1
-            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain("analyze-sgf-popup")
-        StyledIconButton:
-            icon: 'img/flaticon/bar.png'
-            tooltip_text: '[Ctrl-S]\nSave Game'
-            size_hint: 0.25, 1
-            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain('output-sgf')
-        StyledIconButton:
-            icon: 'img/flaticon/gears.png'
-            tooltip_text: 'General Settings'
-            size_hint: 0.25, 1
-            on_release: if not self.last_touch or self.last_touch.button=="left": root.katrain('config-popup')
+        adaptive_height: True
+        item_height: root.item_height
+        MainMenuItem:
+            text: i18n._('menu:newgame')
+            icon: 'img/New-Game.png'
+            shortcut: 'Ctrl-N'
+            on_action: root.katrain("new-game-popup")
+            height: root.item_height
+        MainMenuItem:
+            text: i18n._('menu:save')
+            icon: 'img/Save-Game.png'
+            shortcut: 'Ctrl-S'
+            on_action: root.katrain("output-sgf")
+        MainMenuItem:
+            text: i18n._('menu:load')
+            icon: 'img/Load-Game.png'
+            shortcut: 'Ctrl-L'
+            on_action: root.katrain("analyze-sgf-popup")
+        MainMenuItem:
+            text: i18n._('menu:clocksettings')
+            icon: 'img/Time-Settings.png'
+            shortcut: 'F5'
+            on_action: root.katrain('timer-popup')
+        MainMenuItem:
+            text: i18n._('menu:teachsettings')
+            icon: 'img/Teaching-Settings.png'
+            shortcut: 'F6'
+            on_action: root.katrain('teacher-popup')
+        MainMenuItem:
+            text: i18n._('menu:aisettings')
+            icon: 'img/AI-Settings.png'
+            shortcut: 'F7'
+            on_action: root.katrain('ai-popup')
+        MainMenuItem:
+            text: i18n._('menu:settings')
+            icon: 'img/General-Settings.png'
+            shortcut: 'F8'
+            on_action: root.katrain('config-popup')
+    MenuLabel:
+        text: i18n._('menu:lang')
+    MDBoxLayout:
+        size_hint: 1, None
+        height: 1.5 * root.item_height
+        LangButton:
+            icon: 'img/flaticon/flag-uk.png'
+            on_press: app.language = 'en'
+        LangButton:
+            icon: 'img/flaticon/flag-fr.png'
+            on_press: app.language = 'fr'
+        LangButton:
+            icon: 'img/flaticon/flag-ko.png'
+            on_press: app.language = 'ko'
+    BoxLayout:
+        size_hint: 1,None
+        height: root.item_height
+        item_height: root.item_height
+        MenuLink:
+            text: i18n._('menu:manual')
+            site_key: 'homepage'
+        MenuLink:
+            text: i18n._('menu:support')
+            site_key: 'support'
+
+
+<OutlineBox@MDBoxLayout+BackgroundMixin>:
+
+
+<PlayAnalyzeButton@SizedToggleButton>:
+    inactive_background_color: BOX_BACKGROUND_COLOR
+    active_background_color: YELLOW
+    ripple_color: BACKGROUND_COLOR
+    text_color:  self.inactive_background_color if self.state=='down' else self.active_background_color
+    size_hint: 0.5,1
+    _font_size: self.height * 0.5
+    group: 'play_analyze'
+    allow_no_selection: False
+
+<PlayAnalyzeSelect>:
+    play: play
+    analyze: analyze
+    OutlineBox:
+        outline_color: WHITE
+        size_hint: 0.7,0.7
+        pos_hint: {'center_x':0.5,'center_y':0.45}
+        PlayAnalyzeButton:
+            text: i18n._('btn:Play')
+            id: play
+            state: 'down'
+            on_state: app.gui.update_state()
+        PlayAnalyzeButton:
+            text: i18n._('btn:Analysis')
+            id: analyze
+            on_state: app.gui.update_state()
 
 <KaTrainGui>:
-	board_gui: board_gui
-	controls_box: controls_box
-	controls: controls
-	board_controls: board_controls
-	board_aspect_ratio: 1.075
-    BoxLayout:
-        size_hint: 1,1
-        canvas.before:
-            Color:
-                rgb: BOARD_COLOR
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        orientation: 'vertical'
-        BadukPanWidget:
-            id: board_gui
-        BadukPanControls:
-            id: board_controls
+    board_gui: board_gui
+    controls: controls
+    board_controls: board_controls
+    play_mode: play_mode
+    analysis_controls: analysis_controls
+    nav_drawer: nav_drawer
+    nav_drawer_contents: nav_drawer_contents
+    zen: False
+    NavigationLayout:
+        ScreenManager:
+            Screen:
+                name: 'gui'
+                BGBoxLayout:
+                    background_color: BACKGROUND_COLOR
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        AnalysisControls:
+                            id: analysis_controls
+                            size_hint_y: None
+                            height: min(100,self.width / 13.5) if not root.zen else 1
+                            opacity: 0 if root.zen else 1
+                        BadukPanWidget:
+                            id: board_gui
+                        BadukPanControls:
+                            id: board_controls
+                            size_hint_y: None
+                            height: min(100,self.width / 13.5) if not root.zen else 1
+                            opacity: 0 if root.zen else 1
+                    MDBoxLayout:
+                        size_hint_x: None
+                        width: 0 if root.zen else self.height * 0.4
+                        opacity: 0 if root.zen else 1
+                        orientation: 'vertical'
+                        PlayAnalyzeSelect:
+                            id: play_mode
+                            size_hint_y: None
+                            height: analysis_controls.height
+                        ControlsPanel:
+                            id: controls
+        MyNavigationDrawer:
+            id: nav_drawer
+            state: "close"
+            y: 0
             size_hint_y: None
-            height: min(100,self.width / 13.5)
-    BoxLayout: # avoids a weird syntax error in builder .. somehow
-        size_hint_x: None
-        size_hint_y: 1
-        hidden: False
-        width: 0 if self.hidden else self.height * 0.4
-        opacity: 0 if self.hidden else 1
-        id: controls_box
-        canvas.before:
-            Color:
-                rgba: 0.95, 0.95, 0.95, 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Controls:
-            id: controls
+            width: self.height * 0.5
+            height: root.height - analysis_controls.height
+            swipe_edge_width: 0
+            HamburgerMenuContents:
+                id: nav_drawer_contents
 
-<LoadSGFPopup>:
-    fast: fast
-    rewind: rewind
-    filesel: filesel
-    orientation: 'vertical'
-    Label:
-        text: root.filesel.path
-        size_hint: 1,0.05
-        halign: 'left'
-    FileChooserListView:
-        id: filesel
-        multiselect: False
-        filters: ["*.sgf"]
-        path: "."
-        size_hint: 1,0.88
-    BoxLayout:
-        orientation: 'horizontal'
-        size_hint: 1,0.07
-        canvas.before:
-            Color:
-                rgb: 0.4, 0.4, 0.4
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Label:
-            text: "Analyze Extra Fast"
-            size_hint: 0.45,1
-            halign: 'right'
-        CheckBox:
-            id: fast
-            color: (0.95, 0.95, 0.95)
-            size_hint: 0.05,1
-        Label:
-            text: "Rewind to Start"
-            halign: 'right'
-            size_hint: 0.45,1
-        CheckBox:
-            id: rewind
-            active: True
-            color: (0.95, 0.95, 0.95)
-            size_hint: 0.05,1
 
-<QuickInputButton@StyledButton>
-    on_press: if not self.last_touch or self.last_touch.button=="left": self.parent.parent.children[self.parent.parent.children.index(self.parent)+1].text = self.text # why +1 instead of -1?
 
-<NewGamePopup>:
-    orientation: 'vertical'
-    rules_spinner: rules_spinner
-    info: info
-    restart: restart
-    GridLayout:
-        size_hint: 1, 0.8
-        rows: 6
-        cols: 3
-        spacing: 2
-        padding: 2
-        ScaledLightLabel:
-            text: "Size"
-        LabelledTextInput:
-            text: '19'
-            font_size: 0.5*self.size[1]
-            padding: 7, 0.2*self.size[1]
-            input_property: 'SZ'
-        BoxLayout:
-            spacing: 1
-            QuickInputButton:
-                text: '9'
-            QuickInputButton:
-                text: '13'
-            QuickInputButton:
-                text: '19'
-        ScaledLightLabel:
-            text: "Handicap"
-        LabelledIntInput:
-            text: '0'
-            input_property: 'HA'
-        BoxLayout:
-            spacing: 1
-            QuickInputButton:
-                text: '0'
-                on_press: if not self.last_touch or self.last_touch.button=="left": km.text='6.5'
-            QuickInputButton:
-                text: '2'
-                on_press: if not self.last_touch or self.last_touch.button=="left": km.text='0.5'
-            QuickInputButton:
-                text: '9'
-                on_press: if not self.last_touch or self.last_touch.button=="left": km.text='0.5'
-        ScaledLightLabel:
-            text: "Komi"
-        LabelledFloatInput:
-            text: '6.5'
-            id: km
-            input_property: 'KM'
-        BoxLayout:
-            spacing: 1
-            QuickInputButton:
-                text: '0.5'
-            QuickInputButton:
-                text: '5.5'
-            QuickInputButton:
-                text: '6.5'
-        ScaledLightLabel:
-            text: "Ruleset"
-        LabelledSpinner:
-            input_property: 'RU'
-            id: rules_spinner
-        Label:
-        ScaledLightLabel:
-            text: 'Clear cache'
-        CheckBox:
-            color: WHITE
-            id: restart
-        ScaledLightLabel:
-            font_size: 0.35*self.size[1]
-            text: 'avoids replaying\nidentical games'
-        LightHelpLabel:
-            text: "Use x:y (e.g. 19:9) to play on a non-square board."
-            size_hint: 1,2
-            text_size: self.width-6, None
-            font_size: self.size[1]/6
-            id: info
-        LightHelpLabel:
-            text: "Note that handicaps above 9 are not supported on non-square boards."
-            font_size: self.size[1]/6
-            text_size: self.width-6, None
-            id: info
-        StyledButton:
-            halign: 'center'
-            text: 'Start\nGame'
-            font_size: 0.3 * self.size[1]
-            on_press: if not self.last_touch or self.last_touch.button=="left": root.new_game()
+

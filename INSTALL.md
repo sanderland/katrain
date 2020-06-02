@@ -38,6 +38,25 @@
     * If you prefer not to install, run without installing using `python3 -m katrain`
 * A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.4+ binary.
 
+## Troubleshooting 
+
+Older linux machines may have trouble installing, you can try to manually install dependencies to resolve some issues.
+
+The following packages may help resolve missing OS packages for Kivy or KataGo.
+```
+sudo apt-get install python3-pip build-essential git python3 python3-dev ffmpeg libsdl2-dev libsdl2-image-dev\
+    libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev \
+    libgstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good\
+    pkg-config libgl-dev opencl-headers ocl-icd-opencl-dev
+```
+Then, try installing python package dependencies using:
+```
+pip3 install -U cython wheel setuptools
+pip3 install kivy==2.0.0rc2 kivymd==1.104.1
+```
+
+In case KataGo does not start, an alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.
+
 # Configuring the GPU(s) KataGo uses
 
 In most cases KataGo detects your configuration correctly, automatically searching for OpenCL devices and select the highest scoring device. 
@@ -64,7 +83,7 @@ As you can see it scores about twice as high as the Intel UHD chip and KataGo ha
 openclDeviceToUseThread0 = 1
 openclDeviceToUseThread1 = 2
 ```
-* Run `python3 katrain.py` and confirm that KataGo is now using both devices, by 
+* Run `python3 -m katrain` and confirm that KataGo is now using both devices, by 
  checking the output from the terminal, which should indicate two devices being used. For example:
 ```
   Found 3 device(s) on platform 0 with type CPU or GPU or Accelerator

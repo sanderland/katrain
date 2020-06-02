@@ -1,0 +1,555 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "Player Setup"
+
+msgid "menu:newgame"
+msgstr "New Game"
+
+msgid "menu:save"
+msgstr "Save Game"
+
+msgid "menu:load"
+msgstr "Load Game"
+
+msgid "menu:settings"
+msgstr "General & Engine Settings"
+
+msgid "menu:clocksettings"
+msgstr "Timer Settings"
+
+msgid "menu:teachsettings"
+msgstr "Teaching Game Settings"
+
+msgid "menu:aisettings"
+msgstr "AI Settings"
+
+msgid "menu:lang"
+msgstr "Language"
+
+msgid "menu:support"
+msgstr "Support"
+
+msgid "menu:manual"
+msgstr "Manual"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "Player"
+
+msgid "player:human"
+msgstr "Human"
+
+msgid "player:ai"
+msgstr "AI"
+
+msgid "aistrategy"
+msgstr "AI Strategy"
+
+msgid "gametype"
+msgstr "Game Type"
+
+msgid "game:normal"
+msgstr "Normal Game"
+
+msgid "game:teach"
+msgstr "Teaching Game"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"Next\n"
+"Moves"
+
+msgid "analysis:dots"
+msgstr ""
+"Show\n"
+"Dots"
+
+msgid "analysis:topmoves"
+msgstr ""
+"Top\n"
+"Moves"
+
+msgid "analysis:policy"
+msgstr ""
+"Policy\n"
+"Moves"
+
+msgid "analysis:territory"
+msgstr ""
+"Expected\n"
+"Territory"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "Deeper analysis"
+
+msgid "analysis:equalize"
+msgstr "Equalize visits of potential moves"
+
+msgid "analysis:sweep"
+msgstr "Fast analysis of all moves"
+
+msgid "analysis:aimove"
+msgstr "Force AI Move"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "Pass"
+
+msgid "teaching undo message"
+msgstr ""
+"Undid move {move} as it lost {points_lost:.1f} points. Hover over the move "
+"to see expected refutation. Please try again."
+
+msgid "ai-ponder"
+msgstr ""
+"This simply indicates the Engine status, going from green (idle) to orange "
+"(processing queries). It turns red when the engine has crashed or fails to "
+"start."
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "Undo"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "Score"
+
+msgid "tab:winrate"
+msgstr "Win Rate"
+
+msgid "tab:points"
+msgstr "Point Loss"
+
+msgid "tab:info"
+msgstr "Info"
+
+msgid "tab:notes"
+msgstr "Notes"
+
+msgid "closedlabel:scoregraph"
+msgstr "Score Graph"
+
+#. on the graph
+msgid "Jigo"
+msgstr "Jigo"
+
+msgid "closedlabel:movestats"
+msgstr "Move Stats"
+
+msgid "closedlabel:info&notes"
+msgstr "Move Info & Notes"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "pass"
+
+msgid "board-game-end"
+msgstr ""
+"game\n"
+"end"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "Play"
+
+msgid "btn:Analysis"
+msgstr "Analysis"
+
+msgid "btn:Analyze"
+msgstr "Analysis Options"
+
+msgid "stats:winrate"
+msgstr "Win Rate"
+
+msgid "stats:score"
+msgstr "Estimated Score"
+
+msgid "stats:pointslost"
+msgstr "Points Lost"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "Points Gained"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr ""
+"Moves marked 'X' indicate the top move according to KataGo, those with a "
+"square are moves that lose less than 0.5 points"
+
+msgid "Info:score"
+msgstr "Score: {score}"
+
+msgid "Info:winrate"
+msgstr "Win rate: {winrate}"
+
+msgid "Info:point loss"
+msgstr "Estimated point loss: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "Move {number}"
+
+msgid "Info:top move"
+msgstr "Predicted top move was {top_move} ({score})."
+
+msgid "Info:best move"
+msgstr "Move was predicted best move"
+
+msgid "Info:PV"
+msgstr "PV: {pv}"
+
+msgid "Info:policy rank"
+msgstr "Move was #{rank} according to policy  ({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "Top policy move was {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr "Move was automatically undone in teaching mode."
+
+msgid "Info:undo predicted PV"
+msgstr "Predicted follow-up: {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "AI thought process: {thoughts}"
+
+msgid "No analysis available"
+msgstr "No analysis available"
+
+msgid "Analyzing move..."
+msgstr "Analyzing move..."
+
+msgid "SGF Notes Hint"
+msgstr "Your SGF notes for this position here."
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "Load SGF File to Analyze"
+
+msgid "load sgf fast analysis"
+msgstr "Use fast analysis"
+
+msgid "load sgf rewind"
+msgstr "Rewind to start"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "Adjust Timer Settings"
+
+msgid "byoyomi length"
+msgstr "Time per Byo-yomi Period"
+
+msgid "byoyomi periods"
+msgstr "Number of Periods"
+
+#. submit button
+msgid "update timer"
+msgstr "Update Timer"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "Setup New Game"
+
+msgid "board size"
+msgstr "Board size"
+
+msgid "handicap"
+msgstr "Handicap"
+
+msgid "komi"
+msgstr "Komi"
+
+msgid "ruleset"
+msgstr "Rules"
+
+#. ruleset names
+msgid "japanese"
+msgstr "Japanese"
+
+msgid "chinese"
+msgstr "Chinese"
+
+msgid "korean"
+msgstr "Korean"
+
+msgid "aga"
+msgstr "AGA"
+
+msgid "clear cache"
+msgstr "Clear Cache"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"Avoids replaying\n"
+"identical games"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "Use x:y (e.g. 19:9) for non-square size"
+
+#. submit new game
+msgid "new game"
+msgstr "Start New Game"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "Edit Teacher Settings"
+
+msgid "point loss threshold"
+msgstr "Point loss greater than"
+
+msgid "num undos"
+msgstr "Number of undos"
+
+msgid "dot color"
+msgstr "Colour (fixed)"
+
+msgid "show dots"
+msgstr "Show dots"
+
+msgid "save dots"
+msgstr "Save in SGF"
+
+msgid "show last n dots"
+msgstr ""
+"Show dots for the last\n"
+"<this many> moves"
+
+msgid "show ai dots"
+msgstr ""
+"Show dots/SGF comments\n"
+" for AI players"
+
+msgid "lock ai when playing"
+msgstr ""
+"Disable top moves\n"
+" while in play mode"
+
+#. submit button
+msgid "update teacher"
+msgstr "Update Feedback Settings"
+
+# main config settings
+msgid "restarting engine"
+msgstr "Restarting Engine after Settings Change."
+
+# title
+msgid "general settings title"
+msgstr "General and Engine Settings"
+
+msgid "file not found"
+msgstr "Path does not exist"
+
+msgid "general settings"
+msgstr "General Settings"
+
+msgid "engine settings"
+msgstr "KataGo Engine Settings"
+
+msgid "config file path"
+msgstr "All options are saved in {file}"
+
+msgid "engine:katago"
+msgstr "Path to KataGo executable"
+
+msgid "engine:katago:hint"
+msgstr "Leave blank to use included executable"
+
+msgid "engine:model"
+msgstr "Path to KataGo model file"
+
+msgid "engine:config"
+msgstr "Path to KataGo config file"
+
+msgid "engine:max_visits"
+msgstr "Maximum number of visits in analysis"
+
+msgid "engine:fast_visits"
+msgstr "Maximum number of visits in fast analysis"
+
+msgid "engine:max_time"
+msgstr "Maximum time for analysis"
+
+msgid "engine:wide_root_noise"
+msgstr "Wide root noise (increases variety of moves considered)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"Use 0.02-0.1 to show\n"
+"more possible moves"
+
+msgid "engine:time:hint"
+msgstr "Time in seconds"
+
+msgid "general:sgf_load"
+msgstr "Path for loading SGF files"
+
+msgid "general:sgf_save"
+msgstr "Path for saving SGF files"
+
+msgid "general:anim_pv_time"
+msgstr "Time between moves when animating a sequence"
+
+msgid "general:debug_level"
+msgstr "Debug level in the console"
+
+msgid "general:debug_level:hint"
+msgstr "Set to 1 when reporting errors"
+
+msgid "update settings"
+msgstr "Update Settings"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "Advanced AI Settings"
+
+msgid "Select AI"
+msgstr "Select AI strategy to configure"
+
+msgid "update ai settings"
+msgstr "Update AI Settings"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "SGF with analysis written to {file_name}"
+
+msgid "wait-before-equalize"
+msgstr "Wait for initial analysis to complete before requesting a refinement."
+
+msgid "Copied SGF to clipboard."
+msgstr "Copied SGF to clipboard."
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"Failed to import game from clipboard: {error}\n"
+"Clipboard contents: {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "Failed to load SGF. Parse Error: {error}"
+
+msgid "Starting default Kata failed"
+msgstr ""
+"Starting KataGo with command '{command}' failed with error {error}. If on "
+"MacOS, see the manual on how to use brew to install katago first, and add it"
+" to your path or 'engine/katago' setting."
+
+msgid "Starting Kata failed"
+msgstr ""
+"Starting KataGo with command '{command}' failed with error {error}. Please "
+"make sure the 'katago' value under 'engine' in settings points to the "
+"correct KataGo executable."
+
+msgid "Engine died unexpectedly"
+msgstr ""
+"Engine died unexpectedly without sending output, possibly due to out of "
+"memory: {error}"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "k"
+
+msgid "strength:dan"
+msgstr "d"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"Full strength KataGo AI. Strength is  affected by `max visits` and `model` "
+"in the general settings `engine` section and engine configuration file. No "
+"options are available here."
+
+msgid "ai:jigo"
+msgstr "KataJigo"
+
+msgid "aihelp:jigo"
+msgstr ""
+"Will try to win by a set amount of points (default 0.5), without further "
+"restrictions."
+
+msgid "ai:scoreloss"
+msgstr "Score Loss"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"Plays moves that lead to more points lost with lower probability. Likely to "
+"play more varied/weaker with higher visits settings."
+
+msgid "ai:policy"
+msgstr "Policy"
+
+msgid "aihelp:policy"
+msgstr ""
+"Plays the top move from the policy network, without any reading. Strength is"
+" mainly affected by `model` in engine settings. The opening moves setting "
+"affects how many moves in the opening are more random."
+
+msgid "ai:p:weighted"
+msgstr "Policy Weighted"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"Plays moves according to policy probability, with `weaken_fac` influencing "
+"how much more likely weaker moves are played. A high negative value plays "
+"like the `Policy` AI.`pick_override` determines when top move is chosen "
+"without randomness, and `lower_bound` determines the lower bound policy "
+"value that is allowed."
+
+msgid "ai:p:pick"
+msgstr "Blinded Policy"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"Picks `pick_n + pick_frac * <number of legal moves>` at random and plays the"
+" best one. For `pick_frac=1` plays like the `Policy` AI. Plays top move if "
+"policy value is above `pick_override` to avoid obvious mistakes."
+
+msgid "ai:p:local"
+msgstr "Local Style"
+
+msgid "aihelp:p:local"
+msgstr ""
+"Picks `pick_n + pick_frac * <number of legal moves>` weighted towards the "
+"last move and plays the best one. Plays top move if policy value is above "
+"`pick_override` to avoid obvious mistakes."
+
+msgid "ai:p:tenuki"
+msgstr "Tenuki Style"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"Picks `pick_n + pick_frac * <number of legal moves>` weighted away from the "
+"last move and plays the best one. Plays top move if policy value is above "
+"`pick_override` to avoid obvious mistakes. A higher `stddev` makes it play "
+"further away."
+
+msgid "ai:p:influence"
+msgstr "Influential Style"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"Picks moves biased above the `threshold` line and plays the best one. "
+"Increase `line_weight` to penalize moves near the edge more. Stops strategy "
+"after the 'endgame' fraction of the board is filled."
+
+msgid "ai:p:territory"
+msgstr "Territorial Style"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"Picks moves biased below the `threshold` line and plays the best one. "
+"Increase `line_weight` to penalize moves near the center more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."

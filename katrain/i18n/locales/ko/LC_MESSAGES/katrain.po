@@ -1,0 +1,537 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: Korean\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "대국자 설정"
+
+msgid "menu:newgame"
+msgstr "새 대국"
+
+msgid "menu:save"
+msgstr "SGF 파일 저장하기"
+
+msgid "menu:load"
+msgstr "SGF 파일 불러오기"
+
+#. Engine as in the AI program powering the analysis
+msgid "menu:settings"
+msgstr "일반 설정 및 엔진 설정"
+
+msgid "menu:clocksettings"
+msgstr "시간 설정"
+
+msgid "menu:teachsettings"
+msgstr "지도대국 설정"
+
+msgid "menu:aisettings"
+msgstr "인공지능 설정"
+
+msgid "menu:lang"
+msgstr "언어"
+
+#. as in help me
+msgid "menu:support"
+msgstr "지원하기"
+
+msgid "menu:manual"
+msgstr "설명서"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "대국자"
+
+msgid "player:human"
+msgstr "사람"
+
+msgid "player:ai"
+msgstr "인공지능"
+
+msgid "aistrategy"
+msgstr "인공지능 변종"
+
+msgid "gametype"
+msgstr "대국 종류"
+
+msgid "game:normal"
+msgstr "일반 대국"
+
+msgid "game:teach"
+msgstr "지도대국"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"다음 수\n"
+"보기"
+
+msgid "analysis:dots"
+msgstr ""
+"색으로\n"
+"평가 표시"
+
+msgid "analysis:topmoves"
+msgstr "후보수"
+
+#. policy is really hard to translate - refering to (AlphaGo's) policy
+#. network.
+msgid "analysis:policy"
+msgstr ""
+"정책망\n"
+"후보수"
+
+msgid "analysis:territory"
+msgstr "집 모양"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "더 깊이 분석하기"
+
+msgid "analysis:equalize"
+msgstr "후보수에 같은 visit 주기"
+
+msgid "analysis:sweep"
+msgstr "빠르게 모든 수 분석하기"
+
+msgid "analysis:aimove"
+msgstr "인공지능이 다음 수 두게 하기"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "착수 넘김"
+
+msgid "ai-ponder"
+msgstr ""
+"엔진 상태를 나타냅니다. 초록색은 대기중, 주황색은 분석 결과를 기다리는 중입니다. 엔진이 충돌하거나 시작하지 못했을 때는 빨간색이 "
+"됩니다."
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "무르기"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "집 차이"
+
+msgid "tab:winrate"
+msgstr "승리 확률"
+
+msgid "tab:points"
+msgstr "집 손해"
+
+msgid "tab:info"
+msgstr "정보"
+
+msgid "tab:notes"
+msgstr "주석"
+
+msgid "closedlabel:scoregraph"
+msgstr "집 차이/승률 그래프"
+
+#. on the graph
+msgid "Jigo"
+msgstr "무승부"
+
+msgid "closedlabel:movestats"
+msgstr "착수 통계"
+
+msgid "closedlabel:info&notes"
+msgstr "착수 정보 및 주석"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "착수 넘김"
+
+msgid "board-game-end"
+msgstr "대국 종료"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "대국"
+
+msgid "btn:Analysis"
+msgstr "분석"
+
+msgid "btn:Analyze"
+msgstr "분석 옵션"
+
+msgid "stats:winrate"
+msgstr "승리 확률"
+
+msgid "stats:score"
+msgstr "예상 집 차이"
+
+msgid "stats:pointslost"
+msgstr "집 손해"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "집 이득"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr "'X'표시된 수들은 KataGo가 생각하는 최선의 수이며, 네모 표시된 수들은 0.5집보다 적게 손해본 수들입니다."
+
+msgid "Info:score"
+msgstr "예상 집 차이: {score}"
+
+msgid "Info:winrate"
+msgstr "승리 확률: {winrate}"
+
+msgid "Info:point loss"
+msgstr "집 손해: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "{number}수"
+
+msgid "Info:top move"
+msgstr "예상한 최선의 수는 {top_move}입니다({score})."
+
+msgid "Info:best move"
+msgstr "예상한 최선의 수입니다."
+
+#. Principal Variation (expected best sequence)
+msgid "Info:PV"
+msgstr "변화도: {pv}"
+
+msgid "Info:policy rank"
+msgstr "정책망이 고려하는 #{rank}번째 수입니다 ({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "정책망의 일감은 {move}입니다 ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr "지도대국이므로 자동으로 물렀습니다."
+
+msgid "Info:undo predicted PV"
+msgstr "예상 변화도: {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "인공지능 사고 과정: {thoughts}"
+
+msgid "No analysis available"
+msgstr "분석 결과 없음"
+
+msgid "Analyzing move..."
+msgstr "분석 중..."
+
+msgid "SGF Notes Hint"
+msgstr "이 국면에서 SGF 파일에 첨부할 주석입니다."
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "분석할 SGF 파일 불러오기"
+
+msgid "load sgf fast analysis"
+msgstr "빠르게 분석하기"
+
+msgid "load sgf rewind"
+msgstr "처음으로 이동하기"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "제한시간 설정"
+
+msgid "byoyomi length"
+msgstr "초읽기 시간"
+
+msgid "byoyomi periods"
+msgstr "초읽기 횟수"
+
+#. submit button
+msgid "update timer"
+msgstr "시간 설정 갱신"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "새 대국 설정"
+
+msgid "board size"
+msgstr "판 크기"
+
+msgid "handicap"
+msgstr "치석"
+
+msgid "komi"
+msgstr "덤"
+
+msgid "ruleset"
+msgstr "규칙"
+
+#. ruleset names
+msgid "japanese"
+msgstr "일본"
+
+msgid "chinese"
+msgstr "중국"
+
+msgid "korean"
+msgstr "한국"
+
+msgid "aga"
+msgstr "AGA"
+
+msgid "clear cache"
+msgstr "캐시 지우기"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"반복해서 같은 판을\n"
+"두지 않게 합니다."
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "정사각형이 아닌 판에서 두려면 x:y(예: 19:9)를 사용하십시오."
+
+#. submit new game
+msgid "new game"
+msgstr "새 대국 시작"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "지도대국 설정 변경"
+
+msgid "point loss threshold"
+msgstr "-집 이상 손해"
+
+msgid "num undos"
+msgstr "무르기 횟수"
+
+msgid "dot color"
+msgstr "색(고정됨)"
+
+msgid "show dots"
+msgstr "색 표시하기"
+
+msgid "save dots"
+msgstr "SGF 파일에 저장"
+
+msgid "show last n dots"
+msgstr ""
+"마지막 몇 수에 대해\n"
+"인공지능 평가를 색으로 표시할지"
+
+msgid "show ai dots"
+msgstr ""
+"인공지능 대국자에 대해서도\n"
+"평가를 색으로 표시"
+
+msgid "lock ai when playing"
+msgstr ""
+"대국 중에\n"
+"후보수 분석하지 않기"
+
+#. submit button
+msgid "update teacher"
+msgstr "피드백 설정 갱신"
+
+# main config settings
+msgid "restarting engine"
+msgstr "설정 변경 후 엔진을 재시작하고 있습니다."
+
+# title
+msgid "general settings title"
+msgstr "일반 및 엔진 설정"
+
+msgid "file not found"
+msgstr "존재하지 않는 경로입니다."
+
+msgid "general settings"
+msgstr "일반 설정"
+
+msgid "engine settings"
+msgstr "KataGo 엔진 설정"
+
+msgid "config file path"
+msgstr "설정 파일 경로: {file}"
+
+msgid "engine:katago"
+msgstr "KataGo 실행 파일 경로"
+
+msgid "engine:katago:hint"
+msgstr "비워 두면 내장된 실행 파일을 사용합니다."
+
+msgid "engine:model"
+msgstr "KataGo 신경망 파일 경로"
+
+msgid "engine:config"
+msgstr "KataGo 설정 파일 경로"
+
+msgid "engine:max_visits"
+msgstr "분석에 사용할 visit 수"
+
+msgid "engine:fast_visits"
+msgstr "빠른 분석에 사용할 visit 수"
+
+msgid "engine:max_time"
+msgstr "최대 분석 시간"
+
+msgid "engine:wide_root_noise"
+msgstr ""
+"Wide root noise\n"
+"(더 다양한 수를 고려)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"더 많은 수를 분석하려면\n"
+"0.02와 0.1 사이로 설정"
+
+msgid "engine:time:hint"
+msgstr "시간(초)"
+
+msgid "general:sgf_load"
+msgstr "SGF 파일을 불러올 경로"
+
+msgid "general:sgf_save"
+msgstr "SGF 파일을 저장할 경로"
+
+msgid "general:anim_pv_time"
+msgstr "수순을 보여줄 때 수 사이의 시간"
+
+msgid "general:debug_level"
+msgstr "콘솔의 debug level"
+
+msgid "general:debug_level:hint"
+msgstr "오류 보고를 위해서는 1로 설정하십시오."
+
+msgid "update settings"
+msgstr "설정 갱신"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "인공지능 세부 설정"
+
+msgid "Select AI"
+msgstr "인공지능 착수 방법 선택"
+
+msgid "update ai settings"
+msgstr "인공지능 설정 갱신"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "SGF와 분석 결과를 {file_name}에 기록했습니다."
+
+msgid "wait-before-equalize"
+msgstr "추가적인 분석을 요청하기 전에, 먼저 일차적인 분석이 끝날 때까지 기다려 주십시오."
+
+msgid "Copied SGF to clipboard."
+msgstr "SGF를 클립보드에 복사했습니다."
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"클립보드에서 대국 내용을 가져오는 데 실패했습니다: {error}\n"
+"클립보드 내용: {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "SGF 파일을 불러올 수 없습니다. Parse Error: {error}"
+
+msgid "Starting default Kata failed"
+msgstr ""
+"'{command}'로 KataGo를 시작하던 중 {error} 오류가 발생했습니다. MacOS를 사용하고 계시다면, 어떻게 brew를 "
+"이용해 KataGo를 설치하는지 설명서에서 확인하시고, 실행 파일을 path에 추가하거나 'engine/katago' 설정에 "
+"추가하십시오."
+
+msgid "Starting Kata failed"
+msgstr ""
+"'{command}'로 KataGo를 시작하던 중 {error} 오류가 발생했습니다. 설정의 'engine' 아래에 있는 'katago'"
+" 값이 올바른 KataGo 실행 파일 경로가 맞는지 확인해 주십시오."
+
+msgid "Engine died unexpectedly"
+msgstr "엔진이 출력을 보내지 않고 예상치 않게 종료되었습니다. 메모리 용량 초과일 가능성이 있습니다: {error}."
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "급"
+
+msgid "strength:dan"
+msgstr "단"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"최대 기력의 KataGo입니다. 기력은 일반 설정-엔진의 `max visits`와 `model` 및 엔진 설정 파일에 영향을 받습니다. "
+"별도의 설정은 없습니다."
+
+msgid "ai:jigo"
+msgstr "KataJigo"
+
+msgid "aihelp:jigo"
+msgstr "다른 제한 없이 지정한 집 수만큼(기본값 0.5) 이기고자 합니다."
+
+msgid "ai:scoreloss"
+msgstr "집 손해"
+
+msgid "aihelp:scoreloss"
+msgstr "집 손해를 많이 보는 수일수록 낮은 확률로 둡니다. 많은 visit을 줄수록 더 다양하거나 약하게 둘 수도 있습니다."
+
+msgid "ai:policy"
+msgstr "정책망"
+
+msgid "aihelp:policy"
+msgstr ""
+"수읽기를 하지 않고 정책망에서 가장 높은 확률의 수를 둡니다. 엔진 설정의 `model`이 기력에 영향을 줍니다. "
+"`opening_moves` 설정에 따라 초반에 무작위적으로 두는 수가 늘어납니다."
+
+msgid "ai:p:weighted"
+msgstr "정책망 확률에 따라"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"정책망 확률에 따라 착수합니다. `weaken_fac`은 약한 수를 둘 확률을 증가시키며, 낮은 음수값일수록 `정책망` 인공지능과 "
+"비슷하게 둡니다. `pick_override`는 언제 무작위성 없이 가장 확률이 높은 수를 둘지, `lower_bound`는 정책 확률의"
+" 하한값을 결정합니다."
+
+msgid "ai:p:pick"
+msgstr "구멍난 정책망"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"`pick_n + pick_frac * <착수 허용점>`개의 수를 무작위로 뽑아 그 중 최선의 수를 둡니다. `pick_frac=1`일 "
+"때는 `정책망` 인공지능과 같이 둡니다. 지나치게 명백한 실수를 방지하기 위해 정책값이 가장 높은 수의 정책값이 "
+"`pick_override`보다 높을 때는 그 수를 둡니다."
+
+msgid "ai:p:local"
+msgstr "손따라 두기"
+
+msgid "aihelp:p:local"
+msgstr ""
+"마지막으로 둔 수 근처의 `pick_n + pick_frac * <착수 허용점>`개의 수를 뽑아 그 중 최선의 수를 둡니다. 지나치게 "
+"명백한 실수를 방지하기 위해 정책값이 가장 높은 수의 정책값이 `pick_override`보다 높을 때는 그 수를 둡니다."
+
+msgid "ai:p:tenuki"
+msgstr "손빼며 두기"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"마지막으로 둔 수에서 먼 `pick_n + pick_frac * <착수 허용점>`개의 수를 뽑아 그 중 최선의 수를 둡니다. 지나치게 "
+"명백한 실수를 방지하기 위해 정책값이 가장 높은 수의 정책값이 `pick_override`보다 높을 때는 그 수를 둡니다. "
+"`stddev` 값이 크면 더 멀리 두게 됩니다."
+
+msgid "ai:p:influence"
+msgstr "세력지향"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"`threshold`선 위의 수를 더 많이 뽑은 후 그 중 최선의 수를 둡니다. `line_weight`을 증가시키면 판 가장자리에 있는"
+" 수를 더욱 꺼리게 됩니다. 판이 `endgame` 비율만큼 차면 평범하게 둡니다."
+
+msgid "ai:p:territory"
+msgstr "실리지향"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"`threshold`선 밑의 수를 더 많이 뽑은 후 그 중 최선의 수를 둡니다. `line_weight`을 증가시키면 바둑판 중앙에 있는"
+" 수를 더욱 꺼리게 됩니다. 판이 `endgame` 비율만큼 차면 평범하게 둡니다."
+
+msgid "teaching undo message"
+msgstr ""
+"{points_lost:.1f}집 손해이므로 {move}을/를 물렀습니다. 커서를 올려 상대의 대응책을 보십시오. 다시 두어 주세요."

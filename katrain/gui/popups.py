@@ -1,62 +1,140 @@
-from collections import defaultdict
-from typing import Dict, List, DefaultDict, Tuple
+import os
+import re
+from typing import Any, Dict, List, Tuple, Union
 
 from kivy.clock import Clock
+from kivy.properties import BooleanProperty, NumericProperty, StringProperty
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivymd.app import MDApp
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.selectioncontrol import MDCheckbox
+from kivymd.uix.textfield import MDTextField
 
-from katrain.core.common import OUTPUT_DEBUG, OUTPUT_ERROR
-from katrain.core.engine import KataGoEngine
-from katrain.core.game import Game, GameNode
-from katrain.gui.kivyutils import (
-    BackgroundLabel,
-    LabelledCheckBox,
-    LabelledFloatInput,
-    LabelledIntInput,
-    LabelledObjectInputArea,
-    LabelledSpinner,
-    LabelledTextInput,
-    LightHelpLabel,
-    ScaledLightLabel,
-    StyledButton,
-    StyledSpinner,
+from katrain.core.constants import (
+    AI_CONFIG_DEFAULT,
+    AI_DEFAULT,
+    AI_STRATEGIES_RECOMMENDED_ORDER,
+    OUTPUT_DEBUG,
+    OUTPUT_ERROR,
+    OUTPUT_INFO,
 )
+from katrain.core.engine import KataGoEngine
+from katrain.core.lang import i18n
+from katrain.core.utils import find_package_resource
+from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
+from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
+
+
+class I18NPopup(Popup):
+    title_key = StringProperty("")
+    font_name = StringProperty(DEFAULT_FONT)
+
+
+class LabelledTextInput(MDTextField):
+    input_property = StringProperty("")
+    multiline = BooleanProperty(False)
+
+    @property
+    def input_value(self):
+        return self.text
+
+
+class LabelledPathInput(LabelledTextInput):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Clock.schedule_once(self.check_error, 0)
+
+    def check_error(self, _dt=None):
+        file = find_package_resource(self.input_value, silent_errors=True)
+        self.error = not (file and os.path.exists(file))
+
+    def on_text(self, widget, text):
+        self.check_error()
+        return super().on_text(widget, text)
+
+    @property
+    def input_value(self):
+        return self.text.strip().replace("\n", " ").replace("\r", " ")
+
+
+class LabelledCheckBox(MDCheckbox):
+    input_property = StringProperty("")
+
+    def __init__(self, text=None, **kwargs):
+        if text is not None:
+            kwargs["active"] = text.lower() == "true"
+        super().__init__(**kwargs)
+
+    @property
+    def input_value(self):
+        return bool(self.active)
+
+
+class LabelledSpinner(I18NSpinner):
+    input_property = StringProperty("")
+
+    @property
+    def input_value(self):
+        return self.selected[1]  # ref value
+
+
+class LabelledFloatInput(LabelledTextInput):
+    signed = BooleanProperty(True)
+    pat = re.compile("[^0-9-]")
+
+    def insert_text(self, substring, from_undo=False):
+        pat = self.pat
+        if "." in self.text:
+            s = re.sub(pat, "", substring)
+        else:
+            s = ".".join([re.sub(pat, "", s) for s in substring.split(".", 1)])
+        r = super().insert_text(s, from_undo=from_undo)
+        if not self.signed and "-" in self.text:
+            self.text = self.text.replace("-", "")
+        elif self.text and "-" in self.text[1:]:
+            self.text = self.text[0] + self.text[1:].replace("-", "")
+        return r
+
+    @property
+    def input_value(self):
+        return float(self.text)
+
+
+class LabelledIntInput(LabelledTextInput):
+    pat = re.compile("[^0-9]")
+
+    def insert_text(self, substring, from_undo=False):
+        return super().insert_text(re.sub(self.pat, "", substring), from_undo=from_undo)
+
+    @property
+    def input_value(self):
+        return int(self.text)
 
 
 class InputParseError(Exception):
     pass
 
 
-class QuickConfigGui(BoxLayout):
-    def __init__(self, katrain, popup: Popup, initial_values: Dict = None, **kwargs):
-        super().__init__(**kwargs)
+class QuickConfigGui(MDBoxLayout):
+    def __init__(self, katrain):
+        super().__init__()
         self.katrain = katrain
-        self.popup = popup
-        self.orientation = "vertical"
-        if initial_values:
-            self.set_properties(self, initial_values)
+        self.popup = None
+        Clock.schedule_once(lambda _dt: self.set_properties(self))
 
-    @staticmethod
-    def type_to_widget_class(value):
-        if isinstance(value, float):
-            return LabelledFloatInput
-        elif isinstance(value, bool):
-            return LabelledCheckBox
-        elif isinstance(value, int):
-            return LabelledIntInput
-        if isinstance(value, dict):
-            return LabelledObjectInputArea
-        else:
-            return LabelledTextInput
-
-    def collect_properties(self, widget):
-        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)):
+    def collect_properties(self, widget) -> Dict:
+        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
+            widget, "input_property", None
+        ):
             try:
                 ret = {widget.input_property: widget.input_value}
             except Exception as e:
-                raise InputParseError(f"Could not parse value for {widget.input_property} ({widget.__class__}): {e}")
+                raise InputParseError(
+                    f"Could not parse value for {widget.input_property} ({widget.__class__}): {e}"
+                )  # TODO : on widget!
         else:
             ret = {}
         for c in widget.children:
@@ -64,123 +142,178 @@ class QuickConfigGui(BoxLayout):
                 ret[k] = v
         return ret
 
-    def set_properties(self, widget, properties):
-        if isinstance(widget, (LabelledTextInput, LabelledSpinner)):
-            key = widget.input_property
-            if key in properties:
-                widget.text = str(properties[key])
+    def get_setting(self, key) -> Union[Tuple[Any, Dict, str], Tuple[Any, List, int]]:
+        keys = key.split("/")
+        config = self.katrain._config
+        for k in keys[:-1]:
+            if k not in config:
+                config[k] = {}
+            config = config[k]
+
+        if "::" in keys[-1]:
+            array_key, ix = keys[-1].split("::")
+            ix = int(ix)
+            array = config[array_key]
+            return array[ix], array, ix
+        else:
+            if keys[-1] not in config:
+                config[keys[-1]] = ""
+                self.katrain.log(
+                    f"Configuration setting {repr(key)} was missing, created it, but this likely indicates a broken config file.",
+                    OUTPUT_ERROR,
+                )
+            return config[keys[-1]], config, keys[-1]
+
+    def set_properties(self, widget):
+        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
+            widget, "input_property", None
+        ):
+            value = self.get_setting(widget.input_property)[0]
+            if isinstance(widget, LabelledCheckBox):
+                widget.active = value is True
+            elif isinstance(widget, LabelledSpinner):
+                selected = 0
+                try:
+                    selected = widget.value_refs.index(value)
+                except:
+                    pass
+                widget.text = widget.values[selected]
+            else:
+                widget.text = str(value)
         for c in widget.children:
-            self.set_properties(c, properties)
+            self.set_properties(c)
+
+    def update_config(self, save_to_file=True):
+        updated = set()
+        for multikey, value in self.collect_properties(self).items():
+            old_value, conf, key = self.get_setting(multikey)
+            if value != old_value:
+                self.katrain.log(f"Updating setting {multikey} = {value}", OUTPUT_DEBUG)
+                conf[key] = value  # reference straight back to katrain._config - may be array or dict
+                updated.add(multikey)
+        if save_to_file:
+            self.katrain.save_config()
+        if updated:
+            self.katrain.update_state()
+        if self.popup:
+            self.popup.dismiss()
+        return updated
 
 
-class LoadSGFPopup(BoxLayout):
-    pass
+class ConfigTimerPopup(QuickConfigGui):
+    def update_config(self, save_to_file=True):
+        super().update_config(save_to_file=save_to_file)
+        for p in self.katrain.players_info.values():
+            p.periods_used = 0
+        self.katrain.controls.timer.paused = True
+        self.katrain.game.current_node.time_used = 0
+        self.katrain.update_state()
 
 
 class NewGamePopup(QuickConfigGui):
-    def __init__(self, katrain, popup: Popup, properties: Dict, **kwargs):
-        properties["RU"] = KataGoEngine.get_rules(katrain.game.root)
-        super().__init__(katrain, popup, properties, **kwargs)
-        self.rules_spinner.values = list(set(self.katrain.engine.RULESETS.values()))
-        self.rules_spinner.text = properties["RU"]
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        self.rules_spinner.value_refs = [name for abbr, name in katrain.engine.RULESETS_ABBR]
 
-    def new_game(self):
-        properties = self.collect_properties(self)
-        self.katrain.log(f"New game settings: {properties}", OUTPUT_DEBUG)
-        new_root = GameNode(properties={**Game.DEFAULT_PROPERTIES, **properties})
-        x, y = new_root.board_size
-        if x > 52 or y > 52:
-            self.info.text = "Board size too big, should be at most 52"
-            return
+    def update_config(self, save_to_file=True):
+        super().update_config(save_to_file=save_to_file)
+        self.katrain.log(f"New game settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
         if self.restart.active:
-            self.katrain.log("Restarting Engine")
+            self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
             self.katrain.engine.restart()
-        self.katrain("new-game", new_root)
-        self.popup.dismiss()
+        for bw, player_setup in self.player_setup.players.items():
+            self.katrain.update_player(bw, **player_setup.player_type_dump)
+        self.katrain("new-game")
+
+
+def wrap_anchor(widget):
+    anchor = AnchorLayout()
+    anchor.add_widget(widget)
+    return anchor
+
+
+class ConfigTeacherPopup(QuickConfigGui):
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        self.build()
+
+    def add_option_widgets(self, widgets):
+        for widget in widgets:
+            self.options_grid.add_widget(wrap_anchor(widget))
+
+    def build(self):
+        undos = self.katrain.config("trainer/num_undo_prompts")
+        thresholds = self.katrain.config("trainer/eval_thresholds")
+        savesgfs = self.katrain.config("trainer/save_feedback")
+        show_dots = self.katrain.config("trainer/show_dots")
+
+        for i, (color, threshold, undo, show_dot, savesgf) in enumerate(
+            zip(EVAL_COLORS, thresholds, undos, show_dots, savesgfs)
+        ):
+            self.add_option_widgets(
+                [
+                    BackgroundMixin(background_color=color, size_hint=[0.9, 0.9]),
+                    LabelledFloatInput(text=str(threshold), input_property=f"trainer/eval_thresholds::{i}"),
+                    LabelledFloatInput(text=str(undo), input_property=f"trainer/num_undo_prompts::{i}"),
+                    LabelledCheckBox(text=str(show_dot), input_property=f"trainer/show_dots::{i}"),
+                    LabelledCheckBox(text=str(savesgf), input_property=f"trainer/save_feedback::{i}"),
+                ]
+            )
+        self.set_properties(self)
+
+
+class DescriptionLabel(Label):
+    pass
+
+
+class AIPopup(QuickConfigGui):
+    max_options = NumericProperty(6)
+
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        self.ai_select.value_refs = AI_STRATEGIES_RECOMMENDED_ORDER
+        selected_strategies = {p.strategy for p in katrain.players_info.values()}
+        config_strategy = list((selected_strategies - {AI_DEFAULT}) or {AI_CONFIG_DEFAULT})[0]
+        self.ai_select.select_key(config_strategy)
+        self.build_ai_options()
+        self.ai_select.bind(text=self.build_ai_options)
+
+    def build_ai_options(self, *_args):
+        strategy = self.ai_select.selected[1]
+        mode_settings = self.katrain.config(f"ai/{strategy}")
+        self.options_grid.clear_widgets()
+        self.help_label.text = i18n._(strategy.replace("ai:", "aihelp:"))
+        for k, v in sorted(mode_settings.items(), key=lambda kv: kv[0]):
+            self.options_grid.add_widget(DescriptionLabel(text=k))
+            self.options_grid.add_widget(
+                wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"ai/{strategy}/{k}"))
+            )
+        for _ in range((self.max_options - len(mode_settings)) * 2):
+            self.options_grid.add_widget(Label())
 
 
 class ConfigPopup(QuickConfigGui):
-    def __init__(self, katrain, popup: Popup, config: Dict, ignore_cats: Tuple = (), **kwargs):
-        self.config = config
-        self.ignore_cats = ignore_cats
-        self.orientation = "vertical"
-        super().__init__(katrain, popup, **kwargs)
-        Clock.schedule_once(self.build, 0)
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        self.configfile.text = i18n._("config file path").format(file=katrain.config_file)
 
-    def build(self, _):
+    def update_config(self, save_to_file=True):
+        updated = super().update_config(save_to_file=save_to_file)
+        self.katrain.debug_level = self.katrain.config("general/debug_level", OUTPUT_INFO)
 
-        props_in_col = [0, 0]
-        cols = [BoxLayout(orientation="vertical"), BoxLayout(orientation="vertical")]
-
-        for k1, all_d in sorted(self.config.items(), key=lambda tup: -len(tup[1])):  # sort to make greedy bin packing work better
-            if k1 in self.ignore_cats:
-                continue
-            d = {k: v for k, v in all_d.items() if isinstance(v, (int, float, str, bool)) and not k.startswith("_")}  # no lists . dict could be supported but hard to scale
-            cat = GridLayout(cols=2, rows=len(d) + 1, size_hint=(1, len(d) + 1))
-            cat.add_widget(Label(text=""))
-            cat.add_widget(ScaledLightLabel(text=f"{k1} settings", bold=True))
-            for k2, v in d.items():
-                label = ScaledLightLabel(text=f"{k2}:")
-                widget = self.type_to_widget_class(v)(text=str(v), input_property=f"{k1}/{k2}")
-                hint = all_d.get("_hint_" + k2)
-                if hint:
-                    label.tooltip_text = hint
-                    if isinstance(widget, LabelledTextInput):
-                        widget.hint_text = hint
-                cat.add_widget(label)
-                cat.add_widget(widget)
-            if props_in_col[0] <= props_in_col[1]:
-                cols[0].add_widget(cat)
-                props_in_col[0] += len(d)
-            else:
-                cols[1].add_widget(cat)
-                props_in_col[1] += len(d)
-
-        col_container = BoxLayout(size_hint=(1, 0.9))
-        col_container.add_widget(cols[0])
-        col_container.add_widget(cols[1])
-        self.add_widget(col_container)
-        self.info_label = Label(halign="center")
-        self.apply_button = StyledButton(text="Apply", on_press=lambda _: self.update_config())
-        self.save_button = StyledButton(text="Apply and Save", on_press=lambda _: self.update_config(save_to_file=True))
-        btn_container = BoxLayout(orientation="horizontal", size_hint=(1, 0.1), spacing=1, padding=1)
-        btn_container.add_widget(self.apply_button)
-        btn_container.add_widget(self.info_label)
-        btn_container.add_widget(self.save_button)
-        self.add_widget(btn_container)
-
-    def update_config(self, save_to_file=False):
-        updated_cat = defaultdict(list)  # type: DefaultDict[List[str]]
-        try:
-            for k, v in self.collect_properties(self).items():
-                k1, k2 = k.split("/")
-                if self.config[k1][k2] != v:
-                    self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
-                    updated_cat[k1].append(k2)
-                    self.config[k1][k2] = v
-            self.popup.dismiss()
-        except InputParseError as e:
-            self.info_label.text = str(e)
-            self.katrain.log(e, OUTPUT_ERROR)
-            return
-
-        if save_to_file:
-            self.katrain.save_config()
-
-        engine_updates = updated_cat["engine"]
-        if "visits" in engine_updates:
-            self.katrain.engine.visits = engine_updates["visits"]
-        if {key for key in engine_updates if key not in {"max_visits", "max_time", "enable_ownership", "wide_root_noise"}}:
-            self.katrain.log(f"Restarting Engine after {engine_updates} settings change")
-            self.info_label.text = "Restarting engine\nplease wait."
-            self.katrain.controls.set_status(f"Restarted Engine after {engine_updates} settings change.")
+        ignore = {"max_visits", "max_time", "enable_ownership", "wide_root_noise"}
+        detected_restart = [key for key in updated if "engine" in key and not any(ig in key for ig in ignore)]
+        if detected_restart:
 
             def restart_engine(_dt):
+                self.katrain.log(f"Restarting Engine after {detected_restart} settings change")
+                self.katrain.controls.set_status(i18n._("restarting engine"))
+
                 old_engine = self.katrain.engine  # type: KataGoEngine
                 old_proc = old_engine.katago_process
                 if old_proc:
-                    old_engine.shutdown(finish=True)
-                new_engine = KataGoEngine(self.katrain, self.config["engine"])
+                    old_engine.shutdown(finish=False)
+                new_engine = KataGoEngine(self.katrain, self.katrain.config("engine"))
                 self.katrain.engine = new_engine
                 self.katrain.game.engines = {"B": new_engine, "W": new_engine}
                 self.katrain.game.analyze_all_nodes()  # old engine was possibly broken, so make sure we redo any failures
@@ -188,168 +321,14 @@ class ConfigPopup(QuickConfigGui):
 
             Clock.schedule_once(restart_engine, 0)
 
-        self.katrain.debug_level = self.config["debug"]["level"]
-        self.katrain.update_state(redraw_board=True)
 
-
-class ConfigAIPopup(QuickConfigGui):
-    def __init__(self, katrain, popup: Popup, settings):
-        super().__init__(katrain, popup, settings)
-        self.settings = settings
-        Clock.schedule_once(self.build, 0)
-
-    def build(self, _):
-        ais = list(self.settings.keys())
-
-        top_bl = BoxLayout()
-        top_bl.add_widget(ScaledLightLabel(text="Select AI to configure:"))
-        ai_spinner = StyledSpinner(values=ais, text=ais[0])
-        ai_spinner.fbind("text", lambda _, text: self.build_ai_options(text))
-        top_bl.add_widget(ai_spinner)
-        self.add_widget(top_bl)
-        self.options_grid = GridLayout(cols=2, rows=max(len(v) for v in self.settings.values()) - 1, size_hint=(1, 7.5), spacing=1)  # -1 for help in 1 col
-        bottom_bl = BoxLayout(spacing=2)
-        self.info_label = Label()
-        bottom_bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
-        bottom_bl.add_widget(self.info_label)
-        bottom_bl.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
-        self.add_widget(self.options_grid)
-        self.add_widget(bottom_bl)
-        self.build_ai_options(ais[0])
-
-    def build_ai_options(self, mode):
-        mode_settings = self.settings[mode]
-        self.options_grid.clear_widgets()
-        self.options_grid.add_widget(LightHelpLabel(size_hint=(1, 4), padding=(2, 2), text=mode_settings.get("_help_left", "")))
-        self.options_grid.add_widget(LightHelpLabel(size_hint=(1, 4), padding=(2, 2), text=mode_settings.get("_help_right", "")))
-        for k, v in mode_settings.items():
-            if not k.startswith("_"):
-                self.options_grid.add_widget(ScaledLightLabel(text=f"{k}"))
-                self.options_grid.add_widget(ConfigPopup.type_to_widget_class(v)(text=str(v), input_property=f"{mode}/{k}"))
-        for _ in range(self.options_grid.rows * self.options_grid.cols - len(self.options_grid.children)):
-            self.options_grid.add_widget(ScaledLightLabel(text=f""))
-        self.set_properties(self, self.settings)
-
-    def update_config(self, save_to_file=False):
-        try:
-            for k, v in self.collect_properties(self).items():
-                k1, k2 = k.split("/")
-                if self.settings[k1][k2] != v:
-                    self.settings[k1][k2] = v
-                    self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
-            if save_to_file:
-                self.katrain.save_config()
-            self.popup.dismiss()
-        except InputParseError as e:
-            self.info_label.text = str(e)
-            self.katrain.log(e, OUTPUT_ERROR)
-            return
-        self.popup.dismiss()
-
-
-class ConfigTeacherPopup(QuickConfigGui):
-    def __init__(self, katrain, popup, **kwargs):
-        self.settings = katrain.config("trainer")
-        self.sgf_settings = katrain.config("sgf")
-        self.ui_settings = katrain.config("board_ui")
-        super().__init__(katrain, popup, self.settings, **kwargs)
-        self.spacing = 2
-        Clock.schedule_once(self.build, 0)
-
-    def build(self, _dt):
-        thresholds = self.settings["eval_thresholds"]
-        undos = self.settings["num_undo_prompts"]
-        colors = self.ui_settings["eval_colors"]
-        thrbox = GridLayout(spacing=1, padding=2, cols=5, rows=len(thresholds) + 1)
-        thrbox.add_widget(ScaledLightLabel(text="Point loss greater than", bold=True))
-        thrbox.add_widget(ScaledLightLabel(text="Gives this many undos", bold=True))
-        thrbox.add_widget(ScaledLightLabel(text="Color (fixed)", bold=True))
-        thrbox.add_widget(ScaledLightLabel(text="Show dots", bold=True))
-        thrbox.add_widget(ScaledLightLabel(text="Save in SGF", bold=True))
-        for i, (thr, undos, color) in enumerate(zip(thresholds, undos, colors)):
-            thrbox.add_widget(LabelledFloatInput(text=str(thr), input_property=f"eval_thresholds::{i}"))
-            thrbox.add_widget(LabelledFloatInput(text=str(undos), input_property=f"num_undo_prompts::{i}"))
-            thrbox.add_widget(BackgroundLabel(background=color[:3]))
-            thrbox.add_widget(LabelledCheckBox(text=str(color[3] == 1), input_property=f"alpha::{i}"))
-            thrbox.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.sgf_settings["save_feedback"][i]), input_property=f"save_feedback::{i}"))
-        self.add_widget(thrbox)
-
-        xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
-        xsettings.add_widget(ScaledLightLabel(text="Show last <n> dots"))
-        xsettings.add_widget(LabelledIntInput(size_hint=(0.5, 1), text=str(self.settings["eval_off_show_last"]), input_property="eval_off_show_last"))
-        self.add_widget(xsettings)
-        xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
-        xsettings.add_widget(ScaledLightLabel(text="Show dots/SGF comments for AI players"))
-        xsettings.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.settings["eval_show_ai"]), input_property="eval_show_ai"))
-        self.add_widget(xsettings)
-        xsettings = BoxLayout(size_hint=(1, 0.15), spacing=2)
-        xsettings.add_widget(ScaledLightLabel(text="Disable analysis while in teach mode"))
-        xsettings.add_widget(LabelledCheckBox(size_hint=(0.5, 1), text=str(self.settings["lock_ai"]), input_property="lock_ai"))
-        self.add_widget(xsettings)
-
-        bl = BoxLayout(size_hint=(1, 0.15), spacing=2)
-        bl.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
-        self.info_label = Label()
-        bl.add_widget(self.info_label)
-        bl.add_widget(StyledButton(text=f"Apply and Save", on_press=lambda _: self.update_config(True)))
-        self.add_widget(bl)
-
-    def update_config(self, save_to_file=False):
-        try:
-            for k, v in self.collect_properties(self).items():
-                if "::" in k:
-                    k1, i = k.split("::")
-                    i = int(i)
-                    if "alpha" in k1:
-                        v = 1.0 if v else 0.0
-                        if self.ui_settings["eval_colors"][i][3] != v:
-                            self.katrain.log(f"Updating alpha {i} = {v}", OUTPUT_DEBUG)
-                            self.ui_settings["eval_colors"][i][3] = v
-                    elif "save_feedback" in k1:
-                        if self.sgf_settings[k1][i] != v:
-                            self.sgf_settings[k1][i] = v
-                            self.katrain.log(f"Updating setting sgf/{k1}[{i}] = {v}", OUTPUT_DEBUG)
-
-                    else:
-                        if self.settings[k1][i] != v:
-                            self.settings[k1][i] = v
-                            self.katrain.log(f"Updating setting trainer/{k1}[{i}] = {v}", OUTPUT_DEBUG)
-                else:
-                    if self.settings[k] != v:
-                        self.settings[k] = v
-                        self.katrain.log(f"Updating setting {k} = {v}", OUTPUT_DEBUG)
-            if save_to_file:
-                self.katrain.save_config()
-            self.popup.dismiss()
-        except InputParseError as e:
-            self.info_label.text = str(e)
-            self.katrain.log(e, OUTPUT_ERROR)
-            return
-        self.katrain.update_state()
-        self.popup.dismiss()
-
-
-class ConfigTimerPopup(QuickConfigGui):
-    def __init__(self, katrain, popup, **kwargs):
-        self.settings = katrain.config("timer")
-        super().__init__(katrain, popup, self.settings, **kwargs)
-        self.spacing = 2
-        Clock.schedule_once(self.build, 0)
-
-    def build(self, _dt):
-        thrbox = GridLayout(spacing=1, padding=2, cols=2, rows=2, size_hint=(1, 2))
-        thrbox.add_widget(ScaledLightLabel(text="Byo-yomi\nperiod length (s)", bold=True, size_hint=(2, 1), num_lines=2))
-        thrbox.add_widget(LabelledIntInput(text="30", input_property="byo_length"))
-        thrbox.add_widget(ScaledLightLabel(text="Byo-yomi\nnumber of periods", bold=True, size_hint=(2, 1), num_lines=2))
-        thrbox.add_widget(LabelledIntInput(text="5", input_property="byo_num"))
-        self.add_widget(thrbox)
-        self.add_widget(StyledButton(text=f"Apply", on_press=lambda _: self.update_config(False)))
-
-    def update_config(self, save_to_file=False):
-        for k, v in self.collect_properties(self).items():
-            self.settings[k] = v
-        if save_to_file:
-            self.katrain.save_config()
-        self.katrain.controls.periods_used = {"B": 0, "W": 0}
-        self.katrain.update_state()
-        self.popup.dismiss()
+class LoadSGFPopup(BoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        app = MDApp.get_running_app()
+        self.filesel.favorites = [
+            (os.path.abspath(app.gui.config("general/sgf_load")), "SGF Load Dir"),
+            (os.path.abspath(app.gui.config("general/sgf_save")), "SGF Save Dir"),
+        ]
+        self.filesel.path = os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load")))
+        self.filesel.select_string = i18n._("Load File")

@@ -1,0 +1,528 @@
+# KaTrain i18n file
+msgid ""
+msgstr ""
+"Language: ㅋㅋㅋ\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "general:sgf_load"
+msgstr "ㅋㅋPath for loading SGF files"
+
+msgid "btn:Play"
+msgstr "ㅋㅋPlay"
+
+msgid "game:normal"
+msgstr "ㅋㅋNormal Game"
+
+msgid "engine:config"
+msgstr "ㅋㅋPath to KataGo config file"
+
+msgid "aihelp:policy"
+msgstr ""
+"ㅋㅋPlays the top move from the policy network, without any reading. Strength "
+"is mainly affected by `model` in engine settings. The opening moves setting "
+"affects how many moves in the opening are more random."
+
+msgid "analysis:topmoves"
+msgstr ""
+"ㅋㅋTop\n"
+"Moves"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"ㅋㅋPicks `pick_n + pick_frac * <number of legal moves>` weighted away from "
+"the last move and plays the best one. Plays top move if policy value is "
+"above `pick_override` to avoid obvious mistakes. A higher `stddev` makes it "
+"play further away."
+
+msgid "general settings"
+msgstr "ㅋㅋGeneral Settings"
+
+msgid "general:debug_level"
+msgstr "ㅋㅋDebug level in the console"
+
+msgid "ai:p:local"
+msgstr "ㅋㅋLocal Style"
+
+msgid "avoids replaying"
+msgstr ""
+"ㅋㅋAvoids replaying\n"
+"identical games"
+
+msgid "ai:p:territory"
+msgstr "ㅋㅋTerritorial Style"
+
+msgid "wait-before-equalize"
+msgstr ""
+"ㅋㅋWait for initial analysis to complete before requesting a refinement."
+
+msgid "Copied SGF to clipboard."
+msgstr "ㅋㅋCopied SGF to clipboard."
+
+msgid "Info:AI thoughts"
+msgstr "ㅋㅋAI thought process: {thoughts}"
+
+msgid "Starting Kata failed"
+msgstr ""
+"ㅋㅋStarting KataGo with command '{command}' failed with error {error}. Please"
+" make sure the 'katago' value under 'engine' in settings points to the "
+"correct KataGo executable."
+
+msgid "Engine died unexpectedly"
+msgstr ""
+"ㅋㅋEngine died unexpectedly without sending output, possibly due to out of "
+"memory: {error}"
+
+msgid "menu:settings"
+msgstr "ㅋㅋGeneral & Engine Settings"
+
+msgid "save dots"
+msgstr "ㅋㅋSave in SGF"
+
+msgid "ai:scoreloss"
+msgstr "ㅋㅋScore Loss"
+
+msgid "player:human"
+msgstr "ㅋㅋHuman"
+
+msgid "menu:playersetup"
+msgstr "ㅋㅋPlayer Setup"
+
+msgid "tab:notes"
+msgstr "ㅋㅋNotes"
+
+msgid "Jigo"
+msgstr "ㅋㅋJigo"
+
+msgid "komi"
+msgstr "ㅋㅋKomi"
+
+msgid "general:debug_level:hint"
+msgstr "ㅋㅋSet to 1 when reporting errors"
+
+msgid "stats:pointslost"
+msgstr "ㅋㅋPoints Lost"
+
+msgid "menu:load"
+msgstr "ㅋㅋLoad Game"
+
+msgid "engine:wide_root_noise"
+msgstr "ㅋㅋWide root noise (increases variety of moves considered)"
+
+msgid "engine:katago"
+msgstr "ㅋㅋPath to KataGo executable"
+
+msgid "teacher settings"
+msgstr "ㅋㅋEdit Teacher Settings"
+
+msgid "Info:undo predicted PV"
+msgstr "ㅋㅋPredicted follow-up: {pv}"
+
+msgid "chinese"
+msgstr "ㅋㅋChinese"
+
+msgid "update settings"
+msgstr "ㅋㅋUpdate Settings"
+
+msgid "ai:default"
+msgstr "ㅋㅋKataGo"
+
+msgid "show dots"
+msgstr "ㅋㅋShow dots"
+
+msgid "ruleset"
+msgstr "ㅋㅋRules"
+
+msgid "Analyzing move..."
+msgstr "ㅋㅋAnalyzing move..."
+
+msgid "Starting default Kata failed"
+msgstr ""
+"ㅋㅋStarting KataGo with command '{command}' failed with error {error}. If on "
+"MacOS, see the manual on how to use brew to install katago first, and add it"
+" to your path or 'engine/katago' setting."
+
+msgid "tab:points"
+msgstr "ㅋㅋPoint Loss"
+
+msgid "pass-button-text"
+msgstr "ㅋㅋPass"
+
+msgid "ai settings"
+msgstr "ㅋㅋAdvanced AI Settings"
+
+msgid "ai:jigo"
+msgstr "ㅋㅋKataJigo"
+
+msgid "analysis:aimove"
+msgstr "ㅋㅋForce AI Move"
+
+msgid "board size"
+msgstr "ㅋㅋBoard size"
+
+msgid "tab:winrate"
+msgstr "ㅋㅋWin Rate"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"ㅋㅋPlays moves according to policy probability, with `weaken_fac` influencing"
+" how much more likely weaker moves are played. A high negative value plays "
+"like the `Policy` AI.`pick_override` determines when top move is chosen "
+"without randomness, and `lower_bound` determines the lower bound policy "
+"value that is allowed."
+
+msgid "strength:dan"
+msgstr "ㅋㅋd"
+
+msgid "byoyomi length"
+msgstr "ㅋㅋTime per Byo-yomi Period"
+
+msgid "tab:score"
+msgstr "ㅋㅋScore"
+
+msgid "sgf written"
+msgstr "ㅋㅋSGF with analysis written to {file_name}"
+
+msgid "game:teach"
+msgstr "ㅋㅋTeaching Game"
+
+msgid "menu:lang"
+msgstr "ㅋㅋLanguage"
+
+msgid "clear cache"
+msgstr "ㅋㅋClear Cache"
+
+msgid "aihelp:jigo"
+msgstr ""
+"ㅋㅋWill try to win by a set amount of points (default 0.5), without further "
+"restrictions."
+
+msgid "Info:policy rank"
+msgstr "ㅋㅋMove was #{rank} according to policy  ({probability:.2%})."
+
+msgid "update ai settings"
+msgstr "ㅋㅋUpdate AI Settings"
+
+msgid "menu:support"
+msgstr "ㅋㅋSupport"
+
+msgid "dot color"
+msgstr "ㅋㅋColour (fixed)"
+
+msgid "Failed to load SGF"
+msgstr "ㅋㅋFailed to load SGF. Parse Error: {error}"
+
+msgid "update teacher"
+msgstr "ㅋㅋUpdate Feedback Settings"
+
+msgid "menu:newgame"
+msgstr "ㅋㅋNew Game"
+
+msgid "New Game title"
+msgstr "ㅋㅋSetup New Game"
+
+msgid "Info:top move"
+msgstr "ㅋㅋPredicted top move was {top_move} ({score})."
+
+msgid "show last n dots"
+msgstr ""
+"ㅋㅋShow dots for the last\n"
+"<this many> moves"
+
+msgid "num undos"
+msgstr "ㅋㅋNumber of undos"
+
+msgid "ai-ponder"
+msgstr ""
+"ㅋㅋThis simply indicates the Engine status, going from green (idle) to orange"
+" (processing queries). It turns red when the engine has crashed or fails to "
+"start."
+
+msgid "aihelp:p:local"
+msgstr ""
+"ㅋㅋPicks `pick_n + pick_frac * <number of legal moves>` weighted towards the "
+"last move and plays the best one. Plays top move if policy value is above "
+"`pick_override` to avoid obvious mistakes."
+
+msgid "analysis:extra"
+msgstr "ㅋㅋDeeper analysis"
+
+msgid "byoyomi periods"
+msgstr "ㅋㅋNumber of Periods"
+
+msgid "show ai dots"
+msgstr ""
+"ㅋㅋShow dots/SGF comments\n"
+" for AI players"
+
+msgid "ai:p:pick"
+msgstr "ㅋㅋBlinded Policy"
+
+msgid "ai:policy"
+msgstr "ㅋㅋPolicy"
+
+msgid "restarting engine"
+msgstr "ㅋㅋRestarting Engine after Settings Change."
+
+msgid "menu:clocksettings"
+msgstr "ㅋㅋTimer Settings"
+
+msgid "analysis:equalize"
+msgstr "ㅋㅋEqualize visits of potential moves"
+
+msgid "engine:max_time"
+msgstr "ㅋㅋMaximum time for analysis"
+
+msgid "closedlabel:info&notes"
+msgstr "ㅋㅋMove Info & Notes"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"ㅋㅋPicks `pick_n + pick_frac * <number of legal moves>` at random and plays "
+"the best one. For `pick_frac=1` plays like the `Policy` AI. Plays top move "
+"if policy value is above `pick_override` to avoid obvious mistakes."
+
+msgid "Info:score"
+msgstr "ㅋㅋScore: {score}"
+
+msgid "japanese"
+msgstr "ㅋㅋJapanese"
+
+msgid "engine settings"
+msgstr "ㅋㅋKataGo Engine Settings"
+
+msgid "general settings title"
+msgstr "ㅋㅋGeneral and Engine Settings"
+
+msgid "engine:katago:hint"
+msgstr "ㅋㅋLeave blank to use included executable"
+
+msgid "Info:best move"
+msgstr "ㅋㅋMove was predicted best move"
+
+msgid "file not found"
+msgstr "ㅋㅋPath does not exist"
+
+msgid "analysis:policy"
+msgstr ""
+"ㅋㅋPolicy\n"
+"Moves"
+
+msgid "Select AI"
+msgstr "ㅋㅋSelect AI strategy to configure"
+
+msgid "SGF Notes Hint"
+msgstr "ㅋㅋYour SGF notes for this position here."
+
+msgid "load sgf rewind"
+msgstr "ㅋㅋRewind to start"
+
+msgid "Info:winrate"
+msgstr "ㅋㅋWin rate: {winrate}"
+
+msgid "move"
+msgstr "ㅋㅋMove {number}"
+
+msgid "menu:save"
+msgstr "ㅋㅋSave Game"
+
+msgid "board-pass"
+msgstr "ㅋㅋpass"
+
+msgid "aistrategy"
+msgstr "ㅋㅋAI Strategy"
+
+msgid "load sgf fast analysis"
+msgstr "ㅋㅋUse fast analysis"
+
+msgid "engine:fast_visits"
+msgstr "ㅋㅋMaximum number of visits in fast analysis"
+
+msgid "player:ai"
+msgstr "ㅋㅋAI"
+
+msgid "menu:manual"
+msgstr "ㅋㅋManual"
+
+msgid "analysis:sweep"
+msgstr "ㅋㅋFast analysis of all moves"
+
+msgid "board-game-end"
+msgstr ""
+"ㅋㅋgame\n"
+"end"
+
+msgid "undo-button-text"
+msgstr "ㅋㅋUndo"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"ㅋㅋPicks moves biased below the `threshold` line and plays the best "
+"one.Increase `line_weight` to penalize moves near the center more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."
+
+msgid "engine:model"
+msgstr "ㅋㅋPath to KataGo model file"
+
+msgid "korean"
+msgstr "ㅋㅋKorean"
+
+msgid "closedlabel:scoregraph"
+msgstr "ㅋㅋScore Graph"
+
+msgid "analysis:dots"
+msgstr ""
+"ㅋㅋShow\n"
+"Dots"
+
+msgid "non square board hint"
+msgstr "ㅋㅋUse x:y (e.g. 19:9) for non-square size"
+
+msgid "lock ai when playing"
+msgstr ""
+"ㅋㅋDisable analysis\n"
+" while in play mode"
+
+msgid "general:anim_pv_time"
+msgstr "ㅋㅋTime between moves when animating a sequence"
+
+msgid "stats:score"
+msgstr "ㅋㅋEstimated Score"
+
+msgid "new game"
+msgstr "ㅋㅋStart New Game"
+
+msgid "update timer"
+msgstr "ㅋㅋUpdate Timer"
+
+msgid "Info:policy best"
+msgstr "ㅋㅋTop policy move was {move} ({probability:.1%})."
+
+msgid "handicap"
+msgstr "ㅋㅋHandicap"
+
+msgid "closedlabel:movestats"
+msgstr "ㅋㅋMove Stats"
+
+msgid "stats:pointsgained"
+msgstr "ㅋㅋPoints Gained"
+
+msgid "Info:point loss"
+msgstr "ㅋㅋEstimated point loss: {points_lost:.1f}"
+
+msgid "tab:info"
+msgstr "ㅋㅋInfo"
+
+msgid "gametype"
+msgstr "ㅋㅋGame Type"
+
+msgid "ai:p:weighted"
+msgstr "ㅋㅋPolicy Weighted"
+
+msgid "menu:aisettings"
+msgstr "ㅋㅋAI Settings"
+
+msgid "btn:Analysis"
+msgstr "ㅋㅋAnalysis"
+
+msgid "SGF start message"
+msgstr ""
+"ㅋㅋMoves marked 'X' indicate the top move according to KataGo, those with a "
+"square are moves that lose less than 0.5 points"
+
+msgid "player:type"
+msgstr "ㅋㅋPlayer"
+
+msgid "aihelp:default"
+msgstr ""
+"ㅋㅋFull strength KataGo AI. Strength is  affected by `max_visits` and `model`"
+" in the general settings `engine` section and engine configuration file. No "
+"options are available here."
+
+msgid "analysis:territory"
+msgstr ""
+"ㅋㅋExpected\n"
+"Territory"
+
+msgid "No analysis available"
+msgstr "ㅋㅋNo analysis available"
+
+msgid "point loss threshold"
+msgstr "ㅋㅋPoint loss greater than"
+
+msgid "ai:p:influence"
+msgstr "ㅋㅋInfluential Style"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"ㅋㅋPicks moves biased above the `threshold` line and plays the best "
+"one.Increase `line_weight` to penalize moves near the edge more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."
+
+msgid "ai:p:tenuki"
+msgstr "ㅋㅋTenuki Style"
+
+msgid "menu:teachsettings"
+msgstr "ㅋㅋTeaching Game Settings"
+
+msgid "aga"
+msgstr "ㅋㅋAGA"
+
+msgid "btn:Analyze"
+msgstr "ㅋㅋAnalyze"
+
+msgid "Info:PV"
+msgstr "ㅋㅋPV: {pv}"
+
+msgid "stats:winrate"
+msgstr "ㅋㅋWin Rate"
+
+msgid "engine:max_visits"
+msgstr "ㅋㅋMaximum number of visits in analysis"
+
+msgid "Info:teaching undo"
+msgstr "ㅋㅋMove was automatically undone in teaching mode."
+
+msgid "load sgf title"
+msgstr "ㅋㅋLoad SGF File to Analyze"
+
+msgid "engine:time:hint"
+msgstr "ㅋㅋTime in seconds"
+
+msgid "analysis:nextmoves"
+msgstr ""
+"ㅋㅋNext\n"
+"Moves"
+
+msgid "strength:kyu"
+msgstr "ㅋㅋk"
+
+msgid "general:sgf_save"
+msgstr "ㅋㅋPath for saving SGF files"
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"ㅋㅋFailed to import game from clipboard: {error}\n"
+"Clipboard contents: {contents}..."
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"ㅋㅋPlays moves that lead to more points lost with lower probability. Likely "
+"to play more varied/weaker with higher visits settings."
+
+msgid "timer settings"
+msgstr "ㅋㅋAdjust Timer Settings"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"ㅋㅋUse 0.02-0.1 to show\n"
+"more possible moves"
+
+msgid "config file path"
+msgstr "ㅋㅋAll options are saved in {file}"
+
+msgid "teaching undo message"
+msgstr ""
+"ㅋㅋUndid move {move} as it lost {points_lost:.1f} points. Hover over the move"
+" to see expected refutation. Please try again."

@@ -24,10 +24,13 @@ jobs:
     - name: Install dependencies
       run: |
         pip3 install -e .
-        pip3 install pytest wheel
+        pip3 install pytest wheel polib
 
     - name: Run tests
       run: pytest tests
+
+    - name: Run I18N conversion
+      run: python i18n.py
 
     - name: Build
       run: |

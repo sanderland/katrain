@@ -1,0 +1,426 @@
+#:kivy 1.11.0
+#:import i18n katrain.core.lang.i18n
+#:import expanduser os.path.expanduser
+#:import abspath os.path.abspath
+#:import kivy_version kivy.__version__
+
+#:set CP_SPACING 6
+#:set CP_SMALL_SPACING 3
+#:set CP_PADDING 6
+
+#:set INPUT_FONT_SIZE dp(25)
+#:set DESC_FONT_SIZE  dp(20)
+
+#:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
+#:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
+#:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
+
+
+# MDTextField:
+#    hint_text: "Helper text on focus"
+#    helper_text: "This will disappear when you click off"
+#    helper_text_mode: "on_focus"
+#    font_size: INPUT_FONT_SIZE
+
+<LabelledTextInput>:
+    font_size: INPUT_FONT_SIZE
+    helper_text_mode: "none"
+    hint_text: ""
+    helper_text: ""
+
+<LabelledPathInput>:
+    font_size: dp(16)
+    multiline: True # just for wrapping
+    helper_text_mode: "on_error"
+    helper_text: i18n._("file not found")
+
+<LabelledIntInput>:
+    font_size: INPUT_FONT_SIZE
+    size_hint: 0.5, None
+
+<LabelledFloatInput>:
+    font_size: INPUT_FONT_SIZE
+    size_hint: 0.5, None
+
+<LabelledCheckBox>:
+    color: WHITE
+    size: DESC_FONT_SIZE*2,DESC_FONT_SIZE*2
+    size_hint: None,None
+
+<QuickInputButton@SizedRectangleButton>
+    on_left_press: if self.target: self.target.text = self.text
+    size: DESC_FONT_SIZE * 2, DESC_FONT_SIZE * 2
+    font_size: DESC_FONT_SIZE
+
+<I18NPopup>:
+    background_color: BACKGROUND_COLOR
+    background: self.background if kivy_version < '2.0' else ''
+    title: i18n._(self.title_key)
+    title_size: DESC_FONT_SIZE
+    title_font: self.font_name
+    size_hint: None, None
+
+
+<QuickConfigGui>:
+    orientation: 'vertical'
+    spacing: CP_SPACING
+    padding: 4*CP_PADDING,CP_PADDING, 4*CP_PADDING, CP_PADDING
+
+<DescriptionLabel>:
+    font_size: DESC_FONT_SIZE
+    multiline: True
+    text_size: self.width, None
+    halign: 'center'
+    valign: 'center'
+
+<SmallDescriptionLabel@DescriptionLabel>
+    font_size: DESC_FONT_SIZE * 0.66
+
+<ConfigPopup>:
+    configfile: configfile
+    BoxLayout:
+        size_hint: 1,9
+        orientation: 'horizontal'
+        GridLayout:
+            cols: 2
+            rows: 8
+            spacing: CP_SPACING
+            Label:
+            DescriptionLabel:
+                text: i18n._('general settings')
+                font_size: DESC_FONT_SIZE * 1.5
+            DescriptionLabel:
+                text: i18n._("general:sgf_load")
+            AnchorLayout:
+                LabelledPathInput:
+                    input_property: "general/sgf_load" # just last load dir?
+            DescriptionLabel:
+                text: i18n._("general:sgf_save")
+            AnchorLayout:
+                LabelledPathInput:
+                    input_property: "general/sgf_save"
+            DescriptionLabel:
+                text: i18n._("general:anim_pv_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "general/anim_pv_time"
+                    hint_text: i18n._("engine:time:hint")
+            DescriptionLabel:
+                text: i18n._("general:debug_level")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "general/debug_level"
+                    helper_text: i18n._("general:debug_level:hint")
+                    helper_text_mode: "on_focus"
+            Label:
+            Label:
+            Label:
+            Label:
+            SmallDescriptionLabel:
+                id: configfile
+                text: i18n._('config file path')
+            Label:
+        BackgroundMixin:
+            background_color: LIGHTGREY
+            size_hint: None, 1
+            width: 2
+        GridLayout:
+            cols: 2
+            rows: 8
+            spacing: CP_SPACING
+            Label:
+            DescriptionLabel:
+                font_size: DESC_FONT_SIZE * 1.5
+                text: i18n._('engine settings')
+            DescriptionLabel:
+                text: i18n._("engine:katago")
+            AnchorLayout:
+                LabelledPathInput:
+                    input_property: "engine/katago"
+                    hint_text: i18n._("engine:katago:hint")
+            DescriptionLabel:
+                text: i18n._("engine:model")
+            AnchorLayout:
+                LabelledPathInput:
+                    input_property: "engine/model"
+            DescriptionLabel:
+                text: i18n._("engine:config")
+            AnchorLayout:
+                LabelledPathInput:
+                    input_property: "engine/config"
+            DescriptionLabel:
+                text: i18n._("engine:max_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/max_visits"
+            DescriptionLabel:
+                text: i18n._("engine:fast_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/fast_visits"
+            DescriptionLabel:
+                text: i18n._("engine:max_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/max_time"
+                    hint_text: i18n._("engine:time:hint")
+            DescriptionLabel:
+                text: i18n._("engine:wide_root_noise")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/wide_root_noise"
+                    hint_text: i18n._("engine:wide_root_noise:hint")
+    AnchorLayout:
+        size_hint: 1,1.5
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("update settings")
+            on_press: root.update_config(True)
+
+<ConfigTeacherPopup>
+    options_grid: options_grid
+    GridLayout:
+        cols: 5
+        rows: 7
+        size_hint: 1, 7
+        id: options_grid
+        DescriptionLabel:
+            text: i18n._("dot color")
+        DescriptionLabel:
+            text: i18n._("point loss threshold")
+        DescriptionLabel:
+            text: i18n._("num undos")
+        DescriptionLabel:
+            text: i18n._("show dots")
+        DescriptionLabel:
+            text: i18n._("save dots")
+    AnchorLayout:
+        size_hint: 1, 3
+        GridLayout:
+            cols: 2
+            rows: 3
+            padding: 4
+            size_hint: 0.66, 1
+            DescriptionLabel:
+                font_size: DESC_FONT_SIZE * 0.8
+                text: i18n._("show last n dots")
+                size_hint: 2,1
+            AnchorLayout:
+                LabelledIntInput:
+                    size_hint: 0.33, 1
+                    input_property: "trainer/eval_off_show_last"
+            DescriptionLabel:
+                size_hint: 2,1
+                font_size: DESC_FONT_SIZE * 0.8
+                text: i18n._("show ai dots")
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/eval_show_ai"
+            DescriptionLabel:
+                size_hint: 2,1
+                font_size: DESC_FONT_SIZE * 0.8
+                text: i18n._("lock ai when playing")
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/lock_ai"
+    AnchorLayout:
+        size_hint: 1,1.5
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("update teacher")
+            on_press: root.update_config(True)
+
+
+<ConfigTimerPopup>:
+    MDGridLayout:
+        cols: 2
+        rows: 2
+        spacing: CP_SPACING
+        size_hint: 1,2
+        DescriptionLabel:
+            text: i18n._('byoyomi length')
+        AnchorLayout:
+            LabelledIntInput:
+                text: "30"
+                input_property: "timer/byo_length"
+        DescriptionLabel:
+            text: i18n._('byoyomi periods')
+        AnchorLayout:
+            LabelledIntInput:
+                text: "5"
+                input_property: "timer/byo_periods"
+    AnchorLayout:
+        size_hint: 1,1
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("update timer")
+            on_press: root.update_config(True)
+
+
+<NewGamePopup>:
+    restart: restart
+    rules_spinner: rules_spinner
+    player_setup: player_setup
+    PlayerSetupBlock:
+        size_hint: 1, 2
+        id: player_setup
+    GridLayout:
+        rows: 6
+        cols: 3
+        size_hint: 1, 2.5
+        spacing: CP_SPACING
+        padding: CP_PADDING
+        DescriptionLabel:
+            text: i18n._("board size")
+        AnchorLayout:
+            LabelledTextInput:
+                text: '19'
+                id: boardsize
+                input_property: 'game/size'
+                size_hint: 0.5, None
+                hint_text: i18n._("non square board hint")
+        AnchorLayout:
+            MDBoxLayout:
+                adaptive_size: True
+                spacing: CP_SPACING
+                QuickInputButton:
+                    text: '9'
+                    target: boardsize
+                QuickInputButton:
+                    text: '13'
+                    target: boardsize
+                QuickInputButton:
+                    text: '19'
+                    target: boardsize
+        DescriptionLabel:
+            text:  i18n._("handicap")
+        AnchorLayout:
+            LabelledIntInput:
+                text: '0'
+                input_property: 'game/handicap'
+                id: handicap
+        AnchorLayout:
+            MDBoxLayout:
+                adaptive_size: True
+                spacing: CP_SPACING
+                QuickInputButton:
+                    text: '0'
+                    on_left_press: km.text='6.5'
+                    target: handicap
+                QuickInputButton:
+                    text: '2'
+                    on_left_press: km.text='0.5'
+                    target: handicap
+                QuickInputButton:
+                    text: '9'
+                    on_left_press: km.text='0.5'
+                    target: handicap
+        DescriptionLabel:
+            text:  i18n._("komi")
+        AnchorLayout:
+            LabelledFloatInput:
+                text: '6.5'
+                id: km
+                input_property: 'game/komi'
+        AnchorLayout:
+            MDBoxLayout:
+                adaptive_size: True
+                spacing: CP_SPACING
+                QuickInputButton:
+                    text: '0.5'
+                QuickInputButton:
+                    text: '6.5'
+                QuickInputButton:
+                    text: '7.5'
+        DescriptionLabel:
+            text: i18n._("ruleset")
+        AnchorLayout:
+            LabelledSpinner:
+                size_hint: 0.8,0.8
+                input_property: 'game/rules'
+                font_size: DESC_FONT_SIZE
+                id: rules_spinner
+        Label:
+        DescriptionLabel:
+            text: i18n._('clear cache')
+        AnchorLayout:
+            LabelledCheckBox:
+                id: restart
+                input_property: 'game/clear_cache'
+        SmallDescriptionLabel:
+            text: i18n._('avoids replaying')
+    AnchorLayout:
+        size_hint: 1,1
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("new game")
+            on_press: root.update_config(True)
+
+
+
+<AIPopup>
+    options_grid: options_grid
+    help_label: help_label
+    ai_select: ai_select
+    BoxLayout:
+        size_hint: 1,1
+        DescriptionLabel:
+            font_size: DESC_FONT_SIZE
+            text: i18n._('Select AI')
+        AnchorLayout:
+            I18NSpinner:
+                size_hint: 0.8, 0.5
+                id: ai_select
+    SmallDescriptionLabel:
+        id: help_label
+        size_hint: 1,1.25
+        text: i18n._('')
+    GridLayout:
+        size_hint: 1,4
+        id: options_grid
+        rows: root.max_options
+        cols: 2
+    AnchorLayout:
+        size_hint: 1,1.5
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("update ai settings")
+            on_press: root.update_config(True)
+
+
+<LoadSGFPopup>:
+    fast: fast
+    rewind: rewind
+    filesel: filesel
+    orientation: 'vertical'
+    AnchorLayout:
+        size_hint: 1,1
+        BoxLayout:
+            size_hint: 0.5,1
+            orientation: 'horizontal'
+            DescriptionLabel:
+                text: i18n._("load sgf fast analysis")
+                size_hint: 0.45,1
+                halign: 'right'
+            LabelledCheckBox:
+                id: fast
+                size_hint: 0.05,1
+            DescriptionLabel:
+                text: i18n._("load sgf rewind")
+                halign: 'right'
+                size_hint: 0.45,1
+            LabelledCheckBox:
+                id: rewind
+                active: True
+                size_hint: 0.05,1
+    I18NFileBrowser:
+        id: filesel
+        multiselect: False
+        filters: ["*.sgf"]
+        path: "."
+        size_hint: 1,7
