@@ -1,8 +1,9 @@
 import os
-import polib
-import sys
 import re
+import sys
 from collections import defaultdict
+
+import polib
 
 localedir = "katrain/i18n/locales"
 locales = set(os.listdir(localedir))
