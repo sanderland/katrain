@@ -5,7 +5,7 @@
 ![Build Status](https://github.com/sanderland/katrain/workflows/release/badge.svg)
 ![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
-![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)
+[![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)](https://liberapay.com/sanderbaduk/)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
 
 KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
@@ -130,7 +130,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 
 ![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)
 ![GitHub contributors](https://img.shields.io/github/contributors/sanderland/katrain?label=github%20contributors)
-![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)
+[![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)](https://liberapay.com/sanderbaduk/)
 ![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)
 
 * Donations for improving and promoting KaTrain are taken supported through [Liberapay](https://liberapay.com/KaTrain/).
