@@ -30,7 +30,7 @@ for lang in locales:
             strings_to_langs[entry.msgid][lang] = entry.msgstr
         strings_to_keys[entry.msgid][lang] = set(re.findall("{.*?}", entry.msgstr))
         if entry.msgid in lang_to_strings[lang]:
-            print('duplicate',entry.msgid,'in',lang            )
+            print("duplicate", entry.msgid, "in", lang)
             errors = True
         lang_to_strings[lang].add(entry.msgid)
     if num_todo[lang]:

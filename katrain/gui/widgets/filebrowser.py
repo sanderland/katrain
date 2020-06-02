@@ -37,19 +37,20 @@ a shortcut to the Documents directory added to the favorites bar::
 .. image:: _static/filebrowser.png
     :align: right
 """
-from kivy import Config
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.treeview import TreeViewLabel, TreeView
-from kivy.uix.filechooser import FileChooserListView, FileChooserListLayout
-from kivy.properties import ObjectProperty, StringProperty, OptionProperty, ListProperty, BooleanProperty
-from kivy.lang import Builder
-from kivy.utils import platform
-from kivy.clock import Clock
 import string
-from os.path import sep, dirname, expanduser, isdir, join, getmtime
-from os import walk
-from functools import partial
 import warnings
+from functools import partial
+from os import walk
+from os.path import dirname, expanduser, getmtime, isdir, join, sep
+
+from kivy import Config
+from kivy.clock import Clock
+from kivy.lang import Builder
+from kivy.properties import BooleanProperty, ListProperty, ObjectProperty, OptionProperty, StringProperty
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.filechooser import FileChooserListLayout, FileChooserListView
+from kivy.uix.treeview import TreeView, TreeViewLabel
+from kivy.utils import platform
 
 from katrain.gui.style import DEFAULT_FONT
 

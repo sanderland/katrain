@@ -3,14 +3,14 @@ import os
 import re
 import threading
 from datetime import datetime
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Optional, Union
 
-from katrain.core.utils import var_to_grid
-from katrain.core.lang import i18n
-from katrain.core.constants import OUTPUT_INFO, OUTPUT_DEBUG, HOMEPAGE
+from katrain.core.constants import HOMEPAGE, OUTPUT_DEBUG, OUTPUT_INFO
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
+from katrain.core.lang import i18n
 from katrain.core.sgf_parser import SGF, Move
+from katrain.core.utils import var_to_grid
 
 
 class IllegalMoveException(Exception):

@@ -71,7 +71,7 @@ class Lang(Observable):
             except ReferenceError:
                 pass  # proxy no longer exists
             except Exception as e:
-                print("Error in switching languages",e)
+                print("Error in switching languages", e)
         for cb in self.callbacks:
             try:
                 cb(self)

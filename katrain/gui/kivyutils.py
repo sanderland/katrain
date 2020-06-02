@@ -1,46 +1,33 @@
-import json
-import random
-import re
-
 from kivy.clock import Clock
-from kivy.core.window import Window
+from kivy.core.text import Label as CoreLabel
 from kivy.graphics import *
 from kivy.properties import (
     BooleanProperty,
     ListProperty,
     NumericProperty,
-    StringProperty,
-    OptionProperty,
     ObjectProperty,
+    OptionProperty,
+    StringProperty,
 )
-from kivy.uix.behaviors import ToggleButtonBehavior, ButtonBehavior
+from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.checkbox import CheckBox
-from kivy.uix.filechooser import FileChooserLayout, FileChooserListLayout
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
-from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
-
-
-# --new
 from kivymd.app import MDApp
-from kivymd.uix.behaviors import RectangularRippleBehavior, CircularRippleBehavior
+from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import BasePressedButton, BaseFlatButton
+from kivymd.uix.button import BaseFlatButton, BasePressedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
-from kivy.core.text import Label as CoreLabel
 
-from katrain.core.constants import GAME_TYPES, AI_STRATEGIES_RECOMMENDED_ORDER, PLAYER_HUMAN, PLAYER_AI
+from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, PLAYER_AI
 from katrain.core.lang import i18n
+from katrain.gui.style import DEFAULT_FONT, WHITE
 
-#
 
-# --- new mixins
-from katrain.gui.style import WHITE, DEFAULT_FONT
+# -- mixins
 
 
 class BackgroundMixin(Widget):
@@ -177,7 +164,7 @@ class BGBoxLayout(BoxLayout, BackgroundMixin):
     pass
 
 
-# -- new gui elements
+# --  gui elements
 
 
 class I18NSpinner(Spinner):

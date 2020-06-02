@@ -1,9 +1,11 @@
-from kivy import Config
-from kivy.properties import ObjectProperty
-from kivy.storage.jsonstore import JsonStore
-import os, sys, shutil
-from katrain.core.constants import *
+import os
+import shutil
+import sys
 
+from kivy import Config
+from kivy.storage.jsonstore import JsonStore
+
+from katrain.core.constants import *
 from katrain.core.utils import find_package_resource
 
 

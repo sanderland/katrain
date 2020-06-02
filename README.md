@@ -73,6 +73,8 @@ This section describes the available AIs, with strength based on their current O
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
  while the policy net based AIs are affected by the choice of model file, but work identically with 1 visit.
 
+Further technical details and discussion on these AIs can be found on [this](https://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
+
 ## Analysis
 
 AI moves, teaching mode and timers are suspended in analysis mode,

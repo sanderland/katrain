@@ -1,8 +1,9 @@
-import re, os
-from typing import Dict, Tuple, Any, Union, List
+import os
+import re
+from typing import Any, Dict, List, Tuple, Union
 
 from kivy.clock import Clock
-from kivy.properties import StringProperty, BooleanProperty, NumericProperty
+from kivy.properties import BooleanProperty, NumericProperty, StringProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -13,17 +14,17 @@ from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import (
-    OUTPUT_ERROR,
-    OUTPUT_DEBUG,
-    OUTPUT_INFO,
-    AI_DEFAULT,
     AI_CONFIG_DEFAULT,
+    AI_DEFAULT,
     AI_STRATEGIES_RECOMMENDED_ORDER,
+    OUTPUT_DEBUG,
+    OUTPUT_ERROR,
+    OUTPUT_INFO,
 )
 from katrain.core.engine import KataGoEngine
-from katrain.core.utils import find_package_resource
 from katrain.core.lang import i18n
-from katrain.gui.kivyutils import I18NSpinner, BackgroundMixin
+from katrain.core.utils import find_package_resource
+from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
 
 

@@ -4,42 +4,21 @@ import time
 from typing import List, Optional
 
 from kivy.clock import Clock
+from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
-from kivy.metrics import sp
-from kivy.properties import ListProperty, StringProperty, NumericProperty
-from kivy.uix.boxlayout import BoxLayout
+from kivy.properties import ListProperty
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
-from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.menu import MDDropdownMenu, RightContent
+from kivymd.uix.menu import MDDropdownMenu
 
-from katrain.core.utils import evaluation_class
-from katrain.core.lang import i18n
-from katrain.core.constants import OUTPUT_DEBUG, MODE_PLAY
+from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG
 from katrain.core.game import Move
+from katrain.core.lang import i18n
+from katrain.core.utils import evaluation_class, var_to_grid
 from katrain.gui.kivyutils import draw_circle, draw_text
-from katrain.core.utils import var_to_grid
-from kivy.core.window import Window
-
-from katrain.gui.style import (
-    EVAL_COLORS,
-    LINE_COLOR,
-    POLICY_COLOR,
-    GHOST_ALPHA,
-    TOP_MOVE_ALPHA,
-    STONE_COLORS,
-    OUTLINE_COLORS,
-    CHILD_SCALE,
-    EVAL_DOT_MIN_SIZE,
-    EVAL_DOT_MAX_SIZE,
-    BOARD_COLOR,
-    STARPOINT_SIZE,
-    STONE_SIZE,
-    VISITS_FRAC_SMALL,
-    ENGINE_DOWN_COL,
-)
+from katrain.gui.style import *
 
 
 class BadukPanWidget(Widget):

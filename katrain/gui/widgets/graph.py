@@ -1,6 +1,6 @@
 import math
 
-from kivy.properties import ListProperty, NumericProperty, BooleanProperty
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty
 
 from katrain.gui.kivyutils import BackgroundMixin
 

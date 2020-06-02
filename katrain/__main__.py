@@ -24,6 +24,7 @@ from kivy.resources import resource_add_path
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from katrain.core.ai import ai_move
+from kivy.core.window import Window
 
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
 from katrain.core.constants import (

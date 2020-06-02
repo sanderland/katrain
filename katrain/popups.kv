@@ -2,6 +2,7 @@
 #:import i18n katrain.core.lang.i18n
 #:import expanduser os.path.expanduser
 #:import abspath os.path.abspath
+#:import kivy_version kivy.__version__
 
 #:set CP_SPACING 6
 #:set CP_SMALL_SPACING 3
@@ -52,7 +53,8 @@
     font_size: DESC_FONT_SIZE
 
 <I18NPopup>:
-    background_color: [*[c*255/66 for c in BACKGROUND_COLOR[:3]], 1]
+    background_color: BACKGROUND_COLOR
+    background: self.background if kivy_version < '2.0' else ''
     title: i18n._(self.title_key)
     title_size: DESC_FONT_SIZE
     title_font: self.font_name

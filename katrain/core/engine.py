@@ -1,6 +1,5 @@
 import copy
 import json
-import shlex
 import subprocess
 import sys
 import threading
@@ -39,16 +38,11 @@ class KataGoEngine:
             else:  # e.g. MacOS after brewing
                 executable = "katago"
 
-        modelfile, configfile, exefile = (
-            find_package_resource(config["model"]),
-            find_package_resource(config["config"]),
-            find_package_resource(executable),
-        )
-        self.command = (
-            f'"{exefile}" analysis -model "{modelfile}" -config "{configfile}" -analysis-threads {config["threads"]}'
-        )
-        if not sys.platform.startswith("win"):
-            self.command = shlex.split(self.command)
+        model = find_package_resource(config["model"])
+        cfg = find_package_resource(config["config"])
+        exe = find_package_resource(executable)
+
+        self.command = f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
         self.queries = {}  # outstanding query id -> start time and callback
         self.config = config
         self.query_counter = 0
@@ -127,33 +121,37 @@ class KataGoEngine:
                 return
             if not line:
                 continue
-            analysis = json.loads(line)
-            if analysis["id"] not in self.queries:
-                self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
-                continue
-            query_id = analysis["id"]
-            callback, error_callback, start_time, next_move = self.queries[query_id]
-            if "error" in analysis:
-                del self.queries[query_id]
-                if error_callback:
-                    error_callback(analysis)
-                elif not (next_move and "Illegal move" in analysis["error"]):  # sweep
-                    self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
-            elif "warning" in analysis:
-                self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
-            else:
-                del self.queries[query_id]
-                time_taken = time.time() - start_time
-                self.katrain.log(
-                    f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG
-                )
-                self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
-                try:
-                    callback(analysis)
-                except Exception as e:
-                    self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
-            if getattr(self.katrain, "update_state", None):  # easier mocking etc
-                self.katrain.update_state()
+            try:
+                analysis = json.loads(line)
+                if analysis["id"] not in self.queries:
+                    self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
+                    continue
+                query_id = analysis["id"]
+                callback, error_callback, start_time, next_move = self.queries[query_id]
+                if "error" in analysis:
+                    del self.queries[query_id]
+                    if error_callback:
+                        error_callback(analysis)
+                    elif not (next_move and "Illegal move" in analysis["error"]):  # sweep
+                        self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
+                elif "warning" in analysis:
+                    self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
+                else:
+                    del self.queries[query_id]
+                    time_taken = time.time() - start_time
+                    self.katrain.log(
+                        f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}",
+                        OUTPUT_DEBUG,
+                    )
+                    self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
+                    try:
+                        callback(analysis)
+                    except Exception as e:
+                        self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
+                if getattr(self.katrain, "update_state", None):  # easier mocking etc
+                    self.katrain.update_state()
+            except Exception as e:
+                self.katrain.log(f"Unexpected exception while processing KataGo output {line}", OUTPUT_ERROR)
 
     def send_query(self, query, callback, error_callback, next_move=None):
         with self._lock:
