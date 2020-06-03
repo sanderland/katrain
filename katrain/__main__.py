@@ -1,14 +1,28 @@
-import os  # isort:skip
+# first, logging level lower
+import os
+os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
+
+# next, icon
 from katrain.core.utils import find_package_resource  # isort:skip
-
-os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")  # isort:skip surpress info output
 from kivy.config import Config  # isort:skip
-
 ICON = find_package_resource("katrain/img/icon.ico")  # isort:skip  # find icon
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
-Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
-Config.set("graphics", "width", 1300)  # isort:skip
-Config.set("graphics", "height", 1000)  # isort:skip
+
+# finally, window size
+WINDOW_X, WINDOW_Y = 1300, 1000
+try:
+    from screeninfo import get_monitors
+    scale = 1.0
+    for m in get_monitors():
+        scale = min(scale, (m.height-100) / WINDOW_Y, (m.width-100) / WINDOW_X)
+    WINDOW_SCALE_FAC = max(0.4,scale)
+except Exception as e:
+    print("Exception while getting screen resolution", e)
+    WINDOW_SCALE_FAC = 1
+
+Config.set("graphics", "width", int(WINDOW_SCALE_FAC*WINDOW_X))
+Config.set("graphics", "height", int(WINDOW_SCALE_FAC*WINDOW_Y))
+Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
 import signal
 import sys
@@ -50,6 +64,8 @@ from katrain.gui.widgets.graph import ScoreGraph
 from katrain.gui.widgets.filebrowser import I18NFileBrowser
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
+
+
 
 
 class KaTrainGui(Screen, KaTrainBase):
@@ -184,8 +200,8 @@ class KaTrainGui(Screen, KaTrainBase):
                 fn = getattr(self, f"_do_{msg.replace('-','_')}")
                 fn(*args)
                 self.update_state()
-            except Exception as e:
-                self.log(f"Exception in processing message {msg} {args}: {e}", OUTPUT_ERROR)
+            except Exception as exc:
+                self.log(f"Exception in processing message {msg} {args}: {exc}", OUTPUT_ERROR)
                 traceback.print_exc()
 
     def __call__(self, message, *args):
@@ -409,9 +425,15 @@ class KaTrainGui(Screen, KaTrainBase):
 class KaTrainApp(MDApp):
     gui = ObjectProperty(None)
     language = StringProperty(DEFAULT_LANGUAGE)
-
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
+
+        kv_file = find_package_resource("katrain/gui.kv")
+        popup_kv_file = find_package_resource("katrain/popups.kv")
+        resource_add_path(os.path.split(kv_file)[0])
+        Builder.load_file(kv_file)
+        Builder.load_file(popup_kv_file)
+
         self.gui = KaTrainGui()
         self.title = f"KaTrain v{VERSION}"
         self.theme_cls.theme_style = "Dark"
@@ -454,11 +476,6 @@ class KaTrainApp(MDApp):
 
 
 def run_app():
-    kv_file = find_package_resource("katrain/gui.kv")
-    popup_kv_file = find_package_resource("katrain/popups.kv")
-    resource_add_path(os.path.split(kv_file)[0])
-    Builder.load_file(kv_file)
-    Builder.load_file(popup_kv_file)
     app = KaTrainApp()
     signal.signal(signal.SIGINT, app.signal_handler)
     try:
