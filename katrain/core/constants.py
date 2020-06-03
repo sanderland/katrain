@@ -1,6 +1,6 @@
-VERSION = "1.1.1"
+VERSION = "1.1.2"
 HOMEPAGE = "https://github.com/sanderland/katrain"
-CONFIG_MIN_VERSION = "1.1.1"
+CONFIG_MIN_VERSION = "1.1.2"
 
 PLAYER_HUMAN, PLAYER_AI = "player:human", "player:ai"
 PLAYER_TYPES = [PLAYER_HUMAN, PLAYER_AI]
