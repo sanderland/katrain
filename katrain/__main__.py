@@ -10,12 +10,12 @@ Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
 
 # finally, window size
 from kivy.metrics import dp
-WINDOW_X, WINDOW_Y = dp(1300), dp(1000)
+WINDOW_X, WINDOW_Y = 1300, 1000
 try:
     from screeninfo import get_monitors
     scale = 1.0
     for m in get_monitors():
-        scale = min(scale, (m.height-dp(100)) / WINDOW_Y, (m.width-dp(100)) / WINDOW_X)
+        scale = min(scale, (m.height-100) / WINDOW_Y, (m.width-100) / WINDOW_X)
     WINDOW_SCALE_FAC = max(0.4,scale)
 except Exception as e:
     print("Exception while getting screen resolution", e)
