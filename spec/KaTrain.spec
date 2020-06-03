@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-from kivy_deps import sdl2, glew
+from kivy_deps import sdl2, glew, gstreamer
 from kivymd import hooks_path as kivymd_hooks_path
 
 block_cipher = None
@@ -14,6 +14,7 @@ a = Analysis(
     datas=[
         ("..\\katrain\\gui.kv", "katrain"),
         ("..\\katrain\\popups.kv", "katrain"),
+        ("..\\katrain\\beep.wav", "katrain"),
         ("..\\katrain\\config.json", "katrain"),
         ("..\\katrain\\KataGo", "katrain\\KataGo"),
         ("..\\katrain\img", "katrain\\img"),
@@ -85,7 +86,7 @@ for console, name in console_names.items():
         strip=False,
         upx=True,
         name=name,
-        console=False,
+        console=console,
         icon="C:\\icon.ico",
     )
 
