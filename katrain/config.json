@@ -117,6 +117,9 @@
             "threshold": 3.5,
             "line_weight": 2,
             "endgame": 0.4
+        },
+        "ai:p:rank": {
+            "kyu": 8.0
         }
     }
 }

@@ -20,6 +20,7 @@ from katrain.core.constants import (
     AI_TENUKI,
     AI_TERRITORY,
     AI_PICK,
+    AI_RANK, 
 )
 from katrain.core.engine import EngineDiedException
 from katrain.core.game import Game, GameNode, Move
@@ -60,10 +61,13 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
         policy_grid = var_to_grid(cn.policy, size)  # type: List[List[float]]
         top_policy_move = policy_moves[0][1]
         ai_thoughts += f"Using policy based strategy, base top 5 moves are {fmt_moves(policy_moves[:5])}. "
+        len_legal_policy_moves = len([(pol, mv) for pol, mv in policy_moves if not mv.is_pass if pol > 0])
         if ai_mode == AI_POLICY and cn.depth <= ai_settings["opening_moves"]:
             ai_mode = AI_WEIGHTED
             ai_thoughts += f"Switching to weighted strategy in the opening {int(ai_settings['opening_moves'])} moves. "
             ai_settings = {"pick_override": 0.9, "weaken_fac": 1, "lower_bound": 0.02}
+        if ai_mode == AI_RANK:
+            ai_settings = {"pick_override": (0.8*(1-(361-len_legal_policy_moves)/361.*.5)), "kyu": ai_settings["kyu"] }
         if top_5_pass:
             aimove = top_policy_move
             ai_thoughts += "Playing top one because one of them is pass."
@@ -103,7 +107,8 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
             )
         elif ai_mode in AI_STRATEGIES_PICK:
             legal_policy_moves = [(pol, mv) for pol, mv in policy_moves if not mv.is_pass if pol > 0]
-            n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])
+            if ai_mode!=AI_RANK:
+                n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])
             if ai_mode in [AI_INFLUENCE, AI_TERRITORY]:
 
                 thr_line = ai_settings["threshold"] - 1  # zero-based
@@ -158,6 +163,14 @@ def ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode
                             f"Generated weights based on gaussian with variance {var} around coordinates {mx},{my}. "
                         )
             elif ai_mode == AI_PICK:
+                weighted_coords = [
+                    (policy_grid[y][x], 1, x, y)
+                    for x in range(size[0])
+                    for y in range(size[1])
+                    if policy_grid[y][x] > 0
+                ]
+            elif ai_mode == AI_RANK:
+                n_moves = int(round(10**(-0.05737*ai_settings["kyu"] + 1.9482)))
                 weighted_coords = [
                     (policy_grid[y][x], 1, x, y)
                     for x in range(size[0])
