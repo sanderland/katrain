@@ -128,7 +128,7 @@ Builder.load_string(
     is_selected: self.path in ctx.controller().selection
     orientation: 'horizontal'
     size_hint_y: None
-    height: 24
+    height: '24dp'
     # Don't allow expansion of the ../ node
     is_leaf: not ctx.isdir or ctx.name.endswith('..' + ctx.sep) or self.locked
     on_touch_down: self.collide_point(*args[1].pos) and ctx.controller().entry_touched(self, args[1])
@@ -136,7 +136,7 @@ Builder.load_string(
     BoxLayout:
         pos: root.pos
         size_hint_x: None
-        width: root.width - 10
+        width: root.width - dp(10)
         Label:
             id: filename
             text_size: self.width, None
@@ -204,7 +204,7 @@ Builder.load_string(
                 size_hint_y: None
                 height: '22dp'
                 text_size: self.size
-                padding_x: 10
+                padding_x: '10dp'
                 text: abspath(root.path)
                 track_lang: i18n._('')
                 valign: 'middle'
