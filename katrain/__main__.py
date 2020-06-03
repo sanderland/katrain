@@ -483,6 +483,7 @@ class KaTrainApp(MDApp):
 def run_app():
     app = KaTrainApp()
     signal.signal(signal.SIGINT, app.signal_handler)
+
     try:
         app.run()
     except Exception as e:

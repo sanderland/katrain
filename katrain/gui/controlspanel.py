@@ -114,7 +114,7 @@ class ControlsPanel(BoxLayout):
             now = time.time()
             byo_len = max(1, self.katrain.config("timer/byo_length"))
             byo_num = max(1, self.katrain.config("timer/byo_periods"))
-            sounds_on = max(1, self.katrain.config("timer/sounds",True))
+            sounds_on = self.katrain.config("timer/sound", True) or True
             player = self.katrain.next_player_info
             ai = player.ai
             used_period = False

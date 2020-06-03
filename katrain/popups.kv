@@ -237,8 +237,8 @@
     MDGridLayout:
         cols: 2
         rows: 3
-        spacing: CP_SPACING
-        size_hint: 1,2
+        spacing: 1.5 * CP_SPACING
+        size_hint: 1,2.5
         DescriptionLabel:
             text: i18n._('byoyomi length')
         AnchorLayout:
@@ -252,10 +252,10 @@
                 text: "5"
                 input_property: "timer/byo_periods"
         DescriptionLabel:
-            text: i18n._('count down sounds')
+            text: i18n._('count down sound')
         AnchorLayout:
             LabelledCheckBox:
-                input_property: "timer/sounds"
+                input_property: "timer/sound"
     AnchorLayout:
         size_hint: 1,1
         AutoSizedRoundedRectangleButton:
