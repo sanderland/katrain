@@ -24,7 +24,7 @@ class KaTrainSGF(SGF):
 class Game:
     """Represents a game of go, including an implementation of capture rules."""
 
-    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": f"KaTrain:{HOMEPAGE}"}
+    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": f"KaTrain:{HOMEPAGE}", "CA": "UTF-8"}
 
     def __init__(self, katrain, engine: Union[Dict, KataGoEngine], move_tree: GameNode = None, analyze_fast=False):
         self.katrain = katrain
@@ -304,7 +304,7 @@ class Game:
         sgf = self.root.sgf(
             save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=eval_thresholds
         )
-        with open(file_name, "w") as f:
+        with open(file_name, "w", encoding='utf-8') as f:
             f.write(sgf)
         return i18n._("sgf written").format(file_name=file_name)
 
