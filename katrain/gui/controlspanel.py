@@ -114,6 +114,7 @@ class ControlsPanel(BoxLayout):
             now = time.time()
             byo_len = max(1, self.katrain.config("timer/byo_length"))
             byo_num = max(1, self.katrain.config("timer/byo_periods"))
+            sounds_on = max(1, self.katrain.config("timer/sounds",True))
             player = self.katrain.next_player_info
             ai = player.ai
             used_period = False
@@ -144,13 +145,12 @@ class ControlsPanel(BoxLayout):
                 time_remaining = byo_len - current_node.time_used
             periods_rem = byo_num - player.periods_used
 
-            if beeping and not new_beeping and not used_period:
-                self.beep.stop()
-                print("STOP")
-            elif not beeping and new_beeping and self.beep:
-                self.beep.volume = 0.5 if periods_rem > 1 else 1
-                self.beep.play()
-                print("PLAY")
+            if sounds_on:
+                if beeping and not new_beeping and not used_period:
+                    self.beep.stop()
+                elif not beeping and new_beeping and self.beep:
+                    self.beep.volume = 0.5 if periods_rem > 1 else 1
+                    self.beep.play()
 
             self.last_timer_update = (current_node, now, new_beeping)
 

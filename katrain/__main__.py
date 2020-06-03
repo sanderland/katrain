@@ -273,7 +273,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.timer_settings_popup:
             self.timer_settings_popup = I18NPopup(
-                title_key="timer settings", size=[dp(350), dp(350)], content=ConfigTimerPopup(self)
+                title_key="timer settings", size=[dp(350), dp(400)], content=ConfigTimerPopup(self)
             ).__self__
             self.timer_settings_popup.content.popup = self.timer_settings_popup
         self.timer_settings_popup.open()

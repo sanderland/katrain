@@ -253,6 +253,9 @@ msgstr "Time per Byo-yomi Period"
 msgid "byoyomi periods"
 msgstr "Number of Periods"
 
+msgid "count down sounds"
+msgstr "Count Down Sounds"
+
 #. submit button
 msgid "update timer"
 msgstr "Update Timer"

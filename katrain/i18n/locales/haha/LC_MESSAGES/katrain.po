@@ -526,3 +526,6 @@ msgid "teaching undo message"
 msgstr ""
 "ㅋㅋUndid move {move} as it lost {points_lost:.1f} points. Hover over the move"
 " to see expected refutation. Please try again."
+
+msgid "count down sounds"
+msgstr "ㅋㅋCount Down Sounds"

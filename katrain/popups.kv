@@ -236,7 +236,7 @@
 <ConfigTimerPopup>:
     MDGridLayout:
         cols: 2
-        rows: 2
+        rows: 3
         spacing: CP_SPACING
         size_hint: 1,2
         DescriptionLabel:
@@ -251,6 +251,11 @@
             LabelledIntInput:
                 text: "5"
                 input_property: "timer/byo_periods"
+        DescriptionLabel:
+            text: i18n._('count down sounds')
+        AnchorLayout:
+            LabelledCheckBox:
+                input_property: "timer/sounds"
     AnchorLayout:
         size_hint: 1,1
         AutoSizedRoundedRectangleButton:

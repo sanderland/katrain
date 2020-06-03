@@ -535,3 +535,7 @@ msgstr ""
 msgid "teaching undo message"
 msgstr ""
 "{points_lost:.1f}집 손해이므로 {move}을/를 물렀습니다. 커서를 올려 상대의 대응책을 보십시오. 다시 두어 주세요."
+
+#. TODO
+msgid "count down sounds"
+msgstr "Count Down Sounds"

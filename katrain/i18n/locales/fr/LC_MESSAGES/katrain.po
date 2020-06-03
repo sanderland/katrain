@@ -594,3 +594,7 @@ msgstr ""
 "Le coup {move} a été annulé car il perdait {points_lost:.1f} points. Vous "
 "pouvez survoler le coup pour voir la réfutation. Veuillez jouer un nouveau "
 "coup."
+
+#. TODO
+msgid "count down sounds"
+msgstr "Count Down Sounds"
