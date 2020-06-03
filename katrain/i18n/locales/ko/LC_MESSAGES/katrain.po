@@ -535,3 +535,12 @@ msgstr ""
 msgid "teaching undo message"
 msgstr ""
 "{points_lost:.1f}집 손해이므로 {move}을/를 물렀습니다. 커서를 올려 상대의 대응책을 보십시오. 다시 두어 주세요."
+
+msgid "ai:p:rank"
+msgstr "Rank 12k - 3d"
+
+msgid "aihelp:p:rank"
+msgstr ""
+"Picks moves at random from a limited selection of moves and plays the best "
+"one. Stronger bots select the best move from a larger selection.Since there "
+"is no 0 kyu/dan, 3 dan = -2 kyu."
