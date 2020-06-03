@@ -23,7 +23,7 @@
     "timer": {
         "byo_length": 30,
         "byo_periods": 5,
-        "sound": True
+        "sound": true
     },
     "game": {
         "size": "19",

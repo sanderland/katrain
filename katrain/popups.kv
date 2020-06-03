@@ -11,6 +11,7 @@
 #:set INPUT_FONT_SIZE dp(25)
 #:set DESC_FONT_SIZE  dp(20)
 
+#:set LIGHTGREY [0.7,0.7,0.7,1]
 #:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
 #:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
@@ -33,6 +34,7 @@
     multiline: True # just for wrapping
     helper_text_mode: "on_error"
     helper_text: i18n._("file not found")
+    color: WHITE
 
 <LabelledIntInput>:
     font_size: INPUT_FONT_SIZE
@@ -43,7 +45,6 @@
     size_hint: 0.5, None
 
 <LabelledCheckBox>:
-    color: WHITE
     size: DESC_FONT_SIZE*2,DESC_FONT_SIZE*2
     size_hint: None,None
 
