@@ -121,7 +121,9 @@ class KaTrainGui(Screen, KaTrainBase):
         self, redraw_board=False
     ):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
-        cn = self.game.current_node
+        cn = self.game and self.game.current_node
+        if not cn:
+            return
         last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
         if self.play_analyze_mode == MODE_PLAY:
             teaching_undo = cn.player and last_player.being_taught
@@ -158,6 +160,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
+        self.board_controls.branch.disabled = not cn.parent or len(cn.parent.children) <= 1
         self.controls.players["W"].captures = prisoners["W"]
         self.controls.players["B"].captures = prisoners["B"]
 
@@ -448,6 +451,9 @@ class KaTrainApp(MDApp):
         if language != "haha":
             self.gui._config["general"]["lang"] = language
             self.gui.save_config()
+        if self.gui.game:
+            self.gui.update_state()
+            self.gui.controls.set_status("")
 
     def webbrowser(self, site_key):
         WEBSITES = {"homepage": HOMEPAGE, "support": HOMEPAGE + "#support"}
@@ -484,7 +490,6 @@ def run_app():
         print(e)
         app.on_request_close()
         raise
-
 
 if __name__ == "__main__":
     run_app()

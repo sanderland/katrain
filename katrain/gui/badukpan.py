@@ -485,14 +485,12 @@ class AnalysisControls(MDFloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.analysis_menu = None
-        i18n.add_callback(lambda _lang: self.build_menu(0))
+        MDApp.get_running_app().bind(language=lambda *_args: Clock.schedule_once(self.build_menu))
         Clock.schedule_once(self.build_menu, 0)
 
     def build_menu(self, _dt):
         menu_items = [
-            {
-                "text": i18n._(text) + f"  ({shortcut})"
-            }  # , "right_content_cls": AnalysisDropdownMenuRightContent(text=shortcut)}
+            {"text": i18n._(text) + f"  ({shortcut})"}
             for text, shortcut in zip(self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS)
         ]
         self.analysis_menu = AnalysisDropdownMenu(
