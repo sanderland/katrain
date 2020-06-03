@@ -1,6 +1,7 @@
 import time
 
 from kivy.clock import Clock
+from kivy.core.audio import SoundLoader
 from kivy.properties import ObjectProperty, ListProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
@@ -39,8 +40,12 @@ class ControlsPanel(BoxLayout):
         self.status_msg = None
         self.status_node = None
         self.active_comment_node = None
-        self.last_timer_update = (None, 0)
-        Clock.schedule_interval(self.update_timer, 0.07)
+        self.last_timer_update = (None, 0, False)
+        self.beep = SoundLoader.load('beep.wav')
+        self.beep_start = 3.2
+        self.timer_interval = 0.07
+
+        Clock.schedule_interval(self.update_timer, self.timer_interval)
 
     def update_players(self, *_args):
         for bw, player_info in self.katrain.players_info.items():
@@ -104,26 +109,49 @@ class ControlsPanel(BoxLayout):
     def update_timer(self, _dt):
         current_node = self.katrain and self.katrain.game and self.katrain.game.current_node
         if current_node:
-            last_update_node, last_update_time = self.last_timer_update
+            last_update_node, last_update_time, beeping = self.last_timer_update
+            new_beeping = beeping
             now = time.time()
-            self.last_timer_update = (current_node, now)
             byo_len = max(1, self.katrain.config("timer/byo_length"))
             byo_num = max(1, self.katrain.config("timer/byo_periods"))
+            sounds_on = self.katrain.config("timer/sound")
             player = self.katrain.next_player_info
             ai = player.ai
+            used_period = False
+
             if not self.timer.paused and not ai and self.katrain.play_analyze_mode == MODE_PLAY:
                 if last_update_node == current_node and not current_node.children:
                     current_node.time_used += now - last_update_time
                 else:
                     current_node.time_used = 0
+                    new_beeping = False
                 time_remaining = byo_len - current_node.time_used
                 while time_remaining < 0 and player.periods_used < byo_num:
                     current_node.time_used -= byo_len
                     time_remaining += byo_len
                     player.periods_used += 1
+                    used_period = True
+                if self.beep_start - 2 * self.timer_interval < time_remaining < self.beep_start and player.periods_used < byo_num:
+                    new_beeping = True
+                elif time_remaining > self.beep_start:
+                    new_beeping = False
+            else:
+                new_beeping = False
+
+
             if player.periods_used == byo_num:
                 time_remaining = 0
             else:
                 time_remaining = byo_len - current_node.time_used
             periods_rem = byo_num - player.periods_used
+
+            if sounds_on:
+                if beeping and not new_beeping and not used_period:
+                    self.beep.stop()
+                elif not beeping and new_beeping and self.beep:
+                    self.beep.volume = 0.5 if periods_rem > 1 else 1
+                    self.beep.play()
+
+            self.last_timer_update = (current_node, now, new_beeping)
+
             self.timer.state = (max(0, time_remaining), max(0, periods_rem), ai)

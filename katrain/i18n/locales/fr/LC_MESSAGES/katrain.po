@@ -250,6 +250,9 @@ msgstr "Secondes par période"
 msgid "byoyomi periods"
 msgstr "Nombre de périodes"
 
+msgid "count down sound"
+msgstr "Activer le son"
+
 #. submit button
 msgid "update timer"
 msgstr "Confirmer"

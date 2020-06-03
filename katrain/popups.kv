@@ -11,6 +11,7 @@
 #:set INPUT_FONT_SIZE dp(25)
 #:set DESC_FONT_SIZE  dp(20)
 
+#:set LIGHTGREY [0.7,0.7,0.7,1]
 #:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
 #:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
@@ -43,7 +44,6 @@
     size_hint: 0.5, None
 
 <LabelledCheckBox>:
-    color: WHITE
     size: DESC_FONT_SIZE*2,DESC_FONT_SIZE*2
     size_hint: None,None
 
@@ -236,9 +236,9 @@
 <ConfigTimerPopup>:
     MDGridLayout:
         cols: 2
-        rows: 2
-        spacing: CP_SPACING
-        size_hint: 1,2
+        rows: 3
+        spacing: 1.5 * CP_SPACING
+        size_hint: 1,2.5
         DescriptionLabel:
             text: i18n._('byoyomi length')
         AnchorLayout:
@@ -251,6 +251,11 @@
             LabelledIntInput:
                 text: "5"
                 input_property: "timer/byo_periods"
+        DescriptionLabel:
+            text: i18n._('count down sound')
+        AnchorLayout:
+            LabelledCheckBox:
+                input_property: "timer/sound"
     AnchorLayout:
         size_hint: 1,1
         AutoSizedRoundedRectangleButton:

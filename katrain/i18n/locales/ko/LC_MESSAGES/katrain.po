@@ -244,6 +244,9 @@ msgstr "초읽기 시간"
 msgid "byoyomi periods"
 msgstr "초읽기 횟수"
 
+msgid "count down sound"
+msgstr "소리"
+
 #. submit button
 msgid "update timer"
 msgstr "시간 설정 갱신"

@@ -116,6 +116,7 @@ class AutoSizedRectangleToggleButton(ToggleButtonMixin, AutoSizedRectangleButton
 class TransparentIconButton(CircularRippleBehavior, Button):
     icon_size = ListProperty([25, 25])
     icon = StringProperty("")
+    disabled = BooleanProperty(False)
 
 
 class PauseButton(CircularRippleBehavior, LeftButtonBehavior, Widget):

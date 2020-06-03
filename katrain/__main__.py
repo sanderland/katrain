@@ -1,14 +1,29 @@
-import os  # isort:skip
+# first, logging level lower
+import os
+os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
+
+# next, icon
 from katrain.core.utils import find_package_resource  # isort:skip
-
-os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")  # isort:skip surpress info output
 from kivy.config import Config  # isort:skip
-
 ICON = find_package_resource("katrain/img/icon.ico")  # isort:skip  # find icon
 Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
-Config.set("input", "mouse", "mouse,multitouch_on_demand")  # isort:skip  # no red dots on right click
-Config.set("graphics", "width", 1300)  # isort:skip
-Config.set("graphics", "height", 1000)  # isort:skip
+
+# finally, window size
+from kivy.metrics import dp
+WINDOW_X, WINDOW_Y = 1300, 1000
+try:
+    from screeninfo import get_monitors
+    scale = 1.0
+    for m in get_monitors():
+        scale = min(scale, (m.height-100) / WINDOW_Y, (m.width-100) / WINDOW_X)
+    WINDOW_SCALE_FAC = max(0.4,scale)
+except Exception as e:
+    print("Exception while getting screen resolution", e)
+    WINDOW_SCALE_FAC = 1
+
+Config.set("graphics", "width", int(WINDOW_SCALE_FAC*WINDOW_X))
+Config.set("graphics", "height", int(WINDOW_SCALE_FAC*WINDOW_Y))
+Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
 import signal
 import sys
@@ -105,7 +120,9 @@ class KaTrainGui(Screen, KaTrainBase):
         self, redraw_board=False
     ):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
-        cn = self.game.current_node
+        cn = self.game and self.game.current_node
+        if not cn:
+            return
         last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
         if self.play_analyze_mode == MODE_PLAY:
             teaching_undo = cn.player and last_player.being_taught
@@ -142,6 +159,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
+        self.board_controls.branch.disabled = not cn.parent or len(cn.parent.children) <= 1
         self.controls.players["W"].captures = prisoners["W"]
         self.controls.players["B"].captures = prisoners["B"]
 
@@ -184,8 +202,8 @@ class KaTrainGui(Screen, KaTrainBase):
                 fn = getattr(self, f"_do_{msg.replace('-','_')}")
                 fn(*args)
                 self.update_state()
-            except Exception as e:
-                self.log(f"Exception in processing message {msg} {args}: {e}", OUTPUT_ERROR)
+            except Exception as exc:
+                self.log(f"Exception in processing message {msg} {args}: {exc}", OUTPUT_ERROR)
                 traceback.print_exc()
 
     def __call__(self, message, *args):
@@ -246,7 +264,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.new_game_popup:
             self.new_game_popup = I18NPopup(
-                title_key="New Game title", size=[800, 800], content=NewGamePopup(self)
+                title_key="New Game title", size=[dp(800), dp(800)], content=NewGamePopup(self)
             ).__self__
             self.new_game_popup.content.popup = self.new_game_popup
         self.new_game_popup.open()
@@ -255,7 +273,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.timer_settings_popup:
             self.timer_settings_popup = I18NPopup(
-                title_key="timer settings", size=[350, 350], content=ConfigTimerPopup(self)
+                title_key="timer settings", size=[dp(350), dp(400)], content=ConfigTimerPopup(self)
             ).__self__
             self.timer_settings_popup.content.popup = self.timer_settings_popup
         self.timer_settings_popup.open()
@@ -264,7 +282,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.teacher_settings_popup:
             self.teacher_settings_popup = I18NPopup(
-                title_key="teacher settings", size=[800, 800], content=ConfigTeacherPopup(self)
+                title_key="teacher settings", size=[dp(800), dp(800)], content=ConfigTeacherPopup(self)
             ).__self__
             self.teacher_settings_popup.content.popup = self.teacher_settings_popup
         self.teacher_settings_popup.open()
@@ -273,7 +291,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.config_popup:
             self.config_popup = I18NPopup(
-                title_key="general settings title", size=[1200, 800], content=ConfigPopup(self)
+                title_key="general settings title", size=[dp(1200), dp(800)], content=ConfigPopup(self)
             ).__self__
             self.config_popup.content.popup = self.config_popup
         self.config_popup.open()
@@ -281,7 +299,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_ai_popup(self):
         self.controls.timer.paused = True
         if not self.ai_settings_popup:
-            self.ai_settings_popup = I18NPopup(title_key="ai settings", size=[600, 600], content=AIPopup(self)).__self__
+            self.ai_settings_popup = I18NPopup(title_key="ai settings", size=[dp(600), dp(600)], content=AIPopup(self)).__self__
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
@@ -290,7 +308,7 @@ class KaTrainGui(Screen, KaTrainBase):
             popup_contents = LoadSGFPopup()
             popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
             self.fileselect_popup = I18NPopup(
-                title_key="load sgf title", size=[1200, 800], content=popup_contents
+                title_key="load sgf title", size=[dp(1200), dp(800)], content=popup_contents
             ).__self__
 
             def readfile(*args):
@@ -409,9 +427,15 @@ class KaTrainGui(Screen, KaTrainBase):
 class KaTrainApp(MDApp):
     gui = ObjectProperty(None)
     language = StringProperty(DEFAULT_LANGUAGE)
-
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
+
+        kv_file = find_package_resource("katrain/gui.kv")
+        popup_kv_file = find_package_resource("katrain/popups.kv")
+        resource_add_path(os.path.split(kv_file)[0])
+        Builder.load_file(kv_file)
+        Builder.load_file(popup_kv_file)
+
         self.gui = KaTrainGui()
         self.title = f"KaTrain v{VERSION}"
         self.theme_cls.theme_style = "Dark"
@@ -426,6 +450,9 @@ class KaTrainApp(MDApp):
         if language != "haha":
             self.gui._config["general"]["lang"] = language
             self.gui.save_config()
+        if self.gui.game:
+            self.gui.update_state()
+            self.gui.controls.set_status("")
 
     def webbrowser(self, site_key):
         WEBSITES = {"homepage": HOMEPAGE, "support": HOMEPAGE + "#support"}
@@ -454,20 +481,15 @@ class KaTrainApp(MDApp):
 
 
 def run_app():
-    kv_file = find_package_resource("katrain/gui.kv")
-    popup_kv_file = find_package_resource("katrain/popups.kv")
-    resource_add_path(os.path.split(kv_file)[0])
-    Builder.load_file(kv_file)
-    Builder.load_file(popup_kv_file)
     app = KaTrainApp()
     signal.signal(signal.SIGINT, app.signal_handler)
+
     try:
         app.run()
     except Exception as e:
         print(e)
         app.on_request_close()
         raise
-
 
 if __name__ == "__main__":
     run_app()

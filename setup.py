@@ -48,6 +48,7 @@ setup(
         "kivy_deps.gstreamer;platform_system=='Windows'",
         "kivy>=2.0.0rc2",
         "kivymd>=0.104.1",
+        "screeninfo",  # for screen resolution
     ],
     python_requires=">=3.6, <4",
     entry_points={"console_scripts": ["katrain=katrain.__main__:run_app"]},
