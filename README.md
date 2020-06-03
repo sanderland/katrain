@@ -103,7 +103,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 
 * **[Shift]**: Open the main menu.
 * **[Tab]**: Switch between analysis and play modes.
-* **[~]** or **[`]** or **[m]**: Toggles only showing the board.
+* **[~]** or **[ ` ]** or **[m]**: Toggles only showing the board.
 * **[p]**: Pass
 * **[spacebar]**: Pause/Resume timer
 * **[arrow up]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
@@ -131,7 +131,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 [![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/sanderland/katrain?label=github%20contributors)](https://github.com/sanderland/katrain/graphs/contributors)
 [![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)](https://liberapay.com/sanderbaduk/)
-![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)
+[![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 
 * Donations for improving and promoting KaTrain are taken supported through [Liberapay](https://liberapay.com/KaTrain/).
 * You also can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 

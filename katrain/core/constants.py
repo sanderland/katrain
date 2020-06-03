@@ -1,4 +1,4 @@
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 HOMEPAGE = "https://github.com/sanderland/katrain"
 
 PLAYER_HUMAN, PLAYER_AI = "player:human", "player:ai"

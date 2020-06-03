@@ -66,8 +66,6 @@ from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWid
 from katrain.gui.controlspanel import ControlsPanel
 
 
-
-
 class KaTrainGui(Screen, KaTrainBase):
     """Top level class responsible for tying everything together"""
 

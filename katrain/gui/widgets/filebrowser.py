@@ -128,7 +128,7 @@ Builder.load_string(
     is_selected: self.path in ctx.controller().selection
     orientation: 'horizontal'
     size_hint_y: None
-    height: '24dp'
+    height: 24
     # Don't allow expansion of the ../ node
     is_leaf: not ctx.isdir or ctx.name.endswith('..' + ctx.sep) or self.locked
     on_touch_down: self.collide_point(*args[1].pos) and ctx.controller().entry_touched(self, args[1])
@@ -136,7 +136,7 @@ Builder.load_string(
     BoxLayout:
         pos: root.pos
         size_hint_x: None
-        width: root.width - dp(10)
+        width: root.width - 10
         Label:
             id: filename
             text_size: self.width, None
@@ -202,9 +202,9 @@ Builder.load_string(
             orientation: 'vertical'
             Label:
                 size_hint_y: None
-                height: '22dp'
+                height: 22
                 text_size: self.size
-                padding_x: '10dp'
+                padding_x: 10
                 text: abspath(root.path)
                 track_lang: i18n._('')
                 valign: 'middle'
@@ -231,11 +231,11 @@ Builder.load_string(
             text: (root.selection and (root._shorten_filenames(root.selection) if root.multiselect else root.selection[0])) or ''
             hint_text: i18n._('Filename')
             multiline: False
-            height: '40dp'
+            height: 40
         AutoSizedRoundedRectangleButton:
             id: select_button
             padding_x: 15
-            height: '40dp'
+            height: 40
             size_hint_x: None
             text: root.select_string
             on_release: root.dispatch('on_success')
