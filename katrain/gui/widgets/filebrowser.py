@@ -202,7 +202,7 @@ Builder.load_string(
             orientation: 'vertical'
             Label:
                 size_hint_y: None
-                height: 22
+                height: '22dp'
                 text_size: self.size
                 padding_x: 10
                 text: abspath(root.path)
@@ -231,11 +231,11 @@ Builder.load_string(
             text: (root.selection and (root._shorten_filenames(root.selection) if root.multiselect else root.selection[0])) or ''
             hint_text: i18n._('Filename')
             multiline: False
-            height: 40
+            height: '40dp'
         AutoSizedRoundedRectangleButton:
             id: select_button
             padding_x: 15
-            height: 40
+            height: '40dp'
             size_hint_x: None
             text: root.select_string
             on_release: root.dispatch('on_success')
