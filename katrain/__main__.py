@@ -1,5 +1,8 @@
 # first, logging level lower
 import os
+
+from kivy.metrics import dp
+
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 
 # next, icon
@@ -263,7 +266,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.new_game_popup:
             self.new_game_popup = I18NPopup(
-                title_key="New Game title", size=[800, 800], content=NewGamePopup(self)
+                title_key="New Game title", size=[dp(800), dp(800)], content=NewGamePopup(self)
             ).__self__
             self.new_game_popup.content.popup = self.new_game_popup
         self.new_game_popup.open()
@@ -272,7 +275,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.timer_settings_popup:
             self.timer_settings_popup = I18NPopup(
-                title_key="timer settings", size=[350, 350], content=ConfigTimerPopup(self)
+                title_key="timer settings", size=[dp(350), dp(350)], content=ConfigTimerPopup(self)
             ).__self__
             self.timer_settings_popup.content.popup = self.timer_settings_popup
         self.timer_settings_popup.open()
@@ -281,7 +284,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.teacher_settings_popup:
             self.teacher_settings_popup = I18NPopup(
-                title_key="teacher settings", size=[800, 800], content=ConfigTeacherPopup(self)
+                title_key="teacher settings", size=[dp(800), dp(800)], content=ConfigTeacherPopup(self)
             ).__self__
             self.teacher_settings_popup.content.popup = self.teacher_settings_popup
         self.teacher_settings_popup.open()
@@ -290,7 +293,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.config_popup:
             self.config_popup = I18NPopup(
-                title_key="general settings title", size=[1200, 800], content=ConfigPopup(self)
+                title_key="general settings title", size=[dp(1200), dp(800)], content=ConfigPopup(self)
             ).__self__
             self.config_popup.content.popup = self.config_popup
         self.config_popup.open()
@@ -298,7 +301,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_ai_popup(self):
         self.controls.timer.paused = True
         if not self.ai_settings_popup:
-            self.ai_settings_popup = I18NPopup(title_key="ai settings", size=[600, 600], content=AIPopup(self)).__self__
+            self.ai_settings_popup = I18NPopup(title_key="ai settings", size=[dp(600), dp(600)], content=AIPopup(self)).__self__
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
@@ -307,7 +310,7 @@ class KaTrainGui(Screen, KaTrainBase):
             popup_contents = LoadSGFPopup()
             popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
             self.fileselect_popup = I18NPopup(
-                title_key="load sgf title", size=[1200, 800], content=popup_contents
+                title_key="load sgf title", size=[dp(1200), dp(800)], content=popup_contents
             ).__self__
 
             def readfile(*args):
