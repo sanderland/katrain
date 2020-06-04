@@ -12,7 +12,7 @@ class TestAI:
     def test_order(self):
         assert set(AI_STRATEGIES_RECOMMENDED_ORDER) == set(AI_STRATEGIES)
 
-    @pytest.mark.skipif(os.environ.get('CI'),reason='GH actions has no OpenCL')
+    @pytest.mark.skipif(os.environ.get('CI').lower() == 'true', reason='GH actions has no OpenCL')
     def test_ai_strategies(self):
         katrain = KaTrainBase(force_package_config=True, debug_level=0)
         engine = KataGoEngine(katrain, katrain.config("engine"))
