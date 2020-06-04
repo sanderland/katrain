@@ -597,3 +597,14 @@ msgstr ""
 "Le coup {move} a été annulé car il perdait {points_lost:.1f} points. Vous "
 "pouvez survoler le coup pour voir la réfutation. Veuillez jouer un nouveau "
 "coup."
+
+#. TODO
+msgid "aihelp:p:rank"
+msgstr ""
+"Picks moves at random from a limited selection of moves and plays the best "
+"one. Stronger settings select the best move from a larger selection. Since "
+"there is no 0 kyu/dan, 3 dan = -2 kyu."
+
+#. TODO
+msgid "ai:p:rank"
+msgstr "Calibrated Rank Bot"
