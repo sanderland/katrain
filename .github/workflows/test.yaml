@@ -11,13 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Install dependencies
-      run: sudo apt install ocl-icd-opencl-dev
+      run: sudo apt install ocl-icd-libopencl1 ocl-icd-dev ocl-icd-opencl-dev
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
