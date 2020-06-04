@@ -1,6 +1,6 @@
-VERSION = "1.1.2"
+VERSION = "1.2.0"
 HOMEPAGE = "https://github.com/sanderland/katrain"
-CONFIG_MIN_VERSION = "1.1.2"
+CONFIG_MIN_VERSION = "1.2.0"
 
 PLAYER_HUMAN, PLAYER_AI = "player:human", "player:ai"
 PLAYER_TYPES = [PLAYER_HUMAN, PLAYER_AI]
@@ -33,13 +33,13 @@ AI_STRATEGIES_RECOMMENDED_ORDER = [
     AI_SCORELOSS,
     AI_POLICY,
     AI_WEIGHTED,
+    AI_RANK,
     AI_PICK,
     AI_LOCAL,
     AI_TENUKI,
     AI_TERRITORY,
     AI_INFLUENCE,
     AI_JIGO,
-    AI_RANK, 
 ]
 
 

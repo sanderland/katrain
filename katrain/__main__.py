@@ -39,7 +39,7 @@ from kivy.lang import Builder
 from kivy.resources import resource_add_path
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
-from katrain.core.ai import ai_move
+from katrain.core.ai import generate_ai_move
 from kivy.core.window import Window
 
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
@@ -231,7 +231,7 @@ class KaTrainGui(Screen, KaTrainBase):
             mode = self.next_player_info.strategy
             settings = self.config(f"ai/{mode}")
             if settings is not None:
-                ai_move(self.game, mode, settings)
+                generate_ai_move(self.game, mode, settings)
             else:
                 self.log(f"AI Mode {mode} not found!", OUTPUT_ERROR)
 

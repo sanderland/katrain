@@ -1,7 +1,6 @@
 {
     "engine": {
         "katago": "",
-        "_hint_katago": "Path to your katago executable",
         "model": "katrain/models/g170e-b15c192-s1672170752-d466197061.bin.gz",
         "config": "katrain/KataGo/analysis_config.cfg",
         "threads": 12,
@@ -9,7 +8,6 @@
         "fast_visits": 50,
         "max_time": 3.0,
         "wide_root_noise": 0.0,
-        "_hint_wide_root_noise": "A higher value here (typically 0.05-0.1)\nmakes the analysis explore more moves\nat the cost of some strength.",
         "_enable_ownership": true
     },
     "general": {
@@ -18,7 +16,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.1.2"
+        "version": "1.2.0"
     },
     "timer": {
         "byo_length": 30,
@@ -94,7 +92,8 @@
             "pick_override": 0.95,
             "stddev": 1.5,
             "pick_n": 15,
-            "pick_frac": 0.0
+            "pick_frac": 0.0,
+            "endgame": 0.5
         },
         "ai:p:tenuki": {
             "pick_override": 0.85,
@@ -120,7 +119,7 @@
             "endgame": 0.4
         },
         "ai:p:rank": {
-            "kyu": 4.0
+            "kyu_rank": 4.0
         }
     }
 }

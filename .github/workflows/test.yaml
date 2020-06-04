@@ -27,7 +27,7 @@ jobs:
         pip3 install pytest wheel polib
 
     - name: Run tests
-      run: pytest tests
+      run: pytest -v -s tests
 
     - name: Run I18N conversion
       run: python i18n.py

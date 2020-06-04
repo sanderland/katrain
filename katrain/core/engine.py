@@ -82,6 +82,12 @@ class KataGoEngine:
         self.shutdown(finish=False)
         self.start()
 
+    def check_alive(self,exception_if_dead=False):
+        ok =  self.katago_process and self.katago_process.poll() is None
+        if not ok and exception_if_dead:
+            raise EngineDiedException(f"Engine died (process {self.katago_process}, poll {self.katago_process and self.katago_process.poll()}) config {self.config}")
+        return ok
+
     def shutdown(self, finish=False):
         process = self.katago_process
         if finish and process:
