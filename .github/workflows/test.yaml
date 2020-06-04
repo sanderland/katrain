@@ -11,13 +11,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.7]
+        python-version: [3.6, 3.7]
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Install dependencies
-      run: sudo apt install ocl-icd-libopencl1 ocl-icd-dev ocl-icd-opencl-dev
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
@@ -30,7 +27,7 @@ jobs:
         pip3 install pytest wheel polib
 
     - name: Run tests
-      run: pytest -v -s tests
+      run: pytest tests
 
     - name: Run I18N conversion
       run: python i18n.py
