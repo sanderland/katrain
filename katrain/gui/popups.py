@@ -213,6 +213,9 @@ class ConfigTimerPopup(QuickConfigGui):
 class NewGamePopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
+        for bw, info in katrain.players_info.items():
+            self.player_setup.update_players(bw, info)
+
         self.rules_spinner.value_refs = [name for abbr, name in katrain.engine.RULESETS_ABBR]
 
     def update_config(self, save_to_file=True):

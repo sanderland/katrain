@@ -64,7 +64,7 @@ class KaTrainBase:
 
     def log(self, message, level=OUTPUT_INFO):
         if level == OUTPUT_ERROR:
-            print(f"ERROR: {message}", file=sys.stderr)
+            print(f"ERROR: {message}")
         elif self.debug_level >= level:
             print(message)
 

@@ -1,5 +1,8 @@
 # first, logging level lower
 import os
+
+from kivy.base import ExceptionHandler, ExceptionManager
+
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 os.environ['KIVY_AUDIO'] = "sdl2" # force working audio
 
@@ -481,6 +484,8 @@ class KaTrainApp(MDApp):
         sys.exit(0)
 
 
+
+
 def run_app():
     app = KaTrainApp()
     signal.signal(signal.SIGINT, app.signal_handler)
@@ -488,9 +493,24 @@ def run_app():
     try:
         app.run()
     except Exception as e:
-        print(e)
         app.on_request_close()
-        raise
+        print(f"FATAL ERROR: {e}")
+        traceback.print_exc()
+
 
 if __name__ == "__main__":
+    class CrashHandler(ExceptionHandler):
+        def handle_exception(self, inst):
+            args = list(inst.args)
+            trace = traceback.format_exc()
+            message = args[0]
+            app = MDApp.get_running_app()
+            if app and app.gui:
+                app.gui.log("Exception: " + message + "\n" + trace,OUTPUT_ERROR)
+            else:
+                print("Exception: " + message + "\n" + trace)
+            return ExceptionManager.PASS
+
+    ExceptionManager.add_handler(CrashHandler())
+
     run_app()
