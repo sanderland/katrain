@@ -290,8 +290,6 @@ class Game:
         save_feedback = trainer_config["save_feedback"]
         eval_thresholds = trainer_config["eval_thresholds"]
 
-        print(trainer_config, save_feedback, eval_thresholds)
-
         def player_name(player_info):
             return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
 
