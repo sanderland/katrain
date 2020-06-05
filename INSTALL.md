@@ -2,11 +2,12 @@
 # Installation for MacOS users
 
 ## <a name="MacPrereq"></a>Installation pre-requisites
-* Download and install [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
 * Install [Homebrew](https://brew.sh) by running the following command in terminal:
   * ```
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     ```
+* Install Python using [Homebrew](https://brew.sh/) by executing `brew install python3`
+    * Alternatively download and install [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
 * Install Katago using [Homebrew](https://brew.sh/) by executing `brew install katago`
 * You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself.
 

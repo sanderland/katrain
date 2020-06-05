@@ -133,6 +133,9 @@ msgstr "Point Loss"
 msgid "tab:info"
 msgstr "Info"
 
+msgid "tab:info-details"
+msgstr "Details"
+
 msgid "tab:notes"
 msgstr "Notes"
 

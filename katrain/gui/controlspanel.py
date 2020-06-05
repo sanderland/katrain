@@ -84,11 +84,11 @@ class ControlsPanel(BoxLayout):
             self.active_comment_node = current_node.parent
 
         lock_ai = katrain.config("trainer/lock_ai") and katrain.play_analyze_mode == MODE_PLAY
-        hints = katrain.analysis_controls.hints.active and not lock_ai
+        details = self.info.detailed and not lock_ai
         info = ""
         if current_node.move and not current_node.is_root:
             info = self.active_comment_node.comment(
-                teach=katrain.players_info[self.active_comment_node.player].being_taught, hints=hints
+                teach=katrain.players_info[self.active_comment_node.player].being_taught, details=details
             )
 
         if self.active_comment_node.analysis_ready:

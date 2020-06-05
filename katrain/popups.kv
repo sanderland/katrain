@@ -28,10 +28,12 @@
     helper_text_mode: "none"
     hint_text: ""
     helper_text: ""
+    color_mode: 'custom'
+    line_color_focus: TEXT_COLOR
 
 <LabelledPathInput>:
     font_size: dp(16)
-    multiline: True # just for wrapping
+    multiline: False
     helper_text_mode: "on_error"
     helper_text: i18n._("file not found")
 
@@ -46,6 +48,7 @@
 <LabelledCheckBox>:
     size: DESC_FONT_SIZE*2,DESC_FONT_SIZE*2
     size_hint: None,None
+
 
 <QuickInputButton@SizedRectangleButton>
     on_left_press: if self.target: self.target.text = self.text
@@ -79,16 +82,21 @@
 <ConfigPopup>:
     configfile: configfile
     BoxLayout:
+        size_hint: 1,1
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('general settings')
+            font_size: DESC_FONT_SIZE * 1.5
+        DescriptionLabel:
+            font_size: DESC_FONT_SIZE * 1.5
+            text: i18n._('engine settings')
+    BoxLayout:
         size_hint: 1,9
         orientation: 'horizontal'
         GridLayout:
             cols: 2
-            rows: 8
+            rows: 7
             spacing: CP_SPACING
-            Label:
-            DescriptionLabel:
-                text: i18n._('general settings')
-                font_size: DESC_FONT_SIZE * 1.5
             DescriptionLabel:
                 text: i18n._("general:sgf_load")
             AnchorLayout:
@@ -126,12 +134,8 @@
             width: 2
         GridLayout:
             cols: 2
-            rows: 8
+            rows: 7
             spacing: CP_SPACING
-            Label:
-            DescriptionLabel:
-                font_size: DESC_FONT_SIZE * 1.5
-                text: i18n._('engine settings')
             DescriptionLabel:
                 text: i18n._("engine:katago")
             AnchorLayout:

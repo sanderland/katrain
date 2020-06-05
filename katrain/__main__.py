@@ -64,7 +64,7 @@ from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
-from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
+from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL, LIGHTGREY
 from katrain.gui.widgets.graph import ScoreGraph
 from katrain.gui.widgets.filebrowser import I18NFileBrowser
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
@@ -431,8 +431,19 @@ class KaTrainGui(Screen, KaTrainBase):
 class KaTrainApp(MDApp):
     gui = ObjectProperty(None)
     language = StringProperty(DEFAULT_LANGUAGE)
+
+    def __init__(self):
+        super().__init__()
+#        self.theme_cls.selected_color = WHITE
+#        self.theme_cls.secondary_text_color = LIGHTGREY
+
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
+
+        self.title = f"KaTrain v{VERSION}"
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Gray"
+        self.theme_cls.primary_hue = "200"
 
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
@@ -440,12 +451,8 @@ class KaTrainApp(MDApp):
         Builder.load_file(kv_file)
         Builder.load_file(popup_kv_file)
 
-        self.gui = KaTrainGui()
-        self.title = f"KaTrain v{VERSION}"
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Blue"
-
         Window.bind(on_request_close=self.on_request_close)
+        self.gui = KaTrainGui()
         return self.gui
 
     def on_language(self, _instance, language):
@@ -459,7 +466,7 @@ class KaTrainApp(MDApp):
             self.gui.controls.set_status("")
 
     def webbrowser(self, site_key):
-        WEBSITES = {"homepage": HOMEPAGE, "support": HOMEPAGE + "#support"}
+        WEBSITES = {"homepage": HOMEPAGE + "#manual", "support": HOMEPAGE + "#support"}
         if site_key in WEBSITES:
             webbrowser.open(WEBSITES[site_key])
 

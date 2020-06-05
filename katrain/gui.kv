@@ -12,6 +12,7 @@
 
 #:import RED katrain.gui.style.RED
 #:import WHITE katrain.gui.style.WHITE
+#:import LIGHTGREY katrain.gui.style.LIGHTGREY
 #:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
 #:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
@@ -19,14 +20,13 @@
 #:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
 #:set SPINNER_OPTION_COLOR [64 / 255, 85 / 255, 110 / 255, 1]
 
-#:set LIGHTGREY [0.7,0.7,0.7,1]
 #:set BLACK [0.05,0.05,0.05,1]
 #:set GREY  [0.5,0.5,0.5,1]
 #:set GREEN  [0.1,0.8,0.1,1]
 #:set LIGHTBLUE  [0.3,0.7,0.9,1]
 #:set YELLOW [0.8,0.8,0.1,1]
 #:set DARKRED  [0.3,0.1,0.1,1]
-
+#:set ORANGE [242/255,96/255,34/255,1]
 
 #:set SCORE_COLOR LIGHTBLUE
 #:set POINTLOSS_COLOR YELLOW
@@ -64,6 +64,7 @@
 
 
 # new widgets
+
 
 <SizedButton>:
     ripple_duration_in_slow: 0.6
@@ -301,7 +302,7 @@
     min_size: min(self.height,self.width)
     inactive_line_color: WHITE
     inactive_fill_color: [1,1,1,0]
-    active_line_color: [242/255,96/255,34/255,1]
+    active_line_color: ORANGE
     active_fill_color: [1,1,1,0]
     line_width: max(1.1,self.min_size/20)
     line_color: root.active_line_color if self.active else root.inactive_line_color
@@ -332,7 +333,8 @@
 
 
 <TimerLabel@Label>
-    color: GREEN
+    timeout: False
+    color: ORANGE if self.timeout else GREEN
     markup: True
     multiline: False
     font_name: 'fonts/digital-7 (mono).ttf'
@@ -341,6 +343,7 @@
     spacing: CP_SPACING
     padding: CP_PADDING * 4, CP_PADDING * 2
     paused: True
+    timeout: self.state[1] <= 0
     MDBoxLayout:
         size_hint: 0.7,1
         MDFloatLayout:
@@ -355,6 +358,7 @@
                 valign: 'middle'
             TimerLabel:
                 id: timer
+                timeout: root.timeout
                 text: "{:01d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
                 text_size: self.size
                 font_size: 0.85*self.height
@@ -368,6 +372,7 @@
             text_size: self.width, self.height * 0.95
             halign: 'right'
             valign: 'top'
+            timeout: root.timeout
         TimerLabel:
             size_hint: 0.1,1
             font_size: self.height * 0.35
@@ -377,6 +382,7 @@
             id: periods
             text: str(root.state[1])
             multiline: False
+            timeout: root.timeout
     MDBoxLayout:
         size_hint: 0.2,1
         PauseButton:
@@ -631,14 +637,16 @@
     CollapsablePanel:
         size_hint_y_open: 1
         closed_label: 'closedlabel:info&notes'
-        options: ['info','notes']
-        option_colors: [WHITE,WHITE]
-        option_active: [True,False]
+        options: ['info','info-details','notes']
+        option_colors: [WHITE,WHITE,YELLOW]
+        option_active: [True,False,False]
         on_option_state:
             info.size_hint_y = int(args[1]['info'])+1e-9
             info.opacity =  int(args[1]['info'])
+            info.detailed = args[1]['info-details']
             notebox.size_hint_y = int(args[1]['notes'])*0.66+1e-9
             notebox.opacity = int(args[1]['notes'])
+            app.gui.update_state()
         options_height: root.tab_option_height
         BGBoxLayout:
             background_color: BOX_BACKGROUND_COLOR
@@ -651,6 +659,7 @@
                 background_color: DARKRED
             ScrollableLabel:
                 id: info
+                detailed: False
                 line_height: 1.25
                 markup: True
                 on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
@@ -700,8 +709,6 @@
         pos_hint: {'center_y': 0.5}
         width: self.height
         active: root.default_active
-        selected_color: WHITE
-        unselected_color: LIGHTGREY
         on_active: if app.gui: app.gui.update_state()
 
 <AnalysisDropdownMenu>:

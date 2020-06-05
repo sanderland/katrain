@@ -538,3 +538,6 @@ msgstr ""
 
 msgid "ai:p:rank"
 msgstr "ㅋㅋCalibrated Rank Bot"
+
+msgid "tab:info-details"
+msgstr "ㅋㅋ+Analysis"
