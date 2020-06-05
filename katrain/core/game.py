@@ -26,7 +26,14 @@ class Game:
 
     DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": f"KaTrain:{HOMEPAGE}", "CA": "UTF-8"}
 
-    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], move_tree: GameNode = None, analyze_fast=False):
+    def __init__(
+        self,
+        katrain,
+        engine: Union[Dict, KataGoEngine],
+        move_tree: GameNode = None,
+        analyze_fast=False,
+        game_properties: Optional[Dict] = None,
+    ):
         self.katrain = katrain
         if not isinstance(engine, Dict):
             engine = {"B": engine, "W": engine}
@@ -43,7 +50,11 @@ class Game:
             board_size = katrain.config("game/size")
             self.komi = katrain.config("game/komi")
             self.root = GameNode(
-                properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}}
+                properties={
+                    **Game.DEFAULT_PROPERTIES,
+                    **{"SZ": board_size, "KM": self.komi, "DT": self.game_id},
+                    **(game_properties or {}),
+                }
             )
             handicap = katrain.config("game/handicap")
             if handicap:
@@ -272,18 +283,14 @@ class Game:
         )
 
     def write_sgf(
-        self,
-        path: str,
-        trainer_config: Optional[Dict] = None,
-        save_feedback: Optional[List] = None,
-        eval_thresholds: Optional[List] = None,
+        self, path: str, trainer_config: Optional[Dict] = None,
     ):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer")
-        if save_feedback is None:
-            save_feedback = self.katrain.config("trainer/save_feedback")
-        if eval_thresholds is None:
-            eval_thresholds = self.katrain.config("trainer/eval_thresholds")
+        save_feedback = trainer_config["save_feedback"]
+        eval_thresholds = trainer_config["eval_thresholds"]
+
+        print(trainer_config, save_feedback, eval_thresholds)
 
         def player_name(player_info):
             return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
@@ -299,12 +306,12 @@ class Game:
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
         show_dots_for = {
-            bw: trainer_config.get("eval_show_ai", True) or pl.human for bw, pl in self.katrain.players_info.items()
+            bw: trainer_config.get("eval_show_ai", True) or self.katrain.players_info[bw].human for bw in "BW"
         }
         sgf = self.root.sgf(
             save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=eval_thresholds
         )
-        with open(file_name, "w", encoding='utf-8') as f:
+        with open(file_name, "w", encoding="utf-8") as f:
             f.write(sgf)
         return i18n._("sgf written").format(file_name=file_name)
 

@@ -1,15 +1,17 @@
 import copy
 import json
 import subprocess
-import traceback
 import threading
 import time
+import traceback
 from typing import Callable, Optional
+
 from kivy.utils import platform
-from katrain.core.utils import find_package_resource
-from katrain.core.lang import i18n
-from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG
+
+from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from katrain.core.game_node import GameNode
+from katrain.core.lang import i18n
+from katrain.core.utils import find_package_resource
 
 
 class EngineDiedException(Exception):
@@ -27,22 +29,25 @@ class KataGoEngine:
     def get_rules(node):
         return KataGoEngine.RULESETS.get(str(node.ruleset).lower(), "japanese")
 
-    def __init__(self, katrain, config):
+    def __init__(self, katrain, config, override_command=None):
         self.katrain = katrain
-        executable = config["katago"].strip()
-        if not executable:
-            if platform == "win":
-                executable = "katrain/KataGo/katago.exe"
-            elif platform == "linux":
-                executable = "katrain/KataGo/katago"
-            else:  # e.g. MacOS after brewing
-                executable = "katago"
+        if override_command:
+            self.command = override_command
+        else:
+            executable = config["katago"].strip()
+            if not executable:
+                if platform == "win":
+                    executable = "katrain/KataGo/katago.exe"
+                elif platform == "linux":
+                    executable = "katrain/KataGo/katago"
+                else:  # e.g. MacOS after brewing
+                    executable = "katago"
 
-        model = find_package_resource(config["model"])
-        cfg = find_package_resource(config["config"])
-        exe = find_package_resource(executable)
+            model = find_package_resource(config["model"])
+            cfg = find_package_resource(config["config"])
+            exe = find_package_resource(executable)
+            self.command = f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
 
-        self.command = f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
         self.queries = {}  # outstanding query id -> start time and callback
         self.config = config
         self.query_counter = 0
@@ -64,11 +69,11 @@ class KataGoEngine:
         except (FileNotFoundError, PermissionError, OSError) as e:
             if not self.config["katago"].strip():
                 self.katrain.log(
-                    i18n._("Starting default Kata failed").format(command=self.comment, error=e), OUTPUT_ERROR,
+                    i18n._("Starting default Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
                 )
             else:
                 self.katrain.log(
-                    i18n._("Starting Kata failed").format(command=self.comment, error=e), OUTPUT_ERROR,
+                    i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
                 )
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
         self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
@@ -82,10 +87,12 @@ class KataGoEngine:
         self.shutdown(finish=False)
         self.start()
 
-    def check_alive(self,exception_if_dead=False):
-        ok =  self.katago_process and self.katago_process.poll() is None
+    def check_alive(self, exception_if_dead=False):
+        ok = self.katago_process and self.katago_process.poll() is None
         if not ok and exception_if_dead:
-            raise EngineDiedException(f"Engine died (process {self.katago_process}, poll {self.katago_process and self.katago_process.poll()}) config {self.config}")
+            raise EngineDiedException(
+                f"Engine died (process {self.katago_process}, poll {self.katago_process and self.katago_process.poll()}) config {self.config}"
+            )
         return ok
 
     def shutdown(self, finish=False):
