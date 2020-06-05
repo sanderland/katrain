@@ -1,6 +1,6 @@
 import math
 
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, Clock
 
 from katrain.gui.kivyutils import BackgroundMixin
 
@@ -107,4 +107,4 @@ class ScoreGraph(BackgroundMixin):
             while node.children:  # add children back
                 node = node.children[0]
                 self.nodes.append(node)
-        self.update_graph()
+        Clock.schedule_once(self.update_graph,0)
