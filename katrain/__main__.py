@@ -489,37 +489,27 @@ class KaTrainApp(MDApp):
                     print(f"\tFile: {filename}, line {lineno}, in {name}")
                     if line:
                         print(f"\t\t{line.strip()}")
-        self.on_request_close()
-        sys.exit(0)
-
+        self.stop()
 
 
 
 def run_app():
-    app = KaTrainApp()
-    signal.signal(signal.SIGINT, app.signal_handler)
-
-    try:
-        app.run()
-    except Exception as e:
-        app.on_request_close()
-        print(f"FATAL ERROR: {e}")
-        traceback.print_exc()
-
-
-if __name__ == "__main__":
     class CrashHandler(ExceptionHandler):
         def handle_exception(self, inst):
-            args = list(inst.args)
-            trace = traceback.format_exc()
-            message = args[0]
+            ex_type, ex, tb = sys.exc_info()
+            trace = "".join(traceback.format_tb(tb))
             app = MDApp.get_running_app()
             if app and app.gui:
-                app.gui.log("Exception: " + message + "\n" + trace,OUTPUT_ERROR)
+                app.gui.log(f"Exception {inst.__class__}: {inst.args}\n{trace}",OUTPUT_ERROR)
             else:
-                print("Exception: " + message + "\n" + trace)
+                print(f"Exception {inst.__class__}: {inst.args}\n{trace}")
             return ExceptionManager.PASS
 
     ExceptionManager.add_handler(CrashHandler())
+    app = KaTrainApp()
+    signal.signal(signal.SIGINT, app.signal_handler)
+    app.run()
 
+
+if __name__ == "__main__":
     run_app()

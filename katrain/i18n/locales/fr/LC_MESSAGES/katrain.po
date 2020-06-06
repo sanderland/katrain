@@ -607,8 +607,8 @@ msgstr ""
 
 #. TODO
 msgid "ai:p:rank"
-msgstr "Calibrated Rank Bot"
+msgstr "Calibrated Rank"
 
 #. TODO
 msgid "tab:info-details"
-msgstr "+Analysis"
+msgstr "Details"
