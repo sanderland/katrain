@@ -7,17 +7,16 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
-from kivy.properties import ListProperty
+from kivy.properties import ListProperty, ObjectProperty, BooleanProperty
+from kivy.uix.dropdown import DropDown
 from kivy.uix.widget import Widget
-from kivymd.app import MDApp
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.menu import MDDropdownMenu
 
 from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, var_to_grid
-from katrain.gui.kivyutils import draw_circle, draw_text
+from katrain.gui.kivyutils import draw_circle, draw_text, BackgroundMixin
 from katrain.gui.style import *
 
 
@@ -468,46 +467,35 @@ class BadukPanWidget(Widget):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
 
-class AnalysisDropdownMenu(MDDropdownMenu):
-    def create_menu_items(self):
-        super().create_menu_items()
-        for widget in self.menu.ids.box.children:
-            try:
-                widget.ids._text_container.children[2].font_name = i18n.font_name
-            except:  # TODO not use this terrible widget
-                pass
+class AnalysisDropDown(DropDown):
+    pass
 
 
 class AnalysisControls(MDFloatLayout):
-    ANALYSIS_OPTIONS = ["analysis:extra", "analysis:equalize", "analysis:sweep", "analysis:aimove"]
-    ANALYSIS_SHORTCUTS = ["a", "s", "d", "enter"]
+    dropdown = ObjectProperty(None)
+    is_open = BooleanProperty(False)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.analysis_menu = None
-        MDApp.get_running_app().bind(language=lambda *_args: Clock.schedule_once(self.build_menu))
-        Clock.schedule_once(self.build_menu, 0)
+        self.build_dropdown()
 
-    def build_menu(self, _dt):
-        menu_items = [
-            {"text": i18n._(text) + f"  ({shortcut})"}
-            for text, shortcut in zip(self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS)
-        ]
-        self.analysis_menu = AnalysisDropdownMenu(
-            caller=self.analysis_button, items=menu_items, width_mult=6, use_icon_item=False, callback=self.action
-        )
+    def on_is_open(self, instance, value):
+        if value:
+            max_content_width = max(option.content_width for option in self.dropdown.container.children)
+            self.dropdown.width = max_content_width
+            self.dropdown.open(self.analysis_button)
+        elif self.dropdown.attach_to:
+                self.dropdown.dismiss()
 
-    def action(self, item):
-        katrain = MDApp.get_running_app().gui
-        shortcuts = katrain.shortcuts
-        for text, shortcut in zip(self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS):
-            if item.text.startswith(i18n._(text)):
-                katrain(*shortcuts[shortcut])
+    def close_dropdown(self, *largs):
+        self.is_open = False
 
-    def open_analysis_menu(self):
-        while not self.analysis_menu:
-            time.sleep(0.01)
-        self.analysis_menu.open()
+    def toggle_dropdown(self, *largs):
+        self.is_open = not self.is_open
+
+    def build_dropdown(self):
+        self.dropdown = AnalysisDropDown(auto_width=False)
+        self.dropdown.bind(on_dismiss=self.close_dropdown)
 
 
 class BadukPanControls(MDFloatLayout):

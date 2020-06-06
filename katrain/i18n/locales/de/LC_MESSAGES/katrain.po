@@ -113,9 +113,8 @@ msgstr ""
 
 msgid "ai-ponder"
 msgstr ""
-"Dies zeigt den Enginestatus an von grün (Leerlauf) bis orange "
-"(Zugberechnung).Es wird rot, wenn die Engine abgestürzt ist oder nicht "
-"starten konnte."
+"Zeigt den Enginestatus an von grün (Leerlauf) bis orange(Zugberechnung). Ist"
+" rot, wenn die Engine abgestürzt ist oder nicht starten konnte."
 
 #. undo button on the right
 msgid "undo-button-text"
@@ -167,13 +166,13 @@ msgid "btn:Analysis"
 msgstr "Analyse"
 
 msgid "btn:Analyze"
-msgstr "Analyse Optionen"
+msgstr "Analyseoptionen"
 
 msgid "stats:winrate"
 msgstr "Gewinnrate"
 
 msgid "stats:score"
-msgstr "Geschätzes Ergebnis"
+msgstr "Ergebnis"
 
 msgid "stats:pointslost"
 msgstr "Punkte verloren"
@@ -211,10 +210,10 @@ msgid "Info:PV"
 msgstr "PV: {pv}"
 
 msgid "Info:policy rank"
-msgstr "Zug war #{rank} gemäss Policy  ({probability:.2%})."
+msgstr "Zug war #{rank} gemäss Policy ({probability:.2%})."
 
 msgid "Info:policy best"
-msgstr "Bester Policy Zug war {move} ({probability:.1%})."
+msgstr "Bester Policy-Zug war {move} ({probability:.1%})."
 
 msgid "Info:teaching undo"
 msgstr "Zug wurde automatisch im Lehrmodus zurückgenommen."
@@ -242,11 +241,11 @@ msgid "load sgf fast analysis"
 msgstr "Schnelle Analyse verwenden"
 
 msgid "load sgf rewind"
-msgstr "Zum Start zurückspulen"
+msgstr "Am Anfang beginnen"
 
 # timer settings from here
 msgid "timer settings"
-msgstr "Timer Einstellungen Anpassen"
+msgstr "Timereinstellungen Anpassen"
 
 msgid "byoyomi length"
 msgstr "Zeit pro Byo-yomi Periode"
@@ -309,7 +308,7 @@ msgstr "Neues Spiel Starten"
 
 # teacher settings from here
 msgid "teacher settings"
-msgstr "Lehrereinstellungen Bearbeiten"
+msgstr "Übungsspieleinstellungen Bearbeiten"
 
 msgid "point loss threshold"
 msgstr "Punktverlust grösser als"
@@ -318,7 +317,7 @@ msgid "num undos"
 msgstr "Anzahl der Undos"
 
 msgid "dot color"
-msgstr "Farbe (konstant)"
+msgstr "Farbe (fix)"
 
 msgid "show dots"
 msgstr "Dots zeigen"
@@ -343,7 +342,7 @@ msgstr ""
 
 #. submit button
 msgid "update teacher"
-msgstr "Feedback Einstellungen aktualisieren"
+msgstr "Feedbackeinstellungen aktualisieren"
 
 # main config settings
 msgid "restarting engine"
@@ -369,7 +368,7 @@ msgid "engine:katago"
 msgstr "Pfad zur KataGo Datei"
 
 msgid "engine:katago:hint"
-msgstr "Leer lassen, um beigefügte Datei zu verwenden."
+msgstr "Leer = beigefügte Datei verwenden."
 
 msgid "engine:model"
 msgstr "Pfad zur KataGo Model Datei"
@@ -475,7 +474,7 @@ msgstr "KataGo"
 msgid "aihelp:default"
 msgstr ""
 "Spielstärkste KataGo AI. Spielstärke wird von `max visits` und `model`in den"
-" allgemeinen Einstellungen Bereich `engine` und dem Engine-"
+" allgemeinen Einstellungen im Bereich `engine` und dem Engine-"
 "Konfigurationsfile bestimmt. Hier gibt es sonst keine Optionen."
 
 msgid "ai:jigo"
@@ -487,7 +486,7 @@ msgstr ""
 "weitere Einschränkungen."
 
 msgid "ai:scoreloss"
-msgstr "Punktverluste"
+msgstr "Punktverlust"
 
 msgid "aihelp:scoreloss"
 msgstr ""
@@ -499,9 +498,9 @@ msgstr "Policy"
 
 msgid "aihelp:policy"
 msgstr ""
-"Wählt den besten Zug vom Policy Netzwerk ohne Analyse. Die Stärke ist am "
+"Wählt den besten Zug vom Policy-Netzwerk ohne Analyse. Die Stärke ist am "
 "meisten von der `model` Einstellung in den Engine Einstellungen abhängig. "
-"Die Eröffnungs-züge Einstellung bestimmt wie viele Züge der Eröffnung "
+"Die `opening_moves` Einstellung bestimmt wie viele Züge der Eröffnung "
 "zufällig sind."
 
 msgid "ai:p:weighted"
@@ -509,11 +508,11 @@ msgstr "Policy Gewichtet"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"Wählt den Zug gemäss der Policy Wahrscheinlichkeit, beeinflusst durch "
+"Wählt den Zug gemäss der Policy-Wahrscheinlichkeit, beeinflusst durch "
 "`weaken_fac` wie wahrscheinlich schlechtere Züge gespielt werden. Ein hoher "
 "negativer Wert spielt wie die `Policy` AI. `pick_override` legt fest, wann "
 "der beste Zug gewählt wird ohne Zufall und `lower_bound` bestimmt die untere"
-" Grenze des erlaubten Policy Wertes."
+" Grenze des erlaubten Policy-Wertes."
 
 msgid "ai:p:pick"
 msgstr "Blinde Policy"
@@ -522,7 +521,7 @@ msgid "aihelp:p:pick"
 msgstr ""
 "Wählt `pick_n + pick_frac * <number of legal moves>` gewichtete Züge "
 "zufälligund spielt den Besten. Spielt wie die Policy AI, wenn `pick_frac=1`."
-" Spielt besten Zug, wenn Policy Wert höher als `pick_override` ist, um "
+" Spielt besten Zug, wenn Policy-Wert höher als `pick_override` ist, um "
 "offensichtliche Fehler zu vermeiden."
 
 msgid "ai:p:local"
@@ -530,8 +529,8 @@ msgstr "Lokaler Stil"
 
 msgid "aihelp:p:local"
 msgstr ""
-"Wählt `pick_n + pick_frac * <number of legal moves>` gewichtete Züge hin "
-"zumletzten Zug und spielt den Besten. Spielt besten Zug, wenn Policy Wert "
+"Wählt `pick_n + pick_frac * <number of legal moves>` gewichtete Züge nahedem"
+" letzten Zug und spielt den Besten. Spielt besten Zug, wenn Policy-Wert "
 "höher als`pick_override` ist, um offensichtliche Fehler zu vermeiden."
 
 msgid "ai:p:tenuki"
@@ -539,39 +538,37 @@ msgstr "Tenuki Stil"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
-"Wählt `pick_n + pick_frac * <number of legal moves>` gewichtete Züge weg "
-"vomletzten Zug und spielt den Besten. Spielt besten Zug, wenn Policy Wert "
-"höher als`pick_override` ist, um offensichtliche Fehler zu vermeiden. Eine "
-"höhere `stddev`führt zu weiter entfernten Zügen."
+"Wählt `pick_n + pick_frac * <number of legal moves>` gewichtete Züge "
+"fernvomletzten Zug und spielt den Besten. Spielt besten Zug, wenn Policy-"
+"Wert höher als`pick_override` ist, um offensichtliche Fehler zu vermeiden. "
+"Eine höhere `stddev`führt zu weiter entfernten Zügen."
 
 msgid "ai:p:influence"
-msgstr "Einfluss Stil"
+msgstr "Einflussstil"
 
 msgid "aihelp:p:influence"
 msgstr ""
-"Wählt Züge oberhalb des Grenzwertes und spielt den Besten.Erhöht den "
-"`line_weight`, um Züge nahe der Ecken zu bestrafen.Stoppt die Strategie nach"
-" dem der 'endgame' Teil des Brettes gefüllt ist."
+"Wählt Züge oberhalb des Grenzwertes und spielt den Besten.Erhöhe "
+"`line_weight`,um Züge nahe der Ecken mehr zu bestrafen.Stoppt die Strategie "
+"nach dem der 'endgame' Anteil des Brettes gefüllt ist."
 
 msgid "ai:p:territory"
 msgstr "Gebietsstil"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"Wählt Züge unterhalb des Grenzwertes und spielt den Besten.Erhöht den "
-"`line_weight`, um Züge nahe der Mitte zu bestrafen.Stoppt die Strategie nach"
-" dem der 'endgame' Teil des Brettes gefüllt ist."
+"Wählt Züge unterhalb des Grenzwertes und spielt den Besten.Erhöhe "
+"`line_weight`,um Züge nahe der Mitte mehr zu bestrafen.Stoppt die Strategie "
+"nach dem der 'endgame' Anteil des Brettes gefüllt ist."
 
-#. TODO
 msgid "aihelp:p:rank"
 msgstr ""
-"Picks moves at random from a limited selection of moves and plays the best "
-"one. Stronger settings select the best move from a larger selection. Since "
-"there is no 0 kyu/dan, 3 dan = -2 kyu."
+"Wählt zufällige Züge aus einer beschränkten Auswahl an Zügen und spieltden "
+"Besten. Stärkere Einstellungen wählen den besten Zug aus einer grösseren "
+"Auswahl. Da es keinen 0 Kyu/Dan gibt, ist 3 Dan = -2 Kyu."
 
-#. TODO
 msgid "ai:p:rank"
-msgstr "Calibrated Rank"
+msgstr "Kalibrierter Rang"
 
 #. TODO
 msgid "tab:info-details"

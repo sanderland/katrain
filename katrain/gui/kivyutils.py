@@ -317,21 +317,24 @@ class AnalysisToggle(MDBoxLayout):
         return self.checkbox.active
 
 
-class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, BackgroundMixin):
-    __events__ = ["on_action"]
+class MenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, BackgroundMixin):
+    __events__ = ["on_action","on_close"]
     icon = StringProperty("")
     text = StringProperty("")
     shortcut = StringProperty("")
     font_name = StringProperty(DEFAULT_FONT)
+    content_width = NumericProperty(100)
 
     def on_left_release(self):
         self.anim_complete()  # kill ripple
-        MDApp.get_running_app().gui.nav_drawer.set_state("close")
+        self.dispatch("on_close")
         self.dispatch("on_action")
 
     def on_action(self):
         pass
 
+    def on_close(self):
+        pass
 
 class CollapsablePanelHeader(MDBoxLayout):
     pass

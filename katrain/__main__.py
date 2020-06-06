@@ -1,8 +1,5 @@
 # first, logging level lower
 import os
-
-from kivy.base import ExceptionHandler, ExceptionManager
-
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 os.environ['KIVY_AUDIO'] = "sdl2" # force working audio
 
@@ -36,6 +33,7 @@ import traceback
 from queue import Queue
 import webbrowser
 
+from kivy.base import ExceptionHandler, ExceptionManager
 from kivy.app import App
 from kivy.core.clipboard import Clipboard
 from kivy.lang import Builder
@@ -120,36 +118,7 @@ class KaTrainGui(Screen, KaTrainBase):
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
         self._do_new_game()
 
-    def update_state(
-        self, redraw_board=False
-    ):  # is called after every message and on receiving analyses and config changes
-        # AI and Trainer/auto-undo handlers
-        cn = self.game and self.game.current_node
-        if not cn:
-            return
-        last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
-        if self.play_analyze_mode == MODE_PLAY:
-            teaching_undo = cn.player and last_player.being_taught
-            if (
-                teaching_undo
-                and cn.analysis_ready
-                and cn.parent
-                and cn.parent.analysis_ready
-                and not cn.children
-                and not self.game.ended
-            ):
-                self.game.analyze_undo(cn)  # not via message loop
-            if (
-                cn.analysis_ready
-                and next_player.ai
-                and not cn.children
-                and not self.game.ended
-                and not (teaching_undo and cn.auto_undo is None)
-            ):
-                self._do_ai_move(
-                    cn
-                )  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
-
+    def update_gui(self,cn,redraw_board=False):
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
         top, bot = [w.__self__ for w in self.board_controls.circles]  # no weakref
@@ -177,10 +146,43 @@ class KaTrainGui(Screen, KaTrainBase):
 
         # redraw
         if redraw_board:
-            Clock.schedule_once(self.board_gui.draw_board, -1)
+            self.board_gui.draw_board()
         self.board_gui.redraw_board_contents_trigger()
         self.controls.update_evaluation()
         self.controls.update_timer(1)
+
+
+    def update_state(
+        self, redraw_board=False
+    ):  # is called after every message and on receiving analyses and config changes
+        # AI and Trainer/auto-undo handlers
+        if not self.game or not self.game.current_node:
+            return
+        cn = self.game.current_node
+        last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
+        if self.play_analyze_mode == MODE_PLAY:
+            teaching_undo = cn.player and last_player.being_taught
+            if (
+                teaching_undo
+                and cn.analysis_ready
+                and cn.parent
+                and cn.parent.analysis_ready
+                and not cn.children
+                and not self.game.ended
+            ):
+                self.game.analyze_undo(cn)  # not via message loop
+            if (
+                cn.analysis_ready
+                and next_player.ai
+                and not cn.children
+                and not self.game.ended
+                and not (teaching_undo and cn.auto_undo is None)
+            ):
+                self._do_ai_move(
+                    cn
+                )  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
+        Clock.schedule_once(lambda _dt: self.update_gui(cn,redraw_board=redraw_board),-1)
+
 
     def update_player(self, bw, **kwargs):
         super().update_player(bw, **kwargs)

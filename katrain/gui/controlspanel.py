@@ -2,13 +2,10 @@ import time
 
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
-from kivy.properties import ObjectProperty, ListProperty
+from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.popup import Popup
-from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.lang import i18n
 from katrain.core.constants import MODE_PLAY, MODE_ANALYZE
 
 

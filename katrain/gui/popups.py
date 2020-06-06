@@ -298,7 +298,12 @@ class AIPopup(QuickConfigGui):
 class ConfigPopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
-        self.configfile.text = i18n._("config file path").format(file=katrain.config_file)
+
+        def set_config_hint(*args):
+            self.configfile.text = i18n._("config file path").format(file=katrain.config_file)
+
+        set_config_hint()
+        MDApp.get_running_app().bind(language=set_config_hint)
 
     def update_config(self, save_to_file=True):
         updated = super().update_config(save_to_file=save_to_file)
