@@ -72,7 +72,7 @@ from katrain.gui.controlspanel import ControlsPanel
 class KaTrainGui(Screen, KaTrainBase):
     """Top level class responsible for tying everything together"""
 
-    zen = BooleanProperty(False)
+    zen = NumericProperty(0)
     controls = ObjectProperty(None)
 
     def __init__(self, **kwargs):
@@ -403,7 +403,7 @@ class KaTrainGui(Screen, KaTrainBase):
         elif keycode[1] == "spacebar":
             self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in ["`", "~", "m"]:
-            self.zen = not self.zen
+            self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["up", "z"]:
             self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] in ["down", "x"]:

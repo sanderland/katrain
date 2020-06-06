@@ -104,7 +104,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 
 * **[Shift]**: Open the main menu.
 * **[Tab]**: Switch between analysis and play modes.
-* **[~]** or **[ ` ]** or **[m]**: Toggles only showing the board.
+* **[~]** or **[ ` ]** or **[m]**: Cycles through more minimalistic UI modes.
 * **[p]**: Pass
 * **[spacebar]**: Pause/Resume timer
 * **[arrow up]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.

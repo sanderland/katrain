@@ -1045,7 +1045,6 @@
     analysis_controls: analysis_controls
     nav_drawer: nav_drawer
     nav_drawer_contents: nav_drawer_contents
-    zen: False
     NavigationLayout:
         ScreenManager:
             Screen:
@@ -1057,19 +1056,19 @@
                         AnalysisControls:
                             id: analysis_controls
                             size_hint_y: None
-                            height: min(100,self.width / 13.5) if not root.zen else 1
-                            opacity: 0 if root.zen else 1
+                            height: 1 if root.zen > 0 else min(100,self.width / 13.5)
+                            opacity: 0 if root.zen > 0 else 1
                         BadukPanWidget:
                             id: board_gui
                         BadukPanControls:
                             id: board_controls
                             size_hint_y: None
-                            height: min(100,self.width / 13.5) if not root.zen else 1
-                            opacity: 0 if root.zen else 1
+                            height: 1 if root.zen > 0 else min(100,self.width / 13.5)
+                            opacity: 0 if root.zen > 0 else 1
                     MDBoxLayout:
                         size_hint_x: None
-                        width: 0 if root.zen else self.height * 0.4
-                        opacity: 0 if root.zen else 1
+                        width: 1 if root.zen == 2 else self.height * 0.4
+                        opacity: 0 if root.zen == 2 else 1
                         orientation: 'vertical'
                         PlayAnalyzeSelect:
                             id: play_mode
