@@ -2,6 +2,7 @@ import copy
 import json
 import subprocess
 import threading
+import os
 import time
 import traceback
 from typing import Callable, Optional
@@ -45,8 +46,15 @@ class KataGoEngine:
 
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
-            exe = find_package_resource(executable)
-            self.command = f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
+            if executable.startswith('katrain'):
+                executable = find_package_resource(executable)
+            if not os.path.exists(model):
+                self.katrain.log(f"Model {model} appears missing, check general/engine settings.", OUTPUT_ERROR)
+            if not os.path.exists(cfg):
+                self.katrain.log(f"KataGo configuration file {cfg} appears missing, check general/engine settings.", OUTPUT_ERROR)
+            if not os.path.exists(executable):
+                self.katrain.log(f"KataGo binary {executable} appears missing, check general/engine settings.", OUTPUT_ERROR)
+            self.command = f'"{executable}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
 
         self.queries = {}  # outstanding query id -> start time and callback
         self.config = config
