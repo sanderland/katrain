@@ -19,8 +19,8 @@ try:
         scale = min(scale, (m.height-100) / WINDOW_Y, (m.width-100) / WINDOW_X)
     WINDOW_SCALE_FAC = max(0.4,scale)
 except Exception as e:
-    print("Exception while getting screen resolution", e)
-    WINDOW_SCALE_FAC = 1
+    print(f"Exception {e} while getting screen resolution (if on MacOS, 'pip3 install screeninfo' manually or ignore this)")
+    WINDOW_SCALE_FAC = 0.85 
 
 Config.set("graphics", "width", int(WINDOW_SCALE_FAC*WINDOW_X))
 Config.set("graphics", "height", int(WINDOW_SCALE_FAC*WINDOW_Y))
