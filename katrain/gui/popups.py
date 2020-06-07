@@ -32,6 +32,10 @@ class I18NPopup(Popup):
     title_key = StringProperty("")
     font_name = StringProperty(DEFAULT_FONT)
 
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+        self.bind(on_dismiss=Clock.schedule_once(lambda _dt: MDApp.get_running_app().gui.update_state(),1))
+
 
 class LabelledTextInput(MDTextField):
     input_property = StringProperty("")
@@ -193,8 +197,6 @@ class QuickConfigGui(MDBoxLayout):
                 updated.add(multikey)
         if save_to_file:
             self.katrain.save_config()
-        if updated:
-            self.katrain.update_state()
         if self.popup:
             self.popup.dismiss()
         return updated

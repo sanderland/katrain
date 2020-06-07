@@ -62,7 +62,7 @@ This section describes the available AIs, with strength based on their current O
     * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
     * **[~5k]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
     * **[~8k]** **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn.
-    * **[3d - 12k]** **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found on [this](https://github.com/sanderland/katrain/issues/44) thread.
+    * **[15k - 3d]** **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found on [this](https://github.com/sanderland/katrain/issues/44) thread.
 *  Options that are more on the 'fun and experimental' side include: 
     * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist.:
         * **[~5k]** **Local Style** will consider mostly moves close to the last move.
@@ -122,7 +122,8 @@ In addition to shortcuts mentioned above and those shown in the main menu:
   *  Adjust the number of visits or maximum time allowed in the settings.
 * KataGo crashes with out of memory errors, how can I prevent this?
   * Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using versions compiled with large board sizes.
-  * If still encountering problems, please start KataGo by itself to check for any errors it gives.  
+  * If still encountering problems, please start KataGo by itself to check for any errors it gives.
+  * Note that if you don't have a GPU, or your GPU does not support OpenCL, you may not be able to use KataGo.
 * How can I play on larger boards?
   * For windows, change the `katago` setting to `katrain\KataGo\katago-bs52.exe`. For other operating systems, you need to compile your own KataGo version with higher limits.
 
@@ -134,12 +135,12 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 [![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)](https://liberapay.com/sanderbaduk/)
 [![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 
-* Donations for improving and promoting KaTrain are taken supported through [Liberapay](https://liberapay.com/KaTrain/).
-* You also can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
- or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
     * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
+* You also can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
+ or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
+* Donations for improving and promoting KaTrain are taken supported through [Liberapay](https://liberapay.com/KaTrain/).
 
 
 
