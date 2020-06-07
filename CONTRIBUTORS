@@ -7,6 +7,7 @@ Matthew Allred ("Kameone") for design of the v1.1 UI and providing MacOS install
 "Dontbtme" for detailed feedback and early testing of v1.0, and the French translation.
 "bale-go" for implementing and calibrating the 'calibrated rank' AI.
 "nimets123" for the German translation and sound effects.
+"nowoowoo" for a fix to the parser for SGF files with extra line breaks.
 
 Additional thanks to:
 "Seventeen" for explanatory youtube videos.
