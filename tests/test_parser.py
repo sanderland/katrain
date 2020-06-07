@@ -18,6 +18,12 @@ def test_branch():
     assert input_sgf == root.sgf()
 
 
+def test_dragon_weirdness():  # dragon go server has weird line breaks
+    input_sgf = "\n(\n\n;\nGM[1]\nFF[4]\nCA[UTF-8]AP[Sabaki:0.43.3]KM[6.5]SZ[19]DT[2020-04-12]AB[dd]\n[dj]\n(\n;\nB[dp]\n;\nW[pp]\n(\n;\nB[pj]\n)\n(\n;\nPL[B]\nAW[jp]\nC[sdfdsfdsf]\n)\n)\n(\n;\nB[pd]\n)\n)\n"
+    root = SGF.parse(input_sgf)
+    assert input_sgf.replace("\n", "") == root.sgf()
+
+
 def test_weird_escape():
     input_sgf = """(;GM[1]FF[4]CA[UTF-8]AP[Sabaki:0.43.3]KM[6.5]SZ[19]DT[2020-04-12]C[how does it escape
 [

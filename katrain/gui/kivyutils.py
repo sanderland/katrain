@@ -144,11 +144,13 @@ class StatsLabel(MDBoxLayout):
     font_name = StringProperty(DEFAULT_FONT)
 
 
-class MyNavigationDrawer(MDNavigationDrawer):  # in PR - closes NavDrawer on any outside click
+class MyNavigationDrawer(MDNavigationDrawer):
+
+
     def on_touch_down(self, touch):
         return super().on_touch_down(touch)
 
-    def on_touch_up(self, touch):
+    def on_touch_up(self, touch):   # in PR - closes NavDrawer on any outside click
         if self.status == "opened" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
             self.set_state("close", animation=True)
             return True

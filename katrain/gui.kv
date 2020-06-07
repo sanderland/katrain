@@ -835,8 +835,9 @@
                 on_release: root.toggle_dropdown()
                 text: '  ' + i18n._("btn:Analyze")
             Image:
-                pos_hint: {'center_y': 0.5, 'x': 0}
-                size_hint: None, 0.5
+                pos_hint: {'center_y': 0.5}
+                x: self.parent.x + 2
+                size_hint: None, 0.4
                 width: self.height/2
                 source: 'img/menu.png'
                 mipmap: True
@@ -1063,14 +1064,14 @@
                         AnalysisControls:
                             id: analysis_controls
                             size_hint_y: None
-                            height: 1 if root.zen > 0 else min(100,self.width / 13.5)
+                            height: 1 if root.zen > 0 else min(75,self.width / 13.5)
                             opacity: 0 if root.zen > 0 else 1
                         BadukPanWidget:
                             id: board_gui
                         BadukPanControls:
                             id: board_controls
                             size_hint_y: None
-                            height: 1 if root.zen > 0 else min(100,self.width / 13.5)
+                            height: 1 if root.zen > 0 else min(75,self.width / 13.5)
                             opacity: 0 if root.zen > 0 else 1
                     MDBoxLayout:
                         size_hint_x: None
@@ -1088,10 +1089,12 @@
             state: "close"
             y: 0
             size_hint_y: None
-            width: self.height * 0.5
-            height: root.height - analysis_controls.height
+            -height: root.height - analysis_controls.height
+            -width: self.height * 0.5
             swipe_edge_width: 0
-            on_state: if self.state=='close': root.update_state() # ai move etc on nav drawer close
+            on_state:
+                print(self.height,self.width,root.height,analysis_controls.height)
+                if self.state=='close': root.update_state() # ai move etc on nav drawer close
             HamburgerMenuContents:
                 id: nav_drawer_contents
 

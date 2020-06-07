@@ -314,11 +314,12 @@ class SGF:
             if not match:
                 break
             self.ix += len(match[0])
-            if match[0] == ")":
+            matched_item = match[0].strip()
+            if matched_item == ")":
                 return
-            if match[0] == "(":
+            if matched_item == "(":
                 self._parse_branch(self._NODE_CLASS(parent=current_move))
-            elif match[0] == ";":
+            elif matched_item == ";":
                 if not current_move.empty:  # ignore ; that generate empty nodes
                     current_move = self._NODE_CLASS(parent=current_move)
             else:
