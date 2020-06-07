@@ -107,13 +107,14 @@ msgstr "Pasar"
 
 msgid "teaching undo message"
 msgstr ""
-"Deshice jugada {move} ya que perdía {points_lost:.1f} puntos. Coloca el cursor sobre la jugada "
-"para ver la refutación esperada. Por favor intenta de nuevo."
+"Deshice jugada {move} ya que perdía {points_lost:.1f} puntos. Coloca el "
+"cursor sobre la jugada para ver la refutación esperada. Por favor intenta de"
+" nuevo."
 
 msgid "ai-ponder"
 msgstr ""
-"Indica el estado del motor, yendo de verde (en espera) a naranja "
-"(procesando consultas). Se convierte en rojo cuando el motor se bloquea o no empieza"
+"Indica el estado del motor, yendo de verde (en espera) a naranja (procesando"
+" consultas). Se convierte en rojo cuando el motor se bloquea o no empieza"
 
 #. undo button on the right
 msgid "undo-button-text"
@@ -291,7 +292,7 @@ msgstr "Vaciar Cache"
 #. clear cache help
 msgid "avoids replaying"
 msgstr ""
-"Evita reproducir \n" --Duda SERGIO
+"Evita reproducir\n"
 "juegos idénticos"
 
 #. hints on new game
@@ -334,7 +335,7 @@ msgstr ""
 msgid "lock ai when playing"
 msgstr ""
 "Deshabilitar jugadas superiores top moves\n"
-" en modo juego"  --------DUDA
+" en modo juego"
 
 #. submit button
 msgid "update teacher"
@@ -382,7 +383,8 @@ msgid "engine:max_time"
 msgstr "Tiempo máximo para análisis"
 
 msgid "engine:wide_root_noise"
-msgstr "Ruido base de nodo raiz (incrementa la variedad de jugadas a considerar)"
+msgstr ""
+"Ruido base de nodo raiz (incrementa la variedad de jugadas a considerar)"
 
 msgid "engine:wide_root_noise:hint"
 msgstr ""
@@ -425,7 +427,8 @@ msgid "sgf written"
 msgstr "SGF con análisis escrito en {file_name}"
 
 msgid "wait-before-equalize"
-msgstr "Esperar completar análisis inicial antes de solicitar un refinamiento."
+msgstr ""
+"Esperar completar análisis inicial antes de solicitar un refinamiento."
 
 msgid "Copied SGF to clipboard."
 msgstr "SGF copiado al portapapeles."
@@ -440,20 +443,20 @@ msgstr "Error al cargar SGF. Error de parseo: {error}"
 
 msgid "Starting default Kata failed"
 msgstr ""
-"Al empezar KataGo con el comando '{command}' falla con error {error}. Si estas en "
-"MacOS, ve el manual de como usar homebrew para instalar KataGo primero, y ponerlo"
-" en tu ruta o en la configuración 'motor/katago'."
+"Al empezar KataGo con el comando '{command}' falla con error {error}. Si "
+"estas en MacOS, ve el manual de como usar homebrew para instalar KataGo "
+"primero, y ponerlo en tu ruta o en la configuración 'motor/katago'."
 
 msgid "Starting Kata failed"
 msgstr ""
-"Empezando KataGo con el comando '{command}' fallo con error {error}. Porfavor "
-"asegurar que el ejecutable de 'katago' dentro de la configuración del motor 'engine' "
-"al valor correcto del ejecutable KataGo."
+"Empezando KataGo con el comando '{command}' fallo con error {error}. "
+"Porfavor asegurar que el ejecutable de 'katago' dentro de la configuración "
+"del motor 'engine' al valor correcto del ejecutable KataGo."
 
 msgid "Engine died unexpectedly"
 msgstr ""
-"El motor murió inesperadamente sin mandar alguna señal, posiblemente debido a  "
-"memoria: {error}"
+"El motor murió inesperadamente sin mandar alguna señal, posiblemente debido "
+"a  memoria: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -467,88 +470,109 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"Fuerza máxima de KataGo IA. La fuerza es afectada por el número `máximo visitas` y `modelo` "
-"en configuración general del `motor` y el archivo de configuración  del motor. No hay opciones  "
-"disponibles acá."
+"Fuerza máxima de KataGo IA. La fuerza es afectada por el número `máximo "
+"visitas` y `modelo` en configuración general del `motor` y el archivo de "
+"configuración  del motor. No hay opciones  disponibles acá."
 
 msgid "ai:jigo"
 msgstr "KataJigo"
 
 msgid "aihelp:jigo"
 msgstr ""
-"Trata de ganar por una cantidad de puntos (default 0.5), sin  "
-"restriciones."
+"Trata de ganar por una cantidad de puntos (default 0.5), sin  restriciones."
 
 msgid "ai:scoreloss"
 msgstr "Perdia de puntos"
 
 msgid "aihelp:scoreloss"
 msgstr ""
-"Jugadas que conllevan a mayor pérdida de puntos con una menor probabilidad. Probablemente "
-"lleva a jugada mas variadasçdebiles con un mayor número de visitas."
+"Jugadas que conllevan a mayor pérdida de puntos con una menor probabilidad. "
+"Probablemente lleva a jugada mas variadasçdebiles con un mayor número de "
+"visitas."
 
 msgid "ai:policy"
 msgstr "Jugadas intuivtivas"
 
 msgid "aihelp:policy"
 msgstr ""
-"Juega la jugada que se considera la más intuivida sin leer. La fuerza esta"
-" dada por el `model` en la configuración del motor. El parámetro  opening_moves"
-"afecta cuantas jugadas en la apertura son al azar."
+"Juega la jugada que se considera la más intuivida sin leer. La fuerza esta "
+"dada por el `model` en la configuración del motor. El parámetro  "
+"opening_movesafecta cuantas jugadas en la apertura son al azar."
 
 msgid "ai:p:weighted"
 msgstr "Jugadas intuivtivas con Peso"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"Hace jugadas deacuerdo a las jugadas más intuitivas y sus probabilidades, con `weaken_fac` influenciando "
-"que tan probable es que jugadas debiles sean jugadas. Un valor negativo grande se acerca "
-"a  jugadas más intuitivas según IA.`pick_override` determina que tan frecuente una la mejor jugada es ecogida "
-"sin azar, y `lower_bound` determina el rango bajo"
-"permitido."
+"Hace jugadas deacuerdo a las jugadas más intuitivas y sus probabilidades, "
+"con `weaken_fac` influenciando que tan probable es que jugadas debiles sean "
+"jugadas. Un valor negativo grande se acerca a  jugadas más intuitivas según "
+"IA.`pick_override` determina que tan frecuente una la mejor jugada es "
+"ecogida sin azar, y `lower_bound` determina el rango bajopermitido."
 
 msgid "ai:p:pick"
 msgstr "Politica Ciega"
 
 msgid "aihelp:p:pick"
 msgstr ""
-"Escoge `pick_n + pick_frac * <#jugadas legales>` al azar y juega la mejor."
-"For `pick_frac=1` juega como la politica intuitia del IA. Juega la mejor jugada si la probabilidad de "
-"la politica es por encima de `pick_override`. Esto con el fin de prevenir errores obvios."
+"Escoge `pick_n + pick_frac * <#jugadas legales>` al azar y juega la "
+"mejor.For `pick_frac=1` juega como la politica intuitia del IA. Juega la "
+"mejor jugada si la probabilidad de la politica es por encima de "
+"`pick_override`. Esto con el fin de prevenir errores obvios."
 
 msgid "ai:p:local"
 msgstr "Estilo Local Style"
 
 msgid "aihelp:p:local"
 msgstr ""
-"Escoge `pick_n + pick_frac * <#jugadas legales>` con un peso superior a jugadas alrededor de la última "
-"jugada y escoge la mejor. Juega la mejor jugada si el valor de la politica está "
-"por encima `pick_override` con el fin de prevenir errores obvios."
+"Escoge `pick_n + pick_frac * <#jugadas legales>` con un peso superior a "
+"jugadas alrededor de la última jugada y escoge la mejor. Juega la mejor "
+"jugada si el valor de la politica está por encima `pick_override` con el fin"
+" de prevenir errores obvios."
 
 msgid "ai:p:tenuki"
 msgstr "Estilo Tenuki"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
-"Escoge `pick_n + pick_frac * <#jugadas legales>` con un peso en contra de la última "
-"jugada y escoge la mejor. Juega la mejor jugada si el valor de la politica esta "
-"por encima `pick_override` con el fin de prevenir errores obvios. Un `stddev` más grande hace que juegue "
-"más lejos."
+"Escoge `pick_n + pick_frac * <#jugadas legales>` con un peso en contra de la"
+" última jugada y escoge la mejor. Juega la mejor jugada si el valor de la "
+"politica esta por encima `pick_override` con el fin de prevenir errores "
+"obvios. Un `stddev` más grande hace que juegue más lejos."
 
 msgid "ai:p:influence"
 msgstr "Estilo Influencia"
 
 msgid "aihelp:p:influence"
 msgstr ""
-"Escoje jugadas preferiendo aquellas por encima de la linea `threshold` y juega la mejor. "
-"Incrementar `line_weight` para penalizar más jugadas cerca al borde. Para estrategia cuando la fase "
-"'endgame' del tablero ha llegado."
+"Escoje jugadas preferiendo aquellas por encima de la linea `threshold` y "
+"juega la mejor. Incrementar `line_weight` para penalizar más jugadas cerca "
+"al borde. Para estrategia cuando la fase 'endgame' del tablero ha llegado."
 
 msgid "ai:p:territory"
 msgstr "Estilo Territorial"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"Escoje jugadas preferiendo aquellas por debajo de la linea `threshold` y juega la mejor. "
-"Incrementar `line_weight` para penalizar más jugadas cerca al centro. Para estrategia cuando la fase "
-"'endgame' del tablero ha llegado."
+"Escoje jugadas preferiendo aquellas por debajo de la linea `threshold` y "
+"juega la mejor. Incrementar `line_weight` para penalizar más jugadas cerca "
+"al centro. Para estrategia cuando la fase 'endgame' del tablero ha llegado."
+
+#. TODO
+msgid "tab:info-details"
+msgstr "Details"
+
+#. TODO
+msgid "count down sound"
+msgstr "Sound on"
+
+#. TODO
+msgid "ai:p:rank"
+msgstr "Calibrated Rank"
+
+#. TODO
+msgid "aihelp:p:rank"
+msgstr ""
+"Picks moves at random from a limited selection of moves and plays the best "
+"one. Stronger settings select the best move from a larger selection. Since "
+"there is no 0 kyu/dan, 3 dan = -2 kyu."
