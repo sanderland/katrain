@@ -1092,9 +1092,7 @@
             -height: root.height - analysis_controls.height
             -width: self.height * 0.5
             swipe_edge_width: 0
-            on_state:
-                print(self.height,self.width,root.height,analysis_controls.height)
-                if self.state=='close': root.update_state() # ai move etc on nav drawer close
+            on_state: if self.state=='close': root.update_state() # ai move etc on nav drawer close
             HamburgerMenuContents:
                 id: nav_drawer_contents
 
