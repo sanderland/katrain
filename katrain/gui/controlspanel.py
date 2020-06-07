@@ -39,7 +39,7 @@ class ControlsPanel(BoxLayout):
         self.active_comment_node = None
         self.last_timer_update = (None, 0, False)
         self.beep = SoundLoader.load('beep.wav')
-        self.beep_start = 3.2
+        self.beep_start = 5.2
         self.timer_interval = 0.07
 
         Clock.schedule_interval(self.update_timer, self.timer_interval)
