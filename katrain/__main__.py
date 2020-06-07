@@ -20,7 +20,7 @@ try:
     WINDOW_SCALE_FAC = max(0.4,scale)
 except Exception as e:
     print(f"Exception {e} while getting screen resolution (if on MacOS, 'pip3 install screeninfo' manually or ignore this)")
-    WINDOW_SCALE_FAC = 0.85 
+    WINDOW_SCALE_FAC = 0.85
 
 Config.set("graphics", "width", int(WINDOW_SCALE_FAC*WINDOW_X))
 Config.set("graphics", "height", int(WINDOW_SCALE_FAC*WINDOW_Y))
@@ -160,12 +160,12 @@ class KaTrainGui(Screen, KaTrainBase):
             return
         cn = self.game.current_node
         last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
-        if self.play_analyze_mode == MODE_PLAY:
-            teaching_undo = cn.player and last_player.being_taught
+        print('update state',self.play_analyze_mode == MODE_PLAY , self.nav_drawer.state != "open" , self.popup_open is None)
+        if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
+            teaching_undo = cn.player and last_player.being_taught and cn.parent
             if (
                 teaching_undo
                 and cn.analysis_ready
-                and cn.parent
                 and cn.parent.analysis_ready
                 and not cn.children
                 and not self.game.ended
@@ -177,11 +177,9 @@ class KaTrainGui(Screen, KaTrainBase):
                 and not cn.children
                 and not self.game.ended
                 and not (teaching_undo and cn.auto_undo is None)
-            ):
-                self._do_ai_move(
-                    cn
-                )  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
-        Clock.schedule_once(lambda _dt: self.update_gui(cn,redraw_board=redraw_board),-1)
+            ):   # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
+                self._do_ai_move(cn)
+        Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)
 
 
     def update_player(self, bw, **kwargs):
@@ -317,7 +315,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 title_key="load sgf title", size=[dp(1200), dp(800)], content=popup_contents
             ).__self__
 
-            def readfile(*args):
+            def readfile(*_args):
                 files = popup_contents.filesel.selection
                 self.fileselect_popup.dismiss()
                 try:
@@ -345,8 +343,8 @@ class KaTrainGui(Screen, KaTrainBase):
             return
         try:
             move_tree = KaTrainSGF.parse(clipboard)
-        except Exception as e:
-            self.controls.set_status(i18n._("Failed to import from clipboard").format(error=e, contents=clipboard[:50]))
+        except Exception as exc:
+            self.controls.set_status(i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50]))
             return
         move_tree.nodes_in_tree[-1].analyze(
             self.engine, analyze_fast=False
@@ -385,15 +383,23 @@ class KaTrainGui(Screen, KaTrainBase):
             "f8": ("config-popup",),
         }
 
+
+    @property
+    def popup_open(self) -> Popup:
+        app = App.get_running_app()
+        first_child = app.root_window.children[0]
+        return first_child if isinstance(first_child, Popup) else None
+
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
-        app = App.get_running_app()
-        first_child = app.root_window.children[0]
-        if isinstance(first_child, Popup):
-            if keycode[1] not in ["f5", "f6", "f7", "f8"]:
+
+        popup = self.popup_open
+        if popup:
+            if keycode[1] in ["f5", "f6", "f7", "f8"]:  # switch between popups
+                popup.dismiss()
+            else:
                 return
-            first_child.dismiss()
 
         shortcuts = self.shortcuts
         if keycode[1] == "tab":
@@ -412,8 +418,6 @@ class KaTrainGui(Screen, KaTrainBase):
             self("new-game-popup")
         elif keycode[1] == "l" and "ctrl" in modifiers:
             self("analyze-sgf-popup")
-        elif keycode[1] == "f12" and "ctrl" in modifiers:
-            app.language = "haha"
         elif keycode[1] == "s" and "ctrl" in modifiers:
             self("output-sgf")
         elif keycode[1] == "c" and "ctrl" in modifiers:
@@ -436,8 +440,6 @@ class KaTrainApp(MDApp):
 
     def __init__(self):
         super().__init__()
-#        self.theme_cls.selected_color = WHITE
-#        self.theme_cls.secondary_text_color = LIGHTGREY
 
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
@@ -460,9 +462,8 @@ class KaTrainApp(MDApp):
     def on_language(self, _instance, language):
         self.gui.log(f"Switching language to {language}", OUTPUT_INFO)
         i18n.switch_lang(language)
-        if language != "haha":
-            self.gui._config["general"]["lang"] = language
-            self.gui.save_config()
+        self.gui._config["general"]["lang"] = language
+        self.gui.save_config()
         if self.gui.game:
             self.gui.update_state()
             self.gui.controls.set_status("")

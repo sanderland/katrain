@@ -1084,6 +1084,7 @@
             width: self.height * 0.5
             height: root.height - analysis_controls.height
             swipe_edge_width: 0
+            on_state: if self.state=='close': root.update_state() # ai move etc on nav drawer close
             HamburgerMenuContents:
                 id: nav_drawer_contents
 

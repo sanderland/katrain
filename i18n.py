@@ -59,11 +59,8 @@ for lang in locales:
             errors = True
         elif DEFAULT_LANG in strings_to_langs[msgid]:
             copied_msg = strings_to_langs[msgid][DEFAULT_LANG]
-            if lang == "haha":
-                entry = polib.POEntry(msgid=msgid, msgstr="ㅋㅋ" + copied_msg)
-            else:
-                print("Message id", msgid, "missing in ", lang, "-> Adding it from", DEFAULT_LANG)
-                entry = polib.POEntry(msgid=msgid, msgstr=copied_msg, comment="TODO")
+            print("Message id", msgid, "missing in ", lang, "-> Adding it from", DEFAULT_LANG)
+            entry = polib.POEntry(msgid=msgid, msgstr=copied_msg, comment="TODO")
             po[lang].append(entry)
             errors = True
         else:
