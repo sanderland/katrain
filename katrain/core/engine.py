@@ -35,26 +35,27 @@ class KataGoEngine:
         if override_command:
             self.command = override_command
         else:
-            executable = config["katago"].strip()
-            if not executable:
+            exe = config["katago"].strip()
+            if not exe:
                 if platform == "win":
-                    executable = "katrain/KataGo/katago.exe"
+                    exe = "katrain/KataGo/katago.exe"
                 elif platform == "linux":
-                    executable = "katrain/KataGo/katago"
+                    exe = "katrain/KataGo/katago"
                 else:  # e.g. MacOS after brewing
-                    executable = "katago"
+                    exe = "katago"
 
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
-            if executable.startswith('katrain'):
-                executable = find_package_resource(executable)
+            if exe.startswith("katrain"):
+                exe = find_package_resource(exe)
             if not os.path.exists(model):
-                self.katrain.log(f"Model {model} appears missing, check general/engine settings.", OUTPUT_ERROR)
+                self.katrain.log(f"Model {model} appears missing, check general settings.", OUTPUT_ERROR)
             if not os.path.exists(cfg):
-                self.katrain.log(f"KataGo configuration file {cfg} appears missing, check general/engine settings.", OUTPUT_ERROR)
-            if not os.path.exists(executable):
-                self.katrain.log(f"KataGo binary {executable} appears missing, check general/engine settings.", OUTPUT_ERROR)
-            self.command = f'"{executable}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
+                self.katrain.log(f"KataGo config file {cfg} appears missing, check general settings.", OUTPUT_ERROR)
+            if not os.path.exists(exe):
+                self.katrain.log(f"KataGo binary {exe} appears missing, check general settings.", OUTPUT_ERROR)
+
+            self.command = f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
 
         self.queries = {}  # outstanding query id -> start time and callback
         self.config = config
