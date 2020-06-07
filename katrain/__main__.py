@@ -160,7 +160,6 @@ class KaTrainGui(Screen, KaTrainBase):
             return
         cn = self.game.current_node
         last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
-        print('update state',self.play_analyze_mode == MODE_PLAY , self.nav_drawer.state != "open" , self.popup_open is None)
         if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
             teaching_undo = cn.player and last_player.being_taught and cn.parent
             if (

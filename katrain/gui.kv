@@ -826,13 +826,20 @@
         AnalysisToggle:
             id: ownership
             text: i18n._('analysis:territory')
-        AutoSizedRectangleButton:
-            background_color: BOX_BACKGROUND_COLOR
-            size_hint_y: 0.5
-            id: analysis_button
-            on_release: root.toggle_dropdown()
-            text: i18n._("btn:Analyze")
-            pos_hint: {'center_y':0.5}
+        MDFloatLayout:
+            AutoSizedRectangleButton:
+                background_color: BOX_BACKGROUND_COLOR
+                size_hint_y: 0.5
+                pos_hint: {'center_y': 0.5, 'x': 0}
+                id: analysis_button
+                on_release: root.toggle_dropdown()
+                text: '  ' + i18n._("btn:Analyze")
+            Image:
+                pos_hint: {'center_y': 0.5, 'x': 0}
+                size_hint: None, 0.5
+                width: self.height/2
+                source: 'img/menu.png'
+                mipmap: True
 
 
 
