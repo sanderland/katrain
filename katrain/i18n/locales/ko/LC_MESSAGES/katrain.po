@@ -435,11 +435,21 @@ msgstr ""
 msgid "Failed to load SGF"
 msgstr "SGF 파일을 불러올 수 없습니다. Parse Error: {error}"
 
-msgid "Starting default Kata failed"
+#. TODO
+msgid "Kata config not found"
 msgstr ""
-"'{command}'로 KataGo를 시작하던 중 {error} 오류가 발생했습니다. MacOS를 사용하고 계시다면, 어떻게 brew를 "
-"이용해 KataGo를 설치하는지 설명서에서 확인하시고, 실행 파일을 path에 추가하거나 'engine/katago' 설정에 "
-"추가하십시오."
+"KataGo config file {config} does not exist, please check general settings."
+
+#. TODO
+msgid "Kata model not found"
+msgstr "KataGo Model {model} does not exist, please check general settings."
+
+#. TODO
+msgid "Kata exe not found in path"
+msgstr ""
+"KataGo binary `{exe}` not found in your PATH, check your environment "
+"variables or use the full path in general settings instead.  MacOS를 사용하고 "
+"계시다면, 어떻게 brew를 이용해 KataGo를 설치하는지 설명서에서 확인하세요."
 
 msgid "Starting Kata failed"
 msgstr ""
@@ -553,3 +563,19 @@ msgstr "Calibrated Rank"
 #. TODO
 msgid "tab:info-details"
 msgstr "Details"
+
+#. TODO
+msgid "sweep analysis"
+msgstr "Analyzing entire board using {visits} visits/move"
+
+#. TODO
+msgid "Kata exe not found"
+msgstr "KataGo binary {exe} does not exist, check general settings."
+
+#. TODO
+msgid "equalizing analysis"
+msgstr "Equalizing analysis of candidate moves to {visits} visits"
+
+#. TODO
+msgid "extra analysis"
+msgstr "Performing additional analysis to {visits} visits"

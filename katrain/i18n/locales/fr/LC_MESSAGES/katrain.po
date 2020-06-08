@@ -460,11 +460,25 @@ msgstr ""
 msgid "Failed to load SGF"
 msgstr "Impossible de charger le SGF. Erreur d'analyse : {error}"
 
-msgid "Starting default Kata failed"
+#. TODO
+msgid "Kata model not found"
+msgstr "KataGo model {model} does not exist, please check general settings."
+
+#. TODO
+msgid "Kata config not found"
 msgstr ""
-"L'Erreur {error} a empêché de lancer KataGo avec la commande '{command}'. "
-"Sur MacOS, consultez le manuel pour savoir comment utiliser BREW pour "
-"installer KataGo, puis ajoutez-le aux paramètres ou au chemin d'accès."
+"KataGo config file {config} does not exist, please check general settings."
+
+#. TODO
+msgid "Kata exe not found in path"
+msgstr ""
+"KataGo binary `{exe}` not found in your PATH, check your environment "
+"variables or use the full path in general settings instead. Sur MacOS, "
+"consultez le manuel pour savoir comment utiliser BREW pour installer KataGo"
+
+#. TODO
+msgid "Kata exe not found"
+msgstr "KataGo binary {exe} does not exist, check general settings."
 
 msgid "Starting Kata failed"
 msgstr ""
@@ -599,6 +613,18 @@ msgstr ""
 "coup."
 
 #. TODO
+msgid "sweep analysis"
+msgstr "Analyzing entire board using {visits} visits/move"
+
+#. TODO
+msgid "extra analysis"
+msgstr "Performing additional analysis to {visits} visits"
+
+#. TODO
+msgid "ai:p:rank"
+msgstr "Calibrated Rank"
+
+#. TODO
 msgid "aihelp:p:rank"
 msgstr ""
 "Picks moves at random from a limited selection of moves and plays the best "
@@ -606,9 +632,9 @@ msgstr ""
 "there is no 0 kyu/dan, 3 dan = -2 kyu."
 
 #. TODO
-msgid "ai:p:rank"
-msgstr "Calibrated Rank"
-
-#. TODO
 msgid "tab:info-details"
 msgstr "Details"
+
+#. TODO
+msgid "equalizing analysis"
+msgstr "Equalizing analysis of candidate moves to {visits} visits"
