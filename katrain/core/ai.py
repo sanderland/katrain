@@ -151,7 +151,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                         x_ai_thoughts = (
                             f"Generated equal weights as move number >= {ai_settings['endgame'] * size[0] * size[1]}. "
                         )
-                        n_moves = int(max(n_moves,0.5 * len(legal_policy_moves)))
+                        n_moves = int(max(n_moves, 0.5 * len(legal_policy_moves)))
                     elif ai_mode in [AI_INFLUENCE, AI_TERRITORY]:
                         weighted_coords, x_ai_thoughts = generate_influence_territory_weights(
                             ai_mode, ai_settings, policy_grid, size

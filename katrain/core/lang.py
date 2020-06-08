@@ -1,7 +1,6 @@
 import gettext
 import os
 import sys
-from typing import Callable
 
 from kivy._event import Observable
 

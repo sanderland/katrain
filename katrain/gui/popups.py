@@ -32,9 +32,9 @@ class I18NPopup(Popup):
     title_key = StringProperty("")
     font_name = StringProperty(DEFAULT_FONT)
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.bind(on_dismiss=Clock.schedule_once(lambda _dt: MDApp.get_running_app().gui.update_state(),1))
+        self.bind(on_dismiss=Clock.schedule_once(lambda _dt: MDApp.get_running_app().gui.update_state(), 1))
 
 
 class LabelledTextInput(MDTextField):
@@ -135,10 +135,8 @@ class QuickConfigGui(MDBoxLayout):
         ):
             try:
                 ret = {widget.input_property: widget.input_value}
-            except Exception as e:
-                raise InputParseError(
-                    f"Could not parse value for {widget.input_property} ({widget.__class__}): {e}"
-                )  # TODO : on widget!
+            except Exception as e:  # TODO : on widget?
+                raise InputParseError(f"Could not parse value for {widget.input_property} ({widget.__class__}): {e}")
         else:
             ret = {}
         for c in widget.children:

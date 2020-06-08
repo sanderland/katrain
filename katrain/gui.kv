@@ -9,6 +9,8 @@
 #:import PLAYER_TYPES katrain.core.constants.PLAYER_TYPES
 #:import PLAYER_HUMAN katrain.core.constants.PLAYER_HUMAN
 #:import PLAYER_AI    katrain.core.constants.PLAYER_AI
+#:import MODE_PLAY katrain.core.constants.MODE_PLAY
+#:import MODE_ANALYZE katrain.core.constants.MODE_ANALYZE
 
 #:import RED katrain.gui.style.RED
 #:import WHITE katrain.gui.style.WHITE
@@ -614,6 +616,7 @@
                 size_hint: 1, 0.5
                 on_left_release: root.katrain("undo","smart")
     CollapsablePanel:
+        id: graph_panel
         height_open: root.graph_box_height
         closed_label: 'closedlabel:scoregraph'
         options: ['score','winrate']
@@ -624,6 +627,7 @@
         ScoreGraph:
             id: graph
     CollapsablePanel:
+        id: stats_panel
         height_open: root.stats_box_height
         closed_label: 'closedlabel:movestats'
         options: ['score','winrate','points']
@@ -634,6 +638,7 @@
         StatsBox:
             id: stats
     CollapsablePanel:
+        id: notes_panel
         size_hint_y_open: 1
         closed_label: 'closedlabel:info&notes'
         options: ['info','info-details','notes']
@@ -1030,6 +1035,7 @@
     allow_no_selection: False
 
 <PlayAnalyzeSelect>:
+    katrain: app.gui
     play: play
     analyze: analyze
     OutlineBox:
@@ -1040,11 +1046,11 @@
             text: i18n._('btn:Play')
             id: play
             state: 'down'
-            on_state: app.gui.update_state()
+            on_state: if self.state=='down': root.select_mode(MODE_PLAY)
         PlayAnalyzeButton:
             text: i18n._('btn:Analysis')
             id: analyze
-            on_state: app.gui.update_state()
+            on_state: if self.state=='down': root.select_mode(MODE_ANALYZE)
 
 
 

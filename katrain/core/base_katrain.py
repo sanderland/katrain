@@ -45,7 +45,7 @@ class KaTrainBase:
 
     """Settings, logging, and players functionality, so other classes like bots who need a katrain instance can be used without a GUI"""
 
-    def __init__(self, force_package_config=False,debug_level=0, **kwargs):
+    def __init__(self, force_package_config=False, debug_level=0, **kwargs):
         self.debug_level = debug_level
         self.game = None
 
@@ -68,7 +68,7 @@ class KaTrainBase:
         elif self.debug_level >= level:
             print(message)
 
-    def _load_config(self,force_package_config):
+    def _load_config(self, force_package_config):
         if len(sys.argv) > 1 and sys.argv[1].endswith(".json"):
             config_file = os.path.abspath(sys.argv[1])
             self.log(f"Using command line config file {config_file}", OUTPUT_INFO)
@@ -110,9 +110,12 @@ class KaTrainBase:
         self._config = dict(self._config_store)
         return config_file
 
-    def save_config(self):
-        for k, v in self._config.items():
-            self._config_store.put(k, **v)
+    def save_config(self, key=None):
+        if key is None:
+            for k, v in self._config.items():
+                self._config_store.put(k, **v)
+        else:
+            self._config_store.put(key, **self._config[key])
 
     def config(self, setting, default=None):
         try:

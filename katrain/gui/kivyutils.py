@@ -27,10 +27,7 @@ from katrain.core.lang import i18n
 from katrain.gui.style import DEFAULT_FONT, WHITE
 
 
-# -- mixins
-
-
-class BackgroundMixin(Widget):
+class BackgroundMixin(Widget):  # -- mixins
     background_color = ListProperty([0, 0, 0, 0])
     background_radius = NumericProperty(0)
     outline_color = ListProperty([0, 0, 0, 0])
@@ -63,10 +60,8 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
         pass
 
 
-# -- resizeable buttons
-class SizedButton(
-    LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin
-):  # avoid baserectangular for sizing
+# -- resizeable buttons / avoid baserectangular for sizing
+class SizedButton(LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin):
     text = StringProperty("")
     text_color = ListProperty(WHITE)
     text_size = ListProperty([100, 100])
@@ -145,12 +140,10 @@ class StatsLabel(MDBoxLayout):
 
 
 class MyNavigationDrawer(MDNavigationDrawer):
-
-
     def on_touch_down(self, touch):
         return super().on_touch_down(touch)
 
-    def on_touch_up(self, touch):   # in PR - closes NavDrawer on any outside click
+    def on_touch_up(self, touch):  # in PR - closes NavDrawer on any outside click
         if self.status == "opened" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
             self.set_state("close", animation=True)
             return True
@@ -306,6 +299,7 @@ class Timer(BGBoxLayout):
     state = ListProperty([30, 5, 1])
     timeout = BooleanProperty(False)
 
+
 class AnalysisToggle(MDBoxLayout):
     text = StringProperty("")
     default_active = BooleanProperty(False)
@@ -320,7 +314,7 @@ class AnalysisToggle(MDBoxLayout):
 
 
 class MenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, BackgroundMixin):
-    __events__ = ["on_action","on_close"]
+    __events__ = ["on_action", "on_close"]
     icon = StringProperty("")
     text = StringProperty("")
     shortcut = StringProperty("")
@@ -337,6 +331,7 @@ class MenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, Backg
 
     def on_close(self):
         pass
+
 
 class CollapsablePanelHeader(MDBoxLayout):
     pass
@@ -380,6 +375,17 @@ class CollapsablePanel(MDBoxLayout):
         self.bind(state=self.build, size_hint_y_open=self.build, height_open=self.build)
         MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
         self.build_options()
+
+    @property
+    def option_state(self):
+        return {option: active for option, active in zip(self.options, self.option_active)}
+
+    def set_option_state(self, state_dict):
+        for ix, (option, button) in enumerate(zip(self.options, self.option_buttons)):
+            if option in state_dict:
+                self.option_active[ix] = state_dict[option]
+                button.state = "down" if state_dict[option] else "normal"
+        self.trigger_select(ix=None)
 
     def build_options(self, *args, **kwargs):
         self.header = CollapsablePanelHeader(

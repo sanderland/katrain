@@ -2,27 +2,56 @@ import time
 
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
 from katrain.core.constants import MODE_PLAY, MODE_ANALYZE
+from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
 
 
 class PlayAnalyzeSelect(MDFloatLayout):
+    katrain = ObjectProperty(None)
+    mode = OptionProperty(MODE_PLAY, options=[MODE_PLAY, MODE_ANALYZE])
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        Clock.schedule_once(self.load_ui_state, 1)
 
-    @property
-    def play_analyze_mode(self):
-        return MODE_PLAY if self.play.active else MODE_ANALYZE
+    def save_ui_state(self):
+        self.katrain._config["ui_state"] = self.katrain._config.get("ui_state", {})
+        self.katrain._config["ui_state"][self.mode] = {
+            "analysis_controls": {
+                id: checkbox.active
+                for id, checkbox in self.katrain.analysis_controls.ids.items()
+                if isinstance(checkbox, AnalysisToggle)
+            },
+            "panels": {
+                id: (panel.state, panel.option_state)
+                for id, panel in self.katrain.controls.ids.items()
+                if isinstance(panel, CollapsablePanel)
+            },
+        }
+        self.katrain.save_config("ui_state")
 
-    def select_mode(self, mode):
-        if self.play_analyze_mode != mode:
-            self.switch_mode()
+    def load_ui_state(self, _dt=None):
+        state = self.katrain.config(f"ui_state/{self.mode}", {})
+        for id, active in state.get("analysis_controls", {}).items():
+            self.katrain.analysis_controls.ids[id].checkbox.active = active
+        for id, (panel_state, button_state) in state.get("panels", {}).items():
+            self.katrain.controls.ids[id].set_option_state(button_state)
+            self.katrain.controls.ids[id].state = panel_state
 
-    def switch_mode(self):  # TODO: load settings
-        if self.play_analyze_mode == MODE_PLAY:
+    def select_mode(self, new_mode):  # actual switch state handler
+        if self.mode == new_mode:
+            return
+        self.save_ui_state()
+        self.mode = new_mode
+        self.load_ui_state()
+        self.katrain.update_state()  # for lock ai even if nothing changed
+
+    def switch_ui_mode(self):  # on tab press, fake ui click and trigger everything top down
+        if self.mode == MODE_PLAY:
             self.analyze.trigger_action(duration=0)
         else:
             self.play.trigger_action(duration=0)
@@ -38,7 +67,7 @@ class ControlsPanel(BoxLayout):
         self.status_node = None
         self.active_comment_node = None
         self.last_timer_update = (None, 0, False)
-        self.beep = SoundLoader.load('beep.wav')
+        self.beep = SoundLoader.load("beep.wav")
         self.beep_start = 5.2
         self.timer_interval = 0.07
 
@@ -128,13 +157,15 @@ class ControlsPanel(BoxLayout):
                     time_remaining += byo_len
                     player.periods_used += 1
                     used_period = True
-                if self.beep_start - 2 * self.timer_interval < time_remaining < self.beep_start and player.periods_used < byo_num:
+                if (
+                    self.beep_start - 2 * self.timer_interval < time_remaining < self.beep_start
+                    and player.periods_used < byo_num
+                ):
                     new_beeping = True
                 elif time_remaining > self.beep_start:
                     new_beeping = False
             else:
                 new_beeping = False
-
 
             if player.periods_used == byo_num:
                 time_remaining = 0

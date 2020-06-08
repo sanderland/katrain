@@ -121,5 +121,9 @@
         "ai:p:rank": {
             "kyu_rank": 4.0
         }
+    },
+    "ui_state": {
+      "mode:play": {},
+      "mode:analysis": {}
     }
 }

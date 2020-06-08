@@ -107,4 +107,4 @@ class ScoreGraph(BackgroundMixin):
             while node.children:  # add children back
                 node = node.children[0]
                 self.nodes.append(node)
-        Clock.schedule_once(self.update_graph,0)
+        Clock.schedule_once(self.update_graph, 0)

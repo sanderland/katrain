@@ -223,7 +223,6 @@ class BadukPanWidget(Widget):
         outline_color = OUTLINE_COLORS
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
-        lock_ai = self.trainer_config["lock_ai"] and self.katrain.play_analyze_mode == MODE_PLAY
         show_n_eval = self.trainer_config["eval_off_show_last"]
 
         self.canvas.clear()
@@ -284,7 +283,7 @@ class BadukPanWidget(Widget):
 
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
-            if katrain.analysis_controls.ownership.active and ownership and not lock_ai:
+            if katrain.analysis_controls.ownership.active and ownership:
                 ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
                 rsz = self.grid_size * 0.2
                 for y in range(board_size_y - 1, -1, -1):
@@ -308,7 +307,7 @@ class BadukPanWidget(Widget):
 
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
-            if katrain.analysis_controls.policy.active and policy and not lock_ai:
+            if katrain.analysis_controls.policy.active and policy:
                 policy_grid = var_to_grid(policy, (board_size_x, board_size_y))
                 best_move_policy = max(*policy)
                 for y in range(board_size_y - 1, -1, -1):
@@ -353,7 +352,6 @@ class BadukPanWidget(Widget):
         current_node = katrain.game.current_node
         player, next_player = current_node.player, current_node.next_player
         stone_color = STONE_COLORS
-        lock_ai = self.trainer_config["lock_ai"] and self.katrain.play_analyze_mode == MODE_PLAY
 
         self.canvas.after.clear()
         with self.canvas.after:
@@ -388,7 +386,7 @@ class BadukPanWidget(Widget):
                         )
 
             # hints or PV
-            if katrain.analysis_controls.hints.active and not game_ended and not lock_ai:
+            if katrain.analysis_controls.hints.active and not game_ended:
                 hint_moves = current_node.candidate_moves
                 for i, move_dict in enumerate(hint_moves):
                     move = Move.from_gtp(move_dict["move"])
@@ -485,7 +483,7 @@ class AnalysisControls(MDFloatLayout):
             self.dropdown.width = max_content_width
             self.dropdown.open(self.analysis_button)
         elif self.dropdown.attach_to:
-                self.dropdown.dismiss()
+            self.dropdown.dismiss()
 
     def close_dropdown(self, *largs):
         self.is_open = False

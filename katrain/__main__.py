@@ -1,29 +1,32 @@
+"""isort:skip_file"""
 # first, logging level lower
 import os
+
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
-os.environ['KIVY_AUDIO'] = "sdl2" # force working audio
+os.environ["KIVY_AUDIO"] = "sdl2"  # force working audio
 
 # next, icon
-from katrain.core.utils import find_package_resource  # isort:skip
-from kivy.config import Config  # isort:skip
-ICON = find_package_resource("katrain/img/icon.ico")  # isort:skip  # find icon
-Config.set("kivy", "window_icon", ICON)  # isort:skip  # set icon
+from katrain.core.utils import find_package_resource
+from kivy.config import Config
+from kivy.utils import platform
+
+ICON = find_package_resource("katrain/img/icon.ico")
+Config.set("kivy", "window_icon", ICON)
 
 # finally, window size
-from kivy.metrics import dp
-WINDOW_X, WINDOW_Y = 1300, 1000
+WINDOW_SCALE_FAC, WINDOW_X, WINDOW_Y = 1, 1300, 1000
 try:
     from screeninfo import get_monitors
-    scale = 1.0
-    for m in get_monitors():
-        scale = min(scale, (m.height-100) / WINDOW_Y, (m.width-100) / WINDOW_X)
-    WINDOW_SCALE_FAC = max(0.4,scale)
-except Exception as e:
-    print(f"Exception {e} while getting screen resolution (if on MacOS, 'pip3 install screeninfo' manually or ignore this)")
-    WINDOW_SCALE_FAC = 0.85
 
-Config.set("graphics", "width", int(WINDOW_SCALE_FAC*WINDOW_X))
-Config.set("graphics", "height", int(WINDOW_SCALE_FAC*WINDOW_Y))
+    for m in get_monitors():
+        WINDOW_SCALE_FAC = min(WINDOW_SCALE_FAC, (m.height - 100) / WINDOW_Y, (m.width - 100) / WINDOW_X)
+except Exception as e:
+    if platform != "macosx":
+        print(f"Exception {e} while getting screen resolution.")
+        WINDOW_SCALE_FAC = 0.85
+
+Config.set("graphics", "width", max(400, int(WINDOW_X * WINDOW_SCALE_FAC)))
+Config.set("graphics", "height", max(400, int(WINDOW_Y * WINDOW_SCALE_FAC)))
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
 import signal
@@ -42,6 +45,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from katrain.core.ai import generate_ai_move
 from kivy.core.window import Window
+from kivy.metrics import dp
 
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
 from katrain.core.constants import (
@@ -108,7 +112,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     @property
     def play_analyze_mode(self):
-        return self.play_mode.play_analyze_mode
+        return self.play_mode.mode
 
     def start(self):
         if self.engine:
@@ -118,7 +122,7 @@ class KaTrainGui(Screen, KaTrainBase):
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
         self._do_new_game()
 
-    def update_gui(self,cn,redraw_board=False):
+    def update_gui(self, cn, redraw_board=False):
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
         top, bot = [w.__self__ for w in self.board_controls.circles]  # no weakref
@@ -151,7 +155,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.update_evaluation()
         self.controls.update_timer(1)
 
-
     def update_state(
         self, redraw_board=False
     ):  # is called after every message and on receiving analyses and config changes
@@ -176,10 +179,9 @@ class KaTrainGui(Screen, KaTrainBase):
                 and not cn.children
                 and not self.game.ended
                 and not (teaching_undo and cn.auto_undo is None)
-            ):   # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
+            ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                 self._do_ai_move(cn)
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)
-
 
     def update_player(self, bw, **kwargs):
         super().update_player(bw, **kwargs)
@@ -302,7 +304,9 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_ai_popup(self):
         self.controls.timer.paused = True
         if not self.ai_settings_popup:
-            self.ai_settings_popup = I18NPopup(title_key="ai settings", size=[dp(600), dp(600)], content=AIPopup(self)).__self__
+            self.ai_settings_popup = I18NPopup(
+                title_key="ai settings", size=[dp(600), dp(600)], content=AIPopup(self)
+            ).__self__
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
@@ -343,7 +347,9 @@ class KaTrainGui(Screen, KaTrainBase):
         try:
             move_tree = KaTrainSGF.parse(clipboard)
         except Exception as exc:
-            self.controls.set_status(i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50]))
+            self.controls.set_status(
+                i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50])
+            )
             return
         move_tree.nodes_in_tree[-1].analyze(
             self.engine, analyze_fast=False
@@ -382,7 +388,6 @@ class KaTrainGui(Screen, KaTrainBase):
             "f8": ("config-popup",),
         }
 
-
     @property
     def popup_open(self) -> Popup:
         app = App.get_running_app()
@@ -402,7 +407,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
         shortcuts = self.shortcuts
         if keycode[1] == "tab":
-            self.play_mode.switch_mode()
+            self.play_mode.switch_ui_mode()
         elif keycode[1] == "shift":
             self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
@@ -477,8 +482,10 @@ class KaTrainApp(MDApp):
         self.gui.start()
 
     def on_request_close(self, *_args):
-        if getattr(self, "gui", None) and self.gui.engine:
-            self.gui.engine.shutdown()
+        if getattr(self, "gui", None):
+            self.gui.play_mode.save_ui_state()
+            if self.gui.engine:
+                self.gui.engine.shutdown()
 
     def signal_handler(self, _signal, _frame):
         if self.gui.debug_level >= OUTPUT_DEBUG:
@@ -492,7 +499,6 @@ class KaTrainApp(MDApp):
         self.stop()
 
 
-
 def run_app():
     class CrashHandler(ExceptionHandler):
         def handle_exception(self, inst):
@@ -500,7 +506,10 @@ def run_app():
             trace = "".join(traceback.format_tb(tb))
             app = MDApp.get_running_app()
             if app and app.gui:
-                app.gui.log(f"Exception {inst.__class__}: {inst.args}\n{trace}",OUTPUT_ERROR)
+                app.gui.log(
+                    f"Exception {inst.__class__.__name__}: {', '.join(repr(a) for a in inst.args)}\n{trace}",
+                    OUTPUT_ERROR,
+                )
             else:
                 print(f"Exception {inst.__class__}: {inst.args}\n{trace}")
             return ExceptionManager.PASS

@@ -1,8 +1,8 @@
 import copy
 import json
+import os
 import subprocess
 import threading
-import os
 import time
 import traceback
 from typing import Callable, Optional
@@ -32,6 +32,16 @@ class KataGoEngine:
 
     def __init__(self, katrain, config, override_command=None):
         self.katrain = katrain
+        self.queries = {}  # outstanding query id -> start time and callback
+        self.config = config
+        self.query_counter = 0
+        self.katago_process = None
+        self.base_priority = 0
+        self.override_settings = {}  # mainly for bot scripts to hook into
+        self._lock = threading.Lock()
+        self.analysis_thread = None
+        self.stderr_thread = None
+
         if override_command:
             self.command = override_command
         else:
@@ -48,24 +58,26 @@ class KataGoEngine:
             cfg = find_package_resource(config["config"])
             if exe.startswith("katrain"):
                 exe = find_package_resource(exe)
-            if not os.path.exists(model):
-                self.katrain.log(f"Model {model} appears missing, check general settings.", OUTPUT_ERROR)
-            if not os.path.exists(cfg):
-                self.katrain.log(f"KataGo config file {cfg} appears missing, check general settings.", OUTPUT_ERROR)
-            if not os.path.exists(exe):
-                self.katrain.log(f"KataGo binary {exe} appears missing, check general settings.", OUTPUT_ERROR)
 
+            exepath, exename = os.path.split(exe)
+            if exepath and not os.path.isfile(exe):
+                self.katrain.log(f"KataGo binary {exe} does not exist, check general settings.", OUTPUT_ERROR)
+                return  # don't start
+            elif not exepath and not any(
+                os.path.isfile(os.path.join(path, exe)) for path in os.environ.get("PATH", "").split(os.pathsep)
+            ):
+                self.katrain.log(
+                    f"KataGo binary `{exe}` not found in PATH, check your environment variables or add the full path in general settings.",
+                    OUTPUT_ERROR,
+                )
+                return  # don't start
+            elif not os.path.isfile(model):
+                self.katrain.log(f"Model {model} does not exist, check general settings.", OUTPUT_ERROR)
+                return  # don't start
+            elif not os.path.isfile(cfg):
+                self.katrain.log(f"KataGo config file {cfg} does not exist, check general settings.", OUTPUT_ERROR)
+                return  # don't start
             self.command = f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
-
-        self.queries = {}  # outstanding query id -> start time and callback
-        self.config = config
-        self.query_counter = 0
-        self.katago_process = None
-        self.base_priority = 0
-        self.override_settings = {}  # mainly for bot scripts to hook into
-        self._lock = threading.Lock()
-        self.analysis_thread = None
-        self.stderr_thread = None
         self.start()
 
     def start(self):

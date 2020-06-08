@@ -338,6 +338,7 @@ msgstr ""
 "Show dots/SGF comments\n"
 " for AI players"
 
+#. removed as an option / can ignore
 msgid "lock ai when playing"
 msgstr ""
 "Disable top moves\n"

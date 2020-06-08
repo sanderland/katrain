@@ -3,7 +3,7 @@ import os
 
 from setuptools import find_packages, setup
 
-package_data = {"": ["*.json", "*.kv","*.wav"], "katrain": [], "tests": []}
+package_data = {"": ["*.json", "*.kv", "*.wav"], "katrain": [], "tests": []}
 packages = find_packages(exclude=["tests"])
 version = re.search('^VERSION\s*=\s*"(.*)"', open("katrain/core/constants.py").read(), re.M).group(1)
 
