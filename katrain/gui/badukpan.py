@@ -10,6 +10,7 @@ from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.properties import ListProperty, ObjectProperty, BooleanProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.widget import Widget
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
 from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG
@@ -469,7 +470,7 @@ class AnalysisDropDown(DropDown):
     pass
 
 
-class AnalysisControls(MDFloatLayout):
+class AnalysisControls(MDBoxLayout):
     dropdown = ObjectProperty(None)
     is_open = BooleanProperty(False)
 
