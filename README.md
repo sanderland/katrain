@@ -78,10 +78,12 @@ Further technical details and discussion on these AIs can be found on [this](htt
 
 ## Analysis
 
-AI moves, teaching mode and timers are suspended in analysis mode,
- although analysis options are always available, some information is hidden if the 'Disable analysis while in play mode' is selected. 
-
 Keyboard shortcuts are shown with **[key]**.
+
+* **[Tab]**: Switch between analysis and play modes.
+  * AI moves, teaching mode and timers are suspended in analysis mode.
+  * The state of the analysis options and right-hand side panels and options is saved independently for 'play' and 'analyze',
+    allowing you to quickly switch between a more minimalistic 'play' mode and more complex 'analysis' mode.
 
 * The checkboxes at the top of the screen:
     * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when 
@@ -103,7 +105,6 @@ Keyboard shortcuts are shown with **[key]**.
 In addition to shortcuts mentioned above and those shown in the main menu:
 
 * **[Shift]**: Open the main menu.
-* **[Tab]**: Switch between analysis and play modes.
 * **[~]** or **[ ` ]** or **[m]**: Cycles through more minimalistic UI modes.
 * **[p]**: Pass
 * **[spacebar]**: Pause/Resume timer

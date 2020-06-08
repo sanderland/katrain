@@ -123,7 +123,73 @@
         }
     },
     "ui_state": {
-      "mode:play": {},
-      "mode:analysis": {}
+        "play": {
+            "analysis_controls": {
+                "show_children": true,
+                "eval": false,
+                "hints": false,
+                "policy": false,
+                "ownership": false
+            },
+            "panels": {
+                "graph_panel": [
+                    "open",
+                    {
+                        "score": true,
+                        "winrate": false
+                    }
+                ],
+                "stats_panel": [
+                    "open",
+                    {
+                        "score": true,
+                        "winrate": true,
+                        "points": true
+                    }
+                ],
+                "notes_panel": [
+                    "open",
+                    {
+                        "info": true,
+                        "info-details": false,
+                        "notes": false
+                    }
+                ]
+            }
+        },
+        "analyze": {
+            "analysis_controls": {
+                "show_children": true,
+                "eval": false,
+                "hints": true,
+                "policy": false,
+                "ownership": true
+            },
+            "panels": {
+                "graph_panel": [
+                    "open",
+                    {
+                        "score": true,
+                        "winrate": true
+                    }
+                ],
+                "stats_panel": [
+                    "open",
+                    {
+                        "score": true,
+                        "winrate": true,
+                        "points": true
+                    }
+                ],
+                "notes_panel": [
+                    "open",
+                    {
+                        "info": true,
+                        "info-details": true,
+                        "notes": false
+                    }
+                ]
+            }
+        }
     }
 }
