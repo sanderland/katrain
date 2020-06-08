@@ -1,5 +1,5 @@
 import math
-import glob,  os
+
 
 def median(data):
     sorteddata = sorted(data)
@@ -36,11 +36,11 @@ def rank_game(len_legal_policy_moves, policy_rank, policy_value, len_segment):
             total_game_rank.append(policy_rank[i])
             segments_len_legal[j].append(len_legal_policy_moves[i])
             segments_rank[j].append(policy_rank[i])
-            if i>(j+1)*len_segment/2: # 50 moves on the board means 25 move for the player
+            if i>=(j+1)*len_segment/2-1: # 50 moves on the board means 25 move for the player
                 segments_len_legal.append([])
                 segments_rank.append([])
                 j+=1
-    
+        
     if j>0: # concatenate the last two segments to avoid low sample number in the last one
         segments_len_legal[-2] = segments_len_legal[-1]+segments_len_legal[-2]
         segments_rank[-2] = segments_rank[-1]+segments_rank[-2]
@@ -54,11 +54,9 @@ def rank_game(len_legal_policy_moves, policy_rank, policy_value, len_segment):
     
     return ranks
                 
-                
-        
-
 
 if __name__ == '__main__':
+    import glob,  os
     filelist = glob.glob("*.csv")
     filelist.sort(key=os.path.getmtime)
     for fil in filelist:
@@ -75,9 +73,9 @@ if __name__ == '__main__':
             policy_value.append(eval(c))
         ranks = rank_game(len_legal_policy_moves, policy_rank, policy_value, len_segment)
         print("File name: {0:s}".format(fil))
-        print("Move consistency for the entire game: {0:.0f} kyu".format(ranks[0]))
+        print("Move quality for the entire game: {0:.0f} kyu".format(ranks[0]))
         for ind in range(1, len(ranks)-1):
-            print("Move consistency from move {1:d} to {2:d}: {0:.0f} kyu".format(ranks[ind], (ind-1)*len_segment,  ind*len_segment))
-        print("Move consistency from move {1:d} to the end: {0:.0f} kyu\n".format(ranks[ind+1], (ind)*len_segment))
+            print("Move quality from move {1:d} to {2:d}: {0:.0f} kyu".format(ranks[ind], (ind-1)*len_segment,  ind*len_segment))
+        print("Move quality from move {1:d} to the end: {0:.0f} kyu\n".format(ranks[ind+1], (ind)*len_segment))
         filer.close()
         
