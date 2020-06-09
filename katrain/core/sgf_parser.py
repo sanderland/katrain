@@ -91,13 +91,21 @@ class SGFNode:
         """For hooking into in a subclass and overriding branch order."""
         return children
 
+    @staticmethod
+    def _escape_value(value):
+        return re.sub(r"([\]\\])", r"\\\1", value) if isinstance(value, str) else value  # escape \ and ]
+
+    @staticmethod
+    def _unescape_value(value):
+        return re.sub(r"\\([\]\\])", r"\1", value) if isinstance(value, str) else value  # unescape \ and ]
+
     def sgf(self, **xargs) -> str:
         """Generates an SGF, calling sgf_properties on each node with the given xargs, so it can filter relevant properties if needed."""
 
         def node_sgf_str(node):
             return ";" + "".join(
                 [
-                    prop + "".join(f"[{v}]" for v in values)
+                    prop + "".join(f"[{self._escape_value(v)}]" for v in values)
                     for prop, values in node.sgf_properties(**xargs).items()
                     if values
                 ]
@@ -127,12 +135,9 @@ class SGFNode:
 
     def set_property(self, property: str, value: Any):
         """Add some values to the property. If not a list, it will be made into a single-value list."""
-        if isinstance(value, list):
-            self.properties[property] = value
-        else:
-            if isinstance(value, str):
-                value = re.sub(r"(?<!\\)(\])", r"\\\1", value)  # escape unescaped ] - TODO: this could be \\[ or something and still break / unescape as well
-            self.properties[property] = [value]
+        if not isinstance(value, list):
+            value = [value]
+        self.properties[property] = value
 
     def get_property(self, property, default=None) -> Any:
         """Get the first value of the property, typically when exactly one is expected."""
@@ -278,9 +283,10 @@ class SGFNode:
 
 
 class SGF:
-    """Class used for SGF Nodes, can change this to something that inherits from SGFNode"""
 
-    _NODE_CLASS = SGFNode
+    _NODE_CLASS = SGFNode  # Class used for SGF Nodes, can change this to something that inherits from SGFNode
+    # https://xkcd.com/1171/
+    SGFPROP_PAT = re.compile(r"\s*(?:\(|\)|;|(?:(\w+)((\s*\[([^\]\\]*(\\.[^\]\\]*)*)\])+)))", flags=re.DOTALL)
 
     @classmethod
     def parse(cls, input_str) -> SGFNode:
@@ -311,8 +317,8 @@ class SGF:
         self._parse_branch(self.root)
 
     def _parse_branch(self, current_move: SGFNode):
-        while self.ix < len(self.contents):  # https://xkcd.com/1171/
-            match = re.match(r"\s*(?:\(|\)|;|(?:(\w+)((?:\[.*?(?<!\\)\]\s*)+)))", self.contents[self.ix :], re.DOTALL)
+        while self.ix < len(self.contents):
+            match = re.match(self.SGFPROP_PAT, self.contents[self.ix :])
             if not match:
                 break
             self.ix += len(match[0])
@@ -327,7 +333,7 @@ class SGF:
             else:
                 property, value = match[1], match[2].strip()[1:-1]
                 values = re.split(r"\]\s*\[", value)
-                current_move.add_list_property(property, values)
+                current_move.add_list_property(property, [SGFNode._unescape_value(v) for v in values])
         if self.ix < len(self.contents):
             raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix:self.ix+25]}")
         raise ParseError("Parse Error: expected ')' at end of input.")

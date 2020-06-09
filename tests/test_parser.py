@@ -1,6 +1,6 @@
 import os
 
-from katrain.core.sgf_parser import SGF
+from katrain.core.sgf_parser import SGF, SGFNode
 
 
 def test_simple():
@@ -31,6 +31,20 @@ or \\]
 ])"""
     root = SGF.parse(input_sgf)
     assert input_sgf == root.sgf()
+
+
+def test_backslash_escape():
+    nasty_string = "[]]\\"
+    nasty_strings = ["[\\]\\]\\\\", "[", "]", "\\", "\\[", "\\]", "\\\\[", "\\\\]", "]]]\\]]\\]]["]
+    assert "[\\]\\]\\\\" == SGFNode._escape_value(nasty_string)
+    for x in nasty_strings:
+        assert x == SGFNode._unescape_value(SGFNode._escape_value(x))
+
+    c2 = ["]", "\\"]
+    node = SGFNode(properties={"C1": nasty_string})
+    node.set_property("C2", c2)
+    assert "(;C1[[\\]\\]\\\\]C2[\\]][\\\\])" == node.sgf()
+    assert {"C1": [nasty_string], "C2": c2} == SGF.parse(node.sgf()).properties
 
 
 def test_alphago():

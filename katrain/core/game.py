@@ -320,7 +320,7 @@ class Game:
         engine = self.engines[cn.next_player]
         if mode == "extra":
             visits = cn.analysis_visits_requested + engine.config["max_visits"]
-            self.katrain.controls.set_status(i18n._('extra analysis').format(visits=visits))
+            self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits))
             cn.analyze(engine, visits=visits, priority=-1_000, time_limit=False)
             return
         elif mode == "sweep":
@@ -348,7 +348,7 @@ class Game:
                     if (x, y) not in stones
                 ]
             visits = engine.config["fast_visits"]
-            self.katrain.controls.set_status(i18n._('sweep analysis').format(visits=visits))
+            self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits))
             priority = -1_000_000_000
         else:  # mode=='equalize':
             if not cn.analysis_ready:
@@ -357,7 +357,7 @@ class Game:
 
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
             visits = max(d["visits"] for d in cn.analysis["moves"].values())
-            self.katrain.controls.set_status(i18n._('equalizing analysis').format(visits=visits))
+            self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits))
             priority = -1_000
         for move in analyze_moves:
             cn.analyze(

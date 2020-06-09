@@ -121,7 +121,7 @@ class KaTrainBase:
         try:
             if "/" in setting:
                 cat, key = setting.split("/")
-                return self._config.get(cat,{}).get(key, default)
+                return self._config.get(cat, {}).get(key, default)
             else:
                 return self._config[setting]
         except KeyError:

@@ -61,18 +61,18 @@ class KataGoEngine:
 
             exepath, exename = os.path.split(exe)
             if exepath and not os.path.isfile(exe):
-                self.katrain.log(i18n._('Kata exe not found').format(exe=exe), OUTPUT_ERROR)
+                self.katrain.log(i18n._("Kata exe not found").format(exe=exe), OUTPUT_ERROR)
                 return  # don't start
             elif not exepath and not any(
                 os.path.isfile(os.path.join(path, exe)) for path in os.environ.get("PATH", "").split(os.pathsep)
             ):
-                self.katrain.log(i18n._('Kata exe not found in path').format(exe),                    OUTPUT_ERROR   )
+                self.katrain.log(i18n._("Kata exe not found in path").format(exe), OUTPUT_ERROR)
                 return  # don't start
             elif not os.path.isfile(model):
-                self.katrain.log(i18n._('Kata model not found').format(model), OUTPUT_ERROR)
+                self.katrain.log(i18n._("Kata model not found").format(model), OUTPUT_ERROR)
                 return  # don't start
             elif not os.path.isfile(cfg):
-                self.katrain.log(i18n._('Kata config not found').format(config=cfg), OUTPUT_ERROR)
+                self.katrain.log(i18n._("Kata config not found").format(config=cfg), OUTPUT_ERROR)
                 return  # don't start
             self.command = f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
         self.start()
@@ -88,7 +88,7 @@ class KataGoEngine:
             self.katrain.log(
                 i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
             )
-            return # don't start
+            return  # don't start
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
         self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
 
