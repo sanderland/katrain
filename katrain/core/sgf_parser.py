@@ -130,6 +130,8 @@ class SGFNode:
         if isinstance(value, list):
             self.properties[property] = value
         else:
+            if isinstance(value, str):
+                value = re.sub(r"(?<!\\)(\])", r"\\\1", value)  # escape unescaped ] - TODO: this could be \\[ or something and still break / unescape as well
             self.properties[property] = [value]
 
     def get_property(self, property, default=None) -> Any:
