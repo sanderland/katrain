@@ -53,10 +53,10 @@ class KaTrainBase:
         self.config_file = self._load_config(force_package_config=force_package_config)
         self.debug_level = debug_level or self.config("general/debug_level", OUTPUT_INFO)
 
-        Config.set("kivy", "log_level", "error")
+        Config.set("kivy", "log_level", "warning")
         if self.debug_level >= OUTPUT_DEBUG:
             Config.set("kivy", "log_enable", 1)
-            Config.set("kivy", "log_level", "info")
+            Config.set("kivy", "log_level", "debug")
         if self.debug_level >= OUTPUT_EXTRA_DEBUG:
             Config.set("kivy", "log_level", "trace")
         self.players_info = {"B": Player("B"), "W": Player("W")}
