@@ -178,44 +178,44 @@ Builder.load_string(
             rgba: GRAPH_DOT_COLOR
         Ellipse:
             id: score_dot
-            pos: [c - self.highlight_size / 2 for c in (self.score_dot_pos if not self.navigate_move else [self.navigate_move[1],self.navigate_move[2]] ) ]
+            pos: [c - self.highlight_size / 2 for c in (self.score_dot_pos if not self.navigate_move[0] else [self.navigate_move[1],self.navigate_move[2]] ) ]
             size: (self.highlight_size,self.highlight_size) if root.show_score else (0.0001,0.0001)
         Color:
             rgba: GRAPH_DOT_COLOR
         Ellipse:
             id: winrate_dot
-            pos: [c - self.highlight_size / 2 for c in (self.winrate_dot_pos if not self.navigate_move else [self.navigate_move[1],self.navigate_move[3]] ) ]
+            pos: [c - self.highlight_size / 2 for c in (self.winrate_dot_pos if not self.navigate_move[0] else [self.navigate_move[1],self.navigate_move[3]] ) ]
             size: (self.highlight_size,self.highlight_size) if root.show_winrate else (0.0001,0.0001)
     # score ticks
     GraphMarkerLabel:
         font_size: root.marker_font_size
         color:  SCORE_COLOR
-        pos: root.right_edge - root.width-1, root.y+root.height - self.font_size - 1
+        pos: root.right_edge - self.width-1, root.pos[1]+root.height - self.font_size - 1
         text: 'B+{}'.format(root.score_scale)
         opacity: int(root.show_score)
     GraphMarkerLabel:
         font_size: root.marker_font_size
         color:  SCORE_COLOR
-        pos: root.right_edge - root.width-1, root.mid - root.height/2 + 2
+        pos: root.right_edge - self.width-1, root.mid - self.height/2 + 2
         text: i18n._('Jigo')
         opacity: int(root.show_score)
     GraphMarkerLabel:
         font_size: root.marker_font_size
         color:  SCORE_COLOR
-        pos: root.right_edge - root.width-1, root.y
+        pos: root.right_edge - self.width-1, root.pos[1]
         text: 'W+' + str(int(root.score_scale))
         opacity: int(root.show_score)
     # wr ticks
     GraphMarkerLabel:
         font_size: root.marker_font_size
         color: WINRATE_COLOR
-        pos: root.x+1,  root.y+root.height - self.font_size - 1
+        pos: root.pos[0]+1,  root.pos[1]+root.height - self.font_size - 1
         text: "{}%".format(50 + root.winrate_scale)
         opacity: int(root.show_winrate)
     GraphMarkerLabel:
         font_size: root.marker_font_size
         color: WINRATE_COLOR
-        pos:root.x+1, root.y
+        pos:root.pos[0]+1, root.pos[1]
         text: "{}%".format(50 - root.winrate_scale)
         opacity: int(root.show_winrate)
 """

@@ -80,7 +80,6 @@
 
 <ConfigPopup>:
     configfile: configfile
-    model_files: model_files
     DescriptionLabel:
         text: i18n._('katago settings')
         font_size: DESC_FONT_SIZE * 1.5
@@ -99,17 +98,9 @@
         DescriptionLabel:
             text: i18n._("engine:model")
             size_hint: 0.33, 1
-        BoxLayout:
-            AnchorLayout:
-                size_hint: 0.66, 1
-                LabelledPathInput:
-                    input_property: "engine/model"
-                    on_text: root.check_models(*args)
-            AnchorLayout:
-                size_hint: 0.33, 1
-                Spinner:
-                    id: model_files
-                    on_text: root.set_model(*args)
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "engine/model"
         DescriptionLabel:
             text: i18n._("engine:config")
             size_hint: 0.33, 1

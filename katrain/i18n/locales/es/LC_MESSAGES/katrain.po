@@ -356,7 +356,10 @@ msgid "general settings"
 msgstr "Configuraciones Generales"
 
 msgid "engine settings"
-msgstr "Configuración Motor KataGo"
+msgstr "Configuración Motor"
+
+msgid "katago settings"
+msgstr "Configuración KataGo"
 
 msgid "config file path"
 msgstr "La Configuración se guardan en:"
@@ -602,7 +605,3 @@ msgstr ""
 #. TODO
 msgid "extra analysis"
 msgstr "Performing additional analysis to {visits} visits"
-
-#. TODO
-msgid "katago settings"
-msgstr "KataGo settings"

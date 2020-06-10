@@ -349,8 +349,11 @@ msgstr "존재하지 않는 경로입니다."
 msgid "general settings"
 msgstr "일반 설정"
 
+msgid "katago settings"
+msgstr "KataGo 설정"
+
 msgid "engine settings"
-msgstr "KataGo 엔진 설정"
+msgstr "엔진 설정"
 
 msgid "config file path"
 msgstr "설정 파일 경로:"
@@ -579,7 +582,3 @@ msgstr "Equalizing analysis of candidate moves to {visits} visits"
 #. TODO
 msgid "extra analysis"
 msgstr "Performing additional analysis to {visits} visits"
-
-#. TODO
-msgid "katago settings"
-msgstr "KataGo settings"

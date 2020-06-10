@@ -140,12 +140,13 @@
             points: self.x,self.y,self.x+self.width,self.y
             width: 1
 
-<I18NSpinner>:
-    font_size: self.height * 0.5
-    sync_height_frac: 1.0
+<Spinner>:
+    -font_size: self.height * 0.5
     background_color: [*[c*255/88 for c in BACKGROUND_COLOR[:3]], 1] # compensate for texture
     option_cls: 'I18NSpinnerOption'
 
+<I18NSpinner>
+    sync_height_frac: 1.0
 
 <CircleWithText>:
     min_size: min(self.height,self.width)

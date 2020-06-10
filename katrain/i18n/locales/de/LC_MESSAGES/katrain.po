@@ -359,7 +359,10 @@ msgid "general settings"
 msgstr "Allgemeine Einstellungen"
 
 msgid "engine settings"
-msgstr "KataGo Engine Einstellungen"
+msgstr "Engine Einstellungen"
+
+msgid "katago settings"
+msgstr "KataGo Einstellungen"
 
 msgid "config file path"
 msgstr "Alle Optionen sind gespeichert in:"
@@ -599,7 +602,3 @@ msgstr "KataGo model {model} does not exist, please check general settings."
 #. TODO
 msgid "equalizing analysis"
 msgstr "Equalizing analysis of candidate moves to {visits} visits"
-
-#. TODO
-msgid "katago settings"
-msgstr "KataGo settings"

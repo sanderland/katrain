@@ -355,8 +355,11 @@ msgstr "Chemin d’accès est introuvable"
 msgid "general settings"
 msgstr "Divers"
 
+msgid "katago settings"
+msgstr "Moteur de KataGo"
+
 msgid "engine settings"
-msgstr "Moteur de Jeu (KataGo)"
+msgstr "Moteur de Jeu"
 
 msgid "engine:katago"
 msgstr ""
@@ -635,7 +638,3 @@ msgstr "Details"
 #. TODO
 msgid "equalizing analysis"
 msgstr "Equalizing analysis of candidate moves to {visits} visits"
-
-#. TODO
-msgid "katago settings"
-msgstr "KataGo settings"

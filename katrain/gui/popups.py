@@ -46,6 +46,10 @@ class LabelledTextInput(MDTextField):
     def input_value(self):
         return self.text
 
+    @property
+    def raw_input_value(self):
+        return self.text
+
 
 class LabelledPathInput(LabelledTextInput):
     def __init__(self, **kwargs):
@@ -77,6 +81,9 @@ class LabelledCheckBox(MDCheckbox):
     def input_value(self):
         return bool(self.active)
 
+    def raw_input_value(self):
+        return self.active
+
 
 class LabelledSpinner(I18NSpinner):
     input_property = StringProperty("")
@@ -84,6 +91,9 @@ class LabelledSpinner(I18NSpinner):
     @property
     def input_value(self):
         return self.selected[1]  # ref value
+
+    def raw_input_value(self):
+        return self.text
 
 
 class LabelledFloatInput(LabelledTextInput):
@@ -105,7 +115,7 @@ class LabelledFloatInput(LabelledTextInput):
 
     @property
     def input_value(self):
-        return float(self.text)
+        return float('0'+self.text)
 
 
 class LabelledIntInput(LabelledTextInput):
@@ -116,7 +126,7 @@ class LabelledIntInput(LabelledTextInput):
 
     @property
     def input_value(self):
-        return int(self.text)
+        return int('0'+self.text)
 
 
 class InputParseError(Exception):
@@ -128,7 +138,7 @@ class QuickConfigGui(MDBoxLayout):
         super().__init__()
         self.katrain = katrain
         self.popup = None
-        Clock.schedule_once(lambda _dt: self.set_properties(self))
+        Clock.schedule_once(self.build_and_set_properties,0)
 
     def collect_properties(self, widget) -> Dict:
         if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
@@ -137,7 +147,7 @@ class QuickConfigGui(MDBoxLayout):
             try:
                 ret = {widget.input_property: widget.input_value}
             except Exception as e:  # TODO : on widget?
-                raise InputParseError(f"Could not parse value for {widget.input_property} ({widget.__class__}): {e}")
+                raise InputParseError(f"Could not parse value '{widget.raw_input_value}' for {widget.input_property} ({widget.__class__.__name__}): {e}")
         else:
             ret = {}
         for c in widget.children:
@@ -167,7 +177,10 @@ class QuickConfigGui(MDBoxLayout):
                 )
             return config[keys[-1]], config, keys[-1]
 
-    def set_properties(self, widget):
+    def build_and_set_properties(self,*_args):
+        return self._set_properties_subtree(self)
+
+    def _set_properties_subtree(self, widget):
         if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
             widget, "input_property", None
         ):
@@ -184,7 +197,7 @@ class QuickConfigGui(MDBoxLayout):
             else:
                 widget.text = str(value)
         for c in widget.children:
-            self.set_properties(c)
+            self._set_properties_subtree(c)
 
     def update_config(self, save_to_file=True):
         updated = set()
@@ -237,15 +250,11 @@ def wrap_anchor(widget):
 
 
 class ConfigTeacherPopup(QuickConfigGui):
-    def __init__(self, katrain):
-        super().__init__(katrain)
-        self.build()
-
     def add_option_widgets(self, widgets):
         for widget in widgets:
             self.options_grid.add_widget(wrap_anchor(widget))
 
-    def build(self):
+    def build_and_set_properties(self,*_args):
         undos = self.katrain.config("trainer/num_undo_prompts")
         thresholds = self.katrain.config("trainer/eval_thresholds")
         savesgfs = self.katrain.config("trainer/save_feedback")
@@ -263,7 +272,7 @@ class ConfigTeacherPopup(QuickConfigGui):
                     LabelledCheckBox(text=str(savesgf), input_property=f"trainer/save_feedback::{i}"),
                 ]
             )
-        self.set_properties(self)
+        super().build_and_set_properties()
 
 
 class DescriptionLabel(Label):
@@ -297,23 +306,34 @@ class AIPopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
-    def __init__(self, katrain):
-        super().__init__(katrain)
 
-    def check_models(self):
-        model = self.collect_properties()['katago/model']
+    def build_and_set_properties(self,*_args):
+        super().build_and_set_properties()
+        self.check_models()
+
+    def check_models(self,*args): # WIP
+        try:
+            model = self.collect_properties(self)['engine/model']
+        except InputParseError:
+            self.model_files.values = []
+            return
+
         if os.path.exists(model):
             if os.path.isdir(model):
-               path = model
-               file = None
+                path = model.rstrip('\\/')
+                file = None
             else:
+                if model.startswith('katrain'):
+                    model = find_package_resource(model)
                 path, file = os.path.split(model)
-                glob.glob(path+'*.bin.gz')
-                    for file in f:
-
-            self.model_files.values = []
+            files = sorted([os.path.split(f)[1] for ftype in ['*.bin.gz','*.txt.gz'] for f in glob.glob(path+os.path.sep+ftype)])
+            self.model_files.values =files
+            print(file,files,file in files)
+            if file in files:
+                self.model_files.text = file
         else:
             self.model_files.values = []
+
 
     def update_config(self, save_to_file=True):
         updated = super().update_config(save_to_file=save_to_file)
