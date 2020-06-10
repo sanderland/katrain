@@ -19,20 +19,17 @@
 #:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
 
+#:import SCORE_COLOR katrain.gui.style.SCORE_COLOR
+#:import WINRATE_COLOR katrain.gui.style.WINRATE_COLOR
+#:import POINTLOSS_COLOR katrain.gui.style.POINTLOSS_COLOR
+
 #:set SPINNER_OPTION_COLOR [64 / 255, 85 / 255, 110 / 255, 1]
 
 #:set BLACK [0.05,0.05,0.05,1]
-#:set GREY  [0.5,0.5,0.5,1]
 #:set GREEN  [0.1,0.8,0.1,1]
-#:set LIGHTBLUE  [0.3,0.7,0.9,1]
 #:set YELLOW [0.8,0.8,0.1,1]
 #:set DARKRED  [0.3,0.1,0.1,1]
 #:set ORANGE [242/255,96/255,34/255,1]
-
-#:set SCORE_COLOR LIGHTBLUE
-#:set POINTLOSS_COLOR YELLOW
-#:set WINRATE_COLOR GREEN
-#:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 
 #:set BUTTON_INACTIVE_COLOR LIGHTGREY
 #:set NOTES_FONT_SIZE dp(18)
@@ -393,7 +390,6 @@
             on_left_press: root.paused = not root.paused
 
 
-#:set GRAPH_CENTER_COLOR GREY
 
 
 <GraphMarkerLabel@Label>:
@@ -401,84 +397,6 @@
     halign: 'left'
     text: '+0'
     size: self.texture_size
-
-<ScoreGraph>:
-    background_color:  BOX_BACKGROUND_COLOR
-    whalf: root.pos[1]+self.height*0.25
-    bhalf: root.pos[1]+self.height*0.75
-    mid:  root.pos[1]+self.height*0.5
-    right_edge: root.pos[0] + root.width
-    marker_font_size: 0.1 * root.height
-    canvas:
-        Color:
-            rgba: GRAPH_CENTER_COLOR
-        Line:
-            points: [root.pos[0],root.whalf,root.pos[0]+root.width,root.whalf]
-            width: 1
-            dashes: [2,2]
-        Line:
-            points: [root.pos[0],root.mid,root.pos[0]+root.width,root.mid]
-            width: 1
-            dashes: [4,4]
-        Line:
-            points: [root.pos[0],root.bhalf,root.pos[0]+root.width,root.bhalf]
-            width: 1
-            dashes: [2,2]
-    canvas.after:
-        Color:
-            rgba: SCORE_COLOR
-        Line:
-            points: root.score_points if root.show_score else []
-            width: 1.1
-        Color:
-            rgba: WINRATE_COLOR
-        Line:
-            points: root.winrate_points if root.show_winrate else []
-            width: 1.1
-        Color:
-            rgba: GRAPH_DOT_COLOR
-        Ellipse:
-            id: score_dot
-            pos: root.score_dot_pos
-            size: (self.highlight_size,self.highlight_size) if root.show_score else (0.0001,0.0001)
-        Color:
-            rgba: GRAPH_DOT_COLOR
-        Ellipse:
-            id: winrate_dot
-            pos: root.winrate_dot_pos
-            size: (self.highlight_size,self.highlight_size) if root.show_winrate else (0.0001,0.0001)
-    # score ticks
-    GraphMarkerLabel:
-        font_size: root.marker_font_size
-        color:  SCORE_COLOR
-        pos: root.right_edge - self.width-1, root.pos[1]+root.height - self.font_size - 1
-        text: 'B+{}'.format(root.score_scale)
-        opacity: int(root.show_score)
-    GraphMarkerLabel:
-        font_size: root.marker_font_size
-        color:  SCORE_COLOR
-        pos: root.right_edge - self.width-1, root.mid - self.height/2 + 2
-        text: i18n._('Jigo')
-        opacity: int(root.show_score)
-    GraphMarkerLabel:
-        font_size: root.marker_font_size
-        color:  SCORE_COLOR
-        pos: root.right_edge - self.width-1, root.pos[1]
-        text: 'W+' + str(int(root.score_scale))
-        opacity: int(root.show_score)
-    # wr ticks
-    GraphMarkerLabel:
-        font_size: root.marker_font_size
-        color: WINRATE_COLOR
-        pos: root.pos[0]+1,  root.pos[1]+root.height - self.font_size - 1
-        text: "{}%".format(50 + root.winrate_scale)
-        opacity: int(root.show_winrate)
-    GraphMarkerLabel:
-        font_size: root.marker_font_size
-        color: WINRATE_COLOR
-        pos:root.pos[0]+1, root.pos[1]
-        text: "{}%".format(50 - root.winrate_scale)
-        opacity: int(root.show_winrate)
 
 
 <StatsLabel>:

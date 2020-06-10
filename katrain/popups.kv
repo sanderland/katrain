@@ -13,7 +13,6 @@
 
 #:set LIGHTGREY [0.7,0.7,0.7,1]
 #:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
-#:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
 
 
@@ -81,6 +80,42 @@
 
 <ConfigPopup>:
     configfile: configfile
+    model_files: model_files
+    DescriptionLabel:
+        text: i18n._('katago settings')
+        font_size: DESC_FONT_SIZE * 1.5
+    GridLayout:
+        cols: 2
+        rows: 3
+        size_hint: 1,3
+        spacing: CP_SPACING
+        DescriptionLabel:
+            text: i18n._("engine:katago")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "engine/katago"
+                hint_text: i18n._("engine:katago:hint")
+        DescriptionLabel:
+            text: i18n._("engine:model")
+            size_hint: 0.33, 1
+        BoxLayout:
+            AnchorLayout:
+                size_hint: 0.66, 1
+                LabelledPathInput:
+                    input_property: "engine/model"
+                    on_text: root.check_models(*args)
+            AnchorLayout:
+                size_hint: 0.33, 1
+                Spinner:
+                    id: model_files
+                    on_text: root.set_model(*args)
+        DescriptionLabel:
+            text: i18n._("engine:config")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "engine/config"
     BoxLayout:
         size_hint: 1,1
         orientation: 'horizontal'
@@ -91,17 +126,12 @@
             font_size: DESC_FONT_SIZE * 1.5
             text: i18n._('engine settings')
     BoxLayout:
-        size_hint: 1,9
+        size_hint: 1,5
         orientation: 'horizontal'
         GridLayout:
             cols: 2
-            rows: 7
+            rows: 4
             spacing: CP_SPACING
-            DescriptionLabel:
-                text: i18n._("general:sgf_load")
-            AnchorLayout:
-                LabelledPathInput:
-                    input_property: "general/sgf_load" # just last load dir?
             DescriptionLabel:
                 text: i18n._("general:sgf_save")
             AnchorLayout:
@@ -120,38 +150,20 @@
                     input_property: "general/debug_level"
                     helper_text: i18n._("general:debug_level:hint")
                     helper_text_mode: "on_focus"
-            Label:
-            Label:
-            Label:
-            Label:
+            SmallDescriptionLabel:
+                text: i18n._('config file path')
             SmallDescriptionLabel:
                 id: configfile
-                text: i18n._('config file path')
-            Label:
+                text: app.gui.config_file
         BackgroundMixin:
             background_color: LIGHTGREY
             size_hint: None, 1
             width: 2
         GridLayout:
             cols: 2
-            rows: 7
+            rows: 4
             spacing: CP_SPACING
-            DescriptionLabel:
-                text: i18n._("engine:katago")
-            AnchorLayout:
-                LabelledPathInput:
-                    input_property: "engine/katago"
-                    hint_text: i18n._("engine:katago:hint")
-            DescriptionLabel:
-                text: i18n._("engine:model")
-            AnchorLayout:
-                LabelledPathInput:
-                    input_property: "engine/model"
-            DescriptionLabel:
-                text: i18n._("engine:config")
-            AnchorLayout:
-                LabelledPathInput:
-                    input_property: "engine/config"
+            padding: CP_PADDING*2,0,0,0
             DescriptionLabel:
                 text: i18n._("engine:max_visits")
             AnchorLayout:

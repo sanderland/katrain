@@ -374,11 +374,14 @@ msgstr "Path does not exist"
 msgid "general settings"
 msgstr "General Settings"
 
+msgid "katago settings"
+msgstr "KataGo settings"
+
 msgid "engine settings"
-msgstr "KataGo Engine Settings"
+msgstr "Engine Settings"
 
 msgid "config file path"
-msgstr "All options are saved in {file}"
+msgstr "All options are saved in:"
 
 msgid "engine:katago"
 msgstr "Path to KataGo executable"
@@ -412,6 +415,7 @@ msgstr ""
 msgid "engine:time:hint"
 msgstr "Time in seconds"
 
+#. no longer used, can ignore
 msgid "general:sgf_load"
 msgstr "Path for loading SGF files"
 

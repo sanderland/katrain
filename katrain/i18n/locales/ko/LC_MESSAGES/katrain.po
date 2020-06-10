@@ -353,7 +353,7 @@ msgid "engine settings"
 msgstr "KataGo 엔진 설정"
 
 msgid "config file path"
-msgstr "설정 파일 경로: {file}"
+msgstr "설정 파일 경로:"
 
 msgid "engine:katago"
 msgstr "KataGo 실행 파일 경로"
@@ -579,3 +579,7 @@ msgstr "Equalizing analysis of candidate moves to {visits} visits"
 #. TODO
 msgid "extra analysis"
 msgstr "Performing additional analysis to {visits} visits"
+
+#. TODO
+msgid "katago settings"
+msgstr "KataGo settings"

@@ -1,3 +1,4 @@
+import glob
 import os
 import re
 from typing import Any, Dict, List, Tuple, Union
@@ -299,11 +300,20 @@ class ConfigPopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
 
-        def set_config_hint(*args):
-            self.configfile.text = i18n._("config file path").format(file=katrain.config_file)
+    def check_models(self):
+        model = self.collect_properties()['katago/model']
+        if os.path.exists(model):
+            if os.path.isdir(model):
+               path = model
+               file = None
+            else:
+                path, file = os.path.split(model)
+                glob.glob(path+'*.bin.gz')
+                    for file in f:
 
-        set_config_hint()
-        MDApp.get_running_app().bind(language=set_config_hint)
+            self.model_files.values = []
+        else:
+            self.model_files.values = []
 
     def update_config(self, save_to_file=True):
         updated = super().update_config(save_to_file=save_to_file)
@@ -335,7 +345,7 @@ class LoadSGFPopup(BoxLayout):
         super().__init__(**kwargs)
         app = MDApp.get_running_app()
         self.filesel.favorites = [
-            (os.path.abspath(app.gui.config("general/sgf_load")), "SGF Load Dir"),
+            (os.path.abspath(app.gui.config("general/sgf_load")), "Last Used Dir"),
             (os.path.abspath(app.gui.config("general/sgf_save")), "SGF Save Dir"),
         ]
         self.filesel.path = os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load")))

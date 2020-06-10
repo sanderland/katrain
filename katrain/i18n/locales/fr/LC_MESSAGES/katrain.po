@@ -601,10 +601,7 @@ msgstr ""
 "(Se reporter aux styles précédents pour une explication des autres valeurs)"
 
 msgid "config file path"
-msgstr ""
-"TOUTES les options sont \n"
-"sauvegardées dans : \n"
-"{file}"
+msgstr "TOUTES les options sont sauvegardées dans:"
 
 msgid "teaching undo message"
 msgstr ""
@@ -638,3 +635,7 @@ msgstr "Details"
 #. TODO
 msgid "equalizing analysis"
 msgstr "Equalizing analysis of candidate moves to {visits} visits"
+
+#. TODO
+msgid "katago settings"
+msgstr "KataGo settings"
