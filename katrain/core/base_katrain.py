@@ -69,7 +69,7 @@ class KaTrainBase:
             print(message)
 
     def _load_config(self, force_package_config):
-        if len(sys.argv) > 1 and sys.argv[1].endswith(".json"):
+        if len(sys.argv) > 1 and sys.argv[1].endswith("config.json"):
             config_file = os.path.abspath(sys.argv[1])
             self.log(f"Using command line config file {config_file}", OUTPUT_INFO)
         else:

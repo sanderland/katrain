@@ -9,7 +9,7 @@
 * Install Python using [Homebrew](https://brew.sh/) by executing `brew install python3`
     * Alternatively download and install [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
 * Install Katago using [Homebrew](https://brew.sh/) by executing `brew install katago`
-* You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself.
+    * You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself.
 
 ## Installation and running KaTrain from PyPi
 * Run `pip3 install katrain`
