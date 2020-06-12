@@ -283,6 +283,11 @@ class PlayerSetupBlock(MDBoxLayout):
         self.add_widget(self.white)
         PlayerSetupBlock.INSTANCES.append(self)
 
+    def swap_players(self):
+        player_dump = {bw: p.player_type_dump for bw,p in self.players.items()}
+        for bw in 'BW':
+            self.update_players(bw,player_dump['B' if bw=='W' else 'W'])
+
     def update_players(self, bw, player_info):  # update sub widget based on gui state change
         self.players[bw].update_widget(player_type=player_info.player_type, player_subtype=player_info.player_subtype)
 

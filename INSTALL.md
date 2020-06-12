@@ -36,10 +36,10 @@
     * Run the command `git clone https://github.com/sanderland/katrain.git` to download the repository.
     * Changing directory using `cd katrain`
     * Run the command `pip3 install .` to install the package globally, or use `--user` to install locally, then run the program by typing `katrain` in the terminal.
-    * If you prefer not to install, run without installing using `python3 -m katrain`
+    * If you prefer not to install, run without installing using `python3 -m katrain` after installing the kivy dependencies mentioned in the next section.
 * A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.4+ binary.
 
-## Troubleshooting 
+## Troubleshooting
 
 Older linux machines may have trouble installing, you can try to manually install dependencies to resolve some issues.
 
