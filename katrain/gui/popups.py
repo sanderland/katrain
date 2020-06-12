@@ -310,7 +310,7 @@ class AIPopup(QuickConfigGui):
 class ConfigPopup(QuickConfigGui):
     def build_and_set_properties(self, *_args):
         super().build_and_set_properties()
-        self.check_models()
+        #self.check_models()
 
     def check_models(self, *args):  # WIP
         try:
