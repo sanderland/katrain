@@ -223,10 +223,9 @@ class KaTrainGui(Screen, KaTrainBase):
                 self.message_queue.put([self.game.game_id, message, *args])
 
     def _do_new_game(self, move_tree=None, analyze_fast=False):
-        if move_tree is None:
-            self.play_mode.select_mode(MODE_PLAY)
-        else:
-            self.play_mode.select_mode(MODE_ANALYZE)
+        mode = self.play_analyze_mode
+        if (move_tree is None and mode != MODE_PLAY) or (move_tree is None and mode != MODE_ANALYZE):
+            self.play_mode.switch_ui_mode() # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
         self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast)

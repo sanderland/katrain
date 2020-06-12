@@ -291,7 +291,7 @@ class BadukPanWidget(Widget):
                     for x in range(board_size_x):
                         ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
                         if ix_owner != (has_stone.get((x, y), -1)):
-                            Color(*stone_color[ix_owner], abs(ownership_grid[y][x]))
+                            Color(*stone_color[ix_owner][:3], abs(ownership_grid[y][x]))
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
 
             policy = current_node.policy
