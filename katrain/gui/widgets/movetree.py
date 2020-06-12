@@ -49,7 +49,7 @@ class MoveTreeCanvas(Widget):
         move_pos = {root: (0, 0)}
         stack = GameNode.order_children(root.children)[::-1]
         next_y_pos = defaultdict(int)  # x pos -> max y pos
-
+        children = defaultdict(list) # since AI self-play etc may modify the tree between layout and draw!
         while stack:
             move = stack.pop()
             x = move.depth
@@ -57,7 +57,8 @@ class MoveTreeCanvas(Widget):
             next_y_pos[x] = y + 1
             next_y_pos[x - 1] = max(next_y_pos[x], next_y_pos[x - 1])
             move_pos[move] = (x, y)
-            for c in GameNode.order_children(move.children)[::-1]:  # stack, so push top child last to process first
+            children[move] = GameNode.order_children(move.children)
+            for c in children[move][::-1]:  # stack, so push top child last to process first
                 stack.append(c)
 
         def draw_stone(pos, player):
@@ -76,8 +77,8 @@ class MoveTreeCanvas(Widget):
 
         self.move_xy_pos = {n: xy_pos(x, y) for n, (x, y) in move_pos.items()}
 
-        self.canvas.clear()
         with self.canvas:
+            self.canvas.clear()
             Color(*YELLOW)
             Rectangle(
                 pos=[c - self.move_size / 2 - spacing / 2 for c in self.move_xy_pos[current_node]],
@@ -85,7 +86,7 @@ class MoveTreeCanvas(Widget):
             )
             Color(*LIGHTGREY)
             for node, (x, y) in self.move_xy_pos.items():
-                for ci, c in enumerate(GameNode.order_children(node.children)):
+                for ci, c in enumerate(children[node]):
                     cx, cy = self.move_xy_pos[c]
                     Line(points=[x, y, x, cy, cx, cy], width=1)
 

@@ -149,9 +149,9 @@ class BadukPanWidget(Widget):
             return
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
-        max_board_size = max(board_size_x, board_size_y)
-        self.canvas.before.clear()
+
         with self.canvas.before:
+            self.canvas.before.clear()
             # set up margins and grid lines
             grid_spaces_margin_x = [1.5, 0.75]  # left, right
             grid_spaces_margin_y = [1.5, 0.75]  # bottom, top
@@ -226,8 +226,8 @@ class BadukPanWidget(Widget):
         board_size_x, board_size_y = katrain.game.board_size
         show_n_eval = self.trainer_config["eval_off_show_last"]
 
-        self.canvas.clear()
         with self.canvas:
+            self.canvas.clear()
             # stones
             current_node = katrain.game.current_node
             game_ended = katrain.game.ended
@@ -354,8 +354,8 @@ class BadukPanWidget(Widget):
         player, next_player = current_node.player, current_node.next_player
         stone_color = STONE_COLORS
 
-        self.canvas.after.clear()
         with self.canvas.after:
+            self.canvas.after.clear()
             self.active_pv_moves = []
 
             # children of current moves in undo / review
