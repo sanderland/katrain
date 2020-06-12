@@ -22,7 +22,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BaseFlatButton, BasePressedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
-from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, PLAYER_AI
+from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, PLAYER_AI, MODE_PLAY
 from katrain.core.lang import i18n
 from katrain.gui.style import DEFAULT_FONT, WHITE
 
@@ -299,6 +299,8 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     player_subtype = StringProperty("")
     active = BooleanProperty(True)
 
+class TimerOrMoveTree(BoxLayout):
+    mode = StringProperty(MODE_PLAY)
 
 class Timer(BGBoxLayout):
     state = ListProperty([30, 5, 1])

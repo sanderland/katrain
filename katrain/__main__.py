@@ -68,6 +68,7 @@ from katrain.gui.kivyutils import *
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL, LIGHTGREY
 from katrain.gui.widgets.graph import ScoreGraph
+from katrain.gui.widgets.movetree import MoveTree
 from katrain.gui.widgets.filebrowser import I18NFileBrowser
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
@@ -148,12 +149,15 @@ class KaTrainGui(Screen, KaTrainBase):
         else:
             self.board_controls.engine_status_col = ENGINE_BUSY_COL
 
-        # redraw
+        # redraw board/stones
         if redraw_board:
             self.board_gui.draw_board()
         self.board_gui.redraw_board_contents_trigger()
         self.controls.update_evaluation()
         self.controls.update_timer(1)
+        # update move tree
+        self.controls.move_tree.current_node = self.game.current_node
+
 
     def update_state(
         self, redraw_board=False
@@ -242,7 +246,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_undo(self, n_times=1):
         if n_times == "smart":
             n_times = 1
-            if self.play_analyze_mode == "play" and self.last_player_info.ai and self.next_player_info.human:
+            if self.play_analyze_mode == MODE_PLAY and self.last_player_info.ai and self.next_player_info.human:
                 n_times = 2
         self.board_gui.animating_pv = None
         self.game.undo(n_times)
@@ -251,9 +255,9 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.game.redo(n_times)
 
-    def _do_switch_branch(self, direction):
+    def _do_switch_branch(self, *args):
         self.board_gui.animating_pv = None
-        self.game.switch_branch(direction)
+        self.game.switch_branch(*args)
 
     def _do_play(self, coords):
         self.board_gui.animating_pv = None
@@ -386,8 +390,8 @@ class KaTrainGui(Screen, KaTrainBase):
             "s": ("analyze-extra", "equalize"),
             "d": ("analyze-extra", "sweep"),
             "p": ("play", None),
-            "right": ("switch-branch", 1),
-            "left": ("switch-branch", -1),
+            "down": ("switch-branch", 1),
+            "up": ("switch-branch", -1),
             "f5": ("timer-popup",),
             "f6": ("teacher-popup",),
             "f7": ("ai-popup",),
@@ -420,9 +424,9 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in ["`", "~", "m"]:
             self.zen = (self.zen + 1) % 3
-        elif keycode[1] in ["up", "z"]:
+        elif keycode[1] in ["left", "z"]:
             self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
-        elif keycode[1] in ["down", "x"]:
+        elif keycode[1] in ["right", "x"]:
             self("redo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] == "n" and "ctrl" in modifiers:
             self("new-game-popup")

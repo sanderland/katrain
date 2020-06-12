@@ -173,11 +173,16 @@ class Game:
                 cn = cn.favourite_child
         self.set_current_node(cn)
 
-    def switch_branch(self, direction):
+    def switch_branch(self, direction, cycle=False):
         cn = self.current_node  # avoid race conditions
         if cn.parent and len(cn.parent.children) > 1:
-            ix = cn.parent.children.index(cn)
-            self.set_current_node(cn.parent.children[(ix + direction) % len(cn.parent.children)])
+            ordered_children = GameNode.order_children(cn.parent.children)
+            ix = ordered_children.index(cn) + direction
+            if cycle:
+                ix = (ix + len(ordered_children)) % len(ordered_children)
+            elif ix < 0 or ix >= len(ordered_children):
+                return
+            self.set_current_node(ordered_children[ix])
 
     def place_handicap_stones(self, n_handicaps):
         board_size_x, board_size_y = self.board_size
