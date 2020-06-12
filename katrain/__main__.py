@@ -158,7 +158,6 @@ class KaTrainGui(Screen, KaTrainBase):
         # update move tree
         self.controls.move_tree.current_node = self.game.current_node
 
-
     def update_state(
         self, redraw_board=False
     ):  # is called after every message and on receiving analyses and config changes
@@ -327,10 +326,10 @@ class KaTrainGui(Screen, KaTrainBase):
                 self.fileselect_popup.dismiss()
                 path, file = os.path.split(files[0])
                 settings_path = self.config("general/sgf_load")
-                if path!=settings_path:
-                    self.log(f"Updating sgf load path default to {path}",OUTPUT_INFO)
-                    self._config['general']['sgf_load'] = path
-                    self.save_config('general')
+                if path != settings_path:
+                    self.log(f"Updating sgf load path default to {path}", OUTPUT_INFO)
+                    self._config["general"]["sgf_load"] = path
+                    self.save_config("general")
                 try:
                     move_tree = KaTrainSGF.parse_file(files[0])
                 except ParseError as e:

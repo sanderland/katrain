@@ -10,10 +10,10 @@ BLACK = [0.05, 0.05, 0.05, 1]
 LIGHTGREY = [0.7, 0.7, 0.7, 1]
 
 RED = [0.8, 0.1, 0.1, 1]
-GREEN = [0.1,0.8,0.1,1]
-YELLOW = [0.8,0.8,0.1,1]
-DARKRED = [0.3,0.1,0.1,1]
-ORANGE = [242/255,96/255,34/255,1]
+GREEN = [0.1, 0.8, 0.1, 1]
+YELLOW = [0.8, 0.8, 0.1, 1]
+DARKRED = [0.3, 0.1, 0.1, 1]
+ORANGE = [242 / 255, 96 / 255, 34 / 255, 1]
 
 # gui colors
 BACKGROUND_COLOR = [36 / 255, 48 / 255, 62 / 255, 1]
@@ -39,7 +39,7 @@ EVAL_DOT_MIN_SIZE = 0.25
 
 STONE_COLORS = {"B": BLACK, "W": WHITE}
 OUTLINE_COLORS = {"B": [0.3, 0.3, 0.3, 0.5], "W": [0.7, 0.7, 0.7, 0.5]}
-STONE_TEXT_COLORS= {"W": BLACK, "B": WHITE}
+STONE_TEXT_COLORS = {"W": BLACK, "B": WHITE}
 
 # board
 LINE_COLOR = [0, 0, 0]

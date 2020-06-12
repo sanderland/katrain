@@ -115,7 +115,7 @@ class LabelledFloatInput(LabelledTextInput):
 
     @property
     def input_value(self):
-        return float('0'+self.text)
+        return float("0" + self.text)
 
 
 class LabelledIntInput(LabelledTextInput):
@@ -126,7 +126,7 @@ class LabelledIntInput(LabelledTextInput):
 
     @property
     def input_value(self):
-        return int('0'+self.text)
+        return int("0" + self.text)
 
 
 class InputParseError(Exception):
@@ -138,7 +138,7 @@ class QuickConfigGui(MDBoxLayout):
         super().__init__()
         self.katrain = katrain
         self.popup = None
-        Clock.schedule_once(self.build_and_set_properties,0)
+        Clock.schedule_once(self.build_and_set_properties, 0)
 
     def collect_properties(self, widget) -> Dict:
         if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
@@ -147,7 +147,9 @@ class QuickConfigGui(MDBoxLayout):
             try:
                 ret = {widget.input_property: widget.input_value}
             except Exception as e:  # TODO : on widget?
-                raise InputParseError(f"Could not parse value '{widget.raw_input_value}' for {widget.input_property} ({widget.__class__.__name__}): {e}")
+                raise InputParseError(
+                    f"Could not parse value '{widget.raw_input_value}' for {widget.input_property} ({widget.__class__.__name__}): {e}"
+                )
         else:
             ret = {}
         for c in widget.children:
@@ -177,7 +179,7 @@ class QuickConfigGui(MDBoxLayout):
                 )
             return config[keys[-1]], config, keys[-1]
 
-    def build_and_set_properties(self,*_args):
+    def build_and_set_properties(self, *_args):
         return self._set_properties_subtree(self)
 
     def _set_properties_subtree(self, widget):
@@ -254,7 +256,7 @@ class ConfigTeacherPopup(QuickConfigGui):
         for widget in widgets:
             self.options_grid.add_widget(wrap_anchor(widget))
 
-    def build_and_set_properties(self,*_args):
+    def build_and_set_properties(self, *_args):
         undos = self.katrain.config("trainer/num_undo_prompts")
         thresholds = self.katrain.config("trainer/eval_thresholds")
         savesgfs = self.katrain.config("trainer/save_feedback")
@@ -306,34 +308,38 @@ class AIPopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
-
-    def build_and_set_properties(self,*_args):
+    def build_and_set_properties(self, *_args):
         super().build_and_set_properties()
         self.check_models()
 
-    def check_models(self,*args): # WIP
+    def check_models(self, *args):  # WIP
         try:
-            model = self.collect_properties(self)['engine/model']
+            model = self.collect_properties(self)["engine/model"]
         except InputParseError:
             self.model_files.values = []
             return
 
         if os.path.exists(model):
             if os.path.isdir(model):
-                path = model.rstrip('\\/')
+                path = model.rstrip("\\/")
                 file = None
             else:
-                if model.startswith('katrain'):
+                if model.startswith("katrain"):
                     model = find_package_resource(model)
                 path, file = os.path.split(model)
-            files = sorted([os.path.split(f)[1] for ftype in ['*.bin.gz','*.txt.gz'] for f in glob.glob(path+os.path.sep+ftype)])
-            self.model_files.values =files
-            print(file,files,file in files)
+            files = sorted(
+                [
+                    os.path.split(f)[1]
+                    for ftype in ["*.bin.gz", "*.txt.gz"]
+                    for f in glob.glob(path + os.path.sep + ftype)
+                ]
+            )
+            self.model_files.values = files
+            print(file, files, file in files)
             if file in files:
                 self.model_files.text = file
         else:
             self.model_files.values = []
-
 
     def update_config(self, save_to_file=True):
         updated = super().update_config(save_to_file=save_to_file)
