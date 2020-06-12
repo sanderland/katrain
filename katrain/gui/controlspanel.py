@@ -47,6 +47,7 @@ class PlayAnalyzeSelect(MDFloatLayout):
             return
         self.save_ui_state()
         self.mode = new_mode
+        self.katrain.controls.timer_or_movetree.mode = self.mode
         self.load_ui_state()
         self.katrain.update_state()  # for lock ai even if nothing changed
 

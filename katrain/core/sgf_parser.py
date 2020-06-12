@@ -286,7 +286,7 @@ class SGF:
 
     _NODE_CLASS = SGFNode  # Class used for SGF Nodes, can change this to something that inherits from SGFNode
     # https://xkcd.com/1171/
-    SGFPROP_PAT=re.compile(r"\s*(?:\(|\)|;|(\w+)((\s*\[([^\]\\]|\\.)*\])+))",flags=re.DOTALL)
+    SGFPROP_PAT = re.compile(r"\s*(?:\(|\)|;|(\w+)((\s*\[([^\]\\]|\\.)*\])+))", flags=re.DOTALL)
 
     @classmethod
     def parse(cls, input_str) -> SGFNode:

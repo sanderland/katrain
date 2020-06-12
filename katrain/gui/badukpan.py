@@ -438,7 +438,6 @@ class BadukPanWidget(Widget):
             if i > up_to_move:
                 return
             move_player = next_last_player[i % 2]
-            opp_player = next_last_player[1 - i % 2]
             coords = Move.from_gtp(gtpmove).coords
             if coords is None:  # tee-hee
                 sizefac = katrain.board_controls.pass_btn.size[1] / 2 / self.stone_size
@@ -453,7 +452,7 @@ class BadukPanWidget(Widget):
                 sizefac = 1
 
             draw_circle(board_coords, self.stone_size * sizefac, stone_color[move_player])
-            Color(*stone_color[opp_player])
+            Color(*STONE_TEXT_COLORS[move_player])
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):

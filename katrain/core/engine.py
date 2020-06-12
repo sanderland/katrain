@@ -14,6 +14,7 @@ from katrain.core.utils import find_package_resource
 
 from kivy.utils import platform
 
+
 class EngineDiedException(Exception):
     pass
 

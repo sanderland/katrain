@@ -22,7 +22,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BaseFlatButton, BasePressedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
-from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, PLAYER_AI
+from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, PLAYER_AI, MODE_PLAY
 from katrain.core.lang import i18n
 from katrain.gui.style import DEFAULT_FONT, WHITE
 
@@ -284,9 +284,9 @@ class PlayerSetupBlock(MDBoxLayout):
         PlayerSetupBlock.INSTANCES.append(self)
 
     def swap_players(self):
-        player_dump = {bw: p.player_type_dump for bw,p in self.players.items()}
-        for bw in 'BW':
-            self.update_players(bw,player_dump['B' if bw=='W' else 'W'])
+        player_dump = {bw: p.player_type_dump for bw, p in self.players.items()}
+        for bw in "BW":
+            self.update_players(bw, player_dump["B" if bw == "W" else "W"])
 
     def update_players(self, bw, player_info):  # update sub widget based on gui state change
         self.players[bw].update_widget(player_type=player_info.player_type, player_subtype=player_info.player_subtype)
@@ -298,6 +298,10 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     player_type = StringProperty("Player")
     player_subtype = StringProperty("")
     active = BooleanProperty(True)
+
+
+class TimerOrMoveTree(BoxLayout):
+    mode = StringProperty(MODE_PLAY)
 
 
 class Timer(BGBoxLayout):

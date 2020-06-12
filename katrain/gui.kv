@@ -1,39 +1,34 @@
 #:kivy 1.11.0
 #:import i18n katrain.core.lang.i18n
 
-# TODO: refactor
-#:set CP_SPACING 6
-#:set CP_SMALL_SPACING 3
-#:set CP_PADDING 6
-
 #:import PLAYER_TYPES katrain.core.constants.PLAYER_TYPES
 #:import PLAYER_HUMAN katrain.core.constants.PLAYER_HUMAN
 #:import PLAYER_AI    katrain.core.constants.PLAYER_AI
 #:import MODE_PLAY katrain.core.constants.MODE_PLAY
 #:import MODE_ANALYZE katrain.core.constants.MODE_ANALYZE
 
-#:import RED katrain.gui.style.RED
 #:import WHITE katrain.gui.style.WHITE
+#:import BLACK katrain.gui.style.BLACK
 #:import LIGHTGREY katrain.gui.style.LIGHTGREY
+#:import GREEN katrain.gui.style.GREEN
+#:import YELLOW katrain.gui.style.YELLOW
+#:import RED katrain.gui.style.RED
+#:import DARKRED katrain.gui.style.DARKRED
+#:import ORANGE katrain.gui.style.ORANGE
+
 #:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
 #:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
+#:import LIGHTER_BACKGROUND_COLOR katrain.gui.style.LIGHTER_BACKGROUND_COLOR
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
-
 #:import SCORE_COLOR katrain.gui.style.SCORE_COLOR
 #:import WINRATE_COLOR katrain.gui.style.WINRATE_COLOR
 #:import POINTLOSS_COLOR katrain.gui.style.POINTLOSS_COLOR
-
-#:set SPINNER_OPTION_COLOR [64 / 255, 85 / 255, 110 / 255, 1]
-
-#:set BLACK [0.05,0.05,0.05,1]
-#:set GREEN  [0.1,0.8,0.1,1]
-#:set YELLOW [0.8,0.8,0.1,1]
-#:set DARKRED  [0.3,0.1,0.1,1]
-#:set ORANGE [242/255,96/255,34/255,1]
-
 #:set BUTTON_INACTIVE_COLOR LIGHTGREY
-#:set NOTES_FONT_SIZE dp(18)
 
+#:set CP_SPACING dp(6)
+#:set CP_SMALL_SPACING dp(3)
+#:set CP_PADDING dp(6)
+#:set NOTES_FONT_SIZE dp(18)
 
 # for sizing help
 #<Label>:
@@ -129,7 +124,7 @@
 
 
 <I18NSpinnerOption@SpinnerOption>:
-    background_color: SPINNER_OPTION_COLOR
+    background_color: LIGHTER_BACKGROUND_COLOR
     background_normal: ''
     lang_change_tracking: i18n._('') # for font
     color: WHITE
@@ -241,7 +236,7 @@
         NavIconButton:
             id: branch
             icon: 'img/Branch.png'
-            on_press: root.katrain('switch-branch',1)
+            on_press: root.katrain('switch-branch',1,True)
             disabled: True
     ClickableLabel:
         pos_hint: {'center_x': 0.85,'center_y':0.5}
@@ -350,7 +345,6 @@
             TimerLabel:
                 color: BACKGROUND_COLOR
                 text: '8:88'
-                text_size: self.size
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
                 halign: 'right'
@@ -359,7 +353,6 @@
                 id: timer
                 timeout: root.timeout
                 text: "{:01d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
-                text_size: self.size
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
                 halign: 'right'
@@ -487,6 +480,7 @@
             width: 1
             points: (*self.pos,self.x+self.width,self.y)
 
+
 <ControlsPanel>:
     katrain: app.gui
     orientation: 'vertical'
@@ -498,6 +492,8 @@
     info: info
     note: note
     status: status
+    timer_or_movetree: timer_or_movetree
+    move_tree: move_tree
     padding: CP_PADDING
     spacing: CP_SPACING
     player_box_height: max(50, 0.075 * root.height)
@@ -514,26 +510,34 @@
         PlayerInfo:
             id: W_player
             player: 'W'
-    BoxLayout:
+    TimerOrMoveTree:
+        id: timer_or_movetree
         size_hint_y: None
         height: root.timer_box_height
-        spacing: CP_SPACING
-        Timer:
-            id: timer
-            size_hint_x: 0.7
-        MDBoxLayout:
-            orientation: 'vertical'
-            padding: 2*CP_PADDING,CP_PADDING
+        BoxLayout:
+            size_hint_x: 0.0001 if self.parent.mode != MODE_PLAY else 1
+            opacity: 0 if self.parent.mode != MODE_PLAY else 1
             spacing: CP_SPACING
-            size_hint_x: 0.3
-            SizedRoundedRectangleButton:
-                text: i18n._('pass-button-text')
-                size_hint: 1, 0.5
-                on_left_release: root.katrain("play",None)
-            SizedRoundedRectangleButton:
-                text: i18n._('undo-button-text')
-                size_hint: 1, 0.5
-                on_left_release: root.katrain("undo","smart")
+            Timer:
+                id: timer
+                size_hint_x: 0.7
+            MDBoxLayout:
+                orientation: 'vertical'
+                padding: 2*CP_PADDING,CP_PADDING
+                spacing: CP_SPACING
+                size_hint_x: 0.3
+                SizedRoundedRectangleButton:
+                    text: i18n._('pass-button-text')
+                    size_hint: 1, 0.5
+                    on_left_release: root.katrain("play",None)
+                SizedRoundedRectangleButton:
+                    text: i18n._('undo-button-text')
+                    size_hint: 1, 0.5
+                    on_left_release: root.katrain("undo","smart")
+        MoveTree:
+            id: move_tree
+            size_hint_x: 0.1 if self.parent.mode == MODE_PLAY else 1
+            opacity: 0 if self.parent.mode == MODE_PLAY else 1
     CollapsablePanel:
         id: graph_panel
         height_open: root.graph_box_height
@@ -673,7 +677,7 @@
 
 <AnalysisMenuItem@MenuItem>:
     on_close: app.gui.analysis_controls.close_dropdown()
-    background_color: SPINNER_OPTION_COLOR
+    background_color: LIGHTER_BACKGROUND_COLOR
     height: 45
     canvas.before:
         Color:
