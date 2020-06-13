@@ -23,9 +23,18 @@ from katrain.gui.style import (
 
 
 class MoveTreeCanvas(Widget):
-    move_xy_pos = DictProperty({})
+    scroll_view_widget = ObjectProperty(None)
     move_size = NumericProperty(5)
-    move_tree = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.move_pos = {}
+        self.move_xy_pos = {}
+
+    def set_game_node(self, node):
+        katrain = MDApp.get_running_app().gui
+        katrain.game.set_current_node(node)
+        katrain.update_state()
 
     def on_touch_up(self, touch):
         if touch.button == "left":
@@ -33,31 +42,40 @@ class MoveTreeCanvas(Widget):
                 self.move_xy_pos.items(), key=lambda n_xy: abs(n_xy[1][0] - touch.x) + abs(n_xy[1][1] - touch.y)
             )
             if max(abs(x - touch.x), abs(y - touch.y)) <= (self.move_size / 2):
-                katrain = MDApp.get_running_app().gui
-                katrain.game.set_current_node(node)
-                katrain.update_state()
+                self.set_game_node(node)
+
+    def switch_branch(self, direction=1):
+        pos = self.move_pos.get(self.scroll_view_widget.current_node)
+        if not self.scroll_view_widget:
+            return
+        same_x_moves = sorted([(y, n) for n, (x, y) in self.move_pos.items() if x == pos[0]])
+        new_index = next((i for i, (y, n) in enumerate(same_x_moves) if y == pos[1]), 0) + direction
+        if new_index < 0 or new_index >= len(same_x_moves):
+            return
+        self.set_game_node(same_x_moves[new_index][1])
 
     def draw_move_tree(self, current_node):
-        if not self.move_tree:
+        if not self.scroll_view_widget:
             return
+
         spacing = 5
         moves_vert = 3
-        self.move_size = (self.move_tree.height - (moves_vert + 1) * spacing) / moves_vert
+        self.move_size = (self.scroll_view_widget.height - (moves_vert + 1) * spacing) / moves_vert
 
         root = current_node.root
 
-        move_pos = {root: (0, 0)}
-        stack = GameNode.order_children(root.children)[::-1]
+        self.move_pos = {root: (0, 0)}
+        stack = root.ordered_children[::-1]
         next_y_pos = defaultdict(int)  # x pos -> max y pos
-        children = defaultdict(list) # since AI self-play etc may modify the tree between layout and draw!
+        children = defaultdict(list)  # since AI self-play etc may modify the tree between layout and draw!
         while stack:
             move = stack.pop()
             x = move.depth
-            y = max(next_y_pos[x], move_pos[move.parent][1])
+            y = max(next_y_pos[x], self.move_pos[move.parent][1])
             next_y_pos[x] = y + 1
             next_y_pos[x - 1] = max(next_y_pos[x], next_y_pos[x - 1])
-            move_pos[move] = (x, y)
-            children[move] = GameNode.order_children(move.children)
+            self.move_pos[move] = (x, y)
+            children[move] = move.ordered_children
             for c in children[move][::-1]:  # stack, so push top child last to process first
                 stack.append(c)
 
@@ -69,13 +87,13 @@ class MoveTreeCanvas(Widget):
         def coord_pos(coord):
             return (coord + 0.5) * (spacing + self.move_size) + spacing / 2
 
-        self.width = coord_pos(max(x + 0.5 for x, y in move_pos.values()))
-        self.height = coord_pos(max(y + 0.5 for x, y in move_pos.values()))
+        self.width = coord_pos(max(x + 0.5 for x, y in self.move_pos.values()))
+        self.height = coord_pos(max(y + 0.5 for x, y in self.move_pos.values()))
 
         def xy_pos(x, y):
             return coord_pos(x), self.height - coord_pos(y)
 
-        self.move_xy_pos = {n: xy_pos(x, y) for n, (x, y) in move_pos.items()}
+        self.move_xy_pos = {n: xy_pos(x, y) for n, (x, y) in self.move_pos.items()}
 
         with self.canvas:
             self.canvas.clear()
@@ -96,7 +114,7 @@ class MoveTreeCanvas(Widget):
                 Color(*STONE_COLORS["W" if node.player == "B" else "B"])
                 draw_text(pos=pos, text=text, font_size=self.move_size * 1.75 / (1 + 1 * len(text)), font_name="Roboto")
 
-            self.move_tree.scroll_to_pixel(*self.move_xy_pos[current_node])
+            self.scroll_view_widget.scroll_to_pixel(*self.move_xy_pos[current_node])
 
 
 class MoveTree(ScrollView, BackgroundMixin):
@@ -108,6 +126,9 @@ class MoveTree(ScrollView, BackgroundMixin):
             lambda _dt: self.move_tree_canvas.draw_move_tree(self.current_node)
         )
         self.bind(current_node=self.redraw_tree_trigger, size=self.redraw_tree_trigger)
+
+    def switch_branch(self, direction):
+        self.move_tree_canvas.switch_branch(direction)
 
     def scroll_to_pixel(self, x, y):
         if not self._viewport:
@@ -126,8 +147,9 @@ Builder.load_string(
 <MoveTree>:
     background_color: BOX_BACKGROUND_COLOR
     move_tree_canvas: move_tree_canvas
+    scroll_distance: 0 # scroll wheel is for forward/backward
     MoveTreeCanvas:
-        move_tree: root
+        scroll_view_widget: root
         id: move_tree_canvas
         size_hint: None, None
     """

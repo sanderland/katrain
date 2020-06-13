@@ -225,7 +225,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_new_game(self, move_tree=None, analyze_fast=False):
         mode = self.play_analyze_mode
         if (move_tree is None and mode != MODE_PLAY) or (move_tree is None and mode != MODE_ANALYZE):
-            self.play_mode.switch_ui_mode() # for new game, go to play, for loaded, analyze
+            self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
         self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast)
@@ -253,9 +253,13 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.game.redo(n_times)
 
+    def _do_cycle_children(self, *args):
+        self.board_gui.animating_pv = None
+        self.game.cycle_children(*args)
+
     def _do_switch_branch(self, *args):
         self.board_gui.animating_pv = None
-        self.game.switch_branch(*args)
+        self.controls.move_tree.switch_branch(*args)
 
     def _do_play(self, coords):
         self.board_gui.animating_pv = None
@@ -367,7 +371,11 @@ class KaTrainGui(Screen, KaTrainBase):
         self.log("Imported game from clipboard.", OUTPUT_INFO)
 
     def on_touch_up(self, touch):
-        if self.board_gui.collide_point(*touch.pos) or self.board_controls.collide_point(*touch.pos):
+        if (
+            self.board_gui.collide_point(*touch.pos)
+            or self.board_controls.collide_point(*touch.pos)
+            or self.controls.move_tree.collide_point(*touch.pos)
+        ):
             if touch.button == "scrollup":
                 self("redo")
             elif touch.button == "scrolldown":

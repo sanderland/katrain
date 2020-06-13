@@ -91,6 +91,10 @@ class SGFNode:
         """For hooking into in a subclass and overriding branch order."""
         return children
 
+    @property
+    def ordered_children(self):
+        return self.order_children(self.children)
+
     @staticmethod
     def _escape_value(value):
         return re.sub(r"([\]\\])", r"\\\1", value) if isinstance(value, str) else value  # escape \ and ]
@@ -122,7 +126,7 @@ class SGFNode:
                 if len(item.children) == 1:
                     stack.append(item.children[0])
                 elif item.children:
-                    stack += sum([[")", c, "("] for c in self.order_children(item.children)[::-1]], [])
+                    stack += sum([[")", c, "("] for c in item.ordered_children[::-1]], [])
         return sgf_str
 
     def add_list_property(self, property: str, values: List):

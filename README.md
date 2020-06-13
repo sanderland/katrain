@@ -141,7 +141,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
     * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
 * You also can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
  or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
-* Donations for improving and promoting KaTrain are taken supported through [Liberapay](https://liberapay.com/KaTrain/).
+* Donations for improving and promoting KaTrain are taken supported through [Liberapay](https://liberapay.com/KaTrain/) or [Github Sponsors](https://github.com/sponsors/sanderland).
 
 
 

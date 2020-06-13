@@ -86,7 +86,9 @@ class Game:
             try:
                 for node in self.current_node.nodes_from_root:
                     for m in node.move_with_placements:
-                        self._validate_move_and_update_chains(m, True)  # ignore ko since we didn't know if it was forced
+                        self._validate_move_and_update_chains(
+                            m, True
+                        )  # ignore ko since we didn't know if it was forced
             except IllegalMoveException as e:
                 raise Exception(f"Unexpected illegal move ({str(e)})")
 
@@ -163,7 +165,6 @@ class Game:
         cn = self.current_node  # avoid race conditions
         for _ in range(n_times):
             if not cn.is_root:
-                cn.parent.set_favourite_child(cn)
                 cn = cn.parent
         self.set_current_node(cn)
 
@@ -171,18 +172,14 @@ class Game:
         cn = self.current_node  # avoid race conditions
         for _ in range(n_times):
             if cn.children:
-                cn = cn.favourite_child
+                cn = cn.order_children[0]
         self.set_current_node(cn)
 
-    def switch_branch(self, direction, cycle=False):
+    def cycle_children(self, direction):
         cn = self.current_node  # avoid race conditions
         if cn.parent and len(cn.parent.children) > 1:
-            ordered_children = GameNode.order_children(cn.parent.children)
-            ix = ordered_children.index(cn) + direction
-            if cycle:
-                ix = (ix + len(ordered_children)) % len(ordered_children)
-            elif ix < 0 or ix >= len(ordered_children):
-                return
+            ordered_children = cn.parent.ordered_children
+            ix = (ordered_children.index(cn) + len(ordered_children) + direction) % len(ordered_children)
             self.set_current_node(ordered_children[ix])
 
     def place_handicap_stones(self, n_handicaps):

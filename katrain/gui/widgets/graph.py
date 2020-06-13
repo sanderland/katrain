@@ -5,6 +5,7 @@ from kivy.properties import BooleanProperty, ListProperty, NumericProperty, Cloc
 from kivymd.app import MDApp
 
 from katrain.gui.kivyutils import BackgroundMixin
+import threading
 
 
 class ScoreGraph(BackgroundMixin):
@@ -31,6 +32,7 @@ class ScoreGraph(BackgroundMixin):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._lock = threading.Lock()
         self.bind(pos=self.update_graph, size=self.update_graph)
 
     def on_touch_down(self, touch):
@@ -123,23 +125,24 @@ class ScoreGraph(BackgroundMixin):
                 self.winrate_dot_pos = winrate_dot_point
 
     def update_value(self, node):
-        self.highlighted_index = index = node.depth
-        self.nodes.extend([None] * max(0, index - (len(self.nodes) - 1)))
-        self.nodes[index] = node
-        if index > 1 and node.parent: # sometimes things go so fast
-            backfill, node = index-1, node.parent
-            while self.nodes[backfill] is None:
-                self.nodes[backfill] = node
-                backfill -= 1
-                node = node.parent
+        with self._lock:
+            self.highlighted_index = index = node.depth
+            self.nodes.extend([None] * max(0, index - (len(self.nodes) - 1)))
+            self.nodes[index] = node
+            if index > 1 and node.parent:  # sometimes things go so fast
+                backfill, bfnode = index - 1, node.parent
+                while self.nodes[backfill] is None:
+                    self.nodes[backfill] = bfnode
+                    backfill -= 1
+                    bfnode = bfnode.parent
 
-        if index + 1 < len(self.nodes) and (node is None or self.nodes[index + 1] not in node.children):
-            self.nodes = self.nodes[: index + 1]  # on branch switching, don't show history from other branch
-        if index == len(self.nodes) - 1:  # possibly just switched branch
-            while node.children:  # add children back
-                node = node.children[0]
-                self.nodes.append(node)
-        Clock.schedule_once(self.update_graph, 0)
+            if index + 1 < len(self.nodes) and (node is None or self.nodes[index + 1] not in node.children):
+                self.nodes = self.nodes[: index + 1]  # on branch switching, don't show history from other branch
+            if index == len(self.nodes) - 1:  # possibly just switched branch
+                while node.children:  # add children back
+                    node = node.children[0]
+                    self.nodes.append(node)
+            Clock.schedule_once(self.update_graph, 0)
 
 
 Builder.load_string(

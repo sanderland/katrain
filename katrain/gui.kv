@@ -236,7 +236,7 @@
         NavIconButton:
             id: branch
             icon: 'img/Branch.png'
-            on_press: root.katrain('switch-branch',1,True)
+            on_press: root.katrain('cycle-children',1)
             disabled: True
     ClickableLabel:
         pos_hint: {'center_x': 0.85,'center_y':0.5}
