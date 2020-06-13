@@ -410,7 +410,7 @@ class BadukPanWidget(Widget):
 
             # hover next move ghost stone
             if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*stone_color[next_player], ghost_alpha))
+                self.draw_stone(*self.ghost_stone, (*stone_color[next_player][:3], ghost_alpha))
 
             animating_pv = self.animating_pv
             if animating_pv:

@@ -27,6 +27,14 @@ def evaluation_class(points_lost: float, eval_thresholds: List[float]):
     return i
 
 
+def check_thread(tb=False): # for checking if draws occur in correct thread
+    import threading
+    print('build in ', threading.current_thread().ident)
+    if tb:
+        import traceback
+        traceback.print_stack()
+
+
 def find_package_resource(path, silent_errors=False):
     if path.startswith("katrain"):
         parts = path.replace("\\", "/").split("/")

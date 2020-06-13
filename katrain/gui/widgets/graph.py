@@ -62,7 +62,7 @@ class ScoreGraph(BackgroundMixin):
         self.nodes = [root]
         node = root
         while node.children:
-            node = node.favourite_child
+            node = node.ordered_children[0]
             self.nodes.append(node)
         self.highlighted_index = 0
 

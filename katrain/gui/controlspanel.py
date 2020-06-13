@@ -53,9 +53,9 @@ class PlayAnalyzeSelect(MDFloatLayout):
 
     def switch_ui_mode(self):  # on tab press, fake ui click and trigger everything top down
         if self.mode == MODE_PLAY:
-            self.analyze.trigger_action(duration=0)
+            Clock.schedule_once(lambda _dt: self.analyze.trigger_action(duration=0)) # normal trigger does not cross thread
         else:
-            self.play.trigger_action(duration=0)
+            Clock.schedule_once(lambda _dt: self.play.trigger_action(duration=0))
 
 
 class ControlsPanel(BoxLayout):
