@@ -566,39 +566,36 @@ msgstr ""
 msgid "ai:p:rank"
 msgstr "Kalibrierter Rang"
 
-#. TODO
+#. this is between 'info' and 'notes' to show extra move statistics in the
+#. info box
 msgid "tab:info-details"
 msgstr "Details"
 
-#. TODO
-msgid "sweep analysis"
-msgstr "Analyzing entire board using {visits} visits/move"
-
-#. TODO
 msgid "Kata exe not found"
-msgstr "KataGo binary {exe} does not exist, please check general settings."
+msgstr ""
+"KataGo binary {exe} nicht gefunden, bitte prüfe Allgemeine Einstellungen."
 
-#. TODO
 msgid "Kata config not found"
 msgstr ""
-"KataGo config file {config} does not exist, please check general settings."
+"KataGo config Datei {config} nicht gefunden, bitte prüfe Allgemeine "
+"Einstellungen."
 
-#. TODO
 msgid "Kata exe not found in path"
 msgstr ""
-"KataGo binary `{exe}` not found in your PATH, check your environment "
-"variables or use the full path in general settings instead. Wenn unter "
+"KataGo binary {exe} nicht im PATH gefunden, prüfe deine Umgebungs- variablen"
+" oder benutze den vollen Pfad in den Allgemeinen Einstellungen. Wenn unter "
 "MacOS, konsultiere das Handbuch wie brew verwendet werden soll, um KataGo zu"
 " installieren."
 
-#. TODO
-msgid "extra analysis"
-msgstr "Performing additional analysis to {visits} visits"
-
-#. TODO
 msgid "Kata model not found"
-msgstr "KataGo model {model} does not exist, please check general settings."
+msgstr ""
+"KataGo model {model} nicht gefunden, bitte prüfe Allgemeine Einstellungen."
 
-#. TODO
+msgid "extra analysis"
+msgstr "Erweiterte Analyse wird ausgeführt mit {visits} Visits"
+
 msgid "equalizing analysis"
-msgstr "Equalizing analysis of candidate moves to {visits} visits"
+msgstr "Analyse der Kandidatenzüge wird abgeglichen mit {visits} Visits"
+
+msgid "sweep analysis"
+msgstr "Analysiere gesamtes Brett mit {visits} Visits/Zug"

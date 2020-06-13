@@ -125,6 +125,9 @@ msgid "tab:points"
 msgstr "Pertes"
 
 msgid "tab:info"
+msgstr "Info"
+
+msgid "tab:info-details"
 msgstr "Diagnostic"
 
 msgid "tab:notes"
@@ -209,7 +212,7 @@ msgstr ""
 "({probability:.2%})."
 
 msgid "Info:policy best"
-msgstr "Le premier instinct était {move} ({probability:.1%})."
+msgstr "La première intuition était {move} ({probability:.1%})."
 
 msgid "Info:teaching undo"
 msgstr ""
@@ -356,7 +359,7 @@ msgid "general settings"
 msgstr "Divers"
 
 msgid "katago settings"
-msgstr "Moteur de KataGo"
+msgstr "KataGo"
 
 msgid "engine settings"
 msgstr "Moteur de Jeu"
@@ -432,6 +435,9 @@ msgstr ""
 "Afficher 1 pour \n"
 "signaler des erreurs"
 
+msgid "config file path"
+msgstr "TOUTES les options sont sauvegardées dans:"
+
 msgid "update settings"
 msgstr "Mettre à jour"
 
@@ -463,37 +469,53 @@ msgstr ""
 msgid "Failed to load SGF"
 msgstr "Impossible de charger le SGF. Erreur d'analyse : {error}"
 
-#. TODO
 msgid "Kata model not found"
-msgstr "KataGo model {model} does not exist, please check general settings."
+msgstr ""
+"Le réseau neuronal {model} est introuvable. \n"
+"Veuillez vérifier son chemin d'accès dans les paramètres généraux."
 
-#. TODO
 msgid "Kata config not found"
 msgstr ""
-"KataGo config file {config} does not exist, please check general settings."
+"Le fichier de configuration {config} est introuvable. Veuillez vérifier son "
+"chemin d'accès dans les paramètres généraux."
 
-#. TODO
 msgid "Kata exe not found in path"
 msgstr ""
-"KataGo binary `{exe}` not found in your PATH, check your environment "
-"variables or use the full path in general settings instead. Sur MacOS, "
-"consultez le manuel pour savoir comment utiliser BREW pour installer KataGo"
+"L'exécutable {exe} est introuvable dans votre PATH (cf. les Variables d'environnement dans vos Propriétés système). Veuillez vérifier ce dernier ou entrer dans les paramètres généraux le chemin absolu de l'exécutable. \n"
+"Sur MacOS, veuillez consulter le manuel pour savoir comment installer KataGo en utilisant BREW."
 
 #. TODO
 msgid "Kata exe not found"
-msgstr "KataGo binary {exe} does not exist, check general settings."
+msgstr ""
+"L'exécutable `{exe}` est introuvable. \n"
+"Veuillez vérifier son chemin d'accès dans les paramètres généraux."
 
 msgid "Starting Kata failed"
 msgstr ""
 "L'Erreur {error} a empêché de lancer KataGo avec la commande '{command}'. "
 "Vérifiez le chemin d'accès de l'exécutable 'katago' dans les paramètres "
-"généraux/Moteur de jeu"
+"généraux"
 
 msgid "Engine died unexpectedly"
 msgstr ""
 "Le moteur de jeu est tombé en panne, \n"
 "possiblement pour cause de \n"
 "mémoire insuffisante : {error}"
+
+msgid "teaching undo message"
+msgstr ""
+"Le coup {move} a été annulé car il perdait {points_lost:.1f} points. Vous "
+"pouvez survoler le coup pour voir la réfutation. Veuillez jouer un nouveau "
+"coup."
+
+msgid "sweep analysis"
+msgstr "Analyse de tous les possibles ({visits} visites/coup)."
+
+msgid "extra analysis"
+msgstr "Analyse supplémentaire de {visits} visites."
+
+msgid "equalizing analysis"
+msgstr "Égalisation de l'analyse ({visits} visites/coup considéré)."
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -537,7 +559,7 @@ msgstr "Intuitif"
 msgid "aihelp:policy"
 msgstr ""
 "Le niveau de jeu dépend du réseau neuronal (cf. Paramètres généraux), \n"
-"étant donné que son coup préféré d'instinct sera joué sans calcul. \n"
+"étant donné que sa première intuition sera joué sans calcul. \n"
 "Néanmoins, on peut varier les débuts de partie \n"
 "pour un nombre donné de coups d'ouverture \n"
 "grâce au champ opening_moves."
@@ -547,21 +569,21 @@ msgstr "Biaisé"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"Jouera le coup proportionnellement aux préférences instinctives. \n"
+"Jouera le coup proportionnellement à ses intuitions. \n"
 "Plus lower_bound (0~1) est haut, moins les coups bizarres seront joués. \n"
 "Plus pick_override (0~1) est bas, plus le coup naturel sera forcé. \n"
 "Plus weaken_fac est bas (voire négatif) plus le coup naturel pourra être joué."
 
 msgid "ai:p:pick"
-msgstr "Mal-voyant"
+msgstr "Myope"
 
 msgid "aihelp:p:pick"
 msgstr ""
-"Jouera d'instinct son coup préféré parmi un échantillon sélectionné au hasard. \n"
+"Jouera le coup le plus intuitif parmi un échantillon sélectionné au hasard. \n"
 "Échantillon = pick_n + (pick_frac multiplié par le nombre de coups légaux). \n"
-"Plus pick_frac (0~1) est haut, plus le coup naturel pourra être joué. \n"
 "Pick_n ajoute un nombre de coups à l'échantillon considéré. \n"
-"Plus pick_override (0~1) est bas, plus le coup naturel sera forcé."
+"Plus pick_frac (0~1) est haut, plus des coups intuitifs seront joués. \n"
+"Plus pick_override (0~1) est bas, plus la première intuition sera forcé."
 
 msgid "ai:p:local"
 msgstr "Local"
@@ -603,38 +625,12 @@ msgstr ""
 "Plus line_weight (1~10) est haut, plus il sera difficile de jouer au-dessus de treshold \n"
 "(Se reporter aux styles précédents pour une explication des autres valeurs)"
 
-msgid "config file path"
-msgstr "TOUTES les options sont sauvegardées dans:"
-
-msgid "teaching undo message"
-msgstr ""
-"Le coup {move} a été annulé car il perdait {points_lost:.1f} points. Vous "
-"pouvez survoler le coup pour voir la réfutation. Veuillez jouer un nouveau "
-"coup."
-
-#. TODO
-msgid "sweep analysis"
-msgstr "Analyzing entire board using {visits} visits/move"
-
-#. TODO
-msgid "extra analysis"
-msgstr "Performing additional analysis to {visits} visits"
-
-#. TODO
 msgid "ai:p:rank"
-msgstr "Calibrated Rank"
+msgstr "Par niveau"
 
-#. TODO
 msgid "aihelp:p:rank"
 msgstr ""
-"Picks moves at random from a limited selection of moves and plays the best "
-"one. Stronger settings select the best move from a larger selection. Since "
-"there is no 0 kyu/dan, 3 dan = -2 kyu."
-
-#. TODO
-msgid "tab:info-details"
-msgstr "Details"
-
-#. TODO
-msgid "equalizing analysis"
-msgstr "Equalizing analysis of candidate moves to {visits} visits"
+"Jouera le coup le plus intuitif parmi un échantillon sélectionné au hasard. \n"
+"Plus kyu_rank (-3~18) est bas, plus l'échantillon sera large et le niveau de jeu élevé. \n"
+"Une valeur positive équivaudra à un niveau en kyu, 0 à 1er dan, -1 à 2e dan, etc. \n"
+"(Niveaux estimés sur OGS avec le réseau neuronal utilisé PAR DÉFAUT)"

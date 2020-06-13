@@ -220,8 +220,6 @@ class BadukPanWidget(Widget):
     def draw_board_contents(self, *_args):
         if not (self.katrain and self.katrain.game):
             return
-        stone_color = STONE_COLORS
-        outline_color = OUTLINE_COLORS
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
         show_n_eval = self.trainer_config["eval_off_show_last"]
@@ -260,13 +258,13 @@ class BadukPanWidget(Widget):
                             evalcol = self.eval_color(points_lost, show_dots_for_class)
                         else:
                             evalcol = None
-                        inner = stone_color[m.opponent] if i == 0 else None
+                        inner = STONE_COLORS[m.opponent] if i == 0 else None
                         drawn_stone[m.coords] = m.player
                         self.draw_stone(
                             m.coords[0],
                             m.coords[1],
-                            stone_color[m.player],
-                            outline_color[m.player],
+                            STONE_COLORS[m.player],
+                            OUTLINE_COLORS[m.player],
                             inner,
                             evalcol,
                             evalsize,
@@ -276,10 +274,10 @@ class BadukPanWidget(Widget):
             if katrain.game.current_node.is_root and katrain.debug_level >= 3:  # secret ;)
                 for y in range(0, board_size_y):
                     evalcol = self.eval_color(16 * y / board_size_y)
-                    self.draw_stone(0, y, stone_color["B"], outline_color["B"], None, evalcol, y / (board_size_y - 1))
-                    self.draw_stone(1, y, stone_color["B"], outline_color["B"], stone_color["W"], evalcol, 1)
-                    self.draw_stone(2, y, stone_color["W"], outline_color["W"], None, evalcol, y / (board_size_y - 1))
-                    self.draw_stone(3, y, stone_color["W"], outline_color["W"], stone_color["B"], evalcol, 1)
+                    self.draw_stone(0, y, STONE_COLORS["B"], OUTLINE_COLORS["B"], None, evalcol, y / (board_size_y - 1))
+                    self.draw_stone(1, y, STONE_COLORS["B"], OUTLINE_COLORS["B"], STONE_COLORS["W"], evalcol, 1)
+                    self.draw_stone(2, y, STONE_COLORS["W"], OUTLINE_COLORS["W"], None, evalcol, y / (board_size_y - 1))
+                    self.draw_stone(3, y, STONE_COLORS["W"], OUTLINE_COLORS["W"], STONE_COLORS["B"], evalcol, 1)
                     self.draw_stone(4, y, [*evalcol[:3], 0.5], scale=0.8)
 
             # ownership - allow one move out of date for smooth animation
@@ -291,7 +289,7 @@ class BadukPanWidget(Widget):
                     for x in range(board_size_x):
                         ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
                         if ix_owner != (has_stone.get((x, y), -1)):
-                            Color(*stone_color[ix_owner][:3], abs(ownership_grid[y][x]))
+                            Color(*STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]))
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
 
             policy = current_node.policy
