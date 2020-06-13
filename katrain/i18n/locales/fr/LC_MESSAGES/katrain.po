@@ -191,7 +191,7 @@ msgid "Info:winrate"
 msgstr "Pronostic : {winrate}"
 
 msgid "Info:point loss"
-msgstr "Estimation des points perdus: {points_lost:.1f}"
+msgstr "Points perdus: {points_lost:.1f}"
 
 #. as in 'Move 125: B5'
 msgid "move"
