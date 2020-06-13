@@ -35,6 +35,7 @@ class Game:
         game_properties: Optional[Dict] = None,
     ):
         self.katrain = katrain
+        self._lock = threading.Lock()
         if not isinstance(engine, Dict):
             engine = {"B": engine, "W": engine}
         self.engines = engine
@@ -75,19 +76,19 @@ class Game:
     # -- move tree functions --
     def _calculate_groups(self):
         board_size_x, board_size_y = self.board_size
-        self.board = [
-            [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
-        ]  # type: List[List[int]]  #  board pos -> chain id
-        self.chains = []  # type: List[List[Move]]  #   chain id -> chain
-        self.prisoners = []  # type: List[Move]
-        self.last_capture = []  # type: List[Move]
-        try:
-            #            for m in self.moves:
-            for node in self.current_node.nodes_from_root:
-                for m in node.move_with_placements:
-                    self._validate_move_and_update_chains(m, True)  # ignore ko since we didn't know if it was forced
-        except IllegalMoveException as e:
-            raise Exception(f"Unexpected illegal move ({str(e)})")
+        with self._lock:
+            self.board = [
+                [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
+            ]  # type: List[List[int]]  #  board pos -> chain id
+            self.chains = []  # type: List[List[Move]]  #   chain id -> chain
+            self.prisoners = []  # type: List[Move]
+            self.last_capture = []  # type: List[Move]
+            try:
+                for node in self.current_node.nodes_from_root:
+                    for m in node.move_with_placements:
+                        self._validate_move_and_update_chains(m, True)  # ignore ko since we didn't know if it was forced
+            except IllegalMoveException as e:
+                raise Exception(f"Unexpected illegal move ({str(e)})")
 
     def _validate_move_and_update_chains(self, move: Move, ignore_ko: bool):
         board_size_x, board_size_y = self.board_size
@@ -219,7 +220,8 @@ class Game:
 
     @property
     def stones(self):
-        return sum(self.chains, [])
+        with self._lock:
+            return sum(self.chains, [])
 
     @property
     def ended(self):
