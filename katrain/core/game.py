@@ -172,7 +172,7 @@ class Game:
         cn = self.current_node  # avoid race conditions
         for _ in range(n_times):
             if cn.children:
-                cn = cn.order_children[0]
+                cn = cn.ordered_children[0]
         self.set_current_node(cn)
 
     def cycle_children(self, direction):

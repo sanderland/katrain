@@ -438,21 +438,19 @@ msgstr ""
 msgid "Failed to load SGF"
 msgstr "SGF 파일을 불러올 수 없습니다. Parse Error: {error}"
 
-#. TODO
+msgid "Kata exe not found"
+msgstr "KataGo 실행 파일 {exe}이 존재하지 않습니다. 일반 설정을 확인해 주십시오."
+
 msgid "Kata config not found"
-msgstr ""
-"KataGo config file {config} does not exist, please check general settings."
+msgstr "KataGo 설정 파일 {config}이 존재하지 않습니다. 일반 설정을 확인해 주십시오."
 
-#. TODO
 msgid "Kata model not found"
-msgstr "KataGo Model {model} does not exist, please check general settings."
+msgstr "KataGo 가중치 {model}이 존재하지 않습니다. 일반 설정을 확인해 주십시오."
 
-#. TODO
 msgid "Kata exe not found in path"
 msgstr ""
-"KataGo binary `{exe}` not found in your PATH, check your environment "
-"variables or use the full path in general settings instead.  MacOS를 사용하고 "
-"계시다면, 어떻게 brew를 이용해 KataGo를 설치하는지 설명서에서 확인하세요."
+"KataGo 실행 파일 `{exe}`이 PATH에 없습니다. 환경 변수를 확인해 보시거나, 혹은 일반 설정에서 실행 파일의 절대경로를 "
+"지정해 주십시오.  MacOS를 사용하고 계시다면, 어떻게 brew를 이용해 KataGo를 설치하는지 설명서에서 확인하세요."
 
 msgid "Starting Kata failed"
 msgstr ""
@@ -552,33 +550,24 @@ msgid "teaching undo message"
 msgstr ""
 "{points_lost:.1f}집 손해이므로 {move}을/를 물렀습니다. 커서를 올려 상대의 대응책을 보십시오. 다시 두어 주세요."
 
-#. TODO
 msgid "aihelp:p:rank"
 msgstr ""
-"Picks moves at random from a limited selection of moves and plays the best "
-"one. Stronger settings select the best move from a larger selection. Since "
-"there is no 0 kyu/dan, 3 dan = -2 kyu."
+"제한적인 착수 가능 목록에서 무작위로 다음 착수를 선택한 후 그 중 최선의 수를 둡니다. 더 강한 설정은 최선의 수를 더 큰 목록에서 "
+"뽑습니다. 0급이나 0단은 없으므로, 3단은 -2급입니다."
 
-#. TODO
 msgid "ai:p:rank"
-msgstr "Calibrated Rank"
+msgstr "기력 지정"
 
-#. TODO
+#. this is between 'info' and 'notes' to show extra move statistics in the
+#. info box
 msgid "tab:info-details"
-msgstr "Details"
+msgstr "상세"
 
-#. TODO
 msgid "sweep analysis"
-msgstr "Analyzing entire board using {visits} visits/move"
+msgstr "가능한 착수 가능점 모두를 각각 {visits} visits를 사용하여 분석합니다."
 
-#. TODO
-msgid "Kata exe not found"
-msgstr "KataGo binary {exe} does not exist, check general settings."
-
-#. TODO
 msgid "equalizing analysis"
-msgstr "Equalizing analysis of candidate moves to {visits} visits"
+msgstr "모든 후보수를 균일하게 {visits} visits으로 분석합니다."
 
-#. TODO
 msgid "extra analysis"
-msgstr "Performing additional analysis to {visits} visits"
+msgstr "{visits} visits까지 추가적으로 분석하고 있습니다."

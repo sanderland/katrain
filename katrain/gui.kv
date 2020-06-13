@@ -568,9 +568,9 @@
         option_colors: [WHITE,WHITE,YELLOW]
         option_active: [True,False,False]
         on_option_state:
-            info.size_hint_y = int(args[1]['info'])+1e-9
-            info.opacity =  int(args[1]['info'])
             info.detailed = args[1]['info-details']
+            info.size_hint_y = int(args[1]['info'] or info.detailed)+1e-9
+            info.opacity =  int(args[1]['info'] or info.detailed)
             notebox.size_hint_y = int(args[1]['notes'])*0.66+1e-9
             notebox.opacity = int(args[1]['notes'])
             app.gui.update_state()
