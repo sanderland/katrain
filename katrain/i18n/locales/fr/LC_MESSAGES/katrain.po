@@ -484,7 +484,6 @@ msgstr ""
 "L'exécutable {exe} est introuvable dans votre PATH (cf. les Variables d'environnement dans vos Propriétés système). Veuillez vérifier ce dernier ou entrer dans les paramètres généraux le chemin absolu de l'exécutable. \n"
 "Sur MacOS, veuillez consulter le manuel pour savoir comment installer KataGo en utilisant BREW."
 
-#. TODO
 msgid "Kata exe not found"
 msgstr ""
 "L'exécutable `{exe}` est introuvable. \n"
