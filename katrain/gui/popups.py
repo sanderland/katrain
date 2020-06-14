@@ -115,7 +115,7 @@ class LabelledFloatInput(LabelledTextInput):
 
     @property
     def input_value(self):
-        return float("0" + self.text)
+        return float(self.text or "0.0")
 
 
 class LabelledIntInput(LabelledTextInput):
@@ -126,7 +126,7 @@ class LabelledIntInput(LabelledTextInput):
 
     @property
     def input_value(self):
-        return int("0" + self.text)
+        return int(self.text or "0")
 
 
 class InputParseError(Exception):
