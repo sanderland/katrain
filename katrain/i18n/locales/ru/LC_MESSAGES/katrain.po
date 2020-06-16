@@ -8,75 +8,75 @@ msgstr ""
 
 #. main hamburger menu
 msgid "menu:playersetup"
-msgstr "Player Setup"
+msgstr "Настройка игроков"
 
 msgid "menu:newgame"
-msgstr "New Game"
+msgstr "Новая игра"
 
 msgid "menu:save"
-msgstr "Save Game"
+msgstr "Сохранить игру"
 
 msgid "menu:load"
-msgstr "Load Game"
+msgstr "Загрузить игру"
 
 msgid "menu:settings"
-msgstr "General & Engine Settings"
+msgstr "Настройки системы"
 
 msgid "menu:clocksettings"
-msgstr "Timer Settings"
+msgstr "Контроль времени"
 
 msgid "menu:teachsettings"
-msgstr "Teaching Game Settings"
+msgstr "Настройки обучающей игры"
 
 msgid "menu:aisettings"
-msgstr "AI Settings"
+msgstr "Настройки ИИ"
 
 msgid "menu:lang"
-msgstr "Language"
+msgstr "Язык"
 
 msgid "menu:support"
 msgstr "Contribute"
 
 msgid "menu:manual"
-msgstr "Manual"
+msgstr "Помощь"
 
 #. player options in the setup and on the right
 msgid "player:type"
-msgstr "Player"
+msgstr "Игрок"
 
 msgid "player:human"
-msgstr "Human"
+msgstr "Человек"
 
 msgid "player:ai"
-msgstr "AI"
+msgstr "Компьютер"
 
 msgid "aistrategy"
-msgstr "AI Strategy"
+msgstr "Стратегия ИИ"
 
 msgid "gametype"
-msgstr "Game Type"
+msgstr "Тип игры"
 
 msgid "game:normal"
-msgstr "Normal Game"
+msgstr "Обычная"
 
 msgid "game:teach"
-msgstr "Teaching Game"
+msgstr "Обучающая"
 
 #. buttons at the top - should all include a line break
 msgid "analysis:nextmoves"
 msgstr ""
-"Next\n"
-"Moves"
+"Следующие\n"
+"Ходы"
 
 msgid "analysis:dots"
 msgstr ""
-"Show\n"
-"Dots"
+"Показывать\n"
+"Точки"
 
 msgid "analysis:topmoves"
 msgstr ""
-"Top\n"
-"Moves"
+"Лучшие\n"
+"Ходы"
 
 msgid "analysis:policy"
 msgstr ""
@@ -85,18 +85,18 @@ msgstr ""
 
 msgid "analysis:territory"
 msgstr ""
-"Expected\n"
-"Territory"
+"Ожидаемая\n"
+"Территория"
 
 #. analysis menu items
 msgid "analysis:extra"
-msgstr "Deeper analysis"
+msgstr "Более глубокий анализ"
 
 msgid "analysis:equalize"
-msgstr "Equalize visits of potential moves"
+msgstr "Уровнять посещения потенциальных ходов"
 
 msgid "analysis:sweep"
-msgstr "Fast analysis of all moves"
+msgstr "Быстрый анализ всех ходов"
 
 msgid "analysis:aimove"
 msgstr "Force AI Move"
@@ -124,23 +124,22 @@ msgstr ""
 
 msgid "ai-ponder"
 msgstr ""
-"This simply indicates the Engine status, going from green (idle) to orange "
-"(processing queries). It turns red when the engine has crashed or fails to "
-"start."
+"Индикатор статуса ИИ, от зелёного (бездействие) к оранжевому (обработка "
+"запросов). Становится красным если движок сломался или не запустился."
 
 #. undo button on the right
 msgid "undo-button-text"
-msgstr "Undo"
+msgstr "Отмена"
 
 #. tabs and labels on the right panel
 msgid "tab:score"
-msgstr "Score"
+msgstr "Очки"
 
 msgid "tab:winrate"
-msgstr "Win Rate"
+msgstr "Доля побед"
 
 msgid "tab:points"
-msgstr "Point Loss"
+msgstr "Потеря очков"
 
 msgid "tab:info"
 msgstr "Info"
@@ -149,77 +148,77 @@ msgid "tab:info-details"
 msgstr "Details"
 
 msgid "tab:notes"
-msgstr "Notes"
+msgstr "Заметки"
 
 msgid "closedlabel:scoregraph"
-msgstr "Score Graph"
+msgstr "График очков"
 
 #. on the graph
 msgid "Jigo"
 msgstr "Jigo"
 
 msgid "closedlabel:movestats"
-msgstr "Move Stats"
+msgstr "Статистика ходов"
 
 msgid "closedlabel:info&notes"
-msgstr "Move Info & Notes"
+msgstr "Информация о ходах и заметки"
 
 #. on the board after passing once/twice
 msgid "board-pass"
-msgstr "pass"
+msgstr "пас"
 
 msgid "board-game-end"
 msgstr ""
-"game\n"
-"end"
+"конец\n"
+"игры"
 
 #. Select mode
 msgid "btn:Play"
-msgstr "Play"
+msgstr "Играть"
 
 msgid "btn:Analysis"
-msgstr "Analysis"
+msgstr "Анализ"
 
 msgid "btn:Analyze"
-msgstr "Analysis Options"
+msgstr "Настройки анализа"
 
 msgid "stats:winrate"
-msgstr "Win Rate"
+msgstr "Доля побед"
 
 msgid "stats:score"
-msgstr "Estimated Score"
+msgstr "Оценка очков"
 
 msgid "stats:pointslost"
-msgstr "Points Lost"
+msgstr "Потерянные очки"
 
 #. better than expected best move
 msgid "stats:pointsgained"
-msgstr "Points Gained"
+msgstr "Полученные очки"
 
 #. SGF and move comment messages
 msgid "SGF start message"
 msgstr ""
-"Moves marked 'X' indicate the top move according to KataGo, those with a "
-"square are moves that lose less than 0.5 points"
+"Ходы, отмеченные 'X', соответствуют лучшему ходу согласно KataGo, а ходы, "
+"отмеченные квадратом, соответствуют потере не более 0.5 очка"
 
 msgid "Info:score"
-msgstr "Score: {score}"
+msgstr "Очки: {score}"
 
 msgid "Info:winrate"
-msgstr "Win rate: {winrate}"
+msgstr "Доля побед: {winrate}"
 
 msgid "Info:point loss"
-msgstr "Estimated point loss: {points_lost:.1f}"
+msgstr "Ожидаемая потеря очков: {points_lost:.1f}"
 
 #. as in 'Move 125: B5'
 msgid "move"
-msgstr "Move {number}"
+msgstr "Ход {number}"
 
 msgid "Info:top move"
-msgstr "Predicted top move was {top_move} ({score})."
+msgstr "Лучший предсказанный ход был {top_move} ({score})."
 
 msgid "Info:best move"
-msgstr "Move was predicted best move"
+msgstr "Ход совпадает с лучшим предсказанным"
 
 msgid "Info:PV"
 msgstr "PV: {pv}"
@@ -231,39 +230,39 @@ msgid "Info:policy best"
 msgstr "Top policy move was {move} ({probability:.1%})."
 
 msgid "Info:teaching undo"
-msgstr "Move was automatically undone in teaching mode."
+msgstr "Ход был автоматически отменён в режиме обучения."
 
 msgid "Info:undo predicted PV"
-msgstr "Predicted follow-up: {pv}"
+msgstr "Ожидаемое продолжение: {pv}"
 
 msgid "Info:AI thoughts"
-msgstr "AI thought process: {thoughts}"
+msgstr "Мысли ИИ: {thoughts}"
 
 msgid "No analysis available"
-msgstr "No analysis available"
+msgstr "Анализ недоступен"
 
 msgid "Analyzing move..."
-msgstr "Analyzing move..."
+msgstr "Анализ хода..."
 
 msgid "SGF Notes Hint"
-msgstr "Your SGF notes for this position here."
+msgstr "Ваши SGF-заметки для этой позиции тут."
 
 # sgf load popup
 msgid "load sgf title"
-msgstr "Load SGF File to Analyze"
+msgstr "Загрузить SGF файл для анализа"
 
 msgid "load sgf fast analysis"
-msgstr "Use fast analysis"
+msgstr "Быстрый анализ"
 
 msgid "load sgf rewind"
-msgstr "Rewind to start"
+msgstr "Перемотать к началу"
 
 # timer settings from here
 msgid "timer settings"
-msgstr "Adjust Timer Settings"
+msgstr "Изменить настройки времени"
 
 msgid "byoyomi length"
-msgstr "Time per Byo-yomi Period"
+msgstr "Период бёёми"
 
 msgid "byoyomi periods"
 msgstr "Number of Periods"
@@ -273,103 +272,103 @@ msgstr "Sound on"
 
 #. submit button
 msgid "update timer"
-msgstr "Update Timer"
+msgstr "Сохранить настройки времени"
 
 # new game settings from here
 msgid "New Game title"
-msgstr "Setup New Game"
+msgstr "Настроить новую игру"
 
 msgid "board size"
-msgstr "Board size"
+msgstr "Размер доски"
 
 msgid "handicap"
-msgstr "Handicap"
+msgstr "Фора"
 
 msgid "komi"
-msgstr "Komi"
+msgstr "Коми"
 
 msgid "ruleset"
-msgstr "Rules"
+msgstr "Правила"
 
 #. ruleset names
 msgid "japanese"
-msgstr "Japanese"
+msgstr "Японские"
 
 msgid "chinese"
-msgstr "Chinese"
+msgstr "Китайские"
 
 msgid "korean"
-msgstr "Korean"
+msgstr "Корейские"
 
 msgid "aga"
 msgstr "AGA"
 
 msgid "clear cache"
-msgstr "Clear Cache"
+msgstr "Очистить кэш"
 
 #. clear cache help
 msgid "avoids replaying"
 msgstr ""
-"Avoids replaying\n"
-"identical games"
+"Избегает воспроизведения\n"
+"идентичных игр"
 
 #. hints on new game
 msgid "non square board hint"
-msgstr "Use x:y (e.g. 19:9) for non-square size"
+msgstr "Используйте x:y (e.g. 19:9) для прямоугольных размеров"
 
 #. submit new game
 msgid "new game"
-msgstr "Start New Game"
+msgstr "Начать новую игру"
 
 # teacher settings from here
 msgid "teacher settings"
-msgstr "Edit Teacher Settings"
+msgstr "Редактировать настройки учителя"
 
 msgid "point loss threshold"
-msgstr "Point loss greater than"
+msgstr "Потеря очков более"
 
 msgid "num undos"
-msgstr "Number of undos"
+msgstr "Количество отмен хода"
 
 msgid "dot color"
-msgstr "Colour (fixed)"
+msgstr "Цвет (зафиксирован)"
 
 msgid "show dots"
-msgstr "Show dots"
+msgstr "Показывать точки"
 
 msgid "save dots"
-msgstr "Save in SGF"
+msgstr "Сохранить в SGF"
 
 msgid "show last n dots"
 msgstr ""
-"Show dots for the last\n"
-"<this many> moves"
+"Показать точки для\n"
+"<this many> последних ходов"
 
 msgid "show ai dots"
 msgstr ""
-"Show dots/SGF comments\n"
-" for AI players"
+"Показать точки/SGF комментарии\n"
+" для ИИ игроков"
 
 #. removed as an option / can ignore
 msgid "lock ai when playing"
 msgstr ""
-"Disable top moves\n"
-" while in play mode"
+"Отключить лучшие ходы\n"
+" во время игры"
 
 #. submit button
 msgid "update teacher"
-msgstr "Update Feedback Settings"
+msgstr "Сохранить настройки обратной связи"
 
 # main config settings
 msgid "restarting engine"
-msgstr "Restarting Engine after Settings Change."
+msgstr "Перезапуск движка после смены настроек."
 
 # title
 msgid "general settings title"
-msgstr "General and Engine Settings"
+msgstr "Общие настройки и настройки движка"
 
 msgid "file not found"
-msgstr "Path does not exist"
+msgstr "Файл не найден"
 
 msgid "general settings"
 msgstr "General Settings"
@@ -378,89 +377,89 @@ msgid "katago settings"
 msgstr "KataGo settings"
 
 msgid "engine settings"
-msgstr "Engine Settings"
+msgstr "Настройки движка KataGo"
 
 msgid "config file path"
 msgstr "All options are saved in:"
 
 msgid "engine:katago"
-msgstr "Path to KataGo executable"
+msgstr "Путь к исполняемому файлу KataGo"
 
 msgid "engine:katago:hint"
-msgstr "Leave blank to use included executable"
+msgstr "По умолчанию используется встроенный движок"
 
 msgid "engine:model"
-msgstr "Path to KataGo model file"
+msgstr "Путь к файлу модели KataGo"
 
 msgid "engine:config"
-msgstr "Path to KataGo config file"
+msgstr "Путь к файлу конфигурации KataGo"
 
 msgid "engine:max_visits"
-msgstr "Maximum number of visits in analysis"
+msgstr "Максимальное число посещение в анализе"
 
 msgid "engine:fast_visits"
-msgstr "Maximum number of visits in fast analysis"
+msgstr "Максимальное число посещений в быстром анализе"
 
 msgid "engine:max_time"
-msgstr "Maximum time for analysis"
+msgstr "Максимальное время анализа"
 
 msgid "engine:wide_root_noise"
-msgstr "Wide root noise (increases variety of moves considered)"
+msgstr "Высокий уровень шума (увеличивает разнообразие рассматриваемых ходов)"
 
 msgid "engine:wide_root_noise:hint"
 msgstr ""
-"Use 0.02-0.1 to show\n"
-"more possible moves"
+"Используйте 0.02-0.1 для показа\n"
+"большего числа возможных ходов"
 
 msgid "engine:time:hint"
-msgstr "Time in seconds"
+msgstr "Время в секундах"
 
 #. no longer used, can ignore
 msgid "general:sgf_load"
-msgstr "Path for loading SGF files"
+msgstr "Путь для загрузки файлов SGF"
 
 msgid "general:sgf_save"
-msgstr "Path for saving SGF files"
+msgstr "Путь для сохранения файлов SGF"
 
 msgid "general:anim_pv_time"
-msgstr "Time between moves when animating a sequence"
+msgstr "Задержка между ходами в анимации"
 
 msgid "general:debug_level"
-msgstr "Debug level in the console"
+msgstr "Уровень отладочных сообщение в консоли"
 
 msgid "general:debug_level:hint"
-msgstr "Set to 1 when reporting errors"
+msgstr "Используйте 1 для печати только ошибок"
 
 msgid "update settings"
-msgstr "Update Settings"
+msgstr "Сохранить настройки"
 
 # ai settings from here
 msgid "ai settings"
-msgstr "Advanced AI Settings"
+msgstr "Расширенные настройки ИИ"
 
 msgid "Select AI"
-msgstr "Select AI strategy to configure"
+msgstr "Выбор стратегии ИИ"
 
 msgid "update ai settings"
-msgstr "Update AI Settings"
+msgstr "Сохранить настройки ИИ"
 
 #. misc errors and info messages
 msgid "sgf written"
-msgstr "SGF with analysis written to {file_name}"
+msgstr "SGF с анализом сохранён в {file_name}"
 
 msgid "wait-before-equalize"
-msgstr "Wait for initial analysis to complete before requesting a refinement."
+msgstr "Дождитесь начального анализа перед запросом уточнений."
 
 msgid "Copied SGF to clipboard."
-msgstr "Copied SGF to clipboard."
+msgstr "SGF скопирован в буфер обмена."
 
 msgid "Failed to import from clipboard"
 msgstr ""
-"Failed to import game from clipboard: {error}\n"
-"Clipboard contents: {contents}..."
+"Ошибка импорта из буфера обмена: {error}\n"
+"Содержимое буфера: {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "Failed to load SGF. Parse Error: {error}"
+msgstr "Ошибка загрузки SGF. Ошибка парсинга: {error}"
 
 msgid "Kata exe not found"
 msgstr "KataGo binary {exe} does not exist, please check general settings."
@@ -488,35 +487,34 @@ msgstr ""
 
 #. AI names, help etc
 msgid "strength:kyu"
-msgstr "k"
+msgstr "к"
 
 msgid "strength:dan"
-msgstr "d"
+msgstr "д"
 
 msgid "ai:default"
 msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"Full strength KataGo AI. Strength is  affected by `max visits` and `model` "
-"in the general settings `engine` section and engine configuration file. No "
-"options are available here."
+"Полная сила ИИ KataGo. Сила зависит от настроек `max visits` и `model` в "
+"общих настройках и файле конфигурации."
 
 msgid "ai:jigo"
 msgstr "KataJigo"
 
 msgid "aihelp:jigo"
 msgstr ""
-"Will try to win by a set amount of points (default 0.5), without further "
-"restrictions."
+"Пытается выиграть на заданное число очков (по умолчанию 0.5), без иных "
+"ограничений."
 
 msgid "ai:scoreloss"
-msgstr "Score Loss"
+msgstr "Потеря очков"
 
 msgid "aihelp:scoreloss"
 msgstr ""
-"Plays moves that lead to more points lost with lower probability. Likely to "
-"play more varied/weaker with higher visits settings."
+"Избегает ходов с высокой вероятностью большой потери очков. Склонна играть "
+"более разнообразно/слабее при высокой настройке посещений ходов."
 
 msgid "ai:policy"
 msgstr "Policy"
@@ -548,7 +546,7 @@ msgstr ""
 "policy value is above `pick_override` to avoid obvious mistakes."
 
 msgid "ai:p:local"
-msgstr "Local Style"
+msgstr "Локальный стиль"
 
 msgid "aihelp:p:local"
 msgstr ""
@@ -557,7 +555,7 @@ msgstr ""
 "`pick_override` to avoid obvious mistakes."
 
 msgid "ai:p:tenuki"
-msgstr "Tenuki Style"
+msgstr "Стиль Tenuki"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
@@ -567,7 +565,7 @@ msgstr ""
 "further away."
 
 msgid "ai:p:influence"
-msgstr "Influential Style"
+msgstr "Стиль влияния"
 
 msgid "aihelp:p:influence"
 msgstr ""
@@ -576,7 +574,7 @@ msgstr ""
 "after the 'endgame' fraction of the board is filled."
 
 msgid "ai:p:territory"
-msgstr "Territorial Style"
+msgstr "Территориальный стиль"
 
 msgid "aihelp:p:territory"
 msgstr ""
