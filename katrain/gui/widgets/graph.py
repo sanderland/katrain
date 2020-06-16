@@ -140,7 +140,7 @@ class ScoreGraph(BackgroundMixin):
                 self.nodes = self.nodes[: index + 1]  # on branch switching, don't show history from other branch
             if index == len(self.nodes) - 1:  # possibly just switched branch
                 while node.children:  # add children back
-                    node = node.children[0]
+                    node = node.ordered_children[0]
                     self.nodes.append(node)
             Clock.schedule_once(self.update_graph, 0)
 
