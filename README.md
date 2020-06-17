@@ -69,7 +69,7 @@ This section describes the available AIs, with strength based on their current O
         * **[~8k]** **Tenuki Style** will consider mostly moves away from the last move.
         * **[~8k]** **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
         * **[~5k]** **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
-    * **KataJigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
+    * **KataJigo** is KataGo attempting to win by 0.5 points, typically by responding to your mistakes with an immediate mistake of it's own.
     
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
  while the policy net based AIs are affected by the choice of model file, but work identically with 1 visit.

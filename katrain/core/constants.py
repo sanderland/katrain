@@ -54,7 +54,7 @@ AI_STRENGTH = {
     AI_TENUKI: "8k",
     AI_INFLUENCE: "8k",
     AI_TERRITORY: "5k",
-    AI_RANK: "12k - 3d",
+    AI_RANK: "15k - 3d",
 }
 
 
