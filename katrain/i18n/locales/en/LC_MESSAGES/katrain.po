@@ -524,7 +524,7 @@ msgstr "Policy"
 msgid "aihelp:policy"
 msgstr ""
 "Plays the top move from the policy network, without any reading. Strength is"
-" mainly affected by `model` in engine settings. The opening moves setting "
+" mainly affected by `model` in engine settings. The `opening_moves` setting "
 "affects how many moves in the opening are more random."
 
 msgid "ai:p:weighted"
