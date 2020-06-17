@@ -273,7 +273,7 @@ msgstr "Звук"
 
 #. submit button
 msgid "update timer"
-msgstr "Сохранить настройки времени"
+msgstr "Сохранить"
 
 # new game settings from here
 msgid "New Game title"

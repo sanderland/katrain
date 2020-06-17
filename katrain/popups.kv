@@ -203,7 +203,7 @@
         DescriptionLabel:
             text: i18n._("save dots")
     AnchorLayout:
-        size_hint: 1, 3
+        size_hint: 1, 2
         GridLayout:
             cols: 2
             rows: 3
@@ -215,7 +215,7 @@
                 size_hint: 2,1
             AnchorLayout:
                 LabelledIntInput:
-                    size_hint: 0.33, 1
+                    size_hint_x: 0.33
                     input_property: "trainer/eval_off_show_last"
             DescriptionLabel:
                 size_hint: 2,1
@@ -224,9 +224,6 @@
             AnchorLayout:
                 LabelledCheckBox:
                     input_property: "trainer/eval_show_ai"
-            AnchorLayout:
-                LabelledCheckBox:
-                    input_property: "trainer/lock_ai"
     AnchorLayout:
         size_hint: 1,1.5
         AutoSizedRoundedRectangleButton:
