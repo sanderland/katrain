@@ -93,7 +93,7 @@ msgid "analysis:extra"
 msgstr "Более глубокий анализ"
 
 msgid "analysis:equalize"
-msgstr "Уровнять посещения потенциальных ходов"
+msgstr "Уравнять посещения потенциальных ходов"
 
 msgid "analysis:sweep"
 msgstr "Быстрый анализ всех ходов"
