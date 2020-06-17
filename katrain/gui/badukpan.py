@@ -7,17 +7,17 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
-from kivy.properties import ListProperty
+from kivy.properties import ListProperty, ObjectProperty, BooleanProperty
+from kivy.uix.dropdown import DropDown
 from kivy.uix.widget import Widget
-from kivymd.app import MDApp
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.uix.menu import MDDropdownMenu
 
 from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, var_to_grid
-from katrain.gui.kivyutils import draw_circle, draw_text
+from katrain.gui.kivyutils import draw_circle, draw_text, BackgroundMixin
 from katrain.gui.style import *
 
 
@@ -149,9 +149,9 @@ class BadukPanWidget(Widget):
             return
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
-        max_board_size = max(board_size_x, board_size_y)
-        self.canvas.before.clear()
+
         with self.canvas.before:
+            self.canvas.before.clear()
             # set up margins and grid lines
             grid_spaces_margin_x = [1.5, 0.75]  # left, right
             grid_spaces_margin_y = [1.5, 0.75]  # bottom, top
@@ -220,15 +220,12 @@ class BadukPanWidget(Widget):
     def draw_board_contents(self, *_args):
         if not (self.katrain and self.katrain.game):
             return
-        stone_color = STONE_COLORS
-        outline_color = OUTLINE_COLORS
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
-        lock_ai = self.trainer_config["lock_ai"] and self.katrain.play_analyze_mode == MODE_PLAY
         show_n_eval = self.trainer_config["eval_off_show_last"]
 
-        self.canvas.clear()
         with self.canvas:
+            self.canvas.clear()
             # stones
             current_node = katrain.game.current_node
             game_ended = katrain.game.ended
@@ -261,13 +258,13 @@ class BadukPanWidget(Widget):
                             evalcol = self.eval_color(points_lost, show_dots_for_class)
                         else:
                             evalcol = None
-                        inner = stone_color[m.opponent] if i == 0 else None
+                        inner = STONE_COLORS[m.opponent] if i == 0 else None
                         drawn_stone[m.coords] = m.player
                         self.draw_stone(
                             m.coords[0],
                             m.coords[1],
-                            stone_color[m.player],
-                            outline_color[m.player],
+                            STONE_COLORS[m.player],
+                            OUTLINE_COLORS[m.player],
                             inner,
                             evalcol,
                             evalsize,
@@ -277,22 +274,22 @@ class BadukPanWidget(Widget):
             if katrain.game.current_node.is_root and katrain.debug_level >= 3:  # secret ;)
                 for y in range(0, board_size_y):
                     evalcol = self.eval_color(16 * y / board_size_y)
-                    self.draw_stone(0, y, stone_color["B"], outline_color["B"], None, evalcol, y / (board_size_y - 1))
-                    self.draw_stone(1, y, stone_color["B"], outline_color["B"], stone_color["W"], evalcol, 1)
-                    self.draw_stone(2, y, stone_color["W"], outline_color["W"], None, evalcol, y / (board_size_y - 1))
-                    self.draw_stone(3, y, stone_color["W"], outline_color["W"], stone_color["B"], evalcol, 1)
+                    self.draw_stone(0, y, STONE_COLORS["B"], OUTLINE_COLORS["B"], None, evalcol, y / (board_size_y - 1))
+                    self.draw_stone(1, y, STONE_COLORS["B"], OUTLINE_COLORS["B"], STONE_COLORS["W"], evalcol, 1)
+                    self.draw_stone(2, y, STONE_COLORS["W"], OUTLINE_COLORS["W"], None, evalcol, y / (board_size_y - 1))
+                    self.draw_stone(3, y, STONE_COLORS["W"], OUTLINE_COLORS["W"], STONE_COLORS["B"], evalcol, 1)
                     self.draw_stone(4, y, [*evalcol[:3], 0.5], scale=0.8)
 
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
-            if katrain.analysis_controls.ownership.active and ownership and not lock_ai:
+            if katrain.analysis_controls.ownership.active and ownership:
                 ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
                 rsz = self.grid_size * 0.2
                 for y in range(board_size_y - 1, -1, -1):
                     for x in range(board_size_x):
                         ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
                         if ix_owner != (has_stone.get((x, y), -1)):
-                            Color(*stone_color[ix_owner], abs(ownership_grid[y][x]))
+                            Color(*STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]))
                             Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
 
             policy = current_node.policy
@@ -309,7 +306,7 @@ class BadukPanWidget(Widget):
 
             pass_btn = katrain.board_controls.pass_btn
             pass_btn.canvas.after.clear()
-            if katrain.analysis_controls.policy.active and policy and not lock_ai:
+            if katrain.analysis_controls.policy.active and policy:
                 policy_grid = var_to_grid(policy, (board_size_x, board_size_y))
                 best_move_policy = max(*policy)
                 for y in range(board_size_y - 1, -1, -1):
@@ -354,10 +351,9 @@ class BadukPanWidget(Widget):
         current_node = katrain.game.current_node
         player, next_player = current_node.player, current_node.next_player
         stone_color = STONE_COLORS
-        lock_ai = self.trainer_config["lock_ai"] and self.katrain.play_analyze_mode == MODE_PLAY
 
-        self.canvas.after.clear()
         with self.canvas.after:
+            self.canvas.after.clear()
             self.active_pv_moves = []
 
             # children of current moves in undo / review
@@ -389,7 +385,7 @@ class BadukPanWidget(Widget):
                         )
 
             # hints or PV
-            if katrain.analysis_controls.hints.active and not game_ended and not lock_ai:
+            if katrain.analysis_controls.hints.active and not game_ended:
                 hint_moves = current_node.candidate_moves
                 for i, move_dict in enumerate(hint_moves):
                     move = Move.from_gtp(move_dict["move"])
@@ -412,7 +408,7 @@ class BadukPanWidget(Widget):
 
             # hover next move ghost stone
             if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*stone_color[next_player], ghost_alpha))
+                self.draw_stone(*self.ghost_stone, (*stone_color[next_player][:3], ghost_alpha))
 
             animating_pv = self.animating_pv
             if animating_pv:
@@ -440,7 +436,6 @@ class BadukPanWidget(Widget):
             if i > up_to_move:
                 return
             move_player = next_last_player[i % 2]
-            opp_player = next_last_player[1 - i % 2]
             coords = Move.from_gtp(gtpmove).coords
             if coords is None:  # tee-hee
                 sizefac = katrain.board_controls.pass_btn.size[1] / 2 / self.stone_size
@@ -455,7 +450,7 @@ class BadukPanWidget(Widget):
                 sizefac = 1
 
             draw_circle(board_coords, self.stone_size * sizefac, stone_color[move_player])
-            Color(*stone_color[opp_player])
+            Color(*STONE_TEXT_COLORS[move_player])
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):
@@ -468,46 +463,35 @@ class BadukPanWidget(Widget):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
 
-class AnalysisDropdownMenu(MDDropdownMenu):
-    def create_menu_items(self):
-        super().create_menu_items()
-        for widget in self.menu.ids.box.children:
-            try:
-                widget.ids._text_container.children[2].font_name = i18n.font_name
-            except:  # TODO not use this terrible widget
-                pass
+class AnalysisDropDown(DropDown):
+    pass
 
 
-class AnalysisControls(MDFloatLayout):
-    ANALYSIS_OPTIONS = ["analysis:extra", "analysis:equalize", "analysis:sweep", "analysis:aimove"]
-    ANALYSIS_SHORTCUTS = ["a", "s", "d", "enter"]
+class AnalysisControls(MDBoxLayout):
+    dropdown = ObjectProperty(None)
+    is_open = BooleanProperty(False)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.analysis_menu = None
-        MDApp.get_running_app().bind(language=lambda *_args: Clock.schedule_once(self.build_menu))
-        Clock.schedule_once(self.build_menu, 0)
+        self.build_dropdown()
 
-    def build_menu(self, _dt):
-        menu_items = [
-            {"text": i18n._(text) + f"  ({shortcut})"}
-            for text, shortcut in zip(self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS)
-        ]
-        self.analysis_menu = AnalysisDropdownMenu(
-            caller=self.analysis_button, items=menu_items, width_mult=6, use_icon_item=False, callback=self.action
-        )
+    def on_is_open(self, instance, value):
+        if value:
+            max_content_width = max(option.content_width for option in self.dropdown.container.children)
+            self.dropdown.width = max_content_width
+            self.dropdown.open(self.analysis_button)
+        elif self.dropdown.attach_to:
+            self.dropdown.dismiss()
 
-    def action(self, item):
-        katrain = MDApp.get_running_app().gui
-        shortcuts = katrain.shortcuts
-        for text, shortcut in zip(self.ANALYSIS_OPTIONS, self.ANALYSIS_SHORTCUTS):
-            if item.text.startswith(i18n._(text)):
-                katrain(*shortcuts[shortcut])
+    def close_dropdown(self, *largs):
+        self.is_open = False
 
-    def open_analysis_menu(self):
-        while not self.analysis_menu:
-            time.sleep(0.01)
-        self.analysis_menu.open()
+    def toggle_dropdown(self, *largs):
+        self.is_open = not self.is_open
+
+    def build_dropdown(self):
+        self.dropdown = AnalysisDropDown(auto_width=False)
+        self.dropdown.bind(on_dismiss=self.close_dropdown)
 
 
 class BadukPanControls(MDFloatLayout):

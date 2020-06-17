@@ -1,41 +1,34 @@
 #:kivy 1.11.0
 #:import i18n katrain.core.lang.i18n
 
-# TODO: refactor
-#:set CP_SPACING 6
-#:set CP_SMALL_SPACING 3
-#:set CP_PADDING 6
-
 #:import PLAYER_TYPES katrain.core.constants.PLAYER_TYPES
 #:import PLAYER_HUMAN katrain.core.constants.PLAYER_HUMAN
 #:import PLAYER_AI    katrain.core.constants.PLAYER_AI
+#:import MODE_PLAY katrain.core.constants.MODE_PLAY
+#:import MODE_ANALYZE katrain.core.constants.MODE_ANALYZE
 
-#:import RED katrain.gui.style.RED
 #:import WHITE katrain.gui.style.WHITE
+#:import BLACK katrain.gui.style.BLACK
+#:import LIGHTGREY katrain.gui.style.LIGHTGREY
+#:import GREEN katrain.gui.style.GREEN
+#:import YELLOW katrain.gui.style.YELLOW
+#:import RED katrain.gui.style.RED
+#:import DARKRED katrain.gui.style.DARKRED
+#:import ORANGE katrain.gui.style.ORANGE
+
 #:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
 #:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
+#:import LIGHTER_BACKGROUND_COLOR katrain.gui.style.LIGHTER_BACKGROUND_COLOR
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
-
-#:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
-#:set SPINNER_OPTION_COLOR [64 / 255, 85 / 255, 110 / 255, 1]
-
-#:set LIGHTGREY [0.7,0.7,0.7,1]
-#:set BLACK [0.05,0.05,0.05,1]
-#:set GREY  [0.5,0.5,0.5,1]
-#:set GREEN  [0.1,0.8,0.1,1]
-#:set LIGHTBLUE  [0.3,0.7,0.9,1]
-#:set YELLOW [0.8,0.8,0.1,1]
-#:set DARKRED  [0.3,0.1,0.1,1]
-
-
-#:set SCORE_COLOR LIGHTBLUE
-#:set POINTLOSS_COLOR YELLOW
-#:set WINRATE_COLOR GREEN
-#:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
-
+#:import SCORE_COLOR katrain.gui.style.SCORE_COLOR
+#:import WINRATE_COLOR katrain.gui.style.WINRATE_COLOR
+#:import POINTLOSS_COLOR katrain.gui.style.POINTLOSS_COLOR
 #:set BUTTON_INACTIVE_COLOR LIGHTGREY
-#:set NOTES_FONT_SIZE dp(18)
 
+#:set CP_SPACING dp(6)
+#:set CP_SMALL_SPACING dp(3)
+#:set CP_PADDING dp(6)
+#:set NOTES_FONT_SIZE dp(18)
 
 # for sizing help
 #<Label>:
@@ -64,6 +57,7 @@
 
 
 # new widgets
+
 
 <SizedButton>:
     ripple_duration_in_slow: 0.6
@@ -130,7 +124,7 @@
 
 
 <I18NSpinnerOption@SpinnerOption>:
-    background_color: SPINNER_OPTION_COLOR
+    background_color: LIGHTER_BACKGROUND_COLOR
     background_normal: ''
     lang_change_tracking: i18n._('') # for font
     color: WHITE
@@ -138,15 +132,16 @@
         Color:
             rgba: LIGHTGREY
         Line
-            points: self.pos[0],self.pos[1],self.pos[0]+self.width,self.pos[1]
+            points: self.x,self.y,self.x+self.width,self.y
             width: 1
 
-<I18NSpinner>:
-    font_size: self.height * 0.5
-    sync_height_frac: 1.0
+<Spinner>:
+    -font_size: self.height * 0.5
     background_color: [*[c*255/88 for c in BACKGROUND_COLOR[:3]], 1] # compensate for texture
     option_cls: 'I18NSpinnerOption'
 
+<I18NSpinner>
+    sync_height_frac: 1.0
 
 <CircleWithText>:
     min_size: min(self.height,self.width)
@@ -241,7 +236,7 @@
         NavIconButton:
             id: branch
             icon: 'img/Branch.png'
-            on_press: root.katrain('switch-branch',1)
+            on_press: root.katrain('cycle-children',1)
             disabled: True
     ClickableLabel:
         pos_hint: {'center_x': 0.85,'center_y':0.5}
@@ -264,7 +259,7 @@
 <HamburgerButton@TransparentIconButton>:
     icon: 'img/hamburger.png'
     width: self.height
-    icon_size: [self.height * 0.6, self.height * 0.6]
+    icon_size: [self.height * 0.5, self.height * 0.5]
 
 # ---------- components of right pane -------
 
@@ -301,7 +296,7 @@
     min_size: min(self.height,self.width)
     inactive_line_color: WHITE
     inactive_fill_color: [1,1,1,0]
-    active_line_color: [242/255,96/255,34/255,1]
+    active_line_color: ORANGE
     active_fill_color: [1,1,1,0]
     line_width: max(1.1,self.min_size/20)
     line_color: root.active_line_color if self.active else root.inactive_line_color
@@ -332,7 +327,8 @@
 
 
 <TimerLabel@Label>
-    color: GREEN
+    timeout: False
+    color: ORANGE if self.timeout else GREEN
     markup: True
     multiline: False
     font_name: 'fonts/digital-7 (mono).ttf'
@@ -341,6 +337,7 @@
     spacing: CP_SPACING
     padding: CP_PADDING * 4, CP_PADDING * 2
     paused: True
+    timeout: self.state[1] <= 0
     MDBoxLayout:
         size_hint: 0.7,1
         MDFloatLayout:
@@ -348,15 +345,14 @@
             TimerLabel:
                 color: BACKGROUND_COLOR
                 text: '8:88'
-                text_size: self.size
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
                 halign: 'right'
                 valign: 'middle'
             TimerLabel:
                 id: timer
+                timeout: root.timeout
                 text: "{:01d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
-                text_size: self.size
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
                 halign: 'right'
@@ -368,6 +364,7 @@
             text_size: self.width, self.height * 0.95
             halign: 'right'
             valign: 'top'
+            timeout: root.timeout
         TimerLabel:
             size_hint: 0.1,1
             font_size: self.height * 0.35
@@ -377,6 +374,7 @@
             id: periods
             text: str(root.state[1])
             multiline: False
+            timeout: root.timeout
     MDBoxLayout:
         size_hint: 0.2,1
         PauseButton:
@@ -386,7 +384,6 @@
             on_left_press: root.paused = not root.paused
 
 
-#:set GRAPH_CENTER_COLOR GREY
 
 
 <GraphMarkerLabel@Label>:
@@ -394,84 +391,6 @@
     halign: 'left'
     text: '+0'
     size: self.texture_size
-
-<ScoreGraph>:
-    background_color:  BOX_BACKGROUND_COLOR
-    whalf: root.pos[1]+self.height*0.25
-    bhalf: root.pos[1]+self.height*0.75
-    mid:  root.pos[1]+self.height*0.5
-    right_edge: root.pos[0] + root.width
-    marker_font_size: 0.1 * root.height
-    canvas:
-        Color:
-            rgba: GRAPH_CENTER_COLOR
-        Line:
-            points: [root.pos[0],root.whalf,root.pos[0]+root.width,root.whalf]
-            width: 1
-            dashes: [2,2]
-        Line:
-            points: [root.pos[0],root.mid,root.pos[0]+root.width,root.mid]
-            width: 1
-            dashes: [4,4]
-        Line:
-            points: [root.pos[0],root.bhalf,root.pos[0]+root.width,root.bhalf]
-            width: 1
-            dashes: [2,2]
-    canvas.after:
-        Color:
-            rgba: SCORE_COLOR
-        Line:
-            points: root.score_points if root.show_score else []
-            width: 1.1
-        Color:
-            rgba: WINRATE_COLOR
-        Line:
-            points: root.winrate_points if root.show_winrate else []
-            width: 1.1
-        Color:
-            rgba: GRAPH_DOT_COLOR
-        Ellipse:
-            id: score_dot
-            pos: root.score_dot_pos
-            size: (self.highlight_size,self.highlight_size) if root.show_score else (0.0001,0.0001)
-        Color:
-            rgba: GRAPH_DOT_COLOR
-        Ellipse:
-            id: winrate_dot
-            pos: root.winrate_dot_pos
-            size: (self.highlight_size,self.highlight_size) if root.show_winrate else (0.0001,0.0001)
-    # score ticks
-    GraphMarkerLabel:
-        font_size: root.marker_font_size
-        color:  SCORE_COLOR
-        pos: root.right_edge - self.width-1, root.pos[1]+root.height - self.font_size - 1
-        text: 'B+{}'.format(root.score_scale)
-        opacity: int(root.show_score)
-    GraphMarkerLabel:
-        font_size: root.marker_font_size
-        color:  SCORE_COLOR
-        pos: root.right_edge - self.width-1, root.mid - self.height/2 + 2
-        text: i18n._('Jigo')
-        opacity: int(root.show_score)
-    GraphMarkerLabel:
-        font_size: root.marker_font_size
-        color:  SCORE_COLOR
-        pos: root.right_edge - self.width-1, root.pos[1]
-        text: 'W+' + str(int(root.score_scale))
-        opacity: int(root.show_score)
-    # wr ticks
-    GraphMarkerLabel:
-        font_size: root.marker_font_size
-        color: WINRATE_COLOR
-        pos: root.pos[0]+1,  root.pos[1]+root.height - self.font_size - 1
-        text: "{}%".format(50 + root.winrate_scale)
-        opacity: int(root.show_winrate)
-    GraphMarkerLabel:
-        font_size: root.marker_font_size
-        color: WINRATE_COLOR
-        pos:root.pos[0]+1, root.pos[1]
-        text: "{}%".format(50 - root.winrate_scale)
-        opacity: int(root.show_winrate)
 
 
 <StatsLabel>:
@@ -561,6 +480,7 @@
             width: 1
             points: (*self.pos,self.x+self.width,self.y)
 
+
 <ControlsPanel>:
     katrain: app.gui
     orientation: 'vertical'
@@ -572,6 +492,8 @@
     info: info
     note: note
     status: status
+    timer_or_movetree: timer_or_movetree
+    move_tree: move_tree
     padding: CP_PADDING
     spacing: CP_SPACING
     player_box_height: max(50, 0.075 * root.height)
@@ -588,27 +510,36 @@
         PlayerInfo:
             id: W_player
             player: 'W'
-    BoxLayout:
+    TimerOrMoveTree:
+        id: timer_or_movetree
         size_hint_y: None
         height: root.timer_box_height
-        spacing: CP_SPACING
-        Timer:
-            id: timer
-            size_hint_x: 0.7
-        MDBoxLayout:
-            orientation: 'vertical'
-            padding: 2*CP_PADDING,CP_PADDING
+        BoxLayout:
+            size_hint_x: 0.0001 if self.parent.mode != MODE_PLAY else 1
+            opacity: 0 if self.parent.mode != MODE_PLAY else 1
             spacing: CP_SPACING
-            size_hint_x: 0.3
-            SizedRoundedRectangleButton:
-                text: i18n._('pass-button-text')
-                size_hint: 1, 0.5
-                on_left_release: root.katrain("play",None)
-            SizedRoundedRectangleButton:
-                text: i18n._('undo-button-text')
-                size_hint: 1, 0.5
-                on_left_release: root.katrain("undo","smart")
+            Timer:
+                id: timer
+                size_hint_x: 0.65
+            MDBoxLayout:
+                orientation: 'vertical'
+                padding: 2*CP_PADDING,CP_PADDING
+                spacing: CP_SPACING
+                size_hint_x: 0.35
+                SizedRoundedRectangleButton:
+                    text: i18n._('pass-button-text')
+                    size_hint: 1, 0.5
+                    on_left_release: root.katrain("play",None)
+                SizedRoundedRectangleButton:
+                    text: i18n._('undo-button-text')
+                    size_hint: 1, 0.5
+                    on_left_release: root.katrain("undo","smart")
+        MoveTree:
+            id: move_tree
+            size_hint_x: 0.0001 if self.parent.mode == MODE_PLAY else 1
+            opacity: 0 if self.parent.mode == MODE_PLAY else 1
     CollapsablePanel:
+        id: graph_panel
         height_open: root.graph_box_height
         closed_label: 'closedlabel:scoregraph'
         options: ['score','winrate']
@@ -619,6 +550,7 @@
         ScoreGraph:
             id: graph
     CollapsablePanel:
+        id: stats_panel
         height_open: root.stats_box_height
         closed_label: 'closedlabel:movestats'
         options: ['score','winrate','points']
@@ -629,16 +561,19 @@
         StatsBox:
             id: stats
     CollapsablePanel:
+        id: notes_panel
         size_hint_y_open: 1
         closed_label: 'closedlabel:info&notes'
-        options: ['info','notes']
-        option_colors: [WHITE,WHITE]
-        option_active: [True,False]
+        options: ['info','info-details','notes']
+        option_colors: [WHITE,WHITE,YELLOW]
+        option_active: [True,False,False]
         on_option_state:
-            info.size_hint_y = int(args[1]['info'])+1e-9
-            info.opacity =  int(args[1]['info'])
+            info.detailed = args[1]['info-details']
+            info.size_hint_y = int(args[1]['info'] or info.detailed)+1e-9
+            info.opacity =  int(args[1]['info'] or info.detailed)
             notebox.size_hint_y = int(args[1]['notes'])*0.66+1e-9
             notebox.opacity = int(args[1]['notes'])
+            app.gui.update_state()
         options_height: root.tab_option_height
         BGBoxLayout:
             background_color: BOX_BACKGROUND_COLOR
@@ -651,6 +586,7 @@
                 background_color: DARKRED
             ScrollableLabel:
                 id: info
+                detailed: False
                 line_height: 1.25
                 markup: True
                 on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
@@ -679,6 +615,43 @@
         size_hint_y: 1e-9 # takes up remaining space if info is closed
 
 
+<MenuItem>
+    font_size: self.height * 0.5
+    size_hint_y: None
+    height: 50
+    background_color: BOX_BACKGROUND_COLOR
+    content_width: icon.width + label.texture_size[0] * 1.33
+    MDFloatLayout:
+        id: icon
+        size_hint: None, 1
+        width: self.height + 16
+        Image:
+            id:image
+            source: root.icon
+            mipmap: True
+            size_hint: 0.7,0.7
+            pos_hint: {'center_y': 0.5,'center_x': 0.5}
+    AnchorLayout:
+        size_hint_x: 1
+        anchor_x: 'left'
+        Label:
+            id: label
+            text: root.text
+            size: self.texture_size
+            size_hint: None, None
+            font_size: root.font_size
+            font_name: root.font_name
+            color: WHITE
+    Label:
+        text: root.shortcut
+        halign: 'left'
+        valign: 'middle'
+        size_hint_x: 1/3
+        font_size: root.font_size
+        font_name: root.font_name
+        color: LIGHTGREY
+
+
 <AnalysisToggle>:
     adaptive_width: True
     spacing: CP_SPACING
@@ -700,29 +673,52 @@
         pos_hint: {'center_y': 0.5}
         width: self.height
         active: root.default_active
-        selected_color: WHITE
-        unselected_color: LIGHTGREY
         on_active: if app.gui: app.gui.update_state()
 
-<AnalysisDropdownMenu>:
-    background_color: BOX_BACKGROUND_COLOR
-    opening_time: 0.1
-    width_mult: 1.25
+<AnalysisMenuItem@MenuItem>:
+    on_close: app.gui.analysis_controls.close_dropdown()
+    background_color: LIGHTER_BACKGROUND_COLOR
+    height: 45
+    canvas.before:
+        Color:
+            rgba: WHITE
+        Line:
+            points: self.x,self.y, self.x,self.y+self.height
+        Color:
+            rgba: LIGHTGREY
+        Line
+            points: self.x,self.y,self.x+self.width,self.y
+            width: 1
 
-<AnalysisDropdownMenuRightContent>:
-    width: 0
-    Label:
-        id: label
-        size: dp(30)
-        font_size: root.font_size
-        text: root.text
-        color: LIGHTGREY
+
+<AnalysisDropDown>:
+    width: 50
+    katrain: app.gui
+    AnalysisMenuItem:
+        text: i18n._("analysis:extra")
+        icon: 'img/Extra.png'
+        shortcut: 'a'
+        on_action: root.katrain("analyze-extra", "extra")
+    AnalysisMenuItem:
+        text: i18n._("analysis:equalize")
+        icon: 'img/Equalize.png'
+        shortcut: 's'
+        on_action: root.katrain("analyze-extra", "equalize")
+    AnalysisMenuItem:
+        text: i18n._("analysis:sweep")
+        icon: 'img/Sweep.png'
+        shortcut: 'd'
+        on_action: root.katrain("analyze-extra", "sweep")
+    AnalysisMenuItem:
+        text: i18n._("analysis:aimove")
+        icon: 'img/ai.png'
+        shortcut: 'enter'
+        on_action: root.katrain("ai-move")
 
 
 <AnalysisControls>:
     katrain: app.gui
     orientation: 'horizontal'
-    padding: CP_PADDING, CP_PADDING
     spacing: CP_SPACING
     show_children: show_children
     eval: eval
@@ -734,68 +730,51 @@
     HamburgerButton:
         id: hamburger
         size_hint: None, 1
-        pos_hint: {'center_y': 0.5,'left': 0}
         on_press: app.gui.nav_drawer.set_state("open")
-    MDBoxLayout:
-        pos_hint: {'center_x': 0.5,'center_y': 0.5}
-        size_hint: None, 1
-        adaptive_width: True
-        spacing: show_children.width/4
-        AnalysisToggle:
-            id: show_children
-            text: i18n._("analysis:nextmoves")
-            default_active: True
-        AnalysisToggle:
-            id: eval
-            text: i18n._("analysis:dots")
-        AnalysisToggle:
-            id: hints
-            text: i18n._("analysis:topmoves")
-        AnalysisToggle:
-            id: policy
-            text: i18n._("analysis:policy")
-        AnalysisToggle:
-            id: ownership
-            text: i18n._('analysis:territory')
-        AutoSizedRoundedRectangleButton:
-            background_color: BOX_BACKGROUND_COLOR
-            size_hint_y: 0.5
-            id: analysis_button
-            on_press: root.open_analysis_menu()
-            text: i18n._("btn:Analyze")
-            pos_hint: {'center_y':0.5}
+    AnchorLayout:
+        MDBoxLayout:
+            adaptive_width: True
+            spacing: root.height/4
+            AnalysisToggle:
+                id: show_children
+                text: i18n._("analysis:nextmoves")
+                default_active: True
+            AnalysisToggle:
+                id: eval
+                text: i18n._("analysis:dots")
+            AnalysisToggle:
+                id: hints
+                text: i18n._("analysis:topmoves")
+            AnalysisToggle:
+                id: policy
+                text: i18n._("analysis:policy")
+            AnalysisToggle:
+                id: ownership
+                text: i18n._('analysis:territory')
+                padding: 0,0,show_children.width/8,0 # space button a bit more
+            MDFloatLayout:
+                width: analysis_button.width
+                size_hint: None, 1
+                AutoSizedRectangleButton:
+                    background_color: BOX_BACKGROUND_COLOR
+                    size_hint_y: 0.5
+                    pos_hint: {'center_y': 0.5, 'x': 0}
+                    id: analysis_button
+                    on_release: root.toggle_dropdown()
+                    text: '  ' + i18n._("btn:Analyze")
+                Image:
+                    pos_hint: {'center_y': 0.5}
+                    x: self.parent.x + 2
+                    size_hint: None, 0.4
+                    width: self.height/2
+                    source: 'img/menu.png'
+                    mipmap: True
 
-<MainMenuItem>
-    font_size: self.height * 0.5
-    size_hint_y: None
+
+
+<MainMenuItem@MenuItem>
+    on_close: app.gui.nav_drawer.set_state("close")
     height: self.parent.item_height or 50
-    background_color: BOX_BACKGROUND_COLOR
-    MDFloatLayout:
-        size_hint: None, 1
-        width: self.height + 16
-        Image:
-            id:image
-            source: root.icon
-            mipmap: True
-            size_hint: 0.7,0.7
-            pos_hint: {'center_y': 0.5,'center_x': 0.5}
-    Label:
-        text: root.text
-        text_size: self.size
-        size_hint_x: 1
-        halign: 'left'
-        valign: 'middle'
-        font_size: root.font_size
-        font_name: root.font_name
-        color: WHITE
-    Label:
-        text: root.shortcut
-        halign: 'left'
-        valign: 'middle'
-        size_hint_x: 1/3
-        font_size: root.font_size
-        font_name: root.font_name
-        color: LIGHTGREY
 
 
 <LangButton@TransparentIconButton>
@@ -878,6 +857,8 @@
     height: (self.parent.item_height or 50) * 5
 
 
+
+
 <HamburgerMenuContents@MDBoxLayout+BackgroundMixin>:
     katrain: app.gui
     player_setup: player_setup
@@ -945,6 +926,12 @@
             icon: 'img/flaticon/flag-fr.png'
             on_press: app.language = 'fr'
         LangButton:
+            icon: 'img/flaticon/flag-de.png'
+            on_press: app.language = 'de'
+        LangButton:
+            icon: 'img/flaticon/flag-ru.png'
+            on_press: app.language = 'ru'
+        LangButton:
             icon: 'img/flaticon/flag-ko.png'
             on_press: app.language = 'ko'
     BoxLayout:
@@ -973,6 +960,7 @@
     allow_no_selection: False
 
 <PlayAnalyzeSelect>:
+    katrain: app.gui
     play: play
     analyze: analyze
     OutlineBox:
@@ -983,11 +971,13 @@
             text: i18n._('btn:Play')
             id: play
             state: 'down'
-            on_state: app.gui.update_state()
+            on_state: if self.state=='down': root.select_mode(MODE_PLAY)
         PlayAnalyzeButton:
             text: i18n._('btn:Analysis')
             id: analyze
-            on_state: app.gui.update_state()
+            on_state: if self.state=='down': root.select_mode(MODE_ANALYZE)
+
+
 
 <KaTrainGui>:
     board_gui: board_gui
@@ -997,7 +987,6 @@
     analysis_controls: analysis_controls
     nav_drawer: nav_drawer
     nav_drawer_contents: nav_drawer_contents
-    zen: False
     NavigationLayout:
         ScreenManager:
             Screen:
@@ -1009,19 +998,19 @@
                         AnalysisControls:
                             id: analysis_controls
                             size_hint_y: None
-                            height: min(100,self.width / 13.5) if not root.zen else 1
-                            opacity: 0 if root.zen else 1
+                            height: 1 if root.zen > 0 else max(dp(50),min(dp(75),self.width / 13.5))
+                            opacity: 0 if root.zen > 0 else 1
                         BadukPanWidget:
                             id: board_gui
                         BadukPanControls:
                             id: board_controls
                             size_hint_y: None
-                            height: min(100,self.width / 13.5) if not root.zen else 1
-                            opacity: 0 if root.zen else 1
+                            height: 1 if root.zen > 0 else max(dp(50),min(dp(75),self.width / 13.5))
+                            opacity: 0 if root.zen > 0 else 1
                     MDBoxLayout:
                         size_hint_x: None
-                        width: 0 if root.zen else self.height * 0.4
-                        opacity: 0 if root.zen else 1
+                        width: 1 if root.zen == 2 else self.height * 0.4
+                        opacity: 0 if root.zen == 2 else 1
                         orientation: 'vertical'
                         PlayAnalyzeSelect:
                             id: play_mode
@@ -1034,9 +1023,10 @@
             state: "close"
             y: 0
             size_hint_y: None
-            width: self.height * 0.5
-            height: root.height - analysis_controls.height
+            -height: root.height - analysis_controls.height
+            -width: self.height * 0.5
             swipe_edge_width: 0
+            on_state: if self.state=='close': root.update_state() # ai move etc on nav drawer close
             HamburgerMenuContents:
                 id: nav_drawer_contents
 

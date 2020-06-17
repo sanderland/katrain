@@ -1,11 +1,11 @@
 
-# KaTrain v1.1
+# <a name="manual"></a> KaTrain v1.2
 [![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
 [![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
 ![Build Status](https://github.com/sanderland/katrain/workflows/release/badge.svg)
 ![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
-[![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)](https://liberapay.com/sanderbaduk/)
+[![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
 
 KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
@@ -57,18 +57,19 @@ This section describes the available AIs, with strength based on their current O
 
 * Recommended options for serious play include:
     * **[9p+]** **KataGo** is full KataGo, above professional level. The analysis and feedback given is always based on this full strength KataGo AI.
-    * **[~3k]**  **ScoreLoss** is KataGo analyzing as usual, but 
+    * **[15k - 3d]** **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found on [this](https://github.com/sanderland/katrain/issues/44) thread.
+    * **[~5k]**  **ScoreLoss** is KataGo analyzing as usual, but 
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
     * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
-    * **[~5k]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
+    * **[~4k]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
     * **[~8k]** **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn.
 *  Options that are more on the 'fun and experimental' side include: 
     * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist.:
         * **[~5k]** **Local Style** will consider mostly moves close to the last move.
-        * **[~8k]** **Tenuki Style** will consider mostly moves away from the last move.
-        * **[~8k]** **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
-        * **[~5k]** **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
-    * **KataJigo** is KataGo aggressively making weaker moves, attempting to win by 0.5 points.
+        * **[~5k]** **Tenuki Style** will consider mostly moves away from the last move.
+        * **[~7k]** **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
+        * **[~7k]** **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
+    * **KataJigo** is KataGo attempting to win by 0.5 points, typically by responding to your mistakes with an immediate mistake of it's own.
     
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
  while the policy net based AIs are affected by the choice of model file, but work identically with 1 visit.
@@ -77,10 +78,12 @@ Further technical details and discussion on these AIs can be found on [this](htt
 
 ## Analysis
 
-AI moves, teaching mode and timers are suspended in analysis mode,
- although analysis options are always available, some information is hidden if the 'Disable analysis while in play mode' is selected. 
-
 Keyboard shortcuts are shown with **[key]**.
+
+* **[Tab]**: Switch between analysis and play modes.
+  * AI moves, teaching mode and timers are suspended in analysis mode.
+  * The state of the analysis options and right-hand side panels and options is saved independently for 'play' and 'analyze',
+    allowing you to quickly switch between a more minimalistic 'play' mode and more complex 'analysis' mode.
 
 * The checkboxes at the top of the screen:
     * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when 
@@ -102,12 +105,12 @@ Keyboard shortcuts are shown with **[key]**.
 In addition to shortcuts mentioned above and those shown in the main menu:
 
 * **[Shift]**: Open the main menu.
-* **[Tab]**: Switch between analysis and play modes.
-* **[~]** or **[ ` ]** or **[m]**: Toggles only showing the board.
+* **[~]** or **[ ` ]** or **[m]**: Cycles through more minimalistic UI modes.
 * **[p]**: Pass
 * **[spacebar]**: Pause/Resume timer
-* **[arrow up]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
-* **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow left]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow right]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow up/down]** Switch branch, as would be expected from the move tree.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
 * **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
@@ -121,7 +124,8 @@ In addition to shortcuts mentioned above and those shown in the main menu:
   *  Adjust the number of visits or maximum time allowed in the settings.
 * KataGo crashes with out of memory errors, how can I prevent this?
   * Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using versions compiled with large board sizes.
-  * If still encountering problems, please start KataGo by itself to check for any errors it gives.  
+  * If still encountering problems, please start KataGo by itself to check for any errors it gives.
+  * Note that if you don't have a GPU, or your GPU does not support OpenCL, you may not be able to use KataGo.
 * How can I play on larger boards?
   * For windows, change the `katago` setting to `katrain\KataGo\katago-bs52.exe`. For other operating systems, you need to compile your own KataGo version with higher limits.
 
@@ -129,16 +133,16 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
-[![GitHub contributors](https://img.shields.io/github/contributors/sanderland/katrain?label=github%20contributors)](https://github.com/sanderland/katrain/graphs/contributors)
-[![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)](https://liberapay.com/sanderbaduk/)
+[![Contributors](https://img.shields.io/static/v1?label=contributors&message=12&color=dcb424)](CONTRIBUTORS)
+[![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
 [![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 
-* Donations for improving and promoting KaTrain are taken supported through [Liberapay](https://liberapay.com/KaTrain/).
-* You also can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
- or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
     * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
+* You also can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
+ or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
+* Donations for improving and promoting KaTrain are taken supported through [Liberapay](https://liberapay.com/KaTrain/) or [Github Sponsors](https://github.com/sponsors/sanderland).
 
 
 

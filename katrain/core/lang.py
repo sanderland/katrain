@@ -1,7 +1,6 @@
 import gettext
 import os
 import sys
-from typing import Callable
 
 from kivy._event import Observable
 
@@ -57,7 +56,7 @@ class Lang(Observable):
         self.font_name = self.FONTS.get(lang) or DEFAULT_FONT
         i18n_dir, _ = os.path.split(find_package_resource("katrain/i18n/__init__.py"))
         locale_dir = os.path.join(i18n_dir, "locales")
-        locales = gettext.translation("katrain", locale_dir, languages=[lang])
+        locales = gettext.translation("katrain", locale_dir, languages=[lang,DEFAULT_LANGUAGE])
         self.ugettext = locales.gettext
 
         # update all the kv rules attached to this text

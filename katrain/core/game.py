@@ -24,10 +24,18 @@ class KaTrainSGF(SGF):
 class Game:
     """Represents a game of go, including an implementation of capture rules."""
 
-    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": f"KaTrain:{HOMEPAGE}"}
+    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": f"KaTrain:{HOMEPAGE}", "CA": "UTF-8"}
 
-    def __init__(self, katrain, engine: Union[Dict, KataGoEngine], move_tree: GameNode = None, analyze_fast=False):
+    def __init__(
+        self,
+        katrain,
+        engine: Union[Dict, KataGoEngine],
+        move_tree: GameNode = None,
+        analyze_fast=False,
+        game_properties: Optional[Dict] = None,
+    ):
         self.katrain = katrain
+        self._lock = threading.Lock()
         if not isinstance(engine, Dict):
             engine = {"B": engine, "W": engine}
         self.engines = engine
@@ -43,7 +51,11 @@ class Game:
             board_size = katrain.config("game/size")
             self.komi = katrain.config("game/komi")
             self.root = GameNode(
-                properties={**Game.DEFAULT_PROPERTIES, **{"SZ": board_size, "KM": self.komi, "DT": self.game_id}}
+                properties={
+                    **Game.DEFAULT_PROPERTIES,
+                    **{"SZ": board_size, "KM": self.komi, "DT": self.game_id},
+                    **(game_properties or {}),
+                }
             )
             handicap = katrain.config("game/handicap")
             if handicap:
@@ -64,19 +76,21 @@ class Game:
     # -- move tree functions --
     def _calculate_groups(self):
         board_size_x, board_size_y = self.board_size
-        self.board = [
-            [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
-        ]  # type: List[List[int]]  #  board pos -> chain id
-        self.chains = []  # type: List[List[Move]]  #   chain id -> chain
-        self.prisoners = []  # type: List[Move]
-        self.last_capture = []  # type: List[Move]
-        try:
-            #            for m in self.moves:
-            for node in self.current_node.nodes_from_root:
-                for m in node.move_with_placements:
-                    self._validate_move_and_update_chains(m, True)  # ignore ko since we didn't know if it was forced
-        except IllegalMoveException as e:
-            raise Exception(f"Unexpected illegal move ({str(e)})")
+        with self._lock:
+            self.board = [
+                [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
+            ]  # type: List[List[int]]  #  board pos -> chain id
+            self.chains = []  # type: List[List[Move]]  #   chain id -> chain
+            self.prisoners = []  # type: List[Move]
+            self.last_capture = []  # type: List[Move]
+            try:
+                for node in self.current_node.nodes_from_root:
+                    for m in node.move_with_placements:
+                        self._validate_move_and_update_chains(
+                            m, True
+                        )  # ignore ko since we didn't know if it was forced
+            except IllegalMoveException as e:
+                raise Exception(f"Unexpected illegal move ({str(e)})")
 
     def _validate_move_and_update_chains(self, move: Move, ignore_ko: bool):
         board_size_x, board_size_y = self.board_size
@@ -151,7 +165,6 @@ class Game:
         cn = self.current_node  # avoid race conditions
         for _ in range(n_times):
             if not cn.is_root:
-                cn.parent.set_favourite_child(cn)
                 cn = cn.parent
         self.set_current_node(cn)
 
@@ -159,14 +172,15 @@ class Game:
         cn = self.current_node  # avoid race conditions
         for _ in range(n_times):
             if cn.children:
-                cn = cn.favourite_child
+                cn = cn.ordered_children[0]
         self.set_current_node(cn)
 
-    def switch_branch(self, direction):
+    def cycle_children(self, direction):
         cn = self.current_node  # avoid race conditions
         if cn.parent and len(cn.parent.children) > 1:
-            ix = cn.parent.children.index(cn)
-            self.set_current_node(cn.parent.children[(ix + direction) % len(cn.parent.children)])
+            ordered_children = cn.parent.ordered_children
+            ix = (ordered_children.index(cn) + len(ordered_children) + direction) % len(ordered_children)
+            self.set_current_node(ordered_children[ix])
 
     def place_handicap_stones(self, n_handicaps):
         board_size_x, board_size_y = self.board_size
@@ -203,7 +217,8 @@ class Game:
 
     @property
     def stones(self):
-        return sum(self.chains, [])
+        with self._lock:
+            return sum(self.chains, [])
 
     @property
     def ended(self):
@@ -272,18 +287,12 @@ class Game:
         )
 
     def write_sgf(
-        self,
-        path: str,
-        trainer_config: Optional[Dict] = None,
-        save_feedback: Optional[List] = None,
-        eval_thresholds: Optional[List] = None,
+        self, path: str, trainer_config: Optional[Dict] = None,
     ):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer")
-        if save_feedback is None:
-            save_feedback = self.katrain.config("trainer/save_feedback")
-        if eval_thresholds is None:
-            eval_thresholds = self.katrain.config("trainer/eval_thresholds")
+        save_feedback = trainer_config["save_feedback"]
+        eval_thresholds = trainer_config["eval_thresholds"]
 
         def player_name(player_info):
             return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
@@ -299,12 +308,12 @@ class Game:
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
         show_dots_for = {
-            bw: trainer_config.get("eval_show_ai", True) or pl.human for bw, pl in self.katrain.players_info.items()
+            bw: trainer_config.get("eval_show_ai", True) or self.katrain.players_info[bw].human for bw in "BW"
         }
         sgf = self.root.sgf(
             save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=eval_thresholds
         )
-        with open(file_name, "w") as f:
+        with open(file_name, "w", encoding="utf-8") as f:
             f.write(sgf)
         return i18n._("sgf written").format(file_name=file_name)
 
@@ -315,7 +324,7 @@ class Game:
         engine = self.engines[cn.next_player]
         if mode == "extra":
             visits = cn.analysis_visits_requested + engine.config["max_visits"]
-            self.katrain.controls.set_status(f"Performing additional analysis to {visits} visits")
+            self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits))
             cn.analyze(engine, visits=visits, priority=-1_000, time_limit=False)
             return
         elif mode == "sweep":
@@ -343,7 +352,7 @@ class Game:
                     if (x, y) not in stones
                 ]
             visits = engine.config["fast_visits"]
-            self.katrain.controls.set_status(f"Refining analysis of entire board to {visits} visits")
+            self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits))
             priority = -1_000_000_000
         else:  # mode=='equalize':
             if not cn.analysis_ready:
@@ -352,7 +361,7 @@ class Game:
 
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
             visits = max(d["visits"] for d in cn.analysis["moves"].values())
-            self.katrain.controls.set_status(f"Equalizing analysis of candidate moves to {visits} visits")
+            self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits))
             priority = -1_000
         for move in analyze_moves:
             cn.analyze(

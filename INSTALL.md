@@ -2,13 +2,14 @@
 # Installation for MacOS users
 
 ## <a name="MacPrereq"></a>Installation pre-requisites
-* Download and install [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
 * Install [Homebrew](https://brew.sh) by running the following command in terminal:
   * ```
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     ```
+* Install Python using [Homebrew](https://brew.sh/) by executing `brew install python3`
+    * Alternatively download and install [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
 * Install Katago using [Homebrew](https://brew.sh/) by executing `brew install katago`
-* You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself.
+    * You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself.
 
 ## Installation and running KaTrain from PyPi
 * Run `pip3 install katrain`
@@ -35,10 +36,10 @@
     * Run the command `git clone https://github.com/sanderland/katrain.git` to download the repository.
     * Changing directory using `cd katrain`
     * Run the command `pip3 install .` to install the package globally, or use `--user` to install locally, then run the program by typing `katrain` in the terminal.
-    * If you prefer not to install, run without installing using `python3 -m katrain`
+    * If you prefer not to install, run without installing using `python3 -m katrain` after installing the kivy dependencies mentioned in the next section.
 * A binary for KataGo is included, but if you have compiled your own, point the 'engine/katago' setting to the relevant KataGo v1.4+ binary.
 
-## Troubleshooting 
+## Troubleshooting
 
 Older linux machines may have trouble installing, you can try to manually install dependencies to resolve some issues.
 

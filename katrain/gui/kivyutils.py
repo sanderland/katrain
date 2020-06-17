@@ -22,15 +22,12 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BaseFlatButton, BasePressedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
-from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, PLAYER_AI
+from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, PLAYER_AI, MODE_PLAY
 from katrain.core.lang import i18n
 from katrain.gui.style import DEFAULT_FONT, WHITE
 
 
-# -- mixins
-
-
-class BackgroundMixin(Widget):
+class BackgroundMixin(Widget):  # -- mixins
     background_color = ListProperty([0, 0, 0, 0])
     background_radius = NumericProperty(0)
     outline_color = ListProperty([0, 0, 0, 0])
@@ -63,10 +60,8 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
         pass
 
 
-# -- resizeable buttons
-class SizedButton(
-    LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin
-):  # avoid baserectangular for sizing
+# -- resizeable buttons / avoid baserectangular for sizing
+class SizedButton(LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin):
     text = StringProperty("")
     text_color = ListProperty(WHITE)
     text_size = ListProperty([100, 100])
@@ -144,11 +139,11 @@ class StatsLabel(MDBoxLayout):
     font_name = StringProperty(DEFAULT_FONT)
 
 
-class MyNavigationDrawer(MDNavigationDrawer):  # in PR - closes NavDrawer on any outside click
+class MyNavigationDrawer(MDNavigationDrawer):
     def on_touch_down(self, touch):
         return super().on_touch_down(touch)
 
-    def on_touch_up(self, touch):
+    def on_touch_up(self, touch):  # in PR - closes NavDrawer on any outside click
         if self.status == "opened" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
             self.set_state("close", animation=True)
             return True
@@ -288,6 +283,11 @@ class PlayerSetupBlock(MDBoxLayout):
         self.add_widget(self.white)
         PlayerSetupBlock.INSTANCES.append(self)
 
+    def swap_players(self):
+        player_dump = {bw: p.player_type_dump for bw, p in self.players.items()}
+        for bw in "BW":
+            self.update_players(bw, player_dump["B" if bw == "W" else "W"])
+
     def update_players(self, bw, player_info):  # update sub widget based on gui state change
         self.players[bw].update_widget(player_type=player_info.player_type, player_subtype=player_info.player_subtype)
 
@@ -300,8 +300,13 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     active = BooleanProperty(True)
 
 
+class TimerOrMoveTree(BoxLayout):
+    mode = StringProperty(MODE_PLAY)
+
+
 class Timer(BGBoxLayout):
     state = ListProperty([30, 5, 1])
+    timeout = BooleanProperty(False)
 
 
 class AnalysisToggle(MDBoxLayout):
@@ -317,19 +322,23 @@ class AnalysisToggle(MDBoxLayout):
         return self.checkbox.active
 
 
-class MainMenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, BackgroundMixin):
-    __events__ = ["on_action"]
+class MenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, BackgroundMixin):
+    __events__ = ["on_action", "on_close"]
     icon = StringProperty("")
     text = StringProperty("")
     shortcut = StringProperty("")
     font_name = StringProperty(DEFAULT_FONT)
+    content_width = NumericProperty(100)
 
     def on_left_release(self):
         self.anim_complete()  # kill ripple
-        MDApp.get_running_app().gui.nav_drawer.set_state("close")
+        self.dispatch("on_close")
         self.dispatch("on_action")
 
     def on_action(self):
+        pass
+
+    def on_close(self):
         pass
 
 
@@ -375,6 +384,17 @@ class CollapsablePanel(MDBoxLayout):
         self.bind(state=self.build, size_hint_y_open=self.build, height_open=self.build)
         MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
         self.build_options()
+
+    @property
+    def option_state(self):
+        return {option: active for option, active in zip(self.options, self.option_active)}
+
+    def set_option_state(self, state_dict):
+        for ix, (option, button) in enumerate(zip(self.options, self.option_buttons)):
+            if option in state_dict:
+                self.option_active[ix] = state_dict[option]
+                button.state = "down" if state_dict[option] else "normal"
+        self.trigger_select(ix=None)
 
     def build_options(self, *args, **kwargs):
         self.header = CollapsablePanelHeader(

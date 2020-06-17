@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-from kivy_deps import sdl2, glew, gstreamer
+from kivy_deps import sdl2, glew
 from kivymd import hooks_path as kivymd_hooks_path
 
 block_cipher = None

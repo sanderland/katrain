@@ -35,7 +35,7 @@ msgid "menu:lang"
 msgstr "Language"
 
 msgid "menu:support"
-msgstr "Support"
+msgstr "Contribute"
 
 msgid "menu:manual"
 msgstr "Manual"
@@ -101,6 +101,18 @@ msgstr "Fast analysis of all moves"
 msgid "analysis:aimove"
 msgstr "Force AI Move"
 
+#. status message
+msgid "extra analysis"
+msgstr "Performing additional analysis to {visits} visits"
+
+#. status message
+msgid "sweep analysis"
+msgstr "Analyzing entire board using {visits} visits/move"
+
+#. status message
+msgid "equalizing analysis"
+msgstr "Equalizing analysis of candidate moves to {visits} visits"
+
 #. right panel buttons and below board
 msgid "pass-button-text"
 msgstr "Pass"
@@ -132,6 +144,9 @@ msgstr "Point Loss"
 
 msgid "tab:info"
 msgstr "Info"
+
+msgid "tab:info-details"
+msgstr "Details"
 
 msgid "tab:notes"
 msgstr "Notes"
@@ -335,6 +350,7 @@ msgstr ""
 "Show dots/SGF comments\n"
 " for AI players"
 
+#. removed as an option / can ignore
 msgid "lock ai when playing"
 msgstr ""
 "Disable top moves\n"
@@ -358,11 +374,14 @@ msgstr "Path does not exist"
 msgid "general settings"
 msgstr "General Settings"
 
+msgid "katago settings"
+msgstr "KataGo settings"
+
 msgid "engine settings"
-msgstr "KataGo Engine Settings"
+msgstr "Engine Settings"
 
 msgid "config file path"
-msgstr "All options are saved in {file}"
+msgstr "All options are saved in:"
 
 msgid "engine:katago"
 msgstr "Path to KataGo executable"
@@ -396,6 +415,7 @@ msgstr ""
 msgid "engine:time:hint"
 msgstr "Time in seconds"
 
+#. no longer used, can ignore
 msgid "general:sgf_load"
 msgstr "Path for loading SGF files"
 
@@ -442,17 +462,24 @@ msgstr ""
 msgid "Failed to load SGF"
 msgstr "Failed to load SGF. Parse Error: {error}"
 
-msgid "Starting default Kata failed"
+msgid "Kata exe not found"
+msgstr "KataGo binary {exe} does not exist, please check general settings."
+
+msgid "Kata exe not found in path"
 msgstr ""
-"Starting KataGo with command '{command}' failed with error {error}. If on "
-"MacOS, see the manual on how to use brew to install katago first, and add it"
-" to your path or 'engine/katago' setting."
+"KataGo binary `{exe}` not found in your PATH, check your environment "
+"variables or use the full path in general settings instead. If on MacOS, see"
+" the manual on how to use brew to install katago first"
+
+msgid "Kata model not found"
+msgstr "KataGo model {model} does not exist, please check general settings."
+
+msgid "Kata config not found"
+msgstr ""
+"KataGo config file {config} does not exist, please check general settings."
 
 msgid "Starting Kata failed"
-msgstr ""
-"Starting KataGo with command '{command}' failed with error {error}. Please "
-"make sure the 'katago' value under 'engine' in settings points to the "
-"correct KataGo executable."
+msgstr "Starting KataGo with command '{command}' failed with error {error}."
 
 msgid "Engine died unexpectedly"
 msgstr ""
@@ -497,7 +524,7 @@ msgstr "Policy"
 msgid "aihelp:policy"
 msgstr ""
 "Plays the top move from the policy network, without any reading. Strength is"
-" mainly affected by `model` in engine settings. The opening moves setting "
+" mainly affected by `model` in engine settings. The `opening_moves` setting "
 "affects how many moves in the opening are more random."
 
 msgid "ai:p:weighted"
@@ -507,7 +534,7 @@ msgid "aihelp:p:weighted"
 msgstr ""
 "Plays moves according to policy probability, with `weaken_fac` influencing "
 "how much more likely weaker moves are played. A high negative value plays "
-"like the `Policy` AI.`pick_override` determines when top move is chosen "
+"like the `Policy` AI. `pick_override` determines when top move is chosen "
 "without randomness, and `lower_bound` determines the lower bound policy "
 "value that is allowed."
 
@@ -556,3 +583,12 @@ msgstr ""
 "Picks moves biased below the `threshold` line and plays the best one. "
 "Increase `line_weight` to penalize moves near the center more. Stops "
 "strategy after the 'endgame' fraction of the board is filled."
+
+msgid "ai:p:rank"
+msgstr "Calibrated Rank"
+
+msgid "aihelp:p:rank"
+msgstr ""
+"Picks moves at random from a limited selection of moves and plays the best "
+"one. Stronger settings select the best move from a larger selection. Since "
+"there is no 0 kyu/dan, 3 dan = -2 kyu."

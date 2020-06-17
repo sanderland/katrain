@@ -13,7 +13,6 @@
 
 #:set LIGHTGREY [0.7,0.7,0.7,1]
 #:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
-#:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
 
 
@@ -28,10 +27,12 @@
     helper_text_mode: "none"
     hint_text: ""
     helper_text: ""
+    color_mode: 'custom'
+    line_color_focus: TEXT_COLOR
 
 <LabelledPathInput>:
     font_size: dp(16)
-    multiline: True # just for wrapping
+    multiline: False
     helper_text_mode: "on_error"
     helper_text: i18n._("file not found")
 
@@ -46,6 +47,7 @@
 <LabelledCheckBox>:
     size: DESC_FONT_SIZE*2,DESC_FONT_SIZE*2
     size_hint: None,None
+
 
 <QuickInputButton@SizedRectangleButton>
     on_left_press: if self.target: self.target.text = self.text
@@ -78,22 +80,49 @@
 
 <ConfigPopup>:
     configfile: configfile
+    DescriptionLabel:
+        text: i18n._('katago settings')
+        font_size: DESC_FONT_SIZE * 1.5
+    GridLayout:
+        cols: 2
+        rows: 3
+        size_hint: 1,3
+        spacing: CP_SPACING
+        DescriptionLabel:
+            text: i18n._("engine:katago")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "engine/katago"
+                hint_text: i18n._("engine:katago:hint")
+        DescriptionLabel:
+            text: i18n._("engine:model")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "engine/model"
+        DescriptionLabel:
+            text: i18n._("engine:config")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "engine/config"
     BoxLayout:
-        size_hint: 1,9
+        size_hint: 1,1
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('general settings')
+            font_size: DESC_FONT_SIZE * 1.5
+        DescriptionLabel:
+            font_size: DESC_FONT_SIZE * 1.5
+            text: i18n._('engine settings')
+    BoxLayout:
+        size_hint: 1,5
         orientation: 'horizontal'
         GridLayout:
             cols: 2
-            rows: 8
+            rows: 4
             spacing: CP_SPACING
-            Label:
-            DescriptionLabel:
-                text: i18n._('general settings')
-                font_size: DESC_FONT_SIZE * 1.5
-            DescriptionLabel:
-                text: i18n._("general:sgf_load")
-            AnchorLayout:
-                LabelledPathInput:
-                    input_property: "general/sgf_load" # just last load dir?
             DescriptionLabel:
                 text: i18n._("general:sgf_save")
             AnchorLayout:
@@ -112,42 +141,20 @@
                     input_property: "general/debug_level"
                     helper_text: i18n._("general:debug_level:hint")
                     helper_text_mode: "on_focus"
-            Label:
-            Label:
-            Label:
-            Label:
+            SmallDescriptionLabel:
+                text: i18n._('config file path')
             SmallDescriptionLabel:
                 id: configfile
-                text: i18n._('config file path')
-            Label:
+                text: app.gui.config_file
         BackgroundMixin:
             background_color: LIGHTGREY
             size_hint: None, 1
             width: 2
         GridLayout:
             cols: 2
-            rows: 8
+            rows: 4
             spacing: CP_SPACING
-            Label:
-            DescriptionLabel:
-                font_size: DESC_FONT_SIZE * 1.5
-                text: i18n._('engine settings')
-            DescriptionLabel:
-                text: i18n._("engine:katago")
-            AnchorLayout:
-                LabelledPathInput:
-                    input_property: "engine/katago"
-                    hint_text: i18n._("engine:katago:hint")
-            DescriptionLabel:
-                text: i18n._("engine:model")
-            AnchorLayout:
-                LabelledPathInput:
-                    input_property: "engine/model"
-            DescriptionLabel:
-                text: i18n._("engine:config")
-            AnchorLayout:
-                LabelledPathInput:
-                    input_property: "engine/config"
+            padding: CP_PADDING*2,0,0,0
             DescriptionLabel:
                 text: i18n._("engine:max_visits")
             AnchorLayout:
@@ -196,7 +203,7 @@
         DescriptionLabel:
             text: i18n._("save dots")
     AnchorLayout:
-        size_hint: 1, 3
+        size_hint: 1, 2
         GridLayout:
             cols: 2
             rows: 3
@@ -208,7 +215,7 @@
                 size_hint: 2,1
             AnchorLayout:
                 LabelledIntInput:
-                    size_hint: 0.33, 1
+                    size_hint_x: 0.33
                     input_property: "trainer/eval_off_show_last"
             DescriptionLabel:
                 size_hint: 2,1
@@ -217,13 +224,6 @@
             AnchorLayout:
                 LabelledCheckBox:
                     input_property: "trainer/eval_show_ai"
-            DescriptionLabel:
-                size_hint: 2,1
-                font_size: DESC_FONT_SIZE * 0.8
-                text: i18n._("lock ai when playing")
-            AnchorLayout:
-                LabelledCheckBox:
-                    input_property: "trainer/lock_ai"
     AnchorLayout:
         size_hint: 1,1.5
         AutoSizedRoundedRectangleButton:

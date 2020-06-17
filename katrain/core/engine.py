@@ -1,15 +1,18 @@
 import copy
 import json
+import os
 import subprocess
-import sys
 import threading
 import time
+import traceback
 from typing import Callable, Optional
-from kivy.utils import platform
-from katrain.core.utils import find_package_resource
-from katrain.core.lang import i18n
-from katrain.core.constants import OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_DEBUG, OUTPUT_EXTRA_DEBUG
+
+from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from katrain.core.game_node import GameNode
+from katrain.core.lang import i18n
+from katrain.core.utils import find_package_resource
+
+from kivy.utils import platform
 
 
 class EngineDiedException(Exception):
@@ -27,22 +30,8 @@ class KataGoEngine:
     def get_rules(node):
         return KataGoEngine.RULESETS.get(str(node.ruleset).lower(), "japanese")
 
-    def __init__(self, katrain, config):
+    def __init__(self, katrain, config, override_command=None):
         self.katrain = katrain
-        executable = config["katago"].strip()
-        if not executable:
-            if platform == "win":
-                executable = "katrain/KataGo/katago.exe"
-            elif platform == "linux":
-                executable = "katrain/KataGo/katago"
-            else:  # e.g. MacOS after brewing
-                executable = "katago"
-
-        model = find_package_resource(config["model"])
-        cfg = find_package_resource(config["config"])
-        exe = find_package_resource(executable)
-
-        self.command = f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
         self.queries = {}  # outstanding query id -> start time and callback
         self.config = config
         self.query_counter = 0
@@ -52,6 +41,40 @@ class KataGoEngine:
         self._lock = threading.Lock()
         self.analysis_thread = None
         self.stderr_thread = None
+
+        if override_command:
+            self.command = override_command
+        else:
+            exe = config["katago"].strip()
+            if not exe:
+                if platform == "win":
+                    exe = "katrain/KataGo/katago.exe"
+                elif platform == "linux":
+                    exe = "katrain/KataGo/katago"
+                else:  # e.g. MacOS after brewing
+                    exe = "katago"
+
+            model = find_package_resource(config["model"])
+            cfg = find_package_resource(config["config"])
+            if exe.startswith("katrain"):
+                exe = find_package_resource(exe)
+
+            exepath, exename = os.path.split(exe)
+            if exepath and not os.path.isfile(exe):
+                self.katrain.log(i18n._("Kata exe not found").format(exe=exe), OUTPUT_ERROR)
+                return  # don't start
+            elif not exepath and not any(
+                os.path.isfile(os.path.join(path, exe)) for path in os.environ.get("PATH", "").split(os.pathsep)
+            ):
+                self.katrain.log(i18n._("Kata exe not found in path").format(exe=exe), OUTPUT_ERROR)
+                return  # don't start
+            elif not os.path.isfile(model):
+                self.katrain.log(i18n._("Kata model not found").format(model=model), OUTPUT_ERROR)
+                return  # don't start
+            elif not os.path.isfile(cfg):
+                self.katrain.log(i18n._("Kata config not found").format(config=cfg), OUTPUT_ERROR)
+                return  # don't start
+            self.command = f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
         self.start()
 
     def start(self):
@@ -62,14 +85,10 @@ class KataGoEngine:
                 self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
             )
         except (FileNotFoundError, PermissionError, OSError) as e:
-            if not self.config["katago"].strip():
-                self.katrain.log(
-                    i18n._("Starting default Kata failed").format(command=self.comment, error=e), OUTPUT_ERROR,
-                )
-            else:
-                self.katrain.log(
-                    i18n._("Starting Kata failed").format(command=self.comment, error=e), OUTPUT_ERROR,
-                )
+            self.katrain.log(
+                i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
+            )
+            return  # don't start
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
         self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
 
@@ -81,6 +100,14 @@ class KataGoEngine:
         self.queries = {}
         self.shutdown(finish=False)
         self.start()
+
+    def check_alive(self, exception_if_dead=False):
+        ok = self.katago_process and self.katago_process.poll() is None
+        if not ok and exception_if_dead:
+            raise EngineDiedException(
+                f"Engine died (process {self.katago_process}, poll {self.katago_process and self.katago_process.poll()}) config {self.config}"
+            )
+        return ok
 
     def shutdown(self, finish=False):
         process = self.katago_process
@@ -151,7 +178,8 @@ class KataGoEngine:
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
                     self.katrain.update_state()
             except Exception as e:
-                self.katrain.log(f"Unexpected exception while processing KataGo output {line}", OUTPUT_ERROR)
+                traceback.print_exc(e)
+                self.katrain.log(f"Unexpected exception {e} while processing KataGo output {line}", OUTPUT_ERROR)
 
     def send_query(self, query, callback, error_callback, next_move=None):
         with self._lock:
