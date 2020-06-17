@@ -58,17 +58,17 @@ This section describes the available AIs, with strength based on their current O
 * Recommended options for serious play include:
     * **[9p+]** **KataGo** is full KataGo, above professional level. The analysis and feedback given is always based on this full strength KataGo AI.
     * **[15k - 3d]** **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found on [this](https://github.com/sanderland/katrain/issues/44) thread.
-    * **[~3k]**  **ScoreLoss** is KataGo analyzing as usual, but 
+    * **[~5k]**  **ScoreLoss** is KataGo analyzing as usual, but 
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
     * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
-    * **[~5k]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
+    * **[~4k]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
     * **[~8k]** **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn.
 *  Options that are more on the 'fun and experimental' side include: 
     * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist.:
         * **[~5k]** **Local Style** will consider mostly moves close to the last move.
-        * **[~8k]** **Tenuki Style** will consider mostly moves away from the last move.
-        * **[~8k]** **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
-        * **[~5k]** **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
+        * **[~5k]** **Tenuki Style** will consider mostly moves away from the last move.
+        * **[~7k]** **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
+        * **[~7k]** **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
     * **KataJigo** is KataGo attempting to win by 0.5 points, typically by responding to your mistakes with an immediate mistake of it's own.
     
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
@@ -108,8 +108,9 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[~]** or **[ ` ]** or **[m]**: Cycles through more minimalistic UI modes.
 * **[p]**: Pass
 * **[spacebar]**: Pause/Resume timer
-* **[arrow up]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
-* **[arrow down]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow left]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow right]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow up/down]** Switch branch, as would be expected from the move tree.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
 * **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.

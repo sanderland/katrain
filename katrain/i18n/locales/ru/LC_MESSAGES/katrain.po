@@ -530,7 +530,7 @@ msgstr ""
 "влияет на то, сколько начальных ходов будут более случайными."
 
 msgid "ai:p:weighted"
-msgstr "Взвешенная политика сети"
+msgstr "Слабая политика"
 
 msgid "aihelp:p:weighted"
 msgstr ""
@@ -541,7 +541,7 @@ msgstr ""
 "нижнюю границу допустимого значения."
 
 msgid "ai:p:pick"
-msgstr "Слепая политика сети"
+msgstr "Слепая политика"
 
 msgid "aihelp:p:pick"
 msgstr ""
@@ -570,7 +570,7 @@ msgstr ""
 "высокое значение `stddev` заставляет ИИ играть более далеко."
 
 msgid "ai:p:influence"
-msgstr "Стиль влияния"
+msgstr "Влияние"
 
 msgid "aihelp:p:influence"
 msgstr ""
@@ -580,7 +580,7 @@ msgstr ""
 "заполнена."
 
 msgid "ai:p:territory"
-msgstr "Территориальный стиль"
+msgstr "Территория"
 
 msgid "aihelp:p:territory"
 msgstr ""
@@ -590,7 +590,7 @@ msgstr ""
 "заполнена."
 
 msgid "ai:p:rank"
-msgstr "Калибровка по рангу"
+msgstr "Точный кю / дан"
 
 msgid "aihelp:p:rank"
 msgstr ""
