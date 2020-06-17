@@ -103,16 +103,15 @@ msgstr "Сделать следующий ход ИИ"
 
 #. status message
 msgid "extra analysis"
-msgstr "Проводит углублённый анализ до {visits} посещений"
+msgstr "Углублённый анализ до {visits} посещений"
 
 #. status message
 msgid "sweep analysis"
-msgstr "Анализирует все возможные ходы до {visits} посещений/ход"
+msgstr "Анализ всех возможных ходов на доске до {visits} посещений/ход"
 
 #. status message
 msgid "equalizing analysis"
-msgstr ""
-"Проводит дополнительный анализ всех ходов-кандидатов до {visits} посещений"
+msgstr "Дополнительный анализ всех ходов-кандидатов до {visits} посещений"
 
 #. right panel buttons and below board
 msgid "pass-button-text"
@@ -560,7 +559,7 @@ msgstr ""
 " значение политики сети выше `pick_override` для избежания очевидных ошибок."
 
 msgid "ai:p:tenuki"
-msgstr "Стиль Тэнуки"
+msgstr "Стиль тэнуки"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
