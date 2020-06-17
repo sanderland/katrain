@@ -35,7 +35,7 @@ msgid "menu:lang"
 msgstr "Язык"
 
 msgid "menu:support"
-msgstr "Contribute"
+msgstr "Содействие"
 
 msgid "menu:manual"
 msgstr "Помощь"
@@ -66,27 +66,27 @@ msgstr "Обучающая"
 msgid "analysis:nextmoves"
 msgstr ""
 "Следующие\n"
-"Ходы"
+"ходы"
 
 msgid "analysis:dots"
 msgstr ""
 "Показывать\n"
-"Точки"
+"точки"
 
 msgid "analysis:topmoves"
 msgstr ""
 "Лучшие\n"
-"Ходы"
+"ходы"
 
 msgid "analysis:policy"
 msgstr ""
-"Policy\n"
-"Moves"
+"Политика\n"
+"сети"
 
 msgid "analysis:territory"
 msgstr ""
 "Ожидаемая\n"
-"Территория"
+"территория"
 
 #. analysis menu items
 msgid "analysis:extra"
@@ -99,28 +99,28 @@ msgid "analysis:sweep"
 msgstr "Быстрый анализ всех ходов"
 
 msgid "analysis:aimove"
-msgstr "Force AI Move"
+msgstr "Сделать следующий ход ИИ"
 
 #. status message
 msgid "extra analysis"
-msgstr "Performing additional analysis to {visits} visits"
+msgstr "Проводит углублённый анализ до {visits} посещений"
 
 #. status message
 msgid "sweep analysis"
-msgstr "Analyzing entire board using {visits} visits/move"
+msgstr "Анализирует все возможные ходы до {visits} посещений/ход"
 
 #. status message
 msgid "equalizing analysis"
-msgstr "Equalizing analysis of candidate moves to {visits} visits"
+msgstr "Проводит дополнительный анализ всех ходов-кандидатов до {visits} посещений"
 
 #. right panel buttons and below board
 msgid "pass-button-text"
-msgstr "Pass"
+msgstr "Пас"
 
 msgid "teaching undo message"
 msgstr ""
-"Undid move {move} as it lost {points_lost:.1f} points. Hover over the move "
-"to see expected refutation. Please try again."
+"Ход {move} отменён, т.к. это потеря {points_lost:.1f} очков. Наведите на этот ход "
+"чтобы увидеть опровергающее продолжение. Попытайтесь снова."
 
 msgid "ai-ponder"
 msgstr ""
@@ -142,10 +142,10 @@ msgid "tab:points"
 msgstr "Потеря очков"
 
 msgid "tab:info"
-msgstr "Info"
+msgstr "Инфо"
 
 msgid "tab:info-details"
-msgstr "Details"
+msgstr "Подробности"
 
 msgid "tab:notes"
 msgstr "Заметки"
@@ -155,7 +155,7 @@ msgstr "График очков"
 
 #. on the graph
 msgid "Jigo"
-msgstr "Jigo"
+msgstr "Ничья"
 
 msgid "closedlabel:movestats"
 msgstr "Статистика ходов"
@@ -224,10 +224,10 @@ msgid "Info:PV"
 msgstr "PV: {pv}"
 
 msgid "Info:policy rank"
-msgstr "Move was #{rank} according to policy  ({probability:.2%})."
+msgstr "Сделан ход #{rank} согласно политике сети  ({probability:.2%})."
 
 msgid "Info:policy best"
-msgstr "Top policy move was {move} ({probability:.1%})."
+msgstr "Лучший ход согласно политике сети был {move} ({probability:.1%})."
 
 msgid "Info:teaching undo"
 msgstr "Ход был автоматически отменён в режиме обучения."
@@ -265,10 +265,10 @@ msgid "byoyomi length"
 msgstr "Период бёёми"
 
 msgid "byoyomi periods"
-msgstr "Number of Periods"
+msgstr "Количество периодов"
 
 msgid "count down sound"
-msgstr "Sound on"
+msgstr "Звук"
 
 #. submit button
 msgid "update timer"
@@ -346,7 +346,7 @@ msgstr ""
 
 msgid "show ai dots"
 msgstr ""
-"Показать точки/SGF комментарии\n"
+"Показать точки и SGF комментарии\n"
 " для ИИ игроков"
 
 #. removed as an option / can ignore
@@ -371,16 +371,16 @@ msgid "file not found"
 msgstr "Файл не найден"
 
 msgid "general settings"
-msgstr "General Settings"
+msgstr "Основные настройки"
 
 msgid "katago settings"
-msgstr "KataGo settings"
+msgstr "Настройки KataGo"
 
 msgid "engine settings"
 msgstr "Настройки движка KataGo"
 
 msgid "config file path"
-msgstr "All options are saved in:"
+msgstr "Все настройки сохранены в:"
 
 msgid "engine:katago"
 msgstr "Путь к исполняемому файлу KataGo"
@@ -395,7 +395,7 @@ msgid "engine:config"
 msgstr "Путь к файлу конфигурации KataGo"
 
 msgid "engine:max_visits"
-msgstr "Максимальное число посещение в анализе"
+msgstr "Максимальное число посещений в анализе"
 
 msgid "engine:fast_visits"
 msgstr "Максимальное число посещений в быстром анализе"
@@ -462,28 +462,28 @@ msgid "Failed to load SGF"
 msgstr "Ошибка загрузки SGF. Ошибка парсинга: {error}"
 
 msgid "Kata exe not found"
-msgstr "KataGo binary {exe} does not exist, please check general settings."
+msgstr "Исполняемый файл KataGo {exe} не существует, проверьте путь в основных настройках."
 
 msgid "Kata exe not found in path"
 msgstr ""
-"KataGo binary `{exe}` not found in your PATH, check your environment "
-"variables or use the full path in general settings instead. If on MacOS, see"
-" the manual on how to use brew to install katago first"
+"Исполняемый файл KataGo `{exe}` не найден в PATH, проверьте переменные окружения "
+"или используйте полный путь в основных настройках. Для MacOS посмотрите сначала"
+" инструкцию по установке katago с использованием brew"
 
 msgid "Kata model not found"
-msgstr "KataGo model {model} does not exist, please check general settings."
+msgstr "Файл модели KataGo {model} не существует, проверьте путь в основных настройках."
 
 msgid "Kata config not found"
 msgstr ""
-"KataGo config file {config} does not exist, please check general settings."
+"Файл конфигурации KataGo {config} не существует, проверьте путь в основных настройках."
 
 msgid "Starting Kata failed"
-msgstr "tarting KataGo with command '{command}' failed with error {error}."
+msgstr "Запуск KataGo командой '{command}' завершился с ошибкой {error}."
 
 msgid "Engine died unexpectedly"
 msgstr ""
-"Engine died unexpectedly without sending output, possibly due to out of "
-"memory: {error}"
+"Движок неожиданно умер, вероятно из-за нехватки "
+"памяти: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -517,76 +517,76 @@ msgstr ""
 "более разнообразно/слабее при высокой настройке посещений ходов."
 
 msgid "ai:policy"
-msgstr "Policy"
+msgstr "Политика сети"
 
 msgid "aihelp:policy"
 msgstr ""
-"Plays the top move from the policy network, without any reading. Strength is"
-" mainly affected by `model` in engine settings. The opening moves setting "
-"affects how many moves in the opening are more random."
+"Играет лучший ход согласно политике сети, без просчёта вариантов. Сила"
+" в основном зависит от `model` в настройках движка. Настройка количества начальных "
+"ходов влияет на то, сколько начальных ходов будут более случайными."
 
 msgid "ai:p:weighted"
-msgstr "Policy Weighted"
+msgstr "Взвешенная политика сети"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"Plays moves according to policy probability, with `weaken_fac` influencing "
-"how much more likely weaker moves are played. A high negative value plays "
-"like the `Policy` AI.`pick_override` determines when top move is chosen "
-"without randomness, and `lower_bound` determines the lower bound policy "
-"value that is allowed."
+"Делает ходы согласно вероятности политики сети, при этом `weaken_fac` влияет "
+"на то, как часто более слабые ходы будут сыграны. Большие отрицательные значения "
+"играют аналогично `Политика сети` ИИ. `pick_override` определяет когда лучший "
+"ход будет выбран без случайности, и `lower_bound` определяет нижнюю границу "
+"допустимого значения."
 
 msgid "ai:p:pick"
-msgstr "Blinded Policy"
+msgstr "Слепая политика сети"
 
 msgid "aihelp:p:pick"
 msgstr ""
-"Picks `pick_n + pick_frac * <number of legal moves>` at random and plays the"
-" best one. For `pick_frac=1` plays like the `Policy` AI. Plays top move if "
-"policy value is above `pick_override` to avoid obvious mistakes."
+"Выбирает `pick_n + pick_frac * <number of legal moves>` случайных ходов"
+" и играет лучший из них. При `pick_frac=1` играет как `Политика сети` ИИ. Играет лучший ход, "
+"если значение политики сети выше `pick_override` для избежания очевидных ошибок."
 
 msgid "ai:p:local"
 msgstr "Локальный стиль"
 
 msgid "aihelp:p:local"
 msgstr ""
-"Picks `pick_n + pick_frac * <number of legal moves>` weighted towards the "
-"last move and plays the best one. Plays top move if policy value is above "
-"`pick_override` to avoid obvious mistakes."
+"Выбирает `pick_n + pick_frac * <number of legal moves>` ходов в окрестностях "
+"последнего хода и играет лучший из них. Играет лучший ход, если "
+"значение политики сети выше `pick_override` для избежания очевидных ошибок."
 
 msgid "ai:p:tenuki"
-msgstr "Стиль Tenuki"
+msgstr "Стиль Тэнуки"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
-"Picks `pick_n + pick_frac * <number of legal moves>` weighted away from the "
-"last move and plays the best one. Plays top move if policy value is above "
-"`pick_override` to avoid obvious mistakes. A higher `stddev` makes it play "
-"further away."
+"Выбирает `pick_n + pick_frac * <number of legal moves>` ходов вдалеке от "
+"последнего хода и играет лучший из них. Играет лучший ход, если "
+"значение политики сети выше `pick_override` для избежания очевидных ошибок. "
+"Более высокое значение `stddev` заставляет ИИ играть более далеко."
 
 msgid "ai:p:influence"
 msgstr "Стиль влияния"
 
 msgid "aihelp:p:influence"
 msgstr ""
-"Picks moves biased above the `threshold` line and plays the best one. "
-"Increase `line_weight` to penalize moves near the edge more. Stops strategy "
-"after the 'endgame' fraction of the board is filled."
+"Выбирает ходы с оценкой выше `threshold` и играет лучший из них. "
+"Увеличивайте `line_weight` для штрафования ходов, близких к краю доски. Прекращает "
+"такую стратегию после того, как 'endgame' часть доски была заполнена."
 
 msgid "ai:p:territory"
 msgstr "Территориальный стиль"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"Picks moves biased below the `threshold` line and plays the best one. "
-"Increase `line_weight` to penalize moves near the center more. Stops "
-"strategy after the 'endgame' fraction of the board is filled."
+"Выбирает ходы с оценкой выше `threshold` и играет лучший из них. "
+"Увеличивайте `line_weight` для штрафования ходов, близких к центру доски. Прекращает "
+"такую стратегию после того, как 'endgame' часть доски была заполнена."
 
 msgid "ai:p:rank"
-msgstr "Calibrated Rank"
+msgstr "Калибровка по рангу"
 
 msgid "aihelp:p:rank"
 msgstr ""
-"Picks moves at random from a limited selection of moves and plays the best "
-"one. Stronger settings select the best move from a larger selection. Since "
-"there is no 0 kyu/dan, 3 dan = -2 kyu."
+"Выбирает случайные ходы из ограниченного множества и играет лучший из них. "
+"Более сильные настройки расширяют множество для выбора. Т.к. на шкале отсутствуют "
+"0 кю/дан, то 3 дан = -2 кю."
