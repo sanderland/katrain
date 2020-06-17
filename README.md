@@ -1,11 +1,11 @@
 
-# <a name="manual"></a> KaTrain v1.1
+# <a name="manual"></a> KaTrain v1.2
 [![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
 [![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
 ![Build Status](https://github.com/sanderland/katrain/workflows/release/badge.svg)
 ![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
-[![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)](https://liberapay.com/sanderbaduk/)
+[![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
 
 KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
@@ -57,12 +57,12 @@ This section describes the available AIs, with strength based on their current O
 
 * Recommended options for serious play include:
     * **[9p+]** **KataGo** is full KataGo, above professional level. The analysis and feedback given is always based on this full strength KataGo AI.
+    * **[15k - 3d]** **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found on [this](https://github.com/sanderland/katrain/issues/44) thread.
     * **[~3k]**  **ScoreLoss** is KataGo analyzing as usual, but 
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
     * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
     * **[~5k]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
     * **[~8k]** **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn.
-    * **[15k - 3d]** **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found on [this](https://github.com/sanderland/katrain/issues/44) thread.
 *  Options that are more on the 'fun and experimental' side include: 
     * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist.:
         * **[~5k]** **Local Style** will consider mostly moves close to the last move.
@@ -132,8 +132,8 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
-[![Contributors](https://img.shields.io/static/v1?label=contributors&message=10&color=dcb424)](CONTRIBUTORS)
-[![Liberapay Patrons](https://img.shields.io/liberapay/patrons/KaTrain)](https://liberapay.com/sanderbaduk/)
+[![Contributors](https://img.shields.io/static/v1?label=contributors&message=12&color=dcb424)](CONTRIBUTORS)
+[![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
 [![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
