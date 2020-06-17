@@ -181,7 +181,7 @@ msgid "btn:Analysis"
 msgstr "Анализ"
 
 msgid "btn:Analyze"
-msgstr "Настройки анализа"
+msgstr "Действия"
 
 msgid "stats:winrate"
 msgstr "Доля побед"
@@ -332,7 +332,7 @@ msgid "num undos"
 msgstr "Количество отмен хода"
 
 msgid "dot color"
-msgstr "Цвет (зафиксирован)"
+msgstr "Цвет (фикс.)"
 
 msgid "show dots"
 msgstr "Показывать точки"

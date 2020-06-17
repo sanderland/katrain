@@ -520,12 +520,12 @@
             spacing: CP_SPACING
             Timer:
                 id: timer
-                size_hint_x: 0.7
+                size_hint_x: 0.65
             MDBoxLayout:
                 orientation: 'vertical'
                 padding: 2*CP_PADDING,CP_PADDING
                 spacing: CP_SPACING
-                size_hint_x: 0.3
+                size_hint_x: 0.35
                 SizedRoundedRectangleButton:
                     text: i18n._('pass-button-text')
                     size_hint: 1, 0.5
@@ -536,7 +536,7 @@
                     on_left_release: root.katrain("undo","smart")
         MoveTree:
             id: move_tree
-            size_hint_x: 0.1 if self.parent.mode == MODE_PLAY else 1
+            size_hint_x: 0.0001 if self.parent.mode == MODE_PLAY else 1
             opacity: 0 if self.parent.mode == MODE_PLAY else 1
     CollapsablePanel:
         id: graph_panel
