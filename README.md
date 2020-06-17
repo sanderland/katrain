@@ -21,9 +21,13 @@ but has since grown to include a wide range of features, including:
 
 ## Animated Screenshots
 
-| Play against an AI Teacher | Analyze games  |
-| ------------- | ------------- |
-| ![screenshot](screenshots/teaching.gif) | ![screenshot](screenshots/analysis.gif)  |
+### Play against an AI Teacher
+
+![screenshot](screenshots/teaching.gif) 
+
+### Analyze your games
+
+![screenshot](screenshots/analysis.gif)
 
 
 ## Installation
