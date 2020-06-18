@@ -779,7 +779,7 @@
 
 <LangButton@TransparentIconButton>
     size_hint: 1,1
-    icon_size: self.height * 0.8, self.height  * 0.8
+    icon_size: self.height * 0.75, self.height  * 0.75
 
 
 <MenuLabel@Label+BackgroundMixin>:
@@ -919,15 +919,19 @@
     MDBoxLayout:
         size_hint: 1, None
         height: 1.5 * root.item_height
+        padding: CP_PADDING, 0
         LangButton:
             icon: 'img/flaticon/flag-uk.png'
             on_press: app.language = 'en'
         LangButton:
+            icon: 'img/flaticon/flag-de.png'
+            on_press: app.language = 'de'
+        LangButton:
             icon: 'img/flaticon/flag-fr.png'
             on_press: app.language = 'fr'
         LangButton:
-            icon: 'img/flaticon/flag-de.png'
-            on_press: app.language = 'de'
+            icon: 'img/flaticon/flag-es.png'
+            on_press: app.language = 'es'
         LangButton:
             icon: 'img/flaticon/flag-ru.png'
             on_press: app.language = 'ru'
