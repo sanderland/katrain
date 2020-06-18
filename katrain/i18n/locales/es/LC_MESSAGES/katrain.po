@@ -20,16 +20,16 @@ msgid "menu:load"
 msgstr "Cargar Juego"
 
 msgid "menu:settings"
-msgstr "Configuración General y Motores"
+msgstr "Conf General y Motores"
 
 msgid "menu:clocksettings"
-msgstr "Configuración de Reloj"
+msgstr "Conf de Reloj"
 
 msgid "menu:teachsettings"
-msgstr "Configuración Juego Enseñanza"
+msgstr "Conf Juego Enseñanza"
 
 msgid "menu:aisettings"
-msgstr "Configuración IA"
+msgstr "Conf IA"
 
 msgid "menu:lang"
 msgstr "Idioma"
@@ -125,10 +125,10 @@ msgid "tab:score"
 msgstr "Puntaje"
 
 msgid "tab:winrate"
-msgstr "Probabilidad Victoria"
+msgstr "Pronóstico"
 
 msgid "tab:points"
-msgstr "Perdida de Puntos"
+msgstr "Perdidas"
 
 msgid "tab:info"
 msgstr "Info"
@@ -166,16 +166,16 @@ msgid "btn:Analysis"
 msgstr "Análisis"
 
 msgid "btn:Analyze"
-msgstr "Opciones de Análisis"
+msgstr "Análisis"
 
 msgid "stats:winrate"
-msgstr "Probabilidad Victoria"
+msgstr "Pronóstico"
 
 msgid "stats:score"
-msgstr "Puntaje Estimado"
+msgstr "Puntaje"
 
 msgid "stats:pointslost"
-msgstr "Puntos Perdidos"
+msgstr "Perdidas"
 
 #. better than expected best move
 msgid "stats:pointsgained"
@@ -191,7 +191,7 @@ msgid "Info:score"
 msgstr "Puntaje: {score}"
 
 msgid "Info:winrate"
-msgstr "Probabilidad Victoria: {winrate}"
+msgstr "Pronóstico: {winrate}"
 
 msgid "Info:point loss"
 msgstr "Pérdida esperada de puntos: {points_lost:.1f}"
@@ -245,13 +245,13 @@ msgstr "Devolver al inicio"
 
 # timer settings from here
 msgid "timer settings"
-msgstr "Configuración de Reloj"
+msgstr "Conf de Reloj"
 
 msgid "byoyomi length"
-msgstr "Longitud periodo Byo-yomi"
+msgstr "Segundos Byo-yomi"
 
 msgid "byoyomi periods"
-msgstr "Numero de Periodos"
+msgstr "Número de Periodos"
 
 #. submit button
 msgid "update timer"
@@ -305,7 +305,7 @@ msgstr "Empezar Nuevo Juego"
 
 # teacher settings from here
 msgid "teacher settings"
-msgstr "Editar Configuracion de Profesor"
+msgstr "Editar Conf de Profesor"
 
 msgid "point loss threshold"
 msgstr "Pérdidas de puntaje mayores a"
@@ -339,30 +339,30 @@ msgstr ""
 
 #. submit button
 msgid "update teacher"
-msgstr "Actualizar configuración de retroalimentación"
+msgstr "Actualizar conf de retroalimentación"
 
 # main config settings
 msgid "restarting engine"
-msgstr "Reinicar Motor por cambio en Configuración."
+msgstr "Reinicar Motor por cambio en conf."
 
 # title
 msgid "general settings title"
-msgstr "Configuraciones Generales y de Motores"
+msgstr "Conf Generales y de Motores"
 
 msgid "file not found"
 msgstr "Ruta no existe"
 
 msgid "general settings"
-msgstr "Configuraciones Generales"
+msgstr "Conf Generales"
 
 msgid "engine settings"
-msgstr "Configuración Motor"
+msgstr "Conf Motor"
 
 msgid "katago settings"
-msgstr "Configuración KataGo"
+msgstr "Conf KataGo"
 
 msgid "config file path"
-msgstr "La Configuración se guardan en:"
+msgstr "La Conf se guardan en:"
 
 msgid "engine:katago"
 msgstr "Ruta al ejecutable de KataGo"
@@ -374,7 +374,7 @@ msgid "engine:model"
 msgstr "Ruta al modelo de KataGo"
 
 msgid "engine:config"
-msgstr "Ruta al archivo de configuración de KataGo"
+msgstr "Ruta al archivo de conf de KataGo"
 
 msgid "engine:max_visits"
 msgstr "Máximo número de visitas en análisis"
@@ -413,17 +413,17 @@ msgid "general:debug_level:hint"
 msgstr "Usar 1 para reportar errores"
 
 msgid "update settings"
-msgstr "Actualizar configuración"
+msgstr "Actualizar conf"
 
 # ai settings from here
 msgid "ai settings"
-msgstr "Configuraciones avanzadas IA"
+msgstr "Conf avanzadas IA"
 
 msgid "Select AI"
-msgstr "Selección estrategia para IA"
+msgstr "Estrategia para IA"
 
 msgid "update ai settings"
-msgstr "Actualizar coonfiguración IA"
+msgstr "Actualizar conf IA"
 
 #. misc errors and info messages
 msgid "sgf written"
@@ -447,8 +447,8 @@ msgstr "Error al cargar SGF. Error de parseo: {error}"
 msgid "Starting Kata failed"
 msgstr ""
 "Empezando KataGo con el comando '{command}' fallo con error {error}. "
-"Porfavor asegurar que el ejecutable de 'katago' dentro de la configuración "
-"del motor 'engine' al valor correcto del ejecutable KataGo."
+"Porfavor asegurar que el ejecutable de 'katago' dentro de la conf del motor "
+"'engine' al valor correcto del ejecutable KataGo."
 
 msgid "Engine died unexpectedly"
 msgstr ""
@@ -468,8 +468,8 @@ msgstr "KataGo"
 msgid "aihelp:default"
 msgstr ""
 "Fuerza máxima de KataGo IA. La fuerza es afectada por el número `máximo "
-"visitas` y `modelo` en configuración general del `motor` y el archivo de "
-"configuración  del motor. No hay opciones  disponibles acá."
+"visitas` y `modelo` en conf general del `motor` y el archivo de conf  del "
+"motor. No hay opciones  disponibles acá."
 
 msgid "ai:jigo"
 msgstr "KataJigo"
@@ -493,8 +493,8 @@ msgstr "Jugadas intuivtivas"
 msgid "aihelp:policy"
 msgstr ""
 "Juega la jugada que se considera la más intuivida sin leer. La fuerza esta "
-"dada por el `model` en la configuración del motor. El parámetro  "
-"opening_movesafecta cuantas jugadas en la apertura son al azar."
+"dada por el `model` en la conf del motor. El parámetro  opening_movesafecta "
+"cuantas jugadas en la apertura son al azar."
 
 msgid "ai:p:weighted"
 msgstr "Jugadas intuivtivas con Peso"
@@ -555,53 +555,42 @@ msgstr ""
 "juega la mejor. Incrementar `line_weight` para penalizar más jugadas cerca "
 "al centro. Para estrategia cuando la fase 'endgame' del tablero ha llegado."
 
-#. TODO
 msgid "aihelp:p:rank"
 msgstr ""
-"Picks moves at random from a limited selection of moves and plays the best "
-"one. Stronger settings select the best move from a larger selection. Since "
-"there is no 0 kyu/dan, 3 dan = -2 kyu."
+"Seleciona jugadas al azar de una limitada selección y juega la "
+"mejorConfiguraciones más fuertes amplia su selección y juega la mejor "
+"jugada. Como no hay 0 kyu/dan, 3 dan = -2 kyu."
 
-#. TODO
 msgid "Kata model not found"
-msgstr "KataGo model {model} does not exist, please check general settings."
+msgstr "El modelo KataGo {model} no existe, revisar conf general."
 
-#. TODO
 msgid "equalizing analysis"
-msgstr "Equalizing analysis of candidate moves to {visits} visits"
+msgstr "Ecualizar análsis de jugadas candidatas a {visits} visitas"
 
-#. TODO
 msgid "Kata exe not found in path"
 msgstr ""
-"KataGo binary `{exe}` not found in your PATH, check your environment "
-"variables or use the full path in general settings instead. Si estas en "
+"El binario de KataGo `{exe}` no se encuentra en la RUTA, revisar "
+"variablesambiente o usar la ruta completa en la conf general. Si estas en "
 "MacOS, ve el manual de como usar homebrew para instalar KataGo primero"
 
-#. TODO
 msgid "ai:p:rank"
-msgstr "Calibrated Rank"
+msgstr "Fuerza Calibrada"
 
-#. TODO
 msgid "tab:info-details"
-msgstr "Details"
+msgstr "Detalles"
 
-#. TODO
 msgid "Kata exe not found"
-msgstr "KataGo binary {exe} does not exist, check general settings."
+msgstr "El binario KataGo {exe} no existe, revisar conf general."
 
-#. TODO
 msgid "sweep analysis"
-msgstr "Analyzing entire board using {visits} visits/move"
+msgstr "Analizando tablero entero usando {visits} visitas/jugada"
 
-#. TODO
 msgid "count down sound"
-msgstr "Sound on"
+msgstr "Sonido on"
 
-#. TODO
 msgid "Kata config not found"
 msgstr ""
-"KataGo config file {config} does not exist, please check general settings."
+"El archivo de conf de KataGo {config} no existe, revisar conf general."
 
-#. TODO
 msgid "extra analysis"
-msgstr "Performing additional analysis to {visits} visits"
+msgstr "Realizar análisis adicional a {visits} visitas"
