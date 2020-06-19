@@ -2,18 +2,19 @@ Primary author and project maintainer (https://github.com/sanderland/katrain):
 Sander Land
 
 Many thanks to these additional authors:
-Matthew Allred ("Kameone") for design of the v1.1 UI and providing MacOS installation instructions.
+Matthew Allred ("Kameone") for design of the v1.1 UI, many suggestions, providing MacOS installation instructions, and working on promotion and youtube videos.
 "isty2e" for the Korean translation.
 "Dontbtme" for detailed feedback and early testing of v1.0, and the French translation.
+"wonderingabout" for helping with the French translation.
 "bale-go" for implementing and calibrating the 'calibrated rank' AI.
 "nimets123" for the German translation and sound effects.
 "nowoowoo" for a fix to the parser for SGF files with extra line breaks.
 Sergio Villegas ("serpiente") for the Spanish translation.
 Dmitry Ivankov and Alexander Kiselev for the Russian translation.
+Qing Mu for the simplified Chinese translation.
 
 Additional thanks to:
-"Seventeen" for explanatory youtube videos.
-"wonderingabout" for helping with the French translation.
+"Seventeen" for explanatory youtube videos in Korean.
 
 
 

@@ -1,0 +1,582 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: Simplified Chinese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "用户设置"
+
+msgid "menu:newgame"
+msgstr "新对局"
+
+msgid "menu:save"
+msgstr "保存对局"
+
+msgid "menu:load"
+msgstr "加载对局"
+
+msgid "menu:settings"
+msgstr "通用和引擎设置"
+
+msgid "menu:clocksettings"
+msgstr "用时设置"
+
+msgid "menu:teachsettings"
+msgstr "指导棋设置"
+
+msgid "menu:aisettings"
+msgstr "AI设置"
+
+msgid "menu:lang"
+msgstr "语言"
+
+msgid "menu:support"
+msgstr "帮助"
+
+msgid "menu:manual"
+msgstr "帮助手册"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "棋手"
+
+msgid "player:human"
+msgstr "人类"
+
+msgid "player:ai"
+msgstr "AI"
+
+msgid "aistrategy"
+msgstr "AI选点方式"
+
+msgid "gametype"
+msgstr "对局类型"
+
+msgid "game:normal"
+msgstr "分先对局"
+
+msgid "game:teach"
+msgstr "指导棋"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"下一\n"
+"手"
+
+msgid "analysis:dots"
+msgstr ""
+"显示\n"
+"选点"
+
+msgid "analysis:topmoves"
+msgstr ""
+"最佳\n"
+"选点"
+
+msgid "analysis:policy"
+msgstr ""
+"自定义下\n"
+"最佳选点"
+
+msgid "analysis:territory"
+msgstr ""
+"形势\n"
+"判断"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "深度分析"
+
+msgid "analysis:equalize"
+msgstr "选点平均"
+
+msgid "analysis:sweep"
+msgstr "快速全盘分析"
+
+msgid "analysis:aimove"
+msgstr "AI支招"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "停一手"
+
+msgid "ai-ponder"
+msgstr "AI引擎状态指示, 从空闲（绿色）变为处理中（橙色）。 红色表明运行崩溃或无法 开始。"
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "撤销"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "分数"
+
+msgid "tab:winrate"
+msgstr "胜率"
+
+msgid "tab:points"
+msgstr "目数损失"
+
+msgid "tab:info"
+msgstr "信息"
+
+msgid "tab:notes"
+msgstr "评价"
+
+msgid "closedlabel:scoregraph"
+msgstr "分数图"
+
+#. on the graph
+msgid "Jigo"
+msgstr "和棋"
+
+msgid "closedlabel:movestats"
+msgstr "每步统计"
+
+msgid "closedlabel:info&notes"
+msgstr "每步信息和评价"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "停一手"
+
+msgid "board-game-end"
+msgstr ""
+"对局\n"
+"结束"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "下棋"
+
+msgid "btn:Analysis"
+msgstr "分析"
+
+msgid "btn:Analyze"
+msgstr "分析选项"
+
+msgid "stats:winrate"
+msgstr "胜率"
+
+msgid "stats:score"
+msgstr "分数"
+
+msgid "stats:pointslost"
+msgstr "目数损失"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "目数增加"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr " 'X' 是KataGo的最佳选点, 正方形 表明这一手棋损失在0.5目以内"
+
+msgid "Info:score"
+msgstr "分数: {score}"
+
+msgid "Info:winrate"
+msgstr "胜率: {winrate}"
+
+msgid "Info:point loss"
+msgstr "目数损失: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "手数 {number}"
+
+msgid "Info:top move"
+msgstr "推荐最佳选点 {top_move} ({score})."
+
+msgid "Info:best move"
+msgstr "该手为最佳选点"
+
+msgid "Info:PV"
+msgstr "PV: {pv}"
+
+msgid "Info:policy rank"
+msgstr "直觉选点下该手棋是 #{rank} ({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "最佳直觉选点是 {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr "指导棋模式下该手棋自动悔棋"
+
+msgid "Info:undo predicted PV"
+msgstr "建议下一手: {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "AI 计算长度: {thoughts}"
+
+msgid "No analysis available"
+msgstr "没有可用分析"
+
+msgid "Analyzing move..."
+msgstr "分析中..."
+
+msgid "SGF Notes Hint"
+msgstr "SGF评价"
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "加载SGF文件"
+
+msgid "load sgf fast analysis"
+msgstr "快速分析"
+
+msgid "load sgf rewind"
+msgstr "回到第一步"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "用时设置"
+
+msgid "byoyomi length"
+msgstr "读秒时长"
+
+msgid "byoyomi periods"
+msgstr "读秒次数"
+
+#. submit button
+msgid "update timer"
+msgstr "保存用时设置"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "新对局设置"
+
+msgid "board size"
+msgstr "棋盘大小"
+
+msgid "handicap"
+msgstr "让子"
+
+msgid "komi"
+msgstr "贴目"
+
+msgid "ruleset"
+msgstr "规则设置"
+
+#. ruleset names
+msgid "japanese"
+msgstr "日本规则"
+
+msgid "chinese"
+msgstr "中国规则"
+
+msgid "korean"
+msgstr "韩国规则"
+
+msgid "aga"
+msgstr "AGA规则"
+
+msgid "clear cache"
+msgstr "清除缓存"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"避免重复\n"
+"相同对局"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "非方形棋盘使用x:y(例如19:9)"
+
+#. submit new game
+msgid "new game"
+msgstr "开始新对局"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "指导棋设置"
+
+msgid "point loss threshold"
+msgstr "目数损失下限"
+
+msgid "num undos"
+msgstr "悔棋机会"
+
+msgid "dot color"
+msgstr "选点颜色显示 (固定)"
+
+msgid "show dots"
+msgstr "显示选点"
+
+msgid "save dots"
+msgstr "保存为SGF"
+
+msgid "show last n dots"
+msgstr ""
+"显示最后\n"
+"<this many> 手棋的选点"
+
+msgid "show ai dots"
+msgstr ""
+"AI的\n"
+"显示选点/SGF评价"
+
+msgid "lock ai when playing"
+msgstr ""
+"对局模式中\n"
+"不允许最佳选点"
+
+#. submit button
+msgid "update teacher"
+msgstr "更新指导棋设置"
+
+# main config settings
+msgid "restarting engine"
+msgstr "设置改变后重新启动引擎"
+
+# title
+msgid "general settings title"
+msgstr "一般和引擎设置"
+
+msgid "file not found"
+msgstr "路径不存在"
+
+msgid "general settings"
+msgstr "一般设置"
+
+msgid "engine settings"
+msgstr "KataGo引擎设置"
+
+msgid "config file path"
+msgstr "所有设置保存在:"
+
+msgid "engine:katago"
+msgstr "KataGo运行文件路径"
+
+msgid "engine:katago:hint"
+msgstr "空白以使用其他运行文件"
+
+msgid "engine:model"
+msgstr "KataGo模型文件路径"
+
+msgid "engine:config"
+msgstr "KataGo设置文件路径"
+
+msgid "engine:max_visits"
+msgstr "分析中每手棋运算步数"
+
+msgid "engine:fast_visits"
+msgstr "快速分析中每手棋运算步数"
+
+msgid "engine:max_time"
+msgstr "分析时间上限"
+
+msgid "engine:wide_root_noise"
+msgstr "宽根噪声 (增加了所考虑的选点数量)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"使用 0.02-0.1 以显示\n"
+"更多可能选点"
+
+msgid "engine:time:hint"
+msgstr "时间单位是秒"
+
+msgid "general:sgf_load"
+msgstr "加载SGF文件路径"
+
+msgid "general:sgf_save"
+msgstr "保存SGF文件路径"
+
+msgid "general:anim_pv_time"
+msgstr "动画中两手棋时间间隔"
+
+msgid "general:debug_level"
+msgstr "控制台中的调试级别"
+
+msgid "general:debug_level:hint"
+msgstr "报错显示为1"
+
+msgid "update settings"
+msgstr "保存设置"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "高级AI设置"
+
+msgid "Select AI"
+msgstr "选择AI设置"
+
+msgid "update ai settings"
+msgstr "保存AI设置"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "带分析的SGF文件保存到 {file_name}"
+
+msgid "wait-before-equalize"
+msgstr "优化前等待初始分析完成"
+
+msgid "Copied SGF to clipboard."
+msgstr "复制SGF到剪贴板"
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"从剪贴板导入对局失败: {error}\n"
+"剪贴板内容: {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "加载SGF失败. 错误类型: {error}"
+
+#. TODO
+msgid "Kata model not found"
+msgstr "KataGo model {model} does not exist, please check general settings."
+
+#. TODO
+msgid "Kata config not found"
+msgstr ""
+"KataGo config file {config} does not exist, please check general settings."
+
+#. TODO - CHECK
+msgid "Kata exe not found"
+msgstr "用'{exe}'命令启动katago出错. 并把它加入 的路 擎/katago'设置"
+
+#. TODO - CHECK
+msgid "Kata exe not found in path"
+msgstr ""
+"用'{exe}'命令启动katago出错. 如果使用 MacOS, 参考帮助手册如何使用brew安装katago, 并把它加入 "
+"你的路径或'引擎/katago'设置"
+
+msgid "Starting Kata failed"
+msgstr ""
+"用'{command}'命令启动katago出错 {error}. 请 确认'引擎' 设置里'katago'的值指向了 正确的KataGo运行文件."
+
+msgid "Engine died unexpectedly"
+msgstr "引擎意外崩溃没有输出, 可能内存 不足: {error}"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "级位"
+
+msgid "strength:dan"
+msgstr "段位"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"全功能的KataGo AI. 棋力由 `max visits` 和 `模型` 决定.在一般设置里 `引擎` 部分和引擎设置文件. 这里没有选项."
+
+msgid "ai:jigo"
+msgstr "Kata和棋"
+
+msgid "aihelp:jigo"
+msgstr "尝试按指定目数赢棋(默认0.5目), 没有更多 限制."
+
+msgid "ai:jigo"
+msgstr "Kata和棋"
+
+msgid "aihelp:jigo"
+msgstr "尝试按指定目数赢棋(默认0.5目), 没有更多 限制."
+
+msgid "ai:scoreloss"
+msgstr "分数损失"
+
+msgid "aihelp:scoreloss"
+msgstr "倾向选择概率低目数损失大的落点. 在更高计算深度下, 棋力不稳定且更弱."
+
+msgid "ai:policy"
+msgstr "直觉"
+
+msgid "aihelp:policy"
+msgstr "按最佳直觉行棋, 没有计算. 棋力 主要由引擎设置里的 `模型` 决定. 布局落点设置 影响布局中随机落点的数量."
+
+msgid "ai:p:weighted"
+msgstr "直觉权重"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"按直觉概率行棋, `weaken_fac` 决定了 较弱选点的多少. 负值越大说明越接近 直觉AI.`pick_override` "
+"决定了在没有随机性的最佳选点, `lower_bound` 决定了允许的 直觉值的下限."
+
+msgid "ai:p:pick"
+msgstr "盲选直觉"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"随机选择 `pick_n + pick_frac * <number of legal moves>` 并采用最佳的 一手. "
+"当`pick_frac=1` 就是直觉AI. 如果直觉值大于 `pick_override`则采用最佳的一手以避免明显错误."
+
+msgid "ai:p:local"
+msgstr "本地模式"
+
+msgid "aihelp:p:local"
+msgstr ""
+"使加权 `pick_n + pick_frac * <number of legal moves>` 接近 最后一手且选出最优. 如果直觉值大于 "
+"`pick_override`则采用最佳的一手以避免明显错误."
+
+msgid "ai:p:tenuki"
+msgstr "脱先模式"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"使加权`pick_n + pick_frac * <number of legal moves>` 偏离 最后一手且选出最优. 如果直觉值 "
+"大于`pick_override` 则采用最佳的一手以避免明显错误. 更高的 `stddev` 使其 偏离更多."
+
+msgid "ai:p:influence"
+msgstr "影响模式"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"在高于 `threshold` 的点中选出最优. 加大 `line_weight` 以增加对靠近边缘的点的惩罚. 在  'endgame' "
+"部分结束后停止."
+
+msgid "ai:p:territory"
+msgstr "领地模式"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"在低于 `threshold` 的点中选出最优. 加大 `line_weight` 以增加对靠近中心的点的惩罚. 在  'endgame' "
+"部分结束后停止."
+
+#. TODO
+msgid "aihelp:p:rank"
+msgstr ""
+"Picks moves at random from a limited selection of moves and plays the best "
+"one. Stronger settings select the best move from a larger selection. Since "
+"there is no 0 kyu/dan, 3 dan = -2 kyu."
+
+msgid "katago settings"
+msgstr "KataGo 设置"
+
+#. TODO
+msgid "sweep analysis"
+msgstr "Analyzing entire board using {visits} visits/move"
+
+#. TODO
+msgid "extra analysis"
+msgstr "Performing additional analysis to {visits} visits"
+
+#. TODO
+msgid "equalizing analysis"
+msgstr "Equalizing analysis of candidate moves to {visits} visits"
+
+#. TODO
+msgid "count down sound"
+msgstr "Sound on"
+
+#. TODO
+msgid "tab:info-details"
+msgstr "Details"
+
+#. TODO
+msgid "teaching undo message"
+msgstr ""
+"Undid move {move} as it lost {points_lost:.1f} points. Hover over the move "
+"to see expected refutation. Please try again."
+
+#. TODO
+msgid "ai:p:rank"
+msgstr "Calibrated Rank"
