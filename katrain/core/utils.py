@@ -37,19 +37,19 @@ def check_thread(tb=False):  # for checking if draws occur in correct thread
         traceback.print_stack()
 
 
-PACKAGE_PATH = None
+PATHS = {}
 
 
 def find_package_resource(path, silent_errors=False):
-    global PACKAGE_PATH
+    global PATHS
     if path.startswith("katrain"):
-        if PACKAGE_PATH is None:
+        if not PATHS.get("PACKAGE"):
             try:
                 with pkg_resources.path("katrain", "__init__.py") as p:
-                    PACKAGE_PATH = os.path.split(str(p))[0]
+                    PATHS["PACKAGE"] = os.path.split(str(p))[0]
             except (ModuleNotFoundError, FileNotFoundError, ValueError) as e:
                 print(f"Package file {path} not found, installation possibly broken", file=sys.stderr)
                 return f"FILENOTFOUND/{path}"
-        return os.path.join(PACKAGE_PATH, path.replace("katrain\\", "katrain/").replace("katrain/", ""))
+        return os.path.join(PATHS["PACKAGE"], path.replace("katrain\\", "katrain/").replace("katrain/", ""))
     else:
         return os.path.abspath(os.path.expanduser(path))  # absolute path

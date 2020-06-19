@@ -131,14 +131,16 @@ class ScoreGraph(BackgroundMixin):
             self.nodes[index] = node
             if index > 1 and node.parent:  # sometimes things go so fast
                 backfill, bfnode = index - 1, node.parent
-                while self.nodes[backfill] is None:
+                while bfnode is not None and self.nodes[backfill] != bfnode:
                     self.nodes[backfill] = bfnode
                     backfill -= 1
                     bfnode = bfnode.parent
 
-            if index + 1 < len(self.nodes) and (node is None or self.nodes[index + 1] not in node.children):
+            if index + 1 < len(self.nodes) and (
+                node is None or not node.children or self.nodes[index + 1] != node.ordered_children[0]
+            ):
                 self.nodes = self.nodes[: index + 1]  # on branch switching, don't show history from other branch
-            if index == len(self.nodes) - 1:  # possibly just switched branch
+            if index == len(self.nodes) - 1:  # possibly just switched branch or the line above triggered
                 while node.children:  # add children back
                     node = node.ordered_children[0]
                     self.nodes.append(node)

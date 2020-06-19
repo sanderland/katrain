@@ -6,7 +6,7 @@ os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warni
 os.environ["KIVY_AUDIO"] = "sdl2"  # force working audio
 
 # next, icon
-from katrain.core.utils import find_package_resource
+from katrain.core.utils import find_package_resource, PATHS
 from kivy.config import Config
 from kivy.utils import platform
 
@@ -471,7 +471,8 @@ class KaTrainApp(MDApp):
 
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
-        resource_add_path(os.path.split(kv_file)[0])
+        resource_add_path(PATHS["PACKAGE"])
+
         Builder.load_file(kv_file)
 
         Window.bind(on_request_close=self.on_request_close)
@@ -489,9 +490,9 @@ class KaTrainApp(MDApp):
             self.gui.controls.set_status("")
 
     def webbrowser(self, site_key):
-        WEBSITES = {"homepage": HOMEPAGE + "#manual", "support": HOMEPAGE + "#support"}
-        if site_key in WEBSITES:
-            webbrowser.open(WEBSITES[site_key])
+        websites = {"homepage": HOMEPAGE + "#manual", "support": HOMEPAGE + "#support"}
+        if site_key in websites:
+            webbrowser.open(websites[site_key])
 
     def on_start(self):
         self.language = self.gui.config("general/lang")

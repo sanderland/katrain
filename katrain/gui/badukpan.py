@@ -112,7 +112,7 @@ class BadukPanWidget(Widget):
                     katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
                     katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_DEBUG)
                     katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
-                    katrain.controls.active_comment_node = nodes_here[-1].parent
+                    katrain.controls.active_comment_node = nodes_here[-1]
                     if nodes_here[-1].parent.analysis_ready:
                         self.set_animating_pv(nodes_here[-1].parent.candidate_moves[0]["pv"], nodes_here[-1].parent)
 

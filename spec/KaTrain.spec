@@ -43,7 +43,7 @@ a.datas = [
 
 print("DATA FILTERED", len(a.datas))
 
-console_names = {True:"KaTrain",False:"KaTrainNC"}
+console_names = {True:"DebugKaTrain",False:"KaTrain"}
 
 for console, name in console_names.items():
 
