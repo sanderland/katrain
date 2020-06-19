@@ -475,12 +475,6 @@ msgstr "Kata和棋"
 msgid "aihelp:jigo"
 msgstr "尝试按指定目数赢棋(默认0.5目), 没有更多 限制."
 
-msgid "ai:jigo"
-msgstr "Kata和棋"
-
-msgid "aihelp:jigo"
-msgstr "尝试按指定目数赢棋(默认0.5目), 没有更多 限制."
-
 msgid "ai:scoreloss"
 msgstr "分数损失"
 
