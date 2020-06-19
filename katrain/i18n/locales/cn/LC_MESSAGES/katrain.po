@@ -429,29 +429,6 @@ msgstr ""
 msgid "Failed to load SGF"
 msgstr "加载SGF失败. 错误类型: {error}"
 
-#. TODO
-msgid "Kata model not found"
-msgstr "KataGo model {model} does not exist, please check general settings."
-
-#. TODO
-msgid "Kata config not found"
-msgstr ""
-"KataGo config file {config} does not exist, please check general settings."
-
-#. TODO - CHECK
-msgid "Kata exe not found"
-msgstr "用'{exe}'命令启动katago出错. 并把它加入 的路 擎/katago'设置"
-
-#. TODO - CHECK
-msgid "Kata exe not found in path"
-msgstr ""
-"用'{exe}'命令启动katago出错. 如果使用 MacOS, 参考帮助手册如何使用brew安装katago, 并把它加入 "
-"你的路径或'引擎/katago'设置"
-
-msgid "Starting Kata failed"
-msgstr ""
-"用'{command}'命令启动katago出错 {error}. 请 确认'引擎' 设置里'katago'的值指向了 正确的KataGo运行文件."
-
 msgid "Engine died unexpectedly"
 msgstr "引擎意外崩溃没有输出, 可能内存 不足: {error}"
 
@@ -535,42 +512,51 @@ msgstr ""
 "在低于 `threshold` 的点中选出最优. 加大 `line_weight` 以增加对靠近中心的点的惩罚. 在  'endgame' "
 "部分结束后停止."
 
-#. TODO
+msgid "katago settings"
+msgstr "KataGo 设置"
+
+msgid "count down sound"
+msgstr "读秒声音开启"
+
+msgid "tab:info-details"
+msgstr "详细"
+
+msgid "teaching undo message"
+msgstr "撤销第 {move} 手棋因为损失超过 {points_lost:.1f} 目. 悬停在该手棋 上方查看信息. 请再次尝试."
+
+msgid "ai:p:rank"
+msgstr "参考段位"
+
+msgid "sweep analysis"
+msgstr "Analyzing entire board using {visits} visits/move"
+
+msgid "extra analysis"
+msgstr "Performing additional analysis to {visits} visits"
+
+msgid "equalizing analysis"
+msgstr "Equalizing analysis of candidate moves to {visits} visits"
+
 msgid "aihelp:p:rank"
 msgstr ""
 "Picks moves at random from a limited selection of moves and plays the best "
 "one. Stronger settings select the best move from a larger selection. Since "
 "there is no 0 kyu/dan, 3 dan = -2 kyu."
 
-msgid "katago settings"
-msgstr "KataGo 设置"
+msgid "Kata model not found"
+msgstr "KataGo model {model} does not exist, please check general settings."
 
-#. TODO
-msgid "sweep analysis"
-msgstr "Analyzing entire board using {visits} visits/move"
-
-#. TODO
-msgid "extra analysis"
-msgstr "Performing additional analysis to {visits} visits"
-
-#. TODO
-msgid "equalizing analysis"
-msgstr "Equalizing analysis of candidate moves to {visits} visits"
-
-#. TODO
-msgid "count down sound"
-msgstr "Sound on"
-
-#. TODO
-msgid "tab:info-details"
-msgstr "Details"
-
-#. TODO
-msgid "teaching undo message"
+msgid "Kata config not found"
 msgstr ""
-"Undid move {move} as it lost {points_lost:.1f} points. Hover over the move "
-"to see expected refutation. Please try again."
+"KataGo config file {config} does not exist, please check general settings."
 
-#. TODO
-msgid "ai:p:rank"
-msgstr "Calibrated Rank"
+msgid "Kata exe not found"
+msgstr "用'{exe}'命令启动katago出错. 并把它加入 的路 擎/katago'设置"
+
+msgid "Kata exe not found in path"
+msgstr ""
+"用'{exe}'命令启动katago出错. 如果使用 MacOS, 参考帮助手册如何使用brew安装katago, 并把它加入 "
+"你的路径或'引擎/katago'设置"
+
+msgid "Starting Kata failed"
+msgstr ""
+"用'{command}'命令启动katago出错 {error}. 请 确认'引擎' 设置里'katago'的值指向了 正确的KataGo运行文件."
