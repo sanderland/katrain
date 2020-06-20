@@ -45,10 +45,10 @@ def find_package_resource(path, silent_errors=False):
     if path.startswith("katrain"):
         if not PATHS.get("PACKAGE"):
             try:
-                with pkg_resources.path("katrain", "__init__.py") as p:
+                with pkg_resources.path("katrain", "gui.kv") as p:
                     PATHS["PACKAGE"] = os.path.split(str(p))[0]
             except (ModuleNotFoundError, FileNotFoundError, ValueError) as e:
-                print(f"Package file {path} not found, installation possibly broken", file=sys.stderr)
+                print(f"Package path not found, installation possibly broken. Error: {e}", file=sys.stderr)
                 return f"FILENOTFOUND/{path}"
         return os.path.join(PATHS["PACKAGE"], path.replace("katrain\\", "katrain/").replace("katrain/", ""))
     else:

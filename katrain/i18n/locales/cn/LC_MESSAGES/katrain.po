@@ -528,29 +528,25 @@ msgid "ai:p:rank"
 msgstr "参考段位"
 
 msgid "sweep analysis"
-msgstr "Analyzing entire board using {visits} visits/move"
+msgstr "基于 {visits} 计算深度的全盘分析"
 
 msgid "extra analysis"
-msgstr "Performing additional analysis to {visits} visits"
+msgstr "对第 {visits} 步做额外分析"
 
 msgid "equalizing analysis"
-msgstr "Equalizing analysis of candidate moves to {visits} visits"
+msgstr "对待选点强制进行 {visits} 步分析"
 
 msgid "aihelp:p:rank"
-msgstr ""
-"Picks moves at random from a limited selection of moves and plays the best "
-"one. Stronger settings select the best move from a larger selection. Since "
-"there is no 0 kyu/dan, 3 dan = -2 kyu."
+msgstr "从随机生成的选点集合里选出最佳. 更强的设置拥有更大的随机选点集合. 既然没有 0 级/段, 则3 段 = -2 级."
 
 msgid "Kata model not found"
-msgstr "KataGo model {model} does not exist, please check general settings."
+msgstr "KataGo 模型 {model} 不存在, 请检查一般设置."
 
 msgid "Kata config not found"
-msgstr ""
-"KataGo config file {config} does not exist, please check general settings."
+msgstr "KataGo 设置文件 {config} 不存在, 请检查一般设置."
 
 msgid "Kata exe not found"
-msgstr "用'{exe}'命令启动katago出错. 并把它加入 的路 擎/katago'设置"
+msgstr "用'{exe}'命令启动katago出错. 请检查路径和文件名"
 
 msgid "Kata exe not found in path"
 msgstr ""
@@ -559,4 +555,4 @@ msgstr ""
 
 msgid "Starting Kata failed"
 msgstr ""
-"用'{command}'命令启动katago出错 {error}. 请 确认'引擎' 设置里'katago'的值指向了 正确的KataGo运行文件."
+"用'{command}'命令启动katago出错 {error}. 请确认引擎设置里'katago'的值指向了 正确的KataGo运行文件."

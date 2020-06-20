@@ -488,16 +488,16 @@ msgstr ""
 "visitas."
 
 msgid "ai:policy"
-msgstr "Jugadas intuivtivas"
+msgstr "Jugadas intuitivas"
 
 msgid "aihelp:policy"
 msgstr ""
 "Juega la jugada que se considera la más intuivida sin leer. La fuerza esta "
-"dada por el `model` en la conf del motor. El parámetro  opening_movesafecta "
-"cuantas jugadas en la apertura son al azar."
+"dada por el `model` en la conf del motor. El parámetro  opening_moves afecta"
+" cuantas jugadas en la apertura son al azar."
 
 msgid "ai:p:weighted"
-msgstr "Jugadas intuivtivas con Peso"
+msgstr "Intuición debilitada"
 
 msgid "aihelp:p:weighted"
 msgstr ""
@@ -518,7 +518,7 @@ msgstr ""
 "`pick_override`. Esto con el fin de prevenir errores obvios."
 
 msgid "ai:p:local"
-msgstr "Estilo Local Style"
+msgstr "Estilo Local"
 
 msgid "aihelp:p:local"
 msgstr ""
@@ -569,9 +569,9 @@ msgstr "Ecualizar análsis de jugadas candidatas a {visits} visitas"
 
 msgid "Kata exe not found in path"
 msgstr ""
-"El binario de KataGo `{exe}` no se encuentra en la RUTA, revisar "
-"variablesambiente o usar la ruta completa en la conf general. Si estas en "
-"MacOS, ve el manual de como usar homebrew para instalar KataGo primero"
+"El binario de KataGo `{exe}` no se encuentra en la 'PATH', revisar variables"
+" ambiente o usar la ruta completa en la conf general. Si estas en MacOS, ve "
+"el manual de como usar homebrew para instalar KataGo primero"
 
 msgid "ai:p:rank"
 msgstr "Fuerza Calibrada"
