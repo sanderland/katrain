@@ -316,7 +316,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
-    def load_sgf_file(self,file,fast=True,rewind=False):
+    def load_sgf_file(self, file, fast=False, rewind=False):
         try:
             move_tree = KaTrainSGF.parse_file(file)
         except ParseError as e:
@@ -343,7 +343,7 @@ class KaTrainGui(Screen, KaTrainBase):
                     self.log(f"Updating sgf load path default to {path}", OUTPUT_INFO)
                     self._config["general"]["sgf_load"] = path
                     self.save_config("general")
-                self.load_sgf_file(files[0],popup_contents.fast.active,popup_contents.rewind.active)
+                self.load_sgf_file(files[0], popup_contents.fast.active, popup_contents.rewind.active)
 
             popup_contents.filesel.on_success = readfile
             popup_contents.filesel.on_submit = readfile
@@ -479,7 +479,7 @@ class KaTrainApp(MDApp):
         Builder.load_file(kv_file)
 
         Window.bind(on_request_close=self.on_request_close)
-        Window.bind(on_dropfile=lambda win,file: self.gui.load_sgf_file(file))
+        Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file))
 
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
