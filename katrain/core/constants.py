@@ -1,6 +1,12 @@
-VERSION = "1.2.1"
+VERSION = "1.3.0"
 HOMEPAGE = "https://github.com/sanderland/katrain"
-CONFIG_MIN_VERSION = "1.2.0"
+CONFIG_MIN_VERSION = "1.2.0"  # keep config files from this version
+
+OUTPUT_ERROR = -1
+OUTPUT_KATAGO_STDERR = -0.5
+OUTPUT_INFO = 0
+OUTPUT_DEBUG = 1
+OUTPUT_EXTRA_DEBUG = 2
 
 PLAYER_HUMAN, PLAYER_AI = "player:human", "player:ai"
 PLAYER_TYPES = [PLAYER_HUMAN, PLAYER_AI]
@@ -43,7 +49,7 @@ AI_STRATEGIES_RECOMMENDED_ORDER = [
 ]
 
 
-AI_STRENGTH = {
+AI_STRENGTH = {  # not used
     AI_DEFAULT: "9d",
     AI_POLICY: "4d",
     AI_JIGO: "?d",
@@ -57,9 +63,7 @@ AI_STRENGTH = {
     AI_RANK: "15k - 3d",
 }
 
-
-OUTPUT_ERROR = -1
-OUTPUT_KATAGO_STDERR = -0.5
-OUTPUT_INFO = 0
-OUTPUT_DEBUG = 1
-OUTPUT_EXTRA_DEBUG = 2
+AI_OPTION_VALUES = {
+    "kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(15, 0, -1)]
+    + [(k, f"{1-k}[strength:dan]") for k in range(0, -3, -1)]
+}

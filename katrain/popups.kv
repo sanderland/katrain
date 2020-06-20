@@ -366,8 +366,20 @@
             on_press: root.update_config(True)
 
 
+<LabelledSelectionSlider>:
+    slider: slider
+    textbox: textbox
+    SelectionSlider:
+        id: slider
+        size_hint: 3,1
+        values: root.values
+        on_select: textbox.text = str(slider.value)
+    LabelledFloatInput:
+        id: textbox
 
-<AIPopup>
+
+
+<ConfigAIPopup>:
     options_grid: options_grid
     help_label: help_label
     ai_select: ai_select

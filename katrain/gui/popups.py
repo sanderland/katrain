@@ -4,7 +4,7 @@ import re
 from typing import Any, Dict, List, Tuple, Union
 
 from kivy.clock import Clock
-from kivy.properties import BooleanProperty, NumericProperty, StringProperty
+from kivy.properties import BooleanProperty, NumericProperty, StringProperty, ListProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -21,12 +21,14 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
+    AI_OPTION_VALUES,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n
 from katrain.core.utils import find_package_resource
 from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
+from katrain.gui.widgets.selection_slider import SelectionSlider
 
 
 class I18NPopup(Popup):
@@ -129,6 +131,21 @@ class LabelledIntInput(LabelledTextInput):
         return int(self.text or "0")
 
 
+class LabelledSelectionSlider(BoxLayout):
+    input_property = StringProperty("")
+    values = ListProperty([(0, "")])  # (value:numeric,label:string) pairs
+
+    def set_value(self, v):
+        self.slider.set_value(v)
+        self.textbox.text = str(v)
+
+    @property
+    def input_value(self):
+        if self.textbox.text:
+            return float(self.textbox.text)
+        return self.slider.values[self.silder.index][0]
+
+
 class InputParseError(Exception):
     pass
 
@@ -183,12 +200,14 @@ class QuickConfigGui(MDBoxLayout):
         return self._set_properties_subtree(self)
 
     def _set_properties_subtree(self, widget):
-        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
-            widget, "input_property", None
-        ):
+        if isinstance(
+            widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox, LabelledSelectionSlider)
+        ) and getattr(widget, "input_property", None):
             value = self.get_setting(widget.input_property)[0]
             if isinstance(widget, LabelledCheckBox):
                 widget.active = value is True
+            elif isinstance(widget, LabelledSelectionSlider):
+                widget.set_value(value)
             elif isinstance(widget, LabelledSpinner):
                 selected = 0
                 try:
@@ -281,7 +300,7 @@ class DescriptionLabel(Label):
     pass
 
 
-class AIPopup(QuickConfigGui):
+class ConfigAIPopup(QuickConfigGui):
     max_options = NumericProperty(6)
 
     def __init__(self, katrain):
@@ -300,9 +319,15 @@ class AIPopup(QuickConfigGui):
         self.help_label.text = i18n._(strategy.replace("ai:", "aihelp:"))
         for k, v in sorted(mode_settings.items(), key=lambda kv: kv[0]):
             self.options_grid.add_widget(DescriptionLabel(text=k))
-            self.options_grid.add_widget(
-                wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"ai/{strategy}/{k}"))
-            )
+            if k in AI_OPTION_VALUES:
+                values = [(v, re.sub(r"\[(.*?)\]", lambda m: i18n._(m[1]), l)) for v, l in AI_OPTION_VALUES[k]]
+                widget = LabelledSelectionSlider(values=values, input_property=f"ai/{strategy}/{k}")
+                widget.set_value(v)
+                self.options_grid.add_widget(wrap_anchor(widget))
+            else:
+                self.options_grid.add_widget(
+                    wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"ai/{strategy}/{k}"))
+                )
         for _ in range((self.max_options - len(mode_settings)) * 2):
             self.options_grid.add_widget(Label())
 

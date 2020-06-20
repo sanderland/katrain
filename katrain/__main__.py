@@ -65,7 +65,7 @@ from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
-from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
+from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL, LIGHTGREY
 from katrain.gui.widgets.graph import ScoreGraph
 from katrain.gui.widgets.movetree import MoveTree
@@ -311,7 +311,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.ai_settings_popup:
             self.ai_settings_popup = I18NPopup(
-                title_key="ai settings", size=[dp(600), dp(600)], content=AIPopup(self)
+                title_key="ai settings", size=[dp(600), dp(600)], content=ConfigAIPopup(self)
             ).__self__
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
