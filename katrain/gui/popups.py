@@ -377,14 +377,15 @@ class ConfigPopup(QuickConfigGui):
                     download_url=url,
                     path_to_file=savepath_tmp,
                     downloading_text=f"Downloading {name} model: " + "{}%",
+                    label_downloading_text=f"Starting download for {name} model",
                     download_complete=lambda req, tmp=savepath_tmp, path=savepath, model=name: download_complete(
                         req, tmp, path, model
                     ),
                     download_redirected=lambda req,mname=name: self.katrain.log(
                         f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
                     ),
-                    download_error=lambda req,mname=name: self.katrain.log(
-                        f"Download of {mname} failed or cancelled {req.resp_headers}", OUTPUT_ERROR
+                    download_error=lambda req,error,mname=name: self.katrain.log(
+                        f"Download of {mname} failed or cancelled ({error}) {req.resp_headers}", OUTPUT_ERROR
                     ),
                 )
                 progress.start(self.download_progress_box)

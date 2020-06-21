@@ -86,9 +86,9 @@ class ProgressLoader(BoxLayout):
             on_progress=self.update_progress,
             on_success=self.handle_success,
             on_redirect=self.handle_redirect,
-            on_error=self.handle_error,
-            on_failure=self.handle_error,
-            on_cancel=self.handle_error,
+            on_error=lambda req,error: self.handle_error(req,error),
+            on_failure=lambda req,res: self.handle_error(req,"Failure"),
+            on_cancel=lambda req: self.handle_error(req,"Cancelled"),
         )
 
     def handle_redirect(self, request, *_args):
@@ -102,10 +102,10 @@ class ProgressLoader(BoxLayout):
     def cleanup(self):
         self.root_instance.remove_widget(self)
 
-    def handle_error(self, request, *_args):
+    def handle_error(self, request, error):
         self.cleanup()
         if self.download_error:
-            self.download_error(request)
+            self.download_error(request,error)
 
     def update_progress(self, request, current_size, total_size):
         if total_size < 1e4:
