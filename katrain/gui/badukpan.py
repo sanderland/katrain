@@ -333,6 +333,7 @@ class BadukPanWidget(Widget):
             if passed:
                 if game_ended:
                     text = katrain.game.manual_score or i18n._("board-game-end")
+                    katrain.controls.timer.paused = True
                 else:
                     text = i18n._("board-pass")
                 Color(0.45, 0.05, 0.45, 0.7)

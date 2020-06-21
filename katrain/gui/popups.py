@@ -25,9 +25,10 @@ from katrain.core.constants import (
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n
-from katrain.core.utils import find_package_resource
+from katrain.core.utils import find_package_resource, PATHS
 from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
+from katrain.gui.widgets.progress_loader import ProgressLoader
 from katrain.gui.widgets.selection_slider import SelectionSlider
 
 
@@ -339,36 +340,58 @@ class ConfigAIPopup(QuickConfigGui):
 class ConfigPopup(QuickConfigGui):
     def build_and_set_properties(self, *_args):
         super().build_and_set_properties()
-        # self.check_models()
 
     def check_models(self, *args):  # WIP
-        try:
-            model = self.collect_properties(self)["engine/model"]
-        except InputParseError:
-            self.model_files.values = []
-            return
+        paths = [self.model_path.text, self.katrain.config("engine/model"), "katrain/models", "~/.katrain"]
+        done = set()
+        model_files = []
+        for path in paths:
+            path = path.rstrip("/\\")
+            if path.startswith("katrain"):
+                path = path.replace("katrain", PATHS["PACKAGE"].rstrip("/\\"), 1)
+            if not os.path.isdir(path):
+                path, _file = os.path.split(path)
+            slashpath = path.replace("\\", "/")
+            if slashpath in done or not os.path.isdir(path):
+                continue
+            done.add(slashpath)
+            model_files += [
+                f.replace("/", os.path.sep).replace(PATHS["PACKAGE"], "katrain")
+                for ftype in ["*.bin.gz", "*.txt.gz"]
+                for f in glob.glob(slashpath + "/" + ftype)
+            ]
+        self.model_files.values = model_files
 
-        if os.path.exists(model):
-            if os.path.isdir(model):
-                path = model.rstrip("\\/")
-                file = None
-            else:
-                if model.startswith("katrain"):
-                    model = find_package_resource(model)
-                path, file = os.path.split(model)
-            files = sorted(
-                [
-                    os.path.split(f)[1]
-                    for ftype in ["*.bin.gz", "*.txt.gz"]
-                    for f in glob.glob(path + os.path.sep + ftype)
-                ]
-            )
-            self.model_files.values = files
-            print(file, files, file in files)
-            if file in files:
-                self.model_files.text = file
-        else:
-            self.model_files.values = []
+    MODELS = {
+        "20b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b20c256x2-s4384473088-d968438914.bin.gz",
+        "30b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b30c320x2-s3530176512-d968463914.bin.gz",
+        "40b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b40c256x2-s3708042240-d967973220.bin.gz",
+    }
+
+    def download_models(self, *_largs):
+        def download_complete(req, tmp_path, path, model):
+            os.rename(tmp_path, path)
+            self.katrain.log(f"Download of {model} model complete -> {path}", OUTPUT_INFO)
+            self.check_models()
+
+        for name, url in self.MODELS.items():
+            filename = os.path.split(url)[1]
+            if not any(os.path.split(f)[1] == filename for f in self.model_files.values):
+                savepath = os.path.expanduser(os.path.join("~/.katrain", filename))
+                savepath_tmp = savepath + ".part"
+                self.katrain.log(f"Downloading {name} model from {url} to {savepath_tmp}", OUTPUT_INFO)
+                progress = ProgressLoader(
+                    download_url=url,
+                    path_to_file=savepath_tmp,
+                    downloading_text=f"Downloading {name} model: " + "{}%",
+                    download_complete=lambda req, tmp=savepath_tmp, path=savepath, model=name: download_complete(
+                        req, tmp, path, model
+                    ),
+                    download_redirected=lambda req: self.katrain.log(
+                        f"Download {name} redirected {req.resp_headers}", OUTPUT_DEBUG
+                    ),
+                )
+                progress.start(self.download_progress_box)
 
     def update_config(self, save_to_file=True):
         updated = super().update_config(save_to_file=save_to_file)
