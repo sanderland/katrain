@@ -379,10 +379,11 @@ class KaTrainGui(Screen, KaTrainBase):
             or self.board_controls.collide_point(*touch.pos)
             or self.controls.move_tree.collide_point(*touch.pos)
         ):
-            if touch.button == "scrollup":
-                self("redo")
-            elif touch.button == "scrolldown":
-                self("undo")
+            if touch.is_mouse_scrolling:
+                if touch.button == "scrollup":
+                    self("redo")
+                elif touch.button == "scrolldown":
+                    self("undo")
         return super().on_touch_up(touch)
 
     @property
