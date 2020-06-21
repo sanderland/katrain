@@ -158,7 +158,7 @@ class QuickConfigGui(MDBoxLayout):
         Clock.schedule_once(self.build_and_set_properties, 0)
 
     def collect_properties(self, widget) -> Dict:
-        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
+        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox,LabelledSelectionSlider)) and getattr(
             widget, "input_property", None
         ):
             try:
@@ -318,10 +318,14 @@ class ConfigAIPopup(QuickConfigGui):
         self.options_grid.clear_widgets()
         self.help_label.text = i18n._(strategy.replace("ai:", "aihelp:"))
         for k, v in sorted(mode_settings.items(), key=lambda kv: kv[0]):
-            self.options_grid.add_widget(DescriptionLabel(text=k))
+            self.options_grid.add_widget(DescriptionLabel(text=k,size_hint_x=0.25))
             if k in AI_OPTION_VALUES:
-                values = [(v, re.sub(r"\[(.*?)\]", lambda m: i18n._(m[1]), l)) for v, l in AI_OPTION_VALUES[k]]
-                widget = LabelledSelectionSlider(values=values, input_property=f"ai/{strategy}/{k}")
+                values = AI_OPTION_VALUES[k]
+                if isinstance(values[0],Tuple): # with descriptions, possibly language-specific
+                    fixed_values = [(v, re.sub(r"\[(.*?)\]", lambda m: i18n._(m[1]), l)) for v, l in values]
+                else: # just numbers
+                    fixed_values = [(v, str(v)) for v in values]
+                widget = LabelledSelectionSlider(values=fixed_values, input_property=f"ai/{strategy}/{k}")
                 widget.set_value(v)
                 self.options_grid.add_widget(wrap_anchor(widget))
             else:
@@ -329,7 +333,7 @@ class ConfigAIPopup(QuickConfigGui):
                     wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"ai/{strategy}/{k}"))
                 )
         for _ in range((self.max_options - len(mode_settings)) * 2):
-            self.options_grid.add_widget(Label())
+            self.options_grid.add_widget(Label(size_hint_x=None))
 
 
 class ConfigPopup(QuickConfigGui):

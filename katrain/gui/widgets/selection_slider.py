@@ -2,13 +2,12 @@ from kivy.lang import Builder
 from kivy.uix.widget import Widget
 from kivy.properties import (
     NumericProperty,
-    AliasProperty,
     ListProperty,
     BooleanProperty,
 )
 from kivymd.uix.label import MDLabel
 from kivymd.uix.selectioncontrol import Thumb
-from katrain.gui.style import LIGHTER_BACKGROUND_COLOR
+
 
 
 class SelectionSlider(Widget):
@@ -23,7 +22,7 @@ class SelectionSlider(Widget):
     padding = NumericProperty("16sp")
 
     track_color = ListProperty([1, 1, 1, 0.3])
-    thumb_color = LIGHTER_BACKGROUND_COLOR
+    thumb_color = ListProperty([0.5, 0.5, 0.5, 1])
 
     def __init__(self,**kwargs):
         super().__init__(**kwargs)
@@ -77,6 +76,7 @@ class SelectionSlider(Widget):
 
 
 KV = """
+#:import i18n katrain.core.lang.i18n
 <SelectionSlider>:
     id: slider
     canvas:
@@ -116,17 +116,17 @@ KV = """
         md_bg_color: [1, 1, 1, 1] if root.active else [0, 0, 0, 0]
         elevation: 4 if root.active else 0
         size:
-            (dp(28), dp(28) if root.active else (dp(20), dp(20)))
+            (max(dp(28), label.texture_size[0]+4) , dp(28))
         pos:
             (slider.px_pos - dp(9), slider.center_y - hint_box.height / 2 + dp(30)) 
 
-        MDLabel:
+        Label:
+            id: label
             text: slider.values[slider.index][1]
-            font_style: "Caption"
+            font_size: dp(12)
+            lang_change_tracking: i18n._('') # for font
             halign: "center"
             color: root.thumb_color if root.active else [0, 0, 0, 0]
-
-
 """
 
 Builder.load_string(KV)

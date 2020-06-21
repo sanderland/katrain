@@ -13,6 +13,8 @@
 
 #:set LIGHTGREY [0.7,0.7,0.7,1]
 #:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
+#:import LIGHTER_BACKGROUND_COLOR katrain.gui.style.LIGHTER_BACKGROUND_COLOR
+#:import LIGHTGREY katrain.gui.style.LIGHTGREY
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
 
 
@@ -371,13 +373,13 @@
     textbox: textbox
     SelectionSlider:
         id: slider
-        size_hint: 3,1
+        size_hint: 2,1
         values: root.values
         on_select: textbox.text = str(slider.value)
+        track_color: LIGHTGREY
+        thumb_color: LIGHTER_BACKGROUND_COLOR
     LabelledFloatInput:
         id: textbox
-
-
 
 <ConfigAIPopup>:
     options_grid: options_grid
@@ -397,12 +399,12 @@
         size_hint: 1,1.25
         text: i18n._('')
     GridLayout:
-        size_hint: 1,4
+        size_hint: 1, 4
         id: options_grid
         rows: root.max_options
         cols: 2
     AnchorLayout:
-        size_hint: 1,1.5
+        size_hint: 1, 1.5
         AutoSizedRoundedRectangleButton:
             padding_x: 15
             size_hint: None,0.5
