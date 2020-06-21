@@ -503,7 +503,7 @@ msgid "aihelp:p:weighted"
 msgstr ""
 "Hace jugadas deacuerdo a las jugadas más intuitivas y sus probabilidades, "
 "con `weaken_fac` influenciando que tan probable es que jugadas debiles sean "
-"jugadas. Un valor negativo grande se acerca a  jugadas más intuitivas según "
+"jugadas. Un valor más pequeño se acerca a  jugadas más intuitivas según "
 "IA.`pick_override` determina que tan frecuente una la mejor jugada es "
 "ecogida sin azar, y `lower_bound` determina el rango bajopermitido."
 
