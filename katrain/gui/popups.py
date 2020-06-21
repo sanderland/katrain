@@ -29,7 +29,6 @@ from katrain.core.utils import find_package_resource, PATHS
 from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
 from katrain.gui.widgets.progress_loader import ProgressLoader
-from katrain.gui.widgets.selection_slider import SelectionSlider
 
 
 class I18NPopup(Popup):
@@ -336,7 +335,6 @@ class ConfigAIPopup(QuickConfigGui):
         for _ in range((self.max_options - len(mode_settings)) * 2):
             self.options_grid.add_widget(Label(size_hint_x=None))
 
-
 class ConfigPopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
@@ -353,6 +351,7 @@ class ConfigPopup(QuickConfigGui):
             path = path.rstrip("/\\")
             if path.startswith("katrain"):
                 path = path.replace("katrain", PATHS["PACKAGE"].rstrip("/\\"), 1)
+            path = os.path.expanduser(path)
             if not os.path.isdir(path):
                 path, _file = os.path.split(path)
             slashpath = path.replace("\\", "/")
@@ -382,8 +381,11 @@ class ConfigPopup(QuickConfigGui):
 
     def download_models(self, *_largs):
         def download_complete(req, tmp_path, path, model):
-            os.rename(tmp_path, path)
-            self.katrain.log(f"Download of {model} model complete -> {path}", OUTPUT_INFO)
+            try:
+                os.rename(tmp_path, path)
+                self.katrain.log(f"Download of {model} model complete -> {path}", OUTPUT_INFO)
+            except Exception as e:
+                self.katrain.log(f"Download of {model} model complete, but could not move file: {e}", OUTPUT_ERROR)
             self.check_models()
 
         for name, url in self.MODELS.items():

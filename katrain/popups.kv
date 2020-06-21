@@ -123,7 +123,7 @@
             Spinner:
                 id: model_files
                 text: ''
-                on_text: if self.text and self.text != self.values[0]: model_path.text = self.text
+                on_text: if self.text and self.text != self.values[0]: model_path.text = args[1]
                 size_hint_y: 0.7
                 sync_height_frac: 1.0
                 -font_size: self.height * 0.5
