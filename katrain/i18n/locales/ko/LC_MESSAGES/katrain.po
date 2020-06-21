@@ -571,3 +571,11 @@ msgstr "모든 후보수를 균일하게 {visits} visits으로 분석합니다."
 
 msgid "extra analysis"
 msgstr "{visits} visits까지 추가적으로 분석하고 있습니다."
+
+#. TODO
+msgid "models available"
+msgstr "{num} available model(s) found"
+
+#. TODO
+msgid "download models button"
+msgstr "Download Models"

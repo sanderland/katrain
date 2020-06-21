@@ -556,3 +556,11 @@ msgstr ""
 msgid "Starting Kata failed"
 msgstr ""
 "用'{command}'命令启动katago出错 {error}. 请确认引擎设置里'katago'的值指向了 正确的KataGo运行文件."
+
+#. TODO
+msgid "models available"
+msgstr "{num} available model(s) found"
+
+#. TODO
+msgid "download models button"
+msgstr "Download Models"

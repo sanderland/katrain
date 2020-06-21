@@ -596,3 +596,11 @@ msgstr ""
 "Выбирает случайные ходы из ограниченного множества и играет лучший из них. "
 "Более сильные настройки расширяют множество для выбора. Т.к. на шкале "
 "отсутствуют 0 кю/дан, то 3 дан = -2 кю."
+
+#. TODO
+msgid "models available"
+msgstr "{num} available model(s) found"
+
+#. TODO
+msgid "download models button"
+msgstr "Download Models"
