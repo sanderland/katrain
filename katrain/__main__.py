@@ -6,7 +6,7 @@ os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warni
 os.environ["KIVY_AUDIO"] = "sdl2"  # force working audio
 
 # next, icon
-from katrain.core.utils import find_package_resource
+from katrain.core.utils import find_package_resource, PATHS
 from kivy.config import Config
 from kivy.utils import platform
 
@@ -316,6 +316,16 @@ class KaTrainGui(Screen, KaTrainBase):
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
+    def load_sgf_file(self, file, fast=False, rewind=False):
+        try:
+            move_tree = KaTrainSGF.parse_file(file)
+        except ParseError as e:
+            self.log(i18n._("Failed to load SGF").format(error=e), OUTPUT_ERROR)
+            return
+        self._do_new_game(move_tree=move_tree, analyze_fast=fast)
+        if not rewind:
+            self.game.redo(999)
+
     def _do_analyze_sgf_popup(self):
         if not self.fileselect_popup:
             popup_contents = LoadSGFPopup()
@@ -333,14 +343,7 @@ class KaTrainGui(Screen, KaTrainBase):
                     self.log(f"Updating sgf load path default to {path}", OUTPUT_INFO)
                     self._config["general"]["sgf_load"] = path
                     self.save_config("general")
-                try:
-                    move_tree = KaTrainSGF.parse_file(files[0])
-                except ParseError as e:
-                    self.log(i18n._("Failed to load SGF").format(error=e), OUTPUT_ERROR)
-                    return
-                self._do_new_game(move_tree=move_tree, analyze_fast=popup_contents.fast.active)
-                if not popup_contents.rewind.active:
-                    self.game.redo(999)
+                self.load_sgf_file(files[0], popup_contents.fast.active, popup_contents.rewind.active)
 
             popup_contents.filesel.on_success = readfile
             popup_contents.filesel.on_submit = readfile
@@ -376,10 +379,11 @@ class KaTrainGui(Screen, KaTrainBase):
             or self.board_controls.collide_point(*touch.pos)
             or self.controls.move_tree.collide_point(*touch.pos)
         ):
-            if touch.button == "scrollup":
-                self("redo")
-            elif touch.button == "scrolldown":
-                self("undo")
+            if touch.is_mouse_scrolling:
+                if touch.button == "scrollup":
+                    self("redo")
+                elif touch.button == "scrolldown":
+                    self("undo")
         return super().on_touch_up(touch)
 
     @property
@@ -471,10 +475,13 @@ class KaTrainApp(MDApp):
 
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
-        resource_add_path(os.path.split(kv_file)[0])
+        resource_add_path(PATHS["PACKAGE"])
+
         Builder.load_file(kv_file)
 
         Window.bind(on_request_close=self.on_request_close)
+        Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file))
+
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
         return self.gui
@@ -489,9 +496,9 @@ class KaTrainApp(MDApp):
             self.gui.controls.set_status("")
 
     def webbrowser(self, site_key):
-        WEBSITES = {"homepage": HOMEPAGE + "#manual", "support": HOMEPAGE + "#support"}
-        if site_key in WEBSITES:
-            webbrowser.open(WEBSITES[site_key])
+        websites = {"homepage": HOMEPAGE + "#manual", "support": HOMEPAGE + "#support"}
+        if site_key in websites:
+            webbrowser.open(websites[site_key])
 
     def on_start(self):
         self.language = self.gui.config("general/lang")

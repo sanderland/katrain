@@ -37,7 +37,7 @@ class MoveTreeCanvas(Widget):
         katrain.update_state()
 
     def on_touch_up(self, touch):
-        if touch.button == "left":
+        if "button" not in touch.profile or touch.button == "left":
             node, (x, y) = min(
                 self.move_xy_pos.items(), key=lambda n_xy: abs(n_xy[1][0] - touch.x) + abs(n_xy[1][1] - touch.y)
             )

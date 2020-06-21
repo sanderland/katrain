@@ -27,24 +27,29 @@ def evaluation_class(points_lost: float, eval_thresholds: List[float]):
     return i
 
 
-def check_thread(tb=False): # for checking if draws occur in correct thread
+def check_thread(tb=False):  # for checking if draws occur in correct thread
     import threading
-    print('build in ', threading.current_thread().ident)
+
+    print("build in ", threading.current_thread().ident)
     if tb:
         import traceback
+
         traceback.print_stack()
 
 
+PATHS = {}
+
+
 def find_package_resource(path, silent_errors=False):
+    global PATHS
     if path.startswith("katrain"):
-        parts = path.replace("\\", "/").split("/")
-        try:
-            with pkg_resources.path(".".join(parts[:-1]), parts[-1]) as path_obj:
-                return str(path_obj)  # this will clean up if egg etc, but these don't work anyway
-        except (ModuleNotFoundError, FileNotFoundError, ValueError) as e:
-            if silent_errors:
-                return None
-            print(f"File {path} not found, installation possibly broken", file=sys.stderr)
-            return f"FILENOTFOUND::{path}"
+        if not PATHS.get("PACKAGE"):
+            try:
+                with pkg_resources.path("katrain", "gui.kv") as p:
+                    PATHS["PACKAGE"] = os.path.split(str(p))[0]
+            except (ModuleNotFoundError, FileNotFoundError, ValueError) as e:
+                print(f"Package path not found, installation possibly broken. Error: {e}", file=sys.stderr)
+                return f"FILENOTFOUND/{path}"
+        return os.path.join(PATHS["PACKAGE"], path.replace("katrain\\", "katrain/").replace("katrain/", ""))
     else:
         return os.path.abspath(os.path.expanduser(path))  # absolute path

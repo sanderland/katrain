@@ -1,5 +1,6 @@
 
 # <a name="manual"></a> KaTrain v1.2
+
 [![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
 [![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
 ![Build Status](https://github.com/sanderland/katrain/workflows/release/badge.svg)
@@ -51,9 +52,9 @@ The dots on the move indicate how many points were lost by that move.
 * The size indicates if the mistake was actually punished. Going from fully punished at maximal size,
   to no actual effect on the score at minimal size.
 
-In short, if you are a weaker player you should mostly on large dots that are red or purple,
+In short, if you are a weaker player you should mostly focus on large dots that are red or purple,
 while stronger players can pay more attention to smaller mistakes. If you want to hide some colours
-on the board or not output details for them in SGFs,you can do so under 'Configure Teacher'.
+on the board, or not output details for them in SGFs,you can do so under 'Configure Teacher'.
 
 ### AIs
 
@@ -146,7 +147,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
     * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
 * You also can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
  or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
-* Donations for improving and promoting KaTrain are taken supported through [Liberapay](https://liberapay.com/KaTrain/) or [Github Sponsors](https://github.com/sponsors/sanderland).
+* You can also donate to the project through [Liberapay](https://liberapay.com/KaTrain/) or [Github Sponsors](https://github.com/sponsors/sanderland).
 
 
 

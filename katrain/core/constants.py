@@ -1,4 +1,4 @@
-VERSION = "1.2.0"
+VERSION = "1.2.1"
 HOMEPAGE = "https://github.com/sanderland/katrain"
 CONFIG_MIN_VERSION = "1.2.0"
 

@@ -500,9 +500,9 @@ msgstr "정책망 확률에 따라"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"정책망 확률에 따라 착수합니다. `weaken_fac`은 약한 수를 둘 확률을 증가시키며, 낮은 음수값일수록 `정책망` 인공지능과 "
-"비슷하게 둡니다. `pick_override`는 언제 무작위성 없이 가장 확률이 높은 수를 둘지, `lower_bound`는 정책 확률의"
-" 하한값을 결정합니다."
+"정책망 확률에 따라 착수합니다. `weaken_fac`은 약한 수를 둘 확률을 증가시키며, 낮은 값일수록 `정책망` 인공지능과 비슷하게 "
+"둡니다. `pick_override`는 언제 무작위성 없이 가장 확률이 높은 수를 둘지, `lower_bound`는 정책 확률의 하한값을"
+" 결정합니다."
 
 msgid "ai:p:pick"
 msgstr "구멍난 정책망"
@@ -571,3 +571,11 @@ msgstr "모든 후보수를 균일하게 {visits} visits으로 분석합니다."
 
 msgid "extra analysis"
 msgstr "{visits} visits까지 추가적으로 분석하고 있습니다."
+
+#. TODO
+msgid "models available"
+msgstr "{num} available model(s) found"
+
+#. TODO
+msgid "download models button"
+msgstr "Download Models"

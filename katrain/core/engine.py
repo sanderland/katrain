@@ -37,7 +37,7 @@ class KataGoEngine:
         self.query_counter = 0
         self.katago_process = None
         self.base_priority = 0
-        self.override_settings = {}  # mainly for bot scripts to hook into
+        self.override_settings = {"reportAnalysisWinratesAs": "BLACK"}  # force these settings
         self._lock = threading.Lock()
         self.analysis_thread = None
         self.stderr_thread = None

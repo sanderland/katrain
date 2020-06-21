@@ -80,6 +80,9 @@
 
 <ConfigPopup>:
     configfile: configfile
+    model_path: model_path
+    model_files: model_files
+    download_progress_box: download_progress_box
     DescriptionLabel:
         text: i18n._('katago settings')
         font_size: DESC_FONT_SIZE * 1.5
@@ -87,6 +90,8 @@
         cols: 2
         rows: 3
         size_hint: 1,3
+        rows: 4
+        size_hint: 1,4
         spacing: CP_SPACING
         DescriptionLabel:
             text: i18n._("engine:katago")
@@ -96,17 +101,34 @@
                 input_property: "engine/katago"
                 hint_text: i18n._("engine:katago:hint")
         DescriptionLabel:
-            text: i18n._("engine:model")
-            size_hint: 0.33, 1
-        AnchorLayout:
-            LabelledPathInput:
-                input_property: "engine/model"
-        DescriptionLabel:
             text: i18n._("engine:config")
             size_hint: 0.33, 1
         AnchorLayout:
             LabelledPathInput:
                 input_property: "engine/config"
+        DescriptionLabel:
+            text: i18n._("engine:model")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                id: model_path
+                input_property: "engine/model"
+                on_text: root.check_models()
+        AnchorLayout:
+            size_hint: 0.33, 1
+            AutoSizedRoundedRectangleButton:
+                text: i18n._("download models button")
+                on_press: root.download_models()
+                size_hint_y: 0.7
+        AnchorLayout:
+            Spinner:
+                id: model_files
+                text: ''
+                on_text: if self.text and self.text != self.values[0]: model_path.text = args[1]
+                size_hint_y: 0.7
+                sync_height_frac: 1.0
+                -font_size: self.height * 0.5
+                -background_color: [*[c*255/88 for c in BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
     BoxLayout:
         size_hint: 1,1
         orientation: 'horizontal'
@@ -177,13 +199,18 @@
                 LabelledFloatInput:
                     input_property: "engine/wide_root_noise"
                     hint_text: i18n._("engine:wide_root_noise:hint")
-    AnchorLayout:
+    BoxLayout:
         size_hint: 1,1.5
-        AutoSizedRoundedRectangleButton:
-            padding_x: 15
-            size_hint: None,0.5
-            text: i18n._("update settings")
-            on_press: root.update_config(True)
+        BoxLayout:
+            orientation: 'vertical'
+            id: download_progress_box
+        AnchorLayout:
+            AutoSizedRoundedRectangleButton:
+                padding_x: 15
+                size_hint: None,0.5
+                text: i18n._("update settings")
+                on_press: root.update_config(True)
+        Widget: # for centering
 
 <ConfigTeacherPopup>
     options_grid: options_grid
