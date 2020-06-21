@@ -447,7 +447,7 @@ msgstr ""
 "全功能的KataGo AI. 棋力由 `max visits` 和 `模型` 决定.在一般设置里 `引擎` 部分和引擎设置文件. 这里没有选项."
 
 msgid "ai:jigo"
-msgstr "Kata和棋"
+msgstr "Kata控目"
 
 msgid "aihelp:jigo"
 msgstr "尝试按指定目数赢棋(默认0.5目), 没有更多 限制."
@@ -481,7 +481,7 @@ msgstr ""
 "当`pick_frac=1` 就是直觉AI. 如果直觉值大于 `pick_override`则采用最佳的一手以避免明显错误."
 
 msgid "ai:p:local"
-msgstr "本地模式"
+msgstr "局部模式"
 
 msgid "aihelp:p:local"
 msgstr ""
@@ -505,7 +505,7 @@ msgstr ""
 "部分结束后停止."
 
 msgid "ai:p:territory"
-msgstr "领地模式"
+msgstr "取势模式"
 
 msgid "aihelp:p:territory"
 msgstr ""

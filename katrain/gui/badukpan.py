@@ -60,11 +60,13 @@ class BadukPanWidget(Widget):
     def on_touch_down(self, touch):
         self.animating_pv = None  # any click kills PV from label/move
         self.draw_hover_contents()
-        if touch.button != "left":
+        if "button" in touch.profile and touch.button != "left":
             return
         self.check_next_move_ghost(touch)
 
     def on_touch_move(self, touch):
+        if "button" in touch.profile and touch.button != "left":
+            return
         return self.check_next_move_ghost(touch)
 
     def on_mouse_pos(self, *args):  # https://gist.github.com/opqopq/15c707dc4cffc2b6455f
@@ -92,10 +94,10 @@ class BadukPanWidget(Widget):
             self.last_mouse_pos = pos
 
     def on_touch_up(self, touch):
-        if touch.button != "left" or not self.gridpos_x:
+        if ("button" in touch.profile and touch.button != "left") or not self.gridpos_x:
             return
         katrain = self.katrain
-        if self.ghost_stone and touch.button == "left":
+        if self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
             katrain("play", self.ghost_stone)
         elif not self.ghost_stone:
             xd, xp = self._find_closest(touch.x, self.gridpos_x)
