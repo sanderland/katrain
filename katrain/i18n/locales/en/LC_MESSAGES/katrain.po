@@ -593,5 +593,8 @@ msgstr ""
 "one. Stronger settings select the best move from a larger selection. Since "
 "there is no 0 kyu/dan, 3 dan = -2 kyu."
 
-msgid "Download Models"
-msgstr Download Models"
+msgid "download models button"
+msgstr "Download Models"
+
+msgid "models available"
+msgstr "{num} available model(s) found"

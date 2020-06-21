@@ -98,11 +98,12 @@ class ProgressLoader(BoxLayout):
         pass
 
     def update_progress(self, request, current_size, total_size):
+        if total_size < 1e4:
+            current_size = 0
         percent = current_size * 100 // max(total_size, 1)
         self.label_downloading_text = self.downloading_text.format(percent)
 
     def on_success(self, request, result):
-        Clock.schedule_once(self.animation_hide, 0)
         self.root_instance.remove_widget(self)
         if self.download_complete:
             self.download_complete(request)

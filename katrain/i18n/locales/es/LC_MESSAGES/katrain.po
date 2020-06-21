@@ -594,3 +594,11 @@ msgstr ""
 
 msgid "extra analysis"
 msgstr "Realizar análisis adicional a {visits} visitas"
+
+#. TODO
+msgid "models available"
+msgstr "{num} available model(s) found"
+
+#. TODO
+msgid "download models button"
+msgstr "Download Models"

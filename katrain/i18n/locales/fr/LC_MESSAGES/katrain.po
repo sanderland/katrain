@@ -633,3 +633,11 @@ msgstr ""
 "Plus kyu_rank (-3~18) est bas, plus l'échantillon sera large et le niveau de jeu élevé. \n"
 "Une valeur positive équivaudra à un niveau en kyu, 0 à 1er dan, -1 à 2e dan, etc. \n"
 "(Niveaux estimés sur OGS avec le réseau neuronal utilisé PAR DÉFAUT)"
+
+#. TODO
+msgid "models available"
+msgstr "{num} available model(s) found"
+
+#. TODO
+msgid "download models button"
+msgstr "Download Models"

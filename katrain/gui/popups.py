@@ -338,14 +338,18 @@ class ConfigAIPopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        self.paths = [self.katrain.config("engine/model"), "katrain/models", "~/.katrain"]
+
+
     def build_and_set_properties(self, *_args):
         super().build_and_set_properties()
 
     def check_models(self, *args):  # WIP
-        paths = [self.model_path.text, self.katrain.config("engine/model"), "katrain/models", "~/.katrain"]
         done = set()
         model_files = []
-        for path in paths:
+        for path in self.paths + [self.model_path.text]:
             path = path.rstrip("/\\")
             if path.startswith("katrain"):
                 path = path.replace("katrain", PATHS["PACKAGE"].rstrip("/\\"), 1)
@@ -355,17 +359,25 @@ class ConfigPopup(QuickConfigGui):
             if slashpath in done or not os.path.isdir(path):
                 continue
             done.add(slashpath)
-            model_files += [
+            files = [
                 f.replace("/", os.path.sep).replace(PATHS["PACKAGE"], "katrain")
                 for ftype in ["*.bin.gz", "*.txt.gz"]
                 for f in glob.glob(slashpath + "/" + ftype)
             ]
-        self.model_files.values = model_files
+            if files and path not in self.paths:
+                self.paths.append(path)  # persistent on paths with models found
+            model_files += files
+        models_available_msg = i18n._("models available").format(num=len(model_files))
+        self.model_files.values = [models_available_msg] + model_files
+        self.model_files.text = models_available_msg
 
     MODELS = {
-        "20b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b20c256x2-s4384473088-d968438914.bin.gz",
-        "30b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b30c320x2-s3530176512-d968463914.bin.gz",
-        "40b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b40c256x2-s3708042240-d967973220.bin.gz",
+#        "pure 20b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b20c256x2-s4384473088-d968438914.bin.gz",
+#        "pure 30b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b30c320x2-s3530176512-d968463914.bin.gz",
+#        "pure 40b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b40c256x2-s3708042240-d967973220.bin.gz",
+        "final 20b":"https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
+        "final 30b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
+        "final 40b":"https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz"
     }
 
     def download_models(self, *_largs):

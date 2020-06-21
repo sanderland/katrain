@@ -108,22 +108,26 @@
         DescriptionLabel:
             text: i18n._("engine:model")
             size_hint: 0.33, 1
-        LabelledPathInput:
-            id: model_path
-            input_property: "engine/model"
-            on_text: root.check_models()
+        AnchorLayout:
+            LabelledPathInput:
+                id: model_path
+                input_property: "engine/model"
+                on_text: root.check_models()
         AnchorLayout:
             size_hint: 0.33, 1
             AutoSizedRoundedRectangleButton:
-                text: i18n._("Download Models")
+                text: i18n._("download models button")
                 on_press: root.download_models()
-                size_hint_y: 0.8
-        Spinner:
-            id: model_files
-            text: ''
-            on_text: if self.text: model_path.text = self.text
-            -font_size: self.height * 0.33
-            -background_color: [*[c*255/88 for c in BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+                size_hint_y: 0.7
+        AnchorLayout:
+            Spinner:
+                id: model_files
+                text: ''
+                on_text: if self.text and self.text != self.values[0]: model_path.text = self.text
+                size_hint_y: 0.7
+                sync_height_frac: 1.0
+                -font_size: self.height * 0.5
+                -background_color: [*[c*255/88 for c in BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
     BoxLayout:
         size_hint: 1,1
         orientation: 'horizontal'
