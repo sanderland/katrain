@@ -362,7 +362,6 @@ class ConfigPopup(QuickConfigGui):
             self.check_models()
 
         for c in self.download_progress_box.children:
-            print(c,c.request)
             if isinstance(c,ProgressLoader) and c.request:
                 c.request.cancel()
         self.download_progress_box.clear_widgets()
