@@ -47,6 +47,8 @@ class ProgressLoader(BoxLayout):
 
     download_complete = ObjectProperty()
     """Function, called after a successful file upload."""
+    download_error = ObjectProperty()
+    """Function, called after an error in downloading."""
     download_redirected = ObjectProperty()
     """Function, called after a redirect event."""
 
@@ -56,6 +58,7 @@ class ProgressLoader(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.root_instance = None
+        self.request = None
 
     def start(self, root_instance):
         self.root_instance = root_instance
@@ -81,12 +84,14 @@ class ProgressLoader(BoxLayout):
             file_path=path,
             chunk_size=102400,
             on_progress=self.update_progress,
-            on_success=self.on_success,
-            on_redirect=self.redirected,
-            on_error=self.download_error,
+            on_success=self.handle_success,
+            on_redirect=self.handle_redirect,
+            on_error=self.handle_error,
+            on_failure=self.handle_error,
+            on_cancel=self.handle_error,
         )
 
-    def redirected(self, request, *_args):
+    def handle_redirect(self, request, *_args):
         new_url = request.resp_headers.get("location")
         if new_url:
             self.download_url = new_url
@@ -94,8 +99,13 @@ class ProgressLoader(BoxLayout):
         if self.download_redirected:
             self.download_redirected(request)
 
-    def download_error(self, request, *_args):
-        pass
+    def cleanup(self):
+        self.root_instance.remove_widget(self)
+
+    def handle_error(self, request, *_args):
+        self.cleanup()
+        if self.download_error:
+            self.download_error(request)
 
     def update_progress(self, request, current_size, total_size):
         if total_size < 1e4:
@@ -103,7 +113,7 @@ class ProgressLoader(BoxLayout):
         percent = current_size * 100 // max(total_size, 1)
         self.label_downloading_text = self.downloading_text.format(percent)
 
-    def on_success(self, request, result):
-        self.root_instance.remove_widget(self)
+    def handle_success(self, request, result):
+        self.cleanup()
         if self.download_complete:
             self.download_complete(request)

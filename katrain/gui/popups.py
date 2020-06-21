@@ -361,6 +361,12 @@ class ConfigPopup(QuickConfigGui):
                 self.katrain.log(f"Download of {model} model complete, but could not move file: {e}", OUTPUT_ERROR)
             self.check_models()
 
+        for c in self.download_progress_box.children:
+            print(c,c.request)
+            if isinstance(c,ProgressLoader) and c.request:
+                c.request.cancel()
+        self.download_progress_box.clear_widgets()
+        downloading = False
         for name, url in self.MODELS.items():
             filename = os.path.split(url)[1]
             if not any(os.path.split(f)[1] == filename for f in self.model_files.values):
@@ -374,11 +380,17 @@ class ConfigPopup(QuickConfigGui):
                     download_complete=lambda req, tmp=savepath_tmp, path=savepath, model=name: download_complete(
                         req, tmp, path, model
                     ),
-                    download_redirected=lambda req: self.katrain.log(
-                        f"Download {name} redirected {req.resp_headers}", OUTPUT_DEBUG
+                    download_redirected=lambda req,mname=name: self.katrain.log(
+                        f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
+                    ),
+                    download_error=lambda req,mname=name: self.katrain.log(
+                        f"Download of {mname} failed or cancelled {req.resp_headers}", OUTPUT_ERROR
                     ),
                 )
                 progress.start(self.download_progress_box)
+                downloading = True
+        if not downloading:
+            self.download_progress_box.add_widget(Label(text=i18n._("All models downloaded")))
 
     def update_config(self, save_to_file=True):
         updated = super().update_config(save_to_file=save_to_file)
