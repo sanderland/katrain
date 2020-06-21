@@ -497,7 +497,7 @@ msgstr ""
 " cuantas jugadas en la apertura son al azar."
 
 msgid "ai:p:weighted"
-msgstr "Intuición debilitada"
+msgstr "Parcial"
 
 msgid "aihelp:p:weighted"
 msgstr ""
