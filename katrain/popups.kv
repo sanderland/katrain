@@ -13,7 +13,6 @@
 
 #:set LIGHTGREY [0.7,0.7,0.7,1]
 #:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
-#:import LIGHTER_BACKGROUND_COLOR katrain.gui.style.LIGHTER_BACKGROUND_COLOR
 #:import LIGHTGREY katrain.gui.style.LIGHTGREY
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
 
@@ -377,7 +376,7 @@
         values: root.values
         on_select: textbox.text = str(slider.value)
         track_color: LIGHTGREY
-        thumb_color: LIGHTER_BACKGROUND_COLOR
+        thumb_color:  0.5, 0.6, 0.8, 1
     LabelledFloatInput:
         id: textbox
 

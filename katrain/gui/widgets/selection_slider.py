@@ -9,7 +9,6 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.selectioncontrol import Thumb
 
 
-
 class SelectionSlider(Widget):
     __events__ = ["on_select"]
     active = BooleanProperty(False)
@@ -18,19 +17,24 @@ class SelectionSlider(Widget):
     index = NumericProperty(0)  # selected index
     values = ListProperty([(0, "")])  # (value:numeric,label:string) pairs
     normalized_pos = NumericProperty(0)  # slider relative pos from 0-1
-    px_pos = NumericProperty(0) # actual px pos
+    px_pos = NumericProperty(0)  # actual px pos
     padding = NumericProperty("16sp")
 
     track_color = ListProperty([1, 1, 1, 0.3])
     thumb_color = ListProperty([0.5, 0.5, 0.5, 1])
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.bind(size=self.set_index_and_positions,pos=self.set_index_and_positions,values=self.set_index_and_positions,index=self.set_index_and_positions)
+        self.bind(
+            size=self.set_index_and_positions,
+            pos=self.set_index_and_positions,
+            values=self.set_index_and_positions,
+            index=self.set_index_and_positions,
+        )
 
     def set_index_and_positions(self, *_args):
         self.index = max(0, min(self.index, len(self.values) - 1))
-        self.normalized_pos = self.index / (len(self.values)-1)
+        self.normalized_pos = self.index / (len(self.values) - 1)
         self.px_pos = self.x + self.padding + self.normalized_pos * (self.width - 2 * self.padding)
 
     @property
@@ -41,7 +45,7 @@ class SelectionSlider(Widget):
         eq_value = sorted([(abs(v - set_value), i) for i, (v, l) in enumerate(self.values)])
         self.index = eq_value[0][1]
 
-    def set_from_pos(self,pos):
+    def set_from_pos(self, pos):
         norm_value = (pos[0] - self.x - self.padding) / (self.width - 2 * self.padding)
         self.index = round(norm_value * (len(self.values) - 1))
 
@@ -71,7 +75,7 @@ class SelectionSlider(Widget):
             self.dispatch("on_select", self.value)
             return True
 
-    def on_select(self,value):
+    def on_select(self, value):
         pass
 
 

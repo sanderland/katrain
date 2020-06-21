@@ -64,10 +64,17 @@ AI_STRENGTH = {  # not used
 }
 
 AI_OPTION_VALUES = {
-    "kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(15, 0, -1)] + [(k, f"{1-k}[strength:dan]") for k in range(0, -3, -1)],
-    "strength": [0.25,0.5,1,2,4],
-    "opening_moves": range(0,51),
-    "pick_override": [0,0.5,0.6,0.7,0.8,0.9,0.95,1],
-   "lower_bound": [(v,f"{v:.2%}") for v in [0,0.0001,0.0005,0.001,0.005,0.01,0.05] ],
-    "weaken_fac": [-2,-1,0.5,1,1.25,1.5,2,4]
+    "kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(15, 0, -1)]
+    + [(k, f"{1-k}[strength:dan]") for k in range(0, -3, -1)],
+    "strength": [0.25, 0.5, 1, 2, 4],
+    "opening_moves": range(0, 51),
+    "pick_override": [0, 0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 0.99, 1],
+    "lower_bound": [(v, f"{v:.2%}") for v in [0, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05]],
+    "weaken_fac": [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 4],
+    "endgame": [x / 100 for x in range(10, 80, 5)],
+    "pick_frac": [x / 100 for x in range(0, 101, 5)],
+    "pick_n": range(0, 26),
+    "stddev": [x / 2 for x in range(21)],
+    "line_weight": range(0, 11),
+    "threshold": [2, 2.5, 3, 3.5, 4, 4.5],
 }

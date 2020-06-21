@@ -79,14 +79,14 @@
             "opening_moves": 22.0
         },
         "ai:p:weighted": {
+            "weaken_fac": 1.25,
             "pick_override": 1.0,
-            "lower_bound": 0.001,
-            "weaken_fac": 1.25
+            "lower_bound": 0.001
         },
         "ai:p:pick": {
             "pick_override": 0.95,
             "pick_n": 5,
-            "pick_frac": 0.33
+            "pick_frac": 0.35
         },
         "ai:p:local": {
             "pick_override": 0.95,
