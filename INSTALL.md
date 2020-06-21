@@ -10,6 +10,7 @@
     * Alternatively download and install [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
 * Install Katago using [Homebrew](https://brew.sh/) by executing `brew install katago`
     * You can also follow instructions [here](https://github.com/lightvector/KataGo) to compile KataGo yourself.
+* If you encounter SSL errors on downloading model files, you may need to follow [these](https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate) instructions to fix your certificates.
 
 ## Installation and running KaTrain from PyPi
 * Run `pip3 install katrain`
