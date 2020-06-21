@@ -336,7 +336,6 @@ class ConfigPopup(QuickConfigGui):
                 for ftype in ["*.bin.gz", "*.txt.gz"]
                 for f in glob.glob(slashpath + "/" + ftype)
             ]
-            print(path, files)
             if files and path not in self.paths:
                 self.paths.append(path)  # persistent on paths with models found
             model_files += files
