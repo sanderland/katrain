@@ -599,3 +599,11 @@ msgstr "Analyse der Kandidatenzüge wird abgeglichen mit {visits} Visits"
 
 msgid "sweep analysis"
 msgstr "Analysiere gesamtes Brett mit {visits} Visits/Zug"
+
+#. TODO
+msgid "models available"
+msgstr "{num} available model(s) found"
+
+#. TODO
+msgid "download models button"
+msgstr "Download Models"
