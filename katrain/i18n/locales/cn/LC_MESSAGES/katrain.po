@@ -469,8 +469,8 @@ msgstr "直觉权重"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"按直觉概率行棋, `weaken_fac` 决定了 较弱选点的多少. 负值越大说明越接近 直觉AI.`pick_override` "
-"决定了在没有随机性的最佳选点, `lower_bound` 决定了允许的 直觉值的下限."
+"按直觉概率行棋, `weaken_fac` 决定了 较弱选点的多少.  决定了在没有随机性的最佳选点, `lower_bound` 决定了允许的 "
+"直觉值的下限."
 
 msgid "ai:p:pick"
 msgstr "盲选直觉"

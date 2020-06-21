@@ -571,7 +571,7 @@ msgstr ""
 "Jouera le coup proportionnellement à ses intuitions. \n"
 "Plus lower_bound (0~1) est haut, moins les coups bizarres seront joués. \n"
 "Plus pick_override (0~1) est bas, plus le coup naturel sera forcé. \n"
-"Plus weaken_fac est bas (voire négatif) plus le coup naturel pourra être joué."
+"Plus weaken_fac est bas plus le coup naturel pourra être joué."
 
 msgid "ai:p:pick"
 msgstr "Myope"
