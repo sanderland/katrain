@@ -101,20 +101,16 @@
                 input_property: "engine/katago"
                 hint_text: i18n._("engine:katago:hint")
         DescriptionLabel:
-            text: i18n._("engine:model")
             text: i18n._("engine:config")
-            size_hint: 0.33, 1
-        AnchorLayout:
-            LabelledPathInput:
-                input_property: "engine/model"
-                input_property: "engine/config"
-        DescriptionLabel:
-            text: i18n._("engine:config")
-            text: i18n._("engine:model")
             size_hint: 0.33, 1
         AnchorLayout:
             LabelledPathInput:
                 input_property: "engine/config"
+        DescriptionLabel:
+            text: i18n._("engine:model")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
                 id: model_path
                 input_property: "engine/model"
                 on_text: root.check_models()
