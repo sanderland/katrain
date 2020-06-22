@@ -498,7 +498,7 @@
     spacing: CP_SPACING
     player_box_height: max(50, 0.075 * root.height)
     timer_box_height:  max(50, 0.1 * root.height)
-    graph_box_height:  max(100, 0.2 * root.height)
+    graph_height:  max(75, 0.2 * root.height - 25)
     stats_box_height: max(50, 0.15 * root.height)
     tab_option_height: max(15,root.height / 30)
     BoxLayout: # -- Players
@@ -540,15 +540,26 @@
             opacity: 0 if self.parent.mode == MODE_PLAY else 1
     CollapsablePanel:
         id: graph_panel
-        height_open: root.graph_box_height
+        height_open: self.header.height + graph.height + rank_graph.height
         closed_label: 'closedlabel:scoregraph'
-        options: ['score','winrate']
-        option_colors: [SCORE_COLOR,WINRATE_COLOR]
-        option_active: [True,False]
+        options: ['score','winrate','rank_est']
+        option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
+        option_active: [True,False,False]
         options_height: root.tab_option_height
-        on_option_state: graph.show_graphs(args[1])
+        on_option_state:
+            graph.show_graphs(args[1])
+            graph.hidden = not (args[1]['score'] or args[1]['winrate'])
+            rank_graph.hidden = not args[1]['rank_est']
         ScoreGraph:
             id: graph
+            opacity: 0 if self.hidden else 1
+            size_hint_y: None
+            height: 0.0001 if self.hidden else root.graph_height
+        RankGraph:
+            id: rank_graph
+            opacity: 0 if self.hidden else 1
+            size_hint_y: None
+            height: 0.0001 if self.hidden else root.graph_height
     CollapsablePanel:
         id: stats_panel
         height_open: root.stats_box_height

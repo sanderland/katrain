@@ -645,3 +645,7 @@ msgstr "Download Models"
 #. TODO
 msgid "All models downloaded"
 msgstr "All available models already downloaded"
+
+#. TODO
+msgid "tab:rank_est"
+msgstr "Rank Estimate"

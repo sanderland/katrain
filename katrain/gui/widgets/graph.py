@@ -1,22 +1,64 @@
 import math
 
 from kivy.lang import Builder
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty, Clock
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, Clock, StringProperty
 from kivymd.app import MDApp
 
+from katrain.core.lang import i18n
 from katrain.gui.kivyutils import BackgroundMixin
 import threading
 
 
-class ScoreGraph(BackgroundMixin):
-    whalf = NumericProperty(0)
-    bhalf = NumericProperty(0)
-    mid = NumericProperty(0)
+class Graph(BackgroundMixin):
+    marker_font_size = NumericProperty(0)
+    background_image = StringProperty("img/graph_bg.png")
 
+    nodes = ListProperty([])
+    hidden = BooleanProperty(False)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._lock = threading.Lock()
+        self.bind(pos=self.update_graph, size=self.update_graph)
+
+    def initialize_from_game(self, root):
+        self.nodes = [root]
+        node = root
+        while node.children:
+            node = node.ordered_children[0]
+            self.nodes.append(node)
+        self.highlighted_index = 0
+
+    def update_graph(self, *args):
+        pass
+
+    def update_value(self, node):
+        with self._lock:
+            self.highlighted_index = index = node.depth
+            self.nodes.extend([None] * max(0, index - (len(self.nodes) - 1)))
+            self.nodes[index] = node
+            if index > 1 and node.parent:  # sometimes things go so fast
+                backfill, bfnode = index - 1, node.parent
+                while bfnode is not None and self.nodes[backfill] != bfnode:
+                    self.nodes[backfill] = bfnode
+                    backfill -= 1
+                    bfnode = bfnode.parent
+
+            if index + 1 < len(self.nodes) and (
+                node is None or not node.children or self.nodes[index + 1] != node.ordered_children[0]
+            ):
+                self.nodes = self.nodes[: index + 1]  # on branch switching, don't show history from other branch
+            if index == len(self.nodes) - 1:  # possibly just switched branch or the line above triggered
+                while node.children:  # add children back
+                    node = node.ordered_children[0]
+                    self.nodes.append(node)
+            Clock.schedule_once(self.update_graph, 0)
+
+
+class ScoreGraph(Graph):
     show_score = BooleanProperty(True)
     show_winrate = BooleanProperty(True)
 
-    nodes = ListProperty([])
     score_points = ListProperty([])
     winrate_points = ListProperty([])
 
@@ -29,11 +71,6 @@ class ScoreGraph(BackgroundMixin):
     winrate_scale = NumericProperty(5)
 
     navigate_move = ListProperty([None, 0, 0, 0])
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._lock = threading.Lock()
-        self.bind(pos=self.update_graph, size=self.update_graph)
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
@@ -57,14 +94,6 @@ class ScoreGraph(BackgroundMixin):
                 katrain.game.set_current_node(self.navigate_move[0])
                 katrain.update_state()
         self.navigate_move = [None, 0, 0, 0]
-
-    def initialize_from_game(self, root):
-        self.nodes = [root]
-        node = root
-        while node.children:
-            node = node.ordered_children[0]
-            self.nodes.append(node)
-        self.highlighted_index = 0
 
     def show_graphs(self, keys):
         self.show_score = keys["score"]
@@ -124,27 +153,30 @@ class ScoreGraph(BackgroundMixin):
                     )
                 self.winrate_dot_pos = winrate_dot_point
 
-    def update_value(self, node):
-        with self._lock:
-            self.highlighted_index = index = node.depth
-            self.nodes.extend([None] * max(0, index - (len(self.nodes) - 1)))
-            self.nodes[index] = node
-            if index > 1 and node.parent:  # sometimes things go so fast
-                backfill, bfnode = index - 1, node.parent
-                while bfnode is not None and self.nodes[backfill] != bfnode:
-                    self.nodes[backfill] = bfnode
-                    backfill -= 1
-                    bfnode = bfnode.parent
 
-            if index + 1 < len(self.nodes) and (
-                node is None or not node.children or self.nodes[index + 1] != node.ordered_children[0]
-            ):
-                self.nodes = self.nodes[: index + 1]  # on branch switching, don't show history from other branch
-            if index == len(self.nodes) - 1:  # possibly just switched branch or the line above triggered
-                while node.children:  # add children back
-                    node = node.ordered_children[0]
-                    self.nodes.append(node)
-            Clock.schedule_once(self.update_graph, 0)
+class RankGraph(Graph):
+    black_rank_points = ListProperty([])
+    white_rank_points = ListProperty([])
+    rank_scale = NumericProperty(5)
+    rank_mid = NumericProperty(5)
+
+    @staticmethod
+    def rank_label(rank):
+        if rank <= 0:
+            return f"{1-rank}{i18n._('strength:dan')}"
+        else:
+            return f"{rank}{i18n._('strength:dan')}"
+
+    def update_graph(self, *args):
+        nodes = self.nodes
+        if nodes:
+            score_values = [n.score if n and n.score else math.nan for n in nodes]
+            score_nn_values = [n.score for n in nodes if n and n.score]
+            score_values_range = min(score_nn_values or [0]), max(score_nn_values or [0])
+
+            self.ids.mid_marker.text = self.rank_label(5)
+            self.ids.bottom_marker.text = self.rank_label(10)
+            self.ids.top_marker.text = self.rank_label(-2)
 
 
 Builder.load_string(
@@ -152,16 +184,17 @@ Builder.load_string(
 #:set GRAPH_CENTER_COLOR [0.5,0.5,0.5]
 #:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
 
+#:import LIGHTER_BACKGROUND_COLOR katrain.gui.style.LIGHTER_BACKGROUND_COLOR
 #:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
 #:import SCORE_COLOR katrain.gui.style.SCORE_COLOR
 #:import WINRATE_COLOR katrain.gui.style.WINRATE_COLOR
+#:import BLACK katrain.gui.style.BLACK
+#:import WHITE katrain.gui.style.WHITE
+#:import YELLOW katrain.gui.style.YELLOW
 
-<ScoreGraph>:
+
+<Graph>:
     background_color:  BOX_BACKGROUND_COLOR
-    whalf: self.y + self.height*0.25
-    bhalf: self.y + self.height*0.75
-    mid:   self.y + self.height*0.5
-    right_edge: self.x + self.width
     marker_font_size: 0.1 * self.height
     canvas:
         Color:
@@ -169,7 +202,11 @@ Builder.load_string(
         Rectangle:
             pos: self.pos
             size: self.size
-            source: 'img/graph_bg.png'
+            source: root.background_image
+
+        
+
+<ScoreGraph>:
     canvas.after:
         Color:
             rgba: SCORE_COLOR
@@ -202,26 +239,26 @@ Builder.load_string(
     GraphMarkerLabel:
         font_size: root.marker_font_size
         color:  SCORE_COLOR
-        pos: root.right_edge - self.width-1, root.pos[1]+root.height - self.font_size - 1
+        pos: root.x + root.width - self.width-1, root.pos[1]+root.height - self.font_size - 1
         text: 'B+{}'.format(root.score_scale)
         opacity: int(root.show_score)
     GraphMarkerLabel:
         font_size: root.marker_font_size
         color:  SCORE_COLOR
-        pos: root.right_edge - self.width-1, root.mid - self.height/2 + 2
+        pos: root.x + root.width - self.width-1, root.y + root.height*0.5 - self.height/2 + 2
         text: i18n._('Jigo')
         opacity: int(root.show_score)
     GraphMarkerLabel:
         font_size: root.marker_font_size
         color:  SCORE_COLOR
-        pos: root.right_edge - self.width-1, root.pos[1]
+        pos: root.x + root.width - self.width-1, root.pos[1]
         text: 'W+' + str(int(root.score_scale))
         opacity: int(root.show_score)
     # wr ticks
     GraphMarkerLabel:
         font_size: root.marker_font_size
         color: WINRATE_COLOR
-        pos: root.pos[0]+1,  root.pos[1]+root.height - self.font_size - 1
+        pos: root.pos[0]+1,  root.pos[1] + root.height - self.font_size - 1
         text: "{}%".format(50 + root.winrate_scale)
         opacity: int(root.show_winrate)
     GraphMarkerLabel:
@@ -229,6 +266,39 @@ Builder.load_string(
         color: WINRATE_COLOR
         pos:root.pos[0]+1, root.pos[1]
         text: "{}%".format(50 - root.winrate_scale)
-        opacity: int(root.show_winrate)
+        opacity: int(root.show_winrate) 
+
+<RankGraph>:
+    background_color: LIGHTER_BACKGROUND_COLOR
+    canvas.after:
+        Color:
+            rgba: WHITE
+        Line:
+            points: root.white_rank_points
+            width: 1.1
+        Color:
+            rgba: BLACK
+        Line:
+            points: root.black_rank_points
+            width: 1.1
+    # rank ticks
+    GraphMarkerLabel:
+        id: mid_marker
+        font_size: root.marker_font_size
+        color:  YELLOW
+        pos: root.x + root.width - self.width-1, root.y + root.height*0.5 - self.height/2 + 2
+        text: '?' + i18n._('strength:kyu')
+    GraphMarkerLabel:
+        id: top_marker
+        font_size: root.marker_font_size
+        color: YELLOW
+        pos: root.x + root.width - self.width-1,  root.pos[1]+root.height - self.font_size - 1
+        text: '?' + i18n._('strength:kyu')
+    GraphMarkerLabel:
+        id: bottom_marker
+        font_size: root.marker_font_size
+        color: YELLOW
+        pos: root.x + root.width - self.width-1, root.pos[1]
+        text: '?' + i18n._('strength:kyu')
 """
 )

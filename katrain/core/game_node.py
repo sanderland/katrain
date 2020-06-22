@@ -136,6 +136,15 @@ class GameNode(SGFNode):
         if win_rate is not None:
             return f"{'B' if win_rate > 0.5 else 'W'} {max(win_rate,1-win_rate):.1%}"
 
+    def move_policy_stats(self) -> Tuple[Optional[int], float, List]:
+        single_move = self.move
+        if single_move and self.parent:
+            policy_ranking = self.parent.policy_ranking
+            for ix, (p, m) in enumerate(policy_ranking):
+                if m == single_move:
+                    return ix + 1, p, policy_ranking
+        return None, 0.0, []
+
     def make_pv(self, player, pv, interactive):
         pvtext = f"{player}{' '.join(pv)}"
         if interactive:
@@ -160,44 +169,24 @@ class GameNode(SGFNode):
                         points_lost = self.points_lost
                         if sgf and points_lost > 0.5:
                             text += i18n._("Info:point loss").format(points_lost=points_lost) + "\n"
-                        text += (
-                            i18n._("Info:top move").format(
-                                top_move=previous_top_move["move"],
-                                score=self.format_score(previous_top_move["scoreLead"]),
-                            )
-                            + "\n"
-                        )
+                        top_move = previous_top_move["move"]
+                        score = self.format_score(previous_top_move["scoreLead"])
+                        text += i18n._("Info:top move").format(top_move=top_move, score=score,) + "\n"
                     else:
                         text += i18n._("Info:best move") + "\n"
                     if previous_top_move.get("pv") and (sgf or details):
-                        text += (
-                            i18n._("Info:PV").format(
-                                pv=self.make_pv(single_move.player, previous_top_move["pv"], interactive)
-                            )
-                            + "\n"
-                        )
+                        pv = self.make_pv(single_move.player, previous_top_move["pv"], interactive)
+                        text += i18n._("Info:PV").format(pv=pv) + "\n"
 
                 if sgf or details or teach:
-                    policy_ranking = self.parent.policy_ranking
-                    currmove_policy_with_ix = [
-                        (ix + 1, p)
-                        for (p, m), ix in zip(policy_ranking, range(len(policy_ranking)))
-                        if m == single_move
-                    ]
-                    if currmove_policy_with_ix:
-                        text += (
-                            i18n._("Info:policy rank").format(
-                                rank=currmove_policy_with_ix[0][0], probability=currmove_policy_with_ix[0][1]
-                            )
-                            + "\n"
-                        )
-                    if not currmove_policy_with_ix or currmove_policy_with_ix[0] != 1 and (sgf or details):
-                        text += (
-                            i18n._("Info:policy best").format(
-                                move=policy_ranking[0][1].gtp(), probability=policy_ranking[0][0]
-                            )
-                            + "\n"
-                        )
+                    currmove_pol_rank, currmove_pol_prob, policy_ranking = self.move_policy_stats()
+                    if currmove_pol_rank is not None:
+                        policy_rank_msg = i18n._("Info:policy rank")
+                        text += policy_rank_msg.format(rank=currmove_pol_rank, probability=currmove_pol_prob) + "\n"
+                    if currmove_pol_rank is None or currmove_pol_rank != 1 and (sgf or details):
+                        policy_best_msg = i18n._("Info:policy best")
+                        pol_move, pol_prob = policy_ranking[0][1].gtp(), policy_ranking[0][0]
+                        text += policy_best_msg.format(move=pol_move, probability=pol_prob) + "\n"
             if self.auto_undo and sgf:
                 text += i18n._("Info:teaching undo") + "\n"
                 top_pv = self.analysis_ready and self.candidate_moves[0].get("pv")

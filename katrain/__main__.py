@@ -67,9 +67,7 @@ from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL, LIGHTGREY
-from katrain.gui.widgets.graph import ScoreGraph
-from katrain.gui.widgets.movetree import MoveTree
-from katrain.gui.widgets.filebrowser import I18NFileBrowser
+from katrain.gui.widgets import *
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
 

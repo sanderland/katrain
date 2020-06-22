@@ -139,6 +139,9 @@ msgstr "Score"
 msgid "tab:winrate"
 msgstr "Win Rate"
 
+msgid "tab:rank_est"
+msgstr "Rank Estimate"
+
 msgid "tab:points"
 msgstr "Point Loss"
 
