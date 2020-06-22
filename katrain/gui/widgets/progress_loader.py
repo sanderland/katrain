@@ -1,9 +1,9 @@
 # From KivyMD which will remove it in their next version, with some fixes
-from kivy.clock import Clock
 from kivy.animation import Animation
-from kivy.network.urlrequest import UrlRequest
+from kivy.clock import Clock
 from kivy.lang import Builder
-from kivy.properties import StringProperty, ObjectProperty
+from kivy.network.urlrequest import UrlRequest
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 
 Builder.load_string(
@@ -86,16 +86,18 @@ class ProgressLoader(BoxLayout):
             on_progress=self.update_progress,
             on_success=self.handle_success,
             on_redirect=self.handle_redirect,
-            on_error=lambda req,error: self.handle_error(req,error),
-            on_failure=lambda req,res: self.handle_error(req,"Failure"),
-            on_cancel=lambda req: self.handle_error(req,"Cancelled"),
+            on_error=lambda req, error: self.handle_error(req, error),
+            on_failure=lambda req, res: self.handle_error(req, "Failure"),
+            on_cancel=lambda req: self.handle_error(req, "Cancelled"),
         )
 
     def handle_redirect(self, request, *_args):
-        new_url = request.resp_headers.get("location")
+        new_url = request.resp_headers.get("location") or request.resp_headers.get("Location")
         if new_url:
             self.download_url = new_url
             self.request_download_file(self.download_url, self.path_to_file)
+        else:
+            self.handle_error()
         if self.download_redirected:
             self.download_redirected(request)
 
@@ -103,15 +105,18 @@ class ProgressLoader(BoxLayout):
         self.root_instance.remove_widget(self)
 
     def handle_error(self, request, error):
-        self.cleanup()
+        status = error
+        if request.resp_status:
+            status += f" ({request.resp_status})"
+        self.label_downloading_text = self.downloading_text.format(status)
         if self.download_error:
-            self.download_error(request,error)
+            self.download_error(request, error)
 
     def update_progress(self, request, current_size, total_size):
         if total_size < 1e4:
             current_size = 0
-        percent = current_size * 100 // max(total_size, 1)
-        self.label_downloading_text = self.downloading_text.format(percent)
+        percent = current_size / max(total_size, 1)
+        self.label_downloading_text = self.downloading_text.format(f"{percent:.1%}")
 
     def handle_success(self, request, result):
         self.cleanup()

@@ -24,7 +24,7 @@ from katrain.core.constants import (
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n
-from katrain.core.utils import find_package_resource, PATHS
+from katrain.core.utils import PATHS, find_package_resource
 from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
 from katrain.gui.widgets.progress_loader import ProgressLoader
@@ -344,9 +344,6 @@ class ConfigPopup(QuickConfigGui):
         self.model_files.text = models_available_msg
 
     MODELS = {
-        #        "pure 20b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b20c256x2-s4384473088-d968438914.bin.gz",
-        #        "pure 30b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b30c320x2-s3530176512-d968463914.bin.gz",
-        #        "pure 40b": "https://github.com/lightvector/KataGo/releases/download/v1.4.0/g170-b40c256x2-s3708042240-d967973220.bin.gz",
         "final 20b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
         "final 30b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
         "final 40b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
@@ -362,7 +359,7 @@ class ConfigPopup(QuickConfigGui):
             self.check_models()
 
         for c in self.download_progress_box.children:
-            if isinstance(c,ProgressLoader) and c.request:
+            if isinstance(c, ProgressLoader) and c.request:
                 c.request.cancel()
         self.download_progress_box.clear_widgets()
         downloading = False
@@ -380,10 +377,10 @@ class ConfigPopup(QuickConfigGui):
                     download_complete=lambda req, tmp=savepath_tmp, path=savepath, model=name: download_complete(
                         req, tmp, path, model
                     ),
-                    download_redirected=lambda req,mname=name: self.katrain.log(
+                    download_redirected=lambda req, mname=name: self.katrain.log(
                         f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
                     ),
-                    download_error=lambda req,error,mname=name: self.katrain.log(
+                    download_error=lambda req, error, mname=name: self.katrain.log(
                         f"Download of {mname} failed or cancelled ({error}) {req.resp_headers}", OUTPUT_ERROR
                     ),
                 )
