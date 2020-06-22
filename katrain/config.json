@@ -16,7 +16,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.2.0"
+        "version": "1.2.2"
     },
     "timer": {
         "byo_length": 30,

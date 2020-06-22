@@ -604,3 +604,7 @@ msgstr "{num} available model(s) found"
 #. TODO
 msgid "download models button"
 msgstr "Download Models"
+
+#. TODO
+msgid "All models downloaded"
+msgstr "All available models already downloaded"

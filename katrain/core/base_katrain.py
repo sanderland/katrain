@@ -85,13 +85,16 @@ class KaTrainBase:
                         config_file = user_config_file
                         self.log(f"Copied package config to local file {config_file}", OUTPUT_INFO)
                     else:  # user file exists
-                        version = JsonStore(user_config_file, indent=4).get("general")["version"]
+                        try:
+                            version = JsonStore(user_config_file).get("general")["version"]
+                        except Exception:  # broken file etc
+                            version = "0.0.0"
                         if version < CONFIG_MIN_VERSION:
                             backup = user_config_file + f".{version}.backup"
                             shutil.copyfile(user_config_file, backup)
                             shutil.copyfile(package_config_file, user_config_file)
                             self.log(
-                                f"Copied package config file to {user_config_file} as user file is outdated (<{CONFIG_MIN_VERSION}). Old version stored as {backup}",
+                                f"Copied package config file to {user_config_file} as user file is outdated or broken ({version}<{CONFIG_MIN_VERSION}). Old version stored as {backup}",
                                 OUTPUT_INFO,
                             )
                         config_file = user_config_file
