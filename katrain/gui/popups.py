@@ -4,6 +4,7 @@ import re
 from typing import Any, Dict, List, Tuple, Union
 
 from kivy.clock import Clock
+from kivy.metrics import dp
 from kivy.properties import BooleanProperty, NumericProperty, StringProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
@@ -344,9 +345,9 @@ class ConfigPopup(QuickConfigGui):
         self.model_files.text = models_available_msg
 
     MODELS = {
-        "final 20b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
-        "final 30b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
-        "final 40b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
+        "latest 20b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
+        "latest 30b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
+        "latest 40b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
     }
 
     def download_models(self, *_largs):
@@ -372,7 +373,7 @@ class ConfigPopup(QuickConfigGui):
                 progress = ProgressLoader(
                     download_url=url,
                     path_to_file=savepath_tmp,
-                    downloading_text=f"Downloading {name} model: " + "{}%",
+                    downloading_text=f"Downloading {name} model: " + "{}",
                     label_downloading_text=f"Starting download for {name} model",
                     download_complete=lambda req, tmp=savepath_tmp, path=savepath, model=name: download_complete(
                         req, tmp, path, model
@@ -381,13 +382,14 @@ class ConfigPopup(QuickConfigGui):
                         f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
                     ),
                     download_error=lambda req, error, mname=name: self.katrain.log(
-                        f"Download of {mname} failed or cancelled ({error}) {req.resp_headers}", OUTPUT_ERROR
+                        f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
                     ),
                 )
                 progress.start(self.download_progress_box)
                 downloading = True
         if not downloading:
-            self.download_progress_box.add_widget(Label(text=i18n._("All models downloaded")))
+            self.download_progress_box.add_widget(Label(text=i18n._("All models downloaded"),text_size=(None,dp(50) )))
+            print('x')
 
     def update_config(self, save_to_file=True):
         updated = super().update_config(save_to_file=save_to_file)

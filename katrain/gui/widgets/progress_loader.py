@@ -14,18 +14,22 @@ Builder.load_string(
 <ProgressLoader>
     opacity: 0
     spacing: 10
+    size_hint_y: None
+    height: dp(25)
     MDSpinner
         id: spinner
         size_hint: None, 0.8
-        width: dp(32)
+        size: dp(23), dp(23)
         color: 0.95,0.95,0.95,1
     MDLabel:
         id: label_download
+        max_lines: 2
         shorten: True
-        max_lines: 1
+        shorten_from: 'right'
         halign: 'left'
         valign: 'center'
         text_size: self.size
+        height: dp(23)
         color: 0.95,0.95,0.95,1
         text: root.label_downloading_text
 """
@@ -105,10 +109,11 @@ class ProgressLoader(BoxLayout):
         self.root_instance.remove_widget(self)
 
     def handle_error(self, request, error):
-        status = error
+        status = f"Error: {error}"
         if request.resp_status:
             status += f" ({request.resp_status})"
         self.label_downloading_text = self.downloading_text.format(status)
+        self.ids.spinner.active = False
         if self.download_error:
             self.download_error(request, error)
 
