@@ -598,3 +598,6 @@ msgstr "Download Models"
 
 msgid "models available"
 msgstr "{num} available model(s) found"
+
+msgid "All models downloaded"
+msgstr "All available models already downloaded"

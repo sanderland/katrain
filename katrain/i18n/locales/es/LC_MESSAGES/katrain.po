@@ -497,7 +497,7 @@ msgstr ""
 " cuantas jugadas en la apertura son al azar."
 
 msgid "ai:p:weighted"
-msgstr "Intuición debilitada"
+msgstr "Parcial"
 
 msgid "aihelp:p:weighted"
 msgstr ""
@@ -602,3 +602,7 @@ msgstr "{num} available model(s) found"
 #. TODO
 msgid "download models button"
 msgstr "Download Models"
+
+#. TODO
+msgid "All models downloaded"
+msgstr "All available models already downloaded"
