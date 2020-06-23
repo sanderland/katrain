@@ -167,11 +167,11 @@ def averagemod(data):
 class RankGraph(Graph):
     black_rank_points = ListProperty([])
     white_rank_points = ListProperty([])
-    segment_length = NumericProperty(50)
+    segment_length = NumericProperty(60)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.calculate_trigger = Clock.create_trigger(lambda *args: self.rank_game(), 10)
+        self.calculate_trigger = Clock.create_trigger(lambda *args: self.rank_game(), 2)
         self.rank_by_player = {}
 
     @staticmethod
@@ -222,11 +222,13 @@ class RankGraph(Graph):
         half_seg = self.segment_length // 2
 
         ranks = {"B": [], "W": []}
-        for segment_mid in range(half_seg, len(nodes), half_seg):
-            bounds = (segment_mid - half_seg, min(segment_mid + half_seg, len(nodes)))
-            for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1]], num_intersec).items():
+        dx = self.segment_length//4
+        for segment_mid in range(0, len(nodes), dx):
+            bounds = (max(0,segment_mid - half_seg), min(segment_mid + half_seg, len(nodes)))
+            for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1]+1], num_intersec).items():
                 ranks[pl].append((segment_mid, rank))
         self.rank_by_player = ranks
+        print(ranks)
         self.redraw_trigger()
 
     def update_value(self, node):
