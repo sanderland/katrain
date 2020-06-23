@@ -21,7 +21,7 @@ class Graph(BackgroundMixin):
         super().__init__(**kwargs)
         self._lock = threading.Lock()
         self.bind(pos=self.update_graph, size=self.update_graph)
-        self.redraw_trigger = Clock.create_trigger(self.update_graph, 1)
+        self.redraw_trigger = Clock.create_trigger(self.update_graph, 0.1)
 
     def initialize_from_game(self, root):
         self.nodes = [root]
@@ -171,7 +171,7 @@ class RankGraph(Graph):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.calculate_trigger = Clock.create_trigger(lambda *args: self.rank_game(), 2)
+        self.calculate_trigger = Clock.create_trigger(lambda *args: self.rank_game(), 0.25)
         self.rank_by_player = {}
 
     @staticmethod
