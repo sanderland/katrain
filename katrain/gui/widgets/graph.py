@@ -1,6 +1,7 @@
 import math
 
 from kivy.lang import Builder
+from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, Clock, StringProperty
 from kivymd.app import MDApp
 
@@ -20,6 +21,7 @@ class Graph(BackgroundMixin):
         super().__init__(**kwargs)
         self._lock = threading.Lock()
         self.bind(pos=self.update_graph, size=self.update_graph)
+        self.redraw_trigger = Clock.create_trigger(self.update_graph, 1)
 
     def initialize_from_game(self, root):
         self.nodes = [root]
@@ -52,7 +54,7 @@ class Graph(BackgroundMixin):
                 while node.children:  # add children back
                     node = node.ordered_children[0]
                     self.nodes.append(node)
-            Clock.schedule_once(self.update_graph, 0)
+            self.redraw_trigger()
 
 
 class ScoreGraph(Graph):
@@ -65,7 +67,7 @@ class ScoreGraph(Graph):
     score_dot_pos = ListProperty([0, 0])
     winrate_dot_pos = ListProperty([0, 0])
     highlighted_index = NumericProperty(None)
-    highlight_size = NumericProperty(6)
+    highlight_size = NumericProperty(dp(6))
 
     score_scale = NumericProperty(5)
     winrate_scale = NumericProperty(5)
@@ -154,29 +156,116 @@ class ScoreGraph(Graph):
                 self.winrate_dot_pos = winrate_dot_point
 
 
+def averagemod(data):
+    sorteddata = sorted(data)
+    lendata = len(data)
+    return sum(sorteddata[int(lendata * 0.2) : int(lendata * 0.8) + 1]) / (
+        (int(lendata * 0.8) + 1) - int(lendata * 0.2)
+    )  # average without the best and worst 20% of ranks
+
+
 class RankGraph(Graph):
     black_rank_points = ListProperty([])
     white_rank_points = ListProperty([])
-    rank_scale = NumericProperty(5)
-    rank_mid = NumericProperty(5)
+    segment_length = NumericProperty(50)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.calculate_trigger = Clock.create_trigger(lambda *args: self.rank_game(), 10)
+        self.rank_by_player = {}
 
     @staticmethod
     def rank_label(rank):
-        if rank <= 0:
-            return f"{1-rank}{i18n._('strength:dan')}"
+        if rank > 0:
+            return f"{rank:.0f}{i18n._('strength:dan')}"
         else:
-            return f"{rank}{i18n._('strength:dan')}"
+            return f"{1-rank:.0f}{i18n._('strength:kyu')}"
+
+    @staticmethod
+    def calculate_rank_for_player(segment_stats, num_intersec, player):
+        non_obvious_moves = [
+            (nl, r, val)
+            for nl, r, val, pl in segment_stats
+            if nl is not None and val < (0.8 * (1 - (num_intersec - nl) / num_intersec * 0.5)) and pl == player
+        ]
+        if not non_obvious_moves:
+            return None
+        num_legal, rank, value = zip(*non_obvious_moves)
+        averagemod_rank = averagemod(rank)
+        averagemod_len_legal = averagemod(num_legal)
+        # the averagemod_rank is the outlier free average of the best move from a selection of n_moves with averagemod_len_legal of total legal moves
+        n_moves = math.floor(0.40220696 + averagemod_len_legal / (1.313341 * (averagemod_rank + 1) - 0.088646986))
+        # using the calibration curve of p:pick:rank
+        rank_kyu = (math.log10(n_moves * 361 / num_intersec) - 1.9482) / -0.05737
+        return 1 - rank_kyu  # dan rank
+
+    @staticmethod
+    def calculate_ranks(segment_stats, num_intersec):
+        return {pl: RankGraph.calculate_rank_for_player(segment_stats, num_intersec, pl) for pl in "BW"}
+
+    def rank_game(self):
+
+        nodes = self.nodes
+        parent_policy_per_move = [node.parent.policy_ranking if node.parent else None for node in nodes]
+        num_legal_moves = [
+            sum(pv >= 0 for pv, _ in policy_ranking) if policy_ranking else 0
+            for policy_ranking in parent_policy_per_move
+        ]
+        policy_stats = [
+            [(num_mv, rank, value, mv.player) for rank, (value, mv) in enumerate(policy_ranking) if mv == move.move][0]
+            if policy_ranking
+            else (None, None, None, None)
+            for move, policy_ranking, num_mv in zip(nodes, parent_policy_per_move, num_legal_moves)
+        ]
+        size = self.nodes[0].board_size
+        num_intersec = size[0] * size[1]
+        half_seg = self.segment_length // 2
+
+        ranks = {"B": [], "W": []}
+        for segment_mid in range(half_seg, len(nodes), half_seg):
+            bounds = (segment_mid - half_seg, min(segment_mid + half_seg, len(nodes)))
+            for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1]], num_intersec).items():
+                ranks[pl].append((segment_mid, rank))
+        self.rank_by_player = ranks
+        self.redraw_trigger()
+
+    def update_value(self, node):
+        super().update_value(node)
+        self.calculate_trigger()  # recalc here on trigger for speed
 
     def update_graph(self, *args):
-        nodes = self.nodes
-        if nodes:
-            score_values = [n.score if n and n.score else math.nan for n in nodes]
-            score_nn_values = [n.score for n in nodes if n and n.score]
-            score_values_range = min(score_nn_values or [0]), max(score_nn_values or [0])
+        if self.rank_by_player:
+            xscale = self.width / max(len(self.nodes) - 1, 15)
+            available_height = self.height
 
-            self.ids.mid_marker.text = self.rank_label(5)
-            self.ids.bottom_marker.text = self.rank_label(10)
-            self.ids.top_marker.text = self.rank_label(-2)
+            all_ranks = [rank for lst in self.rank_by_player.values() for seg, rank in lst if rank is not None]
+            if not all_ranks:
+                return
+
+            min_rank = math.floor(min(all_ranks))
+            max_rank = math.ceil(max(all_ranks))
+            if (max_rank - min_rank) % 2 != 0:  # make midpoint whole integer
+                if abs(max_rank - max(all_ranks)) < abs(min(all_ranks) - min_rank):
+                    max_rank += 1
+                else:
+                    min_rank -= 1
+            rank_range = max_rank - min_rank
+
+            self.ids.mid_marker.text = self.rank_label((max_rank + min_rank) / 2)
+            self.ids.top_marker.text = self.rank_label(max_rank)
+            self.ids.bottom_marker.text = self.rank_label(min_rank)
+
+            graph_points = {}
+            for pl, rank_points in self.rank_by_player.items():
+                graph_points[pl] = [
+                    [
+                        self.x + i * xscale,
+                        self.y + available_height * (val - min_rank) / rank_range if val is not None else math.nan,
+                    ]
+                    for i, val in rank_points
+                ]
+            self.black_rank_points = sum(graph_points["B"], [])
+            self.white_rank_points = sum(graph_points["W"], [])
 
 
 Builder.load_string(
@@ -204,20 +293,18 @@ Builder.load_string(
             size: self.size
             source: root.background_image
 
-        
-
 <ScoreGraph>:
     canvas.after:
         Color:
             rgba: SCORE_COLOR
         Line:
             points: root.score_points if root.show_score else []
-            width: 1.1
+            width: dp(1.1)
         Color:
             rgba: WINRATE_COLOR
         Line:
             points: root.winrate_points if root.show_winrate else []
-            width: 1.1
+            width: dp(1.1)
         Color:
             rgba: [0.5,0.5,0.5,1] if root.navigate_move[0] else [0,0,0,0]
         Line:
@@ -275,12 +362,12 @@ Builder.load_string(
             rgba: WHITE
         Line:
             points: root.white_rank_points
-            width: 1.1
+            width: dp(1.1)
         Color:
             rgba: BLACK
         Line:
             points: root.black_rank_points
-            width: 1.1
+            width: dp(1.1)
     # rank ticks
     GraphMarkerLabel:
         id: mid_marker

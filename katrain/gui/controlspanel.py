@@ -132,6 +132,7 @@ class ControlsPanel(BoxLayout):
             self.stats.player = ""
 
         self.graph.update_value(current_node)
+        self.rank_graph.update_value(current_node)
         self.note.text = current_node.note
         self.info.text = info
 
