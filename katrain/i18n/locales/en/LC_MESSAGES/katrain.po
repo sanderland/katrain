@@ -98,6 +98,15 @@ msgstr "Equalize visits of potential moves"
 msgid "analysis:sweep"
 msgstr "Fast analysis of all moves"
 
+msgid "analysis:sweep"
+msgstr "Fast analysis of all moves"
+
+msgid "analysis:game"
+msgstr "Re-analyze entire game"
+
+msgid "analysis:continuous"
+msgstr "Continuously analyze"
+
 msgid "analysis:aimove"
 msgstr "Force AI Move"
 
@@ -112,6 +121,10 @@ msgstr "Analyzing entire board using {visits} visits/move"
 #. status message
 msgid "equalizing analysis"
 msgstr "Equalizing analysis of candidate moves to {visits} visits"
+
+#. status message
+msgid "game re-analysis"
+msgstr "Re-analyzing entire game using {visits} visits"
 
 #. right panel buttons and below board
 msgid "pass-button-text"

@@ -383,15 +383,15 @@ class CollapsablePanel(MDBoxLayout):
             option_active=self.build_options,
             options_spacing=self.build_options,
         )
-        self.bind(state=self._on_state,size_hint_y_open=self._on_size, height_open=self._on_size)
+        self.bind(state=self._on_state, size_hint_y_open=self._on_size, height_open=self._on_size)
         MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
         self.build_options()
 
-    def _on_state(self,*_args):
+    def _on_state(self, *_args):
         self.build()
         self.trigger_select(ix=None)
 
-    def _on_size(self,*_args):
+    def _on_size(self, *_args):
         height, size_hint_y = 1, None
         if self.state == "open" and self.contents:
             if self.height_open:
@@ -401,7 +401,6 @@ class CollapsablePanel(MDBoxLayout):
         else:
             height = self.header.height
         self.height, self.size_hint_y = height, size_hint_y
-
 
     @property
     def option_state(self):

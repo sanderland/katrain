@@ -103,6 +103,8 @@ Keyboard shortcuts are shown with **[key]**.
     * **[a]**: Deeper analysis: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
     * **[s]**: Equalize visits: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
     * **[d]**: Analyze all moves: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but can be useful to see how many reasonable next moves are available.
+    * **[f]**: Re-analyze game: ...
+    * **[spacebar]**: Turn continuous analysis on/off. 
     * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
 
 ## Keyboard and mouse shortcuts
@@ -112,7 +114,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[Shift]**: Open the main menu.
 * **[~]** or **[ ` ]** or **[m]**: Cycles through more minimalistic UI modes.
 * **[p]**: Pass
-* **[spacebar]**: Pause/Resume timer
+* **[b]**: Pause/Resume timer
 * **[arrow left]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[arrow right]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[arrow up/down]** Switch branch, as would be expected from the move tree.

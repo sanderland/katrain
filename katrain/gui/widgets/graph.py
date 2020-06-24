@@ -222,13 +222,12 @@ class RankGraph(Graph):
         half_seg = self.segment_length // 2
 
         ranks = {"B": [], "W": []}
-        dx = self.segment_length//4
+        dx = self.segment_length // 4
         for segment_mid in range(0, len(nodes), dx):
-            bounds = (max(0,segment_mid - half_seg), min(segment_mid + half_seg, len(nodes)))
-            for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1]+1], num_intersec).items():
+            bounds = (max(0, segment_mid - half_seg), min(segment_mid + half_seg, len(nodes)))
+            for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1] + 1], num_intersec).items():
                 ranks[pl].append((segment_mid, rank))
         self.rank_by_player = ranks
-        print(ranks)
         self.redraw_trigger()
 
     def update_value(self, node):

@@ -615,3 +615,15 @@ msgstr "All available models already downloaded"
 #. TODO
 msgid "tab:rank_est"
 msgstr "Rank Estimate"
+
+#. TODO
+msgid "game re-analysis"
+msgstr "Re-analyzing entire game using {visits} visits"
+
+#. TODO
+msgid "analysis:game"
+msgstr "Re-analyze entire game"
+
+#. TODO
+msgid "analysis:continuous"
+msgstr "Continuously analyze"

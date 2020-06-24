@@ -89,6 +89,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.teacher_settings_popup = None
         self.timer_settings_popup = None
 
+        self.idle_analysis = False
         self.message_queue = Queue()
 
         self._keyboard = Window.request_keyboard(None, self, "")
@@ -112,6 +113,10 @@ class KaTrainGui(Screen, KaTrainBase):
     @property
     def play_analyze_mode(self):
         return self.play_mode.mode
+
+    def toggle_continuous_analysis(self):
+        self.idle_analysis = not self.idle_analysis
+        self.update_state()
 
     def start(self):
         if self.engine:
@@ -182,7 +187,9 @@ class KaTrainGui(Screen, KaTrainBase):
                 and not (teaching_undo and cn.auto_undo is None)
             ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                 self._do_ai_move(cn)
-        Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)
+        if len(self.engine.queries) == 0 and self.idle_analysis:
+            self("analyze-extra", "extra", continuous=True)
+        Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
 
     def update_player(self, bw, **kwargs):
         super().update_player(bw, **kwargs)
@@ -197,7 +204,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _message_loop_thread(self):
         while True:
-            game, msg, *args = self.message_queue.get()
+            game, msg, args, kwargs = self.message_queue.get()
             try:
                 self.log(f"Message Loop Received {msg}: {args} for Game {game}", OUTPUT_EXTRA_DEBUG)
                 if game != self.game.game_id:
@@ -206,19 +213,19 @@ class KaTrainGui(Screen, KaTrainBase):
                     )
                     continue
                 fn = getattr(self, f"_do_{msg.replace('-','_')}")
-                fn(*args)
+                fn(*args, **kwargs)
                 self.update_state()
             except Exception as exc:
                 self.log(f"Exception in processing message {msg} {args}: {exc}", OUTPUT_ERROR)
                 traceback.print_exc()
 
-    def __call__(self, message, *args):
+    def __call__(self, message, *args, **kwargs):
         if self.game:
             if message.endswith("popup"):  # gui code needs to run in main kivy thread.
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")
-                Clock.schedule_once(lambda _dt: fn(*args), -1)
+                Clock.schedule_once(lambda _dt: fn(*args, **kwargs), -1)
             else:  # game related actions
-                self.message_queue.put([self.game.game_id, message, *args])
+                self.message_queue.put([self.game.game_id, message, args, kwargs])
 
     def _do_new_game(self, move_tree=None, analyze_fast=False):
         mode = self.play_analyze_mode
@@ -266,8 +273,8 @@ class KaTrainGui(Screen, KaTrainBase):
         except IllegalMoveException as e:
             self.controls.set_status(f"Illegal Move: {str(e)}")
 
-    def _do_analyze_extra(self, mode):
-        self.game.analyze_extra(mode)
+    def _do_analyze_extra(self, mode, **kwargs):
+        self.game.analyze_extra(mode, **kwargs)
 
     def _do_new_game_popup(self):
         self.controls.timer.paused = True
@@ -397,6 +404,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "a": ("analyze-extra", "extra"),
             "s": ("analyze-extra", "equalize"),
             "d": ("analyze-extra", "sweep"),
+            "f": ("analyze-extra", "game"),
             "p": ("play", None),
             "down": ("switch-branch", 1),
             "up": ("switch-branch", -1),
@@ -429,8 +437,10 @@ class KaTrainGui(Screen, KaTrainBase):
         elif keycode[1] == "shift":
             self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
+            self.toggle_continuous_analysis()
+        elif keycode[1] == "b" and "ctrl" not in modifiers:
             self.controls.timer.paused = not self.controls.timer.paused
-        elif keycode[1] in ["`", "~", "m"]:
+        elif keycode[1] in ["`", "~", "m"] and "ctrl" not in modifiers:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["left", "z"]:
             self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)

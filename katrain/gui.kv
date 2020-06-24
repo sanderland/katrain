@@ -722,6 +722,16 @@
         shortcut: 'd'
         on_action: root.katrain("analyze-extra", "sweep")
     AnalysisMenuItem:
+        text: i18n._("analysis:game")
+        icon: 'img/analysis.png'
+        shortcut: 'f'
+        on_action: root.katrain("analyze-extra", "game")
+    AnalysisMenuItem:
+        text: i18n._("analysis:continuous")
+        icon: 'img/off.png'
+        shortcut: 'space'
+        on_action: root.katrain.toggle_continuous_analysis()
+    AnalysisMenuItem:
         text: i18n._("analysis:aimove")
         icon: 'img/ai.png'
         shortcut: 'enter'

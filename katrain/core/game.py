@@ -317,16 +317,29 @@ class Game:
             f.write(sgf)
         return i18n._("sgf written").format(file_name=file_name)
 
-    def analyze_extra(self, mode):
+    def analyze_extra(self, mode, **kwargs):
         stones = {s.coords for s in self.stones}
         cn = self.current_node
 
         engine = self.engines[cn.next_player]
         if mode == "extra":
-            visits = cn.analysis_visits_requested + engine.config["max_visits"]
+            if kwargs.get("continuous", False):
+                visits = max(engine.config["fast_visits"], math.ceil(cn.analysis_visits_requested * 1.1))
+            else:
+                visits = cn.analysis_visits_requested + engine.config["fast_visits"]
+
             self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits))
             cn.analyze(engine, visits=visits, priority=-1_000, time_limit=False)
             return
+        if mode == "game":
+            nodes = self.root.nodes_in_tree
+            min_visits = min(node.analysis_visits_requested for node in nodes)
+            visits = min_visits + engine.config["max_visits"]
+            for node in nodes:
+                node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False)
+            self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits))
+            return
+
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
             if cn.analysis_ready:
@@ -354,7 +367,7 @@ class Game:
             visits = engine.config["fast_visits"]
             self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits))
             priority = -1_000_000_000
-        else:  # mode=='equalize':
+        elif mode == "equalize":
             if not cn.analysis_ready:
                 self.katrain.controls.set_status(i18n._("wait-before-equalize"), self.current_node)
                 return
@@ -363,6 +376,8 @@ class Game:
             visits = max(d["visits"] for d in cn.analysis["moves"].values())
             self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits))
             priority = -1_000
+        else:
+            raise ValueError("Invalid analysis mode")
         for move in analyze_moves:
             cn.analyze(
                 engine, priority, visits=visits, refine_move=move, time_limit=False
