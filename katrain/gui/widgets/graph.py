@@ -226,9 +226,9 @@ class RankGraph(Graph):
         for segment_mid in range(0, len(nodes), dx):
             bounds = (max(0,segment_mid - half_seg), min(segment_mid + half_seg, len(nodes)))
             for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1]+1], num_intersec).items():
-                ranks[pl].append((segment_mid, rank))
+                if bounds[1]-bounds[0]>self.segment_length * .75:
+                    ranks[pl].append((segment_mid, rank))
         self.rank_by_player = ranks
-        print(ranks)
         self.redraw_trigger()
 
     def update_value(self, node):
