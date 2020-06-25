@@ -191,6 +191,11 @@ class RankGraph(Graph):
         if not non_obvious_moves:
             return None
         num_legal, rank, value = zip(*non_obvious_moves)
+        rank = list(rank)
+        for (i, item) in enumerate(rank):
+            if item > num_legal[i]*0.07:
+                rank[i] = num_legal[i]*0.07
+        rank = tuple(rank)
         averagemod_rank = averagemod(rank)
         averagemod_len_legal = averagemod(num_legal)
         # the averagemod_rank is the outlier free average of the best move from a selection of n_moves with averagemod_len_legal of total legal moves
@@ -226,7 +231,8 @@ class RankGraph(Graph):
         for segment_mid in range(0, len(nodes), dx):
             bounds = (max(0, segment_mid - half_seg), min(segment_mid + half_seg, len(nodes)))
             for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1] + 1], num_intersec).items():
-                ranks[pl].append((segment_mid, rank))
+                if bounds[1]-bounds[0]>self.segment_length * .75:
+                    ranks[pl].append((segment_mid, rank))
         self.rank_by_player = ranks
         self.redraw_trigger()
 
