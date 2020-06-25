@@ -324,7 +324,7 @@ class Game:
         engine = self.engines[cn.next_player]
         if mode == "extra":
             if kwargs.get("continuous", False):
-                visits = max(engine.config["fast_visits"], math.ceil(cn.analysis_visits_requested * 1.1))
+                visits = max(engine.config["fast_visits"], math.ceil(cn.analysis_visits_requested * 1.25))
             else:
                 visits = cn.analysis_visits_requested + engine.config["fast_visits"]
 

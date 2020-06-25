@@ -69,9 +69,6 @@ class GameNode(SGFNode):
 
     # various analysis functions
     def analyze(self, engine, priority=0, visits=None, time_limit=True, refine_move=None, analyze_fast=False):
-        if not refine_move:
-            req_visits = visits or (engine.config["fast_visits"] if analyze_fast else engine.config["max_visits"])
-            self.analysis_visits_requested = max(req_visits, self.analysis_visits_requested)
         engine.request_analysis(
             self,
             lambda result: self.set_analysis(result, refine_move),
