@@ -193,15 +193,15 @@ class RankGraph(Graph):
         num_legal, rank, value = zip(*non_obvious_moves)
         rank = list(rank)
         for (i, item) in enumerate(rank):
-            if item > num_legal[i]*0.07:
-                rank[i] = num_legal[i]*0.07
+            if item > num_legal[i]*0.09:
+                rank[i] = num_legal[i]*0.09
         rank = tuple(rank)
         averagemod_rank = averagemod(rank)
         averagemod_len_legal = averagemod(num_legal)
         # the averagemod_rank is the outlier free average of the best move from a selection of n_moves with averagemod_len_legal of total legal moves
-        n_moves = math.floor(0.40220696 + averagemod_len_legal / (1.313341 * (averagemod_rank + 1) - 0.088646986))
-        # using the calibration curve of p:pick:rank
-        rank_kyu = (math.log10(n_moves * 361 / num_intersec) - 1.9482) / -0.05737
+        rank_kyu = -0.62842816*math.log(averagemod_rank)/(0.17050253+averagemod_rank*math.exp(-1*(3.373914*(averagemod_len_legal/num_intersec))**2))+13.588577*(averagemod_len_legal/num_intersec)+10.405252*math.log(averagemod_rank)+12.417778*math.exp(-1*(2.5190649*(averagemod_len_legal/num_intersec))**2)-14.579846
+        if rank_kyu<-10:
+            rank_kyu=-10
         return 1 - rank_kyu  # dan rank
 
     @staticmethod
