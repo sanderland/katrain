@@ -101,7 +101,7 @@ def request_ai_analysis(game: Game, cn: GameNode, extra_settings: Dict) -> Dict:
 
     def set_analysis(a):
         nonlocal analysis
-        analysis = a["moveInfos"]
+        analysis = a
 
     def set_error(a):
         nonlocal error
@@ -129,10 +129,10 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
     if ai_mode == AI_HANDICAP:
         pda = ai_settings["pda"]
         if ai_settings["automatic"]:
-            n_handicaps = len(game.root.get_list_property("AB"))
+            n_handicaps = len(game.root.get_list_property("AB", []))
             MOVE_VALUE = 14  # could be rules dependent
-            b_stones_advantage = max(n_handicaps - 1, 0) - (cn.komi - MOVE_VALUE/2) / MOVE_VALUE
-            pda = min(3, max(-3, b_stones_advantage * (3/8) ))  # max PDA at 8 stone adv, normal 9 stone game is 8.46
+            b_stones_advantage = max(n_handicaps - 1, 0) - (cn.komi - MOVE_VALUE / 2) / MOVE_VALUE
+            pda = min(3, max(-3, -b_stones_advantage * (3 / 8)))  # max PDA at 8 stone adv, normal 9 stone game is 8.46
         handicap_analysis = request_ai_analysis(
             game, cn, {"playoutDoublingAdvantage": pda, "playoutDoublingAdvantagePla": "BLACK"}
         )
@@ -232,11 +232,9 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             else:
                 raise ValueError(f"Unknown Policy-based AI mode {ai_mode}")
     else:  # Engine based move
-        handicap_or_default = "Default"
         candidate_ai_moves = cn.candidate_moves
         if ai_mode == AI_HANDICAP:
-            candidate_ai_moves = handicap_analysis
-            handicap_or_default = "Handicap"
+            candidate_ai_moves = handicap_analysis["moveInfos"]
 
         top_cand = Move.from_gtp(candidate_ai_moves[0]["move"], player=cn.next_player)
         if top_cand.is_pass:  # don't play suicidal to balance score - pass when it's best
@@ -268,7 +266,10 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                     game.katrain.log(f"Unknown AI mode {ai_mode} or policy missing, using default.", OUTPUT_INFO)
                     ai_thoughts += f"Strategy {ai_mode} not found or unexpected fallback."
                 aimove = top_cand
-                ai_thoughts += f"{handicap_or_default} strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move"
+                if ai_mode == AI_HANDICAP:
+                    ai_thoughts += f"Handicap strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move. PDA based score {cn.format_score(handicap_analysis['rootInfo']['scoreLead'])} and win rate {cn.format_winrate(handicap_analysis['rootInfo']['winrate'])}"
+                else:
+                    ai_thoughts += f"Default strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move"
     game.katrain.log(f"AI thoughts: {ai_thoughts}", OUTPUT_DEBUG)
     played_node = game.play(aimove)
     played_node.ai_thoughts = ai_thoughts
