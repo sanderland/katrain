@@ -239,4 +239,4 @@ class KataGoEngine:
             "overrideSettings": settings,
         }
         self.send_query(query, callback, error_callback, next_move)
-        analysis_node.analysis_visits_requested = max(analysis_node.analysis_visits_requested,visits)
+        analysis_node.analysis_visits_requested = max(analysis_node.analysis_visits_requested, visits)
