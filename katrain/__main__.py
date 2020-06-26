@@ -3,7 +3,7 @@
 import os
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
-os.environ["KIVY_AUDIO"] = "sdl2"  # force working audio
+os.environ["KIVY_AUDIO"] = "ffpyplayer"  # force working audio
 
 # next, icon
 from katrain.core.utils import find_package_resource, PATHS
