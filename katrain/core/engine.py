@@ -5,7 +5,7 @@ import subprocess
 import threading
 import time
 import traceback
-from typing import Callable, Optional
+from typing import Callable, Optional, Dict
 
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from katrain.core.game_node import GameNode
@@ -206,9 +206,11 @@ class KataGoEngine:
         time_limit=True,
         priority: int = 0,
         ownership: Optional[bool] = None,
-        next_move=None,
+        next_move: Optional[GameNode] = None,
+        extra_settings: Optional[Dict] = None,
     ):
-        moves = [m for node in analysis_node.nodes_from_root for m in node.move_with_placements]
+        moves = [m for node in analysis_node.nodes_from_root for m in node.moves]
+        initial_stones = analysis_node.root.placements
         if next_move:
             moves.append(next_move)
         if ownership is None:
@@ -233,10 +235,11 @@ class KataGoEngine:
             "komi": analysis_node.komi,
             "boardXSize": size_x,
             "boardYSize": size_y,
-            "includeOwnership": ownership,
+            "includeOwnership": ownership and not next_move,
             "includePolicy": not next_move,
+            "initialStones": [[m.player, m.gtp()] for m in initial_stones],
             "moves": [[m.player, m.gtp()] for m in moves],
-            "overrideSettings": settings,
+            "overrideSettings": {**settings, **(extra_settings or {})},
         }
         self.send_query(query, callback, error_callback, next_move)
         analysis_node.analysis_visits_requested = max(analysis_node.analysis_visits_requested, visits)

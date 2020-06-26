@@ -518,6 +518,16 @@ msgstr ""
 "in the general settings `engine` section and engine configuration file. No "
 "options are available here."
 
+msgid "ai:handicap"
+msgstr "KataGo Handicap"
+
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo optimized for playing higher handicap games.The `pda` setting "
+"corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
+"perspective. When `automatic` is set, KaTrain will find a suitable value "
+"automatically."
+
 msgid "ai:jigo"
 msgstr "KataJigo"
 

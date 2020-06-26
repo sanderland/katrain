@@ -21,6 +21,8 @@ from katrain.core.constants import (
     AI_TERRITORY,
     AI_PICK,
     AI_RANK,
+    AI_HANDICAP,
+    OUTPUT_ERROR,
 )
 from katrain.core.game import Game, GameNode, Move
 
@@ -93,8 +95,51 @@ def generate_local_tenuki_weights(ai_mode, ai_settings, policy_grid, cn, size):
     return weighted_coords, ai_thoughts
 
 
+def request_ai_analysis(game: Game, cn: GameNode, extra_settings: Dict) -> Dict:
+    error = False
+    analysis = None
+
+    def set_analysis(a):
+        nonlocal analysis
+        analysis = a
+
+    def set_error(a):
+        nonlocal error
+        game.katrain.log("Error in PDA-based analysis", a)
+        error = True
+
+    engine = game.engines[cn.player]
+    engine.request_analysis(
+        cn,
+        callback=set_analysis,
+        error_callback=set_error,
+        priority=1_000,
+        ownership=False,
+        extra_settings=extra_settings,
+    )
+    while not (error or analysis):
+        time.sleep(0.01)
+        engine.check_alive(exception_if_dead=True)
+    return analysis
+
+
 def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode]:
     cn = game.current_node
+
+    if ai_mode == AI_HANDICAP:
+        pda = ai_settings["pda"]
+        if ai_settings["automatic"]:
+            n_handicaps = len(game.root.get_list_property("AB", []))
+            MOVE_VALUE = 14  # could be rules dependent
+            b_stones_advantage = max(n_handicaps - 1, 0) - (cn.komi - MOVE_VALUE / 2) / MOVE_VALUE
+            pda = min(3, max(-3, -b_stones_advantage * (3 / 8)))  # max PDA at 8 stone adv, normal 9 stone game is 8.46
+        handicap_analysis = request_ai_analysis(
+            game, cn, {"playoutDoublingAdvantage": pda, "playoutDoublingAdvantagePla": "BLACK"}
+        )
+        if not handicap_analysis:
+            game.katrain.log(f"Error getting handicap-based move", OUTPUT_ERROR)
+            ai_mode = AI_DEFAULT
+
     while not cn.analysis_ready:
         time.sleep(0.01)
         game.engines[cn.next_player].check_alive(exception_if_dead=True)
@@ -224,6 +269,9 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                 raise ValueError(f"Unknown Policy-based AI mode {ai_mode}")
     else:  # Engine based move
         candidate_ai_moves = cn.candidate_moves
+        if ai_mode == AI_HANDICAP:
+            candidate_ai_moves = handicap_analysis["moveInfos"]
+
         top_cand = Move.from_gtp(candidate_ai_moves[0]["move"], player=cn.next_player)
         if top_cand.is_pass:  # don't play suicidal to balance score - pass when it's best
             aimove = top_cand
@@ -250,11 +298,14 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                 aimove = topmove[2]
                 ai_thoughts += f"ScoreLoss strategy found {len(candidate_ai_moves)} candidate moves (best {top_cand.gtp()}) and chose {aimove.gtp()} (weight {topmove[1]:.3f}, point loss {topmove[0]:.1f}) based on score weights."
             else:
-                if ai_mode != AI_DEFAULT:
+                if ai_mode not in [AI_DEFAULT, AI_HANDICAP]:
                     game.katrain.log(f"Unknown AI mode {ai_mode} or policy missing, using default.", OUTPUT_INFO)
                     ai_thoughts += f"Strategy {ai_mode} not found or unexpected fallback."
                 aimove = top_cand
-                ai_thoughts += f"Default strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move"
+                if ai_mode == AI_HANDICAP:
+                    ai_thoughts += f"Handicap strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move. PDA based score {cn.format_score(handicap_analysis['rootInfo']['scoreLead'])} and win rate {cn.format_winrate(handicap_analysis['rootInfo']['winrate'])}"
+                else:
+                    ai_thoughts += f"Default strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move"
     game.katrain.log(f"AI thoughts: {ai_thoughts}", OUTPUT_DEBUG)
     played_node = game.play(aimove)
     played_node.ai_thoughts = ai_thoughts

@@ -322,12 +322,16 @@ class ConfigAIPopup(QuickConfigGui):
             self.options_grid.add_widget(DescriptionLabel(text=k, size_hint_x=0.25))
             if k in AI_OPTION_VALUES:
                 values = AI_OPTION_VALUES[k]
-                if isinstance(values[0], Tuple):  # with descriptions, possibly language-specific
-                    fixed_values = [(v, re.sub(r"\[(.*?)\]", lambda m: i18n._(m[1]), l)) for v, l in values]
-                else:  # just numbers
-                    fixed_values = [(v, str(v)) for v in values]
-                widget = LabelledSelectionSlider(values=fixed_values, input_property=f"ai/{strategy}/{k}")
-                widget.set_value(v)
+                if values == "bool":
+                    widget = LabelledCheckBox(input_property=f"ai/{strategy}/{k}")
+                    widget.active = v
+                else:
+                    if isinstance(values[0], Tuple):  # with descriptions, possibly language-specific
+                        fixed_values = [(v, re.sub(r"\[(.*?)\]", lambda m: i18n._(m[1]), l)) for v, l in values]
+                    else:  # just numbers
+                        fixed_values = [(v, str(v)) for v in values]
+                    widget = LabelledSelectionSlider(values=fixed_values, input_property=f"ai/{strategy}/{k}")
+                    widget.set_value(v)
                 self.options_grid.add_widget(wrap_anchor(widget))
             else:
                 self.options_grid.add_widget(

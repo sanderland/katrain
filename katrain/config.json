@@ -69,6 +69,10 @@
     },
     "ai": {
         "ai:default": {},
+        "ai:handicap": {
+            "automatic": true,
+            "pda": 0
+        },
         "ai:jigo": {
             "target_score": 0.5
         },
