@@ -22,11 +22,21 @@ but has since grown to include a wide range of features, including:
 
 ## Previews and Youtube Videos
 
-| **Play against an AI Teacher**                                                                       | **Teaching Game Tutorial**                                                                                   |
-|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| ![ screenshot](https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/teaching.gif) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
-| **Analyze your games**                                                                               | **New Features in v1.2**                                                                                     |
-| ![ screenshot](https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.gif) | [![New Features Video](https://i.imgur.com/gCY6hMH.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)        |
+### Play against an AI Teacher
+
+![screenshot](https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/teaching.gif) 
+
+### Analyze your games
+
+![screenshot](https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.gif)
+
+### YouTube videos
+
+| **New Features in v1.2**                                                                              | **Teaching Game Tutorial**                                                                                   |
+|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
+| [![New Features Video](https://i.imgur.com/gCY6hMH.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
+
+
 
 ## Installation
 * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
