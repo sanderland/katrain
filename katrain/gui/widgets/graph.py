@@ -198,9 +198,13 @@ class RankGraph(Graph):
         rank = tuple(rank)
         averagemod_rank = averagemod(rank)
         averagemod_len_legal = averagemod(num_legal)
+#        n_moves = math.floor(0.40220696 + averagemod_len_legal / (1.313341 * (averagemod_rank + 1) - 0.088646986))
+#        # using the calibration curve of p:pick:rank
+#        rank_kyu = (math.log10(n_moves * 361 / num_intersec) - 1.9482) / -0.05737 
         # the averagemod_rank is the outlier free average of the best move from a selection of n_moves with averagemod_len_legal of total legal moves
-        rank_kyu = -0.62842816*math.log(averagemod_rank)/(0.17050253+averagemod_rank*math.exp(-1*(3.373914*(averagemod_len_legal/num_intersec))**2))+13.588577*(averagemod_len_legal/num_intersec)+10.405252*math.log(averagemod_rank)+12.417778*math.exp(-1*(2.5190649*(averagemod_len_legal/num_intersec))**2)-14.579846
-        if rank_kyu<-10:
+        if averagemod_rank>0.4:
+            rank_kyu = -0.62842816*math.log(averagemod_rank)/(0.17050253+averagemod_rank*math.exp(-1*(3.373914*(averagemod_len_legal/num_intersec))**2))+13.588577*(averagemod_len_legal/num_intersec)+10.405252*math.log(averagemod_rank)+12.417778*math.exp(-1*(2.5190649*(averagemod_len_legal/num_intersec))**2)-14.579846
+        else:
             rank_kyu=-10
         return 1 - rank_kyu  # dan rank
 
@@ -231,7 +235,7 @@ class RankGraph(Graph):
         for segment_mid in range(0, len(nodes), dx):
             bounds = (max(0, segment_mid - half_seg), min(segment_mid + half_seg, len(nodes)))
             for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1] + 1], num_intersec).items():
-                if bounds[1]-bounds[0]>self.segment_length * .75:
+                if bounds[1]-bounds[0]>self.segment_length * .75 and bounds[0]<250:
                     ranks[pl].append((segment_mid, rank))
         self.rank_by_player = ranks
         self.redraw_trigger()
