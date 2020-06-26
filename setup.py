@@ -46,8 +46,7 @@ setup(
         "kivy_deps.glew;platform_system=='Windows'",
         "kivy_deps.sdl2;platform_system=='Windows'",
         "kivy_deps.gstreamer;platform_system=='Windows'",
-        "kivy==2.0.0rc2", # rc3 failing on mac
-        "ffpyplayer>=4.3.1",
+        "kivy==2.0.0rc2",  # rc3 failing on mac
         "kivymd>=0.104.1",
         "screeninfo;platform_system!='Darwin'",  # for screen resolution, has problems on macos
     ],

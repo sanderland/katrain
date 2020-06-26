@@ -1,6 +1,6 @@
 VERSION = "1.3.0"
 HOMEPAGE = "https://github.com/sanderland/katrain"
-CONFIG_MIN_VERSION = "1.2.0"  # keep config files from this version
+CONFIG_MIN_VERSION = "1.3.0"  # keep config files from this version
 
 OUTPUT_ERROR = -1
 OUTPUT_KATAGO_STDERR = -0.5
@@ -17,6 +17,7 @@ GAME_TYPES = [PLAYING_NORMAL, PLAYING_TEACHING]
 MODE_PLAY, MODE_ANALYZE = "play", "analyze"
 
 AI_DEFAULT = "ai:default"
+AI_HANDICAP = "ai:handicap"
 AI_SCORELOSS = "ai:scoreloss"
 AI_WEIGHTED = "ai:p:weighted"
 AI_JIGO = "ai:jigo"
@@ -30,13 +31,14 @@ AI_RANK = "ai:p:rank"
 
 AI_CONFIG_DEFAULT = AI_SCORELOSS
 
-AI_STRATEGIES_ENGINE = [AI_DEFAULT, AI_SCORELOSS, AI_JIGO]
+AI_STRATEGIES_ENGINE = [AI_DEFAULT, AI_HANDICAP, AI_SCORELOSS, AI_JIGO]
 AI_STRATEGIES_PICK = [AI_PICK, AI_LOCAL, AI_TENUKI, AI_INFLUENCE, AI_TERRITORY, AI_RANK]
 AI_STRATEGIES_POLICY = [AI_WEIGHTED, AI_POLICY] + AI_STRATEGIES_PICK
 AI_STRATEGIES = AI_STRATEGIES_ENGINE + AI_STRATEGIES_POLICY
 AI_STRATEGIES_RECOMMENDED_ORDER = [
     AI_DEFAULT,
     AI_RANK,
+    AI_HANDICAP,
     AI_SCORELOSS,
     AI_POLICY,
     AI_WEIGHTED,
@@ -48,20 +50,6 @@ AI_STRATEGIES_RECOMMENDED_ORDER = [
     AI_JIGO,
 ]
 
-
-AI_STRENGTH = {  # not used
-    AI_DEFAULT: "9d",
-    AI_POLICY: "4d",
-    AI_JIGO: "?d",
-    AI_SCORELOSS: "5k",
-    AI_WEIGHTED: "5k",
-    AI_PICK: "8k",
-    AI_LOCAL: "5k",
-    AI_TENUKI: "8k",
-    AI_INFLUENCE: "8k",
-    AI_TERRITORY: "5k",
-    AI_RANK: "15k - 3d",
-}
 
 AI_OPTION_VALUES = {
     "kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(15, 0, -1)]
@@ -77,4 +65,6 @@ AI_OPTION_VALUES = {
     "stddev": [x / 2 for x in range(21)],
     "line_weight": range(0, 11),
     "threshold": [2, 2.5, 3, 3.5, 4, 4.5],
+    "automatic": "bool",
+    "pda": [(x / 10, f"{'W' if x<0 else 'B'}+{abs(x/10):.1f}") for x in range(-30, 31)],
 }

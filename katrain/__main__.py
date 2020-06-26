@@ -3,7 +3,8 @@
 import os
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
-os.environ["KIVY_AUDIO"] = "ffpyplayer"  # force working audio
+if "KIVY_AUDIO" not in os.environ:
+    os.environ["KIVY_AUDIO"] = "sdl2"  # seems to be most stable / some players hard crash
 
 # next, icon
 from katrain.core.utils import find_package_resource, PATHS
@@ -161,7 +162,10 @@ class KaTrainGui(Screen, KaTrainBase):
         # update move tree
         self.controls.move_tree.current_node = self.game.current_node
 
-    def update_state(
+    def update_state(self, redraw_board=False):  # redirect to message queue thread
+        self("update_state", redraw_board=redraw_board)
+
+    def _do_update_state(
         self, redraw_board=False
     ):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
@@ -214,7 +218,8 @@ class KaTrainGui(Screen, KaTrainBase):
                     continue
                 fn = getattr(self, f"_do_{msg.replace('-','_')}")
                 fn(*args, **kwargs)
-                self.update_state()
+                if msg != "update_state":
+                    self._do_update_state()
             except Exception as exc:
                 self.log(f"Exception in processing message {msg} {args}: {exc}", OUTPUT_ERROR)
                 traceback.print_exc()
