@@ -661,3 +661,15 @@ msgstr "Re-analyze entire game"
 #. TODO
 msgid "analysis:continuous"
 msgstr "Continuously analyze"
+
+#. TODO
+msgid "ai:handicap"
+msgstr "KataGo Handicap"
+
+#. TODO
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo optimized for playing higher handicap games.The `pda` setting "
+"corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
+"perspective.When `automatic` is set, KaTrain will find a suitable value "
+"automatically."
