@@ -34,9 +34,9 @@ For those who have some python experience as well, you can:
 
 # Contributors 
 
-## Primary author and project maintainer (https://github.com/sanderland/katrain):
+## Primary author and project maintainer:
 
-Sander Land
+[Sander Land](https://github.com/sanderland/)
 
 ## Contributors
 
