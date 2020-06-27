@@ -20,15 +20,22 @@ but has since grown to include a wide range of features, including:
 * Play against a stronger player and use the retry option instead of handicap stones.
 * Automatically generate focused SGF reviews which show your biggest mistakes.
 
-## Animated Screenshots
+## Previews and Youtube Videos
 
 ### Play against an AI Teacher
 
-![screenshot](screenshots/teaching.gif) 
+![screenshot](https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/teaching.gif) 
 
 ### Analyze your games
 
-![screenshot](screenshots/analysis.gif)
+![screenshot](https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.gif)
+
+### YouTube videos
+
+| **New Features in v1.2**                                                                              | **Teaching Game Tutorial**                                                                                   |
+|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
+| [![New Features Video](https://i.imgur.com/gCY6hMH.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
+
 
 
 ## Installation
