@@ -140,7 +140,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
-[![Contributors](https://img.shields.io/static/v1?label=contributors&message=12&color=dcb424)](CONTRIBUTORS)
+[![Contributors](https://img.shields.io/static/v1?label=contributors&message=15&color=dcb424)](CONTRIBUTIONS.md)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
 [![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 
