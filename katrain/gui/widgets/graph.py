@@ -163,11 +163,13 @@ def averagemod(data):
         (int(lendata * 0.8) + 1) - int(lendata * 0.2)
     )  # average without the best and worst 20% of ranks
 
+def gauss(data):
+    return math.exp(-1*(data)**2)
 
 class RankGraph(Graph):
     black_rank_points = ListProperty([])
     white_rank_points = ListProperty([])
-    segment_length = NumericProperty(60)
+    segment_length = NumericProperty(80)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -191,12 +193,16 @@ class RankGraph(Graph):
         if not non_obvious_moves:
             return None
         num_legal, rank, value = zip(*non_obvious_moves)
-        averagemod_rank = averagemod(rank)
+        rank = list(rank)
+        for (i, item) in enumerate(rank):
+            if item > num_legal[i]*0.09:
+                rank[i] = num_legal[i]*0.09
+        rank = tuple(rank)
+        averagemod_rank = averagemod(rank)+1
         averagemod_len_legal = averagemod(num_legal)
-        # the averagemod_rank is the outlier free average of the best move from a selection of n_moves with averagemod_len_legal of total legal moves
-        n_moves = math.floor(0.40220696 + averagemod_len_legal / (1.313341 * (averagemod_rank + 1) - 0.088646986))
-        # using the calibration curve of p:pick:rank
-        rank_kyu = (math.log10(n_moves * 361 / num_intersec) - 1.9482) / -0.05737
+        norm_avemod_len_legal = (averagemod_len_legal/num_intersec)
+        rank_kyu = -0.6284*math.log(averagemod_rank)/(0.1705+averagemod_rank*gauss(3.374*(norm_avemod_len_legal)))+13.59*(norm_avemod_len_legal)+10.41*math.log(averagemod_rank)+12.42*gauss(2.519*(norm_avemod_len_legal))-14.58
+
         return 1 - rank_kyu  # dan rank
 
     @staticmethod
@@ -226,7 +232,8 @@ class RankGraph(Graph):
         for segment_mid in range(0, len(nodes), dx):
             bounds = (max(0, segment_mid - half_seg), min(segment_mid + half_seg, len(nodes)))
             for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1] + 1], num_intersec).items():
-                ranks[pl].append((segment_mid, rank))
+                if bounds[1] - bounds[0] > self.segment_length * 0.75:
+                    ranks[pl].append((segment_mid, rank))
         self.rank_by_player = ranks
         self.redraw_trigger()
 
