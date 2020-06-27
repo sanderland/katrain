@@ -23,7 +23,7 @@ msgid "menu:settings"
 msgstr "Conf General y Motores"
 
 msgid "menu:clocksettings"
-msgstr "Conf de Reloj"
+msgstr "Conf Reloj"
 
 msgid "menu:teachsettings"
 msgstr "Conf Juego Enseñanza"
@@ -93,10 +93,10 @@ msgid "analysis:extra"
 msgstr "Profundizar Análisis"
 
 msgid "analysis:equalize"
-msgstr "Igualar visitas de potenciales movimientos"
+msgstr "Igualar visitas potenciales movimientos"
 
 msgid "analysis:sweep"
-msgstr "Análisis rápido de todos los movimientos."
+msgstr "Análisis rápido todos los movimientos"
 
 msgid "analysis:aimove"
 msgstr "Forzar jugada IA"
@@ -297,7 +297,7 @@ msgstr ""
 
 #. hints on new game
 msgid "non square board hint"
-msgstr "Usa x:y (e.g. 19:9) para tableros no cuadrados"
+msgstr "Usa x:y (i.e. 19:9) para tableros no cuadrados"
 
 #. submit new game
 msgid "new game"
@@ -305,16 +305,16 @@ msgstr "Empezar Nuevo Juego"
 
 # teacher settings from here
 msgid "teacher settings"
-msgstr "Editar Conf de Profesor"
+msgstr "Editar Conf Enseñanza"
 
 msgid "point loss threshold"
-msgstr "Pérdidas de puntaje mayores a"
+msgstr "Pérdida de puntaje mayor a"
 
 msgid "num undos"
 msgstr "Número de jugadas desechas"
 
 msgid "dot color"
-msgstr "Color (corregido)"
+msgstr "Color"
 
 msgid "show dots"
 msgstr "Mostrar Puntos"
@@ -339,7 +339,7 @@ msgstr ""
 
 #. submit button
 msgid "update teacher"
-msgstr "Actualizar conf de retroalimentación"
+msgstr "Actualizar conf"
 
 # main config settings
 msgid "restarting engine"
@@ -469,7 +469,7 @@ msgid "aihelp:default"
 msgstr ""
 "Fuerza máxima de KataGo IA. La fuerza es afectada por el número `máximo "
 "visitas` y `modelo` en conf general del `motor` y el archivo de conf  del "
-"motor. No hay opciones  disponibles acá."
+"motor. No hay opciones disponibles acá."
 
 msgid "ai:jigo"
 msgstr "KataJigo"
@@ -479,12 +479,12 @@ msgstr ""
 "Trata de ganar por una cantidad de puntos (default 0.5), sin  restriciones."
 
 msgid "ai:scoreloss"
-msgstr "Perdia de puntos"
+msgstr "Perdida de puntos"
 
 msgid "aihelp:scoreloss"
 msgstr ""
-"Jugadas que conllevan a mayor pérdida de puntos con una menor probabilidad. "
-"Probablemente lleva a jugada mas variadasçdebiles con un mayor número de "
+"Las jugadas que conllevan a mayor pérdida de puntos se juegan con una menor "
+"probabilidad. Probablemente juega mas variado/débil con un mayor número de "
 "visitas."
 
 msgid "ai:policy"
@@ -492,9 +492,9 @@ msgstr "Jugadas intuitivas"
 
 msgid "aihelp:policy"
 msgstr ""
-"Juega la jugada que se considera la más intuivida sin leer. La fuerza esta "
-"dada por el `model` en la conf del motor. El parámetro  opening_moves afecta"
-" cuantas jugadas en la apertura son al azar."
+"Juega la jugada que se considera la más intuitvda sin leer. La fuerza esta "
+"dada por el `model` en la conf del motor. El parámetro `opening_moves` "
+"afecta cuantas jugadas en la apertura son al azar."
 
 msgid "ai:p:weighted"
 msgstr "Parcial"
@@ -512,10 +512,10 @@ msgstr "Politica Ciega"
 
 msgid "aihelp:p:pick"
 msgstr ""
-"Escoge `pick_n + pick_frac * <#jugadas legales>` al azar y juega la "
-"mejor.For `pick_frac=1` juega como la politica intuitia del IA. Juega la "
-"mejor jugada si la probabilidad de la politica es por encima de "
-"`pick_override`. Esto con el fin de prevenir errores obvios."
+"Escoge `pick_n + pick_frac * <#jugadas legales>` al azar y juega la mejor.El"
+" `pick_frac=1` juega como la politica intuitiva del IA. Juega la mejor "
+"jugada si la probabilidad del IA es por encima de `pick_override`. Esto con "
+"el fin de prevenir errores obvios."
 
 msgid "ai:p:local"
 msgstr "Estilo Local"
@@ -557,9 +557,9 @@ msgstr ""
 
 msgid "aihelp:p:rank"
 msgstr ""
-"Seleciona jugadas al azar de una limitada selección y juega la "
-"mejorConfiguraciones más fuertes amplia su selección y juega la mejor "
-"jugada. Como no hay 0 kyu/dan, 3 dan = -2 kyu."
+"Seleciona jugadas al azar de una limitada selección y juega la mejor. "
+"Configuraciones más fuertes toma la mejor jugada de una selección más amplia"
+" de jugadas. Como no hay 0 kyu/dan, 3 dan = -2 kyu."
 
 msgid "Kata model not found"
 msgstr "El modelo KataGo {model} no existe, revisar conf general."
@@ -595,33 +595,26 @@ msgstr ""
 msgid "extra analysis"
 msgstr "Realizar análisis adicional a {visits} visitas"
 
-#. TODO
 msgid "models available"
-msgstr "{num} available model(s) found"
+msgstr "{num} de modelo(s) disponibles"
 
-#. TODO
 msgid "download models button"
-msgstr "Download Models"
+msgstr "Descargar Modelos"
 
-#. TODO
 msgid "All models downloaded"
-msgstr "All available models already downloaded"
+msgstr "Todos los modelos fueron descargados"
 
-#. TODO
 msgid "tab:rank_est"
-msgstr "Rank Estimate"
+msgstr "Estimación fuerza"
 
-#. TODO
 msgid "game re-analysis"
-msgstr "Re-analyzing entire game using {visits} visits"
+msgstr "Re-analizar juego usando {visits} visitas"
 
-#. TODO
 msgid "analysis:game"
-msgstr "Re-analyze entire game"
+msgstr "Re-analizar juego"
 
-#. TODO
 msgid "analysis:continuous"
-msgstr "Continuously analyze"
+msgstr "Analizar continuamente "
 
 #. TODO
 msgid "ai:handicap"
