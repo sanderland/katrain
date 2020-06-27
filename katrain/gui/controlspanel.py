@@ -6,7 +6,7 @@ from kivy.properties import ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.constants import MODE_PLAY, MODE_ANALYZE
+from katrain.core.constants import MODE_PLAY, MODE_ANALYZE, STATUS_ERROR, STATUS_ANALYSIS
 from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
 
 
@@ -66,8 +66,7 @@ class ControlsPanel(BoxLayout):
 
     def __init__(self, **kwargs):
         super(ControlsPanel, self).__init__(**kwargs)
-        self.status_msg = None
-        self.status_node = None
+        self.status_state = (None, -1e9, None)
         self.active_comment_node = None
         self.last_timer_update = (None, 0, False)
         self.beep = SoundLoader.load("beep.wav")
@@ -81,24 +80,28 @@ class ControlsPanel(BoxLayout):
             self.players[bw].player_type = player_info.player_type
             self.players[bw].player_subtype = player_info.player_subtype
 
-    def set_status(self, msg, at_node=None):
-        self.status_msg = msg
-        self.status_node = at_node or self.katrain and self.katrain.game and self.katrain.game.current_node
-        self.status.text = msg
-        self.update_evaluation()
+    def set_status(self, msg, status_type, at_node=None):
+        at_node = at_node or self.katrain and self.katrain.game and self.katrain.game.current_node
+        if at_node != self.status_state[2] or int(status_type) >= int(self.status_state[1]):
+            self.status_state = (msg, status_type, at_node)
+            self.status.text = msg
+            Clock.schedule_once(self.update_evaluation,0)
 
     # handles showing completed analysis and score graph
-    def update_evaluation(self):
+    def update_evaluation(self,*_args):
         katrain = self.katrain
         game = katrain and katrain.game
         if not game:
             return
         current_node, move = game.current_node, game.current_node.move
-        if game.current_node is not self.status_node and not (
-            self.status is not None and self.status_node is None and game.current_node.is_root
-        ):  # startup errors on root
+        if (
+            game.current_node is not self.status_state[2]
+            and not (self.status_state[1] == STATUS_ERROR and self.status_state[2] is None)
+        ) or (
+            len(game.engines["B"].queries)==0 and self.status_state[1] == STATUS_ANALYSIS
+        ):  # clear status if node changes, except startup errors on root. also clear analysis message when no queries
             self.status.text = ""
-            self.status_node = None
+            self.status_state = (None, -1e9, None)
 
         last_player_was_ai_playing_human = katrain.last_player_info.ai and katrain.next_player_info.human
         both_players_are_robots = katrain.last_player_info.ai and katrain.next_player_info.ai

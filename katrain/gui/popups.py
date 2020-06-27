@@ -22,7 +22,7 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
-    AI_OPTION_VALUES,
+    AI_OPTION_VALUES, STATUS_INFO,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n
@@ -432,7 +432,7 @@ class ConfigPopup(QuickConfigGui):
 
             def restart_engine(_dt):
                 self.katrain.log(f"Restarting Engine after {detected_restart} settings change")
-                self.katrain.controls.set_status(i18n._("restarting engine"))
+                self.katrain.controls.set_status(i18n._("restarting engine"),STATUS_INFO)
 
                 old_engine = self.katrain.engine  # type: KataGoEngine
                 old_proc = old_engine.katago_process

@@ -59,6 +59,8 @@ from katrain.core.constants import (
     MODE_ANALYZE,
     HOMEPAGE,
     VERSION,
+    STATUS_ERROR,
+    STATUS_INFO,
 )
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
 from katrain.core.base_katrain import KaTrainBase
@@ -100,16 +102,18 @@ class KaTrainGui(Screen, KaTrainBase):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
             if "starting" in message.lower():
-                self.controls.set_status(f"KataGo engine starting...")
+                self.controls.set_status(f"KataGo engine starting...", STATUS_INFO)
             if message.startswith("Tuning"):
-                self.controls.set_status(f"KataGo is tuning settings for first startup, please wait." + message)
+                self.controls.set_status(
+                    f"KataGo is tuning settings for first startup, please wait." + message, STATUS_INFO
+                )
                 return
             if "ready" in message.lower():
-                self.controls.set_status(f"KataGo engine ready.")
+                self.controls.set_status(f"KataGo engine ready.", STATUS_INFO)
         if (level == OUTPUT_ERROR or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower())) and getattr(
             self, "controls", None
         ):
-            self.controls.set_status(f"ERROR: {message}")
+            self.controls.set_status(f"ERROR: {message}", STATUS_ERROR)
 
     @property
     def play_analyze_mode(self):
@@ -276,7 +280,7 @@ class KaTrainGui(Screen, KaTrainBase):
         try:
             self.game.play(Move(coords, player=self.next_player_info.player))
         except IllegalMoveException as e:
-            self.controls.set_status(f"Illegal Move: {str(e)}")
+            self.controls.set_status(f"Illegal Move: {str(e)}",STATUS_ERROR)
 
     def _do_analyze_extra(self, mode, **kwargs):
         self.game.analyze_extra(mode, **kwargs)
@@ -367,7 +371,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()
         if not clipboard:
-            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.")
+            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.",STATUS_ERROR)
             return
         try:
             move_tree = KaTrainSGF.parse(clipboard)
@@ -459,7 +463,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self("output-sgf")
         elif keycode[1] == "c" and "ctrl" in modifiers:
             Clipboard.copy(self.game.root.sgf())
-            self.controls.set_status(i18n._("Copied SGF to clipboard."))
+            self.controls.set_status(i18n._("Copied SGF to clipboard."),STATUS_INFO)
         elif keycode[1] == "v" and "ctrl" in modifiers:
             self.load_sgf_from_clipboard()
         elif keycode[1] in shortcuts.keys() and "ctrl" not in modifiers:

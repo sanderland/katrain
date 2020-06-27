@@ -6,6 +6,8 @@
 #:import PLAYER_AI    katrain.core.constants.PLAYER_AI
 #:import MODE_PLAY katrain.core.constants.MODE_PLAY
 #:import MODE_ANALYZE katrain.core.constants.MODE_ANALYZE
+#:import STATUS_INFO katrain.core.constants.STATUS_INFO
+
 
 #:import WHITE katrain.gui.style.WHITE
 #:import BLACK katrain.gui.style.BLACK
@@ -253,7 +255,7 @@
             Line:
                 circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.width/6
                 width: 1
-        on_press: app.gui.controls.set_status(i18n._('ai-ponder'))
+        on_press: app.gui.controls.set_status(i18n._('ai-ponder'),STATUS_INFO)
 
 
 <HamburgerButton@TransparentIconButton>:

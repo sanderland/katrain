@@ -5,7 +5,9 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 
-from katrain.core.constants import HOMEPAGE, OUTPUT_DEBUG, OUTPUT_INFO
+from kivy.clock import Clock
+
+from katrain.core.constants import HOMEPAGE, OUTPUT_DEBUG, OUTPUT_INFO, STATUS_ANALYSIS, STATUS_INFO, STATUS_TEACHING
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
@@ -322,13 +324,15 @@ class Game:
         cn = self.current_node
 
         engine = self.engines[cn.next_player]
+        Clock.schedule_once(self.katrain.analysis_controls.hints.activate,0)
+
         if mode == "extra":
             if kwargs.get("continuous", False):
                 visits = max(engine.config["fast_visits"], math.ceil(cn.analysis_visits_requested * 1.25))
             else:
                 visits = cn.analysis_visits_requested + engine.config["fast_visits"]
 
-            self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits))
+            self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
             cn.analyze(engine, visits=visits, priority=-1_000, time_limit=False)
             return
         if mode == "game":
@@ -337,7 +341,7 @@ class Game:
             visits = min_visits + engine.config["max_visits"]
             for node in nodes:
                 node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False)
-            self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits))
+            self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)
             return
 
         elif mode == "sweep":
@@ -365,16 +369,16 @@ class Game:
                     if (x, y) not in stones
                 ]
             visits = engine.config["fast_visits"]
-            self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits))
+            self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits), STATUS_ANALYSIS)
             priority = -1_000_000_000
         elif mode == "equalize":
             if not cn.analysis_ready:
-                self.katrain.controls.set_status(i18n._("wait-before-equalize"), self.current_node)
+                self.katrain.controls.set_status(i18n._("wait-before-equalize"), STATUS_INFO, self.current_node)
                 return
 
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
             visits = max(d["visits"] for d in cn.analysis["moves"].values())
-            self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits))
+            self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits), STATUS_ANALYSIS)
             priority = -1_000
         else:
             raise ValueError("Invalid analysis mode")
@@ -406,6 +410,6 @@ class Game:
         if undo:
             self.undo(1)
             self.katrain.controls.set_status(
-                i18n._("teaching undo message").format(move=move.gtp(), points_lost=points_lost)
+                i18n._("teaching undo message").format(move=move.gtp(), points_lost=points_lost), STATUS_TEACHING
             )
             self.katrain.update_state()
