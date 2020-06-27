@@ -1,5 +1,4 @@
-
-# <a name="manual"></a> KaTrain v1.2
+# <a name="manual"></a> KaTrain
 
 [![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
 [![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
@@ -8,6 +7,19 @@
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
+
+
+* [Introduction](#intro)
+* [Previews and YouTube tutorials](#preview)
+* [Installation](#install)
+* [Manual](#ai)
+    * [Play against AI](#ai)
+    * [Analyzing your Games](#analysis)
+    * [Keyboard shortcuts](#keyboard)
+* [FAQ and Troubleshooting](#faq)
+* [Contributing](#support)
+
+## <a name="intro"></a> Introduction
 
 KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
 
@@ -20,7 +32,7 @@ but has since grown to include a wide range of features, including:
 * Play against a stronger player and use the retry option instead of handicap stones.
 * Automatically generate focused SGF reviews which show your biggest mistakes.
 
-## Previews and Youtube Videos
+## <a name="preview"></a>  Previews and Youtube Videos
 
 ### Play against an AI Teacher
 
@@ -36,16 +48,14 @@ but has since grown to include a wide range of features, including:
 |:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
 | [![New Features Video](https://i.imgur.com/gCY6hMH.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
 
-
-
-## Installation
+## <a name="install"></a> Installation
 * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
     * Note that on MacOS you will need to set up KataGo using brew, as described [here](INSTALL.md).
 * See [here](INSTALL.md#MacPrereq) for detailed instructions for running from source files on Window, Linux and MacOS,
   as well as setting up KataGo to use multiple GPUs.
 
-## Play against AI
+## <a name="ai"></a> Play against AI
 
 * Select the players in the main menu, or under 'New Game'.
 * In a teaching game, KaTrain will analyze your moves and automatically undo those that are sufficiently bad.
@@ -88,7 +98,7 @@ The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the mode
 
 Further technical details and discussion on these AIs can be found on [this](https://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
 
-## Analysis
+## <a name="analysis"></a> Analysis
 
 Keyboard shortcuts are shown with **[key]**.
 
@@ -114,7 +124,7 @@ Keyboard shortcuts are shown with **[key]**.
     * **[spacebar]**: Turn continuous analysis on/off. 
     * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
 
-## Keyboard and mouse shortcuts
+## <a name="keyboard"></a> Keyboard and mouse shortcuts
 
 In addition to shortcuts mentioned above and those shown in the main menu:
 
@@ -132,7 +142,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[Ctrl-V]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
 * **[Ctrl-C]**: Save SGF to clipboard.
 
-## FAQ
+## <a name="faq"></a FAQ
 
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
