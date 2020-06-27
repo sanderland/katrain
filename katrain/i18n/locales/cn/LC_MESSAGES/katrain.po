@@ -557,35 +557,36 @@ msgid "Starting Kata failed"
 msgstr ""
 "用'{command}'命令启动katago出错 {error}. 请确认引擎设置里'katago'的值指向了 正确的KataGo运行文件."
 
-#. TODO
+#. TODO - shown on on the model select dropdown
 msgid "models available"
 msgstr "{num} available model(s) found"
 
-#. TODO
+#. TODO - button in general settings for downloading models
 msgid "download models button"
 msgstr "Download Models"
 
-#. TODO
+#. TODO - error message on trying to download models when already done
 msgid "All models downloaded"
 msgstr "All available models already downloaded"
 
-#. TODO
+#. TODO - shown on a graph tab
 msgid "tab:rank_est"
 msgstr "Rank Estimate"
 
-#. TODO
+#. TODO - status message
 msgid "game re-analysis"
 msgstr "Re-analyzing entire game using {visits} visits"
 
-#. TODO
+#. TODO - Analyze every node in the game more deeply
 msgid "analysis:game"
 msgstr "Re-analyze entire game"
 
-#. TODO
+#. TODO - Keep improving current position analysis when there is nothing else
+#. to do
 msgid "analysis:continuous"
 msgstr "Continuously analyze"
 
-#. TODO
+#. TODO - ai which handles handicap games better
 msgid "ai:handicap"
 msgstr "KataGo Handicap"
 
@@ -594,5 +595,5 @@ msgid "aihelp:handicap"
 msgstr ""
 "KataGo optimized for playing higher handicap games.The `pda` setting "
 "corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
-"perspective.When `automatic` is set, KaTrain will find a suitable value "
+"perspective. When `automatic` is set, KaTrain will find a suitable value "
 "automatically."
