@@ -163,8 +163,10 @@ def averagemod(data):
         (int(lendata * 0.8) + 1) - int(lendata * 0.2)
     )  # average without the best and worst 20% of ranks
 
+
 def gauss(data):
-    return math.exp(-1*(data)**2)
+    return math.exp(-1 * (data) ** 2)
+
 
 class RankGraph(Graph):
     black_rank_points = ListProperty([])
@@ -195,15 +197,21 @@ class RankGraph(Graph):
         num_legal, rank, value = zip(*non_obvious_moves)
         rank = list(rank)
         for (i, item) in enumerate(rank):
-            if item > num_legal[i]*0.09:
-                rank[i] = num_legal[i]*0.09
+            if item > num_legal[i] * 0.09:
+                rank[i] = num_legal[i] * 0.09
         rank = tuple(rank)
         averagemod_rank = averagemod(rank)
         averagemod_len_legal = averagemod(num_legal)
-        norm_avemod_len_legal = (averagemod_len_legal/num_intersec)
-        rank_kyu = -0.97222*math.log(averagemod_rank)/(0.24634+averagemod_rank*gauss(3.3208*(norm_avemod_len_legal)))+12.703*(norm_avemod_len_legal)+11.198*math.log(averagemod_rank)+12.28*gauss(2.379*(norm_avemod_len_legal))-16.544
-        if rank_kyu<-5:
-            rank_kyu=-5
+        norm_avemod_len_legal = averagemod_len_legal / num_intersec
+        rank_kyu = (
+            -0.97222 * math.log(averagemod_rank) / (0.24634 + averagemod_rank * gauss(3.3208 * (norm_avemod_len_legal)))
+            + 12.703 * (norm_avemod_len_legal)
+            + 11.198 * math.log(averagemod_rank)
+            + 12.28 * gauss(2.379 * (norm_avemod_len_legal))
+            - 16.544
+        )
+        if rank_kyu < -4:
+            rank_kyu = -4
         return 1 - rank_kyu  # dan rank
 
     @staticmethod
