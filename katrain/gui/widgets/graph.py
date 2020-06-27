@@ -203,13 +203,18 @@ class RankGraph(Graph):
         averagemod_rank = averagemod(rank)
         averagemod_len_legal = averagemod(num_legal)
         norm_avemod_len_legal = averagemod_len_legal / num_intersec
-        rank_kyu = (
-            -0.97222 * math.log(averagemod_rank) / (0.24634 + averagemod_rank * gauss(3.3208 * (norm_avemod_len_legal)))
-            + 12.703 * (norm_avemod_len_legal)
-            + 11.198 * math.log(averagemod_rank)
-            + 12.28 * gauss(2.379 * (norm_avemod_len_legal))
-            - 16.544
-        )
+        if averagemod_rank > 0.1:
+            rank_kyu = (
+                -0.97222
+                * math.log(averagemod_rank)
+                / (0.24634 + averagemod_rank * gauss(3.3208 * (norm_avemod_len_legal)))
+                + 12.703 * (norm_avemod_len_legal)
+                + 11.198 * math.log(averagemod_rank)
+                + 12.28 * gauss(2.379 * (norm_avemod_len_legal))
+                - 16.544
+            )
+        else:
+            rank_kyu = -4
         if rank_kyu < -4:
             rank_kyu = -4
         return 1 - rank_kyu  # dan rank
