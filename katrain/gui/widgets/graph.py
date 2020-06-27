@@ -198,11 +198,12 @@ class RankGraph(Graph):
             if item > num_legal[i]*0.09:
                 rank[i] = num_legal[i]*0.09
         rank = tuple(rank)
-        averagemod_rank = averagemod(rank)+1
+        averagemod_rank = averagemod(rank)
         averagemod_len_legal = averagemod(num_legal)
         norm_avemod_len_legal = (averagemod_len_legal/num_intersec)
-        rank_kyu = -0.6284*math.log(averagemod_rank)/(0.1705+averagemod_rank*gauss(3.374*(norm_avemod_len_legal)))+13.59*(norm_avemod_len_legal)+10.41*math.log(averagemod_rank)+12.42*gauss(2.519*(norm_avemod_len_legal))-14.58
-
+        rank_kyu = -0.97222*math.log(averagemod_rank)/(0.24634+averagemod_rank*gauss(3.3208*(norm_avemod_len_legal)))+12.703*(norm_avemod_len_legal)+11.198*math.log(averagemod_rank)+12.28*gauss(2.379*(norm_avemod_len_legal))-16.544
+        if rank_kyu<-5:
+            rank_kyu=-5
         return 1 - rank_kyu  # dan rank
 
     @staticmethod
