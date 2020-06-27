@@ -36,7 +36,7 @@ For those who have some python experience as well, you can:
 
 ## Primary author and project maintainer:
 
-[Sander Land]((https://github.com/sanderland/)
+[Sander Land](https://github.com/sanderland/)
 
 ## Contributors
 
