@@ -616,7 +616,7 @@ msgstr "Re-analizar juego"
 msgid "analysis:continuous"
 msgstr "Analizar continuamente "
 
-#. TODO
+#. TODO - ai which handles handicap games better
 msgid "ai:handicap"
 msgstr "KataGo Handicap"
 
@@ -625,5 +625,5 @@ msgid "aihelp:handicap"
 msgstr ""
 "KataGo optimized for playing higher handicap games.The `pda` setting "
 "corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
-"perspective.When `automatic` is set, KaTrain will find a suitable value "
+"perspective. When `automatic` is set, KaTrain will find a suitable value "
 "automatically."

@@ -98,12 +98,11 @@ msgstr "Equalize visits of potential moves"
 msgid "analysis:sweep"
 msgstr "Fast analysis of all moves"
 
-msgid "analysis:sweep"
-msgstr "Fast analysis of all moves"
-
+#. Analyze every node in the game more deeply
 msgid "analysis:game"
 msgstr "Re-analyze entire game"
 
+#. Keep improving current position analysis when there is nothing else to do
 msgid "analysis:continuous"
 msgstr "Continuously analyze"
 
@@ -152,6 +151,7 @@ msgstr "Score"
 msgid "tab:winrate"
 msgstr "Win Rate"
 
+#. shown on a graph tab
 msgid "tab:rank_est"
 msgstr "Rank Estimate"
 
@@ -518,6 +518,7 @@ msgstr ""
 "in the general settings `engine` section and engine configuration file. No "
 "options are available here."
 
+#. ai which handles handicap games better
 msgid "ai:handicap"
 msgstr "KataGo Handicap"
 
@@ -619,11 +620,14 @@ msgstr ""
 "one. Stronger settings select the best move from a larger selection. Since "
 "there is no 0 kyu/dan, 3 dan = -2 kyu."
 
+#. button in general settings for downloading models
 msgid "download models button"
 msgstr "Download Models"
 
+#. shown on on the model select dropdown
 msgid "models available"
 msgstr "{num} available model(s) found"
 
+#. error message on trying to download models when already done
 msgid "All models downloaded"
 msgstr "All available models already downloaded"
