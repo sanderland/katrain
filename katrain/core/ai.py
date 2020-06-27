@@ -188,43 +188,10 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                 if ai_mode != AI_RANK:
                     n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])
                 else:
-                    n_moves = int(
-                        round(
-                            board_squares
-                            / 361
-                            * len(legal_policy_moves)
-                            / (
-                                1.311648546930214
-                                * (
-                                    (
-                                        0.31164467
-                                        + 0.55726218
-                                        * (len(legal_policy_moves) / board_squares)
-                                        * math.exp(
-                                            -1
-                                            * (
-                                                3.0308747
-                                                * (len(legal_policy_moves) / board_squares)
-                                                * (len(legal_policy_moves) / board_squares)
-                                                - (len(legal_policy_moves) / board_squares)
-                                                - 0.045792218 * ai_settings["kyu_rank"]
-                                                - 0.31164467
-                                            )
-                                            ** 2
-                                        )
-                                        - 0.0064860256 * ai_settings["kyu_rank"]
-                                    )
-                                    * (
-                                        0.0630149
-                                        + 0.762399
-                                        * board_squares
-                                        / (10 ** (-0.05737 * ai_settings["kyu_rank"] + 1.9482))
-                                    )
-                                )
-                                - 0.08265346672884874
-                            )
-                        )
-                    )
+                    orig_calib_avemodrank = 0.063015 + 0.7624 * board_squares/(10**(-0.05737*ai_settings["kyu_rank"]+1.9482))
+                    norm_leg_moves = len(legal_policy_moves) / board_squares
+                    modified_calib_avemodrank = (0.3931+0.6559*norm_leg_moves*math.exp(-1*(3.002*norm_leg_moves*norm_leg_moves-norm_leg_moves-0.034889*ai_settings["kyu_rank"]-0.5097)**2)-0.01093*ai_settings["kyu_rank"]) * orig_calib_avemodrank
+                    n_moves = int(round(board_squares * norm_leg_moves/(1.31165*(modified_calib_avemodrank+1)-0.082653)))
 
                 if ai_mode in [AI_INFLUENCE, AI_TERRITORY, AI_LOCAL, AI_TENUKI]:
                     if cn.depth > ai_settings["endgame"] * board_squares:
