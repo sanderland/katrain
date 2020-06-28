@@ -34,7 +34,7 @@ for lang in locales:
             print("duplicate", entry.msgid, "in", lang)
             errors = True
         lang_to_strings[lang].add(entry.msgid)
-    if todos[lang] and any('todo' in a for a in sys.argv):
+    if todos[lang] and any("todo" in a for a in sys.argv):
         print(f"========== {lang} has {len(todos[lang])} TODO entries ========== ")
         for item in todos[lang]:
             print(item)
@@ -73,15 +73,26 @@ for lang in locales:
             errors = True
 
     for msgid, lang_entries in strings_to_langs.items():
-        if lang in lang_entries and 'TODO' in lang_entries[lang].comment:
-            if any(e.msgstr==lang_entries[lang].msgstr for l,e in lang_entries.items() if l!=lang):
-                todo_comment =  f"TODO - {lang_entries[DEFAULT_LANG].comment}" if lang_entries[DEFAULT_LANG].comment else 'TODO' # update todo
-                if lang_entries[lang].msgstr != lang_entries[DEFAULT_LANG].msgstr or lang_entries[lang].comment.replace('\n',' ')!=todo_comment:
-                    print([lang_entries[lang].msgstr, lang_entries[DEFAULT_LANG].msgstr, lang_entries[lang].comment, todo_comment])
-                    lang_entries[lang].msgstr = lang_entries[DEFAULT_LANG].msgstr # update
-                    lang_entries[lang].comment =todo_comment
+        if lang in lang_entries and "TODO" in lang_entries[lang].comment:
+            if any(e.msgstr == lang_entries[lang].msgstr for l, e in lang_entries.items() if l != lang):
+                todo_comment = (
+                    f"TODO - {lang_entries[DEFAULT_LANG].comment}" if lang_entries[DEFAULT_LANG].comment else "TODO"
+                )  # update todo
+                if (
+                    lang_entries[lang].msgstr != lang_entries[DEFAULT_LANG].msgstr
+                    or lang_entries[lang].comment.replace("\n", " ") != todo_comment
+                ):
+                    print(
+                        [
+                            lang_entries[lang].msgstr,
+                            lang_entries[DEFAULT_LANG].msgstr,
+                            lang_entries[lang].comment,
+                            todo_comment,
+                        ]
+                    )
+                    lang_entries[lang].msgstr = lang_entries[DEFAULT_LANG].msgstr  # update
+                    lang_entries[lang].comment = todo_comment
                     print(f"{lang}/{msgid} todo entry updated")
-
 
     po[lang].save(pofile[lang])
     mofile = pofile[lang].replace(".po", ".mo")

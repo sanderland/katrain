@@ -99,8 +99,13 @@ def test_ogs():
 def test_gibo():
     file = os.path.join(os.path.dirname(__file__), "data/test.gib")
     root = SGF.parse_file(file)
-    assert {'PW': ['wildsim1'], 'WR': ['2D'], 'PB': ['kim'], 'BR': ['2D'], 'RE': ['W+T'], 'KM': [6.5], 'DT': ['2020-06-14']} == root.properties
+    assert {
+        "PW": ["wildsim1"],
+        "WR": ["2D"],
+        "PB": ["kim"],
+        "BR": ["2D"],
+        "RE": ["W+T"],
+        "KM": [6.5],
+        "DT": ["2020-06-14"],
+    } == root.properties
     assert "pp" == root.children[0].get_property("B")
-
-
-

@@ -22,21 +22,23 @@ from katrain.core.constants import (
     AI_PICK,
     AI_RANK,
     AI_HANDICAP,
-    OUTPUT_ERROR, AI_STRENGTH,
+    OUTPUT_ERROR,
+    AI_STRENGTH,
 )
 from katrain.core.game import Game, GameNode, Move
 
 
-def ai_rank_estimation(strategy,settings) -> Tuple[int,bool]:
-    if strategy in [AI_DEFAULT,AI_HANDICAP,AI_JIGO]:
+def ai_rank_estimation(strategy, settings) -> Tuple[int, bool]:
+    if strategy in [AI_DEFAULT, AI_HANDICAP, AI_JIGO]:
         return 9, True
     if strategy == AI_RANK:
-        return 1-settings['kyu_rank'], True
+        return 1 - settings["kyu_rank"], True
     if strategy == AI_WEIGHTED:
         dan_rank = -4
         return dan_rank, True
     else:
         return AI_STRENGTH[strategy], False
+
 
 def weighted_selection_without_replacement(items: List[Tuple], pick_n: int) -> List[Tuple]:
     """For a list of tuples where the second element is a weight, returns random items with those weights, without replacement."""
@@ -270,7 +272,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             candidate_ai_moves = handicap_analysis["moveInfos"]
 
         top_cand = Move.from_gtp(candidate_ai_moves[0]["move"], player=cn.next_player)
-        if top_cand.is_pass and not  ai_mode not in [AI_DEFAULT, AI_HANDICAP]:  # don't play suicidal to balance score
+        if top_cand.is_pass and not ai_mode not in [AI_DEFAULT, AI_HANDICAP]:  # don't play suicidal to balance score
             aimove = top_cand
             ai_thoughts += f"Top move is pass, so passing regardless of strategy. "
         else:

@@ -7,9 +7,11 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
+from kivy.metrics import dp
 from kivy.properties import ListProperty, ObjectProperty, BooleanProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.widget import Widget
+from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
@@ -18,6 +20,7 @@ from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, var_to_grid
 from katrain.gui.kivyutils import draw_circle, draw_text, BackgroundMixin
+from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
 from katrain.gui.style import *
 
 
@@ -467,7 +470,11 @@ class BadukPanWidget(Widget):
 
 
 class AnalysisDropDown(DropDown):
-    pass
+    def open_game_analysis_popup(self, *_args):
+        analysis_popup = I18NPopup(title_key="analysis:game", size=[dp(500), dp(300)], content=ReAnalyzeGamePopup())
+        analysis_popup.content.popup = analysis_popup
+        analysis_popup.content.katrain = MDApp.get_running_app().gui
+        analysis_popup.open()
 
 
 class AnalysisControls(MDBoxLayout):

@@ -635,3 +635,7 @@ msgstr "{num} available model(s) found"
 #. error message on trying to download models when already done
 msgid "All models downloaded"
 msgstr "All available models already downloaded"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze max visits"
+msgstr "Number of visits per move"

@@ -640,3 +640,11 @@ msgstr ""
 "corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
 "perspective. When `automatic` is set, KaTrain will find a suitable value "
 "automatically."
+
+#. TODO - in AI settings
+msgid "estimated strength"
+msgstr "Estimated Strength"
+
+#. TODO - label in little popup for analyzing entire game
+msgid "reanalyze max visits"
+msgstr "Number of visits per move"

@@ -8,7 +8,7 @@ OUTPUT_INFO = 0
 OUTPUT_DEBUG = 1
 OUTPUT_EXTRA_DEBUG = 2
 
-STATUS_ANALYSIS = 1.0 # same priority for analysis/info
+STATUS_ANALYSIS = 1.0  # same priority for analysis/info
 STATUS_INFO = 1.1
 STATUS_TEACHING = 2.0
 STATUS_ERROR = 1000.0
@@ -55,10 +55,10 @@ AI_STRATEGIES_RECOMMENDED_ORDER = [
     AI_JIGO,
 ]
 
-AI_STRENGTH = { # dan ranks
+AI_STRENGTH = {  # dan ranks
     AI_DEFAULT: 9,
     AI_POLICY: 4,
-    AI_JIGO: float('nan'),
+    AI_JIGO: float("nan"),
     AI_SCORELOSS: -4,
     AI_WEIGHTED: -4,
     AI_PICK: -7,
@@ -66,7 +66,7 @@ AI_STRENGTH = { # dan ranks
     AI_TENUKI: -7,
     AI_INFLUENCE: -7,
     AI_TERRITORY: -7,
-    AI_RANK: float('nan')
+    AI_RANK: float("nan"),
 }
 
 AI_OPTION_VALUES = {

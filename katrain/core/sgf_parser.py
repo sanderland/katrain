@@ -312,7 +312,7 @@ class SGFNode:
                 stones.append((middle_x, middle_y))
             stones += [(near_x, middle_y), (far_x, middle_y), (middle_x, near_y), (middle_x, far_y)]
         if tygem:
-            stones[2],stones[3] = stones[3],stones[2]
+            stones[2], stones[3] = stones[3], stones[2]
         self.set_property(
             "AB", list({Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]})
         )
@@ -331,7 +331,7 @@ class SGF:
 
     @classmethod
     def parse_file(cls, filename, encoding=None) -> SGFNode:
-        is_gib = filename.lower().endswith('.gib')
+        is_gib = filename.lower().endswith(".gib")
 
         """Parse a file as SGF, encoding will be detected if not given."""
         with open(filename, "rb") as f:
@@ -344,11 +344,11 @@ class SGF:
                     else:
                         encoding = "ISO-8859-1"  # default
                 else:
-                    encoding = 'utf8' # ?
+                    encoding = "utf8"  # ?
                 decoded = bin_contents.decode(encoding=encoding, errors="ignore")
             if is_gib:
                 return cls.parse_gib(decoded)
-            else: # sgf
+            else:  # sgf
                 return cls.parse_sgf(decoded)
 
     def __init__(self, contents):
@@ -382,10 +382,9 @@ class SGF:
             raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix:self.ix+25]}")
         raise ParseError("Parse Error: expected ')' at end of input.")
 
-
     # GIB parser adapted from https://github.com/fohristiwhirl/gofish/
     @classmethod
-    def parse_gib(cls,gib):
+    def parse_gib(cls, gib):
         def parse_player_name(raw):
             name = raw
             rank = ""
@@ -484,7 +483,7 @@ class SGF:
 
                 if handicap >= 2:
                     root.set_property("HA", handicap)
-                    root.place_handicap_stones(handicap,tygem=True)
+                    root.place_handicap_stones(handicap, tygem=True)
 
             if line[0:3] == "STO":
                 move = line.split()
@@ -494,14 +493,14 @@ class SGF:
                     y = 18 - int(move[5])
                     if not (0 <= x < 19 and 0 <= y < 19):
                         raise ParseError(f"Coordinates for move ({x},{y}) out of range on line {line}")
-                    value  = Move(coords=(x,y)).sgf(board_size=(19,19))
+                    value = Move(coords=(x, y)).sgf(board_size=(19, 19))
                 except IndexError:
                     continue
 
                 node = cls._NODE_CLASS(parent=node)
-                node.set_property(key, value )
+                node.set_property(key, value)
 
-        if len(root.children) == 0:     # We'll assume we failed in this case
+        if len(root.children) == 0:  # We'll assume we failed in this case
             raise ParseError("No valid nodes found")
 
         return root

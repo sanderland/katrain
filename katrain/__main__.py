@@ -280,7 +280,7 @@ class KaTrainGui(Screen, KaTrainBase):
         try:
             self.game.play(Move(coords, player=self.next_player_info.player))
         except IllegalMoveException as e:
-            self.controls.set_status(f"Illegal Move: {str(e)}",STATUS_ERROR)
+            self.controls.set_status(f"Illegal Move: {str(e)}", STATUS_ERROR)
 
     def _do_analyze_extra(self, mode, **kwargs):
         self.game.analyze_extra(mode, **kwargs)
@@ -366,12 +366,12 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_output_sgf(self):
         msg = self.game.write_sgf(self.config("general/sgf_save"))
         self.log(msg, OUTPUT_INFO)
-        self.controls.set_status(msg,OUTPUT_INFO)
+        self.controls.set_status(msg, OUTPUT_INFO)
 
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()
         if not clipboard:
-            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.",STATUS_ERROR)
+            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.", STATUS_ERROR)
             return
         try:
             move_tree = KaTrainSGF.parse_sgf(clipboard)
@@ -413,7 +413,6 @@ class KaTrainGui(Screen, KaTrainBase):
             "a": ("analyze-extra", "extra"),
             "s": ("analyze-extra", "equalize"),
             "d": ("analyze-extra", "sweep"),
-            "f": ("analyze-extra", "game"),
             "p": ("play", None),
             "down": ("switch-branch", 1),
             "up": ("switch-branch", -1),
@@ -463,7 +462,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self("output-sgf")
         elif keycode[1] == "c" and "ctrl" in modifiers:
             Clipboard.copy(self.game.root.sgf())
-            self.controls.set_status(i18n._("Copied SGF to clipboard."),STATUS_INFO)
+            self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
         elif keycode[1] == "v" and "ctrl" in modifiers:
             self.load_sgf_from_clipboard()
         elif keycode[1] in shortcuts.keys() and "ctrl" not in modifiers:
@@ -497,7 +496,7 @@ class KaTrainApp(MDApp):
         Builder.load_file(kv_file)
 
         Window.bind(on_request_close=self.on_request_close)
-        Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file.decode('utf8')))
+        Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file.decode("utf8")))
 
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
@@ -510,7 +509,7 @@ class KaTrainApp(MDApp):
         self.gui.save_config()
         if self.gui.game:
             self.gui.update_state()
-            self.gui.controls.set_status("",STATUS_INFO)
+            self.gui.controls.set_status("", STATUS_INFO)
 
     def webbrowser(self, site_key):
         websites = {"homepage": HOMEPAGE + "#manual", "support": HOMEPAGE + "#support"}

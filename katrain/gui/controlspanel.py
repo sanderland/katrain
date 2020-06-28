@@ -85,10 +85,10 @@ class ControlsPanel(BoxLayout):
         if at_node != self.status_state[2] or int(status_type) >= int(self.status_state[1]):
             self.status_state = (msg, status_type, at_node)
             self.status.text = msg
-            Clock.schedule_once(self.update_evaluation,0)
+            Clock.schedule_once(self.update_evaluation, 0)
 
     # handles showing completed analysis and score graph
-    def update_evaluation(self,*_args):
+    def update_evaluation(self, *_args):
         katrain = self.katrain
         game = katrain and katrain.game
         if not game:
@@ -98,7 +98,7 @@ class ControlsPanel(BoxLayout):
             game.current_node is not self.status_state[2]
             and not (self.status_state[1] == STATUS_ERROR and self.status_state[2] is None)
         ) or (
-            len(game.engines["B"].queries)==0 and self.status_state[1] == STATUS_ANALYSIS
+            len(game.engines["B"].queries) == 0 and self.status_state[1] == STATUS_ANALYSIS
         ):  # clear status if node changes, except startup errors on root. also clear analysis message when no queries
             self.status.text = ""
             self.status_state = (None, -1e9, None)

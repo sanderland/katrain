@@ -4,7 +4,7 @@ import re
 from typing import Any, Dict, List, Tuple, Union
 
 from kivy.clock import Clock
-from kivy.properties import BooleanProperty, NumericProperty, StringProperty, ListProperty
+from kivy.properties import BooleanProperty, NumericProperty, StringProperty, ListProperty, ObjectProperty
 from kivy.metrics import dp
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
@@ -23,7 +23,8 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
-    AI_OPTION_VALUES, STATUS_INFO,
+    AI_OPTION_VALUES,
+    STATUS_INFO,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n
@@ -315,15 +316,15 @@ class ConfigAIPopup(QuickConfigGui):
         self.build_ai_options()
         self.ai_select.bind(text=self.build_ai_options)
 
-    def estimate_rank_from_options(self,*_args):
+    def estimate_rank_from_options(self, *_args):
         strategy = self.ai_select.selected[1]
-        options = self.collect_properties(self) # [strategy]
-        print(strategy,options)
+        options = self.collect_properties(self)  # [strategy]
+        print(strategy, options)
         prefix = f"ai/{strategy}/"
-        options = {k[len(prefix):]:v for k,v in options.items() if k.startswith(prefix)}
+        options = {k[len(prefix) :]: v for k, v in options.items() if k.startswith(prefix)}
         print(options)
         dan_rank, model_based = ai_rank_estimation(strategy, options)
-        self.estimated_rank_label.text = ('' if model_based else '~') + RankGraph.rank_label(dan_rank)
+        self.estimated_rank_label.text = ("" if model_based else "~") + RankGraph.rank_label(dan_rank)
 
     def build_ai_options(self, *_args):
         strategy = self.ai_select.selected[1]
@@ -447,7 +448,7 @@ class ConfigPopup(QuickConfigGui):
 
             def restart_engine(_dt):
                 self.katrain.log(f"Restarting Engine after {detected_restart} settings change")
-                self.katrain.controls.set_status(i18n._("restarting engine"),STATUS_INFO)
+                self.katrain.controls.set_status(i18n._("restarting engine"), STATUS_INFO)
 
                 old_engine = self.katrain.engine  # type: KataGoEngine
                 old_proc = old_engine.katago_process
@@ -472,3 +473,8 @@ class LoadSGFPopup(BoxLayout):
         ]
         self.filesel.path = os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load")))
         self.filesel.select_string = i18n._("Load File")
+
+
+class ReAnalyzeGamePopup(BoxLayout):
+    katrain = ObjectProperty(None)
+    popup = ObjectProperty(None)

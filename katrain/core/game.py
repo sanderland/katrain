@@ -184,8 +184,6 @@ class Game:
             ix = (ordered_children.index(cn) + len(ordered_children) + direction) % len(ordered_children)
             self.set_current_node(ordered_children[ix])
 
-
-
     @property
     def board_size(self):
         return self.root.board_size
@@ -297,7 +295,7 @@ class Game:
         cn = self.current_node
 
         engine = self.engines[cn.next_player]
-        Clock.schedule_once(self.katrain.analysis_controls.hints.activate,0)
+        Clock.schedule_once(self.katrain.analysis_controls.hints.activate, 0)
 
         if mode == "extra":
             if kwargs.get("continuous", False):
@@ -310,8 +308,11 @@ class Game:
             return
         if mode == "game":
             nodes = self.root.nodes_in_tree
-            min_visits = min(node.analysis_visits_requested for node in nodes)
-            visits = min_visits + engine.config["max_visits"]
+            if "visits" in kwargs:
+                visits = kwargs["visits"]
+            else:
+                min_visits = min(node.analysis_visits_requested for node in nodes)
+                visits = min_visits + engine.config["max_visits"]
             for node in nodes:
                 node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False)
             self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)

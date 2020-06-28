@@ -317,7 +317,7 @@ class AnalysisToggle(MDBoxLayout):
     def trigger_action(self, *args, **kwargs):
         return self.checkbox.trigger_action(*args, **kwargs)
 
-    def activate(self,*_args):
+    def activate(self, *_args):
         self.checkbox.active = True
 
     @property
