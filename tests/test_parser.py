@@ -108,4 +108,4 @@ def test_gibo():
         "KM": [6.5],
         "DT": ["2020-06-14"],
     } == root.properties
-    assert "pp" == root.children[0].get_property("B")
+    assert "pd" == root.children[0].get_property("B")
