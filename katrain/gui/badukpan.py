@@ -256,14 +256,15 @@ class BadukPanWidget(Widget):
                         evalsize = 0
                     else:
                         evalsize = min(1, max(0, realized_points_lost / points_lost))
-                for m in node.move_with_placements:
+                placements = node.placements
+                for m in node.moves + placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
                         move_eval_on = show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
                         if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost, show_dots_for_class)
                         else:
                             evalcol = None
-                        inner = STONE_COLORS[m.opponent] if i == 0 else None
+                        inner = STONE_COLORS[m.opponent] if i == 0 and not m in placements else None
                         drawn_stone[m.coords] = m.player
                         self.draw_stone(
                             m.coords[0],

@@ -100,11 +100,11 @@ msgstr "Fast analysis of all moves"
 
 #. Analyze every node in the game more deeply
 msgid "analysis:game"
-msgstr "Re-analyze entire game"
+msgstr "Deeper full game analysis"
 
 #. Keep improving current position analysis when there is nothing else to do
 msgid "analysis:continuous"
-msgstr "Continuously analyze"
+msgstr "Continuous analysis"
 
 msgid "analysis:aimove"
 msgstr "Force AI Move"

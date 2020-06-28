@@ -579,7 +579,7 @@ msgstr "Re-analyzing entire game using {visits} visits"
 
 #. TODO - Analyze every node in the game more deeply
 msgid "analysis:game"
-msgstr "Re-analyze entire game"
+msgstr "Deeper full game analysis"
 
 #. TODO - Keep improving current position analysis when there is nothing else
 #. to do

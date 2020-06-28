@@ -299,10 +299,9 @@ class Game:
 
         if mode == "extra":
             if kwargs.get("continuous", False):
-                visits = max(engine.config["fast_visits"], math.ceil(cn.analysis_visits_requested * 1.25))
+                visits = max(engine.config["max_visits"], math.ceil(cn.analysis_visits_requested * 1.25))
             else:
-                visits = cn.analysis_visits_requested + engine.config["fast_visits"]
-
+                visits = cn.analysis_visits_requested + engine.config["max_visits"]
             self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
             cn.analyze(engine, visits=visits, priority=-1_000, time_limit=False)
             return

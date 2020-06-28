@@ -599,7 +599,7 @@ msgstr "Re-analyze entire game"
 #. TODO - Keep improving current position analysis when there is nothing else
 #. to do
 msgid "analysis:continuous"
-msgstr "Continuously analyze"
+msgstr "Continuous analysis"
 
 #. TODO - ai which handles handicap games better
 msgid "ai:handicap"
