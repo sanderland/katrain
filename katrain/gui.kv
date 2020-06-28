@@ -53,7 +53,7 @@
         Color:
             rgba: root.outline_color
         Line:
-            rounded_rectangle: (*self.pos,self.width,self.height,root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
+            rounded_rectangle: (self.x + root.outline_width, self.y + root.outline_width, self.width - 2 * root.outline_width, self.height - 2*root.outline_width, root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
             width: root.outline_width or 1
 
 
@@ -475,7 +475,7 @@
             rgba: BOX_BACKGROUND_COLOR
         Line:
             width: 1
-            points: (*self.pos,self.x+self.width,self.y)
+            points: (self.x,self.y+1,self.x+self.width,self.y+1)
 
 
 <ControlsPanel>:
@@ -512,6 +512,12 @@
         id: timer_or_movetree
         size_hint_y: None
         height: root.timer_box_height
+        canvas.before:
+            Color:
+                rgba: RED
+            Line:
+                rectangle:  (*self.pos,*self.size)
+                width: 1
         BoxLayout:
             size_hint_x: 0.0001 if self.parent.mode != MODE_PLAY else 1
             opacity: 0 if self.parent.mode != MODE_PLAY else 1
@@ -590,10 +596,11 @@
             orientation: 'vertical'
             ScrollableLabel:
                 id: status
+                error: False
                 size_hint: 1, None
                 height: min(self.parent.height*0.66,self.label.texture_size[1])
-                outline_color: RED
-                background_color: DARKRED
+                outline_color: RED if self.error else WHITE
+                background_color: LIGHTER_BACKGROUND_COLOR # DARKRED
             ScrollableLabel:
                 id: info
                 detailed: False
@@ -803,7 +810,7 @@
     icon_size: self.height * 0.75, self.height  * 0.75
 
 
-<MenuLabel@Label+BackgroundMixin>:
+<MenuLabel@BackgroundMixin+Label>:
     background_color: BACKGROUND_COLOR
     font_size: self.height * 0.5
     height: self.parent.item_height or 50

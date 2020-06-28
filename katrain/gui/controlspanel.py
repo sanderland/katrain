@@ -82,9 +82,10 @@ class ControlsPanel(BoxLayout):
 
     def set_status(self, msg, status_type, at_node=None):
         at_node = at_node or self.katrain and self.katrain.game and self.katrain.game.current_node
-        if at_node != self.status_state[2] or int(status_type) >= int(self.status_state[1]):
+        if at_node != self.status_state[2] or int(status_type) >= int(self.status_state[1]) or msg=="":
             self.status_state = (msg, status_type, at_node)
             self.status.text = msg
+            self.status.error = status_type==STATUS_ERROR
             Clock.schedule_once(self.update_evaluation, 0)
 
     # handles showing completed analysis and score graph

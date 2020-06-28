@@ -447,6 +447,7 @@ class ConfigPopup(QuickConfigGui):
         if detected_restart:
 
             def restart_engine(_dt):
+                self.katrain.controls.set_status("", STATUS_INFO)
                 self.katrain.log(f"Restarting Engine after {detected_restart} settings change")
                 self.katrain.controls.set_status(i18n._("restarting engine"), STATUS_INFO)
 
