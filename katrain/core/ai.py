@@ -63,11 +63,12 @@ def policy_weighted_move(policy_moves, lower_bound, weaken_fac):
     ]
     if weighted_coords:
         top = weighted_selection_without_replacement(weighted_coords, 1)[0]
-        ai_thoughts = f"Playing policy-weighted random move {top[2].gtp()} ({top[0]:.1%}) from {len(weighted_coords)} moves above lower_bound of {lower_bound:.1%}."
+        move = top[2]
+        ai_thoughts = f"Playing policy-weighted random move {move.gtp()} ({top[0]:.1%}) from {len(weighted_coords)} moves above lower_bound of {lower_bound:.1%}."
     else:
-        top = policy_moves[0]
+        move = policy_moves[0][1]
         ai_thoughts = f"Playing top policy move because no non-pass move > above lower_bound of {lower_bound:.1%}."
-    return top[2], ai_thoughts
+    return move, ai_thoughts
 
 
 def generate_influence_territory_weights(ai_mode, ai_settings, policy_grid, size):

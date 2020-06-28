@@ -164,11 +164,6 @@
         size: image.size
         font_size: root.min_size * 1.2 / (1 + 1 * len(self.text))
 
-<ClickableLabel>:
-    color: WHITE
-    halign: 'center'
-    valign: 'middle'
-    size: self.texture_size
 
 
 # UI components
@@ -673,7 +668,7 @@
     size_hint: None, 0.7
     pos_hint: {'center_y':0.5}
     checkbox: checkbox
-    Label:
+    ClickableLabel:
         id: label
         text: root.text
         halign: 'center'
@@ -682,6 +677,7 @@
         color: checkbox.selected_color if checkbox.active else checkbox.unselected_color
         size_hint_x: None
         width: self.texture_size[0] + 4
+        on_left_press: checkbox.active = not checkbox.active
     MDCheckbox:
         id: checkbox
         size_hint: None,0.5
