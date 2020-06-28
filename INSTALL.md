@@ -19,10 +19,14 @@
   * Open the settings dialog by clicking on the gear icon at the bottom right of the window and change the path of the 'katago'
    setting under 'engine' to `/usr/local/bin/katago`, or the path where you compiled KataGo.
 
-## Installation from sources
-* This is largely the same as for linux, see [here](#LinuxSources).
+# Installation for Windows users
 
-# Installation from sources for Windows users
+## Downloadable .exe files
+
+You can find downloadable .exe files for windows [here](https://github.com/sanderland/katrain/releases). Simply download and run, everything is included.
+
+## Installation from sources for Windows users
+
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/products/individual#download-section).
 * Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
