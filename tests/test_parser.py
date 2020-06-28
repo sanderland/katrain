@@ -5,7 +5,7 @@ from katrain.core.sgf_parser import SGF, SGFNode
 
 def test_simple():
     input_sgf = "(;GM[1]FF[4]SZ[19]DT[2020-04-12]AB[dd][dj];B[dp];W[pp];B[pj])"
-    root = SGF.parse(input_sgf)
+    root = SGF.parse_sgf(input_sgf)
     assert "4" == root.get_property("FF")
     assert root.get_property("XYZ") is None
     assert "dp" == root.children[0].get_property("B")
@@ -14,13 +14,13 @@ def test_simple():
 
 def test_branch():
     input_sgf = "(;GM[1]FF[4]CA[UTF-8]AP[Sabaki:0.43.3]KM[6.5]SZ[19]DT[2020-04-12]AB[dd][dj](;B[dp];W[pp](;B[pj])(;PL[B]AW[jp]C[sdfdsfdsf]))(;B[pd]))"
-    root = SGF.parse(input_sgf)
+    root = SGF.parse_sgf(input_sgf)
     assert input_sgf == root.sgf()
 
 
 def test_dragon_weirdness():  # dragon go server has weird line breaks
     input_sgf = "\n(\n\n;\nGM[1]\nFF[4]\nCA[UTF-8]AP[Sabaki:0.43.3]KM[6.5]SZ[19]DT[2020-04-12]AB[dd]\n[dj]\n(\n;\nB[dp]\n;\nW[pp]\n(\n;\nB[pj]\n)\n(\n;\nPL[B]\nAW[jp]\nC[sdfdsfdsf]\n)\n)\n(\n;\nB[pd]\n)\n)\n"
-    root = SGF.parse(input_sgf)
+    root = SGF.parse_sgf(input_sgf)
     assert input_sgf.replace("\n", "") == root.sgf()
 
 
@@ -29,7 +29,7 @@ def test_weird_escape():
 [
 or \\]
 ])"""
-    root = SGF.parse(input_sgf)
+    root = SGF.parse_sgf(input_sgf)
     assert input_sgf == root.sgf()
 
 
@@ -44,7 +44,7 @@ def test_backslash_escape():
     node = SGFNode(properties={"C1": nasty_string})
     node.set_property("C2", c2)
     assert "(;C1[[\\]\\]\\\\]C2[\\]][\\\\])" == node.sgf()
-    assert {"C1": [nasty_string], "C2": c2} == SGF.parse(node.sgf()).properties
+    assert {"C1": [nasty_string], "C2": c2} == SGF.parse_sgf(node.sgf()).properties
 
 
 def test_alphago():
@@ -94,3 +94,13 @@ def test_pandanet():
 def test_ogs():
     file = os.path.join(os.path.dirname(__file__), "data/ogs.sgf")
     tree = SGF.parse_file(file)
+
+
+def test_gibo():
+    file = os.path.join(os.path.dirname(__file__), "data/test.gib")
+    root = SGF.parse_file(file)
+    assert {'PW': ['wildsim1'], 'WR': ['2D'], 'PB': ['kim'], 'BR': ['2D'], 'RE': ['W+T'], 'KM': [6.5], 'DT': ['2020-06-14']} == root.properties
+    assert "pp" == root.children[0].get_property("B")
+
+
+

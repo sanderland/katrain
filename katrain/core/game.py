@@ -48,7 +48,7 @@ class Game:
             self.komi = self.root.komi
             handicap = int(self.root.get_property("HA", 0))
             if handicap and not self.root.placements:
-                self.place_handicap_stones(handicap)
+                self.root.place_handicap_stones(handicap)
         else:
             board_size = katrain.config("game/size")
             self.komi = katrain.config("game/komi")
@@ -61,7 +61,7 @@ class Game:
             )
             handicap = katrain.config("game/handicap")
             if handicap:
-                self.place_handicap_stones(handicap)
+                self.root.place_handicap_stones(handicap)
 
         if not self.root.get_property("RU"):
             self.root.set_property("RU", katrain.config("game/rules"))
@@ -184,34 +184,7 @@ class Game:
             ix = (ordered_children.index(cn) + len(ordered_children) + direction) % len(ordered_children)
             self.set_current_node(ordered_children[ix])
 
-    def place_handicap_stones(self, n_handicaps):
-        board_size_x, board_size_y = self.board_size
-        near_x = 3 if board_size_x >= 13 else min(2, board_size_x - 1)
-        near_y = 3 if board_size_y >= 13 else min(2, board_size_y - 1)
-        far_x = board_size_x - 1 - near_x
-        far_y = board_size_y - 1 - near_y
-        middle_x = board_size_x // 2  # what for even sizes?
-        middle_y = board_size_y // 2
-        if n_handicaps > 9 and board_size_x == board_size_y:
-            stones_per_row = math.ceil(math.sqrt(n_handicaps))
-            spacing = (far_x - near_x) / (stones_per_row - 1)
-            if spacing < near_x:
-                far_x += 1
-                near_x -= 1
-                spacing = (far_x - near_x) / (stones_per_row - 1)
-            coords = list({math.floor(0.5 + near_x + i * spacing) for i in range(stones_per_row)})
-            stones = sorted(
-                [(x, y) for x in coords for y in coords],
-                key=lambda xy: -((xy[0] - (board_size_x - 1) / 2) ** 2 + (xy[1] - (board_size_y - 1) / 2) ** 2),
-            )
-        else:  # max 9
-            stones = [(far_x, far_y), (near_x, near_y), (far_x, near_y), (near_x, far_y)]
-            if n_handicaps % 2 == 1:
-                stones.append((middle_x, middle_y))
-            stones += [(near_x, middle_y), (far_x, middle_y), (middle_x, near_y), (middle_x, far_y)]
-        self.root.set_property(
-            "AB", list({Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]})
-        )
+
 
     @property
     def board_size(self):

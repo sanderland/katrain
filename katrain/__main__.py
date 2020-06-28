@@ -325,7 +325,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.ai_settings_popup:
             self.ai_settings_popup = I18NPopup(
-                title_key="ai settings", size=[dp(600), dp(600)], content=ConfigAIPopup(self)
+                title_key="ai settings", size=[dp(600), dp(650)], content=ConfigAIPopup(self)
             ).__self__
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
@@ -366,7 +366,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_output_sgf(self):
         msg = self.game.write_sgf(self.config("general/sgf_save"))
         self.log(msg, OUTPUT_INFO)
-        self.controls.set_status(msg)
+        self.controls.set_status(msg,OUTPUT_INFO)
 
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()
@@ -374,7 +374,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.",STATUS_ERROR)
             return
         try:
-            move_tree = KaTrainSGF.parse(clipboard)
+            move_tree = KaTrainSGF.parse_sgf(clipboard)
         except Exception as exc:
             self.controls.set_status(
                 i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50])
@@ -497,7 +497,7 @@ class KaTrainApp(MDApp):
         Builder.load_file(kv_file)
 
         Window.bind(on_request_close=self.on_request_close)
-        Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file))
+        Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file.decode('utf8')))
 
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
@@ -510,7 +510,7 @@ class KaTrainApp(MDApp):
         self.gui.save_config()
         if self.gui.game:
             self.gui.update_state()
-            self.gui.controls.set_status("")
+            self.gui.controls.set_status("",STATUS_INFO)
 
     def webbrowser(self, site_key):
         websites = {"homepage": HOMEPAGE + "#manual", "support": HOMEPAGE + "#support"}

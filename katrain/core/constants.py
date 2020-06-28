@@ -55,6 +55,19 @@ AI_STRATEGIES_RECOMMENDED_ORDER = [
     AI_JIGO,
 ]
 
+AI_STRENGTH = { # dan ranks
+    AI_DEFAULT: 9,
+    AI_POLICY: 4,
+    AI_JIGO: float('nan'),
+    AI_SCORELOSS: -4,
+    AI_WEIGHTED: -4,
+    AI_PICK: -7,
+    AI_LOCAL: -4,
+    AI_TENUKI: -7,
+    AI_INFLUENCE: -7,
+    AI_TERRITORY: -7,
+    AI_RANK: float('nan')
+}
 
 AI_OPTION_VALUES = {
     "kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(15, 0, -1)]

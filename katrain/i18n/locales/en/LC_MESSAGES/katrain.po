@@ -620,6 +620,10 @@ msgstr ""
 "one. Stronger settings select the best move from a larger selection. Since "
 "there is no 0 kyu/dan, 3 dan = -2 kyu."
 
+#. in AI settings
+msgid "estimated strength"
+msgstr "Estimated Strength"
+
 #. button in general settings for downloading models
 msgid "download models button"
 msgstr "Download Models"

@@ -1,4 +1,5 @@
 import copy
+import math
 import re
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple
@@ -285,6 +286,37 @@ class SGFNode:
         else:
             return "W"
 
+    def place_handicap_stones(self, n_handicaps, tygem=False):
+        board_size_x, board_size_y = self.board_size
+        near_x = 3 if board_size_x >= 13 else min(2, board_size_x - 1)
+        near_y = 3 if board_size_y >= 13 else min(2, board_size_y - 1)
+        far_x = board_size_x - 1 - near_x
+        far_y = board_size_y - 1 - near_y
+        middle_x = board_size_x // 2  # what for even sizes?
+        middle_y = board_size_y // 2
+        if n_handicaps > 9 and board_size_x == board_size_y:
+            stones_per_row = math.ceil(math.sqrt(n_handicaps))
+            spacing = (far_x - near_x) / (stones_per_row - 1)
+            if spacing < near_x:
+                far_x += 1
+                near_x -= 1
+                spacing = (far_x - near_x) / (stones_per_row - 1)
+            coords = list({math.floor(0.5 + near_x + i * spacing) for i in range(stones_per_row)})
+            stones = sorted(
+                [(x, y) for x in coords for y in coords],
+                key=lambda xy: -((xy[0] - (board_size_x - 1) / 2) ** 2 + (xy[1] - (board_size_y - 1) / 2) ** 2),
+            )
+        else:  # max 9
+            stones = [(far_x, far_y), (near_x, near_y), (far_x, near_y), (near_x, far_y)]
+            if n_handicaps % 2 == 1:
+                stones.append((middle_x, middle_y))
+            stones += [(near_x, middle_y), (far_x, middle_y), (middle_x, near_y), (middle_x, far_y)]
+        if tygem:
+            stones[2],stones[3] = stones[3],stones[2]
+        self.set_property(
+            "AB", list({Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]})
+        )
+
 
 class SGF:
 
@@ -293,23 +325,31 @@ class SGF:
     SGFPROP_PAT = re.compile(r"\s*(?:\(|\)|;|(\w+)((\s*\[([^\]\\]|\\.)*\])+))", flags=re.DOTALL)
 
     @classmethod
-    def parse(cls, input_str) -> SGFNode:
+    def parse_sgf(cls, input_str) -> SGFNode:
         """Parse a string as SGF."""
         return cls(input_str).root
 
     @classmethod
     def parse_file(cls, filename, encoding=None) -> SGFNode:
+        is_gib = filename.lower().endswith('.gib')
+
         """Parse a file as SGF, encoding will be detected if not given."""
         with open(filename, "rb") as f:
             bin_contents = f.read()
             if not encoding:
-                match = re.search(rb"CA\[(.*?)\]", bin_contents)
-                if match:
-                    encoding = match[1].decode("ascii", errors="ignore")
+                if not is_gib:
+                    match = re.search(rb"CA\[(.*?)\]", bin_contents)
+                    if match:
+                        encoding = match[1].decode("ascii", errors="ignore")
+                    else:
+                        encoding = "ISO-8859-1"  # default
                 else:
-                    encoding = "ISO-8859-1"  # default
-            decoded = bin_contents.decode(encoding=encoding, errors="ignore")
-            return cls.parse(decoded)
+                    encoding = 'utf8' # ?
+                decoded = bin_contents.decode(encoding=encoding, errors="ignore")
+            if is_gib:
+                return cls.parse_gib(decoded)
+            else: # sgf
+                return cls.parse_sgf(decoded)
 
     def __init__(self, contents):
         self.contents = contents
@@ -341,3 +381,127 @@ class SGF:
         if self.ix < len(self.contents):
             raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix:self.ix+25]}")
         raise ParseError("Parse Error: expected ')' at end of input.")
+
+
+    # GIB parser adapted from https://github.com/fohristiwhirl/gofish/
+    @classmethod
+    def parse_gib(cls,gib):
+        def parse_player_name(raw):
+            name = raw
+            rank = ""
+            foo = raw.split("(")
+            if len(foo) == 2:
+                if foo[1][-1] == ")":
+                    name = foo[0].strip()
+                    rank = foo[1][0:-1]
+            return name, rank
+
+        def gib_make_result(grlt, zipsu):
+            easycases = {3: "B+R", 4: "W+R", 7: "B+T", 8: "W+T"}
+
+            if grlt in easycases:
+                return easycases[grlt]
+
+            if grlt in [0, 1]:
+                return "{}+{}".format("B" if grlt == 0 else "W", zipsu / 10)
+
+            return ""
+
+        def gib_get_result(line, grlt_regex, zipsu_regex):
+            try:
+                grlt = int(re.search(grlt_regex, line).group(1))
+                zipsu = int(re.search(zipsu_regex, line).group(1))
+            except:
+                return ""
+            return gib_make_result(grlt, zipsu)
+
+        root = cls._NODE_CLASS()
+        node = root
+
+        lines = gib.split("\n")
+        for line in lines:
+            line = line.strip()
+            if line.startswith("\\[GAMEBLACKNAME=") and line.endswith("\\]"):
+                s = line[16:-2]
+                name, rank = parse_player_name(s)
+                if name:
+                    root.set_property("PB", name)
+                if rank:
+                    root.set_property("BR", rank)
+
+            if line.startswith("\\[GAMEWHITENAME=") and line.endswith("\\]"):
+                s = line[16:-2]
+                name, rank = parse_player_name(s)
+                if name:
+                    root.set_property("PW", name)
+                if rank:
+                    root.set_property("WR", rank)
+
+            if line.startswith("\\[GAMEINFOMAIN="):
+                result = gib_get_result(line, r"GRLT:(\d+),", r"ZIPSU:(\d+),")
+                if result:
+                    root.set_property("RE", result)
+                    try:
+                        komi = int(re.search(r"GONGJE:(\d+),", line).group(1)) / 10
+                        if komi:
+                            root.set_property("KM", komi)
+                    except:
+                        pass
+
+            if line.startswith("\\[GAMETAG="):
+                if "DT" not in root.properties:
+                    try:
+                        match = re.search(r"C(\d\d\d\d):(\d\d):(\d\d)", line)
+                        date = "{}-{}-{}".format(match.group(1), match.group(2), match.group(3))
+                        root.set_property("DT", date)
+                    except:
+                        pass
+
+                if "RE" not in root.properties:
+                    result = gib_get_result(line, r",W(\d+),", r",Z(\d+),")
+                    if result:
+                        root.set_property("RE", result)
+
+                if "KM" not in root.properties:
+                    try:
+                        komi = int(re.search(r",G(\d+),", line).group(1)) / 10
+                        if komi:
+                            root.set_property("KM", komi)
+                    except:
+                        pass
+
+            if line[0:3] == "INI":
+                if node is not root:
+                    raise ParseError("Node is not root")
+                setup = line.split()
+                try:
+                    handicap = int(setup[3])
+                except IndexError:
+                    continue
+
+                if handicap < 0 or handicap > 9:
+                    raise ParseError(f"Handicap {handicap} out of range")
+
+                if handicap >= 2:
+                    root.set_property("HA", handicap)
+                    root.place_handicap_stones(handicap,tygem=True)
+
+            if line[0:3] == "STO":
+                move = line.split()
+                key = "B" if move[3] == "1" else "W"
+                try:
+                    x = int(move[4])
+                    y = 18 - int(move[5])
+                    if not (0 <= x < 19 and 0 <= y < 19):
+                        raise ParseError(f"Coordinates for move ({x},{y}) out of range on line {line}")
+                    value  = Move(coords=(x,y)).sgf(board_size=(19,19))
+                except IndexError:
+                    continue
+
+                node = cls._NODE_CLASS(parent=node)
+                node.set_property(key, value )
+
+        if len(root.children) == 0:     # We'll assume we failed in this case
+            raise ParseError("No valid nodes found")
+
+        return root

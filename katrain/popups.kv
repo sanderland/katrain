@@ -410,6 +410,7 @@
 <ConfigAIPopup>:
     options_grid: options_grid
     help_label: help_label
+    estimated_rank_label: estimated_rank_label
     ai_select: ai_select
     BoxLayout:
         size_hint: 1,1
@@ -420,6 +421,17 @@
             I18NSpinner:
                 size_hint: 0.8, 0.5
                 id: ai_select
+    BoxLayout:
+        size_hint: 1,1
+        DescriptionLabel:
+            font_size: DESC_FONT_SIZE
+            size_hint: 1, 1
+            text: i18n._('estimated strength')
+        DescriptionLabel:
+            size_hint: 0.8, 1
+            font_size: DESC_FONT_SIZE
+            id: estimated_rank_label
+            text: '?' + i18n._('strength:kyu')
     SmallDescriptionLabel:
         id: help_label
         size_hint: 1,1.25
