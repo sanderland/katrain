@@ -4,8 +4,8 @@ import re
 from typing import Any, Dict, List, Tuple, Union
 
 from kivy.clock import Clock
-from kivy.properties import BooleanProperty, NumericProperty, StringProperty, ListProperty, ObjectProperty
 from kivy.metrics import dp
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -19,11 +19,11 @@ from katrain.core.ai import ai_rank_estimation
 from katrain.core.constants import (
     AI_CONFIG_DEFAULT,
     AI_DEFAULT,
+    AI_OPTION_VALUES,
     AI_STRATEGIES_RECOMMENDED_ORDER,
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
-    AI_OPTION_VALUES,
     STATUS_INFO,
 )
 from katrain.core.engine import KataGoEngine

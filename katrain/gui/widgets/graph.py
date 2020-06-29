@@ -1,14 +1,14 @@
 import math
+import threading
 
 from kivy.lang import Builder
 from kivy.metrics import dp
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty, Clock, StringProperty
+from kivy.properties import BooleanProperty, Clock, ListProperty, NumericProperty, StringProperty
 from kivymd.app import MDApp
 
 from katrain.core.constants import OUTPUT_ERROR
 from katrain.core.lang import i18n
 from katrain.gui.kivyutils import BackgroundMixin
-import threading
 
 
 class Graph(BackgroundMixin):

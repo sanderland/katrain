@@ -8,7 +8,7 @@ from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.metrics import dp
-from kivy.properties import ListProperty, ObjectProperty, BooleanProperty
+from kivy.properties import BooleanProperty, ListProperty, ObjectProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
@@ -19,7 +19,7 @@ from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, var_to_grid
-from katrain.gui.kivyutils import draw_circle, draw_text, BackgroundMixin
+from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
 from katrain.gui.style import *
 
