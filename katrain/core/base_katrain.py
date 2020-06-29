@@ -12,6 +12,9 @@ from katrain.core.utils import find_package_resource
 class Player:
     def __init__(self, player="B", player_type=PLAYER_HUMAN, player_subtype=PLAYING_NORMAL, periods_used=0):
         self.player = player
+        self.sgf_rank = None
+        self.calculated_rank = None
+        self.name = ""
         self.update(player_type, player_subtype)
         self.periods_used = periods_used
 

@@ -6,7 +6,7 @@ from kivy.properties import ObjectProperty, OptionProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.constants import MODE_PLAY, MODE_ANALYZE, STATUS_ERROR, STATUS_ANALYSIS
+from katrain.core.constants import MODE_PLAY, MODE_ANALYZE, STATUS_ERROR, STATUS_ANALYSIS, PLAYER_HUMAN
 from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
 
 
@@ -79,6 +79,8 @@ class ControlsPanel(BoxLayout):
         for bw, player_info in self.katrain.players_info.items():
             self.players[bw].player_type = player_info.player_type
             self.players[bw].player_subtype = player_info.player_subtype
+            self.players[bw].name = player_info.name
+            self.players[bw].rank = player_info.sgf_rank if player_info.player_type == PLAYER_HUMAN else  player_info.calculated_rank
 
     def set_status(self, msg, status_type, at_node=None):
         at_node = at_node or self.katrain and self.katrain.game and self.katrain.game.current_node

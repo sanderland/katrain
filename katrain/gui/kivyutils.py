@@ -297,6 +297,8 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     player = OptionProperty("B", options=["B", "W"])
     player_type = StringProperty("Player")
     player_subtype = StringProperty("")
+    name = StringProperty("", allownone=True)
+    rank = StringProperty("", allownone=True)
     active = BooleanProperty(True)
 
 

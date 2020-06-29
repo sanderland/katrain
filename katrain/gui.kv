@@ -4,6 +4,8 @@
 #:import PLAYER_TYPES katrain.core.constants.PLAYER_TYPES
 #:import PLAYER_HUMAN katrain.core.constants.PLAYER_HUMAN
 #:import PLAYER_AI    katrain.core.constants.PLAYER_AI
+#:import PLAYING_NORMAL katrain.core.constants.PLAYING_NORMAL
+#:import PLAYING_TEACHING katrain.core.constants.PLAYING_TEACHING
 #:import MODE_PLAY katrain.core.constants.MODE_PLAY
 #:import MODE_ANALYZE katrain.core.constants.MODE_ANALYZE
 #:import STATUS_INFO katrain.core.constants.STATUS_INFO
@@ -274,20 +276,29 @@
     CircleWithText:
         player: root.player
         text: str(root.captures)
-        size_hint: 0.25, 1
-    MDBoxLayout:
+        size_hint: 0.32, 1
+    BoxLayout:
         size_hint: 0.75, 1
+        pos_hint: {'x':0,'y':0}
+        size_hint: 1,1
         orientation: 'vertical'
-        spacing: CP_SPACING
         Label:
-            text:  i18n._(root.player_type)
-            size_hint: 1,0.55
+            size_hint: 1,0.6
+            text: i18n._(root.player_type)
             font_size: 0.8 * self.height
+            size: self.texture_size
+            max_lines: 1
+            halign: 'center'
+            valign: 'middle'
         Label:
-            text:  i18n._(root.player_subtype)
-            size_hint: 1,0.45
+            text: (root.name if root.name and root.player_type==PLAYER_HUMAN and root.player_subtype == PLAYING_NORMAL else i18n._(root.player_subtype) ) + (" ({})".format(root.rank) if root.rank and root.player_subtype != PLAYING_TEACHING else "")
+            size_hint: 1,0.4
             font_size: 0.7 * self.height
-
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'right'
 
 <PauseButton>:
     height: self.width
@@ -329,7 +340,7 @@
     timeout: False
     color: ORANGE if self.timeout else GREEN
     markup: True
-    multiline: False
+    max_lines: 1
     font_name: 'fonts/digital-7 (mono).ttf'
 
 <Timer>:
@@ -372,7 +383,7 @@
             valign: 'top'
             id: periods
             text: str(root.state[1])
-            multiline: False
+            max_lines: 1
             timeout: root.timeout
     MDBoxLayout:
         size_hint: 0.2,1
@@ -405,7 +416,7 @@
         valign: 'middle'
         halign: 'center'
         text: root.label
-        multiline: False
+        max_lines: 1
     Label:
         size_hint: 0.4,1
         color: root.color
@@ -416,7 +427,7 @@
         halign: 'center'
         bold: True
         text: root.text
-        multiline: False
+        max_lines: 1
 
 <StatsBox>
     orientation: 'vertical'
@@ -496,14 +507,14 @@
     status: status
     timer_or_movetree: timer_or_movetree
     move_tree: move_tree
-    padding: CP_PADDING
+    padding: CP_PADDING,CP_PADDING,CP_PADDING,0
     spacing: CP_SPACING
     tab_option_height: max(15,root.height / 30)
     available_height: root.height - (3 * self.tab_option_height + 2*CP_PADDING - 4*CP_SPACING) # minus tabs fixed, spacing etc
-    player_box_height: max(50, 0.075 * root.available_height)
-    timer_box_height:  max(50, 0.1 * root.available_height)
-    graph_height:  max(75, 0.2 * root.height)
-    stat_height: max(20, 0.04 * root.height)
+    player_box_height: max(50, 0.08 * root.available_height)
+    timer_box_height:  max(50, 0.11 * root.available_height)
+    graph_height:  max(75, 0.17 * root.height)
+    stat_height: max(20, 0.035 * root.height)
     BoxLayout: # -- Players
         size_hint_y: None
         height: root.player_box_height
@@ -567,7 +578,7 @@
     CollapsablePanel:
         id: stats_panel
         num_active: 3
-        content_height: self.num_active * root.stat_height
+        content_height: self.num_active * root.stat_height + EPSILON
         options_height: root.tab_option_height
         closed_label: 'closedlabel:movestats'
         options: ['score','winrate','points']
@@ -630,7 +641,7 @@
                         Line:
                             points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
                             width: 1
-    Label: # TODO: ??
+    Label:
         size_hint_y: 1e-9 # takes up remaining space if info is closed
 
 
