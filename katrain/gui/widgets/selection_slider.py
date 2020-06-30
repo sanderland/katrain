@@ -1,10 +1,6 @@
 from kivy.lang import Builder
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty
 from kivy.uix.widget import Widget
-from kivy.properties import (
-    NumericProperty,
-    ListProperty,
-    BooleanProperty,
-)
 from kivymd.uix.label import MDLabel
 from kivymd.uix.selectioncontrol import Thumb
 

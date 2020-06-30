@@ -4,6 +4,8 @@
 #:import PLAYER_TYPES katrain.core.constants.PLAYER_TYPES
 #:import PLAYER_HUMAN katrain.core.constants.PLAYER_HUMAN
 #:import PLAYER_AI    katrain.core.constants.PLAYER_AI
+#:import PLAYING_NORMAL katrain.core.constants.PLAYING_NORMAL
+#:import PLAYING_TEACHING katrain.core.constants.PLAYING_TEACHING
 #:import MODE_PLAY katrain.core.constants.MODE_PLAY
 #:import MODE_ANALYZE katrain.core.constants.MODE_ANALYZE
 #:import STATUS_INFO katrain.core.constants.STATUS_INFO
@@ -32,6 +34,8 @@
 #:set CP_PADDING dp(6)
 #:set NOTES_FONT_SIZE dp(18)
 
+#:set EPSILON 1e-9
+
 # for sizing help
 #<Label>:
 #    canvas.before:
@@ -53,7 +57,7 @@
         Color:
             rgba: root.outline_color
         Line:
-            rounded_rectangle: (*self.pos,self.width,self.height,root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
+            rounded_rectangle: (self.x + root.outline_width, self.y + root.outline_width, self.width - 2 * root.outline_width, self.height - 2*root.outline_width, root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
             width: root.outline_width or 1
 
 
@@ -272,20 +276,29 @@
     CircleWithText:
         player: root.player
         text: str(root.captures)
-        size_hint: 0.25, 1
-    MDBoxLayout:
+        size_hint: 0.32, 1
+    BoxLayout:
         size_hint: 0.75, 1
+        pos_hint: {'x':0,'y':0}
+        size_hint: 1,1
         orientation: 'vertical'
-        spacing: CP_SPACING
         Label:
-            text:  i18n._(root.player_type)
-            size_hint: 1,0.55
+            size_hint: 1,0.6
+            text: i18n._(root.player_type)
             font_size: 0.8 * self.height
+            size: self.texture_size
+            max_lines: 1
+            halign: 'center'
+            valign: 'middle'
         Label:
-            text:  i18n._(root.player_subtype)
-            size_hint: 1,0.45
+            text: (root.name if root.name and root.player_type==PLAYER_HUMAN and root.player_subtype == PLAYING_NORMAL else i18n._(root.player_subtype) ) + (" ({})".format(root.rank) if root.rank and root.player_subtype != PLAYING_TEACHING else "")
+            size_hint: 1,0.4
             font_size: 0.7 * self.height
-
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'right'
 
 <PauseButton>:
     height: self.width
@@ -327,7 +340,7 @@
     timeout: False
     color: ORANGE if self.timeout else GREEN
     markup: True
-    multiline: False
+    max_lines: 1
     font_name: 'fonts/digital-7 (mono).ttf'
 
 <Timer>:
@@ -370,7 +383,7 @@
             valign: 'top'
             id: periods
             text: str(root.state[1])
-            multiline: False
+            max_lines: 1
             timeout: root.timeout
     MDBoxLayout:
         size_hint: 0.2,1
@@ -391,28 +404,30 @@
 
 
 <StatsLabel>:
-    value : value
     orientation: 'horizontal'
+    size_hint_y: EPSILON if root.hidden else 1
+    opacity: 0 if root.hidden else 1
     Label:
         size_hint: 0.6,1
         id: desc
-        text: root.label if not root.hidden else ''
         font_size: self.height * 0.7
         font_name: root.font_name
         text_size: self.size
         valign: 'middle'
         halign: 'center'
+        text: root.label
+        max_lines: 1
     Label:
         size_hint: 0.4,1
-        text: root.text if not root.hidden else ''
         color: root.color
         font_size: desc.font_size
         font_name: root.font_name
         text_size: self.size
         valign: 'middle'
         halign: 'center'
-        id: value
         bold: True
+        text: root.text
+        max_lines: 1
 
 <StatsBox>
     orientation: 'vertical'
@@ -475,7 +490,7 @@
             rgba: BOX_BACKGROUND_COLOR
         Line:
             width: 1
-            points: (*self.pos,self.x+self.width,self.y)
+            points: (self.x,self.y+1,self.x+self.width,self.y+1)
 
 
 <ControlsPanel>:
@@ -492,13 +507,14 @@
     status: status
     timer_or_movetree: timer_or_movetree
     move_tree: move_tree
-    padding: CP_PADDING
+    padding: CP_PADDING,CP_PADDING,CP_PADDING,0
     spacing: CP_SPACING
-    player_box_height: max(50, 0.075 * root.height)
-    timer_box_height:  max(50, 0.1 * root.height)
-    graph_height:  max(75, 0.2 * root.height - 25)
-    stats_box_height: max(50, 0.15 * root.height)
     tab_option_height: max(15,root.height / 30)
+    available_height: root.height - (3 * self.tab_option_height + 2*CP_PADDING - 4*CP_SPACING) # minus tabs fixed, spacing etc
+    player_box_height: max(50, 0.08 * root.available_height)
+    timer_box_height:  max(50, 0.11 * root.available_height)
+    graph_height:  max(75, 0.17 * root.height)
+    stat_height: max(20, 0.035 * root.height)
     BoxLayout: # -- Players
         size_hint_y: None
         height: root.player_box_height
@@ -513,7 +529,7 @@
         size_hint_y: None
         height: root.timer_box_height
         BoxLayout:
-            size_hint_x: 0.0001 if self.parent.mode != MODE_PLAY else 1
+            size_hint_x: EPSILON if self.parent.mode != MODE_PLAY else 1
             opacity: 0 if self.parent.mode != MODE_PLAY else 1
             spacing: CP_SPACING
             Timer:
@@ -534,16 +550,16 @@
                     on_left_release: root.katrain("undo","smart")
         MoveTree:
             id: move_tree
-            size_hint_x: 0.0001 if self.parent.mode == MODE_PLAY else 1
+            size_hint_x: EPSILON if self.parent.mode == MODE_PLAY else 1
             opacity: 0 if self.parent.mode == MODE_PLAY else 1
     CollapsablePanel:
         id: graph_panel
-        height_open: self.header.height + graph.height + rank_graph.height
+        content_height: graph.height + rank_graph.height
+        options_height: root.tab_option_height
         closed_label: 'closedlabel:scoregraph'
         options: ['score','winrate','rank_est']
         option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
         option_active: [True,False,False]
-        options_height: root.tab_option_height
         on_option_state:
             graph.show_graphs(args[1])
             graph.hidden = not (args[1]['score'] or args[1]['winrate'])
@@ -553,21 +569,24 @@
             id: graph
             opacity: 0 if self.hidden else 1
             size_hint_y: None
-            height: 0.0001 if self.hidden else root.graph_height
+            height: EPSILON if self.hidden else root.graph_height
         RankGraph:
             id: rank_graph
             opacity: 0 if self.hidden else 1
             size_hint_y: None
-            height: 0.0001 if self.hidden else root.graph_height
+            height: EPSILON if self.hidden else root.graph_height
     CollapsablePanel:
         id: stats_panel
-        height_open: root.stats_box_height
+        num_active: 3
+        content_height: self.num_active * root.stat_height + EPSILON
+        options_height: root.tab_option_height
         closed_label: 'closedlabel:movestats'
         options: ['score','winrate','points']
         option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
         option_active: [True,True,True]
-        options_height: root.tab_option_height
-        on_option_state: for k, v in args[1].items(): stats.labels[k].hidden = not v
+        on_option_state:
+            for k, v in args[1].items(): stats.labels[k].hidden = not v
+            self.num_active = sum(args[1].values(),0)
         StatsBox:
             id: stats
     CollapsablePanel:
@@ -590,10 +609,11 @@
             orientation: 'vertical'
             ScrollableLabel:
                 id: status
+                error: False
                 size_hint: 1, None
                 height: min(self.parent.height*0.66,self.label.texture_size[1])
-                outline_color: RED
-                background_color: DARKRED
+                outline_color: RED if self.error else WHITE
+                background_color: LIGHTER_BACKGROUND_COLOR # DARKRED
             ScrollableLabel:
                 id: info
                 detailed: False
@@ -803,7 +823,7 @@
     icon_size: self.height * 0.75, self.height  * 0.75
 
 
-<MenuLabel@Label+BackgroundMixin>:
+<MenuLabel@BackgroundMixin+Label>:
     background_color: BACKGROUND_COLOR
     font_size: self.height * 0.5
     height: self.parent.item_height or 50
@@ -844,7 +864,7 @@
         MDBoxLayout:
             orientation: 'vertical'
             spacing: CP_SPACING
-            size_hint_x: 1 if root.mode != PLAYER_AI else 0.0001
+            size_hint_x: 1 if root.mode != PLAYER_AI else EPSILON
             opacity:1 if root.mode != PLAYER_AI else 0
             Label:
                 text:  i18n._("gametype")
@@ -857,7 +877,7 @@
         MDBoxLayout:
             orientation: 'vertical'
             spacing: CP_SPACING
-            size_hint_x: 1 if root.mode == PLAYER_AI else 0.0001
+            size_hint_x: 1 if root.mode == PLAYER_AI else EPSILON
             opacity: 1 if root.mode == PLAYER_AI else 0
             Label:
                 text: i18n._("aistrategy")

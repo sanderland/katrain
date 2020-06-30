@@ -61,6 +61,8 @@ from katrain.core.constants import (
     VERSION,
     STATUS_ERROR,
     STATUS_INFO,
+    PLAYING_NORMAL,
+    PLAYER_HUMAN,
 )
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
 from katrain.core.base_katrain import KaTrainBase
@@ -243,6 +245,14 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
         self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast)
+        if move_tree:
+            for bw, player_info in self.players_info.items():
+                player_info.player_type = PLAYER_HUMAN
+                player_info.player_subtype = PLAYING_NORMAL
+                player_info.sgf_rank = move_tree.root.get_property(bw + "R")
+                player_info.calculated_rank = None
+                player_info.name = move_tree.root.get_property("P" + bw)
+                self.update_player(bw)
         self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 
