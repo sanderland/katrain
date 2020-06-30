@@ -123,6 +123,8 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def toggle_continuous_analysis(self):
         self.idle_analysis = not self.idle_analysis
+        if not self.idle_analysis:
+            self.controls.set_status("", STATUS_INFO)
         self.update_state()
 
     def start(self):

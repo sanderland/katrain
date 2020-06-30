@@ -25,9 +25,10 @@ from katrain.core.constants import (
     OUTPUT_ERROR,
     OUTPUT_INFO,
     STATUS_INFO,
+    AI_KEY_PROPERTIES,
 )
 from katrain.core.engine import KataGoEngine
-from katrain.core.lang import i18n
+from katrain.core.lang import i18n, rank_label
 from katrain.core.utils import PATHS, find_package_resource
 from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
@@ -138,6 +139,7 @@ class LabelledIntInput(LabelledTextInput):
 class LabelledSelectionSlider(BoxLayout):
     input_property = StringProperty("")
     values = ListProperty([(0, "")])  # (value:numeric,label:string) pairs
+    key_option = BooleanProperty(False)
 
     def set_value(self, v):
         self.slider.set_value(v)
@@ -319,19 +321,17 @@ class ConfigAIPopup(QuickConfigGui):
     def estimate_rank_from_options(self, *_args):
         strategy = self.ai_select.selected[1]
         options = self.collect_properties(self)  # [strategy]
-        print(strategy, options)
         prefix = f"ai/{strategy}/"
         options = {k[len(prefix) :]: v for k, v in options.items() if k.startswith(prefix)}
-        print(options)
         dan_rank, model_based = ai_rank_estimation(strategy, options)
-        self.estimated_rank_label.text = ("" if model_based else "~") + RankGraph.rank_label(dan_rank)
+        self.estimated_rank_label.text = ("" if model_based else "~") + rank_label(dan_rank)
 
     def build_ai_options(self, *_args):
         strategy = self.ai_select.selected[1]
         mode_settings = self.katrain.config(f"ai/{strategy}")
         self.options_grid.clear_widgets()
         self.help_label.text = i18n._(strategy.replace("ai:", "aihelp:"))
-        for k, v in sorted(mode_settings.items(), key=lambda kv: kv[0]):
+        for k, v in sorted(mode_settings.items(), key=lambda kv: (kv[0] not in AI_KEY_PROPERTIES, kv[0])):
             self.options_grid.add_widget(DescriptionLabel(text=k, size_hint_x=0.25))
             if k in AI_OPTION_VALUES:
                 values = AI_OPTION_VALUES[k]
@@ -344,7 +344,9 @@ class ConfigAIPopup(QuickConfigGui):
                         fixed_values = [(v, re.sub(r"\[(.*?)\]", lambda m: i18n._(m[1]), l)) for v, l in values]
                     else:  # just numbers
                         fixed_values = [(v, str(v)) for v in values]
-                    widget = LabelledSelectionSlider(values=fixed_values, input_property=f"ai/{strategy}/{k}")
+                    widget = LabelledSelectionSlider(
+                        values=fixed_values, input_property=f"ai/{strategy}/{k}", key_option=(k in AI_KEY_PROPERTIES)
+                    )
                     widget.set_value(v)
                     widget.textbox.bind(text=self.estimate_rank_from_options)
                 self.options_grid.add_widget(wrap_anchor(widget))
@@ -355,6 +357,10 @@ class ConfigAIPopup(QuickConfigGui):
         for _ in range((self.max_options - len(mode_settings)) * 2):
             self.options_grid.add_widget(Label(size_hint_x=None))
         Clock.schedule_once(self.estimate_rank_from_options)
+
+    def update_config(self, save_to_file=True):
+        super().update_config(save_to_file=save_to_file)
+        self.katrain.update_calculated_ranks()
 
 
 class ConfigPopup(QuickConfigGui):

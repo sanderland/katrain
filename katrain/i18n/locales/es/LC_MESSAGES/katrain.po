@@ -618,7 +618,7 @@ msgstr "Analizar continuamente "
 
 #. TODO - ai which handles handicap games better
 msgid "ai:handicap"
-msgstr "KataGo Handicap"
+msgstr "KataHandicap"
 
 #. TODO
 msgid "aihelp:handicap"
@@ -635,3 +635,4 @@ msgstr "Estimated Strength"
 #. TODO - label in little popup for analyzing entire game
 msgid "reanalyze max visits"
 msgstr "Number of visits per move"
+

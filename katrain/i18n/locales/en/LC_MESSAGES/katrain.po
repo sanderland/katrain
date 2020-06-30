@@ -520,7 +520,7 @@ msgstr ""
 
 #. ai which handles handicap games better
 msgid "ai:handicap"
-msgstr "KataGo Handicap"
+msgstr "KataHandicap"
 
 msgid "aihelp:handicap"
 msgstr ""

@@ -297,8 +297,8 @@
             text_size: self.size
             halign: 'center'
             valign: 'middle'
-            shorten: True
-            shorten_from: 'right'
+            shorten: root.player_type==PLAYER_HUMAN # overflow/cut rank off AI names
+            max_lines: 1
 
 <PauseButton>:
     height: self.width

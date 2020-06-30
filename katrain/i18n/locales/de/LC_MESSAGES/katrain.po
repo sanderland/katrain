@@ -631,7 +631,7 @@ msgstr "Continuous analysis"
 
 #. TODO - ai which handles handicap games better
 msgid "ai:handicap"
-msgstr "KataGo Handicap"
+msgstr "KataHandicap"
 
 #. TODO
 msgid "aihelp:handicap"

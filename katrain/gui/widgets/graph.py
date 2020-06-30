@@ -7,7 +7,7 @@ from kivy.properties import BooleanProperty, Clock, ListProperty, NumericPropert
 from kivymd.app import MDApp
 
 from katrain.core.constants import OUTPUT_ERROR
-from katrain.core.lang import i18n
+from katrain.core.lang import rank_label
 from katrain.gui.kivyutils import BackgroundMixin
 
 
@@ -180,13 +180,6 @@ class RankGraph(Graph):
         self.rank_by_player = {}
 
     @staticmethod
-    def rank_label(rank):
-        if rank > 0:
-            return f"{rank:.0f}{i18n._('strength:dan')}"
-        else:
-            return f"{1-rank:.0f}{i18n._('strength:kyu')}"
-
-    @staticmethod
     def calculate_rank_for_player(segment_stats, num_intersec, player):
         non_obvious_moves = [
             (nl, r, val)
@@ -284,9 +277,9 @@ class RankGraph(Graph):
                     min_rank -= 1
             rank_range = max_rank - min_rank
 
-            self.ids.mid_marker.text = self.rank_label((max_rank + min_rank) / 2)
-            self.ids.top_marker.text = self.rank_label(max_rank)
-            self.ids.bottom_marker.text = self.rank_label(min_rank)
+            self.ids.mid_marker.text = rank_label((max_rank + min_rank) / 2)
+            self.ids.top_marker.text = rank_label(max_rank)
+            self.ids.bottom_marker.text = rank_label(min_rank)
 
             graph_points = {}
             for pl, rank_points in self.rank_by_player.items():

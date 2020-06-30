@@ -403,7 +403,7 @@
         values: root.values
         on_select: textbox.text = str(slider.value)
         track_color: LIGHTGREY
-        thumb_color:  0.5, 0.6, 0.8, 1
+        thumb_color: (0.6, 0.7, 0.9, 1) if root.key_option else (0.3, 0.4, 0.6, 1)
     LabelledFloatInput:
         id: textbox
 

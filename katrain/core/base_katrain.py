@@ -5,6 +5,7 @@ import sys
 from kivy import Config
 from kivy.storage.jsonstore import JsonStore
 
+from katrain.core.ai import ai_rank_estimation
 from katrain.core.constants import *
 from katrain.core.utils import find_package_resource
 
@@ -135,6 +136,13 @@ class KaTrainBase:
 
     def update_player(self, bw, **kwargs):
         self.players_info[bw].update(**kwargs)
+        self.update_calculated_ranks()
+
+    def update_calculated_ranks(self):
+        for bw, player_info in self.players_info.items():
+            if player_info.player_type == PLAYER_AI:
+                settings = self.config(f"ai/{player_info.strategy}")
+                player_info.calculated_rank, _ = ai_rank_estimation(player_info.player_subtype, settings)
 
     def reset_players(self):
         self.update_player("B")
