@@ -51,9 +51,8 @@ but has since grown to include a wide range of features, including:
 ## <a name="install"></a> Installation
 * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
-    * Note that on MacOS you will need to set up KataGo using brew, as described [here](INSTALL.md).
-* See [here](INSTALL.md#MacPrereq) for detailed instructions for running from source files on Window, Linux and MacOS,
-  as well as setting up KataGo to use multiple GPUs.
+* See [here](INSTALL.md) for detailed instructions for Window, Linux and MacOS,
+  as well as troubleshooting and setting up KataGo to use multiple GPUs.
 
 ## <a name="ai"></a> Play against AI
 
@@ -142,7 +141,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[Ctrl-V]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
 * **[Ctrl-C]**: Save SGF to clipboard.
 
-## <a name="faq"></a FAQ
+## <a name="faq"></a> FAQ
 
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
@@ -157,7 +156,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
-[![Contributors](https://img.shields.io/static/v1?label=contributors&message=15&color=dcb424)](CONTRIBUTIONS.md)
+[![Contributors](https://img.shields.io/static/v1?label=contributors&message=16&color=dcb424)](CONTRIBUTIONS.md)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
 [![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 

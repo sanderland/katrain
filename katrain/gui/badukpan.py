@@ -1,9 +1,11 @@
 import copy
 import math
+import random
 import time
 from typing import List, Optional
 
 from kivy.clock import Clock
+from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
@@ -27,6 +29,7 @@ from katrain.gui.style import *
 class BadukPanWidget(Widget):
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
+        self.stones_sounds = [SoundLoader.load(f"sounds/stone{i}.wav") for i in [1, 2, 3, 4, 5]]
         self.trainer_config = {}
         self.ghost_stone = []
         self.gridpos_x = []
@@ -37,7 +40,6 @@ class BadukPanWidget(Widget):
         self.animating_pv = None
         self.last_mouse_pos = (0, 0)
         Window.bind(mouse_pos=self.on_mouse_pos)
-
         self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents)
         self.redraw_trigger = Clock.create_trigger(self.redraw)
         self.bind(size=self.redraw_trigger)
@@ -102,6 +104,8 @@ class BadukPanWidget(Widget):
         katrain = self.katrain
         if self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
             katrain("play", self.ghost_stone)
+            if self.katrain.config("timer/sound"):
+                random.choice(self.stones_sounds).play()
         elif not self.ghost_stone:
             xd, xp = self._find_closest(touch.x, self.gridpos_x)
             yd, yp = self._find_closest(touch.y, self.gridpos_y)

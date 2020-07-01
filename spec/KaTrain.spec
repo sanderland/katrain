@@ -14,7 +14,12 @@ a = Analysis(
     datas=[
         ("..\\katrain\\gui.kv", "katrain"),
         ("..\\katrain\\popups.kv", "katrain"),
-        ("..\\katrain\\beep.wav", "katrain"),
+        ("..\\katrain\\countdownbeep.wav", "katrain"),
+        ("..\\katrain\\stone1.wav", "katrain"),
+        ("..\\katrain\\stone2.wav", "katrain"),
+        ("..\\katrain\\stone3.wav", "katrain"),
+        ("..\\katrain\\stone4.wav", "katrain"),
+        ("..\\katrain\\stone5.wav", "katrain"),
         ("..\\katrain\\config.json", "katrain"),
         ("..\\katrain\\KataGo", "katrain\\KataGo"),
         ("..\\katrain\img", "katrain\\img"),

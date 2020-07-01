@@ -70,7 +70,7 @@ class ControlsPanel(BoxLayout):
         self.status_state = (None, -1e9, None)
         self.active_comment_node = None
         self.last_timer_update = (None, 0, False)
-        self.beep = SoundLoader.load("beep.wav")
+        self.beep = SoundLoader.load("sounds/countdownbeep.wav")
         self.beep_start = 5.2
         self.timer_interval = 0.07
 
