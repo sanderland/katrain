@@ -101,12 +101,15 @@ class KataGoEngine:
         self.shutdown(finish=False)
         self.start()
 
-    def check_alive(self, exception_if_dead=False):
+    def check_alive(self, os_error='', exception_if_dead=False):
         ok = self.katago_process and self.katago_process.poll() is None
         if not ok and exception_if_dead:
-            raise EngineDiedException(
-                f"Engine died (process {self.katago_process}, poll {self.katago_process and self.katago_process.poll()}) config {self.config}"
-            )
+            if self.katago_process:
+                os_error += f"status {self.katago_process and self.katago_process.poll()}"
+                died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
+                self.katrain.log(died_msg, OUTPUT_ERROR)
+                self.katago_process = None
+            raise EngineDiedException(died_msg)
         return ok
 
     def shutdown(self, finish=False):
@@ -134,15 +137,22 @@ class KataGoEngine:
                         self.katrain.log(line.decode(errors="ignore").strip(), OUTPUT_KATAGO_STDERR)
                     except Exception as e:
                         print("ERROR in processing KataGo stderr:", line, "Exception", e)
-            except:
+                else:
+                    self.check_alive(exception_if_dead=True)
+            except Exception as e:
+                self.katrain.log(f"Exception in reading stdout {e}" , OUTPUT_DEBUG)
                 return
 
     def _analysis_read_thread(self):
         while self.katago_process is not None:
             try:
                 line = self.katago_process.stdout.readline()
+                if not line:
+                    self.check_alive(exception_if_dead=True)
             except OSError as e:
-                raise EngineDiedException(i18n("Engine died unexpectedly").format(error=e))
+                self.check_alive(os_error=str(e),exception_if_dead=True)
+                return
+
             if b"Uncaught exception" in line:
                 self.katrain.log(f"KataGo Engine Failed: {line.decode(errors='ignore')}", OUTPUT_ERROR)
                 return
@@ -193,7 +203,7 @@ class KataGoEngine:
                 self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
                 self.katago_process.stdin.flush()
             except OSError as e:
-                self.katrain.log(i18n._("Engine died unexpectedly").format(error=e), OUTPUT_ERROR)
+                self.check_alive(os_error=str(e),exception_if_dead=True)
                 return  # do not raise, since there's nothing to catch it
 
     def request_analysis(

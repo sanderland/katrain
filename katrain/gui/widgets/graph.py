@@ -4,23 +4,25 @@ import threading
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty, Clock, ListProperty, NumericProperty, StringProperty
+from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 
 from katrain.core.constants import OUTPUT_ERROR
 from katrain.core.lang import rank_label
-from katrain.gui.kivyutils import BackgroundMixin
 
 
-class Graph(BackgroundMixin):
+class Graph(Widget):
     marker_font_size = NumericProperty(0)
     background_image = StringProperty("img/graph_bg.png")
-
+    background_color = ListProperty([1, 1, 1, 1])
+    highlighted_index = NumericProperty(0)
     nodes = ListProperty([])
     hidden = BooleanProperty(False)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._lock = threading.Lock()
+        self.redraw_on_highlight_change = True
         self.bind(pos=self.update_graph, size=self.update_graph)
         self.redraw_trigger = Clock.create_trigger(self.update_graph, 0.1)
 
@@ -31,19 +33,24 @@ class Graph(BackgroundMixin):
             node = node.ordered_children[0]
             self.nodes.append(node)
         self.highlighted_index = 0
+        self.redraw_trigger()
 
     def update_graph(self, *args):
         pass
 
     def update_value(self, node):
         with self._lock:
+            changed = (self.redraw_on_highlight_change and self.highlighted_index != node.depth)
             self.highlighted_index = index = node.depth
             self.nodes.extend([None] * max(0, index - (len(self.nodes) - 1)))
+            if self.nodes[index]!=node:
+                changed=True
             self.nodes[index] = node
-            if index > 1 and node.parent:  # sometimes things go so fast
+            if index > 1 and node.parent:  # sometimes there are gaps
                 backfill, bfnode = index - 1, node.parent
                 while bfnode is not None and self.nodes[backfill] != bfnode:
                     self.nodes[backfill] = bfnode
+                    changed = True
                     backfill -= 1
                     bfnode = bfnode.parent
 
@@ -51,11 +58,13 @@ class Graph(BackgroundMixin):
                 node is None or not node.children or self.nodes[index + 1] != node.ordered_children[0]
             ):
                 self.nodes = self.nodes[: index + 1]  # on branch switching, don't show history from other branch
+                changed = True
             if index == len(self.nodes) - 1:  # possibly just switched branch or the line above triggered
                 while node.children:  # add children back
                     node = node.ordered_children[0]
                     self.nodes.append(node)
-            self.redraw_trigger()
+            if changed:
+                self.redraw_trigger()
 
 
 class ScoreGraph(Graph):
@@ -67,7 +76,6 @@ class ScoreGraph(Graph):
 
     score_dot_pos = ListProperty([0, 0])
     winrate_dot_pos = ListProperty([0, 0])
-    highlighted_index = NumericProperty(None)
     highlight_size = NumericProperty(dp(6))
 
     score_scale = NumericProperty(5)
@@ -173,9 +181,11 @@ class RankGraph(Graph):
     black_rank_points = ListProperty([])
     white_rank_points = ListProperty([])
     segment_length = NumericProperty(80)
+    RANK_CAP = 5
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.redraw_on_highlight_change = False
         self.calculate_trigger = Clock.create_trigger(lambda *args: self.rank_game(), 0.25)
         self.rank_by_player = {}
 
@@ -189,11 +199,7 @@ class RankGraph(Graph):
         if not non_obvious_moves:
             return None
         num_legal, rank, value = zip(*non_obvious_moves)
-        rank = list(rank)
-        for (i, item) in enumerate(rank):
-            if item > num_legal[i] * 0.09:
-                rank[i] = num_legal[i] * 0.09
-        rank = tuple(rank)
+        rank = [min(r, nl * 0.09) for r, nl in zip(rank, num_legal)]
         averagemod_rank = averagemod(rank)
         averagemod_len_legal = averagemod(num_legal)
         norm_avemod_len_legal = averagemod_len_legal / num_intersec
@@ -209,9 +215,7 @@ class RankGraph(Graph):
             )
         else:
             rank_kyu = -4
-        if rank_kyu < -4:
-            rank_kyu = -4
-        return 1 - rank_kyu  # dan rank
+        return min(RankGraph.RANK_CAP,1 - rank_kyu)  # dan rank
 
     @staticmethod
     def calculate_ranks(segment_stats, num_intersec):
@@ -241,10 +245,11 @@ class RankGraph(Graph):
 
             ranks = {"B": [], "W": []}
             dx = self.segment_length // 4
-            for segment_mid in range(0, len(nodes), dx):
+            for segment_mid in range(dx, len(nodes), dx):
                 bounds = (max(0, segment_mid - half_seg), min(segment_mid + half_seg, len(nodes)))
-                for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1] + 1], num_intersec).items():
-                    if bounds[1] - bounds[0] > self.segment_length * 0.75:
+                num_analyzed = sum(num_mv is not None for num_mv, _, _, _ in policy_stats[bounds[0] : bounds[1] + 1])
+                if num_analyzed >= self.segment_length * 0.75:
+                    for pl, rank in self.calculate_ranks(policy_stats[bounds[0] : bounds[1] + 1], num_intersec).items():
                         ranks[pl].append((segment_mid, rank))
             self.rank_by_player = ranks
         except Exception as e:
@@ -270,15 +275,17 @@ class RankGraph(Graph):
 
             min_rank = math.floor(min(all_ranks))
             max_rank = math.ceil(max(all_ranks))
+            if max_rank==min_rank:
+                min_rank -= 1
             if (max_rank - min_rank) % 2 != 0:  # make midpoint whole integer
-                if abs(max_rank - max(all_ranks)) < abs(min(all_ranks) - min_rank):
+                if abs(max_rank - max(all_ranks)) < abs(min(all_ranks) - min_rank) and max_rank < self.RANK_CAP:
                     max_rank += 1
                 else:
                     min_rank -= 1
             rank_range = max_rank - min_rank
 
             self.ids.mid_marker.text = rank_label((max_rank + min_rank) / 2)
-            self.ids.top_marker.text = rank_label(max_rank)
+            self.ids.top_marker.text = rank_label(max_rank) + ("+" if max_rank==self.RANK_CAP else "")
             self.ids.bottom_marker.text = rank_label(min_rank)
 
             graph_points = {}
@@ -292,12 +299,16 @@ class RankGraph(Graph):
                 ]
             self.black_rank_points = sum(graph_points["B"], [])
             self.white_rank_points = sum(graph_points["W"], [])
-
+        else:
+            self.black_rank_points = []
+            self.white_rank_points = []
 
 Builder.load_string(
     """
 #:set GRAPH_CENTER_COLOR [0.5,0.5,0.5]
-#:set GRAPH_DOT_COLOR [0.85, 0.3, 0.3,1]
+#:set GRAPH_DOT_COLOR [0.85,0.3,0.3,1]
+#:set WINRATE_MARKER_COLOR [0.05, 0.7, 0.05, 1]
+#:set SCORE_MARKER_COLOR [0.2, 0.6, 0.8, 1]
 
 #:import LIGHTER_BACKGROUND_COLOR katrain.gui.style.LIGHTER_BACKGROUND_COLOR
 #:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
@@ -307,11 +318,15 @@ Builder.load_string(
 #:import WHITE katrain.gui.style.WHITE
 #:import YELLOW katrain.gui.style.YELLOW
 
-
 <Graph>:
-    background_color:  BOX_BACKGROUND_COLOR
+    background_color: BOX_BACKGROUND_COLOR
     marker_font_size: 0.1 * self.height
-    canvas:
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
         Color:
             rgba: [1,1,1,1]
         Rectangle:
@@ -320,7 +335,7 @@ Builder.load_string(
             source: root.background_image
 
 <ScoreGraph>:
-    canvas.after:
+    canvas:
         Color:
             rgba: SCORE_COLOR
         Line:
@@ -351,39 +366,39 @@ Builder.load_string(
     # score ticks
     GraphMarkerLabel:
         font_size: root.marker_font_size
-        color:  SCORE_COLOR
+        color: SCORE_MARKER_COLOR
         pos: root.x + root.width - self.width-1, root.pos[1]+root.height - self.font_size - 1
         text: 'B+{}'.format(root.score_scale)
         opacity: int(root.show_score)
     GraphMarkerLabel:
         font_size: root.marker_font_size
-        color:  SCORE_COLOR
+        color: SCORE_MARKER_COLOR
         pos: root.x + root.width - self.width-1, root.y + root.height*0.5 - self.height/2 + 2
         text: i18n._('Jigo')
         opacity: int(root.show_score)
     GraphMarkerLabel:
         font_size: root.marker_font_size
-        color:  SCORE_COLOR
+        color: SCORE_MARKER_COLOR
         pos: root.x + root.width - self.width-1, root.pos[1]
         text: 'W+' + str(int(root.score_scale))
         opacity: int(root.show_score)
     # wr ticks
     GraphMarkerLabel:
         font_size: root.marker_font_size
-        color: WINRATE_COLOR
+        color: WINRATE_MARKER_COLOR
         pos: root.pos[0]+1,  root.pos[1] + root.height - self.font_size - 1
         text: "{}%".format(50 + root.winrate_scale)
         opacity: int(root.show_winrate)
     GraphMarkerLabel:
         font_size: root.marker_font_size
-        color: WINRATE_COLOR
+        color: WINRATE_MARKER_COLOR
         pos:root.pos[0]+1, root.pos[1]
         text: "{}%".format(50 - root.winrate_scale)
         opacity: int(root.show_winrate) 
 
 <RankGraph>:
     background_color: LIGHTER_BACKGROUND_COLOR
-    canvas.after:
+    canvas:
         Color:
             rgba: WHITE
         Line:

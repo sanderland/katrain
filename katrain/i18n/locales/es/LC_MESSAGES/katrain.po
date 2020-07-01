@@ -635,4 +635,3 @@ msgstr "Estimated Strength"
 #. TODO - label in little popup for analyzing entire game
 msgid "reanalyze max visits"
 msgstr "Number of visits per move"
-

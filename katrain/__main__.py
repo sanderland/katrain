@@ -256,6 +256,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 player_info.name = move_tree.root.get_property("P" + bw)
                 self.update_player(bw)
         self.controls.graph.initialize_from_game(self.game.root)
+        self.controls.rank_graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 
     def _do_ai_move(self, node=None):
