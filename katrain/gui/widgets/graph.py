@@ -40,11 +40,11 @@ class Graph(Widget):
 
     def update_value(self, node):
         with self._lock:
-            changed = (self.redraw_on_highlight_change and self.highlighted_index != node.depth)
+            changed = self.redraw_on_highlight_change and self.highlighted_index != node.depth
             self.highlighted_index = index = node.depth
             self.nodes.extend([None] * max(0, index - (len(self.nodes) - 1)))
-            if self.nodes[index]!=node:
-                changed=True
+            if self.nodes[index] != node:
+                changed = True
             self.nodes[index] = node
             if index > 1 and node.parent:  # sometimes there are gaps
                 backfill, bfnode = index - 1, node.parent
@@ -215,7 +215,7 @@ class RankGraph(Graph):
             )
         else:
             rank_kyu = -4
-        return min(RankGraph.RANK_CAP,1 - rank_kyu)  # dan rank
+        return min(RankGraph.RANK_CAP, 1 - rank_kyu)  # dan rank
 
     @staticmethod
     def calculate_ranks(segment_stats, num_intersec):
@@ -275,7 +275,7 @@ class RankGraph(Graph):
 
             min_rank = math.floor(min(all_ranks))
             max_rank = math.ceil(max(all_ranks))
-            if max_rank==min_rank:
+            if max_rank == min_rank:
                 min_rank -= 1
             if (max_rank - min_rank) % 2 != 0:  # make midpoint whole integer
                 if abs(max_rank - max(all_ranks)) < abs(min(all_ranks) - min_rank) and max_rank < self.RANK_CAP:
@@ -285,7 +285,7 @@ class RankGraph(Graph):
             rank_range = max_rank - min_rank
 
             self.ids.mid_marker.text = rank_label((max_rank + min_rank) / 2)
-            self.ids.top_marker.text = rank_label(max_rank) + ("+" if max_rank==self.RANK_CAP else "")
+            self.ids.top_marker.text = rank_label(max_rank) + ("+" if max_rank == self.RANK_CAP else "")
             self.ids.bottom_marker.text = rank_label(min_rank)
 
             graph_points = {}
@@ -302,6 +302,7 @@ class RankGraph(Graph):
         else:
             self.black_rank_points = []
             self.white_rank_points = []
+
 
 Builder.load_string(
     """

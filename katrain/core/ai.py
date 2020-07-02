@@ -2,30 +2,30 @@ import heapq
 import math
 import random
 import time
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional, Tuple
 
-from katrain.core.utils import var_to_grid
 from katrain.core.constants import (
-    OUTPUT_INFO,
-    OUTPUT_DEBUG,
-    AI_STRATEGIES_POLICY,
-    AI_POLICY,
-    AI_WEIGHTED,
-    AI_STRATEGIES_PICK,
-    AI_JIGO,
-    AI_SCORELOSS,
     AI_DEFAULT,
+    AI_HANDICAP,
     AI_INFLUENCE,
+    AI_JIGO,
     AI_LOCAL,
+    AI_PICK,
+    AI_POLICY,
+    AI_RANK,
+    AI_SCORELOSS,
+    AI_STRATEGIES_PICK,
+    AI_STRATEGIES_POLICY,
+    AI_STRENGTH,
     AI_TENUKI,
     AI_TERRITORY,
-    AI_PICK,
-    AI_RANK,
-    AI_HANDICAP,
+    AI_WEIGHTED,
+    OUTPUT_DEBUG,
     OUTPUT_ERROR,
-    AI_STRENGTH,
+    OUTPUT_INFO,
 )
 from katrain.core.game import Game, GameNode, Move
+from katrain.core.utils import var_to_grid
 
 
 def ai_rank_estimation(strategy, settings) -> Tuple[int, bool]:
@@ -200,7 +200,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             elif ai_mode in AI_STRATEGIES_PICK:
 
                 if ai_mode != AI_RANK:
-                    n_moves = int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"])
+                    n_moves = max(1, int(ai_settings["pick_frac"] * len(legal_policy_moves) + ai_settings["pick_n"]))
                 else:
                     orig_calib_avemodrank = 0.063015 + 0.7624 * board_squares / (
                         10 ** (-0.05737 * ai_settings["kyu_rank"] + 1.9482)
@@ -222,9 +222,8 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                         )
                         - 0.01093 * ai_settings["kyu_rank"]
                     ) * orig_calib_avemodrank
-                    n_moves = int(
-                        round(board_squares * norm_leg_moves / (1.31165 * (modified_calib_avemodrank + 1) - 0.082653))
-                    )
+                    n_moves = board_squares * norm_leg_moves / (1.31165 * (modified_calib_avemodrank + 1) - 0.082653)
+                    n_moves = max(1, round(n_moves))
 
                 if ai_mode in [AI_INFLUENCE, AI_TERRITORY, AI_LOCAL, AI_TENUKI]:
                     if cn.depth > ai_settings["endgame"] * board_squares:

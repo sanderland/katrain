@@ -98,14 +98,17 @@ class BadukPanWidget(Widget):
                     self.draw_hover_contents()
             self.last_mouse_pos = pos
 
+    def play_stone_sound(self, *_args):
+        if self.katrain.config("timer/sound"):
+            random.choice(self.stones_sounds).play()
+
     def on_touch_up(self, touch):
         if ("button" in touch.profile and touch.button != "left") or not self.gridpos_x:
             return
         katrain = self.katrain
         if self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
             katrain("play", self.ghost_stone)
-            if self.katrain.config("timer/sound"):
-                random.choice(self.stones_sounds).play()
+            self.play_stone_sound()
         elif not self.ghost_stone:
             xd, xp = self._find_closest(touch.x, self.gridpos_x)
             yd, yp = self._find_closest(touch.y, self.gridpos_y)

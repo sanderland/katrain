@@ -7,7 +7,7 @@
 * [Quick install guide for Linux](#LinuxQuick)
     * [Troubleshooting and installation from sources](#LinuxSources)
 
-## <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" alt="drawing" width="25"/> Installation for MacOS users
+## <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg" alt="MacOs" height="35"/> Installation for MacOS users
 
 ### <a name="MacQuick"></a>Quick install guide
 
@@ -25,11 +25,12 @@ These commands install [Homebrew](https://brew.sh), which simplifies installing 
 
 ### <a name="MacSources"></a>Troubleshooting and Installation from sources
 
-Installation from sources is essentially the same as for Linux, see [here](#LinuxSources).
+Installation from sources is essentially the same as for Linux, see [here](#LinuxSources),
+ note that you will still need to install your own KataGo, using brew or otherwise. 
 
 If you encounter SSL errors on downloading model files, you may need to follow [these](https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate) instructions to fix your certificates.
 
-## <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" alt="drawing" width="25"/> Installation for Windows users
+## <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" alt="Windows" height="35"/> Installation for Windows users
 
 ### <a name="WindowsQuick"></a>Quick install guide
 
@@ -42,9 +43,9 @@ Simply download and run, everything is included.
 * Make sure you have a python installation, I will assume Anaconda (Python 3.7), available [here](https://www.anaconda.com/products/individual#download-section).
 * Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
 * Execute the command `pip3 install .`
-* Start the app by running `katrain` in the directory where you downloaded the scripts. 
+* Start the app by running `katrain` in the command prompt. 
 
-## Installation for Linux users
+## <img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Linux_Logo_in_Linux_Libertine_Font.svg" alt="Linux" height="35"/> Installation for Linux users
 
 ### <a name="LinuxQuick"></a>Quick install guide
 
@@ -74,6 +75,7 @@ A binary for KataGo is included, but if you have compiled your own, press F8 to 
 
 You can try to manually install dependencies to resolve some issues relating to missing dependencies,
  e.g. the binary 'wheel' is not provided, KataGo is not starting, or sounds are not working.
+You can also follow these instructions if you don't want to install KaTrain, and just run it locally.
 
 First install the following packages, which are either required for building Kivy, 
  or may help resolve missing dependencies for Kivy or KataGo.
@@ -93,6 +95,7 @@ In case the sound is not working, or there is no available wheel for your OS or 
 pip3 uninstall kivy
 pip3 install --no-binary kivy kivy==2.0.0rc2
 ```
+You can now start KaTrain by running `python3 -m katrain`
 
 In case KataGo does not start, an alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.
 
@@ -114,7 +117,8 @@ The above devices were found on a 2019 MacBook Pro with both an on-motherboard g
 As you can see it scores about twice as high as the Intel UHD chip and KataGo has selected
  it as it's sole device. You can configure KataGo to use *both* the AMD and the Intel devices to get the best performance out of the system.
 
-* Open the 'analysis_config.cfg' file in the KataGo folder.
+* Open the 'analysis_config.cfg' file in the `katrain/KataGo` folder in your python packages, or local sources.
+  If you can't find it, turn on `debug_level=1` in general settings and look for the command that is used to start KataGo.
 * Search for `numNNServerThreadsPerModel` (~line 75), uncomment the line by deleting the # and set the value to 2. The line should read `numNNServerThreadsPerModel = 2`.
 * Search for `openclDeviceToUseThread` (~line 117), uncomment by deleting the # and set the values to the device ID numbers identified in the terminal.
   From the example above, we would want to use devices 1 and 2, for the Intel and AMD GPU's, but not device 0 (the CPU). In our case, the lines should read:
@@ -122,7 +126,7 @@ As you can see it scores about twice as high as the Intel UHD chip and KataGo ha
 openclDeviceToUseThread0 = 1
 openclDeviceToUseThread1 = 2
 ```
-* Run `python3 -m katrain` and confirm that KataGo is now using both devices, by 
+* Run `katrain` and confirm that KataGo is now using both devices, by 
  checking the output from the terminal, which should indicate two devices being used. For example:
 ```
     Found 3 device(s) on platform 0 with type CPU or GPU or Accelerator

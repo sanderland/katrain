@@ -47,7 +47,7 @@ Many thanks to these additional authors:
 * "Dontbtme" for detailed feedback and early testing of v1.0+.
 * "nowoowoo" for a fix to the parser for SGF files with extra line breaks.
 * "nimets123" for the timer sound effects.
-* "JSinSeaward" for stone sounds.
+* Jordan Seaward for the stone sound effects.
 * "fohristiwhirl" for the Gibo format parsing code.
 
 ## Translators

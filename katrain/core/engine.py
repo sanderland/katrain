@@ -101,7 +101,7 @@ class KataGoEngine:
         self.shutdown(finish=False)
         self.start()
 
-    def check_alive(self, os_error='', exception_if_dead=False):
+    def check_alive(self, os_error="", exception_if_dead=False):
         ok = self.katago_process and self.katago_process.poll() is None
         if not ok and exception_if_dead:
             if self.katago_process:
@@ -140,7 +140,7 @@ class KataGoEngine:
                 else:
                     self.check_alive(exception_if_dead=True)
             except Exception as e:
-                self.katrain.log(f"Exception in reading stdout {e}" , OUTPUT_DEBUG)
+                self.katrain.log(f"Exception in reading stdout {e}", OUTPUT_DEBUG)
                 return
 
     def _analysis_read_thread(self):
@@ -150,7 +150,7 @@ class KataGoEngine:
                 if not line:
                     self.check_alive(exception_if_dead=True)
             except OSError as e:
-                self.check_alive(os_error=str(e),exception_if_dead=True)
+                self.check_alive(os_error=str(e), exception_if_dead=True)
                 return
 
             if b"Uncaught exception" in line:
@@ -203,7 +203,7 @@ class KataGoEngine:
                 self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
                 self.katago_process.stdin.flush()
             except OSError as e:
-                self.check_alive(os_error=str(e),exception_if_dead=True)
+                self.check_alive(os_error=str(e), exception_if_dead=True)
                 return  # do not raise, since there's nothing to catch it
 
     def request_analysis(
