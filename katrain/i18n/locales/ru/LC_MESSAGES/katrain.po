@@ -597,51 +597,38 @@ msgstr ""
 "Более сильные настройки расширяют множество для выбора. Т.к. на шкале "
 "отсутствуют 0 кю/дан, то 3 дан = -2 кю."
 
-#. TODO - shown on on the model select dropdown
 msgid "models available"
-msgstr "{num} available model(s) found"
+msgstr "{num} доступных моделей найдено"
 
-#. TODO - button in general settings for downloading models
 msgid "download models button"
-msgstr "Download Models"
+msgstr "Скачать модели"
 
-#. TODO - error message on trying to download models when already done
 msgid "All models downloaded"
-msgstr "All available models already downloaded"
+msgstr "Все доступные модели уже загружены"
 
-#. TODO - shown on a graph tab
 msgid "tab:rank_est"
-msgstr "Rank Estimate"
+msgstr "Оценка ранга"
 
-#. TODO - status message
 msgid "game re-analysis"
-msgstr "Re-analyzing entire game using {visits} visits"
+msgstr "Повторить анализ всей игры, используя {visits} посещений"
 
-#. TODO - Analyze every node in the game more deeply
 msgid "analysis:game"
-msgstr "Deeper full game analysis"
+msgstr "Более глубокий анализ всей игры"
 
-#. TODO - Keep improving current position analysis when there is nothing else
-#. to do
 msgid "analysis:continuous"
-msgstr "Continuous analysis"
+msgstr "Непрерывный анализ"
 
-#. TODO - ai which handles handicap games better
 msgid "ai:handicap"
 msgstr "KataHandicap"
 
-#. TODO
 msgid "aihelp:handicap"
 msgstr ""
-"KataGo optimized for playing higher handicap games.The `pda` setting "
-"corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
-"perspective. When `automatic` is set, KaTrain will find a suitable value "
-"automatically."
+"KataGo оптимизированный под игры с большой форой. Настройка `pda` "
+"соответствует `playoutDoublingAdvantage` в KataGo, с точки зрения чёрных. "
+"При установке `automatic`, KaTrain выберет значение автоматически."
 
-#. TODO - in AI settings
 msgid "estimated strength"
-msgstr "Estimated Strength"
+msgstr "Оценка силы"
 
-#. TODO - label in little popup for analyzing entire game
 msgid "reanalyze max visits"
-msgstr "Number of visits per move"
+msgstr "Количество посещений на ход"
