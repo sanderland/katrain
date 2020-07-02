@@ -572,51 +572,38 @@ msgstr "모든 후보수를 균일하게 {visits} visits으로 분석합니다."
 msgid "extra analysis"
 msgstr "{visits} visits까지 추가적으로 분석하고 있습니다."
 
-#. TODO - shown on on the model select dropdown
 msgid "models available"
-msgstr "{num} available model(s) found"
+msgstr "사용할 수 있는 {num}개의 가중치가 있습니다."
 
-#. TODO - button in general settings for downloading models
 msgid "download models button"
-msgstr "Download Models"
+msgstr "가중치 내려받기"
 
-#. TODO - error message on trying to download models when already done
 msgid "All models downloaded"
-msgstr "All available models already downloaded"
+msgstr "사용할 수 있는 가중치를 이미 모두 내려받았습니다."
 
-#. TODO - shown on a graph tab
 msgid "tab:rank_est"
-msgstr "Rank Estimate"
+msgstr "추정 기력"
 
-#. TODO - status message
 msgid "game re-analysis"
-msgstr "Re-analyzing entire game using {visits} visits"
+msgstr "대국 전체를 {visits} visits로 다시 분석하고 있습니다."
 
-#. TODO - Analyze every node in the game more deeply
 msgid "analysis:game"
-msgstr "Re-analyze entire game"
+msgstr "대국 전체를 다시 분석하기"
 
-#. TODO - Keep improving current position analysis when there is nothing else
-#. to do
 msgid "analysis:continuous"
-msgstr "Continuous analysis"
+msgstr "분석 계속하기"
 
-#. TODO - ai which handles handicap games better
 msgid "ai:handicap"
-msgstr "KataHandicap"
+msgstr "접바둑 KataGo"
 
-#. TODO
 msgid "aihelp:handicap"
 msgstr ""
-"KataGo optimized for playing higher handicap games.The `pda` setting "
-"corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
-"perspective. When `automatic` is set, KaTrain will find a suitable value "
-"automatically."
+"치석이 많은 접바둑에 더 적합한 KataGo입니다. `pda` 설정은 흑 시점에서 KataGo의 "
+"`playoutDoublingAdvantage`에 해당합니다. `automatic`으로 설정하면, KaTrain이 알맞는 값을 자동으로 "
+"설정할 것입니다."
 
-#. TODO - in AI settings
 msgid "estimated strength"
-msgstr "Estimated Strength"
+msgstr "추정 기력"
 
-#. TODO - label in little popup for analyzing entire game
 msgid "reanalyze max visits"
-msgstr "Number of visits per move"
+msgstr "한 수당 visit 수"
