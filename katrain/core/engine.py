@@ -109,6 +109,8 @@ class KataGoEngine:
                 died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
                 self.katrain.log(died_msg, OUTPUT_ERROR)
                 self.katago_process = None
+            else:
+                died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
             raise EngineDiedException(died_msg)
         return ok
 
@@ -118,8 +120,8 @@ class KataGoEngine:
             while self.queries and process.poll() is None:
                 time.sleep(0.1)
         if process:
-            process.terminate()
             self.katago_process = None
+            process.terminate()
         if self.stderr_thread:
             self.stderr_thread.join()
         if self.analysis_thread:
@@ -137,7 +139,7 @@ class KataGoEngine:
                         self.katrain.log(line.decode(errors="ignore").strip(), OUTPUT_KATAGO_STDERR)
                     except Exception as e:
                         print("ERROR in processing KataGo stderr:", line, "Exception", e)
-                else:
+                elif self.katago_process:
                     self.check_alive(exception_if_dead=True)
             except Exception as e:
                 self.katrain.log(f"Exception in reading stdout {e}", OUTPUT_DEBUG)
@@ -147,7 +149,7 @@ class KataGoEngine:
         while self.katago_process is not None:
             try:
                 line = self.katago_process.stdout.readline()
-                if not line:
+                if self.katago_process and not line:
                     self.check_alive(exception_if_dead=True)
             except OSError as e:
                 self.check_alive(os_error=str(e), exception_if_dead=True)

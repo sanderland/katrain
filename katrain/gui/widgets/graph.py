@@ -22,7 +22,6 @@ class Graph(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._lock = threading.Lock()
-        self.redraw_on_highlight_change = True
         self.bind(pos=self.update_graph, size=self.update_graph)
         self.redraw_trigger = Clock.create_trigger(self.update_graph, 0.1)
 
@@ -40,17 +39,13 @@ class Graph(Widget):
 
     def update_value(self, node):
         with self._lock:
-            changed = self.redraw_on_highlight_change and self.highlighted_index != node.depth
             self.highlighted_index = index = node.depth
             self.nodes.extend([None] * max(0, index - (len(self.nodes) - 1)))
-            if self.nodes[index] != node:
-                changed = True
             self.nodes[index] = node
             if index > 1 and node.parent:  # sometimes there are gaps
                 backfill, bfnode = index - 1, node.parent
                 while bfnode is not None and self.nodes[backfill] != bfnode:
                     self.nodes[backfill] = bfnode
-                    changed = True
                     backfill -= 1
                     bfnode = bfnode.parent
 
@@ -58,13 +53,11 @@ class Graph(Widget):
                 node is None or not node.children or self.nodes[index + 1] != node.ordered_children[0]
             ):
                 self.nodes = self.nodes[: index + 1]  # on branch switching, don't show history from other branch
-                changed = True
             if index == len(self.nodes) - 1:  # possibly just switched branch or the line above triggered
                 while node.children:  # add children back
                     node = node.ordered_children[0]
                     self.nodes.append(node)
-            if changed:
-                self.redraw_trigger()
+            self.redraw_trigger()
 
 
 class ScoreGraph(Graph):
@@ -185,7 +178,6 @@ class RankGraph(Graph):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.redraw_on_highlight_change = False
         self.calculate_trigger = Clock.create_trigger(lambda *args: self.rank_game(), 0.25)
         self.rank_by_player = {}
 

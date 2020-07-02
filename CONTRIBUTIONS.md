@@ -43,7 +43,7 @@ For those who have some python experience as well, you can:
 Many thanks to these additional authors:
 
 * Matthew Allred ("Kameone") for design of the v1.1 UI, MacOS installation instructions, and working on promotion and YouTube videos.
-* "bale-go" for development and continued work on the 'calibrated rank' AI.
+* "bale-go" for development and continued work on the 'calibrated rank' AI and rank estimation algorithm.
 * "Dontbtme" for detailed feedback and early testing of v1.0+.
 * "nowoowoo" for a fix to the parser for SGF files with extra line breaks.
 * "nimets123" for the timer sound effects.
