@@ -361,6 +361,7 @@ class ConfigAIPopup(QuickConfigGui):
     def update_config(self, save_to_file=True):
         super().update_config(save_to_file=save_to_file)
         self.katrain.update_calculated_ranks()
+        Clock.schedule_once(self.katrain.controls.update_players, 0)
 
 
 class ConfigPopup(QuickConfigGui):

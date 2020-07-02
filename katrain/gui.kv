@@ -290,11 +290,11 @@
             max_lines: 1
             halign: 'center'
             valign: 'middle'
-        Label:
+        Label: # todo: proper scaling/shortening label instead of this jank
             text: (root.name if root.name and root.player_type==PLAYER_HUMAN and root.player_subtype == PLAYING_NORMAL else i18n._(root.player_subtype) ) + (" ({})".format(root.rank) if root.rank and root.player_subtype != PLAYING_TEACHING else "")
             size_hint: 1,0.4
-            font_size: 0.7 * self.height
-            text_size: self.size
+            font_size: self.height * 0.7 if root.player_type==PLAYER_HUMAN else self.height * 0.7 * min(1,18/len(self.text))
+            text_size: self.size if root.player_type==PLAYER_HUMAN else (None,self.height)
             halign: 'center'
             valign: 'middle'
             shorten: root.player_type==PLAYER_HUMAN # overflow/cut rank off AI names

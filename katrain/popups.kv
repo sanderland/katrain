@@ -49,7 +49,6 @@
     size: DESC_FONT_SIZE*2,DESC_FONT_SIZE*2
     size_hint: None,None
 
-
 <QuickInputButton@SizedRectangleButton>
     on_left_press: if self.target: self.target.text = self.text
     size: DESC_FONT_SIZE * 2, DESC_FONT_SIZE * 2
@@ -62,7 +61,6 @@
     title_size: DESC_FONT_SIZE
     title_font: self.font_name
     size_hint: None, None
-
 
 <QuickConfigGui>:
     orientation: 'vertical'
@@ -364,10 +362,13 @@
                 spacing: CP_SPACING
                 QuickInputButton:
                     text: '0.5'
+                    on_left_press: km.text=self.text
                 QuickInputButton:
                     text: '6.5'
+                    on_left_press: km.text=self.text
                 QuickInputButton:
                     text: '7.5'
+                    on_left_press: km.text=self.text
         DescriptionLabel:
             text: i18n._("ruleset")
         AnchorLayout:
