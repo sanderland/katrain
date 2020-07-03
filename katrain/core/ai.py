@@ -272,7 +272,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             candidate_ai_moves = handicap_analysis["moveInfos"]
 
         top_cand = Move.from_gtp(candidate_ai_moves[0]["move"], player=cn.next_player)
-        if top_cand.is_pass and not ai_mode not in [AI_DEFAULT, AI_HANDICAP]:  # don't play suicidal to balance score
+        if top_cand.is_pass and ai_mode not in [AI_DEFAULT, AI_HANDICAP]:  # don't play suicidal to balance score
             aimove = top_cand
             ai_thoughts += f"Top move is pass, so passing regardless of strategy. "
         else:

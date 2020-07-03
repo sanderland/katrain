@@ -234,6 +234,8 @@ class BadukPanWidget(Widget):
             return
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
+        if len(self.gridpos_x) < board_size_x or len(self.gridpos_y) < board_size_y:
+            return  # race condition
         show_n_eval = self.trainer_config["eval_off_show_last"]
 
         with self.canvas:

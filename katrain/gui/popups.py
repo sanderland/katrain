@@ -149,8 +149,11 @@ class LabelledSelectionSlider(BoxLayout):
     def input_value(self):
         if self.textbox.text:
             return float(self.textbox.text)
-        return self.slider.values[self.silder.index][0]
+        return self.slider.values[self.slider.index][0]
 
+    @property
+    def raw_input_value(self):
+        return self.textbox.text
 
 class InputParseError(Exception):
     pass
@@ -320,7 +323,11 @@ class ConfigAIPopup(QuickConfigGui):
 
     def estimate_rank_from_options(self, *_args):
         strategy = self.ai_select.selected[1]
-        options = self.collect_properties(self)  # [strategy]
+        try:
+            options = self.collect_properties(self)  # [strategy]
+        except InputParseError:
+            self.estimated_rank_label.text = "??"
+            return
         prefix = f"ai/{strategy}/"
         options = {k[len(prefix) :]: v for k, v in options.items() if k.startswith(prefix)}
         dan_rank, model_based = ai_rank_estimation(strategy, options)
