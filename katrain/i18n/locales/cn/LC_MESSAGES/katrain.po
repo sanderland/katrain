@@ -557,51 +557,37 @@ msgid "Starting Kata failed"
 msgstr ""
 "用'{command}'命令启动katago出错 {error}. 请确认引擎设置里'katago'的值指向了 正确的KataGo运行文件."
 
-#. TODO - shown on on the model select dropdown
 msgid "models available"
-msgstr "{num} available model(s) found"
+msgstr "找到{num} 个可用模型"
 
-#. TODO - button in general settings for downloading models
 msgid "download models button"
-msgstr "Download Models"
+msgstr "下载模型"
 
-#. TODO - error message on trying to download models when already done
 msgid "All models downloaded"
-msgstr "All available models already downloaded"
+msgstr "所有可用模型均已下载"
 
-#. TODO - shown on a graph tab
 msgid "tab:rank_est"
-msgstr "Rank Estimate"
+msgstr "估计段位"
 
-#. TODO - status message
 msgid "game re-analysis"
-msgstr "Re-analyzing entire game using {visits} visits"
+msgstr "使用 {visits}深度全局再分析"
 
-#. TODO - Analyze every node in the game more deeply
 msgid "analysis:game"
-msgstr "Deeper full game analysis"
+msgstr "深入全盘分析"
 
-#. TODO - Keep improving current position analysis when there is nothing else
-#. to do
 msgid "analysis:continuous"
-msgstr "Continuously analyze"
+msgstr "开启继续分析"
 
-#. TODO - ai which handles handicap games better
 msgid "ai:handicap"
-msgstr "KataHandicap"
+msgstr "Kata让子棋"
 
-#. TODO
 msgid "aihelp:handicap"
 msgstr ""
-"KataGo optimized for playing higher handicap games.The `pda` setting "
-"corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
-"perspective. When `automatic` is set, KaTrain will find a suitable value "
-"automatically."
+"KataGo 让子棋优化版. pda 设置 对应KataGo里黑棋视角的 playoutDoublingAdvantage. 当设置了 自动, "
+"KaTrain 会自动找到合适的值"
 
-#. TODO - in AI settings
 msgid "estimated strength"
-msgstr "Estimated Strength"
+msgstr "预计棋力"
 
-#. TODO - label in little popup for analyzing entire game
 msgid "reanalyze max visits"
-msgstr "Number of visits per move"
+msgstr "每步棋计算深度"

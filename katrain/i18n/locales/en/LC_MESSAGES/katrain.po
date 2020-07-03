@@ -104,7 +104,7 @@ msgstr "Deeper full game analysis"
 
 #. Keep improving current position analysis when there is nothing else to do
 msgid "analysis:continuous"
-msgstr "Continuous analysis"
+msgstr "Toggle continuous analysis"
 
 msgid "analysis:aimove"
 msgstr "Force AI Move"

@@ -661,7 +661,7 @@ msgstr "Deeper full game analysis"
 #. TODO - Keep improving current position analysis when there is nothing else
 #. to do
 msgid "analysis:continuous"
-msgstr "Continuous analysis"
+msgstr "Toggle continuous analysis"
 
 #. TODO - ai which handles handicap games better
 msgid "ai:handicap"

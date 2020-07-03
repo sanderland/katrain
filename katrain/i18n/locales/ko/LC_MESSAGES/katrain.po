@@ -591,7 +591,7 @@ msgid "analysis:game"
 msgstr "대국 전체를 다시 분석하기"
 
 msgid "analysis:continuous"
-msgstr "분석 계속하기"
+msgstr "분석 계속하기/멈추기"
 
 msgid "ai:handicap"
 msgstr "접바둑 KataGo"
