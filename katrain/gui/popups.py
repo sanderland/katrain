@@ -155,6 +155,7 @@ class LabelledSelectionSlider(BoxLayout):
     def raw_input_value(self):
         return self.textbox.text
 
+
 class InputParseError(Exception):
     pass
 

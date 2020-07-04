@@ -136,20 +136,29 @@ class BadukPanWidget(Widget):
         self.draw_board()
         self.draw_board_contents()
 
-    def draw_stone(self, x, y, col, outline_col=None, innercol=None, evalcol=None, evalscale=1.0, scale=1.0):
+    def draw_stone(self, x, y, player, alpha=1, innercol=None, evalcol=None, evalscale=1.0, scale=1.0):
         stone_size = self.stone_size * scale
-        draw_circle((self.gridpos_x[x], self.gridpos_y[y]), stone_size, col)
-        if outline_col:
-            Color(*outline_col)
-            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size), width=min(2, 0.035 * stone_size))
+        Color(1,1,1,alpha)
+        Rectangle(
+            pos=(self.gridpos_x[x] - stone_size, self.gridpos_y[y] - stone_size),
+            size=(2 * stone_size, 2 * stone_size),
+            source=f"img/{player}_stone.png",
+        )
         if evalcol:
             eval_radius = math.sqrt(evalscale)  # scale area by evalscale
             evalsize = self.stone_size * (EVAL_DOT_MIN_SIZE + eval_radius * (EVAL_DOT_MAX_SIZE - EVAL_DOT_MIN_SIZE))
-            draw_circle((self.gridpos_x[x], self.gridpos_y[y]), evalsize, evalcol)
-
+            Color(*evalcol)
+            Rectangle(  pos=(self.gridpos_x[x] - evalsize, self.gridpos_y[y] - evalsize),
+                        size=(2 * evalsize, 2 * evalsize),
+                        source=f"img/dot.png")
         if innercol:
             Color(*innercol)
-            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size * 0.475 / 0.85), width=0.1 * stone_size)
+            inner_size = stone_size * 0.8
+            Rectangle(
+                pos=(self.gridpos_x[x] - inner_size, self.gridpos_y[y] - inner_size),
+                size=(2 * inner_size, 2 * inner_size),
+                source=f"img/inner.png",
+            )
 
     def eval_color(self, points_lost, show_dots_for_class: List[bool] = None) -> Optional[List[float]]:
         i = evaluation_class(points_lost, self.trainer_config["eval_thresholds"])
@@ -259,12 +268,12 @@ class BadukPanWidget(Widget):
             katrain.config("trainer/show_dots")
             for i, node in enumerate(nodes[::-1]):  # reverse order!
                 points_lost = node.points_lost
-                evalsize = 1
+                evalscale = 1
                 if points_lost and realized_points_lost:
                     if points_lost <= 0.5 and realized_points_lost <= 1.5:
-                        evalsize = 0
+                        evalscale = 0
                     else:
-                        evalsize = min(1, max(0, realized_points_lost / points_lost))
+                        evalscale = min(1, max(0, realized_points_lost / points_lost))
                 placements = node.placements
                 for m in node.moves + placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
@@ -276,24 +285,23 @@ class BadukPanWidget(Widget):
                         inner = STONE_COLORS[m.opponent] if i == 0 and not m in placements else None
                         drawn_stone[m.coords] = m.player
                         self.draw_stone(
-                            m.coords[0],
-                            m.coords[1],
-                            STONE_COLORS[m.player],
-                            OUTLINE_COLORS[m.player],
-                            inner,
-                            evalcol,
-                            evalsize,
+                            x=m.coords[0],
+                            y=m.coords[1],
+                            player=m.player,
+                            innercol=inner,
+                            evalcol=evalcol,
+                            evalscale=evalscale,
                         )
                 realized_points_lost = node.parent_realized_points_lost
 
             if katrain.game.current_node.is_root and katrain.debug_level >= 3:  # secret ;)
                 for y in range(0, board_size_y):
                     evalcol = self.eval_color(16 * y / board_size_y)
-                    self.draw_stone(0, y, STONE_COLORS["B"], OUTLINE_COLORS["B"], None, evalcol, y / (board_size_y - 1))
-                    self.draw_stone(1, y, STONE_COLORS["B"], OUTLINE_COLORS["B"], STONE_COLORS["W"], evalcol, 1)
-                    self.draw_stone(2, y, STONE_COLORS["W"], OUTLINE_COLORS["W"], None, evalcol, y / (board_size_y - 1))
-                    self.draw_stone(3, y, STONE_COLORS["W"], OUTLINE_COLORS["W"], STONE_COLORS["B"], evalcol, 1)
-                    self.draw_stone(4, y, [*evalcol[:3], 0.5], scale=0.8)
+                    self.draw_stone(0, y, "B", evalcol=evalcol, evalscale=y / (board_size_y - 1))
+                    self.draw_stone(1, y, "B", innercol=STONE_COLORS["W"], evalcol=evalcol)
+                    self.draw_stone(2, y, "W", evalcol=evalcol, evalscale=y / (board_size_y - 1))
+                    self.draw_stone(3, y, "W", innercol=STONE_COLORS["B"], evalcol=evalcol)
+                    # self.draw_stone(4, y, evalcol=[*evalcol[:3], 0.5], scale=0.8)
 
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
@@ -332,7 +340,9 @@ class BadukPanWidget(Widget):
                                 *POLICY_COLOR,
                                 GHOST_ALPHA + TOP_MOVE_ALPHA * (policy_grid[y][x] == best_move_policy),
                             )
-                            self.draw_stone(x, y, policy_circle_color, scale=polsize)
+                            draw_circle(
+                                (self.gridpos_x[x], self.gridpos_y[y]), polsize * self.stone_size, policy_circle_color
+                            )
                 polsize = math.sqrt(policy[-1])
                 with pass_btn.canvas.after:
                     draw_circle(
@@ -366,7 +376,6 @@ class BadukPanWidget(Widget):
         game_ended = katrain.game.ended
         current_node = katrain.game.current_node
         player, next_player = current_node.player, current_node.next_player
-        stone_color = STONE_COLORS
 
         with self.canvas.after:
             self.canvas.after.clear()
@@ -392,10 +401,9 @@ class BadukPanWidget(Widget):
                         self.draw_stone(
                             move.coords[0],
                             move.coords[1],
-                            (*stone_color[move.player][:3], alpha),
-                            None,
-                            None,
-                            evalcol,
+                            move.player,
+                            alpha=alpha,
+                            evalcol=evalcol,
                             evalscale=scale,
                             scale=scale,
                         )
@@ -415,16 +423,15 @@ class BadukPanWidget(Widget):
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:
                             katrain.log(f"PV missing for move_dict {move_dict}", OUTPUT_DEBUG)
-                        self.draw_stone(
-                            move.coords[0],
-                            move.coords[1],
-                            [*self.eval_color(move_dict["pointsLost"])[:3], alpha],
-                            scale=scale,
+                        draw_circle(
+                            (self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
+                            col=[*self.eval_color(move_dict["pointsLost"])[:3], alpha],
+                            r=self.stone_size * scale,
                         )
 
             # hover next move ghost stone
             if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, (*stone_color[next_player][:3], ghost_alpha))
+                self.draw_stone(*self.ghost_stone, next_player, alpha=ghost_alpha)
 
             animating_pv = self.animating_pv
             if animating_pv:
@@ -440,13 +447,13 @@ class BadukPanWidget(Widget):
     def draw_pv(self, pv, node, up_to_move):
         katrain = self.katrain
         next_last_player = [node.next_player, node.player]
-        stone_color = STONE_COLORS
         cn = katrain.game.current_node
         if node != cn and node.parent != cn:
             hide_node = cn
             while hide_node and hide_node.move and hide_node != node:
                 if not hide_node.move.is_pass:
-                    self.draw_stone(*hide_node.move.coords, [0.85, 0.68, 0.40, 0.8])  # board coloured dot
+                    pos = (self.gridpos_x[hide_node.move.coords[0]],self.gridpos_y[hide_node.move.coords[1]])
+                    draw_circle(pos, self.stone_size, [0.85, 0.68, 0.40, 0.8])
                 hide_node = hide_node.parent
         for i, gtpmove in enumerate(pv):
             if i > up_to_move:
@@ -465,7 +472,13 @@ class BadukPanWidget(Widget):
                 board_coords = (self.gridpos_x[coords[0]], self.gridpos_y[coords[1]])
                 sizefac = 1
 
-            draw_circle(board_coords, self.stone_size * sizefac, stone_color[move_player])
+            stone_size = self.stone_size * sizefac
+            Color(1,1,1,1)
+            Rectangle(
+                pos=(board_coords[0]-stone_size,board_coords[1]-stone_size),
+                size=(2 * stone_size, 2 * stone_size),
+                source=f"img/{move_player}_stone.png",
+            )
             Color(*STONE_TEXT_COLORS[move_player])
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 
