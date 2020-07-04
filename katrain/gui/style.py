@@ -46,7 +46,7 @@ LINE_COLOR = [0, 0, 0]
 POLICY_COLOR = [0.9, 0.2, 0.8]
 STARPOINT_SIZE = 0.1
 BOARD_COLOR = [0.85, 0.68, 0.40, 1]
-STONE_SIZE = 0.505 # texture edge is transparent
+STONE_SIZE = 0.505  # texture edge is transparent
 VISITS_FRAC_SMALL = 0.1
 
 GHOST_ALPHA = 0.5

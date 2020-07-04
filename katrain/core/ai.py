@@ -195,9 +195,11 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             if policy_moves[0][0] > override:
                 aimove = top_policy_move
                 ai_thoughts += f"Top policy move has weight > {override:.1%}, so overriding other strategies."
-            elif policy_moves[0][0]+policy_moves[1][0] > overridetwo:
+            elif policy_moves[0][0] + policy_moves[1][0] > overridetwo:
                 aimove = top_policy_move
-                ai_thoughts += f"Top two policy moves have cumulative weight > {overridetwo:.1%}, so overriding other strategies."
+                ai_thoughts += (
+                    f"Top two policy moves have cumulative weight > {overridetwo:.1%}, so overriding other strategies."
+                )
             elif ai_mode == AI_WEIGHTED:
                 aimove, ai_thoughts = policy_weighted_move(
                     policy_moves, ai_settings["lower_bound"], ai_settings["weaken_fac"]

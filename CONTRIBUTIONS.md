@@ -46,7 +46,7 @@ Many thanks to these additional authors:
 * "bale-go" for development and continued work on the 'calibrated rank' AI and rank estimation algorithm.
 * "Dontbtme" for detailed feedback and early testing of v1.0+.
 * "nowoowoo" for a fix to the parser for SGF files with extra line breaks.
-* "nimets123" for the timer sound effects and stone graphics.
+* "nimets123" for the timer sound effects and board/stone graphics.
 * Jordan Seaward for the stone sound effects.
 * "fohristiwhirl" for the Gibo format parsing code.
 

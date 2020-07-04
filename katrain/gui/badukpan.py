@@ -138,7 +138,7 @@ class BadukPanWidget(Widget):
 
     def draw_stone(self, x, y, player, alpha=1, innercol=None, evalcol=None, evalscale=1.0, scale=1.0):
         stone_size = self.stone_size * scale
-        Color(1,1,1,alpha)
+        Color(1, 1, 1, alpha)
         Rectangle(
             pos=(self.gridpos_x[x] - stone_size, self.gridpos_y[y] - stone_size),
             size=(2 * stone_size, 2 * stone_size),
@@ -148,9 +148,11 @@ class BadukPanWidget(Widget):
             eval_radius = math.sqrt(evalscale)  # scale area by evalscale
             evalsize = self.stone_size * (EVAL_DOT_MIN_SIZE + eval_radius * (EVAL_DOT_MAX_SIZE - EVAL_DOT_MIN_SIZE))
             Color(*evalcol)
-            Rectangle(  pos=(self.gridpos_x[x] - evalsize, self.gridpos_y[y] - evalsize),
-                        size=(2 * evalsize, 2 * evalsize),
-                        source=f"img/dot.png")
+            Rectangle(
+                pos=(self.gridpos_x[x] - evalsize, self.gridpos_y[y] - evalsize),
+                size=(2 * evalsize, 2 * evalsize),
+                source=f"img/dot.png",
+            )
         if innercol:
             Color(*innercol)
             inner_size = stone_size * 0.8
@@ -194,10 +196,11 @@ class BadukPanWidget(Widget):
                 for i in range(board_size_y)
             ]
 
-            Color(*BOARD_COLOR)
+            Color(1, 0.95, 0.8, 1)  # image is a bit too light
             Rectangle(
                 pos=(self.gridpos_x[0] - self.grid_size * 1.5, self.gridpos_y[0] - self.grid_size * 1.5),
                 size=(self.grid_size * x_grid_spaces, self.grid_size * y_grid_spaces),
+                source="img/board.png",
             )
 
             Color(*LINE_COLOR)
@@ -452,7 +455,7 @@ class BadukPanWidget(Widget):
             hide_node = cn
             while hide_node and hide_node.move and hide_node != node:
                 if not hide_node.move.is_pass:
-                    pos = (self.gridpos_x[hide_node.move.coords[0]],self.gridpos_y[hide_node.move.coords[1]])
+                    pos = (self.gridpos_x[hide_node.move.coords[0]], self.gridpos_y[hide_node.move.coords[1]])
                     draw_circle(pos, self.stone_size, [0.85, 0.68, 0.40, 0.8])
                 hide_node = hide_node.parent
         for i, gtpmove in enumerate(pv):
@@ -473,9 +476,9 @@ class BadukPanWidget(Widget):
                 sizefac = 1
 
             stone_size = self.stone_size * sizefac
-            Color(1,1,1,1)
+            Color(1, 1, 1, 1)
             Rectangle(
-                pos=(board_coords[0]-stone_size,board_coords[1]-stone_size),
+                pos=(board_coords[0] - stone_size, board_coords[1] - stone_size),
                 size=(2 * stone_size, 2 * stone_size),
                 source=f"img/{move_player}_stone.png",
             )

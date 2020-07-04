@@ -99,6 +99,8 @@ Further technical details and discussion on these AIs can be found on [this](htt
 
 ## <a name="analysis"></a> Analysis
 
+Analysis options in KaTrain allow you to explore variations and request more in-depth analysis from the engine at any point in the game.
+
 Keyboard shortcuts are shown with **[key]**.
 
 * **[Tab]**: Switch between analysis and play modes.
@@ -122,6 +124,12 @@ Keyboard shortcuts are shown with **[key]**.
     * **[f]**: Re-analyze game: ...
     * **[spacebar]**: Turn continuous analysis on/off. 
     * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
+
+### Rank Estimation
+
+A new feature in v1.3 is the rank estimation panel. This adds an extra graph which uses a statistical model to estimate the playing strength
+of both players for every 80 move segment. It can be used for determining which part of your game needs extra attention,
+but keep in mind the estimation is based purely on how well moves correspond to the 'shape sense' of KataGo and can be very inaccurate at times.
 
 ## <a name="keyboard"></a> Keyboard and mouse shortcuts
 
@@ -158,7 +166,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 [![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
 [![Contributors](https://img.shields.io/static/v1?label=contributors&message=16&color=dcb424)](CONTRIBUTIONS.md)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
-[![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
+[![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=2&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
