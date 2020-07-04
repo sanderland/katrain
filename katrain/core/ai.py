@@ -187,12 +187,17 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             board_squares = size[0] * size[1]
             if ai_mode == AI_RANK:  # calibrated, override from 0.8 at start to ~0.4 at full board
                 override = 0.8 * (1 - 0.5 * (board_squares - len(legal_policy_moves)) / board_squares)
+                overridetwo = 0.9 * (1 - 0.5 * (board_squares - len(legal_policy_moves)) / board_squares)
             else:
                 override = ai_settings["pick_override"]
+                overridetwo = 1.0
 
             if policy_moves[0][0] > override:
                 aimove = top_policy_move
                 ai_thoughts += f"Top policy move has weight > {override:.1%}, so overriding other strategies."
+            elif policy_moves[0][0]+policy_moves[1][0] > overridetwo:
+                aimove = top_policy_move
+                ai_thoughts += f"Top two policy moves have cumulative weight > {overridetwo:.1%}, so overriding other strategies."
             elif ai_mode == AI_WEIGHTED:
                 aimove, ai_thoughts = policy_weighted_move(
                     policy_moves, ai_settings["lower_bound"], ai_settings["weaken_fac"]
