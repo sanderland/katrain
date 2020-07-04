@@ -230,7 +230,7 @@ class GameNode(SGFNode):
             polmoves = self.policy_ranking
             top_polmove = polmoves[0][1] if polmoves else Move(None)  # if no info at all, pass
             return [
-                {**self.analysis["root"], "pointsLost": 0, "order": 0, "move": top_polmove.gtp()}
+                {**self.analysis["root"], "pointsLost": 0, "order": 0, "move": top_polmove.gtp(),"pv":[top_polmove.gtp()]}
             ]  # single visit -> go by policy/root
 
         root_score = self.analysis["root"]["scoreLead"]

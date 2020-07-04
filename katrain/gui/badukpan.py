@@ -153,11 +153,11 @@ class BadukPanWidget(Widget):
                         source=f"img/dot.png")
         if innercol:
             Color(*innercol)
-            inner_size = stone_size * 0.75
+            inner_size = stone_size * 0.8
             Rectangle(
                 pos=(self.gridpos_x[x] - inner_size, self.gridpos_y[y] - inner_size),
                 size=(2 * inner_size, 2 * inner_size),
-                source=f"img/last_move_ring.png",
+                source=f"img/inner.png",
             )
 
     def eval_color(self, points_lost, show_dots_for_class: List[bool] = None) -> Optional[List[float]]:
@@ -376,7 +376,6 @@ class BadukPanWidget(Widget):
         game_ended = katrain.game.ended
         current_node = katrain.game.current_node
         player, next_player = current_node.player, current_node.next_player
-        stone_color = STONE_COLORS
 
         with self.canvas.after:
             self.canvas.after.clear()
@@ -448,14 +447,13 @@ class BadukPanWidget(Widget):
     def draw_pv(self, pv, node, up_to_move):
         katrain = self.katrain
         next_last_player = [node.next_player, node.player]
-        stone_color = STONE_COLORS
         cn = katrain.game.current_node
         if node != cn and node.parent != cn:
             hide_node = cn
             while hide_node and hide_node.move and hide_node != node:
                 if not hide_node.move.is_pass:
-                    if False:  # TODO
-                        self.draw_stone(*hide_node.move.coords, [0.85, 0.68, 0.40, 0.8])  # board coloured dot
+                    pos = (self.gridpos_x[hide_node.move.coords[0]],self.gridpos_y[hide_node.move.coords[1]])
+                    draw_circle(pos, self.stone_size, [0.85, 0.68, 0.40, 0.8])
                 hide_node = hide_node.parent
         for i, gtpmove in enumerate(pv):
             if i > up_to_move:
@@ -474,7 +472,13 @@ class BadukPanWidget(Widget):
                 board_coords = (self.gridpos_x[coords[0]], self.gridpos_y[coords[1]])
                 sizefac = 1
 
-            draw_circle(board_coords, self.stone_size * sizefac, stone_color[move_player])
+            stone_size = self.stone_size * sizefac
+            Color(1,1,1,1)
+            Rectangle(
+                pos=(board_coords[0]-stone_size,board_coords[1]-stone_size),
+                size=(2 * stone_size, 2 * stone_size),
+                source=f"img/{move_player}_stone.png",
+            )
             Color(*STONE_TEXT_COLORS[move_player])
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 

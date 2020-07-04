@@ -161,8 +161,9 @@ class Game:
         except IllegalMoveException:
             self._calculate_groups()
             raise
-        played_node = self.current_node.play(move)
-        self.current_node = played_node
+        with self._lock:
+            played_node = self.current_node.play(move)
+            self.current_node = played_node
         if analyze:
             played_node.analyze(self.engines[played_node.next_player])
         return played_node
