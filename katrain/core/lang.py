@@ -82,6 +82,7 @@ i18n = Lang(DEFAULT_LANGUAGE)
 def rank_label(rank):
     if rank is None:
         return "??k"
+
     if rank > 0:
         return f"{rank:.0f}{i18n._('strength:dan')}"
     else:

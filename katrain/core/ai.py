@@ -23,9 +23,19 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
+    AI_WEIGHTED_ELO,
+    CALIBRATED_RANK_ELO,
 )
 from katrain.core.game import Game, GameNode, Move
 from katrain.core.utils import var_to_grid
+
+
+def interp1d(x, lookup):
+    i = 0
+    while i + 1 < len(lookup) - 1 and lookup[i + 1][0] < x:
+        i += 1
+    t = max(0, min(1, (x - lookup[i][0]) / (lookup[i + 1][0] - lookup[i][0])))
+    return (1 - t) * lookup[i][1] + t * lookup[i + 1][1]
 
 
 def ai_rank_estimation(strategy, settings) -> Tuple[int, bool]:
@@ -33,9 +43,11 @@ def ai_rank_estimation(strategy, settings) -> Tuple[int, bool]:
         return 9, True
     if strategy == AI_RANK:
         return 1 - settings["kyu_rank"], True
-    if strategy == AI_WEIGHTED:
-        dan_rank = -4
-        return dan_rank, True
+    if strategy in [AI_WEIGHTED]:
+        if strategy == AI_WEIGHTED:
+            elo = interp1d(settings["weaken_fac"], AI_WEIGHTED_ELO)
+        kyu = interp1d(elo, CALIBRATED_RANK_ELO)
+        return 1 - kyu, True
     else:
         return AI_STRENGTH[strategy], False
 

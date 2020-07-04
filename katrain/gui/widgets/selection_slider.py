@@ -6,7 +6,7 @@ from kivymd.uix.selectioncontrol import Thumb
 
 
 class SelectionSlider(Widget):
-    __events__ = ["on_select"]
+    __events__ = ["on_select","on_change"]
     active = BooleanProperty(False)
     hint = BooleanProperty(True)
 
@@ -44,6 +44,7 @@ class SelectionSlider(Widget):
     def set_from_pos(self, pos):
         norm_value = (pos[0] - self.x - self.padding) / (self.width - 2 * self.padding)
         self.index = round(norm_value * (len(self.values) - 1))
+        self.dispatch("on_change", self.value)
 
     def on_touch_down(self, touch):
         if self.disabled or not self.collide_point(*touch.pos):
@@ -74,6 +75,8 @@ class SelectionSlider(Widget):
     def on_select(self, value):
         pass
 
+    def on_change(self, value):
+        pass
 
 KV = """
 #:import i18n katrain.core.lang.i18n
