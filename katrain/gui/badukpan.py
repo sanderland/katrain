@@ -147,11 +147,18 @@ class BadukPanWidget(Widget):
         if evalcol:
             eval_radius = math.sqrt(evalscale)  # scale area by evalscale
             evalsize = self.stone_size * (EVAL_DOT_MIN_SIZE + eval_radius * (EVAL_DOT_MAX_SIZE - EVAL_DOT_MIN_SIZE))
-            draw_circle((self.gridpos_x[x], self.gridpos_y[y]), evalsize, evalcol)
-
+            Color(*evalcol)
+            Rectangle(  pos=(self.gridpos_x[x] - evalsize, self.gridpos_y[y] - evalsize),
+                        size=(2 * evalsize, 2 * evalsize),
+                        source=f"img/dot.png")
         if innercol:
             Color(*innercol)
-            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], stone_size * 0.475 / 0.85), width=0.1 * stone_size)
+            inner_size = stone_size * 0.75
+            Rectangle(
+                pos=(self.gridpos_x[x] - inner_size, self.gridpos_y[y] - inner_size),
+                size=(2 * inner_size, 2 * inner_size),
+                source=f"img/last_move_ring.png",
+            )
 
     def eval_color(self, points_lost, show_dots_for_class: List[bool] = None) -> Optional[List[float]]:
         i = evaluation_class(points_lost, self.trainer_config["eval_thresholds"])
