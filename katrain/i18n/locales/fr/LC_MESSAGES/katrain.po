@@ -105,7 +105,7 @@ msgid "analysis:continuous"
 msgstr "Lancer/Arrêter l'analyse continue"
 
 msgid "analysis:aimove"
-msgstr "Jouer le coup de KataGo"
+msgstr "Jouer le coup de l’IA"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
