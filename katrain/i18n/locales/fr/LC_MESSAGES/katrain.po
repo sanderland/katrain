@@ -98,8 +98,18 @@ msgstr "Égaliser l’analyse des coups"
 msgid "analysis:sweep"
 msgstr "Analyser tous les possibles"
 
+msgid "analysis:game"
+msgstr "Analyser davantage la partie"
+
+msgid "analysis:continuous"
+msgstr "Lancer/Arrêter l'analyse continue"
+
 msgid "analysis:aimove"
-msgstr "Jouer le coup de l’IA"
+msgstr "Jouer le coup de KataGo"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze max visits"
+msgstr "Nombre de visites par coup"
 
 #. right panel buttons and below board
 msgid "pass-button-text"
@@ -120,6 +130,9 @@ msgstr "Score"
 
 msgid "tab:winrate"
 msgstr "Pronostic"
+
+msgid "tab:rank_est"
+msgstr "Niveau"
 
 msgid "tab:points"
 msgstr "Pertes"
@@ -382,6 +395,15 @@ msgstr ""
 "Chemin d'accès du \n"
 "fichier de configuration"
 
+msgid "models available"
+msgstr "{num} modèle(s) disponible(s) pour le réseau neuronal"
+
+msgid "download models button"
+msgstr "Télécharger des modèles"
+
+msgid "All models downloaded"
+msgstr "Pas de nouveaux modèles disponibles pour le réseau neuronal"
+
 msgid "engine:max_visits"
 msgstr ""
 "Maximum de visites \n"
@@ -447,6 +469,9 @@ msgstr "Joueurs artificiels"
 
 msgid "Select AI"
 msgstr "Style de jeu :"
+
+msgid "estimated strength"
+msgstr "Niveau estimé"
 
 msgid "update ai settings"
 msgstr "Mettre à jour"
@@ -515,6 +540,9 @@ msgstr "Analyse supplémentaire de {visits} visites."
 
 msgid "equalizing analysis"
 msgstr "Égalisation de l'analyse ({visits} visites/coup considéré)."
+
+msgid "game re-analysis"
+msgstr "Analyse supplémentaire de la partie ({visits} visites/coup)."
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -634,51 +662,13 @@ msgstr ""
 "Une valeur positive équivaudra à un niveau en kyu, 0 à 1er dan, -1 à 2e dan, etc. \n"
 "(Niveaux estimés sur OGS avec le réseau neuronal utilisé PAR DÉFAUT)"
 
-#. TODO - shown on on the model select dropdown
-msgid "models available"
-msgstr "{num} available model(s) found"
-
-#. TODO - button in general settings for downloading models
-msgid "download models button"
-msgstr "Download Models"
-
-#. TODO - error message on trying to download models when already done
-msgid "All models downloaded"
-msgstr "All available models already downloaded"
-
-#. TODO - shown on a graph tab
-msgid "tab:rank_est"
-msgstr "Rank Estimate"
-
-#. TODO - status message
-msgid "game re-analysis"
-msgstr "Re-analyzing entire game using {visits} visits"
-
-#. TODO - Analyze every node in the game more deeply
-msgid "analysis:game"
-msgstr "Deeper full game analysis"
-
-#. TODO - Keep improving current position analysis when there is nothing else
-#. to do
-msgid "analysis:continuous"
-msgstr "Toggle continuous analysis"
-
-#. TODO - ai which handles handicap games better
 msgid "ai:handicap"
-msgstr "KataHandicap"
+msgstr "Par handicap"
 
-#. TODO
 msgid "aihelp:handicap"
 msgstr ""
-"KataGo optimized for playing higher handicap games.The `pda` setting "
-"corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
-"perspective.When `automatic` is set, KaTrain will find a suitable value "
-"automatically."
-
-#. TODO - in AI settings
-msgid "estimated strength"
-msgstr "Estimated Strength"
-
-#. TODO - label in little popup for analyzing entire game
-msgid "reanalyze max visits"
-msgstr "Number of visits per move"
+"KataGo recherchera/évitera les complications \n"
+"en fonction de la différence de niveau supposée des joueurs. \n"
+"Tout à gauche, un PDA de -3 (W+3) supposera que Blanc est bien plus fort que Noir. \n"
+"Tout à droite, un PDA de 3 (B+3) supposera que Noir est bien plus fort que Blanc. \n"
+"Cocher l'option 'automatic' adaptera la valeur PDA au handicap utilisé."
