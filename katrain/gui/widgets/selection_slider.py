@@ -6,7 +6,7 @@ from kivymd.uix.selectioncontrol import Thumb
 
 
 class SelectionSlider(Widget):
-    __events__ = ["on_select","on_change"]
+    __events__ = ["on_select", "on_change"]
     active = BooleanProperty(False)
     hint = BooleanProperty(True)
 
@@ -77,6 +77,7 @@ class SelectionSlider(Widget):
 
     def on_change(self, value):
         pass
+
 
 KV = """
 #:import i18n katrain.core.lang.i18n

@@ -25,17 +25,39 @@ from katrain.core.constants import (
     OUTPUT_INFO,
     AI_WEIGHTED_ELO,
     CALIBRATED_RANK_ELO,
+    AI_LOCAL_ELO_GRID,
+    AI_TENUKI_ELO_GRID,
+    AI_TERRITORY_ELO_GRID,
+    AI_INFLUENCE_ELO_GRID,
 )
 from katrain.core.game import Game, GameNode, Move
 from katrain.core.utils import var_to_grid
 
 
-def interp1d(x, lookup):
+def interp_ix(lst, x):
     i = 0
-    while i + 1 < len(lookup) - 1 and lookup[i + 1][0] < x:
+    while i + 1 < len(lst) - 1 and lst[i + 1] < x:
         i += 1
-    t = max(0, min(1, (x - lookup[i][0]) / (lookup[i + 1][0] - lookup[i][0])))
-    return (1 - t) * lookup[i][1] + t * lookup[i + 1][1]
+    t = max(0, min(1, (x - lst[i]) / (lst[i + 1] - lst[i])))
+    return i, t
+
+
+def interp1d(lst, x):
+    xs, ys = zip(*lst)
+    i, t = interp_ix(xs, x)
+    return (1 - t) * ys[i] + t * ys[i + 1]
+
+
+def interp2d(gridspec, x, y):
+    xs, ys, matrix = gridspec
+    i, t = interp_ix(xs, x)
+    j, s = interp_ix(ys, y)
+    return (
+        matrix[j][i] * (1 - t) * (1 - s)
+        + matrix[j][i + 1] * t * (1 - s)
+        + matrix[j + 1][i] * (1 - t) * s
+        + matrix[j + 1][i + 1] * t * s
+    )
 
 
 def ai_rank_estimation(strategy, settings) -> Tuple[int, bool]:
@@ -43,10 +65,19 @@ def ai_rank_estimation(strategy, settings) -> Tuple[int, bool]:
         return 9, True
     if strategy == AI_RANK:
         return 1 - settings["kyu_rank"], True
-    if strategy in [AI_WEIGHTED]:
+    if strategy in [AI_WEIGHTED, AI_LOCAL, AI_TENUKI, AI_TERRITORY, AI_INFLUENCE]:
         if strategy == AI_WEIGHTED:
-            elo = interp1d(settings["weaken_fac"], AI_WEIGHTED_ELO)
-        kyu = interp1d(elo, CALIBRATED_RANK_ELO)
+            elo = interp1d(AI_WEIGHTED_ELO, settings["weaken_fac"])
+        if strategy == AI_LOCAL:
+            elo = interp2d(AI_LOCAL_ELO_GRID, settings["pick_frac"], settings["pick_n"])
+        if strategy == AI_TENUKI:
+            elo = interp2d(AI_TENUKI_ELO_GRID, settings["pick_frac"], settings["pick_n"])
+        if strategy == AI_TERRITORY:
+            elo = interp2d(AI_TERRITORY_ELO_GRID, settings["pick_frac"], settings["pick_n"])
+        if strategy == AI_INFLUENCE:
+            elo = interp2d(AI_INFLUENCE_ELO_GRID, settings["pick_frac"], settings["pick_n"])
+
+        kyu = interp1d(CALIBRATED_RANK_ELO, elo)
         return 1 - kyu, True
     else:
         return AI_STRENGTH[strategy], False
@@ -250,7 +281,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                         x_ai_thoughts = (
                             f"Generated equal weights as move number >= {ai_settings['endgame'] * size[0] * size[1]}. "
                         )
-                        n_moves = int(max(n_moves, 0.5 * len(legal_policy_moves)))
+                        n_moves = int(max(n_moves, len(legal_policy_moves) // 2))
                     elif ai_mode in [AI_INFLUENCE, AI_TERRITORY]:
                         weighted_coords, x_ai_thoughts = generate_influence_territory_weights(
                             ai_mode, ai_settings, policy_grid, size
