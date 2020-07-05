@@ -187,7 +187,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             board_squares = size[0] * size[1]
             if ai_mode == AI_RANK:  # calibrated, override from 0.8 at start to ~0.4 at full board
                 override = 0.8 * (1 - 0.5 * (board_squares - len(legal_policy_moves)) / board_squares)
-                overridetwo = 0.9 * (1 - 0.5 * (board_squares - len(legal_policy_moves)) / board_squares)
+                overridetwo = 0.85
             else:
                 override = ai_settings["pick_override"]
                 overridetwo = 1.0
