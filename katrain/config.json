@@ -77,7 +77,7 @@
             "target_score": 0.5
         },
         "ai:scoreloss": {
-            "strength": 0.5
+            "strength": 0.25
         },
         "ai:policy": {
             "opening_moves": 22.0

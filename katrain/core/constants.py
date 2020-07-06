@@ -72,7 +72,7 @@ AI_STRENGTH = {  # dan ranks
 AI_OPTION_VALUES = {
     "kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(15, 0, -1)]
     + [(k, f"{1-k}[strength:dan]") for k in range(0, -3, -1)],
-    "strength": [0.25, 0.5, 1, 2, 4],
+    "strength": [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 1],
     "opening_moves": range(0, 51),
     "pick_override": [0, 0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 0.99, 1],
     "lower_bound": [(v, f"{v:.2%}") for v in [0, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05]],
@@ -87,6 +87,7 @@ AI_OPTION_VALUES = {
     "pda": [(x / 10, f"{'W' if x<0 else 'B'}+{abs(x/10):.1f}") for x in range(-30, 31)],
 }
 AI_KEY_PROPERTIES = {"kyu_rank", "strength", "weaken_fac", "pick_frac", "pick_n", "automatic"}
+
 
 CALIBRATED_RANK_ELO = [
     (-21.679482223451032, 18),
@@ -123,6 +124,18 @@ AI_WEIGHTED_ELO = [
     (2, 575.3637091858013),
     (2.5, 410.9747543504796),
     (3.0, 219.8667371799533),
+]
+
+AI_SCORELOSS_ELO = [
+    (0.0, 539),
+    (0.05, 625),
+    (0.1, 859),
+    (0.2, 1035),
+    (0.3, 1201),
+    (0.4, 1299),
+    (0.5, 1346),
+    (0.75, 1374),
+    (1.0, 1386),
 ]
 
 

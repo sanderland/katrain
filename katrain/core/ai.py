@@ -24,6 +24,7 @@ from katrain.core.constants import (
     OUTPUT_ERROR,
     OUTPUT_INFO,
     AI_WEIGHTED_ELO,
+    AI_SCORELOSS_ELO,
     CALIBRATED_RANK_ELO,
     AI_LOCAL_ELO_GRID,
     AI_TENUKI_ELO_GRID,
@@ -65,9 +66,11 @@ def ai_rank_estimation(strategy, settings) -> Tuple[int, bool]:
         return 9, True
     if strategy == AI_RANK:
         return 1 - settings["kyu_rank"], True
-    if strategy in [AI_WEIGHTED, AI_LOCAL, AI_TENUKI, AI_TERRITORY, AI_INFLUENCE]:
+    if strategy in [AI_WEIGHTED, AI_SCORELOSS, AI_LOCAL, AI_TENUKI, AI_TERRITORY, AI_INFLUENCE]:
         if strategy == AI_WEIGHTED:
             elo = interp1d(AI_WEIGHTED_ELO, settings["weaken_fac"])
+        if strategy == AI_SCORELOSS:
+            elo = interp1d(AI_SCORELOSS_ELO, settings["strength"])
         if strategy == AI_LOCAL:
             elo = interp2d(AI_LOCAL_ELO_GRID, settings["pick_frac"], settings["pick_n"])
         if strategy == AI_TENUKI:
