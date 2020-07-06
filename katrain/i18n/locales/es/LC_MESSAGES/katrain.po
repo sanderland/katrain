@@ -621,13 +621,13 @@ msgstr "KataVentaja"
 
 msgid "aihelp:handicap"
 msgstr ""
-"KataGo optimizado para jugar juegos con ventaja. El parámetro `pda` "
-"corresponde a `playoutDoublingAdvantage` en KataGo, desde la prespectiva de negro."
+"KataGo optimizado para jugar con ventaja al oponente. El parámetro `pda` "
+"corresponde a `playoutDoublingAdvantage` en KataGo, desde la perspectiva de negro."
 "Cuando `automatic` está establecido, KaTrain encontrará un valor adecuado "
 "automáticamente."
 
 msgid "estimated strength"
-msgstr "Fuerza Estimada Strength"
+msgstr "Fuerza Estimada"
 
 msgid "reanalyze max visits"
 msgstr "Número de visitas por jugada"
