@@ -118,7 +118,7 @@ class BadukPanWidget(Widget):
             ]
             if nodes_here and max(yd, xd) < self.grid_size / 2:  # load old comment
                 if touch.is_double_tap:  # navigate to move
-                    katrain.game.set_current_node(nodes_here[-1])
+                    katrain.game.set_current_node(nodes_here[-1].parent)
                     katrain.update_state()
                 else:  # load comments & pv
                     katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
@@ -418,9 +418,7 @@ class BadukPanWidget(Widget):
                     move = Move.from_gtp(move_dict["move"])
                     if move.coords is not None:
                         alpha, scale = GHOST_ALPHA, 1.0
-                        if i == 0:
-                            alpha += TOP_MOVE_ALPHA
-                        elif move_dict["visits"] < VISITS_FRAC_SMALL * hint_moves[0]["visits"]:
+                        if move_dict["visits"] < VISITS_FRAC_SMALL * hint_moves[0]["visits"]:
                             scale = 0.8
                         if "pv" in move_dict:
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
@@ -431,9 +429,16 @@ class BadukPanWidget(Widget):
                             col=[*self.eval_color(move_dict["pointsLost"])[:3], alpha],
                             r=self.stone_size * scale,
                         )
-                        if i==0:
+                        if i == 0:
                             Color(*TOP_MOVE_BORDER_COLOR)
-                            Line(circle=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]],self.stone_size * scale),width=1.1)
+                            Line(
+                                circle=(
+                                    self.gridpos_x[move.coords[0]],
+                                    self.gridpos_y[move.coords[1]],
+                                    self.stone_size * scale - 1.2,
+                                ),
+                                width=dp(1.2),
+                            )
 
             # hover next move ghost stone
             if self.ghost_stone:

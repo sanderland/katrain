@@ -40,6 +40,6 @@ class TestAI:
         katrain = KaTrainBase(force_package_config=True, debug_level=0)
         for strategy in AI_STRATEGIES:
             settings = katrain.config(f"ai/{strategy}")
-            rank,flag = ai_rank_estimation(strategy,settings)
+            rank, flag = ai_rank_estimation(strategy, settings)
             assert -20 <= rank <= 9
-            assert isinstance(flag,bool)
+            assert isinstance(flag, bool)
