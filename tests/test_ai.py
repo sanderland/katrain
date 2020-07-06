@@ -1,6 +1,6 @@
 import pytest
 import os
-from katrain.core.ai import generate_ai_move
+from katrain.core.ai import generate_ai_move, ai_rank_estimation
 from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, AI_STRATEGIES, OUTPUT_INFO
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
@@ -35,3 +35,11 @@ class TestAI:
             move, played_node = generate_ai_move(game, strategy, settings)
             katrain.log(f"Testing strategy on first move {strategy} -> {move}", OUTPUT_INFO)
             assert game.current_node.depth == 1
+
+    def test_ai_rank_estimation(self):
+        katrain = KaTrainBase(force_package_config=True, debug_level=0)
+        for strategy in AI_STRATEGIES:
+            settings = katrain.config(f"ai/{strategy}")
+            rank,flag = ai_rank_estimation(strategy,settings)
+            assert 20 <= rank <= 9
+            assert isinstance(flag,bool)

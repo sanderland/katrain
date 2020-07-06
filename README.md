@@ -126,8 +126,7 @@ Keyboard shortcuts are shown with **[key]**.
     * **[a]**: Deeper analysis: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
     * **[s]**: Equalize visits: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
     * **[d]**: Analyze all moves: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but can be useful to see how many reasonable next moves are available.
-    * **[f]**: Re-analyze game: ...
-    * **[spacebar]**: Turn continuous analysis on/off. 
+    * **[spacebar]**: Turn continuous analysis on/off. This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.
     * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
 
 ### Rank Estimation
@@ -150,7 +149,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
 * **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
-* **[double-click on a move]**: Navigate directly to that point in the game.
+* **[double-click on a move]**: Navigate directly to just before that point in the game.
 * **[Ctrl-V]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
 * **[Ctrl-C]**: Save SGF to clipboard.
 

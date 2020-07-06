@@ -431,6 +431,9 @@ class BadukPanWidget(Widget):
                             col=[*self.eval_color(move_dict["pointsLost"])[:3], alpha],
                             r=self.stone_size * scale,
                         )
+                        if i==0:
+                            Color(*TOP_MOVE_BORDER_COLOR)
+                            Line(circle=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]],self.stone_size * scale),width=1.1)
 
             # hover next move ghost stone
             if self.ghost_stone:
