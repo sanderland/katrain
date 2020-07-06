@@ -41,5 +41,5 @@ class TestAI:
         for strategy in AI_STRATEGIES:
             settings = katrain.config(f"ai/{strategy}")
             rank,flag = ai_rank_estimation(strategy,settings)
-            assert 20 <= rank <= 9
+            assert -20 <= rank <= 9
             assert isinstance(flag,bool)
