@@ -22,6 +22,8 @@ Now you can start KaTrain by simply typing `katrain` in a terminal.
 
 These commands install [Homebrew](https://brew.sh), which simplifies installing packages,
  followed by the programming language Python, the KataGo AI, and KaTrain itself.
+ 
+To upgrade to a newer version, simply run `pip3 install -U katrain`
 
 ### <a name="MacSources"></a>Troubleshooting and Installation from sources
 
@@ -51,7 +53,7 @@ Simply download and run, everything is included.
 
 If you have a working Python 3.6/3.7 available, you should be able to simply:
 
-* Run `pip3 install katrain`
+* Run `pip3 install -U katrain`
 * Run the program by executing `katrain` in a terminal.
 
 ### <a name="LinuxSources"></a>Installation from sources 
