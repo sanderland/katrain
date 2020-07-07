@@ -22,16 +22,17 @@
 * [Contributing](#support)
 
 </td>
-<td style="text-align: center; vertical-align: middle;">
+<td>
 
-<a href="https://github.com/sanderland/katrain/blob/master/README.md"><img alt="English" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png" width=100></a>
-<a href="https://translate.google.com/translate?sl=en&tl=de&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="German" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-de.png" width=100></a>
-<a href="https://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-fr.png" width=100></a>
-<a href="https://translate.google.com/translate?sl=en&tl=es&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Spanish" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-es.png" width=100></a>
+<a href="https://github.com/sanderland/katrain/blob/master/README.md"><img alt="English" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=de&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="German" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-de.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-fr.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=es&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Spanish" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-es.png" width=50></a>
 <br/>
-<a href="https://translate.google.com/translate?sl=en&tl=ko&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Korean" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-ko.png" width=100></a>
-<a href="https://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-cn.png" width=100></a>
-<a href="https://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-ru.png" width=100></a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="https://translate.google.com/translate?sl=en&tl=ko&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Korean" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-ko.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-cn.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-ru.png" width=50></a>
 
 </td>
 </table>
@@ -69,9 +70,9 @@ but has since grown to include a wide range of features, including:
 
 
 ## <a name="install"></a> Installation
-* See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
+* See the [releases page](https://github.com/sanderland/katrain/releases) for downloadable executables for Windows.
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
-* See [here](INSTALL.md) for detailed instructions for Window, Linux and MacOS,
+* [This page](INSTALL.md) has detailed instructions for Window, Linux and MacOS,
   as well as troubleshooting and setting up KataGo to use multiple GPUs.
 
 ## <a name="ai"></a> Play against AI
