@@ -40,7 +40,7 @@ but has since grown to include a wide range of features, including:
 
 ### Analyze your games
 
-![screenshot](https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.gif)
+![screenshot](https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.png)
 
 ### YouTube videos
 
