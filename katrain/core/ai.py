@@ -66,7 +66,7 @@ def ai_rank_estimation(strategy, settings) -> int:
     if strategy in [AI_DEFAULT, AI_HANDICAP, AI_JIGO]:
         return 9
     if strategy == AI_RANK:
-        return 1 - settings["kyu_rank"], True
+        return 1 - settings["kyu_rank"]
     if strategy in [AI_WEIGHTED, AI_SCORELOSS, AI_LOCAL, AI_TENUKI, AI_TERRITORY, AI_INFLUENCE, AI_PICK]:
         if strategy == AI_WEIGHTED:
             elo = interp1d(AI_WEIGHTED_ELO, settings["weaken_fac"])

@@ -76,15 +76,16 @@ on the board, or not output details for them in SGFs,you can do so under 'Config
 
 This section describes the available AIs, with strength based on their current OGS rankings using the default settings.
 
-In the 'AI settings', settings with calibration are at the top and have a lighter color, changing these will show an estimate of rank.
-This estimate is reasonably accurate as long as you have not changed the other settings.
+In the 'AI settings', settings which have been tested and calibrated are at the top and have a lighter color,
+changing these will show an estimate of rank.
+This estimate should be reasonably accurate as long as you have not changed the other settings.
 
 * Recommended options for serious play include:
     * **[9p+]** **KataGo** is full KataGo, above professional level. The analysis and feedback given is always based on this full strength KataGo AI.
     * **[15k - 3d]** **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced
      game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found
       [here](https://github.com/sanderland/katrain/issues/44) and [here](https://github.com/sanderland/katrain/issues/74).
-    * **[~5k]**  **ScoreLoss** is KataGo analyzing as usual, but 
+    * **[8k - 4d+]**  **ScoreLoss** is KataGo analyzing as usual, but
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
     * **[~5d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
     * **[12k - 2d]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
