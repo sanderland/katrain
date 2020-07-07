@@ -8,6 +8,8 @@
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
 
+<table>
+<td>
 
 * [Introduction](#intro)
 * [Previews and YouTube tutorials](#preview)
@@ -18,6 +20,23 @@
     * [Keyboard shortcuts](#keyboard)
 * [FAQ and Troubleshooting](#faq)
 * [Contributing](#support)
+
+</td>
+<td>
+
+![English](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
+![German](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
+<br>
+![French](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
+![Spanish](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
+<br>
+![Korean](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
+![Chinese](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-cn.png)
+<br>
+![Russian](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
+
+</td>
+</table>
 
 ## <a name="intro"></a> Introduction
 
