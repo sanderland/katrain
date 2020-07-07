@@ -98,6 +98,14 @@ msgstr "Equalize visits of potential moves"
 msgid "analysis:sweep"
 msgstr "Fast analysis of all moves"
 
+#. Analyze every node in the game more deeply
+msgid "analysis:game"
+msgstr "Deeper full game analysis"
+
+#. Keep improving current position analysis when there is nothing else to do
+msgid "analysis:continuous"
+msgstr "Toggle continuous analysis"
+
 msgid "analysis:aimove"
 msgstr "Force AI Move"
 
@@ -112,6 +120,10 @@ msgstr "Analyzing entire board using {visits} visits/move"
 #. status message
 msgid "equalizing analysis"
 msgstr "Equalizing analysis of candidate moves to {visits} visits"
+
+#. status message
+msgid "game re-analysis"
+msgstr "Re-analyzing entire game using {visits} visits"
 
 #. right panel buttons and below board
 msgid "pass-button-text"
@@ -138,6 +150,10 @@ msgstr "Score"
 
 msgid "tab:winrate"
 msgstr "Win Rate"
+
+#. shown on a graph tab
+msgid "tab:rank_est"
+msgstr "Rank Estimate"
 
 msgid "tab:points"
 msgstr "Point Loss"
@@ -502,6 +518,17 @@ msgstr ""
 "in the general settings `engine` section and engine configuration file. No "
 "options are available here."
 
+#. ai which handles handicap games better
+msgid "ai:handicap"
+msgstr "KataHandicap"
+
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo optimized for playing higher handicap games.The `pda` setting "
+"corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
+"perspective. When `automatic` is set, KaTrain will find a suitable value "
+"automatically."
+
 msgid "ai:jigo"
 msgstr "KataJigo"
 
@@ -593,11 +620,22 @@ msgstr ""
 "one. Stronger settings select the best move from a larger selection. Since "
 "there is no 0 kyu/dan, 3 dan = -2 kyu."
 
+#. in AI settings
+msgid "estimated strength"
+msgstr "Estimated Strength"
+
+#. button in general settings for downloading models
 msgid "download models button"
 msgstr "Download Models"
 
+#. shown on on the model select dropdown
 msgid "models available"
 msgstr "{num} available model(s) found"
 
+#. error message on trying to download models when already done
 msgid "All models downloaded"
 msgstr "All available models already downloaded"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze max visits"
+msgstr "Number of visits per move"

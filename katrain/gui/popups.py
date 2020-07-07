@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Tuple, Union
 
 from kivy.clock import Clock
 from kivy.metrics import dp
-from kivy.properties import BooleanProperty, NumericProperty, StringProperty
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
@@ -15,19 +15,24 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
+from katrain.core.ai import ai_rank_estimation
 from katrain.core.constants import (
     AI_CONFIG_DEFAULT,
     AI_DEFAULT,
+    AI_OPTION_VALUES,
     AI_STRATEGIES_RECOMMENDED_ORDER,
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
+    STATUS_INFO,
+    AI_KEY_PROPERTIES,
 )
 from katrain.core.engine import KataGoEngine
-from katrain.core.lang import i18n
+from katrain.core.lang import i18n, rank_label
 from katrain.core.utils import PATHS, find_package_resource
 from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
+from katrain.gui.widgets import RankGraph
 from katrain.gui.widgets.progress_loader import ProgressLoader
 
 
@@ -131,6 +136,26 @@ class LabelledIntInput(LabelledTextInput):
         return int(self.text or "0")
 
 
+class LabelledSelectionSlider(BoxLayout):
+    input_property = StringProperty("")
+    values = ListProperty([(0, "")])  # (value:numeric,label:string) pairs
+    key_option = BooleanProperty(False)
+
+    def set_value(self, v):
+        self.slider.set_value(v)
+        self.textbox.text = str(v)
+
+    @property
+    def input_value(self):
+        if self.textbox.text:
+            return float(self.textbox.text)
+        return self.slider.values[self.slider.index][0]
+
+    @property
+    def raw_input_value(self):
+        return self.textbox.text
+
+
 class InputParseError(Exception):
     pass
 
@@ -143,9 +168,9 @@ class QuickConfigGui(MDBoxLayout):
         Clock.schedule_once(self.build_and_set_properties, 0)
 
     def collect_properties(self, widget) -> Dict:
-        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
-            widget, "input_property", None
-        ):
+        if isinstance(
+            widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox, LabelledSelectionSlider)
+        ) and getattr(widget, "input_property", None):
             try:
                 ret = {widget.input_property: widget.input_value}
             except Exception as e:  # TODO : on widget?
@@ -185,12 +210,14 @@ class QuickConfigGui(MDBoxLayout):
         return self._set_properties_subtree(self)
 
     def _set_properties_subtree(self, widget):
-        if isinstance(widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox)) and getattr(
-            widget, "input_property", None
-        ):
+        if isinstance(
+            widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox, LabelledSelectionSlider)
+        ) and getattr(widget, "input_property", None):
             value = self.get_setting(widget.input_property)[0]
             if isinstance(widget, LabelledCheckBox):
                 widget.active = value is True
+            elif isinstance(widget, LabelledSelectionSlider):
+                widget.set_value(value)
             elif isinstance(widget, LabelledSpinner):
                 selected = 0
                 try:
@@ -283,7 +310,7 @@ class DescriptionLabel(Label):
     pass
 
 
-class AIPopup(QuickConfigGui):
+class ConfigAIPopup(QuickConfigGui):
     max_options = NumericProperty(6)
 
     def __init__(self, katrain):
@@ -295,18 +322,54 @@ class AIPopup(QuickConfigGui):
         self.build_ai_options()
         self.ai_select.bind(text=self.build_ai_options)
 
+    def estimate_rank_from_options(self, *_args):
+        strategy = self.ai_select.selected[1]
+        try:
+            options = self.collect_properties(self)  # [strategy]
+        except InputParseError:
+            self.estimated_rank_label.text = "??"
+            return
+        prefix = f"ai/{strategy}/"
+        options = {k[len(prefix) :]: v for k, v in options.items() if k.startswith(prefix)}
+        dan_rank = ai_rank_estimation(strategy, options)
+        self.estimated_rank_label.text = rank_label(dan_rank)
+
     def build_ai_options(self, *_args):
         strategy = self.ai_select.selected[1]
         mode_settings = self.katrain.config(f"ai/{strategy}")
         self.options_grid.clear_widgets()
         self.help_label.text = i18n._(strategy.replace("ai:", "aihelp:"))
-        for k, v in sorted(mode_settings.items(), key=lambda kv: kv[0]):
-            self.options_grid.add_widget(DescriptionLabel(text=k))
-            self.options_grid.add_widget(
-                wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"ai/{strategy}/{k}"))
-            )
+        for k, v in sorted(mode_settings.items(), key=lambda kv: (kv[0] not in AI_KEY_PROPERTIES, kv[0])):
+            self.options_grid.add_widget(DescriptionLabel(text=k, size_hint_x=0.25))
+            if k in AI_OPTION_VALUES:
+                values = AI_OPTION_VALUES[k]
+                if values == "bool":
+                    widget = LabelledCheckBox(input_property=f"ai/{strategy}/{k}")
+                    widget.active = v
+                    widget.bind(active=self.estimate_rank_from_options)
+                else:
+                    if isinstance(values[0], Tuple):  # with descriptions, possibly language-specific
+                        fixed_values = [(v, re.sub(r"\[(.*?)\]", lambda m: i18n._(m[1]), l)) for v, l in values]
+                    else:  # just numbers
+                        fixed_values = [(v, str(v)) for v in values]
+                    widget = LabelledSelectionSlider(
+                        values=fixed_values, input_property=f"ai/{strategy}/{k}", key_option=(k in AI_KEY_PROPERTIES)
+                    )
+                    widget.set_value(v)
+                    widget.textbox.bind(text=self.estimate_rank_from_options)
+                self.options_grid.add_widget(wrap_anchor(widget))
+            else:
+                self.options_grid.add_widget(
+                    wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"ai/{strategy}/{k}"))
+                )
         for _ in range((self.max_options - len(mode_settings)) * 2):
-            self.options_grid.add_widget(Label())
+            self.options_grid.add_widget(Label(size_hint_x=None))
+        Clock.schedule_once(self.estimate_rank_from_options)
+
+    def update_config(self, save_to_file=True):
+        super().update_config(save_to_file=save_to_file)
+        self.katrain.update_calculated_ranks()
+        Clock.schedule_once(self.katrain.controls.update_players, 0)
 
 
 class ConfigPopup(QuickConfigGui):
@@ -316,7 +379,6 @@ class ConfigPopup(QuickConfigGui):
 
     def build_and_set_properties(self, *_args):
         super().build_and_set_properties()
-        # self.check_models()
 
     def check_models(self, *args):  # WIP
         done = set()
@@ -388,8 +450,8 @@ class ConfigPopup(QuickConfigGui):
                 progress.start(self.download_progress_box)
                 downloading = True
         if not downloading:
-            self.download_progress_box.add_widget(Label(text=i18n._("All models downloaded"),text_size=(None,dp(50) )))
-            print('x')
+            self.download_progress_box.add_widget(Label(text=i18n._("All models downloaded"), text_size=(None, dp(50))))
+            print("x")
 
     def update_config(self, save_to_file=True):
         updated = super().update_config(save_to_file=save_to_file)
@@ -400,8 +462,9 @@ class ConfigPopup(QuickConfigGui):
         if detected_restart:
 
             def restart_engine(_dt):
+                self.katrain.controls.set_status("", STATUS_INFO)
                 self.katrain.log(f"Restarting Engine after {detected_restart} settings change")
-                self.katrain.controls.set_status(i18n._("restarting engine"))
+                self.katrain.controls.set_status(i18n._("restarting engine"), STATUS_INFO)
 
                 old_engine = self.katrain.engine  # type: KataGoEngine
                 old_proc = old_engine.katago_process
@@ -426,3 +489,8 @@ class LoadSGFPopup(BoxLayout):
         ]
         self.filesel.path = os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load")))
         self.filesel.select_string = i18n._("Load File")
+
+
+class ReAnalyzeGamePopup(BoxLayout):
+    katrain = ObjectProperty(None)
+    popup = ObjectProperty(None)

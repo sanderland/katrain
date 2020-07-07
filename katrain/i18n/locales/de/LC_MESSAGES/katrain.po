@@ -600,14 +600,38 @@ msgstr "Analyse der Kandidatenzüge wird abgeglichen mit {visits} Visits"
 msgid "sweep analysis"
 msgstr "Analysiere gesamtes Brett mit {visits} Visits/Zug"
 
-#. TODO
 msgid "models available"
-msgstr "{num} available model(s) found"
+msgstr "{num} verfügbare Modelle gefunden"
 
-#. TODO
 msgid "download models button"
-msgstr "Download Models"
+msgstr "Modelle herunterladen"
 
-#. TODO
 msgid "All models downloaded"
-msgstr "All available models already downloaded"
+msgstr "Alle verfügbaren Modelle bereits heruntergeladen"
+
+msgid "tab:rank_est"
+msgstr "Rangschätzung"
+
+msgid "game re-analysis"
+msgstr "Neuanalyse des gesamten Spiels mit {visits} Visits"
+
+msgid "analysis:game"
+msgstr "Tiefere Gesamtspielanalyse"
+
+msgid "analysis:continuous"
+msgstr "Kontinuierliche Analyse ein/aus"
+
+msgid "ai:handicap"
+msgstr "KataHandicap"
+
+msgid "aihelp:handicap"
+msgstr ""
+"Optimiertes KataGo für höhere Handicap Spiele.Die pda Einstellungentspricht "
+"playoutDoublingAdvantage in KataGo, aus Sicht von Schwarz.Wenn automatic "
+"eingestellt ist, wird KaTrain automatischeinen geeigneten Wert finden."
+
+msgid "estimated strength"
+msgstr "Geschätzte Spielstärke"
+
+msgid "reanalyze max visits"
+msgstr "Anzahl der Visits pro Zug"

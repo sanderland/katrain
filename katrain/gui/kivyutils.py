@@ -22,7 +22,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BaseFlatButton, BasePressedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 
-from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, PLAYER_AI, MODE_PLAY
+from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, MODE_PLAY, PLAYER_AI
 from katrain.core.lang import i18n
 from katrain.gui.style import DEFAULT_FONT, WHITE
 
@@ -297,6 +297,8 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     player = OptionProperty("B", options=["B", "W"])
     player_type = StringProperty("Player")
     player_subtype = StringProperty("")
+    name = StringProperty("", allownone=True)
+    rank = StringProperty("", allownone=True)
     active = BooleanProperty(True)
 
 
@@ -316,6 +318,9 @@ class AnalysisToggle(MDBoxLayout):
 
     def trigger_action(self, *args, **kwargs):
         return self.checkbox.trigger_action(*args, **kwargs)
+
+    def activate(self, *_args):
+        self.checkbox.active = True
 
     @property
     def active(self):
@@ -355,22 +360,23 @@ class CollapsablePanel(MDBoxLayout):
 
     options = ListProperty([])
     options_height = NumericProperty(25)
+    content_height = NumericProperty(100)
+    size_hint_y_open = NumericProperty(None)  # total height inc tabs, overrides content_height
     options_spacing = NumericProperty(6)
     option_labels = ListProperty([])
     option_active = ListProperty([])
     option_colors = ListProperty([])
 
-    closed_label = StringProperty("Closed Panel")
+    contents = ListProperty([])
 
-    size_hint_y_open = NumericProperty(1)
-    height_open = NumericProperty(None)
+    closed_label = StringProperty("Closed Panel")
 
     state = OptionProperty("open", options=["open", "close"])
     close_icon = "img/Previous-5.png"
     open_icon = "img/Next-5.png"
 
     def __init__(self, **kwargs):
-        self.header, self.contents, self.open_close_button = None, None, None
+        self.open_close_button, self.header = None, None
         self.option_buttons = []
         super().__init__(**kwargs)
         self.orientation = "vertical"
@@ -381,9 +387,24 @@ class CollapsablePanel(MDBoxLayout):
             option_active=self.build_options,
             options_spacing=self.build_options,
         )
-        self.bind(state=self.build, size_hint_y_open=self.build, height_open=self.build)
+        self.bind(state=self._on_state, content_height=self._on_size, options_height=self._on_size)
         MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
         self.build_options()
+
+    def _on_state(self, *_args):
+        self.build()
+        self.trigger_select(ix=None)
+
+    def _on_size(self, *_args):
+        height, size_hint_y = 1, None
+        if self.state == "open" and self.contents:
+            if self.size_hint_y_open is not None:
+                size_hint_y = self.size_hint_y_open
+            else:
+                height = self.content_height + self.options_height
+        else:
+            height = self.header.height
+        self.height, self.size_hint_y = height, size_hint_y
 
     @property
     def option_state(self):
@@ -396,7 +417,7 @@ class CollapsablePanel(MDBoxLayout):
                 button.state = "down" if state_dict[option] else "normal"
         self.trigger_select(ix=None)
 
-    def build_options(self, *args, **kwargs):
+    def build_options(self, *args):
         self.header = CollapsablePanelHeader(
             height=self.options_height, size_hint_y=None, spacing=self.options_spacing, padding=[1, 0, 0, 0]
         )
@@ -422,13 +443,12 @@ class CollapsablePanel(MDBoxLayout):
         self.bind(state=lambda *_args: self.open_close_button.setter("icon")(None, self.open_close_icon()))
         self.build()
 
-    def build(self, *args, **kwargs):
+    def build(self, *args):
         self.header.clear_widgets()
         if self.state == "open":
             for button in self.option_buttons:
                 self.header.add_widget(button)
             self.header.add_widget(Label())  # spacer
-            self.trigger_select(ix=None)
         else:
             self.header.add_widget(
                 Label(
@@ -439,24 +459,16 @@ class CollapsablePanel(MDBoxLayout):
 
         super().clear_widgets()
         super().add_widget(self.header)
-        height, size_hint_y = 1, None
         if self.state == "open" and self.contents:
-            super().add_widget(self.contents)
-            if self.height_open:
-                height = self.height_open
-            else:
-                size_hint_y = self.size_hint_y_open
-        else:
-            height = self.header.height
-        self.height, self.size_hint_y = height, size_hint_y
+            for w in self.contents:
+                super().add_widget(w)
+        self._on_size()
 
     def open_close_icon(self):
         return self.open_icon if self.state == "open" else self.close_icon
 
     def add_widget(self, widget, index=0, **_kwargs):
-        if self.contents:
-            raise ValueError("CollapsablePanel can only have one child")
-        self.contents = widget
+        self.contents.append(widget)
         self.build()
 
     def set_state(self, state="toggle"):

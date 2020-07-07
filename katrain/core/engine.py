@@ -5,7 +5,7 @@ import subprocess
 import threading
 import time
 import traceback
-from typing import Callable, Optional
+from typing import Callable, Optional, Dict
 
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from katrain.core.game_node import GameNode
@@ -101,12 +101,17 @@ class KataGoEngine:
         self.shutdown(finish=False)
         self.start()
 
-    def check_alive(self, exception_if_dead=False):
+    def check_alive(self, os_error="", exception_if_dead=False):
         ok = self.katago_process and self.katago_process.poll() is None
         if not ok and exception_if_dead:
-            raise EngineDiedException(
-                f"Engine died (process {self.katago_process}, poll {self.katago_process and self.katago_process.poll()}) config {self.config}"
-            )
+            if self.katago_process:
+                os_error += f"status {self.katago_process and self.katago_process.poll()}"
+                died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
+                self.katrain.log(died_msg, OUTPUT_ERROR)
+                self.katago_process = None
+            else:
+                died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
+            raise EngineDiedException(died_msg)
         return ok
 
     def shutdown(self, finish=False):
@@ -115,8 +120,8 @@ class KataGoEngine:
             while self.queries and process.poll() is None:
                 time.sleep(0.1)
         if process:
-            process.terminate()
             self.katago_process = None
+            process.terminate()
         if self.stderr_thread:
             self.stderr_thread.join()
         if self.analysis_thread:
@@ -134,15 +139,22 @@ class KataGoEngine:
                         self.katrain.log(line.decode(errors="ignore").strip(), OUTPUT_KATAGO_STDERR)
                     except Exception as e:
                         print("ERROR in processing KataGo stderr:", line, "Exception", e)
-            except:
+                elif self.katago_process:
+                    self.check_alive(exception_if_dead=True)
+            except Exception as e:
+                self.katrain.log(f"Exception in reading stdout {e}", OUTPUT_DEBUG)
                 return
 
     def _analysis_read_thread(self):
         while self.katago_process is not None:
             try:
                 line = self.katago_process.stdout.readline()
+                if self.katago_process and not line:
+                    self.check_alive(exception_if_dead=True)
             except OSError as e:
-                raise EngineDiedException(i18n("Engine died unexpectedly").format(error=e))
+                self.check_alive(os_error=str(e), exception_if_dead=True)
+                return
+
             if b"Uncaught exception" in line:
                 self.katrain.log(f"KataGo Engine Failed: {line.decode(errors='ignore')}", OUTPUT_ERROR)
                 return
@@ -193,7 +205,7 @@ class KataGoEngine:
                 self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
                 self.katago_process.stdin.flush()
             except OSError as e:
-                self.katrain.log(i18n._("Engine died unexpectedly").format(error=e), OUTPUT_ERROR)
+                self.check_alive(os_error=str(e), exception_if_dead=True)
                 return  # do not raise, since there's nothing to catch it
 
     def request_analysis(
@@ -206,9 +218,11 @@ class KataGoEngine:
         time_limit=True,
         priority: int = 0,
         ownership: Optional[bool] = None,
-        next_move=None,
+        next_move: Optional[GameNode] = None,
+        extra_settings: Optional[Dict] = None,
     ):
-        moves = [m for node in analysis_node.nodes_from_root for m in node.move_with_placements]
+        moves = [m for node in analysis_node.nodes_from_root for m in node.moves]
+        initial_stones = analysis_node.root.placements
         if next_move:
             moves.append(next_move)
         if ownership is None:
@@ -233,9 +247,11 @@ class KataGoEngine:
             "komi": analysis_node.komi,
             "boardXSize": size_x,
             "boardYSize": size_y,
-            "includeOwnership": ownership,
+            "includeOwnership": ownership and not next_move,
             "includePolicy": not next_move,
+            "initialStones": [[m.player, m.gtp()] for m in initial_stones],
             "moves": [[m.player, m.gtp()] for m in moves],
-            "overrideSettings": settings,
+            "overrideSettings": {**settings, **(extra_settings or {})},
         }
         self.send_query(query, callback, error_callback, next_move)
+        analysis_node.analysis_visits_requested = max(analysis_node.analysis_visits_requested, visits)

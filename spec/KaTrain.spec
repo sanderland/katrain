@@ -14,13 +14,13 @@ a = Analysis(
     datas=[
         ("..\\katrain\\gui.kv", "katrain"),
         ("..\\katrain\\popups.kv", "katrain"),
-        ("..\\katrain\\beep.wav", "katrain"),
         ("..\\katrain\\config.json", "katrain"),
         ("..\\katrain\\KataGo", "katrain\\KataGo"),
-        ("..\\katrain\img", "katrain\\img"),
         ("..\\katrain\\models", "katrain\\models"),
-        ("..\\katrain\\i18n", "katrain\\i18n"),
+        ("..\\katrain\\sounds", "katrain\\sounds"),
+        ("..\\katrain\img", "katrain\\img"),
         ("..\\katrain\\fonts", "katrain\\fonts"),
+        ("..\\katrain\\i18n", "katrain\\i18n"),
     ],
     hiddenimports=["win32file", "win32timezone"],  #  FileChooser in kivy loads this conditionally
     hookspath=[kivymd_hooks_path],

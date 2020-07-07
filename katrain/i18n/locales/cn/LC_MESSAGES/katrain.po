@@ -557,14 +557,37 @@ msgid "Starting Kata failed"
 msgstr ""
 "用'{command}'命令启动katago出错 {error}. 请确认引擎设置里'katago'的值指向了 正确的KataGo运行文件."
 
-#. TODO
 msgid "models available"
-msgstr "{num} available model(s) found"
+msgstr "找到{num} 个可用模型"
 
-#. TODO
 msgid "download models button"
-msgstr "Download Models"
+msgstr "下载模型"
 
-#. TODO
 msgid "All models downloaded"
-msgstr "All available models already downloaded"
+msgstr "所有可用模型均已下载"
+
+msgid "tab:rank_est"
+msgstr "估计段位"
+
+msgid "game re-analysis"
+msgstr "使用 {visits}深度全局再分析"
+
+msgid "analysis:game"
+msgstr "深入全盘分析"
+
+msgid "analysis:continuous"
+msgstr "开启继续分析"
+
+msgid "ai:handicap"
+msgstr "Kata让子棋"
+
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo 让子棋优化版. pda 设置 对应KataGo里黑棋视角的 playoutDoublingAdvantage. 当设置了 自动, "
+"KaTrain 会自动找到合适的值"
+
+msgid "estimated strength"
+msgstr "预计棋力"
+
+msgid "reanalyze max visits"
+msgstr "每步棋计算深度"

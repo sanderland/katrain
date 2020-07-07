@@ -597,14 +597,38 @@ msgstr ""
 "Более сильные настройки расширяют множество для выбора. Т.к. на шкале "
 "отсутствуют 0 кю/дан, то 3 дан = -2 кю."
 
-#. TODO
 msgid "models available"
-msgstr "{num} available model(s) found"
+msgstr "{num} доступных моделей найдено"
 
-#. TODO
 msgid "download models button"
-msgstr "Download Models"
+msgstr "Скачать модели"
 
-#. TODO
 msgid "All models downloaded"
-msgstr "All available models already downloaded"
+msgstr "Все доступные модели уже загружены"
+
+msgid "tab:rank_est"
+msgstr "Оценка ранга"
+
+msgid "game re-analysis"
+msgstr "Повторить анализ всей игры, используя {visits} посещений"
+
+msgid "analysis:game"
+msgstr "Более глубокий анализ всей игры"
+
+msgid "analysis:continuous"
+msgstr "Непрерывный анализ"
+
+msgid "ai:handicap"
+msgstr "KataHandicap"
+
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo оптимизированный под игры с большой форой. Настройка `pda` "
+"соответствует `playoutDoublingAdvantage` в KataGo, с точки зрения чёрных. "
+"При установке `automatic`, KaTrain выберет значение автоматически."
+
+msgid "estimated strength"
+msgstr "Оценка силы"
+
+msgid "reanalyze max visits"
+msgstr "Количество посещений на ход"

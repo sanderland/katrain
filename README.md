@@ -1,5 +1,4 @@
-
-# <a name="manual"></a> KaTrain v1.2
+# <a name="manual"></a> KaTrain
 
 [![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
 [![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
@@ -8,6 +7,19 @@
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
+
+
+* [Introduction](#intro)
+* [Previews and YouTube tutorials](#preview)
+* [Installation](#install)
+* [Manual](#ai)
+    * [Play against AI](#ai)
+    * [Analyzing your Games](#analysis)
+    * [Keyboard shortcuts](#keyboard)
+* [FAQ and Troubleshooting](#faq)
+* [Contributing](#support)
+
+## <a name="intro"></a> Introduction
 
 KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
 
@@ -20,7 +32,7 @@ but has since grown to include a wide range of features, including:
 * Play against a stronger player and use the retry option instead of handicap stones.
 * Automatically generate focused SGF reviews which show your biggest mistakes.
 
-## Previews and Youtube Videos
+## <a name="preview"></a>  Previews and Youtube Videos
 
 ### Play against an AI Teacher
 
@@ -36,16 +48,13 @@ but has since grown to include a wide range of features, including:
 |:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
 | [![New Features Video](https://i.imgur.com/gCY6hMH.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
 
-
-
-## Installation
+## <a name="install"></a> Installation
 * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
-    * Note that on MacOS you will need to set up KataGo using brew, as described [here](INSTALL.md).
-* See [here](INSTALL.md#MacPrereq) for detailed instructions for running from source files on Window, Linux and MacOS,
-  as well as setting up KataGo to use multiple GPUs.
+* See [here](INSTALL.md) for detailed instructions for Window, Linux and MacOS,
+  as well as troubleshooting and setting up KataGo to use multiple GPUs.
 
-## Play against AI
+## <a name="ai"></a> Play against AI
 
 * Select the players in the main menu, or under 'New Game'.
 * In a teaching game, KaTrain will analyze your moves and automatically undo those that are sufficiently bad.
@@ -67,13 +76,19 @@ on the board, or not output details for them in SGFs,you can do so under 'Config
 
 This section describes the available AIs, with strength based on their current OGS rankings using the default settings.
 
+In the 'AI settings', settings which have been tested and calibrated are at the top and have a lighter color,
+changing these will show an estimate of rank.
+This estimate should be reasonably accurate as long as you have not changed the other settings.
+
 * Recommended options for serious play include:
     * **[9p+]** **KataGo** is full KataGo, above professional level. The analysis and feedback given is always based on this full strength KataGo AI.
-    * **[15k - 3d]** **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found on [this](https://github.com/sanderland/katrain/issues/44) thread.
-    * **[~5k]**  **ScoreLoss** is KataGo analyzing as usual, but 
+    * **[15k - 3d]** **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced
+     game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found
+      [here](https://github.com/sanderland/katrain/issues/44) and [here](https://github.com/sanderland/katrain/issues/74).
+    * **[8k - 4d+]**  **ScoreLoss** is KataGo analyzing as usual, but
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
-    * **[~4d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
-    * **[~4k]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
+    * **[~5d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
+    * **[12k - 2d]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
     * **[~8k]** **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn.
 *  Options that are more on the 'fun and experimental' side include: 
     * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist.:
@@ -88,7 +103,9 @@ The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the mode
 
 Further technical details and discussion on these AIs can be found on [this](https://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
 
-## Analysis
+## <a name="analysis"></a> Analysis
+
+Analysis options in KaTrain allow you to explore variations and request more in-depth analysis from the engine at any point in the game.
 
 Keyboard shortcuts are shown with **[key]**.
 
@@ -110,27 +127,34 @@ Keyboard shortcuts are shown with **[key]**.
     * **[a]**: Deeper analysis: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
     * **[s]**: Equalize visits: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
     * **[d]**: Analyze all moves: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but can be useful to see how many reasonable next moves are available.
+    * **[spacebar]**: Turn continuous analysis on/off. This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.
     * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
 
-## Keyboard and mouse shortcuts
+### Rank Estimation
+
+A new feature in v1.3 is the rank estimation panel. This adds an extra graph which uses a statistical model to estimate the playing strength
+of both players for every 80 move segment. It can be used for determining which part of your game needs extra attention,
+but keep in mind the estimation is based purely on how well moves correspond to the 'shape sense' of KataGo and can be very inaccurate at times.
+
+## <a name="keyboard"></a> Keyboard and mouse shortcuts
 
 In addition to shortcuts mentioned above and those shown in the main menu:
 
 * **[Shift]**: Open the main menu.
 * **[~]** or **[ ` ]** or **[m]**: Cycles through more minimalistic UI modes.
 * **[p]**: Pass
-* **[spacebar]**: Pause/Resume timer
+* **[b]**: Pause/Resume timer
 * **[arrow left]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[arrow right]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[arrow up/down]** Switch branch, as would be expected from the move tree.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
 * **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
-* **[double-click on a move]**: Navigate directly to that point in the game.
+* **[double-click on a move]**: Navigate directly to just before that point in the game.
 * **[Ctrl-V]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
 * **[Ctrl-C]**: Save SGF to clipboard.
 
-## FAQ
+## <a name="faq"></a> FAQ
 
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
@@ -145,9 +169,9 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
-[![Contributors](https://img.shields.io/static/v1?label=contributors&message=12&color=dcb424)](CONTRIBUTORS)
+[![Contributors](https://img.shields.io/static/v1?label=contributors&message=16&color=dcb424)](CONTRIBUTIONS.md)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
-[![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
+[![Github sponsors](https://img.shields.io/static/v1?label=Sponsor&message=2&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.

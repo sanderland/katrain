@@ -31,8 +31,8 @@ EVAL_COLORS = [
     [0.8, 0, 0, 1],
     [0.9, 0.4, 0.1, 1],
     [0.85, 0.89, 0.3, 1],
-    [0.67, 0.9, 0.18, 1.0],
-    [0.117, 0.588, 0, 1.0],
+    [0.67, 0.9, 0.18, 1],
+    [0.117, 0.588, 0, 1],
 ]
 EVAL_DOT_MAX_SIZE = 0.5
 EVAL_DOT_MIN_SIZE = 0.25
@@ -46,11 +46,12 @@ LINE_COLOR = [0, 0, 0]
 POLICY_COLOR = [0.9, 0.2, 0.8]
 STARPOINT_SIZE = 0.1
 BOARD_COLOR = [0.85, 0.68, 0.40, 1]
-STONE_SIZE = 0.475
+STONE_SIZE = 0.505  # texture edge is transparent
 VISITS_FRAC_SMALL = 0.1
 
 GHOST_ALPHA = 0.5
 TOP_MOVE_ALPHA = 0.4
+TOP_MOVE_BORDER_COLOR = [46 / 255, 65 / 255, 88 / 255, 0.9]
 CHILD_SCALE = 0.95
 
 # ponder light
@@ -59,4 +60,4 @@ ENGINE_BUSY_COL = EVAL_COLORS[2]
 ENGINE_READY_COL = EVAL_COLORS[-1]
 
 # info
-INFO_PV_COLOR = to_hexcol(RED)
+INFO_PV_COLOR = to_hexcol(YELLOW)

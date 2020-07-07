@@ -13,6 +13,7 @@
 
 #:set LIGHTGREY [0.7,0.7,0.7,1]
 #:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
+#:import LIGHTGREY katrain.gui.style.LIGHTGREY
 #:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
 
 
@@ -48,7 +49,6 @@
     size: DESC_FONT_SIZE*2,DESC_FONT_SIZE*2
     size_hint: None,None
 
-
 <QuickInputButton@SizedRectangleButton>
     on_left_press: if self.target: self.target.text = self.text
     size: DESC_FONT_SIZE * 2, DESC_FONT_SIZE * 2
@@ -61,7 +61,6 @@
     title_size: DESC_FONT_SIZE
     title_font: self.font_name
     size_hint: None, None
-
 
 <QuickConfigGui>:
     orientation: 'vertical'
@@ -88,8 +87,6 @@
         font_size: DESC_FONT_SIZE * 1.5
     GridLayout:
         cols: 2
-        rows: 3
-        size_hint: 1,3
         rows: 4
         size_hint: 1,4
         spacing: CP_SPACING
@@ -365,10 +362,13 @@
                 spacing: CP_SPACING
                 QuickInputButton:
                     text: '0.5'
+                    on_left_press: km.text=self.text
                 QuickInputButton:
                     text: '6.5'
+                    on_left_press: km.text=self.text
                 QuickInputButton:
                     text: '7.5'
+                    on_left_press: km.text=self.text
         DescriptionLabel:
             text: i18n._("ruleset")
         AnchorLayout:
@@ -395,10 +395,23 @@
             on_press: root.update_config(True)
 
 
+<LabelledSelectionSlider>:
+    slider: slider
+    textbox: textbox
+    SelectionSlider:
+        id: slider
+        size_hint: 2,1
+        values: root.values
+        on_change: textbox.text = str(slider.value)
+        track_color: LIGHTGREY
+        thumb_color: (0.6, 0.7, 0.9, 1) if root.key_option else (0.3, 0.4, 0.6, 1)
+    LabelledFloatInput:
+        id: textbox
 
-<AIPopup>
+<ConfigAIPopup>:
     options_grid: options_grid
     help_label: help_label
+    estimated_rank_label: estimated_rank_label
     ai_select: ai_select
     BoxLayout:
         size_hint: 1,1
@@ -409,22 +422,56 @@
             I18NSpinner:
                 size_hint: 0.8, 0.5
                 id: ai_select
+    BoxLayout:
+        size_hint: 1,1
+        DescriptionLabel:
+            font_size: DESC_FONT_SIZE
+            size_hint: 1, 1
+            text: i18n._('estimated strength')
+        DescriptionLabel:
+            size_hint: 0.8, 1
+            font_size: DESC_FONT_SIZE
+            id: estimated_rank_label
+            text: '?' + i18n._('strength:kyu')
     SmallDescriptionLabel:
         id: help_label
         size_hint: 1,1.25
         text: i18n._('')
     GridLayout:
-        size_hint: 1,4
+        size_hint: 1, 4
         id: options_grid
         rows: root.max_options
         cols: 2
     AnchorLayout:
-        size_hint: 1,1.5
+        size_hint: 1, 1.5
         AutoSizedRoundedRectangleButton:
             padding_x: 15
             size_hint: None,0.5
             text: i18n._("update ai settings")
             on_press: root.update_config(True)
+
+
+<ReAnalyzeGamePopup>:
+    visits: visits
+    orientation: 'vertical'
+    BoxLayout:
+        size_hint: 1, 1.5
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('reanalyze max visits')
+        AnchorLayout:
+            LabelledIntInput:
+                id: visits
+                text: '2500'
+    AnchorLayout:
+        size_hint: 1, 1
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("analysis:game") # re-use string
+            on_press:
+                root.katrain("analyze-extra", "game", visits=visits.input_value)
+                root.popup.dismiss()
 
 
 <LoadSGFPopup>:
@@ -455,6 +502,6 @@
     I18NFileBrowser:
         id: filesel
         multiselect: False
-        filters: ["*.sgf"]
+        filters: ["*.sgf","*.gib"]
         path: "."
         size_hint: 1,7

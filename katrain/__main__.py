@@ -3,7 +3,8 @@
 import os
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
-os.environ["KIVY_AUDIO"] = "sdl2"  # force working audio
+if "KIVY_AUDIO" not in os.environ:
+    os.environ["KIVY_AUDIO"] = "sdl2"  # seems to be most stable / some players hard crash
 
 # next, icon
 from katrain.core.utils import find_package_resource, PATHS
@@ -58,6 +59,10 @@ from katrain.core.constants import (
     MODE_ANALYZE,
     HOMEPAGE,
     VERSION,
+    STATUS_ERROR,
+    STATUS_INFO,
+    PLAYING_NORMAL,
+    PLAYER_HUMAN,
 )
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
 from katrain.core.base_katrain import KaTrainBase
@@ -65,11 +70,9 @@ from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
-from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, AIPopup
+from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
 from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL, LIGHTGREY
-from katrain.gui.widgets.graph import ScoreGraph
-from katrain.gui.widgets.movetree import MoveTree
-from katrain.gui.widgets.filebrowser import I18NFileBrowser
+from katrain.gui.widgets import *
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
 
@@ -91,6 +94,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.teacher_settings_popup = None
         self.timer_settings_popup = None
 
+        self.idle_analysis = False
         self.message_queue = Queue()
 
         self._keyboard = Window.request_keyboard(None, self, "")
@@ -100,20 +104,29 @@ class KaTrainGui(Screen, KaTrainBase):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
             if "starting" in message.lower():
-                self.controls.set_status(f"KataGo engine starting...")
+                self.controls.set_status(f"KataGo engine starting...", STATUS_INFO)
             if message.startswith("Tuning"):
-                self.controls.set_status(f"KataGo is tuning settings for first startup, please wait." + message)
+                self.controls.set_status(
+                    f"KataGo is tuning settings for first startup, please wait." + message, STATUS_INFO
+                )
                 return
             if "ready" in message.lower():
-                self.controls.set_status(f"KataGo engine ready.")
-        if (level == OUTPUT_ERROR or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower())) and getattr(
-            self, "controls", None
-        ):
-            self.controls.set_status(f"ERROR: {message}")
+                self.controls.set_status(f"KataGo engine ready.", STATUS_INFO)
+        if (
+            level == OUTPUT_ERROR
+            or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower() and "tuning" not in message.lower())
+        ) and getattr(self, "controls", None):
+            self.controls.set_status(f"ERROR: {message}", STATUS_ERROR)
 
     @property
     def play_analyze_mode(self):
         return self.play_mode.mode
+
+    def toggle_continuous_analysis(self):
+        self.idle_analysis = not self.idle_analysis
+        if not self.idle_analysis:
+            self.controls.set_status("", STATUS_INFO)
+        self.update_state()
 
     def start(self):
         if self.engine:
@@ -158,7 +171,10 @@ class KaTrainGui(Screen, KaTrainBase):
         # update move tree
         self.controls.move_tree.current_node = self.game.current_node
 
-    def update_state(
+    def update_state(self, redraw_board=False):  # redirect to message queue thread
+        self("update_state", redraw_board=redraw_board)
+
+    def _do_update_state(
         self, redraw_board=False
     ):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
@@ -184,7 +200,10 @@ class KaTrainGui(Screen, KaTrainBase):
                 and not (teaching_undo and cn.auto_undo is None)
             ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                 self._do_ai_move(cn)
-        Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)
+                Clock.schedule_once(self.board_gui.play_stone_sound, 0)
+        if len(self.engine.queries) == 0 and self.idle_analysis:
+            self("analyze-extra", "extra", continuous=True)
+        Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
 
     def update_player(self, bw, **kwargs):
         super().update_player(bw, **kwargs)
@@ -199,7 +218,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _message_loop_thread(self):
         while True:
-            game, msg, *args = self.message_queue.get()
+            game, msg, args, kwargs = self.message_queue.get()
             try:
                 self.log(f"Message Loop Received {msg}: {args} for Game {game}", OUTPUT_EXTRA_DEBUG)
                 if game != self.game.game_id:
@@ -208,28 +227,39 @@ class KaTrainGui(Screen, KaTrainBase):
                     )
                     continue
                 fn = getattr(self, f"_do_{msg.replace('-','_')}")
-                fn(*args)
-                self.update_state()
+                fn(*args, **kwargs)
+                if msg != "update_state":
+                    self._do_update_state()
             except Exception as exc:
                 self.log(f"Exception in processing message {msg} {args}: {exc}", OUTPUT_ERROR)
                 traceback.print_exc()
 
-    def __call__(self, message, *args):
+    def __call__(self, message, *args, **kwargs):
         if self.game:
             if message.endswith("popup"):  # gui code needs to run in main kivy thread.
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")
-                Clock.schedule_once(lambda _dt: fn(*args), -1)
+                Clock.schedule_once(lambda _dt: fn(*args, **kwargs), -1)
             else:  # game related actions
-                self.message_queue.put([self.game.game_id, message, *args])
+                self.message_queue.put([self.game.game_id, message, args, kwargs])
 
     def _do_new_game(self, move_tree=None, analyze_fast=False):
+        self.idle_analysis = False
         mode = self.play_analyze_mode
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
         self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast)
+        if move_tree:
+            for bw, player_info in self.players_info.items():
+                player_info.player_type = PLAYER_HUMAN
+                player_info.player_subtype = PLAYING_NORMAL
+                player_info.sgf_rank = move_tree.root.get_property(bw + "R")
+                player_info.calculated_rank = None
+                player_info.name = move_tree.root.get_property("P" + bw)
+                self.update_player(bw)
         self.controls.graph.initialize_from_game(self.game.root)
+        self.controls.rank_graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 
     def _do_ai_move(self, node=None):
@@ -266,10 +296,10 @@ class KaTrainGui(Screen, KaTrainBase):
         try:
             self.game.play(Move(coords, player=self.next_player_info.player))
         except IllegalMoveException as e:
-            self.controls.set_status(f"Illegal Move: {str(e)}")
+            self.controls.set_status(f"Illegal Move: {str(e)}", STATUS_ERROR)
 
-    def _do_analyze_extra(self, mode):
-        self.game.analyze_extra(mode)
+    def _do_analyze_extra(self, mode, **kwargs):
+        self.game.analyze_extra(mode, **kwargs)
 
     def _do_new_game_popup(self):
         self.controls.timer.paused = True
@@ -311,7 +341,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.ai_settings_popup:
             self.ai_settings_popup = I18NPopup(
-                title_key="ai settings", size=[dp(600), dp(600)], content=AIPopup(self)
+                title_key="ai settings", size=[dp(600), dp(650)], content=ConfigAIPopup(self)
             ).__self__
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
@@ -352,15 +382,15 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_output_sgf(self):
         msg = self.game.write_sgf(self.config("general/sgf_save"))
         self.log(msg, OUTPUT_INFO)
-        self.controls.set_status(msg)
+        self.controls.set_status(msg, OUTPUT_INFO)
 
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()
         if not clipboard:
-            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.")
+            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.", STATUS_ERROR)
             return
         try:
-            move_tree = KaTrainSGF.parse(clipboard)
+            move_tree = KaTrainSGF.parse_sgf(clipboard)
         except Exception as exc:
             self.controls.set_status(
                 i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50])
@@ -431,8 +461,10 @@ class KaTrainGui(Screen, KaTrainBase):
         elif keycode[1] == "shift":
             self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
+            self.toggle_continuous_analysis()
+        elif keycode[1] == "b" and "ctrl" not in modifiers:
             self.controls.timer.paused = not self.controls.timer.paused
-        elif keycode[1] in ["`", "~", "m"]:
+        elif keycode[1] in ["`", "~", "m"] and "ctrl" not in modifiers:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["left", "z"]:
             self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
@@ -446,7 +478,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self("output-sgf")
         elif keycode[1] == "c" and "ctrl" in modifiers:
             Clipboard.copy(self.game.root.sgf())
-            self.controls.set_status(i18n._("Copied SGF to clipboard."))
+            self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
         elif keycode[1] == "v" and "ctrl" in modifiers:
             self.load_sgf_from_clipboard()
         elif keycode[1] in shortcuts.keys() and "ctrl" not in modifiers:
@@ -476,11 +508,10 @@ class KaTrainApp(MDApp):
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
         resource_add_path(PATHS["PACKAGE"])
-
         Builder.load_file(kv_file)
 
         Window.bind(on_request_close=self.on_request_close)
-        Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file))
+        Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file.decode("utf8")))
 
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
@@ -493,7 +524,7 @@ class KaTrainApp(MDApp):
         self.gui.save_config()
         if self.gui.game:
             self.gui.update_state()
-            self.gui.controls.set_status("")
+            self.gui.controls.set_status("", STATUS_INFO)
 
     def webbrowser(self, site_key):
         websites = {"homepage": HOMEPAGE + "#manual", "support": HOMEPAGE + "#support"}

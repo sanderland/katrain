@@ -5,10 +5,20 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 
-from katrain.core.constants import HOMEPAGE, OUTPUT_DEBUG, OUTPUT_INFO
+from kivy.clock import Clock
+
+from katrain.core.constants import (
+    HOMEPAGE,
+    OUTPUT_DEBUG,
+    OUTPUT_INFO,
+    STATUS_ANALYSIS,
+    STATUS_INFO,
+    STATUS_TEACHING,
+    PLAYER_AI,
+)
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
-from katrain.core.lang import i18n
+from katrain.core.lang import i18n, rank_label
 from katrain.core.sgf_parser import SGF, Move
 from katrain.core.utils import var_to_grid
 
@@ -46,7 +56,7 @@ class Game:
             self.komi = self.root.komi
             handicap = int(self.root.get_property("HA", 0))
             if handicap and not self.root.placements:
-                self.place_handicap_stones(handicap)
+                self.root.place_handicap_stones(handicap)
         else:
             board_size = katrain.config("game/size")
             self.komi = katrain.config("game/komi")
@@ -59,7 +69,7 @@ class Game:
             )
             handicap = katrain.config("game/handicap")
             if handicap:
-                self.place_handicap_stones(handicap)
+                self.root.place_handicap_stones(handicap)
 
         if not self.root.get_property("RU"):
             self.root.set_property("RU", katrain.config("game/rules"))
@@ -151,8 +161,9 @@ class Game:
         except IllegalMoveException:
             self._calculate_groups()
             raise
-        played_node = self.current_node.play(move)
-        self.current_node = played_node
+        with self._lock:
+            played_node = self.current_node.play(move)
+            self.current_node = played_node
         if analyze:
             played_node.analyze(self.engines[played_node.next_player])
         return played_node
@@ -181,35 +192,6 @@ class Game:
             ordered_children = cn.parent.ordered_children
             ix = (ordered_children.index(cn) + len(ordered_children) + direction) % len(ordered_children)
             self.set_current_node(ordered_children[ix])
-
-    def place_handicap_stones(self, n_handicaps):
-        board_size_x, board_size_y = self.board_size
-        near_x = 3 if board_size_x >= 13 else min(2, board_size_x - 1)
-        near_y = 3 if board_size_y >= 13 else min(2, board_size_y - 1)
-        far_x = board_size_x - 1 - near_x
-        far_y = board_size_y - 1 - near_y
-        middle_x = board_size_x // 2  # what for even sizes?
-        middle_y = board_size_y // 2
-        if n_handicaps > 9 and board_size_x == board_size_y:
-            stones_per_row = math.ceil(math.sqrt(n_handicaps))
-            spacing = (far_x - near_x) / (stones_per_row - 1)
-            if spacing < near_x:
-                far_x += 1
-                near_x -= 1
-                spacing = (far_x - near_x) / (stones_per_row - 1)
-            coords = list({math.floor(0.5 + near_x + i * spacing) for i in range(stones_per_row)})
-            stones = sorted(
-                [(x, y) for x in coords for y in coords],
-                key=lambda xy: -((xy[0] - (board_size_x - 1) / 2) ** 2 + (xy[1] - (board_size_y - 1) / 2) ** 2),
-            )
-        else:  # max 9
-            stones = [(far_x, far_y), (near_x, near_y), (far_x, near_y), (near_x, far_y)]
-            if n_handicaps % 2 == 1:
-                stones.append((middle_x, middle_y))
-            stones += [(near_x, middle_y), (far_x, middle_y), (middle_x, near_y), (middle_x, far_y)]
-        self.root.set_property(
-            "AB", list({Move(stone).sgf(board_size=(board_size_x, board_size_y)) for stone in stones[:n_handicaps]})
-        )
 
     @property
     def board_size(self):
@@ -297,12 +279,14 @@ class Game:
         def player_name(player_info):
             return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
 
-        player_names = {
-            bw: re.sub(
-                r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw) or player_name(self.katrain.players_info[bw])
-            )
-            for bw in "BW"
-        }
+        if "KaTrain" in self.root.get_property("AP", ""):
+            for bw in "BW":
+                self.root.set_property("P" + bw, player_name(self.katrain.players_info[bw]))
+                player_info = self.katrain.players_info[bw]
+                if player_info.player_type == PLAYER_AI:
+                    self.root.set_property(bw + "R", rank_label(player_info.calculated_rank))
+
+        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
         game_name = f"katrain_{player_names['B']} vs {player_names['W']} {self.game_id}"
         file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
@@ -317,16 +301,33 @@ class Game:
             f.write(sgf)
         return i18n._("sgf written").format(file_name=file_name)
 
-    def analyze_extra(self, mode):
+    def analyze_extra(self, mode, **kwargs):
         stones = {s.coords for s in self.stones}
         cn = self.current_node
 
         engine = self.engines[cn.next_player]
+        Clock.schedule_once(self.katrain.analysis_controls.hints.activate, 0)
+
         if mode == "extra":
-            visits = cn.analysis_visits_requested + engine.config["max_visits"]
-            self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits))
+            if kwargs.get("continuous", False):
+                visits = max(engine.config["max_visits"], math.ceil(cn.analysis_visits_requested * 1.25))
+            else:
+                visits = cn.analysis_visits_requested + engine.config["max_visits"]
+            self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
             cn.analyze(engine, visits=visits, priority=-1_000, time_limit=False)
             return
+        if mode == "game":
+            nodes = self.root.nodes_in_tree
+            if "visits" in kwargs:
+                visits = kwargs["visits"]
+            else:
+                min_visits = min(node.analysis_visits_requested for node in nodes)
+                visits = min_visits + engine.config["max_visits"]
+            for node in nodes:
+                node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False)
+            self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)
+            return
+
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
             if cn.analysis_ready:
@@ -352,17 +353,19 @@ class Game:
                     if (x, y) not in stones
                 ]
             visits = engine.config["fast_visits"]
-            self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits))
+            self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits), STATUS_ANALYSIS)
             priority = -1_000_000_000
-        else:  # mode=='equalize':
+        elif mode == "equalize":
             if not cn.analysis_ready:
-                self.katrain.controls.set_status(i18n._("wait-before-equalize"), self.current_node)
+                self.katrain.controls.set_status(i18n._("wait-before-equalize"), STATUS_INFO, self.current_node)
                 return
 
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
             visits = max(d["visits"] for d in cn.analysis["moves"].values())
-            self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits))
+            self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits), STATUS_ANALYSIS)
             priority = -1_000
+        else:
+            raise ValueError("Invalid analysis mode")
         for move in analyze_moves:
             cn.analyze(
                 engine, priority, visits=visits, refine_move=move, time_limit=False
@@ -391,6 +394,6 @@ class Game:
         if undo:
             self.undo(1)
             self.katrain.controls.set_status(
-                i18n._("teaching undo message").format(move=move.gtp(), points_lost=points_lost)
+                i18n._("teaching undo message").format(move=move.gtp(), points_lost=points_lost), STATUS_TEACHING
             )
             self.katrain.update_state()
