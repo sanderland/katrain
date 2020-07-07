@@ -142,7 +142,7 @@ class KaTrainBase:
         for bw, player_info in self.players_info.items():
             if player_info.player_type == PLAYER_AI:
                 settings = self.config(f"ai/{player_info.strategy}")
-                player_info.calculated_rank, _ = ai_rank_estimation(player_info.player_subtype, settings)
+                player_info.calculated_rank = ai_rank_estimation(player_info.player_subtype, settings)
 
     def reset_players(self):
         self.update_player("B")

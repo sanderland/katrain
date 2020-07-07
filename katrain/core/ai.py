@@ -30,6 +30,7 @@ from katrain.core.constants import (
     AI_TENUKI_ELO_GRID,
     AI_TERRITORY_ELO_GRID,
     AI_INFLUENCE_ELO_GRID,
+    AI_PICK_ELO_GRID,
 )
 from katrain.core.game import Game, GameNode, Move
 from katrain.core.utils import var_to_grid
@@ -61,16 +62,18 @@ def interp2d(gridspec, x, y):
     )
 
 
-def ai_rank_estimation(strategy, settings) -> Tuple[int, bool]:
+def ai_rank_estimation(strategy, settings) -> int:
     if strategy in [AI_DEFAULT, AI_HANDICAP, AI_JIGO]:
-        return 9, True
+        return 9
     if strategy == AI_RANK:
         return 1 - settings["kyu_rank"], True
-    if strategy in [AI_WEIGHTED, AI_SCORELOSS, AI_LOCAL, AI_TENUKI, AI_TERRITORY, AI_INFLUENCE]:
+    if strategy in [AI_WEIGHTED, AI_SCORELOSS, AI_LOCAL, AI_TENUKI, AI_TERRITORY, AI_INFLUENCE, AI_PICK]:
         if strategy == AI_WEIGHTED:
             elo = interp1d(AI_WEIGHTED_ELO, settings["weaken_fac"])
         if strategy == AI_SCORELOSS:
             elo = interp1d(AI_SCORELOSS_ELO, settings["strength"])
+        if strategy == AI_PICK:
+            elo = interp2d(AI_PICK_ELO_GRID, settings["pick_frac"], settings["pick_n"])
         if strategy == AI_LOCAL:
             elo = interp2d(AI_LOCAL_ELO_GRID, settings["pick_frac"], settings["pick_n"])
         if strategy == AI_TENUKI:
@@ -81,9 +84,9 @@ def ai_rank_estimation(strategy, settings) -> Tuple[int, bool]:
             elo = interp2d(AI_INFLUENCE_ELO_GRID, settings["pick_frac"], settings["pick_n"])
 
         kyu = interp1d(CALIBRATED_RANK_ELO, elo)
-        return 1 - kyu, True
+        return 1 - kyu
     else:
-        return AI_STRENGTH[strategy], False
+        return AI_STRENGTH[strategy]
 
 
 def weighted_selection_without_replacement(items: List[Tuple], pick_n: int) -> List[Tuple]:

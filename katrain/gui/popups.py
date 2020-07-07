@@ -331,8 +331,8 @@ class ConfigAIPopup(QuickConfigGui):
             return
         prefix = f"ai/{strategy}/"
         options = {k[len(prefix) :]: v for k, v in options.items() if k.startswith(prefix)}
-        dan_rank, model_based = ai_rank_estimation(strategy, options)
-        self.estimated_rank_label.text = ("" if model_based else "~") + rank_label(dan_rank)
+        dan_rank = ai_rank_estimation(strategy, options)
+        self.estimated_rank_label.text = rank_label(dan_rank)
 
     def build_ai_options(self, *_args):
         strategy = self.ai_select.selected[1]

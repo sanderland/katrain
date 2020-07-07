@@ -112,9 +112,10 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
             if "ready" in message.lower():
                 self.controls.set_status(f"KataGo engine ready.", STATUS_INFO)
-        if (level == OUTPUT_ERROR or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower())) and getattr(
-            self, "controls", None
-        ):
+        if (
+            level == OUTPUT_ERROR
+            or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower() and "tuning" not in message.lower())
+        ) and getattr(self, "controls", None):
             self.controls.set_status(f"ERROR: {message}", STATUS_ERROR)
 
     @property
