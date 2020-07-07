@@ -44,9 +44,12 @@ but has since grown to include a wide range of features, including:
 
 ### YouTube videos
 
-| **New Features in v1.2**                                                                              | **Teaching Game Tutorial**                                                                                   |
-|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
-| [![New Features Video](https://i.imgur.com/gCY6hMH.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
+| **New Features in v1.3**                  | **New Features in v1.2**                                                                              | **Teaching Game Tutorial**                                                                                   |
+|:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
+| [![New Features Video](https://user-images.githubusercontent.com/48946947/86819542-1514ee80-c088-11ea-954e-7830f7926b97.png)](https://www.youtube.com/watch?v=h8qCzjd5tEo) | [![New Features Video](https://i.imgur.com/gCY6hMH.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
+
+
+
 
 ## <a name="install"></a> Installation
 * See the [releases tab](https://github.com/sanderland/katrain/releases) for pre-built installers for windows.
@@ -74,28 +77,28 @@ on the board, or not output details for them in SGFs,you can do so under 'Config
 
 ### AIs
 
-This section describes the available AIs, with strength based on their current OGS rankings using the default settings.
+This section describes the available AIs.
 
 In the 'AI settings', settings which have been tested and calibrated are at the top and have a lighter color,
 changing these will show an estimate of rank.
 This estimate should be reasonably accurate as long as you have not changed the other settings.
 
 * Recommended options for serious play include:
-    * **[9p+]** **KataGo** is full KataGo, above professional level. The analysis and feedback given is always based on this full strength KataGo AI.
-    * **[15k - 3d]** **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced
+    * **KataGo** is full KataGo, above professional level. The analysis and feedback given is always based on this full strength KataGo AI.
+    * **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced
      game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found
       [here](https://github.com/sanderland/katrain/issues/44) and [here](https://github.com/sanderland/katrain/issues/74).
-    * **[8k - 4d+]**  **ScoreLoss** is KataGo analyzing as usual, but
+    * **ScoreLoss** is KataGo analyzing as usual, but
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
-    * **[~5d]** **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
-    * **[12k - 2d]** **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
-    * **[~8k]** **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn.
+    * **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
+    * **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
+    * **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn. Calibrated rank is based on the same idea, and recommended over this option.
 *  Options that are more on the 'fun and experimental' side include: 
-    * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist.:
-        * **[~5k]** **Local Style** will consider mostly moves close to the last move.
-        * **[~5k]** **Tenuki Style** will consider mostly moves away from the last move.
-        * **[~7k]** **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
-        * **[~7k]** **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
+    * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist:
+        * **Local Style** will consider mostly moves close to the last move.
+        * **Tenuki Style** will consider mostly moves away from the last move.
+        * **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
+        * **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
     * **KataJigo** is KataGo attempting to win by 0.5 points, typically by responding to your mistakes with an immediate mistake of it's own.
     
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
