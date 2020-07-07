@@ -41,7 +41,7 @@ setup(
         "wheel",
         "setuptools",
         "importlib_resources ;python_version<'3.7'",
-        "pygame",  # some mac versions need this for kivy
+        "pygame;platform_system=='Darwin'",  # some mac versions need this for kivy
         "cython>=0.24,<=0.29.14,!=0.27,!=0.27.2",  # kivy wants this
         "kivy_deps.glew;platform_system=='Windows'",
         "kivy_deps.sdl2;platform_system=='Windows'",
