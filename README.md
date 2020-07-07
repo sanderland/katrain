@@ -22,18 +22,16 @@
 * [Contributing](#support)
 
 </td>
-<td>
+<td style="text-align: center; vertical-align: middle;">
 
-![English](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
-![German](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
-<br>
-![French](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
-![Spanish](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
-<br>
-![Korean](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
-![Chinese](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-cn.png)
-<br>
-![Russian](https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png)
+<a href="https://github.com/sanderland/katrain/blob/master/README.md"><img alt="English" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-uk.png" width=100></a>
+<a href="https://translate.google.com/translate?sl=en&tl=de&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="German" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-de.png" width=100></a>
+<a href="https://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-fr.png" width=100></a>
+<a href="https://translate.google.com/translate?sl=en&tl=es&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Spanish" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-es.png" width=100></a>
+<br/>
+<a href="https://translate.google.com/translate?sl=en&tl=ko&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Korean" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-ko.png" width=100></a>
+<a href="https://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-cn.png" width=100></a>
+<a href="https://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flaticon/flag-ru.png" width=100></a>
 
 </td>
 </table>
