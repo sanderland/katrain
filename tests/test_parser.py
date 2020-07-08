@@ -114,8 +114,9 @@ def test_gibo():
 def test_ngf():
     file = os.path.join(os.path.dirname(__file__), "data/handicap2.ngf")
     root = SGF.parse_file(file)
+    root.properties["AB"].sort()
     assert {
-        "AB": ["pd", "dp"],
+        "AB": ["dp", "pd"],
         "DT": ["2017-03-16"],
         "HA": [2],
         "PB": ["p81587"],
