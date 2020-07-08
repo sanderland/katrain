@@ -48,7 +48,7 @@ Many thanks to these additional authors:
 * "nowoowoo" for a fix to the parser for SGF files with extra line breaks.
 * "nimets123" for the timer sound effects and board/stone graphics.
 * Jordan Seaward for the stone sound effects.
-* "fohristiwhirl" for the Gibo format parsing code.
+* "fohristiwhirl" for the Gibo and NGF formats parsing code.
 
 ## Translators
 

@@ -338,14 +338,14 @@ class SGF:
         with open(filename, "rb") as f:
             bin_contents = f.read()
             if not encoding:
-                if not is_gib:
+                if is_gib or is_ngf:
+                    encoding = "utf8"
+                else:  # sgf
                     match = re.search(rb"CA\[(.*?)\]", bin_contents)
                     if match:
                         encoding = match[1].decode("ascii", errors="ignore")
                     else:
                         encoding = "ISO-8859-1"  # default
-                else:
-                    encoding = "utf8"  # ?
                 decoded = bin_contents.decode(encoding=encoding, errors="ignore")
             if is_ngf:
                 return cls.parse_ngf(decoded)
@@ -431,7 +431,7 @@ class SGF:
 
         if handicap >= 2:
             root.set_property("HA", handicap)
-            root.place_handicap_stones(handicap, tygem=True)    # While this isn't Tygem, it uses the same layout
+            root.place_handicap_stones(handicap, tygem=True)  # While this isn't Tygem, it uses the same layout
 
         if komi:
             root.set_property("KM", komi)
@@ -471,7 +471,7 @@ class SGF:
                         node = cls._NODE_CLASS(parent=node)
                         node.set_property(key, value)
 
-        if len(root.children) == 0:     # We'll assume we failed in this case
+        if len(root.children) == 0:  # We'll assume we failed in this case
             raise ParseError("Found no moves")
 
         return root
