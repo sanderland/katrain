@@ -420,7 +420,7 @@ class SGF:
             pass
 
         if handicap < 0 or handicap > 9:
-            raise ParserFail
+            raise ParseError(f"Handicap {handicap} out of range")
 
         root = cls._NODE_CLASS()
         node = root
