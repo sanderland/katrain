@@ -380,6 +380,10 @@ class BadukPanWidget(Widget):
         current_node = katrain.game.current_node
         player, next_player = current_node.player, current_node.next_player
 
+        board_size_x, board_size_y = katrain.game.board_size
+        if len(self.gridpos_x) < board_size_x or len(self.gridpos_y) < board_size_y:
+            return  # race condition
+
         with self.canvas.after:
             self.canvas.after.clear()
             self.active_pv_moves = []

@@ -225,11 +225,11 @@ class RankGraph(Graph):
                 [
                     (num_mv, rank, value, mv.player)
                     for rank, (value, mv) in enumerate(policy_ranking)
-                    if mv == move.move
+                    if mv == node.move
                 ][0]
-                if policy_ranking
+                if policy_ranking and node.move
                 else (None, None, None, None)
-                for move, policy_ranking, num_mv in zip(nodes, parent_policy_per_move, num_legal_moves)
+                for node, policy_ranking, num_mv in zip(nodes, parent_policy_per_move, num_legal_moves)
             ]
             size = self.nodes[0].board_size
             num_intersec = size[0] * size[1]

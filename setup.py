@@ -19,6 +19,7 @@ def include_data_files(directory):
 include_data_files("katrain/KataGo")
 include_data_files("katrain/models")
 include_data_files("katrain/fonts")
+include_data_files("katrain/sounds")
 include_data_files("katrain/img/")
 include_data_files("katrain/img/flaticon")
 include_data_files("katrain/i18n")
@@ -41,7 +42,7 @@ setup(
         "wheel",
         "setuptools",
         "importlib_resources ;python_version<'3.7'",
-        "pygame",  # some mac versions need this for kivy
+        "pygame;platform_system=='Darwin'",  # some mac versions need this for kivy
         "cython>=0.24,<=0.29.14,!=0.27,!=0.27.2",  # kivy wants this
         "kivy_deps.glew;platform_system=='Windows'",
         "kivy_deps.sdl2;platform_system=='Windows'",
