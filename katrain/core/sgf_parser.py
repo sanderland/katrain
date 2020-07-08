@@ -332,6 +332,7 @@ class SGF:
     @classmethod
     def parse_file(cls, filename, encoding=None) -> SGFNode:
         is_gib = filename.lower().endswith(".gib")
+        is_ngf = filename.lower().endswith(".ngf")
 
         """Parse a file as SGF, encoding will be detected if not given."""
         with open(filename, "rb") as f:
@@ -346,6 +347,8 @@ class SGF:
                 else:
                     encoding = "utf8"  # ?
                 decoded = bin_contents.decode(encoding=encoding, errors="ignore")
+            if is_ngf:
+                return cls.parse_ngf(decoded)
             if is_gib:
                 return cls.parse_gib(decoded)
             else:  # sgf
@@ -381,6 +384,97 @@ class SGF:
         if self.ix < len(self.contents):
             raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix:self.ix+25]}")
         raise ParseError("Parse Error: expected ')' at end of input.")
+
+    # NGF parser adapted from https://github.com/fohristiwhirl/gofish/
+    @classmethod
+    def parse_ngf(cls, ngf):
+        ngf = ngf.strip()
+        lines = ngf.split("\n")
+
+        try:
+            boardsize = int(lines[1])
+            handicap = int(lines[5])
+            pw = lines[2].split()[0]
+            pb = lines[3].split()[0]
+            rawdate = lines[8][0:8]
+            komi = float(lines[7])
+
+            if handicap == 0 and int(komi) == komi:
+                komi += 0.5
+
+        except (IndexError, ValueError):
+            boardsize = 19
+            handicap = 0
+            pw = ""
+            pb = ""
+            rawdate = ""
+            komi = 0
+
+        re = ""
+        try:
+            if "hite win" in lines[10]:
+                re = "W+"
+            elif "lack win" in lines[10]:
+                re = "B+"
+        except:
+            pass
+
+        if handicap < 0 or handicap > 9:
+            raise ParseError(f"Handicap {handicap} out of range")
+
+        root = cls._NODE_CLASS()
+        node = root
+
+        # Set root values...
+
+        root.set_property("SZ", boardsize)
+
+        if handicap >= 2:
+            root.set_property("HA", handicap)
+            root.place_handicap_stones(handicap, tygem=True)    # While this isn't Tygem, it uses the same layout
+
+        if komi:
+            root.set_property("KM", komi)
+
+        if len(rawdate) == 8:
+            ok = True
+            for n in range(8):
+                if rawdate[n] not in "0123456789":
+                    ok = False
+            if ok:
+                date = rawdate[0:4] + "-" + rawdate[4:6] + "-" + rawdate[6:8]
+                root.set_property("DT", date)
+
+        if pw:
+            root.set_property("PW", pw)
+        if pb:
+            root.set_property("PB", pb)
+
+        if re:
+            root.set_property("RE", re)
+
+        # Main parser...
+
+        for line in lines:
+            line = line.strip().upper()
+
+            if len(line) >= 7:
+                if line[0:2] == "PM":
+                    if line[4] in ["B", "W"]:
+
+                        # move format is similar to SGF, but uppercase and out-by-1
+
+                        key = line[4]
+                        raw_move = line[5:7].lower()
+                        value = chr(ord(raw_move[0]) - 1) + chr(ord(raw_move[1]) - 1)
+
+                        node = cls._NODE_CLASS(parent=node)
+                        node.set_property(key, value)
+
+        if len(root.children) == 0:     # We'll assume we failed in this case
+            raise ParseError("Found no moves")
+
+        return root
 
     # GIB parser adapted from https://github.com/fohristiwhirl/gofish/
     @classmethod
