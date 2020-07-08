@@ -109,3 +109,18 @@ def test_gibo():
         "DT": ["2020-06-14"],
     } == root.properties
     assert "pd" == root.children[0].get_property("B")
+
+
+def test_ngf():
+    file = os.path.join(os.path.dirname(__file__), "data/handicap2.ngf")
+    root = SGF.parse_file(file)
+    assert {
+        "AB": ["pd", "dp"],
+        "DT": ["2017-03-16"],
+        "HA": [2],
+        "PB": ["p81587"],
+        "PW": ["ace550"],
+        "RE": ["W+"],
+        "SZ": [19],
+    } == root.properties
+    assert "pq" == root.children[0].get_property("W")
