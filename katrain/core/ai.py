@@ -91,7 +91,7 @@ def ai_rank_estimation(strategy, settings) -> int:
 
 def weighted_selection_without_replacement(items: List[Tuple], pick_n: int) -> List[Tuple]:
     """For a list of tuples where the second element is a weight, returns random items with those weights, without replacement."""
-    elt = [(math.log(random.random()) / item[1], item) for item in items]  # magic
+    elt = [(math.log(random.random()) / (item[1] + 1e-18), item) for item in items]  # magic
     return [e[1] for e in heapq.nlargest(pick_n, elt)]  # NB fine if too small
 
 
