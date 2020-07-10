@@ -376,6 +376,7 @@ class ConfigPopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
         self.paths = [self.katrain.config("engine/model"), "katrain/models", "~/.katrain"]
+        MDApp.get_running_app().bind(language=self.check_models)
 
     def build_and_set_properties(self, *_args):
         super().build_and_set_properties()

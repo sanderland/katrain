@@ -451,7 +451,7 @@ class BadukPanWidget(Widget):
             animating_pv = self.animating_pv
             if animating_pv:
                 pv, node, start_time, _ = animating_pv
-                delay = self.trainer_config.get("anim_pv_time", 0.5)
+                delay = self.katrain.config("general/anim_pv_time", 0.5)
                 up_to_move = (time.time() - start_time) / delay
                 self.draw_pv(pv, node, up_to_move)
 
