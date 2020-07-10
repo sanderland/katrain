@@ -14,7 +14,7 @@ class Lang(Observable):
     FONTS = {
         "ko": "fonts/NotoSansKR-Regular.otf",
         "cn": "fonts/NotoSansCJKsc-Regular.otf",
-        "ja": "fonts/NotoSansJP-Regular.otf",
+        "jp": "fonts/NotoSansJP-Regular.otf",
     }
 
     def __init__(self, lang):
