@@ -617,3 +617,7 @@ msgstr "利用できるモデルはすべてダウンロード済です"
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
 msgstr "着手毎の読み手数"
+
+#. TODO - on move tree editing
+msgid "Delete Node"
+msgstr "Delete Node"

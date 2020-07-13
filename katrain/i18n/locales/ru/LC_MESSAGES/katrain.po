@@ -632,3 +632,7 @@ msgstr "Оценка силы"
 
 msgid "reanalyze max visits"
 msgstr "Количество посещений на ход"
+
+#. TODO - on move tree editing
+msgid "Delete Node"
+msgstr "Delete Node"

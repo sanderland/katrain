@@ -631,3 +631,7 @@ msgstr "Fuerza Estimada"
 
 msgid "reanalyze max visits"
 msgstr "Número de visitas por jugada"
+
+#. TODO - on move tree editing
+msgid "Delete Node"
+msgstr "Delete Node"

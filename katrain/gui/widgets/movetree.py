@@ -3,13 +3,12 @@ from collections import defaultdict
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Line, Rectangle
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty, Clock, DictProperty, NumericProperty, BooleanProperty
+from kivy.properties import ObjectProperty, Clock, NumericProperty, BooleanProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 
-from katrain.core.game_node import GameNode
 from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.style import (
     WHITE,
@@ -20,49 +19,44 @@ from katrain.gui.style import (
     LIGHTER_BACKGROUND_COLOR,
     YELLOW,
     STONE_TEXT_COLORS,
+    RED,
 )
 
 
 class MoveTreeDropdown(DropDown):
-    def open(self, widget, delta_pos):
-        if self.attach_to is not None:
-            self.attach_to.unbind(pos=self._reposition, size=self._reposition)
-            self.parent.remove_widget(self)
-        self._win = widget.get_parent_window()
-        self.attach_to = widget
-        self.delta_pos = delta_pos
-        widget.bind(pos=self._reposition, size=self._reposition)
-        self._reposition()
-        self._win.add_widget(self)
+    pass
 
-    def _reposition(self, *largs):
-        # calculate the coordinate of the attached widget in the window
-        # coordinate system
-        win = self._win
-        if not win or not self.attach_to or not self.delta_pos:
-            return
-        widget = self.attach_to
-        wx, wy = widget.to_window(*widget.pos)
-        x, y = wx + self.delta_pos[0], wy + self.delta_pos[1]
-        if x + self.width > win.width:
-            x = win.width - self.width
-        self.x = x
-        self.y = y
 
 class MoveTreeCanvas(Widget):
     scroll_view_widget = ObjectProperty(None)
     move_size = NumericProperty(5)
     dropdown = ObjectProperty(None)
+    is_open = BooleanProperty(False)
+    menu_selected_node = ObjectProperty(None, allownone=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.move_pos = {}
         self.move_xy_pos = {}
-        self.menu_selected_node = None
+        self.bind(menu_selected_node=lambda *_args: self.scroll_view_widget.redraw_tree_trigger())
         self.build_dropdown()
+
+    def on_is_open(self, instance, value):
+        if value:
+            max_content_width = max(option.content_width for option in self.dropdown.container.children)
+            self.dropdown.width = max_content_width
+            self.dropdown.open(self.scroll_view_widget)
+        else:
+            self.menu_selected_node = None
+            if  self.dropdown.attach_to:
+                self.dropdown.dismiss()
+
+    def close_dropdown(self, *largs):
+        self.is_open = False
 
     def build_dropdown(self):
         self.dropdown = MoveTreeDropdown(auto_width=False)
+        self.dropdown.bind(on_dismiss=self.close_dropdown)
 
     def set_game_node(self, node):
         katrain = MDApp.get_running_app().gui
@@ -70,24 +64,26 @@ class MoveTreeCanvas(Widget):
         katrain.update_state()
 
     def on_touch_up(self, touch):
-        self.menu_selected_node = None
+        selected_node = None
+        is_open = False
         node, (x, y) = min(
             self.move_xy_pos.items(), key=lambda n_xy: abs(n_xy[1][0] - touch.x) + abs(n_xy[1][1] - touch.y)
         )
         if max(abs(x - touch.x), abs(y - touch.y)) <= (self.move_size / 2):
             if "button" not in touch.profile or touch.button == "left":
                 self.set_game_node(node)
-            elif touch.button == "right":
-                self.dropdown.width = max(option.content_width for option in self.dropdown.container.children)
-                self.menu_selected_node = node
-                dx,dy = self.move_xy_pos[node]
-                self.dropdown.open(self.scroll_view_widget, [dx,dy-self.move_size] )
-        else:
-            self.dropdown.dismiss()
+            elif touch.button == "right" and not node.is_root:
+                is_open = True
+                selected_node = node
+        self.is_open = is_open
+        self.menu_selected_node = selected_node
 
     def delete_selected_node(self):
-        print(self.menu_selected_node, self.menu_selected_node.move)
-        self.menu_selected_node = None
+        if self.menu_selected_node and self.menu_selected_node.parent:
+            parent = self.menu_selected_node.parent
+            parent.children.remove(self.menu_selected_node)
+            self.set_game_node(parent)
+        self.is_open = False
 
     def switch_branch(self, direction=1):
         pos = self.move_pos.get(self.scroll_view_widget.current_node)
@@ -127,8 +123,7 @@ class MoveTreeCanvas(Widget):
         def draw_stone(pos, player):
             draw_circle(pos, self.move_size / 2 - 0.5, STONE_COLORS[player])
             Color(*STONE_TEXT_COLORS[player])
-            line = Line(circle=(*pos, self.move_size / 2), width=1)
-            return line
+            Line(circle=(*pos, self.move_size / 2), width=1)
 
         def coord_pos(coord):
             return (coord + 0.5) * (spacing + self.move_size) + spacing / 2
@@ -140,15 +135,9 @@ class MoveTreeCanvas(Widget):
             return coord_pos(x), self.height - coord_pos(y)
 
         self.move_xy_pos = {n: xy_pos(x, y) for n, (x, y) in self.move_pos.items()}
-        circle_widgets = {}
 
         with self.canvas:
             self.canvas.clear()
-            Color(*YELLOW)
-            Rectangle(
-                pos=[c - self.move_size / 2 - spacing / 2 for c in self.move_xy_pos[current_node]],
-                size=(self.move_size + spacing, self.move_size + spacing),
-            )
             Color(*LIGHTGREY)
             for node, (x, y) in self.move_xy_pos.items():
                 for ci, c in enumerate(children[node]):
@@ -156,13 +145,19 @@ class MoveTreeCanvas(Widget):
                     Line(points=[x, y, x, cy, cx, cy], width=1)
 
             for node, pos in self.move_xy_pos.items():
-                circle_widgets[node] = draw_stone(pos, node.player)
+                if node == self.menu_selected_node or node == current_node:
+                    Color(*(RED if node == self.menu_selected_node else YELLOW))
+                    Rectangle(
+                        pos=[c - self.move_size / 2 - spacing / 2 for c in self.move_xy_pos[node]],
+                        size=(self.move_size + spacing, self.move_size + spacing),
+                    )
+                draw_stone(pos, node.player)
                 text = str(node.depth)
                 Color(*STONE_COLORS["W" if node.player == "B" else "B"])
                 draw_text(pos=pos, text=text, font_size=self.move_size * 1.75 / (1 + 1 * len(text)), font_name="Roboto")
 
-            self.scroll_view_widget.scroll_to_pixel(*self.move_xy_pos[current_node])
-        self.circle_widgets = circle_widgets
+            if current_node in self.move_xy_pos:
+                self.scroll_view_widget.scroll_to_pixel(*self.move_xy_pos[current_node])
 
 
 class MoveTree(ScrollView, BackgroundMixin):
@@ -205,7 +200,6 @@ Builder.load_string(
         size_hint: None, None
         
 <MoveTreeDropdownItem@MenuItem>:
-    background_color: LIGHTER_BACKGROUND_COLOR
     canvas.before:
         Color:
             rgba: WHITE
@@ -221,9 +215,9 @@ Builder.load_string(
     katrain: app.gui
     MoveTreeDropdownItem:
         text: i18n._("Delete Node")
-        icon: 'img/Extra.png'
+        icon: 'img/delete.png'
         shortcut: ''
         on_action: root.katrain.controls.move_tree.delete_selected_node()
-        -height: 20
+        -background_color: LIGHTER_BACKGROUND_COLOR
     """
 )

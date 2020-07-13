@@ -607,3 +607,7 @@ msgstr "추정 기력"
 
 msgid "reanalyze max visits"
 msgstr "한 수당 visit 수"
+
+#. TODO - on move tree editing
+msgid "Delete Node"
+msgstr "Delete Node"

@@ -591,3 +591,7 @@ msgstr "预计棋力"
 
 msgid "reanalyze max visits"
 msgstr "每步棋计算深度"
+
+#. TODO - on move tree editing
+msgid "Delete Node"
+msgstr "Delete Node"
