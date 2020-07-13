@@ -3,7 +3,8 @@ from collections import defaultdict
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Line, Rectangle
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty, Clock, DictProperty, NumericProperty
+from kivy.properties import ObjectProperty, Clock, DictProperty, NumericProperty, BooleanProperty
+from kivy.uix.dropdown import DropDown
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
@@ -22,14 +23,46 @@ from katrain.gui.style import (
 )
 
 
+class MoveTreeDropdown(DropDown):
+    def open(self, widget, delta_pos):
+        if self.attach_to is not None:
+            self.attach_to.unbind(pos=self._reposition, size=self._reposition)
+            self.parent.remove_widget(self)
+        self._win = widget.get_parent_window()
+        self.attach_to = widget
+        self.delta_pos = delta_pos
+        widget.bind(pos=self._reposition, size=self._reposition)
+        self._reposition()
+        self._win.add_widget(self)
+
+    def _reposition(self, *largs):
+        # calculate the coordinate of the attached widget in the window
+        # coordinate system
+        win = self._win
+        if not win or not self.attach_to or not self.delta_pos:
+            return
+        widget = self.attach_to
+        wx, wy = widget.to_window(*widget.pos)
+        x, y = wx + self.delta_pos[0], wy + self.delta_pos[1]
+        if x + self.width > win.width:
+            x = win.width - self.width
+        self.x = x
+        self.y = y
+
 class MoveTreeCanvas(Widget):
     scroll_view_widget = ObjectProperty(None)
     move_size = NumericProperty(5)
+    dropdown = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.move_pos = {}
         self.move_xy_pos = {}
+        self.menu_selected_node = None
+        self.build_dropdown()
+
+    def build_dropdown(self):
+        self.dropdown = MoveTreeDropdown(auto_width=False)
 
     def set_game_node(self, node):
         katrain = MDApp.get_running_app().gui
@@ -37,12 +70,24 @@ class MoveTreeCanvas(Widget):
         katrain.update_state()
 
     def on_touch_up(self, touch):
-        if "button" not in touch.profile or touch.button == "left":
-            node, (x, y) = min(
-                self.move_xy_pos.items(), key=lambda n_xy: abs(n_xy[1][0] - touch.x) + abs(n_xy[1][1] - touch.y)
-            )
-            if max(abs(x - touch.x), abs(y - touch.y)) <= (self.move_size / 2):
+        self.menu_selected_node = None
+        node, (x, y) = min(
+            self.move_xy_pos.items(), key=lambda n_xy: abs(n_xy[1][0] - touch.x) + abs(n_xy[1][1] - touch.y)
+        )
+        if max(abs(x - touch.x), abs(y - touch.y)) <= (self.move_size / 2):
+            if "button" not in touch.profile or touch.button == "left":
                 self.set_game_node(node)
+            elif touch.button == "right":
+                self.dropdown.width = max(option.content_width for option in self.dropdown.container.children)
+                self.menu_selected_node = node
+                dx,dy = self.move_xy_pos[node]
+                self.dropdown.open(self.scroll_view_widget, [dx,dy-self.move_size] )
+        else:
+            self.dropdown.dismiss()
+
+    def delete_selected_node(self):
+        print(self.menu_selected_node, self.menu_selected_node.move)
+        self.menu_selected_node = None
 
     def switch_branch(self, direction=1):
         pos = self.move_pos.get(self.scroll_view_widget.current_node)
@@ -82,7 +127,8 @@ class MoveTreeCanvas(Widget):
         def draw_stone(pos, player):
             draw_circle(pos, self.move_size / 2 - 0.5, STONE_COLORS[player])
             Color(*STONE_TEXT_COLORS[player])
-            Line(circle=(*pos, self.move_size / 2), width=1)
+            line = Line(circle=(*pos, self.move_size / 2), width=1)
+            return line
 
         def coord_pos(coord):
             return (coord + 0.5) * (spacing + self.move_size) + spacing / 2
@@ -94,6 +140,7 @@ class MoveTreeCanvas(Widget):
             return coord_pos(x), self.height - coord_pos(y)
 
         self.move_xy_pos = {n: xy_pos(x, y) for n, (x, y) in self.move_pos.items()}
+        circle_widgets = {}
 
         with self.canvas:
             self.canvas.clear()
@@ -109,12 +156,13 @@ class MoveTreeCanvas(Widget):
                     Line(points=[x, y, x, cy, cx, cy], width=1)
 
             for node, pos in self.move_xy_pos.items():
-                draw_stone(pos, node.player)
+                circle_widgets[node] = draw_stone(pos, node.player)
                 text = str(node.depth)
                 Color(*STONE_COLORS["W" if node.player == "B" else "B"])
                 draw_text(pos=pos, text=text, font_size=self.move_size * 1.75 / (1 + 1 * len(text)), font_name="Roboto")
 
             self.scroll_view_widget.scroll_to_pixel(*self.move_xy_pos[current_node])
+        self.circle_widgets = circle_widgets
 
 
 class MoveTree(ScrollView, BackgroundMixin):
@@ -129,6 +177,9 @@ class MoveTree(ScrollView, BackgroundMixin):
 
     def switch_branch(self, direction):
         self.move_tree_canvas.switch_branch(direction)
+
+    def delete_selected_node(self):
+        self.move_tree_canvas.delete_selected_node()
 
     def scroll_to_pixel(self, x, y):
         if not self._viewport:
@@ -152,5 +203,27 @@ Builder.load_string(
         scroll_view_widget: root
         id: move_tree_canvas
         size_hint: None, None
+        
+<MoveTreeDropdownItem@MenuItem>:
+    background_color: LIGHTER_BACKGROUND_COLOR
+    canvas.before:
+        Color:
+            rgba: WHITE
+        Line:
+            points: self.x, self.y, self.x, self.y+self.height
+        Color:
+            rgba: LIGHTGREY
+        Line
+            points: self.x,self.y,self.x+self.width,self.y
+            width: 1
+
+<MoveTreeDropdown>:
+    katrain: app.gui
+    MoveTreeDropdownItem:
+        text: i18n._("Delete Node")
+        icon: 'img/Extra.png'
+        shortcut: ''
+        on_action: root.katrain.controls.move_tree.delete_selected_node()
+        -height: 20
     """
 )
