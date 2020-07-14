@@ -48,7 +48,7 @@ class MoveTreeCanvas(Widget):
             self.dropdown.open(self.scroll_view_widget)
         else:
             self.menu_selected_node = None
-            if  self.dropdown.attach_to:
+            if self.dropdown.attach_to:
                 self.dropdown.dismiss()
 
     def close_dropdown(self, *largs):
