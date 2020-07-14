@@ -2,8 +2,7 @@
 
 [![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
 [![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
-![Build Status](https://github.com/sanderland/katrain/workflows/release/badge.svg)
-![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)
+[![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)](https://github.com/sanderland/katrain/releases)
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
 [![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
