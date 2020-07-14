@@ -42,10 +42,12 @@ class KataGoEngine:
         self.analysis_thread = None
         self.stderr_thread = None
 
+        exe = config.get("katago", "").strip()
         if override_command:
             self.command = override_command
+        elif exe.startswith('"') and exe.endswith('"'):
+            self.command = exe.strip('"')
         else:
-            exe = config["katago"].strip()
             if not exe:
                 if platform == "win":
                     exe = "katrain/KataGo/katago.exe"

@@ -635,3 +635,7 @@ msgstr "Geschätzte Spielstärke"
 
 msgid "reanalyze max visits"
 msgstr "Anzahl der Visits pro Zug"
+
+#. TODO - on move tree editing
+msgid "Delete Node"
+msgstr "Delete Node"

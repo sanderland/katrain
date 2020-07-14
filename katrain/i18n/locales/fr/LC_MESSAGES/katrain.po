@@ -672,3 +672,7 @@ msgstr ""
 "Tout à gauche, un PDA de -3 (W+3) supposera que Blanc est bien plus fort que Noir. \n"
 "Tout à droite, un PDA de 3 (B+3) supposera que Noir est bien plus fort que Blanc. \n"
 "Cocher l'option 'automatic' adaptera la valeur PDA au handicap utilisé."
+
+#. TODO - on move tree editing
+msgid "Delete Node"
+msgstr "Delete Node"
