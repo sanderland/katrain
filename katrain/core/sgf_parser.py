@@ -132,7 +132,9 @@ class SGFNode:
 
     def add_list_property(self, property: str, values: List):
         """Add some values to the property list."""
-        self.properties[property] += values
+        # SiZe[19] ==> SZ[19] etc. for old SGF
+        normalized_property = re.sub("[a-z]", "", property)
+        self.properties[normalized_property] += values
 
     def get_list_property(self, property, default=None) -> Any:
         """Get the list of values for a property."""
