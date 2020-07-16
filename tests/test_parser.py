@@ -59,7 +59,7 @@ def test_pandanet():
         "GM",
         "EV",
         "US",
-        "CoPyright",
+        "CP",
         "GN",
         "RE",
         "PW",
