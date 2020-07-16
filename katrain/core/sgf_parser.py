@@ -323,11 +323,14 @@ class SGF:
     _NODE_CLASS = SGFNode  # Class used for SGF Nodes, can change this to something that inherits from SGFNode
     # https://xkcd.com/1171/
     SGFPROP_PAT = re.compile(r"\s*(?:\(|\)|;|(\w+)((\s*\[([^\]\\]|\\.)*\])+))", flags=re.DOTALL)
+    SGF_PAT = re.compile(r"\(;.*\)", flags=re.DOTALL)
 
     @classmethod
     def parse_sgf(cls, input_str) -> SGFNode:
         """Parse a string as SGF."""
-        return cls(input_str).root
+        match = re.search(cls.SGF_PAT, input_str)
+        clipped_str = match.group() if match else input_str
+        return cls(clipped_str).root
 
     @classmethod
     def parse_file(cls, filename, encoding=None) -> SGFNode:
