@@ -380,7 +380,10 @@ class SGF:
             if matched_item == "(":
                 self._parse_branch(self._NODE_CLASS(parent=current_move))
             elif matched_item == ";":
-                if not current_move.empty:  # ignore ; that generate empty nodes
+                # ignore ;) for old SGF
+                useless = self.ix < len(self.contents) and self.contents[self.ix] == ")"
+                # ignore ; that generate empty nodes
+                if not (current_move.empty or useless):
                     current_move = self._NODE_CLASS(parent=current_move)
             else:
                 property, value = match[1], match[2].strip()[1:-1]
