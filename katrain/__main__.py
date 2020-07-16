@@ -393,7 +393,8 @@ class KaTrainGui(Screen, KaTrainBase):
             move_tree = KaTrainSGF.parse_sgf(clipboard)
         except Exception as exc:
             self.controls.set_status(
-                i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50])
+                i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50]),
+                STATUS_ERROR
             )
             return
         move_tree.nodes_in_tree[-1].analyze(

@@ -49,6 +49,7 @@ Many thanks to these additional authors:
 * "nimets123" for the timer sound effects and board/stone graphics.
 * Jordan Seaward for the stone sound effects.
 * "fohristiwhirl" for the Gibo and NGF formats parsing code.
+* "kaorahi" for bug fixes and SGF parser improvements.
 
 ## Translators
 
