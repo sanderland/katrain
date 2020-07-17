@@ -192,8 +192,8 @@ class KataGoEngine:
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
                     self.katrain.update_state()
             except Exception as e:
-                traceback.print_exc(e)
                 self.katrain.log(f"Unexpected exception {e} while processing KataGo output {line}", OUTPUT_ERROR)
+                traceback.print_exc()
 
     def send_query(self, query, callback, error_callback, next_move=None):
         with self._lock:
