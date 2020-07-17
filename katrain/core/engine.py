@@ -169,7 +169,7 @@ class KataGoEngine:
                     continue
                 query_id = analysis["id"]
                 if query_id not in self.queries:
-                    self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
+                    self.katrain.log(f"Query result {query_id} discarded -- recent new game?", OUTPUT_DEBUG)
                     continue
                 callback, error_callback, start_time, next_move = self.queries[query_id]
                 if "error" in analysis:
