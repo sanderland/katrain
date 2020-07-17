@@ -5,14 +5,14 @@ import subprocess
 import threading
 import time
 import traceback
-from typing import Callable, Optional, Dict
+from typing import Callable, Dict, Optional
+
+from kivy.utils import platform
 
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
 from katrain.core.utils import find_package_resource
-
-from kivy.utils import platform
 
 
 class EngineDiedException(Exception):
@@ -164,13 +164,15 @@ class KataGoEngine:
                 continue
             try:
                 analysis = json.loads(line)
+                if "id" not in analysis:
+                    self.katrain.log(f"Error without ID {analysis} received from KataGo", OUTPUT_ERROR)
+                    continue
                 if analysis["id"] not in self.queries:
                     self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
                     continue
-                query_id = analysis["id"]
-                callback, error_callback, start_time, next_move = self.queries[query_id]
+                callback, error_callback, start_time, next_move = self.queries[analysis["id"]]
                 if "error" in analysis:
-                    del self.queries[query_id]
+                    del self.queries[analysis["id"]]
                     if error_callback:
                         error_callback(analysis)
                     elif not (next_move and "Illegal move" in analysis["error"]):  # sweep
@@ -178,7 +180,7 @@ class KataGoEngine:
                 elif "warning" in analysis:
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
                 else:
-                    del self.queries[query_id]
+                    del self.queries[analysis["id"]]
                     time_taken = time.time() - start_time
                     self.katrain.log(
                         f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}",
@@ -188,7 +190,7 @@ class KataGoEngine:
                     try:
                         callback(analysis)
                     except Exception as e:
-                        self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
+                        self.katrain.log(f"Error in engine callback for query {analysis['id']}: {e}", OUTPUT_ERROR)
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
                     self.katrain.update_state()
             except Exception as e:
