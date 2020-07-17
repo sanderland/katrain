@@ -59,7 +59,7 @@ def test_pandanet():
         "GM",
         "EV",
         "US",
-        "CoPyright",
+        "CP",
         "GN",
         "RE",
         "PW",
@@ -89,6 +89,16 @@ def test_pandanet():
     while move.parent:
         move = move.parent
     assert move is root
+
+
+def test_old_long_properties():
+    file = os.path.join(os.path.dirname(__file__), "data/xmgt97.sgf")
+    SGF.parse_file(file)
+
+
+def test_old_server_style():
+    input_sgf = "... 01:23:45 +0900 (JST) ... (;SZ[19];B[aa];W[ba];)"
+    SGF.parse_sgf(input_sgf)
 
 
 def test_ogs():
