@@ -184,14 +184,13 @@ class KataGoEngine:
                     del self.queries[query_id]
                     time_taken = time.time() - start_time
                     self.katrain.log(
-                        f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}",
-                        OUTPUT_DEBUG,
+                        f"[{time_taken:.1f}][{query_id}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG,
                     )
                     self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                     try:
                         callback(analysis)
                     except Exception as e:
-                        self.katrain.log(f"Error in engine callback for query {analysis['id']}: {e}", OUTPUT_ERROR)
+                        self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
                     self.katrain.update_state()
             except Exception as e:
