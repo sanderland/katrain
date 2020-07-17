@@ -167,12 +167,13 @@ class KataGoEngine:
                 if "id" not in analysis:
                     self.katrain.log(f"Error without ID {analysis} received from KataGo", OUTPUT_ERROR)
                     continue
-                if analysis["id"] not in self.queries:
+                query_id = analysis["id"]
+                if query_id not in self.queries:
                     self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
                     continue
-                callback, error_callback, start_time, next_move = self.queries[analysis["id"]]
+                callback, error_callback, start_time, next_move = self.queries[query_id]
                 if "error" in analysis:
-                    del self.queries[analysis["id"]]
+                    del self.queries[query_id]
                     if error_callback:
                         error_callback(analysis)
                     elif not (next_move and "Illegal move" in analysis["error"]):  # sweep
@@ -180,7 +181,7 @@ class KataGoEngine:
                 elif "warning" in analysis:
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
                 else:
-                    del self.queries[analysis["id"]]
+                    del self.queries[query_id]
                     time_taken = time.time() - start_time
                     self.katrain.log(
                         f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}",
