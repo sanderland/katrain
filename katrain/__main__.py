@@ -4,7 +4,7 @@ import os
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 if "KIVY_AUDIO" not in os.environ:
-    os.environ["KIVY_AUDIO"] = "sdl2"  # seems to be most stable / some players hard crash
+    os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
 
 # next, icon
 from katrain.core.utils import find_package_resource, PATHS
@@ -382,19 +382,18 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_output_sgf(self):
         msg = self.game.write_sgf(self.config("general/sgf_save"))
         self.log(msg, OUTPUT_INFO)
-        self.controls.set_status(msg, OUTPUT_INFO)
+        self.controls.set_status(msg, STATUS_INFO)
 
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()
         if not clipboard:
-            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.", STATUS_ERROR)
+            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.", STATUS_INFO)
             return
         try:
             move_tree = KaTrainSGF.parse_sgf(clipboard)
         except Exception as exc:
             self.controls.set_status(
-                i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50]),
-                STATUS_ERROR
+                i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50]), STATUS_INFO
             )
             return
         move_tree.nodes_in_tree[-1].analyze(

@@ -104,21 +104,7 @@ class LabelledSpinner(I18NSpinner):
 
 
 class LabelledFloatInput(LabelledTextInput):
-    signed = BooleanProperty(True)
-    pat = re.compile("[^0-9-]")
-
-    def insert_text(self, substring, from_undo=False):
-        pat = self.pat
-        if "." in self.text:
-            s = re.sub(pat, "", substring)
-        else:
-            s = ".".join([re.sub(pat, "", s) for s in substring.split(".", 1)])
-        r = super().insert_text(s, from_undo=from_undo)
-        if not self.signed and "-" in self.text:
-            self.text = self.text.replace("-", "")
-        elif self.text and "-" in self.text[1:]:
-            self.text = self.text[0] + self.text[1:].replace("-", "")
-        return r
+    input_filter = ObjectProperty("float")
 
     @property
     def input_value(self):
@@ -126,10 +112,7 @@ class LabelledFloatInput(LabelledTextInput):
 
 
 class LabelledIntInput(LabelledTextInput):
-    pat = re.compile("[^0-9]")
-
-    def insert_text(self, substring, from_undo=False):
-        return super().insert_text(re.sub(self.pat, "", substring), from_undo=from_undo)
+    input_filter = ObjectProperty("int")
 
     @property
     def input_value(self):

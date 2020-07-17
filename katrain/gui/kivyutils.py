@@ -1,5 +1,6 @@
 from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
+from kivy.core.window import Window
 from kivy.graphics import *
 from kivy.properties import (
     BooleanProperty,
@@ -9,18 +10,20 @@ from kivy.properties import (
     OptionProperty,
     StringProperty,
 )
-from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior
+from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior, FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
+from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BaseFlatButton, BasePressedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
+from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, MODE_PLAY, PLAYER_AI
 from katrain.core.lang import i18n
@@ -161,6 +164,60 @@ class BGBoxLayout(BoxLayout, BackgroundMixin):
 
 
 # --  gui elements
+
+# MDTextField
+class IMETextField(TextInput):
+    imo_char = StringProperty("")  # current character being input by the IME system, or '' if nothing
+
+    def _bind_keyboard(self):
+        super()._bind_keyboard()
+        Window.bind(on_textedit=self.on_textedit)
+
+    def _unbind_keyboard(self):
+        super()._unbind_keyboard()
+        Window.unbind(on_textedit=self.on_textedit)
+
+    def do_backspace(self, from_undo=False, mode="bkspc"):
+        if self.imo_char == "":  # IMO handles sub-character backspaces
+            return super().do_backspace(from_undo, mode)
+
+    def do_cursor_movement(self, *args, **kwargs):
+        # handle this before cursor changes, otherwise left arrow duplicates characters
+        self.on_textedit(None, "")
+        super().do_cursor_movement(*args, **kwargs)
+
+    def on_textedit(self, window, imo_input):
+        print("on_textedit", repr(imo_input), "prev", repr(self.imo_char))
+        if self.imo_char == "" and imo_input == "":
+            return
+
+        if self.imo_char == "" and imo_input != "" and self._selection:
+            self.delete_selection()
+
+        cc, cr = self.cursor
+        ci = self.cursor_index()
+        text = self._lines[cr]
+        if cc != 0 and text[cc - 1] == self.imo_char:
+            new_text = text[: cc - 1] + imo_input + text[cc:]
+            print("replace IMO", new_text)
+            self._set_line_text(cr, new_text)
+        else:
+            new_text = text[:cc] + imo_input + text[cc:]
+            print(
+                "insert new IMO", new_text,
+            )
+            self._set_line_text(cr, new_text)
+            self.cursor = self.get_cursor_from_index(ci + len(imo_input))
+
+        start, finish, lines, lineflags, len_lines = self._get_line_from_cursor(cr, new_text)
+        self._refresh_text_from_property("insert", start, finish, lines, lineflags, len_lines)
+        self.imo_char = imo_input
+
+    def insert_text(self, text, from_undo=False):
+        print("insert text", repr(text), repr(self.imo_char))
+        if self.imo_char != "":
+            self.on_textedit(None, "")  # 핫 -> 하세 gives an insert 하 event, so remove 핫
+        super().insert_text(text, from_undo)
 
 
 class I18NSpinner(Spinner):
