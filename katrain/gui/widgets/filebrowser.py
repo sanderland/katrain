@@ -165,9 +165,6 @@ Builder.load_string(
 #:import abspath os.path.abspath
 #:import i18n katrain.core.lang.i18n
 
-<Button>:
-    track_lang: i18n._('')
-
 <TreeLabel>:
     on_touch_down:
         self.parent.browser.path = self.path if self.collide_point(*args[1].pos) and self.path else self.parent.browser.path

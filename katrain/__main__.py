@@ -365,15 +365,15 @@ class KaTrainGui(Screen, KaTrainBase):
             ).__self__
 
             def readfile(*_args):
-                files = popup_contents.filesel.selection
+                filename = popup_contents.filesel.filename
                 self.fileselect_popup.dismiss()
-                path, file = os.path.split(files[0])
+                path, file = os.path.split(filename)
                 settings_path = self.config("general/sgf_load")
                 if path != settings_path:
                     self.log(f"Updating sgf load path default to {path}", OUTPUT_INFO)
                     self._config["general"]["sgf_load"] = path
                     self.save_config("general")
-                self.load_sgf_file(files[0], popup_contents.fast.active, popup_contents.rewind.active)
+                self.load_sgf_file(filename, popup_contents.fast.active, popup_contents.rewind.active)
 
             popup_contents.filesel.on_success = readfile
             popup_contents.filesel.on_submit = readfile
