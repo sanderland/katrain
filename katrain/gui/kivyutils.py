@@ -165,59 +165,44 @@ class BGBoxLayout(BoxLayout, BackgroundMixin):
 
 # --  gui elements
 
-# MDTextField
-class IMETextField(TextInput):
-    imo_char = StringProperty("")  # current character being input by the IME system, or '' if nothing
+
+class IMETextField(MDTextField):
+    _imo_composition = StringProperty("")
+    _imo_cursor = ListProperty(None, allownone=True)
 
     def _bind_keyboard(self):
         super()._bind_keyboard()
-        Window.bind(on_textedit=self.on_textedit)
+        Window.bind(on_textedit=self.window_on_textedit)
 
     def _unbind_keyboard(self):
         super()._unbind_keyboard()
-        Window.unbind(on_textedit=self.on_textedit)
+        Window.unbind(on_textedit=self.window_on_textedit)
 
     def do_backspace(self, from_undo=False, mode="bkspc"):
-        if self.imo_char == "":  # IMO handles sub-character backspaces
+        if self._imo_composition == "":  # IMO handles sub-character backspaces
             return super().do_backspace(from_undo, mode)
 
-    def do_cursor_movement(self, *args, **kwargs):
-        # handle this before cursor changes, otherwise left arrow duplicates characters
-        self.on_textedit(None, "")
-        super().do_cursor_movement(*args, **kwargs)
+    def window_on_textedit(self, window, imo_input):
+        text_lines = self._lines
+        if self._imo_composition:
+            pcc, pcr = self._imo_cursor
+            text = text_lines[pcr]
+            if text[pcc - len(self._imo_composition) : pcc] == self._imo_composition:  # should always be true
+                remove_old_imo_text = text[: pcc - len(self._imo_composition)] + text[pcc:]
+                ci = self.cursor_index()
+                self._refresh_text_from_property("insert", *self._get_line_from_cursor(pcr, remove_old_imo_text))
+                self.cursor = self.get_cursor_from_index(ci - len(self._imo_composition))
 
-    def on_textedit(self, window, imo_input):
-        print("on_textedit", repr(imo_input), "prev", repr(self.imo_char))
-        if self.imo_char == "" and imo_input == "":
-            return
-
-        if self.imo_char == "" and imo_input != "" and self._selection:
-            self.delete_selection()
-
-        cc, cr = self.cursor
-        ci = self.cursor_index()
-        text = self._lines[cr]
-        if cc != 0 and text[cc - 1] == self.imo_char:
-            new_text = text[: cc - 1] + imo_input + text[cc:]
-            print("replace IMO", new_text)
-            self._set_line_text(cr, new_text)
-        else:
+        if imo_input:
+            if self._selection:
+                self.delete_selection()
+            cc, cr = self.cursor
+            text = text_lines[cr]
             new_text = text[:cc] + imo_input + text[cc:]
-            print(
-                "insert new IMO", new_text,
-            )
-            self._set_line_text(cr, new_text)
-            self.cursor = self.get_cursor_from_index(ci + len(imo_input))
-
-        start, finish, lines, lineflags, len_lines = self._get_line_from_cursor(cr, new_text)
-        self._refresh_text_from_property("insert", start, finish, lines, lineflags, len_lines)
-        self.imo_char = imo_input
-
-    def insert_text(self, text, from_undo=False):
-        print("insert text", repr(text), repr(self.imo_char))
-        if self.imo_char != "":
-            self.on_textedit(None, "")  # 핫 -> 하세 gives an insert 하 event, so remove 핫
-        super().insert_text(text, from_undo)
+            self._refresh_text_from_property("insert", *self._get_line_from_cursor(cr, new_text))
+            self.cursor = self.get_cursor_from_index(self.cursor_index() + len(imo_input))
+        self._imo_composition = imo_input
+        self._imo_cursor = self.cursor
 
 
 class I18NSpinner(Spinner):
