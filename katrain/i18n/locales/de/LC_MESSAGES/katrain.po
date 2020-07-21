@@ -559,9 +559,9 @@ msgstr ""
 
 msgid "aihelp:p:rank"
 msgstr ""
-"Wählt zufällige Züge aus einer beschränkten Auswahl an Zügen und spieltden "
-"Besten. Stärkere Einstellungen wählen den besten Zug aus einer grösseren "
-"Auswahl. Da es keinen 0 Kyu/Dan gibt, ist 3 Dan = -2 Kyu."
+"Wählt eine begrenzte Anzahl zufälliger Züge und spielt den Besten. Stärkere "
+"Einstellungen wählen den besten Zug aus einer grösseren Auswahl. Da es "
+"keinen 0 Kyu/Dan gibt, ist 3 Dan = -2 Kyu."
 
 msgid "ai:p:rank"
 msgstr "Kalibrierter Rang"

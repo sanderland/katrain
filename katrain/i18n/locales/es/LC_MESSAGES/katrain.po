@@ -557,9 +557,9 @@ msgstr ""
 
 msgid "aihelp:p:rank"
 msgstr ""
-"Seleciona jugadas al azar de una limitada selección y juega la mejor. "
-"Configuraciones más fuertes toma la mejor jugada de una selección más amplia"
-" de jugadas. Como no hay 0 kyu/dan, 3 dan = -2 kyu."
+"Elige una selección limitada de jugadas y juega la mejor. Configuraciones "
+"más fuertes toma la mejor jugada de una selección más amplia de jugadas. "
+"Como no hay 0 kyu/dan, 3 dan = -2 kyu."
 
 msgid "Kata model not found"
 msgstr "El modelo KataGo {model} no existe, revisar conf general."
