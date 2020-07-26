@@ -11,10 +11,10 @@ from katrain.core.constants import (
     HOMEPAGE,
     OUTPUT_DEBUG,
     OUTPUT_INFO,
+    PLAYER_AI,
     STATUS_ANALYSIS,
     STATUS_INFO,
     STATUS_TEACHING,
-    PLAYER_AI,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -55,7 +55,7 @@ class Game:
             self.root = move_tree
             self.komi = self.root.komi
             handicap = int(self.root.get_property("HA", 0))
-            if handicap and not self.root.placements:
+            if handicap >= 2 and not self.root.placements:
                 self.root.place_handicap_stones(handicap)
         else:
             board_size = katrain.config("game/size")
