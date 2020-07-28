@@ -625,12 +625,12 @@ msgstr "この手以降を削除"
 
 #. TODO - theme name
 msgid "theme:red-green-colourblind"
-msgstr "Red-Green Colourblind"
+msgstr "赤緑色弱"
 
 #. TODO - theme name
 msgid "theme:normal"
-msgstr "Default Theme"
+msgstr "デフォルト"
 
 #. TODO - theme label
 msgid "theme"
-msgstr "Colour Theme"
+msgstr "カラーテーマ"
