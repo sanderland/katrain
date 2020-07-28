@@ -635,3 +635,15 @@ msgstr "Número de visitas por jugada"
 #. TODO - on move tree editing
 msgid "Delete Node"
 msgstr "Delete Node"
+
+#. TODO - theme name
+msgid "theme:red-green-colourblind"
+msgstr "Red-Green Colourblind"
+
+#. TODO - theme name
+msgid "theme:normal"
+msgstr "Default Theme"
+
+#. TODO - theme label
+msgid "theme"
+msgstr "Colour Theme"

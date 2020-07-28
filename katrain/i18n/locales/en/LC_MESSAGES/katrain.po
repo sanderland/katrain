@@ -643,3 +643,15 @@ msgstr "Number of visits per move"
 #. on move tree editing
 msgid "Delete Node"
 msgstr "Delete Node"
+
+#. theme label
+msgid "theme"
+msgstr "Colour Theme"
+
+#. theme name
+msgid "theme:normal"
+msgstr "Default Theme"
+
+#. theme name
+msgid "theme:red-green-colourblind"
+msgstr "Red-Green Colourblind"
