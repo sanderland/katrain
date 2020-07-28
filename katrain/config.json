@@ -16,7 +16,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.3.0"
+        "version": "1.3.3"
     },
     "timer": {
         "byo_length": 30,
@@ -31,6 +31,7 @@
         "clear_cache": false
     },
     "trainer": {
+        "theme": "theme:normal",
         "num_undo_prompts": [
             1,
             1,

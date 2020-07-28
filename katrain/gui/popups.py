@@ -269,7 +269,7 @@ class ConfigTeacherPopup(QuickConfigGui):
             self.options_grid.add_widget(wrap_anchor(widget))
 
     def build_and_set_properties(self, *_args):
-        theme = self.katrain.config("trainer/theme", "theme:normal")
+        theme = self.katrain.config("trainer/theme")
         undos = self.katrain.config("trainer/num_undo_prompts")
         thresholds = self.katrain.config("trainer/eval_thresholds")
         savesgfs = self.katrain.config("trainer/save_feedback")
