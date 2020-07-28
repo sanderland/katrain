@@ -11,7 +11,7 @@ from katrain.gui.style import DEFAULT_FONT
 class Lang(Observable):
     observers = []
     callbacks = []
-    FONTS = {}
+    FONTS = {"jp": "fonts/NotoSansJP-Regular.otf"}
 
     def __init__(self, lang):
         super(Lang, self).__init__()
