@@ -50,6 +50,7 @@ Many thanks to these additional authors:
 * Jordan Seaward for the stone sound effects.
 * "fohristiwhirl" for the Gibo and NGF formats parsing code.
 * "kaorahi" for bug fixes and SGF parser improvements.
+* "ajkenny84" for the red-green colourblind theme.
 
 ## Translators
 
