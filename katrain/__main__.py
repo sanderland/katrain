@@ -4,7 +4,7 @@ import os
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 if "KIVY_AUDIO" not in os.environ:
-    os.environ["KIVY_AUDIO"] = "sdl2"  # seems to be most stable / some players hard crash
+    os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
 
 # next, icon
 from katrain.core.utils import find_package_resource, PATHS
@@ -365,15 +365,15 @@ class KaTrainGui(Screen, KaTrainBase):
             ).__self__
 
             def readfile(*_args):
-                files = popup_contents.filesel.selection
+                filename = popup_contents.filesel.filename
                 self.fileselect_popup.dismiss()
-                path, file = os.path.split(files[0])
+                path, file = os.path.split(filename)
                 settings_path = self.config("general/sgf_load")
                 if path != settings_path:
                     self.log(f"Updating sgf load path default to {path}", OUTPUT_INFO)
                     self._config["general"]["sgf_load"] = path
                     self.save_config("general")
-                self.load_sgf_file(files[0], popup_contents.fast.active, popup_contents.rewind.active)
+                self.load_sgf_file(filename, popup_contents.fast.active, popup_contents.rewind.active)
 
             popup_contents.filesel.on_success = readfile
             popup_contents.filesel.on_submit = readfile
@@ -382,18 +382,18 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_output_sgf(self):
         msg = self.game.write_sgf(self.config("general/sgf_save"))
         self.log(msg, OUTPUT_INFO)
-        self.controls.set_status(msg, OUTPUT_INFO)
+        self.controls.set_status(msg, STATUS_INFO)
 
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()
         if not clipboard:
-            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.", STATUS_ERROR)
+            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.", STATUS_INFO)
             return
         try:
             move_tree = KaTrainSGF.parse_sgf(clipboard)
         except Exception as exc:
             self.controls.set_status(
-                i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50])
+                i18n._("Failed to import from clipboard").format(error=exc, contents=clipboard[:50]), STATUS_INFO
             )
             return
         move_tree.nodes_in_tree[-1].analyze(

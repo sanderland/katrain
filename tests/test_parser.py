@@ -1,5 +1,9 @@
 import os
+from unittest.mock import MagicMock, patch
 
+from katrain.core.base_katrain import KaTrainBase
+from katrain.core.engine import KataGoEngine
+from katrain.core.game import Game, KaTrainSGF
 from katrain.core.sgf_parser import SGF, SGFNode
 
 
@@ -59,7 +63,7 @@ def test_pandanet():
         "GM",
         "EV",
         "US",
-        "CoPyright",
+        "CP",
         "GN",
         "RE",
         "PW",
@@ -89,6 +93,16 @@ def test_pandanet():
     while move.parent:
         move = move.parent
     assert move is root
+
+
+def test_old_long_properties():
+    file = os.path.join(os.path.dirname(__file__), "data/xmgt97.sgf")
+    SGF.parse_file(file)
+
+
+def test_old_server_style():
+    input_sgf = "... 01:23:45 +0900 (JST) ... (;SZ[19];B[aa];W[ba];)"
+    SGF.parse_sgf(input_sgf)
 
 
 def test_ogs():
@@ -125,3 +139,17 @@ def test_ngf():
         "SZ": [19],
     } == root.properties
     assert "pq" == root.children[0].get_property("W")
+
+
+def test_foxwq():
+    for sgf in ["data/fox sgf error.sgf", "data/fox sgf works.sgf"]:
+        file = os.path.join(os.path.dirname(__file__), sgf)
+        move_tree = KaTrainSGF.parse_file(file)
+        katrain = KaTrainBase(force_package_config=True, debug_level=0)
+        game = Game(katrain, MagicMock(), move_tree)
+
+        assert [] == move_tree.placements
+        assert [] == game.root.placements
+        while game.current_node.children:
+            assert 1 == len(game.current_node.children)
+            game.redo(1)

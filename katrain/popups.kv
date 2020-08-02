@@ -213,6 +213,7 @@
 
 <ConfigTeacherPopup>
     options_grid: options_grid
+    themes_spinner: themes_spinner
     GridLayout:
         cols: 5
         rows: 7
@@ -229,22 +230,29 @@
         DescriptionLabel:
             text: i18n._("save dots")
     AnchorLayout:
-        size_hint: 1, 2
+        size_hint: 1, 3
         GridLayout:
             cols: 2
-            rows: 3
+            rows: 4
             padding: 4
-            size_hint: 0.66, 1
+            size_hint: 0.8, 1
+            DescriptionLabel:
+                font_size: DESC_FONT_SIZE * 0.8
+                text: i18n._("theme")
+            AnchorLayout:
+                LabelledSpinner:
+                    size_hint: 0.8,0.8
+                    input_property: 'trainer/theme'
+                    font_size: DESC_FONT_SIZE * 0.8
+                    id: themes_spinner
             DescriptionLabel:
                 font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("show last n dots")
-                size_hint: 2,1
             AnchorLayout:
                 LabelledIntInput:
-                    size_hint_x: 0.33
+                    size_hint_x: 0.15
                     input_property: "trainer/eval_off_show_last"
             DescriptionLabel:
-                size_hint: 2,1
                 font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("show ai dots")
             AnchorLayout:

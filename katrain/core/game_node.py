@@ -32,12 +32,11 @@ class GameNode(SGFNode):
         else:
             show_class = False
         if (
-            (save_comments_player or {}).get(self.player, False)
-            and show_class
-            and self.analysis_ready
-            and self.parent
+            self.parent
             and self.parent.analysis_ready
-        ) or note:
+            and self.analysis_ready
+            and (note or ((save_comments_player or {}).get(self.player, False) and show_class))
+        ):
             candidate_moves = self.parent.candidate_moves
             top_x = Move.from_gtp(candidate_moves[0]["move"]).sgf(self.board_size)
             best_sq = [
@@ -194,6 +193,8 @@ class GameNode(SGFNode):
                 text += "\n" + i18n._("Info:AI thoughts").format(thoughts=self.ai_thoughts)
         else:
             text = i18n._("No analysis available") if sgf else i18n._("Analyzing move...")
+        if "C" in self.properties:
+            text += "\n[u]SGF Comments:[/u]\n" + "\n".join(self.properties["C"])
         return text
 
     @property

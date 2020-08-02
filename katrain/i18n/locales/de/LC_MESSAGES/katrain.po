@@ -559,9 +559,9 @@ msgstr ""
 
 msgid "aihelp:p:rank"
 msgstr ""
-"Wählt zufällige Züge aus einer beschränkten Auswahl an Zügen und spieltden "
-"Besten. Stärkere Einstellungen wählen den besten Zug aus einer grösseren "
-"Auswahl. Da es keinen 0 Kyu/Dan gibt, ist 3 Dan = -2 Kyu."
+"Wählt eine begrenzte Anzahl zufälliger Züge und spielt den Besten. Stärkere "
+"Einstellungen wählen den besten Zug aus einer grösseren Auswahl. Da es "
+"keinen 0 Kyu/Dan gibt, ist 3 Dan = -2 Kyu."
 
 msgid "ai:p:rank"
 msgstr "Kalibrierter Rang"
@@ -639,3 +639,15 @@ msgstr "Anzahl der Visits pro Zug"
 #. TODO - on move tree editing
 msgid "Delete Node"
 msgstr "Delete Node"
+
+#. TODO - theme name
+msgid "theme:red-green-colourblind"
+msgstr "Red-Green Colourblind"
+
+#. TODO - theme name
+msgid "theme:normal"
+msgstr "Default Theme"
+
+#. TODO - theme label
+msgid "theme"
+msgstr "Colour Theme"

@@ -19,13 +19,13 @@ from katrain.core.ai import ai_rank_estimation
 from katrain.core.constants import (
     AI_CONFIG_DEFAULT,
     AI_DEFAULT,
+    AI_KEY_PROPERTIES,
     AI_OPTION_VALUES,
     AI_STRATEGIES_RECOMMENDED_ORDER,
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
     STATUS_INFO,
-    AI_KEY_PROPERTIES,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
@@ -104,21 +104,7 @@ class LabelledSpinner(I18NSpinner):
 
 
 class LabelledFloatInput(LabelledTextInput):
-    signed = BooleanProperty(True)
-    pat = re.compile("[^0-9-]")
-
-    def insert_text(self, substring, from_undo=False):
-        pat = self.pat
-        if "." in self.text:
-            s = re.sub(pat, "", substring)
-        else:
-            s = ".".join([re.sub(pat, "", s) for s in substring.split(".", 1)])
-        r = super().insert_text(s, from_undo=from_undo)
-        if not self.signed and "-" in self.text:
-            self.text = self.text.replace("-", "")
-        elif self.text and "-" in self.text[1:]:
-            self.text = self.text[0] + self.text[1:].replace("-", "")
-        return r
+    input_filter = ObjectProperty("float")
 
     @property
     def input_value(self):
@@ -126,10 +112,7 @@ class LabelledFloatInput(LabelledTextInput):
 
 
 class LabelledIntInput(LabelledTextInput):
-    pat = re.compile("[^0-9]")
-
-    def insert_text(self, substring, from_undo=False):
-        return super().insert_text(re.sub(self.pat, "", substring), from_undo=from_undo)
+    input_filter = ObjectProperty("int")
 
     @property
     def input_value(self):
@@ -286,13 +269,16 @@ class ConfigTeacherPopup(QuickConfigGui):
             self.options_grid.add_widget(wrap_anchor(widget))
 
     def build_and_set_properties(self, *_args):
+        theme = self.katrain.config("trainer/theme")
         undos = self.katrain.config("trainer/num_undo_prompts")
         thresholds = self.katrain.config("trainer/eval_thresholds")
         savesgfs = self.katrain.config("trainer/save_feedback")
         show_dots = self.katrain.config("trainer/show_dots")
 
+        self.themes_spinner.value_refs = list(EVAL_COLORS.keys())
+        self.options_grid.clear_widgets()
         for i, (color, threshold, undo, show_dot, savesgf) in enumerate(
-            zip(EVAL_COLORS, thresholds, undos, show_dots, savesgfs)
+            zip(EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs)
         ):
             self.add_option_widgets(
                 [
@@ -304,6 +290,10 @@ class ConfigTeacherPopup(QuickConfigGui):
                 ]
             )
         super().build_and_set_properties()
+
+    def update_config(self, save_to_file=True):
+        super().update_config(save_to_file=save_to_file)
+        self.build_and_set_properties()
 
 
 class DescriptionLabel(Label):

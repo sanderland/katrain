@@ -7,18 +7,16 @@ For on related licenses for these binaries and libraries see https://github.com/
 - Equalize icon and Thrash Icon: derived from work by bqlqn from www.flaticon.com
 - Other Menu icons and Flag icons: derived from work by Freepik from www.flaticon.com
 
-
 3. The True Type Font DIGITAL-7 version 1.02 by Sizenko Alexander, which is free for non-commercial use.
 
 4. The Noto Sans fonts from google which are covered by the SIL open font license v1.1 included in the katrain/fonts directory.
-
 
 -----------------------------------------------------------------------------------------
 Aside from the above, the license for all other content in this repository is as follows:
 -----------------------------------------------------------------------------------------
 
 Copyright 2020 Sander Land and/or other authors of the content in this repository.
-(See 'CONTRIBUTORS' file for a list of authors as well as other indirect contributors).
+(See 'CONTRIBUTIONS.md' file for a list of authors as well as other indirect contributors).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 associated documentation files (the "Software"), to deal in the Software without restriction,

@@ -2,7 +2,7 @@ def to_hexcol(kivycol):
     return "#" + "".join(f"{round(c * 255):02x}" for c in kivycol[:3])
 
 
-DEFAULT_FONT = "fonts/NotoSans-Regular.ttf"
+DEFAULT_FONT = "fonts/NotoSansCJKsc-Regular.otf"
 
 # basic color definitions
 WHITE = [0.95, 0.95, 0.95, 1]
@@ -26,14 +26,26 @@ WINRATE_COLOR = GREEN
 POINTLOSS_COLOR = YELLOW
 
 # eval dots
-EVAL_COLORS = [
-    [0.447, 0.129, 0.42, 1],
-    [0.8, 0, 0, 1],
-    [0.9, 0.4, 0.1, 1],
-    [0.85, 0.89, 0.3, 1],
-    [0.67, 0.9, 0.18, 1],
-    [0.117, 0.588, 0, 1],
-]
+EVAL_COLORS = {
+    "theme:normal": [
+        [0.447, 0.129, 0.42, 1],
+        [0.8, 0, 0, 1],
+        [0.9, 0.4, 0.1, 1],
+        [0.85, 0.89, 0.3, 1],
+        [0.67, 0.9, 0.18, 1],
+        [0.117, 0.588, 0, 1],
+    ],
+    "theme:red-green-colourblind": [
+        [1, 0, 1, 1],
+        [1, 0, 0, 1],
+        [1, 0.5, 0, 1],
+        [0.85, 0.89, 0.3, 1],
+        [0, 1, 1, 1],
+        [0, 0, 1, 1],
+    ],
+}
+
+
 EVAL_DOT_MAX_SIZE = 0.5
 EVAL_DOT_MIN_SIZE = 0.25
 
@@ -55,9 +67,9 @@ TOP_MOVE_BORDER_COLOR = [46 / 255, 65 / 255, 88 / 255, 0.9]
 CHILD_SCALE = 0.95
 
 # ponder light
-ENGINE_DOWN_COL = EVAL_COLORS[1]
-ENGINE_BUSY_COL = EVAL_COLORS[2]
-ENGINE_READY_COL = EVAL_COLORS[-1]
+ENGINE_DOWN_COL = EVAL_COLORS["theme:normal"][1]
+ENGINE_BUSY_COL = EVAL_COLORS["theme:normal"][2]
+ENGINE_READY_COL = EVAL_COLORS["theme:normal"][-1]
 
 # info
 INFO_PV_COLOR = to_hexcol(YELLOW)

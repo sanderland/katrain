@@ -132,7 +132,9 @@ class SGFNode:
 
     def add_list_property(self, property: str, values: List):
         """Add some values to the property list."""
-        self.properties[property] += values
+        # SiZe[19] ==> SZ[19] etc. for old SGF
+        normalized_property = re.sub("[a-z]", "", property)
+        self.properties[normalized_property] += values
 
     def get_list_property(self, property, default=None) -> Any:
         """Get the list of values for a property."""
@@ -323,11 +325,14 @@ class SGF:
     _NODE_CLASS = SGFNode  # Class used for SGF Nodes, can change this to something that inherits from SGFNode
     # https://xkcd.com/1171/
     SGFPROP_PAT = re.compile(r"\s*(?:\(|\)|;|(\w+)((\s*\[([^\]\\]|\\.)*\])+))", flags=re.DOTALL)
+    SGF_PAT = re.compile(r"\(;.*\)", flags=re.DOTALL)
 
     @classmethod
     def parse_sgf(cls, input_str) -> SGFNode:
         """Parse a string as SGF."""
-        return cls(input_str).root
+        match = re.search(cls.SGF_PAT, input_str)
+        clipped_str = match.group() if match else input_str
+        return cls(clipped_str).root
 
     @classmethod
     def parse_file(cls, filename, encoding=None) -> SGFNode:
@@ -375,7 +380,10 @@ class SGF:
             if matched_item == "(":
                 self._parse_branch(self._NODE_CLASS(parent=current_move))
             elif matched_item == ";":
-                if not current_move.empty:  # ignore ; that generate empty nodes
+                # ignore ;) for old SGF
+                useless = self.ix < len(self.contents) and self.contents[self.ix] == ")"
+                # ignore ; that generate empty nodes
+                if not (current_move.empty or useless):
                     current_move = self._NODE_CLASS(parent=current_move)
             else:
                 property, value = match[1], match[2].strip()[1:-1]

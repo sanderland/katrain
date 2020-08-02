@@ -5,14 +5,14 @@ import subprocess
 import threading
 import time
 import traceback
-from typing import Callable, Optional, Dict
+from typing import Callable, Dict, Optional
+
+from kivy.utils import platform
 
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
 from katrain.core.utils import find_package_resource
-
-from kivy.utils import platform
 
 
 class EngineDiedException(Exception):
@@ -164,10 +164,13 @@ class KataGoEngine:
                 continue
             try:
                 analysis = json.loads(line)
-                if analysis["id"] not in self.queries:
-                    self.katrain.log(f"Query result {analysis['id']} discarded -- recent new game?", OUTPUT_DEBUG)
+                if "id" not in analysis:
+                    self.katrain.log(f"Error without ID {analysis} received from KataGo", OUTPUT_ERROR)
                     continue
                 query_id = analysis["id"]
+                if query_id not in self.queries:
+                    self.katrain.log(f"Query result {query_id} discarded -- recent new game?", OUTPUT_DEBUG)
+                    continue
                 callback, error_callback, start_time, next_move = self.queries[query_id]
                 if "error" in analysis:
                     del self.queries[query_id]
@@ -181,8 +184,7 @@ class KataGoEngine:
                     del self.queries[query_id]
                     time_taken = time.time() - start_time
                     self.katrain.log(
-                        f"[{time_taken:.1f}][{analysis['id']}] KataGo Analysis Received: {analysis.keys()}",
-                        OUTPUT_DEBUG,
+                        f"[{time_taken:.1f}][{query_id}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG,
                     )
                     self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                     try:
@@ -192,8 +194,8 @@ class KataGoEngine:
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
                     self.katrain.update_state()
             except Exception as e:
-                traceback.print_exc(e)
                 self.katrain.log(f"Unexpected exception {e} while processing KataGo output {line}", OUTPUT_ERROR)
+                traceback.print_exc()
 
     def send_query(self, query, callback, error_callback, next_move=None):
         with self._lock:

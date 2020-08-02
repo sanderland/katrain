@@ -1,5 +1,6 @@
 from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
+from kivy.core.window import Window
 from kivy.graphics import *
 from kivy.properties import (
     BooleanProperty,
@@ -9,18 +10,20 @@ from kivy.properties import (
     OptionProperty,
     StringProperty,
 )
-from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior
+from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior, FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
+from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BaseFlatButton, BasePressedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
+from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, MODE_PLAY, PLAYER_AI
 from katrain.core.lang import i18n
@@ -161,6 +164,45 @@ class BGBoxLayout(BoxLayout, BackgroundMixin):
 
 
 # --  gui elements
+
+
+class IMETextField(MDTextField):
+    _imo_composition = StringProperty("")
+    _imo_cursor = ListProperty(None, allownone=True)
+
+    def _bind_keyboard(self):
+        super()._bind_keyboard()
+        Window.bind(on_textedit=self.window_on_textedit)
+
+    def _unbind_keyboard(self):
+        super()._unbind_keyboard()
+        Window.unbind(on_textedit=self.window_on_textedit)
+
+    def do_backspace(self, from_undo=False, mode="bkspc"):
+        if self._imo_composition == "":  # IMO handles sub-character backspaces
+            return super().do_backspace(from_undo, mode)
+
+    def window_on_textedit(self, window, imo_input):
+        text_lines = self._lines
+        if self._imo_composition:
+            pcc, pcr = self._imo_cursor
+            text = text_lines[pcr]
+            if text[pcc - len(self._imo_composition) : pcc] == self._imo_composition:  # should always be true
+                remove_old_imo_text = text[: pcc - len(self._imo_composition)] + text[pcc:]
+                ci = self.cursor_index()
+                self._refresh_text_from_property("insert", *self._get_line_from_cursor(pcr, remove_old_imo_text))
+                self.cursor = self.get_cursor_from_index(ci - len(self._imo_composition))
+
+        if imo_input:
+            if self._selection:
+                self.delete_selection()
+            cc, cr = self.cursor
+            text = text_lines[cr]
+            new_text = text[:cc] + imo_input + text[cc:]
+            self._refresh_text_from_property("insert", *self._get_line_from_cursor(cr, new_text))
+            self.cursor = self.get_cursor_from_index(self.cursor_index() + len(imo_input))
+        self._imo_composition = imo_input
+        self._imo_cursor = self.cursor
 
 
 class I18NSpinner(Spinner):

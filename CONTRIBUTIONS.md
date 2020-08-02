@@ -1,7 +1,8 @@
 # Contributing 
 
-If you are a new contributor, please first discuss the change you wish to make via
- an issue, reddit or discord before making a change.
+If you are a new contributor wanting to make a larger contribution,
+ please first discuss the change you wish to make via
+ an issue, reddit or discord before making a pull request.
 
 ## Python contributions
 
@@ -49,6 +50,8 @@ Many thanks to these additional authors:
 * "nimets123" for the timer sound effects and board/stone graphics.
 * Jordan Seaward for the stone sound effects.
 * "fohristiwhirl" for the Gibo and NGF formats parsing code.
+* "kaorahi" for bug fixes and SGF parser improvements.
+* "ajkenny84" for the red-green colourblind theme.
 
 ## Translators
 

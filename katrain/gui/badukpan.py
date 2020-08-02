@@ -164,8 +164,9 @@ class BadukPanWidget(Widget):
 
     def eval_color(self, points_lost, show_dots_for_class: List[bool] = None) -> Optional[List[float]]:
         i = evaluation_class(points_lost, self.trainer_config["eval_thresholds"])
+        colors = EVAL_COLORS[self.trainer_config["theme"]]
         if show_dots_for_class is None or show_dots_for_class[i]:
-            return EVAL_COLORS[i]
+            return colors[i]
 
     def draw_board(self, *_args):
         if not (self.katrain and self.katrain.game):
