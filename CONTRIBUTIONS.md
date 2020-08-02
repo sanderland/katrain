@@ -1,7 +1,8 @@
 # Contributing 
 
-If you are a new contributor, please first discuss the change you wish to make via
- an issue, reddit or discord before making a change.
+If you are a new contributor wanting to make a larger contribution,
+ please first discuss the change you wish to make via
+ an issue, reddit or discord before making a pull request.
 
 ## Python contributions
 

@@ -193,6 +193,8 @@ class GameNode(SGFNode):
                 text += "\n" + i18n._("Info:AI thoughts").format(thoughts=self.ai_thoughts)
         else:
             text = i18n._("No analysis available") if sgf else i18n._("Analyzing move...")
+        if "C" in self.properties:
+            text += "\n[u]SGF Comments:[/u]\n" + "\n".join(self.properties["C"])
         return text
 
     @property
