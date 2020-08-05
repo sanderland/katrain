@@ -340,7 +340,7 @@ msgid "num undos"
 msgstr "待ったの回数"
 
 msgid "dot color"
-msgstr "色（固定）"
+msgstr "色"
 
 msgid "show dots"
 msgstr "ドットを表示"

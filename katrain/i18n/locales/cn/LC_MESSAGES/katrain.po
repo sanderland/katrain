@@ -304,7 +304,7 @@ msgid "num undos"
 msgstr "悔棋机会"
 
 msgid "dot color"
-msgstr "选点颜色显示 (固定)"
+msgstr "选点颜色显示"
 
 msgid "show dots"
 msgstr "显示选点"

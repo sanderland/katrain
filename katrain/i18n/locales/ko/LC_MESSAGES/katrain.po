@@ -308,7 +308,7 @@ msgid "num undos"
 msgstr "무르기 횟수"
 
 msgid "dot color"
-msgstr "색(고정됨)"
+msgstr "색"
 
 msgid "show dots"
 msgstr "색 표시하기"

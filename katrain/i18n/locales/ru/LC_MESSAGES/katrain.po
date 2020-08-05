@@ -331,7 +331,7 @@ msgid "num undos"
 msgstr "Количество отмен хода"
 
 msgid "dot color"
-msgstr "Цвет (фикс.)"
+msgstr "Цвет"
 
 msgid "show dots"
 msgstr "Показывать точки"

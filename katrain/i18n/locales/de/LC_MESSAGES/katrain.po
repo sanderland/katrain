@@ -317,7 +317,7 @@ msgid "num undos"
 msgstr "Anzahl der Undos"
 
 msgid "dot color"
-msgstr "Farbe (fix)"
+msgstr "Farbe"
 
 msgid "show dots"
 msgstr "Dots zeigen"

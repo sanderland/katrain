@@ -348,7 +348,7 @@ msgid "num undos"
 msgstr "Number of undos"
 
 msgid "dot color"
-msgstr "Colour (fixed)"
+msgstr "Colour"
 
 msgid "show dots"
 msgstr "Show dots"
