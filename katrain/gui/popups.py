@@ -283,7 +283,7 @@ class ConfigTeacherPopup(QuickConfigGui):
         self.options_grid.clear_widgets()
 
         for k in ["dot color", "point loss threshold", "num undos", "show dots", "save dots"]:
-            self.options_grid.add_widget(DescriptionLabel(text=i18n._(k), font_name=i18n.font_name))
+            self.options_grid.add_widget(DescriptionLabel(text=i18n._(k), font_name=i18n.font_name, font_size=dp(17)))
 
         for i, (color, threshold, undo, show_dot, savesgf) in enumerate(
             zip(EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs)
