@@ -264,6 +264,10 @@ def wrap_anchor(widget):
 
 
 class ConfigTeacherPopup(QuickConfigGui):
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        MDApp.get_running_app().bind(language=self.build_and_set_properties)
+
     def add_option_widgets(self, widgets):
         for widget in widgets:
             self.options_grid.add_widget(wrap_anchor(widget))
@@ -277,6 +281,10 @@ class ConfigTeacherPopup(QuickConfigGui):
 
         self.themes_spinner.value_refs = list(EVAL_COLORS.keys())
         self.options_grid.clear_widgets()
+
+        for k in ["dot color", "point loss threshold", "num undos", "show dots", "save dots"]:
+            self.options_grid.add_widget(DescriptionLabel(text=i18n._(k), font_name=i18n.font_name, font_size=dp(17)))
+
         for i, (color, threshold, undo, show_dot, savesgf) in enumerate(
             zip(EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs)
         ):
