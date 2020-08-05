@@ -61,9 +61,9 @@ but has since grown to include a wide range of features, including:
 
 ### YouTube videos
 
-| **New Features in v1.3**                  | **New Features in v1.2**                                                                              | **Teaching Game Tutorial**                                                                                   |
+| **New Features in v1.3**                  | **Analysis Tutorial**                                                                              | **Teaching Game Tutorial**                                                                                   |
 |:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
-| [![New Features Video](https://user-images.githubusercontent.com/48946947/86819542-1514ee80-c088-11ea-954e-7830f7926b97.png)](https://www.youtube.com/watch?v=h8qCzjd5tEo) | [![New Features Video](https://i.imgur.com/gCY6hMH.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
+| [![New Features Video](https://user-images.githubusercontent.com/48946947/86819542-1514ee80-c088-11ea-954e-7830f7926b97.png)](https://www.youtube.com/watch?v=h8qCzjd5tEo) | [![Analysis Tutorial](https://i.imgur.com/gCY6hMH.png)](https://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
 
 
 
