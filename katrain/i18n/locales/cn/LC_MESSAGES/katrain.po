@@ -497,7 +497,7 @@ msgstr ""
 "大于`pick_override` 则采用最佳的一手以避免明显错误. 更高的 `stddev` 使其 偏离更多."
 
 msgid "ai:p:influence"
-msgstr "影响模式"
+msgstr "取势模式"
 
 msgid "aihelp:p:influence"
 msgstr ""
@@ -505,7 +505,7 @@ msgstr ""
 "部分结束后停止."
 
 msgid "ai:p:territory"
-msgstr "取势模式"
+msgstr "取地模式"
 
 msgid "aihelp:p:territory"
 msgstr ""
