@@ -1,7 +1,7 @@
 import copy
 import json
 import os
-import subprocess
+import shlex, subprocess
 import threading
 import time
 import traceback
@@ -84,7 +84,7 @@ class KataGoEngine:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
 
             self.katago_process = subprocess.Popen(
-                self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+                shlex.split(self.command), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
             )
         except (FileNotFoundError, PermissionError, OSError) as e:
             self.katrain.log(
