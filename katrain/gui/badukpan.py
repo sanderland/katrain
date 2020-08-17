@@ -100,7 +100,9 @@ class BadukPanWidget(Widget):
 
     def play_stone_sound(self, *_args):
         if self.katrain.config("timer/sound"):
-            random.choice(self.stones_sounds).play()
+            sound = random.choice(self.stones_sounds)
+            if sound:
+                sound.play()
 
     def on_touch_up(self, touch):
         if ("button" in touch.profile and touch.button != "left") or not self.gridpos_x:
