@@ -10,7 +10,7 @@ from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.metrics import dp
-from kivy.properties import BooleanProperty, ListProperty, ObjectProperty
+from kivy.properties import BooleanProperty, ListProperty, ObjectProperty, NumericProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
@@ -547,3 +547,4 @@ class AnalysisControls(MDBoxLayout):
 
 class BadukPanControls(MDFloatLayout):
     engine_status_col = ListProperty(ENGINE_DOWN_COL)
+    engine_status_pondering = NumericProperty(-1)

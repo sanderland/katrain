@@ -99,6 +99,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
         self._keyboard = Window.request_keyboard(None, self, "")
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        Clock.schedule_interval(self.animate_pondering, 0.1)
 
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
@@ -117,6 +118,12 @@ class KaTrainGui(Screen, KaTrainBase):
             or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower() and "tuning" not in message.lower())
         ) and getattr(self, "controls", None):
             self.controls.set_status(f"ERROR: {message}", STATUS_ERROR)
+
+    def animate_pondering(self,*_args):
+        if not self.idle_analysis:
+            self.board_controls.engine_status_pondering = -1
+        else:
+            self.board_controls.engine_status_pondering += 5
 
     @property
     def play_analyze_mode(self):
