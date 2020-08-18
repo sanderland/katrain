@@ -332,7 +332,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.config_popup:
             self.config_popup = I18NPopup(
-                title_key="general settings title", size=[dp(1200), dp(800)], content=ConfigPopup(self)
+                title_key="general settings title", size=[dp(1200), dp(850)], content=ConfigPopup(self)
             ).__self__
             self.config_popup.content.popup = self.config_popup
         self.config_popup.open()

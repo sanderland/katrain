@@ -411,6 +411,14 @@ msgstr "Path to KataGo model file"
 msgid "engine:config"
 msgstr "Path to KataGo config file"
 
+msgid "engine:altcommand"
+msgstr "Override Engine Command"
+
+msgid "engine:altcommand:hint"
+msgstr ""
+"Full command used to start the engine, for e.g. using plink to connect to a "
+"remote engine. All other model options will be ignored."
+
 msgid "engine:max_visits"
 msgstr "Maximum number of visits in analysis"
 

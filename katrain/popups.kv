@@ -87,8 +87,8 @@
         font_size: DESC_FONT_SIZE * 1.5
     GridLayout:
         cols: 2
-        rows: 4
-        size_hint: 1,4
+        rows: 5
+        size_hint: 1,5
         spacing: CP_SPACING
         DescriptionLabel:
             text: i18n._("engine:katago")
@@ -126,6 +126,13 @@
                 sync_height_frac: 1.0
                 -font_size: self.height * 0.5
                 -background_color: [*[c*255/88 for c in BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+        DescriptionLabel:
+            text: i18n._("engine:altcommand")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "engine/altcommand"
+                hint_text: i18n._("engine:altcommand:hint")
     BoxLayout:
         size_hint: 1,1
         orientation: 'horizontal'

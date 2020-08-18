@@ -634,3 +634,13 @@ msgstr "デフォルト"
 #. TODO - theme label
 msgid "theme"
 msgstr "カラーテーマ"
+
+#. TODO
+msgid "engine:altcommand:hint"
+msgstr ""
+"Full command used to start the engine, for e.g. using plink to connect to a "
+"remote engine. All other model options will be ignored."
+
+#. TODO
+msgid "engine:altcommand"
+msgstr "Override Engine Command"

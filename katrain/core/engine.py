@@ -30,7 +30,7 @@ class KataGoEngine:
     def get_rules(node):
         return KataGoEngine.RULESETS.get(str(node.ruleset).lower(), "japanese")
 
-    def __init__(self, katrain, config, override_command=None):
+    def __init__(self, katrain, config):
         self.katrain = katrain
         self.queries = {}  # outstanding query id -> start time and callback
         self.config = config
@@ -43,10 +43,8 @@ class KataGoEngine:
         self.stderr_thread = None
 
         exe = config.get("katago", "").strip()
-        if override_command:
-            self.command = override_command
-        elif exe.startswith('"') and exe.endswith('"'):
-            self.command = exe.strip('"')
+        if config.get("altcommand",""):
+            self.command = config["altcommand"]
         else:
             if not exe:
                 if platform == "win":
