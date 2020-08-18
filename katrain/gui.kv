@@ -248,6 +248,11 @@
         width: self.height
         canvas:
             Color:
+                rgba: YELLOW
+            Ellipse:
+                pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
+                size: self.width/3, self.width/3
+            Color:
                 rgba: root.engine_status_col
             Ellipse:
                 angle_start: 0 if root.engine_status_pondering==-1 else root.engine_status_pondering % 360
