@@ -80,7 +80,6 @@ class KataGoEngine:
     def start(self):
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
-
             self.katago_process = subprocess.Popen(
                 self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
             )
@@ -148,7 +147,7 @@ class KataGoEngine:
     def _analysis_read_thread(self):
         while self.katago_process is not None:
             try:
-                line = self.katago_process.stdout.readline()
+                line = self.katago_process.stdout.readline().strip()
                 if self.katago_process and not line:
                     self.check_alive(exception_if_dead=True)
             except OSError as e:
