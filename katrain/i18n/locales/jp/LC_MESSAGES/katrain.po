@@ -404,10 +404,10 @@ msgid "engine:config"
 msgstr "KataGo設定ファイルの場所"
 
 msgid "engine:max_visits"
-msgstr "分析時の最大読み手数"
+msgstr "分析時の最大探索手数"
 
 msgid "engine:fast_visits"
-msgstr "簡易分析時の最大読み手数"
+msgstr "簡易分析時の最大探索手数"
 
 msgid "engine:max_time"
 msgstr "分析の最大時間"
@@ -502,7 +502,7 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"手加減なしのKataGo AI. 強さは, 一般設定のエンジンの読み手数とモデル, およびエンジンの設定ファイルによります. "
+"手加減なしのKataGo AI. 強さは, 一般設定のエンジンの探索手数とモデル, およびエンジンの設定ファイルによります. "
 "オプション設定はありません."
 
 #. ai which handles handicap games better
@@ -526,7 +526,7 @@ msgstr "損も混ぜて"
 
 msgid "aihelp:scoreloss"
 msgstr ""
-"損する目数に応じた確率でランダムに手を選択します（損が大きいほど低確率）. 読み手数の設定値を大きくするほど多彩で弱い打ち方をするでしょう."
+"損する目数に応じた確率でランダムに手を選択します（損が大きいほど低確率）. 探索手数の設定値を大きくするほど多彩で弱い打ち方をするでしょう."
 
 msgid "ai:policy"
 msgstr "第一感"
@@ -617,30 +617,26 @@ msgstr "利用できるモデルはすべてダウンロード済です"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
-msgstr "着手毎の読み手数"
+msgstr "着手毎の探索手数"
 
-#. TODO - on move tree editing
+#. on move tree editing
 msgid "Delete Node"
 msgstr "この手以降を削除"
 
-#. TODO - theme name
+#. theme name
 msgid "theme:red-green-colourblind"
 msgstr "赤緑色弱"
 
-#. TODO - theme name
+#. theme name
 msgid "theme:normal"
 msgstr "デフォルト"
 
-#. TODO - theme label
+#. theme label
 msgid "theme"
 msgstr "カラーテーマ"
 
-#. TODO
 msgid "engine:altcommand:hint"
-msgstr ""
-"Full command used to start the engine, for e.g. using plink to connect to a "
-"remote engine. All other model options will be ignored."
+msgstr "エンジン起動コマンド全体 (plinkでリモートエンジンに接続, 等). 他のモデルオプションはすべて無視されます."
 
-#. TODO
 msgid "engine:altcommand"
-msgstr "Override Engine Command"
+msgstr "エンジンコマンドの上書き"
