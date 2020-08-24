@@ -516,7 +516,7 @@ msgstr ""
 
 msgid "Engine missing DLL"
 msgstr ""
-"Failed to start KataGo due to missing DLL. Check the requiments, or try "
+"Failed to start KataGo due to missing DLL. Check the requirements, or try "
 "running the binary by itself for details. "
 
 #. AI names, help etc
