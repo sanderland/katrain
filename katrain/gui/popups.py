@@ -443,7 +443,7 @@ class ConfigPopup(QuickConfigGui):
     }
 
     KATAGOS = {
-        "windows": {
+        "win": {
             "Official OpenCL v1.6.0": "https://github.com/lightvector/KataGo/releases/download/v1.6.0/katago-v1.6.0-gpu-opencl-windows-x64.zip",
             "Official OpenCL v1.6.0 (32 bit)": "https://github.com/lightvector/KataGo/releases/download/v1.6.0/katago-v1.6.0-gpu-opencl-windows-x32-dont-use-unless-actually-32bit-windows.zip",
             "Official CUDA v1.6.0 (New NVIDIA cards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.0/katago-v1.6.0-gpu-cuda10.2-windows-x64.zip",
@@ -501,7 +501,7 @@ class ConfigPopup(QuickConfigGui):
 
     def download_katas(self, *_largs):
         def unzipped_name(zipfile):
-            if platform == "windows":
+            if platform == "win":
                 return zipfile.replace(".zip", ".exe")
             else:
                 return zipfile.replace(".zip", "")
@@ -517,6 +517,10 @@ class ConfigPopup(QuickConfigGui):
                             )
                         with open(path, "wb") as fout:
                             fout.write(zipObj.read(exes[0]))
+                        for f in zipObj.namelist():
+                            if f.lower().endswith("dll"):
+                                with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:
+                                    fout.write(zipObj.read(f))
                 else:
                     os.rename(tmp_path, path)
                 self.katrain.log(f"Download of katago binary {binary} model complete -> {path}", OUTPUT_INFO)

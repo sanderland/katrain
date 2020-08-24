@@ -66,6 +66,7 @@
             true
         ],
         "eval_off_show_last": 3,
+        "text_point_loss": true,
         "eval_show_ai": true,
         "lock_ai": false
     },

@@ -436,6 +436,20 @@ class BadukPanWidget(Widget):
                             col=[*self.eval_color(move_dict["pointsLost"])[:3], alpha],
                             r=self.stone_size * scale,
                         )
+                        if self.trainer_config["text_point_loss"]:
+                            if move_dict["pointsLost"] < 0.05:
+                                ptloss_text = "0.0"
+                            else:
+                                ptloss_text = f"{-move_dict['pointsLost']:+.1f}"
+                            sizefac = 1
+                            Color(*BLACK)
+                            draw_text(
+                                pos=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
+                                text=ptloss_text,
+                                font_size=self.grid_size * sizefac / 2.5,
+                                font_name="Roboto",
+                            )
+
                         if i == 0:
                             Color(*TOP_MOVE_BORDER_COLOR)
                             Line(

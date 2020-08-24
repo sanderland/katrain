@@ -25,8 +25,9 @@ msgstr "General & Engine Settings"
 msgid "menu:clocksettings"
 msgstr "Timer Settings"
 
+#. TODO description updated
 msgid "menu:teachsettings"
-msgstr "Teaching Game Settings"
+msgstr "Teaching/Analysis Settings"
 
 msgid "menu:aisettings"
 msgstr "AI Settings"
@@ -366,6 +367,10 @@ msgstr ""
 "Show dots/SGF comments\n"
 " for AI players"
 
+#. in addition to colour, show point loss as -0.1 etc on hints/top moves
+msgid "show point loss as text"
+msgstr "Show point loss on top moves"
+
 #. removed as an option / can ignore
 msgid "lock ai when playing"
 msgstr ""
@@ -509,6 +514,11 @@ msgid "Engine died unexpectedly"
 msgstr ""
 "Engine died unexpectedly without sending output, possibly due to out of "
 "memory: {error}"
+
+msgid "Engine missing DLL"
+msgstr ""
+"Failed to start KataGo due to missing DLL. Check the requiments, or try "
+"running the binary by itself for details. "
 
 #. AI names, help etc
 msgid "strength:kyu"

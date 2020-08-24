@@ -119,7 +119,7 @@ class KaTrainGui(Screen, KaTrainBase):
         ) and getattr(self, "controls", None):
             self.controls.set_status(f"ERROR: {message}", STATUS_ERROR)
 
-    def animate_pondering(self,*_args):
+    def animate_pondering(self, *_args):
         if not self.idle_analysis:
             self.board_controls.engine_status_pondering = -1
         else:
@@ -330,7 +330,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.teacher_settings_popup:
             self.teacher_settings_popup = I18NPopup(
-                title_key="teacher settings", size=[dp(800), dp(700)], content=ConfigTeacherPopup(self)
+                title_key="teacher settings", size=[dp(800), dp(750)], content=ConfigTeacherPopup(self)
             ).__self__
             self.teacher_settings_popup.content.popup = self.teacher_settings_popup
         self.teacher_settings_popup.open()
@@ -339,7 +339,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.config_popup:
             self.config_popup = I18NPopup(
-                title_key="general settings title", size=[dp(1200), dp(850)], content=ConfigPopup(self)
+                title_key="general settings title", size=[dp(1200), dp(950)], content=ConfigPopup(self)
             ).__self__
             self.config_popup.content.popup = self.config_popup
         self.config_popup.open()
@@ -459,6 +459,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if popup:
             if keycode[1] in ["f5", "f6", "f7", "f8"]:  # switch between popups
                 popup.dismiss()
+                return
             else:
                 return
 

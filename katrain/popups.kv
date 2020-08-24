@@ -227,7 +227,7 @@
                     hint_text: i18n._("engine:wide_root_noise:hint")
     MDBoxLayout:
         orientation: 'horizontal'
-        size_hint: 1,1.5
+        size_hint: 1,2
         MDBoxLayout:
             size_hint_x: 3.5 if self.children else 0.0001
             orientation: 'vertical'
@@ -285,6 +285,12 @@
                 LabelledIntInput:
                     size_hint_x: 0.15
                     input_property: "trainer/eval_off_show_last"
+            DescriptionLabel:
+                font_size: DESC_FONT_SIZE * 0.8
+                text: i18n._("show point loss as text")
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/text_point_loss"
             DescriptionLabel:
                 font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("show ai dots")

@@ -714,3 +714,14 @@ msgstr "Detect platform and use provided binary"
 #. TODO - error message on trying to download models when already done
 msgid "All binaries downloaded"
 msgstr "All available binaries already downloaded"
+
+#. TODO
+msgid "Engine missing DLL"
+msgstr ""
+"Failed to start KataGo due to missing DLL. Check the requiments, or try "
+"running the binary by itself for details. "
+
+#. TODO - in addition to colour, show point loss as -0.1 etc on hints/top
+#. moves
+msgid "show point loss as text"
+msgstr "Show point loss on top moves"

@@ -14,6 +14,7 @@
 * [Previews and YouTube tutorials](#preview)
 * [Installation](#install)
 * [Manual](#ai)
+    * [Configuring KataGo](#kata)
     * [Play against AI](#ai)
     * [Analyzing your Games](#analysis)
     * [Keyboard shortcuts](#keyboard)
@@ -73,6 +74,21 @@ but has since grown to include a wide range of features, including:
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
 * [This page](INSTALL.md) has detailed instructions for Window, Linux and MacOS,
   as well as troubleshooting and setting up KataGo to use multiple GPUs.
+
+## <a name="kata"></a>  Configuring KataGo
+
+KaTrain comes pre-packaged with a working KataGo (OpenCL version) for Windows and Linux operating systems, and the 15 block neural network.
+
+To change the model, open 'General and Engine settings' in the application and 'Download models'. You can then select the model you want from the dropdown menu.
+
+To change the katago binary,
+ for example to the CPU version if you don't have a GPU, click 'Download KataGo versions'.
+  You can then select the KataGO binary from the dropdown menu.
+
+Finally, you can override the entire command used to start the analysis engine, which 
+ can be useful for connecting to a remote server. Do keep in mind that KaTrain uses the *analysis engine*
+ of KataGo, and not the GTP engine.
+
 
 ## <a name="ai"></a> Play against AI
 
@@ -181,7 +197,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * KataGo crashes with out of memory errors, how can I prevent this?
   * Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using versions compiled with large board sizes.
   * If still encountering problems, please start KataGo by itself to check for any errors it gives.
-  * Note that if you don't have a GPU, or your GPU does not support OpenCL, you may not be able to use KataGo.
+  * Note that if you don't have a GPU, or your GPU does not support OpenCL, you should use the 'eigen' binaries which run on CPU only.
 * How can I play on larger boards?
   * For windows, change the `katago` setting to `katrain\KataGo\katago-bs52.exe`. For other operating systems, you need to compile your own KataGo version with higher limits.
 

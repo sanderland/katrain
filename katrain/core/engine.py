@@ -43,7 +43,7 @@ class KataGoEngine:
         self.stderr_thread = None
 
         exe = config.get("katago", "").strip()
-        if config.get("altcommand",""):
+        if config.get("altcommand", ""):
             self.command = config["altcommand"]
         else:
             if not exe:
@@ -104,8 +104,12 @@ class KataGoEngine:
         ok = self.katago_process and self.katago_process.poll() is None
         if not ok and exception_if_dead:
             if self.katago_process:
-                os_error += f"status {self.katago_process and self.katago_process.poll()}"
-                died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
+                code = self.katago_process and self.katago_process.poll()
+                if code == 3221225781:
+                    died_msg = i18n._("Engine missing DLL")
+                else:
+                    os_error += f"status {code}"
+                    died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
                 self.katrain.log(died_msg, OUTPUT_ERROR)
                 self.katago_process = None
             else:
