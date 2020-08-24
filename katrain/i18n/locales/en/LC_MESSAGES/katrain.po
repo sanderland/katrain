@@ -416,8 +416,8 @@ msgstr "Override Engine Command"
 
 msgid "engine:altcommand:hint"
 msgstr ""
-"Full command used to start the engine, for e.g. using plink to connect to a "
-"remote engine. All other model options will be ignored."
+"Full command used to start the engine. All other model options will be "
+"ignored."
 
 msgid "engine:max_visits"
 msgstr "Maximum number of visits in analysis"
@@ -636,13 +636,29 @@ msgstr "Estimated Strength"
 msgid "download models button"
 msgstr "Download Models"
 
+#. button in general settings for downloading models
+msgid "download katago button"
+msgstr "Download KataGo versions"
+
 #. shown on on the model select dropdown
 msgid "models available"
 msgstr "{num} available model(s) found"
 
+#. shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "Detect platform and use provided binary"
+
+#. shown on on the model select dropdown
+msgid "katago binaries available"
+msgstr "{num} available binaries found"
+
 #. error message on trying to download models when already done
 msgid "All models downloaded"
 msgstr "All available models already downloaded"
+
+#. error message on trying to download models when already done
+msgid "All binaries downloaded"
+msgstr "All available binaries already downloaded"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"

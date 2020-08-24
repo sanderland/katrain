@@ -652,9 +652,25 @@ msgstr "Colour Theme"
 #. TODO
 msgid "engine:altcommand:hint"
 msgstr ""
-"Full command used to start the engine, for e.g. using plink to connect to a "
-"remote engine. All other model options will be ignored."
+"Full command used to start the engine. All other model options will be "
+"ignored."
 
 #. TODO
 msgid "engine:altcommand"
 msgstr "Override Engine Command"
+
+#. TODO - button in general settings for downloading models
+msgid "download katago button"
+msgstr "Download KataGo versions"
+
+#. TODO - shown on on the model select dropdown
+msgid "katago binaries available"
+msgstr "{num} available binaries found"
+
+#. TODO - shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "Detect platform and use provided binary"
+
+#. TODO - error message on trying to download models when already done
+msgid "All binaries downloaded"
+msgstr "All available binaries already downloaded"

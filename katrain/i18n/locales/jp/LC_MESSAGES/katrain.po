@@ -640,3 +640,19 @@ msgstr "エンジン起動コマンド全体 (plinkでリモートエンジン�
 
 msgid "engine:altcommand"
 msgstr "エンジンコマンドの上書き"
+
+#. TODO - button in general settings for downloading models
+msgid "download katago button"
+msgstr "Download KataGo versions"
+
+#. TODO - shown on on the model select dropdown
+msgid "katago binaries available"
+msgstr "{num} available binaries found"
+
+#. TODO - shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "Detect platform and use provided binary"
+
+#. TODO - error message on trying to download models when already done
+msgid "All binaries downloaded"
+msgstr "All available binaries already downloaded"

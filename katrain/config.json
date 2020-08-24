@@ -1,6 +1,7 @@
 {
     "engine": {
         "katago": "",
+        "altcommand": "",
         "model": "katrain/models/g170e-b15c192-s1672170752-d466197061.bin.gz",
         "config": "katrain/KataGo/analysis_config.cfg",
         "threads": 12,
@@ -16,7 +17,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.3.5"
+        "version": "1.4.0"
     },
     "timer": {
         "byo_length": 30,
