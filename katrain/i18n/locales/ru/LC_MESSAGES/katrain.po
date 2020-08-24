@@ -637,7 +637,7 @@ msgid "Delete Node"
 msgstr "Удалить ход"
 
 msgid "theme:red-green-colourblind"
-msgstr "Режим цветовой слепоты"
+msgstr "Режим красно-зелёной слепоты"
 
 msgid "theme:normal"
 msgstr "Стандартная тема"
