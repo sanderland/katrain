@@ -27,7 +27,7 @@ msgid "menu:clocksettings"
 msgstr "시간 설정"
 
 msgid "menu:teachsettings"
-msgstr "지도대국 설정"
+msgstr "분석/지도대국 설정"
 
 msgid "menu:aisettings"
 msgstr "인공지능 설정"
