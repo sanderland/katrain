@@ -666,7 +666,7 @@ msgstr "Override Engine Command"
 msgid "download katago button"
 msgstr "Download KataGo versions"
 
-#. TODO - shown on on the model select dropdown
+#. TODO - shown on on the binaries select dropdown
 msgid "katago binaries available"
 msgstr "{num} available binaries found"
 

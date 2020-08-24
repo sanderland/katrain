@@ -25,7 +25,6 @@ msgstr "General & Engine Settings"
 msgid "menu:clocksettings"
 msgstr "Timer Settings"
 
-#. TODO description updated
 msgid "menu:teachsettings"
 msgstr "Teaching/Analysis Settings"
 
@@ -658,7 +657,7 @@ msgstr "{num} available model(s) found"
 msgid "default katago option"
 msgstr "Detect platform and use provided binary"
 
-#. shown on on the model select dropdown
+#. shown on on the binaries select dropdown
 msgid "katago binaries available"
 msgstr "{num} available binaries found"
 
