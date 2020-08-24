@@ -592,55 +592,38 @@ msgstr "预计棋力"
 msgid "reanalyze max visits"
 msgstr "每步棋计算深度"
 
-#. TODO - on move tree editing
 msgid "Delete Node"
-msgstr "Delete Node"
+msgstr "删除模式"
 
-#. TODO - theme name
 msgid "theme:red-green-colourblind"
-msgstr "Red-Green Colourblind"
+msgstr "红-绿 混合颜色"
 
-#. TODO - theme name
 msgid "theme:normal"
-msgstr "Default Theme"
+msgstr "默认主题"
 
-#. TODO - theme label
 msgid "theme"
-msgstr "Colour Theme"
+msgstr "颜色主题"
 
-#. TODO
 msgid "engine:altcommand:hint"
-msgstr ""
-"Full command used to start the engine, for e.g. using plink to connect to a "
-"remote engine."
+msgstr "使用全命令启动引擎, 例如使用plink连接远程引擎"
 
-#. TODO
 msgid "engine:altcommand"
-msgstr "Override Engine Command"
+msgstr "覆盖引擎命令"
 
-#. TODO - button in general settings for downloading models
 msgid "download katago button"
-msgstr "Download KataGo versions"
+msgstr "下载KataGo 版本"
 
-#. TODO - shown on on the binaries select dropdown
 msgid "katago binaries available"
-msgstr "{num} available binaries found"
+msgstr "{num} 个二元可用"
 
-#. TODO - shown on on the katago binary select dropdown
 msgid "default katago option"
-msgstr "Detect platform and use provided binary"
+msgstr "检测平台并使用所提供的二元"
 
-#. TODO - error message on trying to download models when already done
 msgid "All binaries downloaded"
-msgstr "All available binaries already downloaded"
+msgstr "所有可用的二元已下载"
 
-#. TODO
 msgid "Engine missing DLL"
-msgstr ""
-"Failed to start KataGo due to missing DLL. Check the requiments, or try "
-"running the binary by itself for details. "
+msgstr "启动katago失败因缺失dll文件. 请检查要求, 或尝试让二元自行运行并检查细节. "
 
-#. TODO - in addition to colour, show point loss as -0.1 etc on hints/top
-#. moves
 msgid "show point loss as text"
-msgstr "Show point loss on top moves"
+msgstr "在棋子上显示目数损失"
