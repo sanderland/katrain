@@ -608,55 +608,39 @@ msgstr "추정 기력"
 msgid "reanalyze max visits"
 msgstr "한 수당 visit 수"
 
-#. TODO - on move tree editing
 msgid "Delete Node"
-msgstr "Delete Node"
+msgstr "노드 지우기"
 
-#. TODO - theme name
 msgid "theme:red-green-colourblind"
-msgstr "Red-Green Colourblind"
+msgstr "적록색약"
 
-#. TODO - theme name
 msgid "theme:normal"
-msgstr "Default Theme"
+msgstr "기본 테마"
 
-#. TODO - theme label
 msgid "theme"
-msgstr "Colour Theme"
+msgstr "색 테마"
 
-#. TODO
 msgid "engine:altcommand:hint"
-msgstr ""
-"Full command used to start the engine. All other model options will be "
-"ignored."
+msgstr "엔진을 시작하기 위한 명령어입니다. 다른 설정은 무시합니다."
 
-#. TODO
 msgid "engine:altcommand"
-msgstr "Override Engine Command"
+msgstr "엔진 명령어 덮어씌우기"
 
-#. TODO - button in general settings for downloading models
 msgid "download katago button"
-msgstr "Download KataGo versions"
+msgstr "KataGo 내려받기"
 
-#. TODO - shown on on the binaries select dropdown
 msgid "katago binaries available"
-msgstr "{num} available binaries found"
+msgstr "{num}가지의 실행 파일을 받을 수 있습니다."
 
-#. TODO - shown on on the katago binary select dropdown
 msgid "default katago option"
-msgstr "Detect platform and use provided binary"
+msgstr "제공되는 KataGo 실행 파일 사용"
 
-#. TODO - error message on trying to download models when already done
 msgid "All binaries downloaded"
-msgstr "All available binaries already downloaded"
+msgstr "이미 사용할 수 있는 모든 실행 파일을 내려받았습니다."
 
-#. TODO
 msgid "Engine missing DLL"
 msgstr ""
-"Failed to start KataGo due to missing DLL. Check the requiments, or try "
-"running the binary by itself for details. "
+"없는 DLL 파일이 있어 KataGo가 실행되지 않습니다. 요구사항을 점검하시거나, 실행 파일을 따로 실행해 세부사항을 알아보십시오."
 
-#. TODO - in addition to colour, show point loss as -0.1 etc on hints/top
-#. moves
 msgid "show point loss as text"
-msgstr "Show point loss on top moves"
+msgstr "돌 위에 집 손해 표시하기"
