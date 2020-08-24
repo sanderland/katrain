@@ -596,7 +596,7 @@ msgid "Delete Node"
 msgstr "删除模式"
 
 msgid "theme:red-green-colourblind"
-msgstr "红-绿 混合颜色"
+msgstr "红绿色盲友好"
 
 msgid "theme:normal"
 msgstr "默认主题"
@@ -613,17 +613,20 @@ msgstr "覆盖引擎命令"
 msgid "download katago button"
 msgstr "下载KataGo 版本"
 
-msgid "katago binaries available"
-msgstr "{num} 个二元可用"
-
-msgid "default katago option"
-msgstr "检测平台并使用所提供的二元"
-
-msgid "All binaries downloaded"
-msgstr "所有可用的二元已下载"
-
-msgid "Engine missing DLL"
-msgstr "启动katago失败因缺失dll文件. 请检查要求, 或尝试让二元自行运行并检查细节. "
-
 msgid "show point loss as text"
 msgstr "在棋子上显示目数损失"
+
+
+msgid "katago binaries available"
+msgstr "{num} 个exe文件可用"
+
+msgid "default katago option"
+msgstr "检测平台并使用所提供的exe文件"
+
+msgid "All binaries downloaded"
+msgstr "所有可用的exe文件已下载"
+
+msgid "Engine missing DLL"
+msgstr ""
+"启动katago失败因缺失dll文件. 请检查运行要求, 或尝试让exe文件自行运行并检查细节. "
+
