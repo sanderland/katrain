@@ -17,7 +17,7 @@ from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG
+from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG, STATUS_TEACHING
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, var_to_grid
@@ -63,8 +63,7 @@ class BadukPanWidget(Widget):
             self.draw_hover_contents()
 
     def on_touch_down(self, touch):
-        self.animating_pv = None  # any click kills PV from label/move
-        self.draw_hover_contents()
+        self.set_animating_pv(None, None)  # any click kills PV from label/move
         if "button" in touch.profile and touch.button != "left":
             return
         self.check_next_move_ghost(touch)
@@ -89,13 +88,11 @@ class BadukPanWidget(Widget):
                 if near_move:
                     self.set_animating_pv(near_move[0][0], near_move[0][1])
                 else:
-                    self.animating_pv = None
-                    self.draw_hover_contents()
+                    self.set_animating_pv(None, None)  # any click kills PV from label/move
             if inside and self.animating_pv is not None:
                 d_sq = (pos[0] - self.animating_pv[3][0]) ** 2 + (pos[1] - self.animating_pv[3][1])
                 if d_sq > 2 * self.stone_size ** 2:  # move too far from where it was activated
-                    self.animating_pv = None
-                    self.draw_hover_contents()
+                    self.set_animating_pv(None, None)  # any click kills PV from label/move
             self.last_mouse_pos = pos
 
     def play_stone_sound(self, *_args):
@@ -307,12 +304,23 @@ class BadukPanWidget(Widget):
                     self.draw_stone(1, y, "B", innercol=STONE_COLORS["W"], evalcol=evalcol)
                     self.draw_stone(2, y, "W", evalcol=evalcol, evalscale=y / (board_size_y - 1))
                     self.draw_stone(3, y, "W", innercol=STONE_COLORS["B"], evalcol=evalcol)
-                    # self.draw_stone(4, y, evalcol=[*evalcol[:3], 0.5], scale=0.8)
 
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
             if katrain.analysis_controls.ownership.active and ownership:
                 ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
+                if (
+                    current_node.children
+                    and katrain.controls.status_state[1] == STATUS_TEACHING
+                    and self.animating_pv
+                    and current_node.children[-1].auto_undo
+                    and current_node.children[-1].ownership
+                ):
+                    ownership_grid = var_to_grid(
+                        [a - b for a, b in zip(current_node.children[-1].ownership, ownership)],
+                        (board_size_x, board_size_y),
+                    )
+
                 rsz = self.grid_size * 0.2
                 for y in range(board_size_y - 1, -1, -1):
                     for x in range(board_size_x):
@@ -515,10 +523,18 @@ class BadukPanWidget(Widget):
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):
+        if pv == None:
+            self.animating_pv = None
+
         if node is not None and (
             not self.animating_pv or not (self.animating_pv[0] == pv and self.animating_pv[1] == node)
         ):
             self.animating_pv = (pv, node, time.time(), self.last_mouse_pos)
+
+        if self.katrain.controls.status_state[1] == STATUS_TEACHING:
+            self.draw_board_contents()
+        else:
+            self.draw_hover_contents()
 
     def show_pv_from_comments(self, pv_str):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
