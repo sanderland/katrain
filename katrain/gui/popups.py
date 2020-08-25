@@ -497,7 +497,9 @@ class ConfigPopup(QuickConfigGui):
                 progress.start(self.download_progress_box)
                 downloading = True
         if not downloading:
-            self.download_progress_box.add_widget(Label(text=i18n._("All models downloaded"), text_size=(None, dp(50))))
+            self.download_progress_box.add_widget(
+                Label(text=i18n._("All models downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
+            )
             print("x")
 
     def download_katas(self, *_largs):
@@ -568,7 +570,7 @@ class ConfigPopup(QuickConfigGui):
                 )
             else:
                 self.katago_download_progress_box.add_widget(
-                    Label(text=i18n._("All binaries downloaded"), text_size=(None, dp(50)))
+                    Label(text=i18n._("All binaries downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
                 )
 
     def update_config(self, save_to_file=True):
