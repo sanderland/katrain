@@ -645,7 +645,7 @@ msgstr "Estimated Strength"
 msgid "download models button"
 msgstr "Download Models"
 
-#. button in general settings for downloading models
+#. button in general settings for downloading katago executables
 msgid "download katago button"
 msgstr "Download KataGo versions"
 

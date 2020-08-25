@@ -616,7 +616,6 @@ msgstr "下载KataGo 版本"
 msgid "show point loss as text"
 msgstr "在棋子上显示目数损失"
 
-
 msgid "katago binaries available"
 msgstr "{num} 个exe文件可用"
 
@@ -627,6 +626,4 @@ msgid "All binaries downloaded"
 msgstr "所有可用的exe文件已下载"
 
 msgid "Engine missing DLL"
-msgstr ""
-"启动katago失败因缺失dll文件. 请检查运行要求, 或尝试让exe文件自行运行并检查细节. "
-
+msgstr "启动katago失败因缺失dll文件. 请检查运行要求, 或尝试让exe文件自行运行并检查细节. "

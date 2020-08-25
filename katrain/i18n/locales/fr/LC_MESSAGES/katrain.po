@@ -699,7 +699,7 @@ msgstr ""
 msgid "engine:altcommand"
 msgstr "Override Engine Command"
 
-#. TODO - button in general settings for downloading models
+#. TODO - button in general settings for downloading katago executables
 msgid "download katago button"
 msgstr "Download KataGo versions"
 

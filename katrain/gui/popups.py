@@ -1,6 +1,7 @@
 import glob
 import os
 import re
+import stat
 from typing import Any, Dict, List, Tuple, Union
 from zipfile import ZipFile
 
@@ -517,6 +518,7 @@ class ConfigPopup(QuickConfigGui):
                             )
                         with open(path, "wb") as fout:
                             fout.write(zipObj.read(exes[0]))
+                            os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR | stat.S_IXGRP)
                         for f in zipObj.namelist():
                             if f.lower().endswith("dll"):
                                 with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:

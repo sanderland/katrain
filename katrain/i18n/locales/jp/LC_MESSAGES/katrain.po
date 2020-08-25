@@ -641,7 +641,7 @@ msgstr "エンジン起動コマンド全体 (plinkでリモートエンジン�
 msgid "engine:altcommand"
 msgstr "エンジンコマンドの上書き"
 
-#. TODO - button in general settings for downloading models
+#. TODO - button in general settings for downloading katago executables
 msgid "download katago button"
 msgstr "Download KataGo versions"
 
@@ -660,7 +660,7 @@ msgstr "All available binaries already downloaded"
 #. TODO
 msgid "Engine missing DLL"
 msgstr ""
-"Failed to start KataGo due to missing DLL. Check the requiments, or try "
+"Failed to start KataGo due to missing DLL. Check the requirements, or try "
 "running the binary by itself for details. "
 
 #. TODO - in addition to colour, show point loss as -0.1 etc on hints/top
