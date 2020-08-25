@@ -660,8 +660,8 @@ msgstr "All available binaries already downloaded"
 #. TODO
 msgid "Engine missing DLL"
 msgstr ""
-"Failed to start KataGo due to missing DLL. Check the requirements, or try "
-"running the binary by itself for details. "
+"Failed to start KataGo due to missing DLL. Check the requirements in the "
+"KataGo documentation, or try running the binary by itself for details. "
 
 #. TODO - in addition to colour, show point loss as -0.1 etc on hints/top
 #. moves
