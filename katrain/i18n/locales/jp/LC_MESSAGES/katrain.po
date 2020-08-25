@@ -26,7 +26,7 @@ msgid "menu:clocksettings"
 msgstr "時間設定"
 
 msgid "menu:teachsettings"
-msgstr "指導対局設定"
+msgstr "指導・分析設定"
 
 msgid "menu:aisettings"
 msgstr "AI設定"
@@ -392,10 +392,10 @@ msgid "config file path"
 msgstr "全オプションの保存先："
 
 msgid "engine:katago"
-msgstr "KataGo本体（実行ファイル）のフルパス"
+msgstr "KataGo実行ファイル （フルパス）"
 
 msgid "engine:katago:hint"
-msgstr "内蔵エンジンを使うなら空のまま"
+msgstr "内蔵KataGoを使うなら空のまま"
 
 msgid "engine:model"
 msgstr "KataGoモデルファイルの場所"
@@ -605,11 +605,11 @@ msgstr "推定段級位"
 
 #. button in general settings for downloading models
 msgid "download models button"
-msgstr "モデルをダウンロード"
+msgstr "追加モデルをダウンロード"
 
 #. shown on on the model select dropdown
 msgid "models available"
-msgstr "利用できるモデルが {num} 個みつかりました"
+msgstr "入手済モデルの一覧（{num}個みつかりました）"
 
 #. error message on trying to download models when already done
 msgid "All models downloaded"
@@ -641,29 +641,28 @@ msgstr "エンジン起動コマンド全体 (plinkでリモートエンジン�
 msgid "engine:altcommand"
 msgstr "エンジンコマンドの上書き"
 
-#. TODO - button in general settings for downloading katago executables
+#. button in general settings for downloading katago executables
 msgid "download katago button"
-msgstr "Download KataGo versions"
+msgstr "別版KataGoをダウンロード"
 
-#. TODO - shown on on the binaries select dropdown
+#. shown on on the binaries select dropdown
 msgid "katago binaries available"
-msgstr "{num} available binaries found"
+msgstr "入手済KataGo実行ファイルの一覧（{num}個みつかりました）"
 
-#. TODO - shown on on the katago binary select dropdown
+#. shown on on the katago binary select dropdown
 msgid "default katago option"
-msgstr "Detect platform and use provided binary"
+msgstr "内蔵KataGo"
 
-#. TODO - error message on trying to download models when already done
+#. error message on trying to download models when already done
 msgid "All binaries downloaded"
-msgstr "All available binaries already downloaded"
+msgstr "KataGo実行ファイルはすべてダウンロード済です"
 
-#. TODO
 msgid "Engine missing DLL"
 msgstr ""
-"Failed to start KataGo due to missing DLL. Check the requirements in the "
-"KataGo documentation, or try running the binary by itself for details. "
+"KataGoの起動に失敗しました. DLLがみつかりません. 必要なものをKataGoの説明書で確認するか, "
+"KataGo実行ファイル自体を直接実行して詳細を調べてください."
 
-#. TODO - in addition to colour, show point loss as -0.1 etc on hints/top
+#. in addition to colour, show point loss as -0.1 etc on hints/top
 #. moves
 msgid "show point loss as text"
-msgstr "Show point loss on top moves"
+msgstr "損失目数を候補手上に表示"
