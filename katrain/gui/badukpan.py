@@ -535,8 +535,7 @@ class BadukPanWidget(Widget):
     def set_animating_pv(self, pv, node):
         if pv is None:
             self.animating_pv = None
-
-        if node is not None and (
+        elif node is not None and (
             not self.animating_pv or not (self.animating_pv[0] == pv and self.animating_pv[1] == node)
         ):
             self.animating_pv = (pv, node, time.time(), self.last_mouse_pos)
