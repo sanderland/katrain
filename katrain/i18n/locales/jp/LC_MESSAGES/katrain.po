@@ -26,7 +26,7 @@ msgid "menu:clocksettings"
 msgstr "時間設定"
 
 msgid "menu:teachsettings"
-msgstr "指導対局設定"
+msgstr "指導・分析設定"
 
 msgid "menu:aisettings"
 msgstr "AI設定"
@@ -392,10 +392,10 @@ msgid "config file path"
 msgstr "全オプションの保存先："
 
 msgid "engine:katago"
-msgstr "KataGo本体（実行ファイル）のフルパス"
+msgstr "KataGo実行ファイル （フルパス）"
 
 msgid "engine:katago:hint"
-msgstr "内蔵エンジンを使うなら空のまま"
+msgstr "内蔵KataGoを使うなら空のまま"
 
 msgid "engine:model"
 msgstr "KataGoモデルファイルの場所"
@@ -404,10 +404,10 @@ msgid "engine:config"
 msgstr "KataGo設定ファイルの場所"
 
 msgid "engine:max_visits"
-msgstr "分析時の最大読み手数"
+msgstr "分析時の最大探索手数"
 
 msgid "engine:fast_visits"
-msgstr "簡易分析時の最大読み手数"
+msgstr "簡易分析時の最大探索手数"
 
 msgid "engine:max_time"
 msgstr "分析の最大時間"
@@ -502,7 +502,7 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"手加減なしのKataGo AI. 強さは, 一般設定のエンジンの読み手数とモデル, およびエンジンの設定ファイルによります. "
+"手加減なしのKataGo AI. 強さは, 一般設定のエンジンの探索手数とモデル, およびエンジンの設定ファイルによります. "
 "オプション設定はありません."
 
 #. ai which handles handicap games better
@@ -526,7 +526,7 @@ msgstr "損も混ぜて"
 
 msgid "aihelp:scoreloss"
 msgstr ""
-"損する目数に応じた確率でランダムに手を選択します（損が大きいほど低確率）. 読み手数の設定値を大きくするほど多彩で弱い打ち方をするでしょう."
+"損する目数に応じた確率でランダムに手を選択します（損が大きいほど低確率）. 探索手数の設定値を大きくするほど多彩で弱い打ち方をするでしょう."
 
 msgid "ai:policy"
 msgstr "第一感"
@@ -605,11 +605,11 @@ msgstr "推定段級位"
 
 #. button in general settings for downloading models
 msgid "download models button"
-msgstr "モデルをダウンロード"
+msgstr "追加モデルをダウンロード"
 
 #. shown on on the model select dropdown
 msgid "models available"
-msgstr "利用できるモデルが {num} 個みつかりました"
+msgstr "入手済モデルの一覧（{num}個みつかりました）"
 
 #. error message on trying to download models when already done
 msgid "All models downloaded"
@@ -617,20 +617,52 @@ msgstr "利用できるモデルはすべてダウンロード済です"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
-msgstr "着手毎の読み手数"
+msgstr "着手毎の探索手数"
 
-#. TODO - on move tree editing
+#. on move tree editing
 msgid "Delete Node"
 msgstr "この手以降を削除"
 
-#. TODO - theme name
+#. theme name
 msgid "theme:red-green-colourblind"
 msgstr "赤緑色弱"
 
-#. TODO - theme name
+#. theme name
 msgid "theme:normal"
 msgstr "デフォルト"
 
-#. TODO - theme label
+#. theme label
 msgid "theme"
 msgstr "カラーテーマ"
+
+msgid "engine:altcommand:hint"
+msgstr "エンジン起動コマンド全体 (plinkでリモートエンジンに接続, 等). 他のモデルオプションはすべて無視されます."
+
+msgid "engine:altcommand"
+msgstr "エンジンコマンドの上書き"
+
+#. button in general settings for downloading katago executables
+msgid "download katago button"
+msgstr "別版KataGoをダウンロード"
+
+#. shown on on the binaries select dropdown
+msgid "katago binaries available"
+msgstr "入手済KataGo実行ファイルの一覧（{num}個みつかりました）"
+
+#. shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "内蔵KataGo"
+
+#. error message on trying to download models when already done
+msgid "All binaries downloaded"
+msgstr "KataGo実行ファイルはすべてダウンロード済です"
+
+msgid "Engine missing DLL"
+msgstr ""
+"KataGoの起動に失敗しました. DLLがみつかりません. 必要なものをKataGoの説明書で確認するか, "
+"KataGo実行ファイル自体を直接実行して詳細を調べてください."
+
+#. in addition to colour, show point loss as -0.1 etc on hints/top
+#. moves
+msgid "show point loss as text"
+msgstr "損失目数を候補手上に表示"

@@ -1,7 +1,9 @@
 import glob
 import os
 import re
+import stat
 from typing import Any, Dict, List, Tuple, Union
+from zipfile import ZipFile
 
 from kivy.clock import Clock
 from kivy.metrics import dp
@@ -10,6 +12,7 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.utils import platform
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
@@ -374,12 +377,14 @@ class ConfigPopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
         self.paths = [self.katrain.config("engine/model"), "katrain/models", "~/.katrain"]
+        self.katago_paths = [self.katrain.config("engine/katago"), "~/.katrain"]
         MDApp.get_running_app().bind(language=self.check_models)
+        MDApp.get_running_app().bind(language=self.check_katas)
 
     def build_and_set_properties(self, *_args):
         super().build_and_set_properties()
 
-    def check_models(self, *args):  # WIP
+    def check_models(self, *args):
         done = set()
         model_files = []
         for path in self.paths + [self.model_path.text]:
@@ -405,10 +410,56 @@ class ConfigPopup(QuickConfigGui):
         self.model_files.values = [models_available_msg] + model_files
         self.model_files.text = models_available_msg
 
+    def check_katas(self, *args):
+        done = set()
+        model_files = []
+        for path in self.katago_paths + [self.katago_path.text]:
+            path = path.rstrip("/\\")
+            if path.startswith("katrain"):
+                path = path.replace("katrain", PATHS["PACKAGE"].rstrip("/\\"), 1)
+            path = os.path.expanduser(path)
+            if not os.path.isdir(path):
+                path, _file = os.path.split(path)
+            slashpath = path.replace("\\", "/")
+            if slashpath in done or not os.path.isdir(path):
+                continue
+            done.add(slashpath)
+            files = [
+                f.replace("/", os.path.sep).replace(PATHS["PACKAGE"], "katrain")
+                for ftype in ["katago*"]
+                for f in glob.glob(slashpath + "/" + ftype)
+                if os.path.isfile(f) and not f.endswith(".zip")
+            ]
+            if files and path not in self.paths:
+                self.paths.append(path)  # persistent on paths with models found
+            model_files += files
+        katas_available_msg = i18n._("katago binaries available").format(num=len(model_files))
+        self.katago_files.values = [katas_available_msg, i18n._("default katago option")] + sorted(
+            model_files, key=lambda f: "bs29" in f
+        )
+        self.katago_files.text = katas_available_msg
+
     MODELS = {
         "latest 20b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
         "latest 30b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
         "latest 40b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
+    }
+
+    KATAGOS = {
+        "win": {
+            "OpenCL v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-opencl-windows-x64.zip",
+            "CUDA v1.6.1 (New NVIDIA cards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-avx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-windows-x64.zip",
+            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
+        },
+        "linux": {
+            "OpenCL v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-opencl-linux-x64.zip",
+            "CUDA v1.6.1 (New NVIDIA cards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-avx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-linux-x64.zip",
+            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
+        },
     }
 
     def download_models(self, *_largs):
@@ -449,8 +500,81 @@ class ConfigPopup(QuickConfigGui):
                 progress.start(self.download_progress_box)
                 downloading = True
         if not downloading:
-            self.download_progress_box.add_widget(Label(text=i18n._("All models downloaded"), text_size=(None, dp(50))))
-            print("x")
+            self.download_progress_box.add_widget(
+                Label(text=i18n._("All models downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
+            )
+
+    def download_katas(self, *_largs):
+        def unzipped_name(zipfile):
+            if platform == "win":
+                return zipfile.replace(".zip", ".exe")
+            else:
+                return zipfile.replace(".zip", "")
+
+        def download_complete(req, tmp_path, path, binary):
+            try:
+                if tmp_path.endswith(".zip"):
+                    with ZipFile(tmp_path, "r") as zipObj:
+                        exes = [f for f in zipObj.namelist() if f.startswith("katago")]
+                        if len(exes) != 1:
+                            raise FileNotFoundError(
+                                f"Zip file {tmp_path} does not contain exactly 1 file starting with 'katago' (contents: {zipObj.namelist()})"
+                            )
+                        with open(path, "wb") as fout:
+                            fout.write(zipObj.read(exes[0]))
+                            os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR | stat.S_IXGRP)
+                        for f in zipObj.namelist():
+                            if f.lower().endswith("dll"):
+                                with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:
+                                    fout.write(zipObj.read(f))
+                    os.remove(tmp_path)
+                else:
+                    os.rename(tmp_path, path)
+                self.katrain.log(f"Download of katago binary {binary} model complete -> {path}", OUTPUT_INFO)
+            except Exception as e:
+                self.katrain.log(
+                    f"Download of katago binary {binary} complete, but could not move file: {e}", OUTPUT_ERROR
+                )
+            self.check_katas()
+
+        for c in self.katago_download_progress_box.children:
+            if isinstance(c, ProgressLoader) and c.request:
+                c.request.cancel()
+        self.katago_download_progress_box.clear_widgets()
+        downloading = False
+        for name, url in self.KATAGOS.get(platform, {}).items():
+            filename = os.path.split(url)[1]
+            exe_name = unzipped_name(filename)
+            if not any(os.path.split(f)[1] == exe_name for f in self.katago_files.values):
+                savepath_tmp = os.path.expanduser(os.path.join("~/.katrain", filename))
+                exe_path_name = os.path.expanduser(os.path.join("~/.katrain", exe_name))
+                self.katrain.log(f"Downloading binary {name} from {url} to {savepath_tmp}", OUTPUT_INFO)
+                progress = ProgressLoader(
+                    download_url=url,
+                    path_to_file=savepath_tmp,
+                    downloading_text=f"Downloading {name}: " + "{}",
+                    label_downloading_text=f"Starting download for {name}",
+                    download_complete=lambda req, tmp=savepath_tmp, path=exe_path_name, model=name: download_complete(
+                        req, tmp, path, model
+                    ),
+                    download_redirected=lambda req, mname=name: self.katrain.log(
+                        f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
+                    ),
+                    download_error=lambda req, error, mname=name: self.katrain.log(
+                        f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
+                    ),
+                )
+                progress.start(self.katago_download_progress_box)
+                downloading = True
+        if not downloading:
+            if not self.KATAGOS.get(platform):
+                self.katago_download_progress_box.add_widget(
+                    Label(text=f"No binaries available for platform {platform}", text_size=(None, dp(50)))
+                )
+            else:
+                self.katago_download_progress_box.add_widget(
+                    Label(text=i18n._("All binaries downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
+                )
 
     def update_config(self, save_to_file=True):
         updated = super().update_config(save_to_file=save_to_file)

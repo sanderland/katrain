@@ -26,7 +26,7 @@ msgid "menu:clocksettings"
 msgstr "Timer Settings"
 
 msgid "menu:teachsettings"
-msgstr "Teaching Game Settings"
+msgstr "Teaching/Analysis Settings"
 
 msgid "menu:aisettings"
 msgstr "AI Settings"
@@ -366,6 +366,10 @@ msgstr ""
 "Show dots/SGF comments\n"
 " for AI players"
 
+#. in addition to colour, show point loss as -0.1 etc on hints/top moves
+msgid "show point loss as text"
+msgstr "Show point loss on top moves"
+
 #. removed as an option / can ignore
 msgid "lock ai when playing"
 msgstr ""
@@ -410,6 +414,14 @@ msgstr "Path to KataGo model file"
 
 msgid "engine:config"
 msgstr "Path to KataGo config file"
+
+msgid "engine:altcommand"
+msgstr "Override Engine Command"
+
+msgid "engine:altcommand:hint"
+msgstr ""
+"Full command used to start the engine. All other model options will be "
+"ignored."
 
 msgid "engine:max_visits"
 msgstr "Maximum number of visits in analysis"
@@ -501,6 +513,11 @@ msgid "Engine died unexpectedly"
 msgstr ""
 "Engine died unexpectedly without sending output, possibly due to out of "
 "memory: {error}"
+
+msgid "Engine missing DLL"
+msgstr ""
+"Failed to start KataGo due to missing DLL. Check the requirements in the "
+"KataGo documentation, or try running the binary by itself for details. "
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -628,13 +645,29 @@ msgstr "Estimated Strength"
 msgid "download models button"
 msgstr "Download Models"
 
+#. button in general settings for downloading katago executables
+msgid "download katago button"
+msgstr "Download KataGo versions"
+
 #. shown on on the model select dropdown
 msgid "models available"
 msgstr "{num} available model(s) found"
 
+#. shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "Detect platform and use provided OpenCL KataGo binary"
+
+#. shown on on the binaries select dropdown
+msgid "katago binaries available"
+msgstr "{num} available katago versions found"
+
 #. error message on trying to download models when already done
 msgid "All models downloaded"
 msgstr "All available models already downloaded"
+
+#. error message on trying to download models when already done
+msgid "All binaries downloaded"
+msgstr "All available binaries already downloaded"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"

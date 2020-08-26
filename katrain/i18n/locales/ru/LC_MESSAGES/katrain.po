@@ -633,18 +633,42 @@ msgstr "Оценка силы"
 msgid "reanalyze max visits"
 msgstr "Количество посещений на ход"
 
-#. TODO - on move tree editing
 msgid "Delete Node"
-msgstr "Delete Node"
+msgstr "Удалить ход"
 
-#. TODO - theme name
 msgid "theme:red-green-colourblind"
-msgstr "Red-Green Colourblind"
+msgstr "Режим красно-зелёной слепоты"
 
-#. TODO - theme name
 msgid "theme:normal"
-msgstr "Default Theme"
+msgstr "Стандартная тема"
 
-#. TODO - theme label
 msgid "theme"
-msgstr "Colour Theme"
+msgstr "Цветовая тема"
+
+msgid "engine:altcommand:hint"
+msgstr ""
+"Полная команда использована для запуска движка. Все остальные настройки "
+"игнорированы."
+
+msgid "engine:altcommand"
+msgstr "Переопределить команду движка"
+
+msgid "download katago button"
+msgstr "Скачать бинарные файлы"
+
+msgid "katago binaries available"
+msgstr "{num} доступных бинарных файлов найдено"
+
+msgid "default katago option"
+msgstr "Определить платформу и использовать соответствующий бинарный файл"
+
+msgid "All binaries downloaded"
+msgstr "Все доступные бинарные файлы уже загружены"
+
+msgid "Engine missing DLL"
+msgstr ""
+"Не удалось запустить KataGo из-за отсутствующих DLL. Проверьте требования "
+"или запустите бинарный файл сам по себе для получения подробностей."
+
+msgid "show point loss as text"
+msgstr "Показывать потерянные очки текстом"

@@ -592,18 +592,38 @@ msgstr "预计棋力"
 msgid "reanalyze max visits"
 msgstr "每步棋计算深度"
 
-#. TODO - on move tree editing
 msgid "Delete Node"
-msgstr "Delete Node"
+msgstr "删除模式"
 
-#. TODO - theme name
 msgid "theme:red-green-colourblind"
-msgstr "Red-Green Colourblind"
+msgstr "红绿色盲友好"
 
-#. TODO - theme name
 msgid "theme:normal"
-msgstr "Default Theme"
+msgstr "默认主题"
 
-#. TODO - theme label
 msgid "theme"
-msgstr "Colour Theme"
+msgstr "颜色主题"
+
+msgid "engine:altcommand:hint"
+msgstr "使用全命令启动引擎, 例如使用plink连接远程引擎"
+
+msgid "engine:altcommand"
+msgstr "覆盖引擎命令"
+
+msgid "download katago button"
+msgstr "下载KataGo 版本"
+
+msgid "show point loss as text"
+msgstr "在棋子上显示目数损失"
+
+msgid "katago binaries available"
+msgstr "{num} 个exe文件可用"
+
+msgid "default katago option"
+msgstr "检测平台并使用所提供的exe文件"
+
+msgid "All binaries downloaded"
+msgstr "所有可用的exe文件已下载"
+
+msgid "Engine missing DLL"
+msgstr "启动katago失败因缺失dll文件. 请检查运行要求, 或尝试让exe文件自行运行并检查细节. "

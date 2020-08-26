@@ -4,7 +4,7 @@
 [![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
 [![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)](https://github.com/sanderland/katrain/releases)
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
-[![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=6&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
+[![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=7&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
 
 <table>
@@ -14,6 +14,7 @@
 * [Previews and YouTube tutorials](#preview)
 * [Installation](#install)
 * [Manual](#ai)
+    * [Configuring KataGo](#kata)
     * [Play against AI](#ai)
     * [Analyzing your Games](#analysis)
     * [Keyboard shortcuts](#keyboard)
@@ -61,10 +62,9 @@ but has since grown to include a wide range of features, including:
 
 ### YouTube videos
 
-| **New Features in v1.3**                  | **Analysis Tutorial**                                                                              | **Teaching Game Tutorial**                                                                                   |
+| **New Features in v1.4**                  | **Analysis Tutorial**                                                                              | **Teaching Game Tutorial**                                                                                   |
 |:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
-| [![New Features Video](https://user-images.githubusercontent.com/48946947/86819542-1514ee80-c088-11ea-954e-7830f7926b97.png)](https://www.youtube.com/watch?v=h8qCzjd5tEo) | [![Analysis Tutorial](https://i.imgur.com/3EP4IEr.png)](https://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
-
+| [![New Features Video](https://i.imgur.com/IXNwTHL.png)](https://www.youtube.com/watch?v=ujjRWGSZJrQ&feature=youtu.be) | [![Analysis Tutorial](https://i.imgur.com/3EP4IEr.png)](https://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
 
 
 
@@ -73,6 +73,21 @@ but has since grown to include a wide range of features, including:
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
 * [This page](INSTALL.md) has detailed instructions for Window, Linux and MacOS,
   as well as troubleshooting and setting up KataGo to use multiple GPUs.
+
+## <a name="kata"></a>  Configuring KataGo
+
+KaTrain comes pre-packaged with a working KataGo (OpenCL version) for Windows and Linux operating systems, and the 15 block neural network.
+
+To change the model, open 'General and Engine settings' in the application and 'Download models'. You can then select the model you want from the dropdown menu.
+
+To change the katago binary,
+ e.g. to the Eigen/CPU version if you don't have a GPU, click 'Download KataGo versions'.
+  You can then select the KataGo binary from the dropdown menu.
+
+Finally, you can override the entire command used to start the analysis engine, which 
+ can be useful for connecting to a remote server. Do keep in mind that KaTrain uses the *analysis engine*
+ of KataGo, and not the GTP engine.
+
 
 ## <a name="ai"></a> Play against AI
 
@@ -181,7 +196,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * KataGo crashes with out of memory errors, how can I prevent this?
   * Try using a lower number for `nnMaxBatchSize` in `KataGo/analysis_config.cfg`, and avoid using versions compiled with large board sizes.
   * If still encountering problems, please start KataGo by itself to check for any errors it gives.
-  * Note that if you don't have a GPU, or your GPU does not support OpenCL, you may not be able to use KataGo.
+  * Note that if you don't have a GPU, or your GPU does not support OpenCL, you should use the 'eigen' binaries which run on CPU only.
 * How can I play on larger boards?
   * For windows, change the `katago` setting to `katrain\KataGo\katago-bs52.exe`. For other operating systems, you need to compile your own KataGo version with higher limits.
 
@@ -189,9 +204,9 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
-[![Contributors](https://img.shields.io/static/v1?label=contributors&message=17&color=dcb424)](CONTRIBUTIONS.md)
+[![Contributors](https://img.shields.io/static/v1?label=contributors&message=19&color=dcb424)](CONTRIBUTIONS.md)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/sanderbaduk)](https://liberapay.com/sanderbaduk/)
-[![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=6&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
+[![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=7&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.

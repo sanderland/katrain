@@ -651,3 +651,40 @@ msgstr "Default Theme"
 #. TODO - theme label
 msgid "theme"
 msgstr "Colour Theme"
+
+#. TODO
+msgid "engine:altcommand:hint"
+msgstr ""
+"Full command used to start the engine. All other model options will be "
+"ignored."
+
+#. TODO
+msgid "engine:altcommand"
+msgstr "Override Engine Command"
+
+#. TODO - button in general settings for downloading katago executables
+msgid "download katago button"
+msgstr "Download KataGo versions"
+
+#. TODO - shown on on the binaries select dropdown
+msgid "katago binaries available"
+msgstr "{num} available katago versions found"
+
+#. TODO - shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "Detect platform and use provided OpenCL KataGo binary"
+
+#. TODO - error message on trying to download models when already done
+msgid "All binaries downloaded"
+msgstr "All available binaries already downloaded"
+
+#. TODO
+msgid "Engine missing DLL"
+msgstr ""
+"Failed to start KataGo due to missing DLL. Check the requirements in the "
+"KataGo documentation, or try running the binary by itself for details. "
+
+#. TODO - in addition to colour, show point loss as -0.1 etc on hints/top
+#. moves
+msgid "show point loss as text"
+msgstr "Show point loss on top moves"

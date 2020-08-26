@@ -80,23 +80,45 @@
 <ConfigPopup>:
     configfile: configfile
     model_path: model_path
+    katago_path: katago_path
     model_files: model_files
+    katago_files: katago_files
     download_progress_box: download_progress_box
+    katago_download_progress_box: katago_download_progress_box
     DescriptionLabel:
         text: i18n._('katago settings')
         font_size: DESC_FONT_SIZE * 1.5
     GridLayout:
         cols: 2
-        rows: 4
-        size_hint: 1,4
+        rows: 6
+        size_hint: 1,6
         spacing: CP_SPACING
         DescriptionLabel:
             text: i18n._("engine:katago")
             size_hint: 0.33, 1
         AnchorLayout:
             LabelledPathInput:
+                id: katago_path
                 input_property: "engine/katago"
                 hint_text: i18n._("engine:katago:hint")
+                on_text: root.check_katas()
+        AnchorLayout:
+            size_hint: 0.33, 1
+            AutoSizedRoundedRectangleButton:
+                text: i18n._("download katago button")
+                on_press: root.download_katas()
+                size_hint_y: 0.7
+        AnchorLayout:
+            Spinner:
+                id: katago_files
+                text: ''
+                on_text:
+                    if self.text and self.text == self.values[1]: katago_path.text = ''
+                    elif self.text and self.text != self.values[0]: katago_path.text = args[1]
+                size_hint_y: 0.7
+                sync_height_frac: 1.0
+                -font_size: self.height * 0.5
+                -background_color: [*[c*255/88 for c in BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
         DescriptionLabel:
             text: i18n._("engine:config")
             size_hint: 0.33, 1
@@ -126,6 +148,13 @@
                 sync_height_frac: 1.0
                 -font_size: self.height * 0.5
                 -background_color: [*[c*255/88 for c in BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+        DescriptionLabel:
+            text: i18n._("engine:altcommand")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "engine/altcommand"
+                hint_text: i18n._("engine:altcommand:hint")
     BoxLayout:
         size_hint: 1,1
         orientation: 'horizontal'
@@ -198,11 +227,15 @@
                     hint_text: i18n._("engine:wide_root_noise:hint")
     MDBoxLayout:
         orientation: 'horizontal'
-        size_hint: 1,1.5
+        size_hint: 1,2
         MDBoxLayout:
-            size_hint_x: 4 if self.children else 0.0001
+            size_hint_x: 3.5 if self.children else 0.0001
             orientation: 'vertical'
             id: download_progress_box
+        MDBoxLayout:
+            size_hint_x: 3.5 if self.children else 0.0001
+            orientation: 'vertical'
+            id: katago_download_progress_box
         AnchorLayout:
             AutoSizedRoundedRectangleButton:
                 padding_x: 15
@@ -235,13 +268,13 @@
             cols: 2
             rows: 4
             padding: 4
-            size_hint: 0.8, 1
+            size_hint: 0.9, 1
             DescriptionLabel:
                 font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("theme")
             AnchorLayout:
                 LabelledSpinner:
-                    size_hint: 0.8,0.8
+                    size_hint: 0.95,0.8
                     input_property: 'trainer/theme'
                     font_size: DESC_FONT_SIZE * 0.8
                     id: themes_spinner
@@ -252,6 +285,12 @@
                 LabelledIntInput:
                     size_hint_x: 0.15
                     input_property: "trainer/eval_off_show_last"
+            DescriptionLabel:
+                font_size: DESC_FONT_SIZE * 0.8
+                text: i18n._("show point loss as text")
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/text_point_loss"
             DescriptionLabel:
                 font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("show ai dots")

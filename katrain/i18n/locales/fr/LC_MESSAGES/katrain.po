@@ -29,7 +29,7 @@ msgid "menu:teachsettings"
 msgstr "Champ d'étude"
 
 msgid "menu:aisettings"
-msgstr "Joueurs Artificiels"
+msgstr "Joueurs artificiels"
 
 msgid "menu:lang"
 msgstr "Langue"
@@ -321,7 +321,7 @@ msgstr "Commencer la partie"
 
 # teacher settings from here
 msgid "teacher settings"
-msgstr "Champ d’étude"
+msgstr "Champ d'étude"
 
 msgid "point loss threshold"
 msgstr "Pertes plus larges que"
@@ -339,14 +339,10 @@ msgid "save dots"
 msgstr "Diagnostics sauvegardés"
 
 msgid "show last n dots"
-msgstr ""
-"Marquer les <tant> \n"
-"derniers coups"
+msgstr "Dernier(s) coup(s) à marquer :"
 
 msgid "show ai dots"
-msgstr ""
-"Marquer/commenter \n"
-"les coups joués par l’IA"
+msgstr "Étudier les coups du joueur artificiel"
 
 msgid "lock ai when playing"
 msgstr ""
@@ -673,18 +669,45 @@ msgstr ""
 "Tout à droite, un PDA de 3 (B+3) supposera que Noir est bien plus fort que Blanc. \n"
 "Cocher l'option 'automatic' adaptera la valeur PDA au handicap utilisé."
 
-#. TODO - on move tree editing
 msgid "Delete Node"
-msgstr "Delete Node"
+msgstr "Supprimer le nœud"
 
-#. TODO - theme name
 msgid "theme:red-green-colourblind"
-msgstr "Red-Green Colourblind"
+msgstr "Daltonisme rouge-vert"
 
-#. TODO - theme name
 msgid "theme:normal"
-msgstr "Default Theme"
+msgstr "Par défaut"
 
-#. TODO - theme label
 msgid "theme"
-msgstr "Colour Theme"
+msgstr "Palette de couleurs"
+
+msgid "engine:altcommand:hint"
+msgstr ""
+"Commande complète exécutée par le moteur de jeu, outrepassant les "
+"réseaux/fichiers sélectionnés plus haut."
+
+msgid "engine:altcommand"
+msgstr "Redéfinir la commande"
+
+msgid "download katago button"
+msgstr "Télécharger des exécutables"
+
+msgid "katago binaries available"
+msgstr "{num} exécutable(s) trouvé(s)"
+
+msgid "default katago option"
+msgstr ""
+"Utilisation automatique de l'exécutable opencl approprié au système "
+"d'exploitation"
+
+msgid "All binaries downloaded"
+msgstr "Pas de nouveaux exécutables disponibles"
+
+msgid "Engine missing DLL"
+msgstr ""
+"Impossible de démarrer KataGo à cause d'un DLL manquant. Veuillez répondre "
+"aux conditions requises, ou bien essayez l'exécutable seul pour plus de "
+"détails."
+
+msgid "show point loss as text"
+msgstr "Indiquer les points perdus"

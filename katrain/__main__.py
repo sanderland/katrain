@@ -99,6 +99,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
         self._keyboard = Window.request_keyboard(None, self, "")
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        Clock.schedule_interval(self.animate_pondering, 0.1)
 
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
@@ -117,6 +118,12 @@ class KaTrainGui(Screen, KaTrainBase):
             or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower() and "tuning" not in message.lower())
         ) and getattr(self, "controls", None):
             self.controls.set_status(f"ERROR: {message}", STATUS_ERROR)
+
+    def animate_pondering(self, *_args):
+        if not self.idle_analysis:
+            self.board_controls.engine_status_pondering = -1
+        else:
+            self.board_controls.engine_status_pondering += 5
 
     @property
     def play_analyze_mode(self):
@@ -323,7 +330,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.teacher_settings_popup:
             self.teacher_settings_popup = I18NPopup(
-                title_key="teacher settings", size=[dp(800), dp(700)], content=ConfigTeacherPopup(self)
+                title_key="teacher settings", size=[dp(800), dp(750)], content=ConfigTeacherPopup(self)
             ).__self__
             self.teacher_settings_popup.content.popup = self.teacher_settings_popup
         self.teacher_settings_popup.open()
@@ -332,7 +339,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.config_popup:
             self.config_popup = I18NPopup(
-                title_key="general settings title", size=[dp(1200), dp(800)], content=ConfigPopup(self)
+                title_key="general settings title", size=[dp(1200), dp(950)], content=ConfigPopup(self)
             ).__self__
             self.config_popup.content.popup = self.config_popup
         self.config_popup.open()
@@ -452,6 +459,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if popup:
             if keycode[1] in ["f5", "f6", "f7", "f8"]:  # switch between popups
                 popup.dismiss()
+                return
             else:
                 return
 

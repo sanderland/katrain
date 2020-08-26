@@ -30,7 +30,7 @@ class KataGoEngine:
     def get_rules(node):
         return KataGoEngine.RULESETS.get(str(node.ruleset).lower(), "japanese")
 
-    def __init__(self, katrain, config, override_command=None):
+    def __init__(self, katrain, config):
         self.katrain = katrain
         self.queries = {}  # outstanding query id -> start time and callback
         self.config = config
@@ -43,10 +43,8 @@ class KataGoEngine:
         self.stderr_thread = None
 
         exe = config.get("katago", "").strip()
-        if override_command:
-            self.command = override_command
-        elif exe.startswith('"') and exe.endswith('"'):
-            self.command = exe.strip('"')
+        if config.get("altcommand", ""):
+            self.command = config["altcommand"]
         else:
             if not exe:
                 if platform == "win":
@@ -82,7 +80,6 @@ class KataGoEngine:
     def start(self):
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
-
             self.katago_process = subprocess.Popen(
                 self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
             )
@@ -107,8 +104,12 @@ class KataGoEngine:
         ok = self.katago_process and self.katago_process.poll() is None
         if not ok and exception_if_dead:
             if self.katago_process:
-                os_error += f"status {self.katago_process and self.katago_process.poll()}"
-                died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
+                code = self.katago_process and self.katago_process.poll()
+                if code == 3221225781:
+                    died_msg = i18n._("Engine missing DLL")
+                else:
+                    os_error += f"status {code}"
+                    died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
                 self.katrain.log(died_msg, OUTPUT_ERROR)
                 self.katago_process = None
             else:
@@ -150,7 +151,7 @@ class KataGoEngine:
     def _analysis_read_thread(self):
         while self.katago_process is not None:
             try:
-                line = self.katago_process.stdout.readline()
+                line = self.katago_process.stdout.readline().strip()
                 if self.katago_process and not line:
                     self.check_alive(exception_if_dead=True)
             except OSError as e:

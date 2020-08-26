@@ -10,14 +10,14 @@ from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.metrics import dp
-from kivy.properties import BooleanProperty, ListProperty, ObjectProperty
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG
+from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG, STATUS_TEACHING
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, var_to_grid
@@ -63,8 +63,7 @@ class BadukPanWidget(Widget):
             self.draw_hover_contents()
 
     def on_touch_down(self, touch):
-        self.animating_pv = None  # any click kills PV from label/move
-        self.draw_hover_contents()
+        self.set_animating_pv(None, None)  # any click kills PV from label/move
         if "button" in touch.profile and touch.button != "left":
             return
         self.check_next_move_ghost(touch)
@@ -88,19 +87,19 @@ class BadukPanWidget(Widget):
                 ]
                 if near_move:
                     self.set_animating_pv(near_move[0][0], near_move[0][1])
-                else:
-                    self.animating_pv = None
-                    self.draw_hover_contents()
+                elif self.animating_pv is not None:
+                    self.set_animating_pv(None, None)  # any click kills PV from label/move
             if inside and self.animating_pv is not None:
                 d_sq = (pos[0] - self.animating_pv[3][0]) ** 2 + (pos[1] - self.animating_pv[3][1])
                 if d_sq > 2 * self.stone_size ** 2:  # move too far from where it was activated
-                    self.animating_pv = None
-                    self.draw_hover_contents()
+                    self.set_animating_pv(None, None)  # any click kills PV from label/move
             self.last_mouse_pos = pos
 
     def play_stone_sound(self, *_args):
         if self.katrain.config("timer/sound"):
-            random.choice(self.stones_sounds).play()
+            sound = random.choice(self.stones_sounds)
+            if sound:
+                sound.play()
 
     def on_touch_up(self, touch):
         if ("button" in touch.profile and touch.button != "left") or not self.gridpos_x:
@@ -305,19 +304,40 @@ class BadukPanWidget(Widget):
                     self.draw_stone(1, y, "B", innercol=STONE_COLORS["W"], evalcol=evalcol)
                     self.draw_stone(2, y, "W", evalcol=evalcol, evalscale=y / (board_size_y - 1))
                     self.draw_stone(3, y, "W", innercol=STONE_COLORS["B"], evalcol=evalcol)
-                    # self.draw_stone(4, y, evalcol=[*evalcol[:3], 0.5], scale=0.8)
 
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
             if katrain.analysis_controls.ownership.active and ownership:
-                ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
                 rsz = self.grid_size * 0.2
-                for y in range(board_size_y - 1, -1, -1):
-                    for x in range(board_size_x):
-                        ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
-                        if ix_owner != (has_stone.get((x, y), -1)):
-                            Color(*STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]))
-                            Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
+                if (
+                    current_node.children
+                    and katrain.controls.status_state[1] == STATUS_TEACHING
+                    and current_node.children[-1].auto_undo
+                    and current_node.children[-1].ownership
+                ):  # loss
+                    loss_grid = var_to_grid(
+                        [a - b for a, b in zip(current_node.children[-1].ownership, ownership)],
+                        (board_size_x, board_size_y),
+                    )
+
+                    for y in range(board_size_y - 1, -1, -1):
+                        for x in range(board_size_x):
+                            loss = max(0, (-1 if current_node.children[-1].move.player == "B" else 1) * loss_grid[y][x])
+                            if loss > 0:
+                                Color(*EVAL_COLORS[self.trainer_config["theme"]][1][:3], loss)
+                                Rectangle(
+                                    pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz)
+                                )
+                else:
+                    ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
+                    for y in range(board_size_y - 1, -1, -1):
+                        for x in range(board_size_x):
+                            ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
+                            if ix_owner != (has_stone.get((x, y), -1)):
+                                Color(*STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]))
+                                Rectangle(
+                                    pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz)
+                                )
 
             policy = current_node.policy
             if (
@@ -434,6 +454,20 @@ class BadukPanWidget(Widget):
                             col=[*self.eval_color(move_dict["pointsLost"])[:3], alpha],
                             r=self.stone_size * scale,
                         )
+                        if self.trainer_config["text_point_loss"]:
+                            if move_dict["pointsLost"] < 0.05:
+                                ptloss_text = "0.0"
+                            else:
+                                ptloss_text = f"{-move_dict['pointsLost']:+.1f}"
+                            sizefac = 1
+                            Color(*BLACK)
+                            draw_text(
+                                pos=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
+                                text=ptloss_text,
+                                font_size=self.grid_size * sizefac / 2.5,
+                                font_name="Roboto",
+                            )
+
                         if i == 0:
                             Color(*TOP_MOVE_BORDER_COLOR)
                             Line(
@@ -499,10 +533,13 @@ class BadukPanWidget(Widget):
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):
-        if node is not None and (
+        if pv is None:
+            self.animating_pv = None
+        elif node is not None and (
             not self.animating_pv or not (self.animating_pv[0] == pv and self.animating_pv[1] == node)
         ):
             self.animating_pv = (pv, node, time.time(), self.last_mouse_pos)
+        self.draw_hover_contents()
 
     def show_pv_from_comments(self, pv_str):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
@@ -545,3 +582,4 @@ class AnalysisControls(MDBoxLayout):
 
 class BadukPanControls(MDFloatLayout):
     engine_status_col = ListProperty(ENGINE_DOWN_COL)
+    engine_status_pondering = NumericProperty(-1)

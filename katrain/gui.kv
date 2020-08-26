@@ -248,8 +248,15 @@
         width: self.height
         canvas:
             Color:
+                rgba: YELLOW
+            Ellipse:
+                pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
+                size: self.width/3, self.width/3
+            Color:
                 rgba: root.engine_status_col
             Ellipse:
+                angle_start: 0 if root.engine_status_pondering==-1 else root.engine_status_pondering % 360
+                angle_end: 360 if root.engine_status_pondering==-1 else (root.engine_status_pondering  % 360 + 180)
                 pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
                 size: self.width/3, self.width/3
             Color:
@@ -501,6 +508,7 @@
     orientation: 'vertical'
     players: {'B':B_player,'W':W_player}
     engine_status_col: [1,1,1,1]
+    engine_status_pondering: -1
     timer:timer
     graph: graph
     rank_graph: rank_graph
