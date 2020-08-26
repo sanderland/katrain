@@ -87,7 +87,7 @@ class BadukPanWidget(Widget):
                 ]
                 if near_move:
                     self.set_animating_pv(near_move[0][0], near_move[0][1])
-                else:
+                elif self.animating_pv is not None:
                     self.set_animating_pv(None, None)  # any click kills PV from label/move
             if inside and self.animating_pv is not None:
                 d_sq = (pos[0] - self.animating_pv[3][0]) ** 2 + (pos[1] - self.animating_pv[3][1])
@@ -533,18 +533,14 @@ class BadukPanWidget(Widget):
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):
-        if pv == None:
+        if pv is None:
             self.animating_pv = None
 
         if node is not None and (
             not self.animating_pv or not (self.animating_pv[0] == pv and self.animating_pv[1] == node)
         ):
             self.animating_pv = (pv, node, time.time(), self.last_mouse_pos)
-
-        if self.katrain.controls.status_state[1] == STATUS_TEACHING and self.katrain.analysis_controls.ownership.active:
-            self.draw_board_contents()  # loss visualization
-        else:
-            self.draw_hover_contents()
+        self.draw_hover_contents()
 
     def show_pv_from_comments(self, pv_str):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)

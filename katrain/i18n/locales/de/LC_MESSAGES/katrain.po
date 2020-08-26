@@ -668,11 +668,11 @@ msgstr "Download KataGo versions"
 
 #. TODO - shown on on the binaries select dropdown
 msgid "katago binaries available"
-msgstr "{num} available binaries found"
+msgstr "{num} available katago versions found"
 
 #. TODO - shown on on the katago binary select dropdown
 msgid "default katago option"
-msgstr "Detect platform and use provided binary"
+msgstr "Detect platform and use provided OpenCL KataGo binary"
 
 #. TODO - error message on trying to download models when already done
 msgid "All binaries downloaded"
