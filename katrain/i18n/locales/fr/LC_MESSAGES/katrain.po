@@ -29,7 +29,7 @@ msgid "menu:teachsettings"
 msgstr "Champ d'étude"
 
 msgid "menu:aisettings"
-msgstr "Joueurs Artificiels"
+msgstr "Joueurs artificiels"
 
 msgid "menu:lang"
 msgstr "Langue"
@@ -321,7 +321,7 @@ msgstr "Commencer la partie"
 
 # teacher settings from here
 msgid "teacher settings"
-msgstr "Champ d’étude"
+msgstr "Champ d'étude"
 
 msgid "point loss threshold"
 msgstr "Pertes plus larges que"
@@ -340,13 +340,11 @@ msgstr "Diagnostics sauvegardés"
 
 msgid "show last n dots"
 msgstr ""
-"Marquer les <tant> \n"
-"derniers coups"
+"Dernier(s) coup(s) à marquer :"
 
 msgid "show ai dots"
 msgstr ""
-"Marquer/commenter \n"
-"les coups joués par l’IA"
+"Étudier les coups du joueur artificiel"
 
 msgid "lock ai when playing"
 msgstr ""
@@ -673,55 +671,42 @@ msgstr ""
 "Tout à droite, un PDA de 3 (B+3) supposera que Noir est bien plus fort que Blanc. \n"
 "Cocher l'option 'automatic' adaptera la valeur PDA au handicap utilisé."
 
-#. TODO - on move tree editing
 msgid "Delete Node"
-msgstr "Delete Node"
+msgstr "Supprimer le nœud"
 
-#. TODO - theme name
 msgid "theme:red-green-colourblind"
-msgstr "Red-Green Colourblind"
+msgstr "Daltonisme rouge-vert"
 
-#. TODO - theme name
 msgid "theme:normal"
-msgstr "Default Theme"
+msgstr "Par défaut"
 
-#. TODO - theme label
 msgid "theme"
-msgstr "Colour Theme"
+msgstr "Palette de couleurs"
 
-#. TODO
 msgid "engine:altcommand:hint"
 msgstr ""
-"Full command used to start the engine. All other model options will be "
-"ignored."
+"Commande complète exécutée par le moteur de jeu, outrepassant les réseaux/fichiers "
+"sélectionnés plus haut."
 
-#. TODO
 msgid "engine:altcommand"
-msgstr "Override Engine Command"
+msgstr "Redéfinir la commande"
 
-#. TODO - button in general settings for downloading katago executables
 msgid "download katago button"
-msgstr "Download KataGo versions"
+msgstr "Télécharger des exécutables"
 
-#. TODO - shown on on the binaries select dropdown
 msgid "katago binaries available"
-msgstr "{num} available binaries found"
+msgstr "{num} exécutable(s) trouvé(s)"
 
-#. TODO - shown on on the katago binary select dropdown
 msgid "default katago option"
-msgstr "Detect platform and use provided binary"
+msgstr "Utilisation automatique de l'exécutable opencl approprié au système d'exploitation"
 
-#. TODO - error message on trying to download models when already done
 msgid "All binaries downloaded"
-msgstr "All available binaries already downloaded"
+msgstr "Pas de nouveaux exécutables disponibles"
 
-#. TODO
 msgid "Engine missing DLL"
 msgstr ""
-"Failed to start KataGo due to missing DLL. Check the requiments, or try "
-"running the binary by itself for details. "
+"Impossible de démarrer KataGo à cause d'un DLL manquant. Veuillez répondre "
+"aux conditions requises, ou bien essayez l'exécutable seul pour plus de détails."
 
-#. TODO - in addition to colour, show point loss as -0.1 etc on hints/top
-#. moves
 msgid "show point loss as text"
-msgstr "Show point loss on top moves"
+msgstr "Indiquer les points perdus"
