@@ -636,55 +636,43 @@ msgstr "Geschätzte Spielstärke"
 msgid "reanalyze max visits"
 msgstr "Anzahl der Visits pro Zug"
 
-#. TODO - on move tree editing
 msgid "Delete Node"
-msgstr "Delete Node"
+msgstr "Knoten löschen"
 
-#. TODO - theme name
 msgid "theme:red-green-colourblind"
-msgstr "Red-Green Colourblind"
+msgstr "Rot-Grün-farbenblind"
 
-#. TODO - theme name
 msgid "theme:normal"
-msgstr "Default Theme"
+msgstr "Standard-Farbschema"
 
-#. TODO - theme label
 msgid "theme"
-msgstr "Colour Theme"
+msgstr "Farbschema"
 
-#. TODO
 msgid "engine:altcommand:hint"
 msgstr ""
-"Full command used to start the engine. All other model options will be "
-"ignored."
+"Kompletter Befehl um die Engine zu starten. Alle anderen Modelloptionen "
+"werden ignoriert."
 
-#. TODO
 msgid "engine:altcommand"
-msgstr "Override Engine Command"
+msgstr "Engine-Befehl überschreiben"
 
-#. TODO - button in general settings for downloading katago executables
 msgid "download katago button"
-msgstr "Download KataGo versions"
+msgstr "KataGo-Versionen herunterladen"
 
-#. TODO - shown on on the binaries select dropdown
 msgid "katago binaries available"
-msgstr "{num} available katago versions found"
+msgstr "{num} KataGo-Programme verfügbar"
 
-#. TODO - shown on on the katago binary select dropdown
 msgid "default katago option"
-msgstr "Detect platform and use provided OpenCL KataGo binary"
+msgstr "Plattform erkennen und angebotenes Programm benutzen"
 
-#. TODO - error message on trying to download models when already done
 msgid "All binaries downloaded"
-msgstr "All available binaries already downloaded"
+msgstr "Alle verfügbaren Programme wurden bereits heruntergeladen"
 
-#. TODO
 msgid "Engine missing DLL"
 msgstr ""
-"Failed to start KataGo due to missing DLL. Check the requirements in the "
-"KataGo documentation, or try running the binary by itself for details. "
+"Konnte KataGo wegen fehlender DLL nicht starten. Überprüf die Anforderungen "
+"in der KataGo-Dokumentation oder versuch, KataGo alleine zu starten, um "
+"Einzelheiten zu erfahren."
 
-#. TODO - in addition to colour, show point loss as -0.1 etc on hints/top
-#. moves
 msgid "show point loss as text"
-msgstr "Show point loss on top moves"
+msgstr "Zeig den Punkteverlust auf Beste Züge"
