@@ -10,7 +10,7 @@ from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.metrics import dp
-from kivy.properties import BooleanProperty, ListProperty, ObjectProperty, NumericProperty
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
@@ -308,26 +308,36 @@ class BadukPanWidget(Widget):
             # ownership - allow one move out of date for smooth animation
             ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
             if katrain.analysis_controls.ownership.active and ownership:
-                ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
+                rsz = self.grid_size * 0.2
                 if (
                     current_node.children
                     and katrain.controls.status_state[1] == STATUS_TEACHING
-                    and self.animating_pv
                     and current_node.children[-1].auto_undo
                     and current_node.children[-1].ownership
-                ):
-                    ownership_grid = var_to_grid(
+                ):  # loss
+                    loss_grid = var_to_grid(
                         [a - b for a, b in zip(current_node.children[-1].ownership, ownership)],
                         (board_size_x, board_size_y),
                     )
 
-                rsz = self.grid_size * 0.2
-                for y in range(board_size_y - 1, -1, -1):
-                    for x in range(board_size_x):
-                        ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
-                        if ix_owner != (has_stone.get((x, y), -1)):
-                            Color(*STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]))
-                            Rectangle(pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz))
+                    for y in range(board_size_y - 1, -1, -1):
+                        for x in range(board_size_x):
+                            loss = max(0, (-1 if current_node.children[-1].move.player == "B" else 1) * loss_grid[y][x])
+                            if loss > 0:
+                                Color(*EVAL_COLORS[self.trainer_config["theme"]][1][:3], loss)
+                                Rectangle(
+                                    pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz)
+                                )
+                else:
+                    ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
+                    for y in range(board_size_y - 1, -1, -1):
+                        for x in range(board_size_x):
+                            ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
+                            if ix_owner != (has_stone.get((x, y), -1)):
+                                Color(*STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]))
+                                Rectangle(
+                                    pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz)
+                                )
 
             policy = current_node.policy
             if (
@@ -531,8 +541,8 @@ class BadukPanWidget(Widget):
         ):
             self.animating_pv = (pv, node, time.time(), self.last_mouse_pos)
 
-        if self.katrain.controls.status_state[1] == STATUS_TEACHING:
-            self.draw_board_contents()
+        if self.katrain.controls.status_state[1] == STATUS_TEACHING and self.katrain.analysis_controls.ownership.active:
+            self.draw_board_contents()  # loss visualization
         else:
             self.draw_hover_contents()
 
