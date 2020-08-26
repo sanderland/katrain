@@ -62,10 +62,9 @@ but has since grown to include a wide range of features, including:
 
 ### YouTube videos
 
-| **New Features in v1.3**                  | **Analysis Tutorial**                                                                              | **Teaching Game Tutorial**                                                                                   |
+| **New Features in v1.4**                  | **Analysis Tutorial**                                                                              | **Teaching Game Tutorial**                                                                                   |
 |:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
-| [![New Features Video](https://user-images.githubusercontent.com/48946947/86819542-1514ee80-c088-11ea-954e-7830f7926b97.png)](https://www.youtube.com/watch?v=h8qCzjd5tEo) | [![Analysis Tutorial](https://i.imgur.com/3EP4IEr.png)](https://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
-
+| [![New Features Video](https://i.imgur.com/IXNwTHL.png)](https://www.youtube.com/watch?v=ujjRWGSZJrQ&feature=youtu.be) | [![Analysis Tutorial](https://i.imgur.com/3EP4IEr.png)](https://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
 
 
 
@@ -82,8 +81,8 @@ KaTrain comes pre-packaged with a working KataGo (OpenCL version) for Windows an
 To change the model, open 'General and Engine settings' in the application and 'Download models'. You can then select the model you want from the dropdown menu.
 
 To change the katago binary,
- for example to the CPU version if you don't have a GPU, click 'Download KataGo versions'.
-  You can then select the KataGO binary from the dropdown menu.
+ e.g. to the Eigen/CPU version if you don't have a GPU, click 'Download KataGo versions'.
+  You can then select the KataGo binary from the dropdown menu.
 
 Finally, you can override the entire command used to start the analysis engine, which 
  can be useful for connecting to a remote server. Do keep in mind that KaTrain uses the *analysis engine*

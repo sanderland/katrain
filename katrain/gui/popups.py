@@ -434,7 +434,9 @@ class ConfigPopup(QuickConfigGui):
                 self.paths.append(path)  # persistent on paths with models found
             model_files += files
         katas_available_msg = i18n._("katago binaries available").format(num=len(model_files))
-        self.katago_files.values = [katas_available_msg, i18n._("default katago option")] + model_files
+        self.katago_files.values = [katas_available_msg, i18n._("default katago option")] + sorted(
+            model_files, key=lambda f: "bs29" in f
+        )
         self.katago_files.text = katas_available_msg
 
     MODELS = {
@@ -446,7 +448,6 @@ class ConfigPopup(QuickConfigGui):
     KATAGOS = {
         "win": {
             "OpenCL v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-opencl-windows-x64.zip",
-            "OpenCL v1.6.1 (32 bit)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-opencl-windows-x32-dont-use-unless-actually-32bit-windows.zip",
             "CUDA v1.6.1 (New NVIDIA cards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-windows-x64.zip",
             "Eigen AVX2 (Modern CPUs) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-avx2-windows-x64.zip",
             "Eigen (CPU, Non-optimized) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-windows-x64.zip",
@@ -502,7 +503,6 @@ class ConfigPopup(QuickConfigGui):
             self.download_progress_box.add_widget(
                 Label(text=i18n._("All models downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
             )
-            print("x")
 
     def download_katas(self, *_largs):
         def unzipped_name(zipfile):
@@ -537,7 +537,7 @@ class ConfigPopup(QuickConfigGui):
                 )
             self.check_katas()
 
-        for c in self.download_progress_box.children:
+        for c in self.katago_download_progress_box.children:
             if isinstance(c, ProgressLoader) and c.request:
                 c.request.cancel()
         self.katago_download_progress_box.clear_widgets()

@@ -7,7 +7,7 @@
         "threads": 12,
         "max_visits": 500,
         "fast_visits": 50,
-        "max_time": 3.0,
+        "max_time": 8.0,
         "wide_root_noise": 0.0,
         "_enable_ownership": true
     },
@@ -66,7 +66,7 @@
             true
         ],
         "eval_off_show_last": 3,
-        "text_point_loss": true,
+        "text_point_loss": false,
         "eval_show_ai": true,
         "lock_ai": false
     },
