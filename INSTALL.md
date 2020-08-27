@@ -16,6 +16,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 brew install python3
 brew install katago
+brew sdl sdl_image sdl_mixer sdl_ttf portmidi
 pip3 install katrain
 ```
 Now you can start KaTrain by simply typing `katrain` in a terminal.
