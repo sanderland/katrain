@@ -332,7 +332,11 @@ class SGF:
         """Parse a string as SGF."""
         match = re.search(cls.SGF_PAT, input_str)
         clipped_str = match.group() if match else input_str
-        return cls(clipped_str).root
+        root = cls(clipped_str).root
+        if "foxwq" in root.get_list_property("AP"):
+            fixed_komi = 0.5 if root.get_property("HA") == 1 else 7.5
+            root.set_property("KM", fixed_komi)
+        return root
 
     @classmethod
     def parse_file(cls, filename, encoding=None) -> SGFNode:
@@ -343,7 +347,7 @@ class SGF:
         with open(filename, "rb") as f:
             bin_contents = f.read()
             if not encoding:
-                if is_gib or is_ngf:
+                if is_gib or is_ngf or b"AP[foxwq]" in bin_contents:
                     encoding = "utf8"
                 else:  # sgf
                     match = re.search(rb"CA\[(.*?)\]", bin_contents)
