@@ -159,6 +159,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_controls.mid_circles_container.add_widget(top)
         self.board_controls.branch.disabled = not cn.parent or len(cn.parent.children) <= 1
         self.controls.players["W"].captures = prisoners["W"]
+        self.controls.players["W"].komi = self.game.komi
         self.controls.players["B"].captures = prisoners["B"]
 
         # update engine status dot

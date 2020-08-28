@@ -333,9 +333,15 @@ class SGF:
         match = re.search(cls.SGF_PAT, input_str)
         clipped_str = match.group() if match else input_str
         root = cls(clipped_str).root
+        # Fix weird FoxGo server KM values
         if "foxwq" in root.get_list_property("AP"):
-            fixed_komi = 0.5 if root.get_property("HA") == 1 else 7.5
-            root.set_property("KM", fixed_komi)
+            if int(root.get_property("HA", 0)) >= 1:
+                corrected_komi = 0.5
+            elif root.get_property("RU").lower() in ["chinese", "cn"]:
+                corrected_komi = 7.5
+            else:
+                corrected_komi = 6.5
+            root.set_property("KM", corrected_komi)
         return root
 
     @classmethod

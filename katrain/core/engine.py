@@ -226,8 +226,9 @@ class KataGoEngine:
         next_move: Optional[GameNode] = None,
         extra_settings: Optional[Dict] = None,
     ):
-        moves = [m for node in analysis_node.nodes_from_root for m in node.moves]
-        initial_stones = analysis_node.root.placements
+        nodes = analysis_node.nodes_from_root
+        moves = [m for node in nodes for m in node.moves]
+        initial_stones = [m for node in nodes for m in node.placements]
         if next_move:
             moves.append(next_move)
         if ownership is None:

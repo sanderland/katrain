@@ -55,7 +55,11 @@ class Game:
             self.root = move_tree
             self.komi = self.root.komi
             handicap = int(self.root.get_property("HA", 0))
-            if handicap >= 2 and not self.root.placements:
+            if (
+                handicap >= 2
+                and not self.root.placements
+                and not (not self.root.move_with_placements and self.root.children and self.root.children[0].placements)
+            ):  # not really according to sgf, and not sure if still needed, last clause for fox
                 self.root.place_handicap_stones(handicap)
         else:
             board_size = katrain.config("game/size")
@@ -310,7 +314,9 @@ class Game:
 
         if mode == "extra":
             if kwargs.get("continuous", False):
-                visits = max(engine.config["max_visits"], math.ceil(cn.analysis_visits_requested * 1.25))
+                visits = min(
+                    1_000_000_000, max(engine.config["max_visits"], math.ceil(cn.analysis_visits_requested * 1.25))
+                )
             else:
                 visits = cn.analysis_visits_requested + engine.config["max_visits"]
             self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)

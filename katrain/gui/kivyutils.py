@@ -338,6 +338,7 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     captures = NumericProperty(0)
     player = OptionProperty("B", options=["B", "W"])
     player_type = StringProperty("Player")
+    komi = NumericProperty(0)
     player_subtype = StringProperty("")
     name = StringProperty("", allownone=True)
     rank = StringProperty("", allownone=True)
