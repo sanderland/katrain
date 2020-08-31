@@ -520,7 +520,6 @@
     engine_status_pondering: -1
     timer:timer
     graph: graph
-    rank_graph: rank_graph
     stats: stats
     info: info
     note: note
@@ -574,24 +573,17 @@
             opacity: 0 if self.parent.mode == MODE_PLAY else 1
     CollapsablePanel:
         id: graph_panel
-        content_height: graph.height + rank_graph.height
+        content_height: graph.height # + rank_graph.height
         options_height: root.tab_option_height
         closed_label: 'closedlabel:scoregraph'
-        options: ['score','winrate','rank_est']
-        option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
+        options: ['score','winrate']
+        option_colors: [SCORE_COLOR,WINRATE_COLOR]
         option_active: [True,False,False]
         on_option_state:
             graph.show_graphs(args[1])
             graph.hidden = not (args[1]['score'] or args[1]['winrate'])
-            rank_graph.hidden = not args[1]['rank_est']
-            rank_graph.trigger_calculate()
         ScoreGraph:
             id: graph
-            opacity: 0 if self.hidden else 1
-            size_hint_y: None
-            height: EPSILON if self.hidden else root.graph_height
-        RankGraph:
-            id: rank_graph
             opacity: 0 if self.hidden else 1
             size_hint_y: None
             height: EPSILON if self.hidden else root.graph_height
