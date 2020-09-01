@@ -334,7 +334,7 @@ class SGF:
         clipped_str = match.group() if match else input_str
         root = cls(clipped_str).root
         # Fix weird FoxGo server KM values
-        if "foxwq" in root.get_list_property("AP",[]):
+        if "foxwq" in root.get_list_property("AP", []):
             if int(root.get_property("HA", 0)) >= 1:
                 corrected_komi = 0.5
             elif root.get_property("RU").lower() in ["chinese", "cn"]:
