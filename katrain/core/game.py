@@ -207,8 +207,11 @@ class Game:
             return sum(self.chains, [])
 
     @property
-    def ended(self):
-        return self.current_node.parent and self.current_node.is_pass and self.current_node.parent.is_pass
+    def end_result(self):
+        if self.current_node.end_state:
+            return self.current_node.end_state
+        if self.current_node.parent and self.current_node.is_pass and self.current_node.parent.is_pass:
+            return self.manual_score or i18n._("board-game-end")
 
     @property
     def prisoner_count(
@@ -283,13 +286,17 @@ class Game:
         def player_name(player_info):
             return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
 
+        root_properties = self.root.properties
+        x_properties = {}
         if "KaTrain" in self.root.get_property("AP", ""):
             for bw in "BW":
-                self.root.set_property("P" + bw, player_name(self.katrain.players_info[bw]))
+                x_properties["P" + bw] = player_name(self.katrain.players_info[bw])
                 player_info = self.katrain.players_info[bw]
                 if player_info.player_type == PLAYER_AI:
-                    self.root.set_property(bw + "R", rank_label(player_info.calculated_rank))
-
+                    x_properties[bw + "R"] = rank_label(player_info.calculated_rank)
+        if "+" in str(self.end_result):
+            x_properties["RE"] = self.end_result
+        self.root.properties = {**root_properties, **{k: [v] for k, v in x_properties.items()}}
         player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
         game_name = f"katrain_{player_names['B']} vs {player_names['W']} {self.game_id}"
         file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
@@ -303,6 +310,7 @@ class Game:
         )
         with open(file_name, "w", encoding="utf-8") as f:
             f.write(sgf)
+        self.root.properties = root_properties
         return i18n._("sgf written").format(file_name=file_name)
 
     def analyze_extra(self, mode, **kwargs):

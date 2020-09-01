@@ -254,7 +254,7 @@ class BadukPanWidget(Widget):
             self.canvas.clear()
             # stones
             current_node = katrain.game.current_node
-            game_ended = katrain.game.ended
+            game_ended = katrain.game.end_result
             full_eval_on = katrain.analysis_controls.eval.active
             has_stone = {}
             drawn_stone = {}
@@ -379,7 +379,7 @@ class BadukPanWidget(Widget):
             passed = len(nodes) > 1 and current_node.is_pass
             if passed:
                 if game_ended:
-                    text = katrain.game.manual_score or i18n._("board-game-end")
+                    text = game_ended
                     katrain.controls.timer.paused = True
                 else:
                     text = i18n._("board-pass")
@@ -397,7 +397,7 @@ class BadukPanWidget(Widget):
     def draw_hover_contents(self, *_args):
         ghost_alpha = GHOST_ALPHA
         katrain = self.katrain
-        game_ended = katrain.game.ended
+        game_ended = katrain.game.end_result
         current_node = katrain.game.current_node
         player, next_player = current_node.player, current_node.next_player
 

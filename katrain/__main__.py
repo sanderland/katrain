@@ -159,7 +159,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_controls.mid_circles_container.add_widget(top)
         self.board_controls.branch.disabled = not cn.parent or len(cn.parent.children) <= 1
         self.controls.players["W"].captures = prisoners["W"]
-        self.controls.players["W"].komi = self.game.komi
         self.controls.players["B"].captures = prisoners["B"]
 
         # update engine status dot
@@ -197,14 +196,14 @@ class KaTrainGui(Screen, KaTrainBase):
                 and cn.analysis_ready
                 and cn.parent.analysis_ready
                 and not cn.children
-                and not self.game.ended
+                and not self.game.end_result
             ):
                 self.game.analyze_undo(cn)  # not via message loop
             if (
                 cn.analysis_ready
                 and next_player.ai
                 and not cn.children
-                and not self.game.ended
+                and not self.game.end_result
                 and not (teaching_undo and cn.auto_undo is None)
             ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                 self._do_ai_move(cn)
@@ -286,6 +285,9 @@ class KaTrainGui(Screen, KaTrainBase):
                 n_times = 2
         self.board_gui.animating_pv = None
         self.game.undo(n_times)
+
+    def _do_resign(self):
+        self.game.current_node.end_state = f"{self.game.current_node.player}+R"
 
     def _do_redo(self, n_times=1):
         self.board_gui.animating_pv = None
