@@ -129,6 +129,10 @@ msgstr "Re-analyzing entire game using {visits} visits"
 msgid "pass-button-text"
 msgstr "Pass"
 
+#. resign the game
+msgid "resign"
+msgstr "Resign"
+
 msgid "teaching undo message"
 msgstr ""
 "Undid move {move} as it lost {points_lost:.1f} points. Hover over the move "

@@ -277,25 +277,16 @@
 <PlayerInfo>:
     captures: 0
     player: 'B'
-    komi: 0
     player_type: 'player:human'
     player_subtype: 'game:normal'
     background_color: BOX_BACKGROUND_COLOR if self.active else BACKGROUND_COLOR
     outline_color: BOX_BACKGROUND_COLOR
     outline_width: 2
     padding: [2*CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING]
-    BoxLayout:
+    CircleWithText:
         size_hint: 0.32, 1
-        orientation: 'vertical'
-        CircleWithText:
-            player: root.player
-            text: str(root.captures)
-        Label:
-            size_hint: 1,0.25
-            halign: 'center'
-            valign: 'middle'
-            font_size: self.height
-            text: "%s: %.1f" % (i18n._('komi'), root.komi) if root.player=='W' else ''
+        player: root.player
+        text: str(root.captures)
     BoxLayout:
         size_hint: 0.75, 1
         pos_hint: {'x':0,'y':0}
@@ -561,13 +552,13 @@
                 spacing: CP_SPACING
                 size_hint_x: 0.35
                 SizedRoundedRectangleButton:
-                    text: i18n._('pass-button-text')
-                    size_hint: 1, 0.5
-                    on_left_release: root.katrain("play",None)
-                SizedRoundedRectangleButton:
                     text: i18n._('undo-button-text')
                     size_hint: 1, 0.5
                     on_left_release: root.katrain("undo","smart")
+                SizedRoundedRectangleButton:
+                    text: i18n._('resign')
+                    size_hint: 1, 0.5
+                    on_left_release: root.katrain("resign")
         MoveTree:
             id: move_tree
             size_hint_x: EPSILON if self.parent.mode == MODE_PLAY else 1

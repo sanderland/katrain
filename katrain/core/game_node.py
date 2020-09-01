@@ -23,6 +23,7 @@ class GameNode(SGFNode):
         self.time_used = 0
         self.analysis_visits_requested = 0
         self.undo_threshold = random.random()  # for fractional undos
+        self.end_state = None
 
     def sgf_properties(self, save_comments_player=None, save_comments_class=None, eval_thresholds=None):
         properties = copy.copy(super().sgf_properties())
@@ -151,6 +152,8 @@ class GameNode(SGFNode):
     def comment(self, sgf=False, teach=False, details=False, interactive=True):
         single_move = self.move
         if not self.parent or not single_move:  # root
+            if self.root:
+                return f"{i18n._('komi')}: {self.komi:.1f}\n{i18n._('ruleset')}: {i18n._(self.get_property('RU','Japanese').lower())}\n"
             return ""
 
         text = i18n._("move").format(number=self.depth) + f": {single_move.player} {single_move.gtp()}\n"
@@ -193,8 +196,10 @@ class GameNode(SGFNode):
                 text += "\n" + i18n._("Info:AI thoughts").format(thoughts=self.ai_thoughts)
         else:
             text = i18n._("No analysis available") if sgf else i18n._("Analyzing move...")
+
         if "C" in self.properties:
             text += "\n[u]SGF Comments:[/u]\n" + "\n".join(self.properties["C"])
+
         return text
 
     @property
@@ -258,3 +263,6 @@ class GameNode(SGFNode):
             moves = [(policy_grid[y][x], Move((x, y), player=self.next_player)) for x in range(szx) for y in range(szy)]
             moves.append((self.policy[-1], Move(None, player=self.next_player)))
             return sorted(moves, key=lambda mp: -mp[0])
+
+
+
