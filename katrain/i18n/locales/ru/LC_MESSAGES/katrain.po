@@ -672,3 +672,7 @@ msgstr ""
 
 msgid "show point loss as text"
 msgstr "Показывать потерянные очки текстом"
+
+#. TODO - resign the game
+msgid "resign"
+msgstr "Resign"

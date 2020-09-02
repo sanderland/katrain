@@ -644,3 +644,7 @@ msgstr ""
 
 msgid "show point loss as text"
 msgstr "돌 위에 집 손해 표시하기"
+
+#. TODO - resign the game
+msgid "resign"
+msgstr "기권함"

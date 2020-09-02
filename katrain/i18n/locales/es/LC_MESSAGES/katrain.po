@@ -684,3 +684,7 @@ msgstr ""
 #. moves
 msgid "show point loss as text"
 msgstr "Show point loss on top moves"
+
+#. TODO - resign the game
+msgid "resign"
+msgstr "Resign"

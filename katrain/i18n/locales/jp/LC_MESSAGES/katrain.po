@@ -666,3 +666,7 @@ msgstr ""
 #. moves
 msgid "show point loss as text"
 msgstr "損失目数を候補手上に表示"
+
+#. TODO - resign the game
+msgid "resign"
+msgstr "Resign"
