@@ -288,6 +288,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_resign(self):
         self.game.current_node.end_state = f"{self.game.current_node.player}+R"
+        self.log(self.game.current_node.end_state,OUTPUT_INFO)
 
     def _do_redo(self, n_times=1):
         self.board_gui.animating_pv = None

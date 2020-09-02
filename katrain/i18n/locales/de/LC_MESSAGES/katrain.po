@@ -676,3 +676,7 @@ msgstr ""
 
 msgid "show point loss as text"
 msgstr "Zeig den Punkteverlust auf Beste Züge"
+
+#. TODO - resign the game
+msgid "resign"
+msgstr "Resign"
