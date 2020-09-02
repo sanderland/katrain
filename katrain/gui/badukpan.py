@@ -409,27 +409,6 @@ class BadukPanWidget(Widget):
             self.canvas.after.clear()
             self.active_pv_moves = []
 
-            # children of current moves in undo / review
-            alpha = GHOST_ALPHA
-            if katrain.analysis_controls.show_children.active:
-                for child_node in current_node.children:
-                    points_lost = child_node.points_lost
-                    move = child_node.move
-                    if move and move.coords is not None:
-                        if child_node.analysis_ready:
-                            self.active_pv_moves.append(
-                                (move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node)
-                            )
-                        Color(*CHILDREN_BORDER_COLOR)
-                        Line(
-                            circle=(
-                                self.gridpos_x[move.coords[0]],
-                                self.gridpos_y[move.coords[1]],
-                                self.stone_size - 1.2,
-                            ),
-                            width=dp(1.2),
-                        )
-
             # hints or PV
             if katrain.analysis_controls.hints.active and not game_ended:
                 hint_moves = current_node.candidate_moves
@@ -469,6 +448,29 @@ class BadukPanWidget(Widget):
                                     self.gridpos_x[move.coords[0]],
                                     self.gridpos_y[move.coords[1]],
                                     self.stone_size * scale - 1.2,
+                                ),
+                                width=dp(1.2),
+                            )
+
+
+            # children of current moves in undo / review
+            alpha = GHOST_ALPHA
+            if katrain.analysis_controls.show_children.active:
+                for child_node in current_node.children:
+                    points_lost = child_node.points_lost
+                    move = child_node.move
+                    if move and move.coords is not None:
+                        if child_node.analysis_ready:
+                            self.active_pv_moves.append(
+                                (move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node)
+                            )
+                        Color(*STONE_COLORS[child_node.player])
+                        for s in range(0,360,30):
+                            Line(
+                                circle=(
+                                    self.gridpos_x[move.coords[0]],
+                                    self.gridpos_y[move.coords[1]],
+                                    self.stone_size - 1.2,s,s+15
                                 ),
                                 width=dp(1.2),
                             )
