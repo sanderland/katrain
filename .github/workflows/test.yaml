@@ -2,15 +2,11 @@ name: test
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ master-disabled ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    only:
-      changes:
-        - katrain/core/constants.py
 
     strategy:
       fail-fast: false
