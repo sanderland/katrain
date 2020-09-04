@@ -3,12 +3,10 @@ name: test
 on:
   pull_request:
     branches: [ master ]
+  only:
+    changes:
+      - katrain/core/constants.py
 
-only:
-  refs:
-    - merge_requests
-  changes:
-    - katrain/core/constants.py
 
 jobs:
   build:
