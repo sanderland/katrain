@@ -4,6 +4,12 @@ on:
   pull_request:
     branches: [ master ]
 
+only:
+  refs:
+    - merge_requests
+  changes:
+    - katrain/core/constants.py
+
 jobs:
   build:
     runs-on: ubuntu-latest

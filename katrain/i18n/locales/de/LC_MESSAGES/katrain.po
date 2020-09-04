@@ -637,7 +637,7 @@ msgid "reanalyze max visits"
 msgstr "Anzahl der Visits pro Zug"
 
 msgid "Delete Node"
-msgstr "Knoten löschen"
+msgstr "Node löschen"
 
 msgid "theme:red-green-colourblind"
 msgstr "Rot-Grün-farbenblind"
