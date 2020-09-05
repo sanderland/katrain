@@ -412,8 +412,17 @@ class ConfigPopup(QuickConfigGui):
         self.model_files.text = models_available_msg
 
     def check_katas(self, *args):
+        def find_description(path):
+            file = os.path.split(path)[1].replace(".exe", "")
+            file_to_desc = {kg.replace(".zip", ""): desc for _, kgs in self.KATAGOS.items() for desc, kg in kgs.items()}
+            print(file_to_desc,file)
+            if file in file_to_desc:
+                return f"{file_to_desc[file]} ({path})"
+            else:
+                return f"unkn {path}"
+
         done = set()
-        model_files = []
+        kata_files = []
         for path in self.katago_paths + [self.katago_path.text]:
             path = path.rstrip("/\\")
             if path.startswith("katrain"):
@@ -433,11 +442,14 @@ class ConfigPopup(QuickConfigGui):
             ]
             if files and path not in self.paths:
                 self.paths.append(path)  # persistent on paths with models found
-            model_files += files
-        katas_available_msg = i18n._("katago binaries available").format(num=len(model_files))
-        self.katago_files.values = [katas_available_msg, i18n._("default katago option")] + sorted(
-            model_files, key=lambda f: "bs29" in f
-        )
+            kata_files += files
+
+        kata_files = [(path, find_description(path)) for path in sorted(kata_files, key=lambda f: "bs29" in f)]
+        katas_available_msg = i18n._("katago binaries available").format(num=len(kata_files))
+        self.katago_files.values = [katas_available_msg, i18n._("default katago option")] + [
+            path for path, desc in kata_files
+        ]
+        self.katago_files.value_keys = ["", ""] + [desc for path, desc in kata_files]
         self.katago_files.text = katas_available_msg
 
     MODELS = {
@@ -449,17 +461,19 @@ class ConfigPopup(QuickConfigGui):
     KATAGOS = {
         "win": {
             "OpenCL v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-opencl-windows-x64.zip",
-            #            "CUDA v1.6.1 (New NVIDIA cards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-windows-x64.zip",
             "Eigen AVX2 (Modern CPUs) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-avx2-windows-x64.zip",
             "Eigen (CPU, Non-optimized) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-windows-x64.zip",
             "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
         },
         "linux": {
             "OpenCL v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-opencl-linux-x64.zip",
-            #           "CUDA v1.6.1 (New NVIDIA cards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-linux-x64.zip",
             "Eigen AVX2 (Modern CPUs) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-avx2-linux-x64.zip",
             "Eigen (CPU, Non-optimized) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-linux-x64.zip",
             "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
+        },
+        "just-descriptions": {
+            "CUDA v1.6.1 (New NVIDIA cards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-windows-x64.zip",
+            "CUDA v1.6.1 (New NVIDIA cards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-linux-x64.zip",
         },
     }
 

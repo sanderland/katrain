@@ -109,12 +109,11 @@
                 on_press: root.download_katas()
                 size_hint_y: 0.7
         AnchorLayout:
-            Spinner:
+            KeyValueSpinner:
                 id: katago_files
                 text: ''
-                on_text:
-                    if self.text and self.text == self.values[1]: katago_path.text = ''
-                    elif self.text and self.text != self.values[0]: katago_path.text = args[1]
+                on_select:
+                    if self.selected_index != 0: katago_path.text = self.values[self.selected_index]
                 size_hint_y: 0.7
                 sync_height_frac: 1.0
                 -font_size: self.height * 0.5

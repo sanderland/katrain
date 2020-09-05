@@ -205,7 +205,7 @@ class IMETextField(MDTextField):
         self._imo_cursor = self.cursor
 
 
-class I18NSpinner(Spinner):
+class KeyValueSpinner(Spinner):
     __events__ = ["on_select"]
     sync_height_frac = NumericProperty(1.0)
     value_refs = ListProperty()
@@ -214,9 +214,8 @@ class I18NSpinner(Spinner):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.bind(size=self.update_dropdown_props, pos=self.update_dropdown_props, value_refs=self.i18n_values)
-        self.i18n_values()
-        MDApp.get_running_app().bind(language=self.i18n_values)
+        self.build_values()
+        self.bind(size=self.update_dropdown_props, pos=self.update_dropdown_props, value_refs=self.build_values)
 
     @property
     def selected(self):
@@ -245,9 +244,8 @@ class I18NSpinner(Spinner):
         except (ValueError, IndexError):
             pass
 
-    def i18n_values(self, *_args):
-        if self.value_refs:
-            self.values = [i18n._(ref) for ref in self.value_refs]
+    def build_values(self, *_args):
+        if self.value_refs and self.values:
             self.text = self.values[self.selected_index]
             self.font_name = i18n.font_name
             self.update_dropdown_props()
@@ -267,6 +265,23 @@ class I18NSpinner(Spinner):
             item.height = h * self.sync_height_frac
             item.font_size = fsz
             item.font_name = self.font_name
+
+
+class I18NSpinner(KeyValueSpinner):
+    __events__ = ["on_select"]
+    sync_height_frac = NumericProperty(1.0)
+    value_refs = ListProperty()
+    selected_index = NumericProperty(0)
+    font_name = StringProperty(DEFAULT_FONT)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        MDApp.get_running_app().bind(language=self.build_values)
+
+    def build_values(self, *_args):
+        self.values = [i18n._(ref) for ref in self.value_refs]
+        super().build_values()
+
 
 
 class PlayerSetup(MDBoxLayout):
