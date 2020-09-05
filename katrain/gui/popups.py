@@ -414,12 +414,12 @@ class ConfigPopup(QuickConfigGui):
     def check_katas(self, *args):
         def find_description(path):
             file = os.path.split(path)[1].replace(".exe", "")
-            file_to_desc = {kg.replace(".zip", ""): desc for _, kgs in self.KATAGOS.items() for desc, kg in kgs.items()}
+            file_to_desc = {re.match(r".*/([^/]+)",kg)[1].replace('.zip',''): desc for _, kgs in self.KATAGOS.items() for desc, kg in kgs.items()}
             print(file_to_desc,file)
             if file in file_to_desc:
-                return f"{file_to_desc[file]} ({path})"
+                return f"{file_to_desc[file]}  -  {path}"
             else:
-                return f"unkn {path}"
+                return path
 
         done = set()
         kata_files = []
@@ -447,9 +447,9 @@ class ConfigPopup(QuickConfigGui):
         kata_files = [(path, find_description(path)) for path in sorted(kata_files, key=lambda f: "bs29" in f)]
         katas_available_msg = i18n._("katago binaries available").format(num=len(kata_files))
         self.katago_files.values = [katas_available_msg, i18n._("default katago option")] + [
-            path for path, desc in kata_files
+            desc for path, desc in kata_files
         ]
-        self.katago_files.value_keys = ["", ""] + [desc for path, desc in kata_files]
+        self.katago_files.value_keys = ["", ""] + [path for path, desc in kata_files]
         self.katago_files.text = katas_available_msg
 
     MODELS = {
