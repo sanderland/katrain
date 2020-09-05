@@ -455,7 +455,6 @@ class BadukPanWidget(Widget):
                                 width=dp(1.2),
                             )
 
-
             # children of current moves in undo / review
             alpha = GHOST_ALPHA
             if katrain.analysis_controls.show_children.active:
@@ -468,12 +467,14 @@ class BadukPanWidget(Widget):
                                 (move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node)
                             )
                         Color(*STONE_COLORS[child_node.player])
-                        for s in range(0,360,30):
+                        for s in range(0, 360, 30):
                             Line(
                                 circle=(
                                     self.gridpos_x[move.coords[0]],
                                     self.gridpos_y[move.coords[1]],
-                                    self.stone_size - 1.2,s,s+15
+                                    self.stone_size - 1.2,
+                                    s,
+                                    s + 15,
                                 ),
                                 width=dp(1.2),
                             )
