@@ -453,9 +453,9 @@ class ConfigPopup(QuickConfigGui):
         self.katago_files.text = katas_available_msg
 
     MODELS = {
-        "latest 20b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
-        "latest 30b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
-        "latest 40b": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
+        "Latest 20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
+        "Latest 30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
+        "Latest 40 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
     }
 
     KATAGOS = {
@@ -472,8 +472,8 @@ class ConfigPopup(QuickConfigGui):
             "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
         },
         "just-descriptions": {
-            "CUDA v1.6.1 (New NVIDIA cards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-windows-x64.zip",
-            "CUDA v1.6.1 (New NVIDIA cards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-linux-x64.zip",
+            "CUDA v1.6.1 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-windows-x64.zip",
+            "CUDA v1.6.1 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-linux-x64.zip",
         },
     }
 

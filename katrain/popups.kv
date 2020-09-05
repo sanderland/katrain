@@ -112,8 +112,9 @@
             KeyValueSpinner:
                 id: katago_files
                 text: ''
+                no_update: True
                 on_select:
-                    if self.selected_index != 0: katago_path.text = self.values[self.selected_index]
+                    if self.selected_index != 0: katago_path.text = self.value_keys[self.selected_index]
                 size_hint_y: 0.7
                 sync_height_frac: 1.0
                 -font_size: self.height * 0.5
@@ -139,10 +140,12 @@
                 on_press: root.download_models()
                 size_hint_y: 0.7
         AnchorLayout:
-            Spinner:
+            KeyValueSpinner:
                 id: model_files
                 text: ''
-                on_text: if self.text and self.text != self.values[0]: model_path.text = args[1]
+                no_update: True
+                on_select:
+                    if self.selected_index != 0: katago_path.text = self.value_keys[self.selected_index]
                 size_hint_y: 0.7
                 sync_height_frac: 1.0
                 -font_size: self.height * 0.5
