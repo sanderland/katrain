@@ -385,7 +385,7 @@ class BadukPanWidget(Widget):
                     text = i18n._("board-pass")
                 Color(0.45, 0.05, 0.45, 0.7)
                 center = (self.gridpos_x[int(board_size_x / 2)], self.gridpos_y[int(board_size_y / 2)])
-                size = min(self.width, self.height) * 0.22
+                size = min(self.width, self.height) * 0.227
                 Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
                 Color(0.85, 0.85, 0.85)
                 draw_text(
@@ -422,10 +422,13 @@ class BadukPanWidget(Widget):
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:
                             katrain.log(f"PV missing for move_dict {move_dict}", OUTPUT_DEBUG)
-                        draw_circle(
-                            (self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
-                            col=[*self.eval_color(move_dict["pointsLost"])[:3], alpha],
-                            r=self.stone_size * scale,
+                        evalsize = self.stone_size * scale
+                        evalcol = self.eval_color(move_dict["pointsLost"])
+                        Color(*evalcol)
+                        Rectangle(
+                            pos=(self.gridpos_x[move.coords[0]] - evalsize, self.gridpos_y[move.coords[1]] - evalsize),
+                            size=(2 * evalsize, 2 * evalsize),
+                            source="katrain/img/topmove.png",
                         )
                         if self.trainer_config["text_point_loss"]:
                             if move_dict["pointsLost"] < 0.05:
