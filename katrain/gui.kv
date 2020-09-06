@@ -697,12 +697,13 @@
         halign: 'center'
         font_size: root.height / 3
         font_name: root.font_name
-        color: checkbox.selected_color if checkbox.active else checkbox.unselected_color
+        color: checkbox.disabled_color if root.disabled else (checkbox.selected_color if checkbox.active else checkbox.unselected_color)
         size_hint_x: None
         width: self.texture_size[0] + 4
         on_left_press: checkbox.active = not checkbox.active
     MDCheckbox:
         id: checkbox
+        disabled: root.disabled
         size_hint: None,0.5
         pos_hint: {'center_y': 0.5}
         width: self.height
@@ -789,6 +790,7 @@
             AnalysisToggle:
                 id: hints
                 text: i18n._("analysis:topmoves")
+                disabled: policy.checkbox.active
             AnalysisToggle:
                 id: policy
                 text: i18n._("analysis:policy")

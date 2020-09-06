@@ -268,7 +268,6 @@ class BadukPanWidget(Widget):
             nodes = katrain.game.current_node.nodes_from_root
             realized_points_lost = None
 
-            katrain.config("trainer/show_dots")
             for i, node in enumerate(nodes[::-1]):  # reverse order!
                 points_lost = node.points_lost
                 evalscale = 1
@@ -410,7 +409,7 @@ class BadukPanWidget(Widget):
             self.active_pv_moves = []
 
             # hints or PV
-            if katrain.analysis_controls.hints.active and not game_ended:
+            if katrain.analysis_controls.hints.active and not katrain.analysis_controls.policy.active and not game_ended:
                 hint_moves = current_node.candidate_moves
                 for i, move_dict in enumerate(hint_moves):
                     move = Move.from_gtp(move_dict["move"])
