@@ -362,7 +362,7 @@ class BadukPanWidget(Widget):
                             polsize = 1.1 * math.sqrt(policy_grid[y][x])
                             policy_circle_color = (
                                 *POLICY_COLOR,
-                                GHOST_ALPHA + TOP_MOVE_ALPHA * (policy_grid[y][x] == best_move_policy),
+                                POLICY_ALPHA + TOP_MOVE_ALPHA * (policy_grid[y][x] == best_move_policy),
                             )
                             draw_circle(
                                 (self.gridpos_x[x], self.gridpos_y[y]), polsize * self.stone_size, policy_circle_color
@@ -385,7 +385,7 @@ class BadukPanWidget(Widget):
                     text = i18n._("board-pass")
                 Color(0.45, 0.05, 0.45, 0.7)
                 center = (self.gridpos_x[int(board_size_x / 2)], self.gridpos_y[int(board_size_y / 2)])
-                size = min(self.width, self.height) * 0.22
+                size = min(self.width, self.height) * 0.227
                 Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
                 Color(0.85, 0.85, 0.85)
                 draw_text(
@@ -395,7 +395,7 @@ class BadukPanWidget(Widget):
         self.draw_hover_contents()
 
     def draw_hover_contents(self, *_args):
-        ghost_alpha = GHOST_ALPHA
+        ghost_alpha = POLICY_ALPHA
         katrain = self.katrain
         game_ended = katrain.game.end_result
         current_node = katrain.game.current_node
@@ -415,17 +415,20 @@ class BadukPanWidget(Widget):
                 for i, move_dict in enumerate(hint_moves):
                     move = Move.from_gtp(move_dict["move"])
                     if move.coords is not None:
-                        alpha, scale = GHOST_ALPHA, 1.0
+                        scale = 0.95
                         if move_dict["visits"] < VISITS_FRAC_SMALL * hint_moves[0]["visits"]:
-                            scale = 0.8
+                            scale = 0.75
                         if "pv" in move_dict:
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:
                             katrain.log(f"PV missing for move_dict {move_dict}", OUTPUT_DEBUG)
-                        draw_circle(
-                            (self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
-                            col=[*self.eval_color(move_dict["pointsLost"])[:3], alpha],
-                            r=self.stone_size * scale,
+                        evalsize = self.stone_size * scale
+                        evalcol = self.eval_color(move_dict["pointsLost"])
+                        Color(*evalcol[:3], HINTS_ALPHA)
+                        Rectangle(
+                            pos=(self.gridpos_x[move.coords[0]] - evalsize, self.gridpos_y[move.coords[1]] - evalsize),
+                            size=(2 * evalsize, 2 * evalsize),
+                            source="katrain/img/topmove.png",
                         )
                         if self.trainer_config["text_point_loss"]:
                             if move_dict["pointsLost"] < 0.05:
@@ -453,7 +456,7 @@ class BadukPanWidget(Widget):
                             )
 
             # children of current moves in undo / review
-            alpha = GHOST_ALPHA
+            alpha = POLICY_ALPHA
             if katrain.analysis_controls.show_children.active:
                 for child_node in current_node.children:
                     points_lost = child_node.points_lost
