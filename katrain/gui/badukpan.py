@@ -474,7 +474,7 @@ class BadukPanWidget(Widget):
                                     self.gridpos_y[move.coords[1]],
                                     self.stone_size - 1.2,
                                     s,
-                                    s + 15,
+                                    s + 12,
                                 ),
                                 width=dp(1.2),
                             )
@@ -524,9 +524,9 @@ class BadukPanWidget(Widget):
 
             stone_size = self.stone_size * sizefac
             Color(1, 1, 1, 1)
-            Rectangle(
-                pos=(board_coords[0] - stone_size, board_coords[1] - stone_size),
-                size=(2 * stone_size, 2 * stone_size),
+            Rectangle(  # not sure why the -1 here, but seems to center better
+                pos=(board_coords[0] - stone_size - 1, board_coords[1] - stone_size),
+                size=(2 * stone_size + 1, 2 * stone_size + 1),
                 source=f"img/{move_player}_stone.png",
             )
             Color(*STONE_TEXT_COLORS[move_player])
