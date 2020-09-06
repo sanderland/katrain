@@ -41,10 +41,12 @@ class KataGoEngine:
         self._lock = threading.Lock()
         self.analysis_thread = None
         self.stderr_thread = None
+        self.shell = False
 
         exe = config.get("katago", "").strip()
         if config.get("altcommand", ""):
             self.command = config["altcommand"]
+            self.shell = True
         else:
             if not exe:
                 if platform == "win":
@@ -81,7 +83,7 @@ class KataGoEngine:
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
             self.katago_process = subprocess.Popen(
-                self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+                self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=self.shell
             )
         except (FileNotFoundError, PermissionError, OSError) as e:
             self.katrain.log(
