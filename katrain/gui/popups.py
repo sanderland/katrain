@@ -386,6 +386,18 @@ class ConfigPopup(QuickConfigGui):
         super().build_and_set_properties()
 
     def check_models(self, *args):
+        def find_description(path):
+            file = os.path.split(path)[1]
+            file_to_desc = {
+                re.match(r".*/([^/]+)", model)[1].replace(".zip", ".bin.gz"): desc
+                for mods in [self.MODELS, self.MODEL_DESC]
+                for desc, model in mods.items()
+            }
+            if file in file_to_desc:
+                return f"{file_to_desc[file]}  -  {path}"
+            else:
+                return path
+
         done = set()
         model_files = []
         for path in self.paths + [self.model_path.text]:
@@ -407,15 +419,21 @@ class ConfigPopup(QuickConfigGui):
             if files and path not in self.paths:
                 self.paths.append(path)  # persistent on paths with models found
             model_files += files
+
+        model_files = sorted([(find_description(path), path) for path in model_files])
         models_available_msg = i18n._("models available").format(num=len(model_files))
-        self.model_files.values = [models_available_msg] + model_files
+        self.model_files.values = [models_available_msg] + [desc for desc, path in model_files]
+        self.model_files.value_keys = [""] + [path for desc, path in model_files]
         self.model_files.text = models_available_msg
 
     def check_katas(self, *args):
         def find_description(path):
             file = os.path.split(path)[1].replace(".exe", "")
-            file_to_desc = {re.match(r".*/([^/]+)",kg)[1].replace('.zip',''): desc for _, kgs in self.KATAGOS.items() for desc, kg in kgs.items()}
-            print(file_to_desc,file)
+            file_to_desc = {
+                re.match(r".*/([^/]+)", kg)[1].replace(".zip", ""): desc
+                for _, kgs in self.KATAGOS.items()
+                for desc, kg in kgs.items()
+            }
             if file in file_to_desc:
                 return f"{file_to_desc[file]}  -  {path}"
             else:
@@ -456,6 +474,10 @@ class ConfigPopup(QuickConfigGui):
         "Latest 20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
         "Latest 30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
         "Latest 40 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
+    }
+    MODEL_DESC = {
+        "Fat 40 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b40c384x2-s2348692992-d1229892979.zip",
+        "Latest 15 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b15c192-s1672170752-d466197061.bin.gz",
     }
 
     KATAGOS = {

@@ -263,6 +263,3 @@ class GameNode(SGFNode):
             moves = [(policy_grid[y][x], Move((x, y), player=self.next_player)) for x in range(szx) for y in range(szy)]
             moves.append((self.policy[-1], Move(None, player=self.next_player)))
             return sorted(moves, key=lambda mp: -mp[0])
-
-
-

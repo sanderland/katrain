@@ -212,6 +212,7 @@ class KeyValueSpinner(Spinner):
     selected_index = NumericProperty(0)
     font_name = StringProperty(DEFAULT_FONT)
     no_update = BooleanProperty(False)
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.build_values()
@@ -282,7 +283,6 @@ class I18NSpinner(KeyValueSpinner):
     def build_values(self, *_args):
         self.values = [i18n._(ref) for ref in self.value_refs]
         super().build_values()
-
 
 
 class PlayerSetup(MDBoxLayout):
