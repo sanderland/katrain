@@ -211,7 +211,6 @@ class KeyValueSpinner(Spinner):
     value_refs = ListProperty()
     selected_index = NumericProperty(0)
     font_name = StringProperty(DEFAULT_FONT)
-    no_update = BooleanProperty(False)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -231,10 +230,9 @@ class KeyValueSpinner(Spinner):
             new_index = self.values.index(text)
             if new_index != self.selected_index:
                 self.selected_index = new_index
-                return self.dispatch("on_select")
+                self.dispatch("on_select")
         except (ValueError, IndexError):
             pass
-        return not self.no_update
 
     def on_select(self, *args):
         pass
