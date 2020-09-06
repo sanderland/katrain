@@ -112,6 +112,11 @@
             KeyValueSpinner:
                 id: katago_files
                 text: ''
+                text_autoupdate: True
+                -text_size: self.width, None
+                -halign: 'center'
+                -shorten: True
+                -shorten_from: 'right'
                 on_select:
                     if self.selected_index != 0: katago_path.text = self.value_keys[self.selected_index]
                 size_hint_y: 0.7
@@ -142,6 +147,11 @@
             KeyValueSpinner:
                 id: model_files
                 text: ''
+                text_autoupdate: True
+                -text_size: self.width, None
+                -halign: 'center'
+                -shorten: True
+                -shorten_from: 'right'
                 on_select:
                     if self.selected_index != 0: model_path.text = self.value_keys[self.selected_index]
                 size_hint_y: 0.7
