@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import shlex
 import subprocess
 import threading
 import time
@@ -76,7 +77,7 @@ class KataGoEngine:
             elif not os.path.isfile(cfg):
                 self.katrain.log(i18n._("Kata config not found").format(config=cfg), OUTPUT_ERROR)
                 return  # don't start
-            self.command = f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
+            self.command = shlex.split(f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}')
         self.start()
 
     def start(self):
