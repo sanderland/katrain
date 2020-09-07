@@ -647,11 +647,11 @@ msgstr "別版KataGoをダウンロード"
 
 #. shown on on the binaries select dropdown
 msgid "katago binaries available"
-msgstr "入手済KataGo実行ファイルの一覧（{num}個みつかりました）"
+msgstr "入手済KataGoの一覧（{num}個みつかりました）"
 
 #. shown on on the katago binary select dropdown
 msgid "default katago option"
-msgstr "内蔵KataGo"
+msgstr "内蔵KataGo（OpenCL版）"
 
 #. error message on trying to download models when already done
 msgid "All binaries downloaded"
@@ -667,6 +667,6 @@ msgstr ""
 msgid "show point loss as text"
 msgstr "損失目数を候補手上に表示"
 
-#. TODO - resign the game
+#. - resign the game
 msgid "resign"
-msgstr "Resign"
+msgstr "投了"
