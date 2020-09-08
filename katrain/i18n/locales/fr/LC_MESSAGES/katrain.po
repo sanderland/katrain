@@ -720,3 +720,7 @@ msgstr "Resign"
 #. TODO - Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
+
+#. TODO - status message
+msgid "alternative analysis"
+msgstr "Searching for alternative moves"

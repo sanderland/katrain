@@ -122,6 +122,10 @@ msgid "sweep analysis"
 msgstr "Analyzing entire board using {visits} visits/move"
 
 #. status message
+msgid "alternative analysis"
+msgstr "Searching for alternative moves"
+
+#. status message
 msgid "equalizing analysis"
 msgstr "Equalizing analysis of candidate moves to {visits} visits"
 

@@ -377,7 +377,7 @@ class Game:
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
             priority = -1_000
             if mode == "alternative":  # also do a quick update on current candidates so it doesn't look too weird
-                self.katrain.controls.set_status("Searching for alternatives", STATUS_ANALYSIS)
+                self.katrain.controls.set_status(i18n._("alternative analysis"), STATUS_ANALYSIS)
                 cn.analyze(engine, priority=-500, time_limit=False, find_alternatives=True)
                 visits = engine.config["fast_visits"]
             else:

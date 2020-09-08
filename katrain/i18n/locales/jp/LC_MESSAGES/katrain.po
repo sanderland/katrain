@@ -675,3 +675,7 @@ msgstr "Find alternative moves"
 msgid "teaching undo message"
 msgstr ""
 "待った。{move}は{points_lost:.1f}目損です（マウスカーソルをこの手にかざせばとがめる手順が表示されます）。打ち直してください。"
+
+#. TODO - status message
+msgid "alternative analysis"
+msgstr "Searching for alternative moves"

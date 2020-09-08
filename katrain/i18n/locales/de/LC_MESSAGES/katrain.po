@@ -685,3 +685,7 @@ msgstr ""
 "Zug {move} zurückgenommen, da er {points_lost:.1f} Punkte verliert. Bewege "
 "Mauszeiger über den Zug,um die erwartete Widerlegung zu sehen. Bitte "
 "versuche es erneut."
+
+#. TODO - status message
+msgid "alternative analysis"
+msgstr "Searching for alternative moves"
