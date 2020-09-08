@@ -440,6 +440,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "a": ("analyze-extra", "extra"),
             "s": ("analyze-extra", "equalize"),
             "d": ("analyze-extra", "sweep"),
+            "f": ("analyze-extra", "alternative"),
             "p": ("play", None),
             "down": ("switch-branch", 1),
             "up": ("switch-branch", -1),

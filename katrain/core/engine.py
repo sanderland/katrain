@@ -77,7 +77,9 @@ class KataGoEngine:
             elif not os.path.isfile(cfg):
                 self.katrain.log(i18n._("Kata config not found").format(config=cfg), OUTPUT_ERROR)
                 return  # don't start
-            self.command = shlex.split(f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}')
+            self.command = shlex.split(
+                f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
+            )
         self.start()
 
     def start(self):
@@ -224,6 +226,7 @@ class KataGoEngine:
         visits: int = None,
         analyze_fast: bool = False,
         time_limit=True,
+        find_alternatives: bool = False,
         priority: int = 0,
         ownership: Optional[bool] = None,
         next_move: Optional[GameNode] = None,
@@ -241,6 +244,17 @@ class KataGoEngine:
             if analyze_fast and self.config.get("fast_visits"):
                 visits = self.config["fast_visits"]
 
+        if find_alternatives:
+            avoid = [
+                {
+                    "moves": list(analysis_node.analysis["moves"].keys()),
+                    "player": analysis_node.next_player,
+                    "untilDepth": 1,
+                }
+            ]
+        else:
+            avoid = []
+
         size_x, size_y = analysis_node.board_size
         settings = copy.copy(self.override_settings)
         if time_limit:
@@ -254,6 +268,7 @@ class KataGoEngine:
             "analyzeTurns": [len(moves)],
             "maxVisits": visits,
             "komi": analysis_node.komi,
+            "avoidMoves": avoid,
             "boardXSize": size_x,
             "boardYSize": size_y,
             "includeOwnership": ownership and not next_move,

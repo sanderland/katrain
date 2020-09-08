@@ -68,15 +68,25 @@ class GameNode(SGFNode):
         )  # analyzed/not undone main, non-teach second, undone last
 
     # various analysis functions
-    def analyze(self, engine, priority=0, visits=None, time_limit=True, refine_move=None, analyze_fast=False):
+    def analyze(
+        self,
+        engine,
+        priority=0,
+        visits=None,
+        time_limit=True,
+        refine_move=None,
+        analyze_fast=False,
+        find_alternatives=False,
+    ):
         engine.request_analysis(
             self,
-            lambda result: self.set_analysis(result, refine_move),
+            lambda result: self.set_analysis(result, refine_move, find_alternatives),
             priority=priority,
             visits=visits,
             analyze_fast=analyze_fast,
             time_limit=time_limit,
             next_move=refine_move,
+            find_alternatives=find_alternatives,
         )
 
     def update_move_analysis(self, move_analysis, move_gtp):
@@ -90,18 +100,22 @@ class GameNode(SGFNode):
         elif cur["visits"] < move_analysis["visits"]:
             cur.update(move_analysis)
 
-    def set_analysis(self, analysis_json, refine_move):
+    def set_analysis(self, analysis_json, refine_move, alternatives_mode):
         if refine_move:
             pvtail = analysis_json["moveInfos"][0]["pv"] if analysis_json["moveInfos"] else []
             self.update_move_analysis(
                 {"pv": [refine_move.gtp()] + pvtail, **analysis_json["rootInfo"]}, refine_move.gtp()
             )
         else:
+            if alternatives_mode:
+                for m in analysis_json["moveInfos"]:
+                    m["order"] += 10  # offset for not making this top
             for move_analysis in analysis_json["moveInfos"]:
                 self.update_move_analysis(move_analysis, move_analysis["move"])
             self.ownership = analysis_json.get("ownership")
             self.policy = analysis_json.get("policy")
-            self.analysis["root"] = analysis_json["rootInfo"]
+            if not alternatives_mode:
+                self.analysis["root"] = analysis_json["rootInfo"]
             if self.parent and self.move:
                 analysis_json["rootInfo"]["pv"] = [self.move.gtp()] + (
                     analysis_json["moveInfos"][0]["pv"] if analysis_json["moveInfos"] else []

@@ -373,6 +373,7 @@ class AnalysisToggle(MDBoxLayout):
     default_active = BooleanProperty(False)
     font_name = StringProperty(DEFAULT_FONT)
     disabled = BooleanProperty(False)
+
     def trigger_action(self, *args, **kwargs):
         return self.checkbox.trigger_action(*args, **kwargs)
 

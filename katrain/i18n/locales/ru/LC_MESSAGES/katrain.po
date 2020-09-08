@@ -117,6 +117,7 @@ msgstr "Дополнительный анализ всех ходов-канди
 msgid "pass-button-text"
 msgstr "Пас"
 
+#. TODO - updated
 msgid "teaching undo message"
 msgstr ""
 "Ход {move} отменён, т.к. это потеря {points_lost:.1f} очков. Наведите на "
@@ -676,3 +677,7 @@ msgstr "Показывать потерянные очки текстом"
 #. TODO - resign the game
 msgid "resign"
 msgstr "Resign"
+
+#. TODO - Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "Find alternative moves"

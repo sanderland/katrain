@@ -361,7 +361,7 @@ class BadukPanWidget(Widget):
                             polsize = 1.1 * math.sqrt(policy_grid[y][x])
                             policy_circle_color = (
                                 *POLICY_COLOR,
-                                POLICY_ALPHA + TOP_MOVE_ALPHA * (policy_grid[y][x] == best_move_policy),
+                                POLICY_ALPHA + TOP_POLICY_ALPHA * (policy_grid[y][x] == best_move_policy),
                             )
                             draw_circle(
                                 (self.gridpos_x[x], self.gridpos_y[y]), polsize * self.stone_size, policy_circle_color
@@ -409,27 +409,37 @@ class BadukPanWidget(Widget):
             self.active_pv_moves = []
 
             # hints or PV
-            if katrain.analysis_controls.hints.active and not katrain.analysis_controls.policy.active and not game_ended:
+            if (
+                katrain.analysis_controls.hints.active
+                and not katrain.analysis_controls.policy.active
+                and not game_ended
+            ):
                 hint_moves = current_node.candidate_moves
                 for i, move_dict in enumerate(hint_moves):
                     move = Move.from_gtp(move_dict["move"])
                     if move.coords is not None:
-                        scale = 0.95
-                        if move_dict["visits"] < VISITS_FRAC_SMALL * hint_moves[0]["visits"]:
-                            scale = 0.75
+                        scale = HINT_SCALE
+                        text_on = True
+                        alpha = HINTS_ALPHA
+                        if move_dict["visits"] < katrain.config("engine/fast_visits"):
+                            scale = UNCERTAIN_HINT_SCALE
+                            text_on = False
+                            alpha = HINTS_MIN_ALPHA + (HINTS_ALPHA - HINTS_MIN_ALPHA) * (
+                                move_dict["visits"] / katrain.config("engine/fast_visits")
+                            )
                         if "pv" in move_dict:
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:
                             katrain.log(f"PV missing for move_dict {move_dict}", OUTPUT_DEBUG)
                         evalsize = self.stone_size * scale
                         evalcol = self.eval_color(move_dict["pointsLost"])
-                        Color(*evalcol[:3], HINTS_ALPHA)
+                        Color(*evalcol[:3], alpha)
                         Rectangle(
                             pos=(self.gridpos_x[move.coords[0]] - evalsize, self.gridpos_y[move.coords[1]] - evalsize),
                             size=(2 * evalsize, 2 * evalsize),
                             source="katrain/img/topmove.png",
                         )
-                        if self.trainer_config["text_point_loss"]:
+                        if self.trainer_config["text_point_loss"] and text_on:
                             if move_dict["pointsLost"] < 0.05:
                                 ptloss_text = "0.0"
                             else:

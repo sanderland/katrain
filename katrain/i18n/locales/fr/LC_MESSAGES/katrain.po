@@ -522,6 +522,7 @@ msgstr ""
 "possiblement pour cause de \n"
 "mémoire insuffisante : {error}"
 
+#. TODO: updated
 msgid "teaching undo message"
 msgstr ""
 "Le coup {move} a été annulé car il perdait {points_lost:.1f} points. Vous "
@@ -715,3 +716,7 @@ msgstr "Indiquer les points perdus"
 #. TODO - resign the game
 msgid "resign"
 msgstr "Resign"
+
+#. TODO - Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "Find alternative moves"

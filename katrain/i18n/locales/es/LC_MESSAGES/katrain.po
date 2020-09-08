@@ -105,6 +105,7 @@ msgstr "Forzar jugada IA"
 msgid "pass-button-text"
 msgstr "Pasar"
 
+#. TODO: updated
 msgid "teaching undo message"
 msgstr ""
 "Deshice jugada {move} ya que perdía {points_lost:.1f} puntos. Coloca el "
@@ -688,3 +689,7 @@ msgstr "Show point loss on top moves"
 #. TODO - resign the game
 msgid "resign"
 msgstr "Resign"
+
+#. TODO - Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "Find alternative moves"

@@ -105,12 +105,6 @@ msgstr "AI Zug erzwingen"
 msgid "pass-button-text"
 msgstr "Passen"
 
-msgid "teaching undo message"
-msgstr ""
-"Zug {move} zurückgenommen, da er {points_lost:.1f} Punkte verliert. Bewege "
-"Mauszeiger über den Zug,um die erwartete Widerlegung zu sehen. Bitte "
-"versuche es erneut."
-
 msgid "ai-ponder"
 msgstr ""
 "Zeigt den Enginestatus an von grün (Leerlauf) bis orange(Zugberechnung). Ist"
@@ -680,3 +674,14 @@ msgstr "Zeig den Punkteverlust auf Beste Züge"
 #. TODO - resign the game
 msgid "resign"
 msgstr "Resign"
+
+#. TODO - Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "Find alternative moves"
+
+#. TODO - updated
+msgid "teaching undo message"
+msgstr ""
+"Zug {move} zurückgenommen, da er {points_lost:.1f} Punkte verliert. Bewege "
+"Mauszeiger über den Zug,um die erwartete Widerlegung zu sehen. Bitte "
+"versuche es erneut."
