@@ -274,6 +274,7 @@ class KataGoEngine:
             "includeOwnership": ownership and not next_move,
             "includePolicy": not next_move,
             "initialStones": [[m.player, m.gtp()] for m in initial_stones],
+            "initialPlayer": analysis_node.root.next_player,
             "moves": [[m.player, m.gtp()] for m in moves],
             "overrideSettings": {**settings, **(extra_settings or {})},
         }
