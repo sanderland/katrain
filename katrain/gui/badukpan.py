@@ -415,17 +415,18 @@ class BadukPanWidget(Widget):
                 and not game_ended
             ):
                 hint_moves = current_node.candidate_moves
+                low_visits_threshold = katrain.config("trainer/low_visits",25)
                 for i, move_dict in enumerate(hint_moves):
                     move = Move.from_gtp(move_dict["move"])
                     if move.coords is not None:
                         scale = HINT_SCALE
                         text_on = True
                         alpha = HINTS_ALPHA
-                        if move_dict["visits"] < katrain.config("engine/fast_visits"):
+                        if move_dict["visits"] < low_visits_threshold:
                             scale = UNCERTAIN_HINT_SCALE
                             text_on = False
                             alpha = HINTS_MIN_ALPHA + (HINTS_ALPHA - HINTS_MIN_ALPHA) * (
-                                move_dict["visits"] / katrain.config("engine/fast_visits")
+                                move_dict["visits"] / low_visits_threshold
                             )
                         if "pv" in move_dict:
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
