@@ -409,14 +409,25 @@ class BadukPanWidget(Widget):
             self.active_pv_moves = []
 
             # hints or PV
+            hint_moves = []
             if (
                 katrain.analysis_controls.hints.active
                 and not katrain.analysis_controls.policy.active
                 and not game_ended
             ):
                 hint_moves = current_node.candidate_moves
-                low_visits_threshold = katrain.config("trainer/low_visits",25)
-                for i, move_dict in enumerate(hint_moves):
+            elif katrain.controls.status_state[1] == STATUS_TEACHING:  # show score hint for teaching  undo
+                hint_moves = [
+                    m
+                    for m in current_node.candidate_moves
+                    for c in current_node.children
+                    if c.move and c.auto_undo and c.move.gtp() == m["move"]
+                ]
+
+            top_move_coords = None
+            if hint_moves:
+                low_visits_threshold = katrain.config("trainer/low_visits", 25)
+                for move_dict in hint_moves:
                     move = Move.from_gtp(move_dict["move"])
                     if move.coords is not None:
                         scale = HINT_SCALE
@@ -438,7 +449,7 @@ class BadukPanWidget(Widget):
                         Rectangle(
                             pos=(self.gridpos_x[move.coords[0]] - evalsize, self.gridpos_y[move.coords[1]] - evalsize),
                             size=(2 * evalsize, 2 * evalsize),
-                            source="katrain/img/topmove.png",
+                            source="img/topmove.png",
                         )
                         if self.trainer_config["text_point_loss"] and text_on:
                             if move_dict["pointsLost"] < 0.05:
@@ -454,19 +465,19 @@ class BadukPanWidget(Widget):
                                 font_name="Roboto",
                             )
 
-                        if i == 0:
+                        if move_dict.get("order", 99) == 0:
+                            top_move_coords = move.coords
                             Color(*TOP_MOVE_BORDER_COLOR)
                             Line(
                                 circle=(
                                     self.gridpos_x[move.coords[0]],
                                     self.gridpos_y[move.coords[1]],
-                                    self.stone_size * scale - 1.2,
+                                    self.stone_size - dp(1.2),
                                 ),
                                 width=dp(1.2),
                             )
 
             # children of current moves in undo / review
-            alpha = POLICY_ALPHA
             if katrain.analysis_controls.show_children.active:
                 for child_node in current_node.children:
                     points_lost = child_node.points_lost
@@ -476,15 +487,29 @@ class BadukPanWidget(Widget):
                             self.active_pv_moves.append(
                                 (move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node)
                             )
+
+                        if move.coords != top_move_coords:  # for contrast
+                            dashed_width = 18
+                            Color(*STONE_CONTRAST_COLORS[child_node.player])
+                            Line(
+                                circle=(
+                                    self.gridpos_x[move.coords[0]],
+                                    self.gridpos_y[move.coords[1]],
+                                    self.stone_size - dp(1.2),
+                                ),
+                                width=dp(1.2),
+                            )
+                        else:
+                            dashed_width = 10
                         Color(*STONE_COLORS[child_node.player])
                         for s in range(0, 360, 30):
                             Line(
                                 circle=(
                                     self.gridpos_x[move.coords[0]],
                                     self.gridpos_y[move.coords[1]],
-                                    self.stone_size - 1.2,
+                                    self.stone_size - dp(1.2),
                                     s,
-                                    s + 12,
+                                    s + dashed_width,
                                 ),
                                 width=dp(1.2),
                             )
