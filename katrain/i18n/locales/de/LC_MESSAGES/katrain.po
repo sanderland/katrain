@@ -671,6 +671,13 @@ msgstr ""
 msgid "show point loss as text"
 msgstr "Zeig den Punkteverlust auf Beste Züge"
 
+#. TODO - updated
+msgid "teaching undo message"
+msgstr ""
+"Zug {move} zurückgenommen, da er {points_lost:.1f} Punkte verliert. Bewege "
+"Mauszeiger über den Zug,um die erwartete Widerlegung zu sehen. Bitte "
+"versuche es erneut."
+
 #. TODO - resign the game
 msgid "resign"
 msgstr "Resign"
@@ -678,13 +685,6 @@ msgstr "Resign"
 #. TODO - Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
-
-#. TODO - updated
-msgid "teaching undo message"
-msgstr ""
-"Zug {move} zurückgenommen, da er {points_lost:.1f} Punkte verliert. Bewege "
-"Mauszeiger über den Zug,um die erwartete Widerlegung zu sehen. Bitte "
-"versuche es erneut."
 
 #. TODO - status message
 msgid "alternative analysis"

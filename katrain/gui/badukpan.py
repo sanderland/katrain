@@ -480,7 +480,6 @@ class BadukPanWidget(Widget):
             # children of current moves in undo / review
             if katrain.analysis_controls.show_children.active:
                 for child_node in current_node.children:
-                    points_lost = child_node.points_lost
                     move = child_node.move
                     if move and move.coords is not None:
                         if child_node.analysis_ready:

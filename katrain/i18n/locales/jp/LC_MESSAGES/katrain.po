@@ -671,7 +671,7 @@ msgstr "投了"
 msgid "analysis:alternatives"
 msgstr "他の候補手を分析"
 
-#. TODO - updated
+#. message shown when move is undone
 msgid "teaching undo message"
 msgstr ""
 "待った。{move}は{points_lost:.1f}目損です。打ち直してください。ヒント：マウスカーソルをこの手にかざせばとがめる手順が表示されます。あるいは、地合推定をオンに（tキー）すれば盤上どのあたりで損をしたかが見られます。"
