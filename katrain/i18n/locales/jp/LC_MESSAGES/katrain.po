@@ -663,19 +663,19 @@ msgstr ""
 msgid "show point loss as text"
 msgstr "損失目数を候補手上に表示"
 
-#. - resign the game
+#. resign the game
 msgid "resign"
 msgstr "投了"
 
-#. TODO - Analyze again but exclude all currently considered moves
+#. Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
-msgstr "Find alternative moves"
+msgstr "他の候補手を分析"
 
 #. TODO - updated
 msgid "teaching undo message"
 msgstr ""
-"待った。{move}は{points_lost:.1f}目損です（マウスカーソルをこの手にかざせばとがめる手順が表示されます）。打ち直してください。"
+"待った。{move}は{points_lost:.1f}目損です。打ち直してください。ヒント：マウスカーソルをこの手にかざせばとがめる手順が表示されます。あるいは、地合推定をオンに（tキー）すれば盤上どのあたりで損をしたかが見られます。"
 
-#. TODO - status message
+#. status message
 msgid "alternative analysis"
-msgstr "Searching for alternative moves"
+msgstr "他の候補手を分析中"
