@@ -100,7 +100,7 @@ class GameNode(SGFNode):
         elif cur["visits"] < move_analysis["visits"]:
             cur.update(move_analysis)
 
-    def set_analysis(self, analysis_json, refine_move, alternatives_mode):
+    def set_analysis(self, analysis_json: Dict, refine_move: Optional[Move], alternatives_mode: bool):
         if refine_move:
             pvtail = analysis_json["moveInfos"][0]["pv"] if analysis_json["moveInfos"] else []
             self.update_move_analysis(
@@ -110,6 +110,10 @@ class GameNode(SGFNode):
             if alternatives_mode:
                 for m in analysis_json["moveInfos"]:
                     m["order"] += 10  # offset for not making this top
+            if refine_move is None and not alternatives_mode:
+                for move_dict in self.analysis["moves"].values():
+                    move_dict["order"] = 999  # old moves to end
+                print("overwriting blah blah")
             for move_analysis in analysis_json["moveInfos"]:
                 self.update_move_analysis(move_analysis, move_analysis["move"])
             self.ownership = analysis_json.get("ownership")

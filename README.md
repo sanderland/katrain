@@ -177,8 +177,8 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[~]** or **[ ` ]** or **[m]**: Cycles through more minimalistic UI modes.
 * **[p]**: Pass
 * **[b]**: Pause/Resume timer
-* **[arrow left]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
-* **[arrow right]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow left]** or **[z]**: Undo move. Hold alt for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow right]** or **[x]**: Redo move. Hold alt for 10 moves at a time, or ctrl to skip to the start.
 * **[arrow up/down]** Switch branch, as would be expected from the move tree.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.

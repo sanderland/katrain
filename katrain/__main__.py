@@ -480,9 +480,9 @@ class KaTrainGui(Screen, KaTrainBase):
         elif keycode[1] in ["`", "~", "m"] and "ctrl" not in modifiers:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["left", "z"]:
-            self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
+            self("undo", 1 + ("alt" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] in ["right", "x"]:
-            self("redo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
+            self("redo", 1 + ("alt" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] == "n" and "ctrl" in modifiers:
             self("new-game-popup")
         elif keycode[1] == "l" and "ctrl" in modifiers:
