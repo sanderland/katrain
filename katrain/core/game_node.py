@@ -113,7 +113,6 @@ class GameNode(SGFNode):
             if refine_move is None and not alternatives_mode:
                 for move_dict in self.analysis["moves"].values():
                     move_dict["order"] = 999  # old moves to end
-                print("overwriting blah blah")
             for move_analysis in analysis_json["moveInfos"]:
                 self.update_move_analysis(move_analysis, move_analysis["move"])
             self.ownership = analysis_json.get("ownership")

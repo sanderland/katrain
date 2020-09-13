@@ -17,7 +17,7 @@ from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG, STATUS_TEACHING
+from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG, STATUS_TEACHING, OUTPUT_EXTRA_DEBUG
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, var_to_grid
@@ -120,8 +120,9 @@ class BadukPanWidget(Widget):
                     katrain.game.set_current_node(nodes_here[-1].parent)
                     katrain.update_state()
                 else:  # load comments & pv
-                    katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_DEBUG)
-                    katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_DEBUG)
+                    katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_EXTRA_DEBUG)
+                    katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_EXTRA_DEBUG)
+                    katrain.log(f"\nRoot Stats:\n{nodes_here[-1].analysis['root']}", OUTPUT_DEBUG)
                     katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
                     katrain.controls.active_comment_node = nodes_here[-1]
                     if nodes_here[-1].parent.analysis_ready:
@@ -430,10 +431,11 @@ class BadukPanWidget(Widget):
                 for move_dict in hint_moves:
                     move = Move.from_gtp(move_dict["move"])
                     if move.coords is not None:
+                        engine_best_move = move_dict.get("order", 99) == 0
                         scale = HINT_SCALE
                         text_on = True
                         alpha = HINTS_ALPHA
-                        if move_dict["visits"] < low_visits_threshold:
+                        if move_dict["visits"] < low_visits_threshold and not engine_best_move:
                             scale = UNCERTAIN_HINT_SCALE
                             text_on = False
                             alpha = HINTS_MIN_ALPHA + (HINTS_ALPHA - HINTS_MIN_ALPHA) * (
@@ -465,7 +467,7 @@ class BadukPanWidget(Widget):
                                 font_name="Roboto",
                             )
 
-                        if move_dict.get("order", 99) == 0:
+                        if engine_best_move:
                             top_move_coords = move.coords
                             Color(*TOP_MOVE_BORDER_COLOR)
                             Line(
