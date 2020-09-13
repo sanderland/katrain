@@ -684,8 +684,8 @@ msgstr "Palette de couleurs"
 
 msgid "engine:altcommand:hint"
 msgstr ""
-"Commande complète exécutée par le moteur de jeu, outrepassant les "
-"réseaux/fichiers sélectionnés plus haut."
+"Commande personnelle outrepassant l'exécutable, la configuration "
+"et le réseau sélectionnés plus haut."
 
 msgid "engine:altcommand"
 msgstr "Redéfinir la commande"
@@ -706,21 +706,18 @@ msgstr "Pas de nouveaux exécutables disponibles"
 
 msgid "Engine missing DLL"
 msgstr ""
-"Impossible de démarrer KataGo à cause d'un DLL manquant. Veuillez répondre "
-"aux conditions requises, ou bien essayez l'exécutable seul pour plus de "
-"détails."
+"Impossible de démarrer KataGo à cause d'un DLL manquant. Veuillez vérifier "
+"votre configuration système, ou bien essayez l'exécutable seul pour plus "
+"de détails."
 
 msgid "show point loss as text"
 msgstr "Indiquer les points perdus"
 
-#. TODO - resign the game
 msgid "resign"
-msgstr "Resign"
+msgstr "Abandon"
 
-#. TODO - Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
-msgstr "Find alternative moves"
-
-#. TODO - status message
+msgstr "Proposer des coups différents"
+	
 msgid "alternative analysis"
-msgstr "Searching for alternative moves"
+msgstr "Recherche de coups différents."
