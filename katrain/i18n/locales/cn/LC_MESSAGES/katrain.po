@@ -629,14 +629,14 @@ msgstr "所有可用的exe文件已下载"
 msgid "Engine missing DLL"
 msgstr "启动katago失败因缺失dll文件. 请检查运行要求, 或尝试让exe文件自行运行并检查细节. "
 
-#. TODO - resign the game
+#.  resign the game
 msgid "resign"
-msgstr "Resign"
+msgstr "认输"
 
-#. TODO - Analyze again but exclude all currently considered moves
+#. Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
-msgstr "Find alternative moves"
+msgstr "寻找其他走法"
 
-#. TODO - status message
+#. status message
 msgid "alternative analysis"
-msgstr "Searching for alternative moves"
+msgstr "正在搜索其他走法"
