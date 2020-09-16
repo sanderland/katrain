@@ -97,8 +97,10 @@ class GameNode(SGFNode):
                 "order": 999,
                 **move_analysis,
             }  # some default values for keys missing in rootInfo
-        elif cur["visits"] < move_analysis["visits"]:
-            cur.update(move_analysis)
+        else:
+            cur["order"] = min(cur["order"], move_analysis.get("order", 999))  # parent arriving after child
+            if cur["visits"] < move_analysis["visits"]:
+                cur.update(move_analysis)
 
     def set_analysis(self, analysis_json: Dict, refine_move: Optional[Move], alternatives_mode: bool):
         if refine_move:
