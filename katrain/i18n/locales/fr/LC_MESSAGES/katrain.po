@@ -684,8 +684,8 @@ msgstr "Palette de couleurs"
 
 msgid "engine:altcommand:hint"
 msgstr ""
-"Commande personnelle outrepassant l'exécutable, la configuration "
-"et le réseau sélectionnés plus haut."
+"Commande personnelle outrepassant l'exécutable, la configuration et le "
+"réseau sélectionnés plus haut."
 
 msgid "engine:altcommand"
 msgstr "Redéfinir la commande"
@@ -707,8 +707,8 @@ msgstr "Pas de nouveaux exécutables disponibles"
 msgid "Engine missing DLL"
 msgstr ""
 "Impossible de démarrer KataGo à cause d'un DLL manquant. Veuillez vérifier "
-"votre configuration système, ou bien essayez l'exécutable seul pour plus "
-"de détails."
+"votre configuration système, ou bien essayez l'exécutable seul pour plus de "
+"détails."
 
 msgid "show point loss as text"
 msgstr "Indiquer les points perdus"
@@ -718,6 +718,6 @@ msgstr "Abandon"
 
 msgid "analysis:alternatives"
 msgstr "Proposer des coups différents"
-	
+
 msgid "alternative analysis"
 msgstr "Recherche de coups différents."
