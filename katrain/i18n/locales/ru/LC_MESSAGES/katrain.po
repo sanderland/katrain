@@ -117,11 +117,13 @@ msgstr "Дополнительный анализ всех ходов-канди
 msgid "pass-button-text"
 msgstr "Пас"
 
-#. TODO - updated
+#. Shown when a move is undone in teaching mode.
 msgid "teaching undo message"
 msgstr ""
-"Ход {move} отменён, т.к. это потеря {points_lost:.1f} очков. Наведите на "
-"этот ход чтобы увидеть опровергающее продолжение. Попытайтесь снова."
+"Ход {move} отменён, т.к. это потеря {points_lost:.1f} очков. Попытайтесь "
+"снова. Наведите на этот ход, чтобы увидеть опровергающее продолжение, или "
+"посмотрите на ожидаемую территорию (t), чтобы увидеть, где на доске "
+"прогнозируется потеря очков."
 
 msgid "ai-ponder"
 msgstr ""
@@ -674,14 +676,11 @@ msgstr ""
 msgid "show point loss as text"
 msgstr "Показывать потерянные очки текстом"
 
-#. TODO - resign the game
 msgid "resign"
-msgstr "Resign"
+msgstr "Сдаться"
 
-#. TODO - Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
-msgstr "Find alternative moves"
+msgstr "Поискать альтернативные ходы"
 
-#. TODO - status message
 msgid "alternative analysis"
-msgstr "Searching for alternative moves"
+msgstr "Поиск альтернативных ходов"
