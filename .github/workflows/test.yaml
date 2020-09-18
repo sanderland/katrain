@@ -2,7 +2,7 @@ name: test
 
 on:
   pull_request:
-    branches: [ master-disabled ]
+    branches: [ master ]
 
 jobs:
   build:
