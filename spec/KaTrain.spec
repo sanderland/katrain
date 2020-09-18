@@ -1,6 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from kivy_deps import sdl2, glew
 from kivymd import hooks_path as kivymd_hooks_path
+import subprocess
 
 block_cipher = None
 
@@ -44,6 +45,8 @@ a.datas = [
 print("DATA FILTERED", len(a.datas))
 
 console_names = {True:"DebugKaTrain",False:"KaTrain"}
+
+powershell = subprocess.Popen(["powershell"],  stdout=subprocess.PIPE, stdin=subprocess.PIPE)
 
 for console, name in console_names.items():
 
@@ -89,4 +92,9 @@ for console, name in console_names.items():
         console=console,
         icon="C:\\icon.ico",
     )
+    powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
+    powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
+    powershell.stdin.flush()
 
+while True:
+    print(powershell.stdout.readline())

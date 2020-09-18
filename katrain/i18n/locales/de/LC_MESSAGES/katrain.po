@@ -678,14 +678,14 @@ msgstr ""
 "Mauszeiger über den Zug,um die erwartete Widerlegung zu sehen. Bitte "
 "versuche es erneut."
 
-#. TODO - resign the game
+#. resign the game
 msgid "resign"
-msgstr "Resign"
+msgstr "Aufgeben"
 
-#. TODO - Analyze again but exclude all currently considered moves
+#.  - Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
-msgstr "Find alternative moves"
+msgstr "Finde alternative Züge"
 
-#. TODO - status message
+#.  - status message
 msgid "alternative analysis"
-msgstr "Searching for alternative moves"
+msgstr "Suche nach alternativen Zügen"
