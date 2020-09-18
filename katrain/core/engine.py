@@ -85,8 +85,15 @@ class KataGoEngine:
     def start(self):
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             self.katago_process = subprocess.Popen(
-                self.command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=self.shell
+                self.command,
+                startupinfo=startupinfo,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=self.shell,
             )
         except (FileNotFoundError, PermissionError, OSError) as e:
             self.katrain.log(
