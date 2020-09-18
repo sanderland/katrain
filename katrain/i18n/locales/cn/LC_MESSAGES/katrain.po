@@ -521,6 +521,7 @@ msgstr "读秒声音开启"
 msgid "tab:info-details"
 msgstr "详细"
 
+#. TODO: updated
 msgid "teaching undo message"
 msgstr "撤销第 {move} 手棋因为损失超过 {points_lost:.1f} 目. 悬停在该手棋 上方查看信息. 请再次尝试."
 
@@ -627,3 +628,15 @@ msgstr "所有可用的exe文件已下载"
 
 msgid "Engine missing DLL"
 msgstr "启动katago失败因缺失dll文件. 请检查运行要求, 或尝试让exe文件自行运行并检查细节. "
+
+#.  resign the game
+msgid "resign"
+msgstr "认输"
+
+#. Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "寻找其他走法"
+
+#. status message
+msgid "alternative analysis"
+msgstr "正在搜索其他走法"

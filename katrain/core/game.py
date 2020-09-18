@@ -55,7 +55,11 @@ class Game:
             self.root = move_tree
             self.komi = self.root.komi
             handicap = int(self.root.get_property("HA", 0))
-            if handicap >= 2 and not self.root.placements:
+            if (
+                handicap >= 2
+                and not self.root.placements
+                and not (not self.root.move_with_placements and self.root.children and self.root.children[0].placements)
+            ):  # not really according to sgf, and not sure if still needed, last clause for fox
                 self.root.place_handicap_stones(handicap)
         else:
             board_size = katrain.config("game/size")
@@ -203,8 +207,11 @@ class Game:
             return sum(self.chains, [])
 
     @property
-    def ended(self):
-        return self.current_node.parent and self.current_node.is_pass and self.current_node.parent.is_pass
+    def end_result(self):
+        if self.current_node.end_state:
+            return self.current_node.end_state
+        if self.current_node.parent and self.current_node.is_pass and self.current_node.parent.is_pass:
+            return self.manual_score or i18n._("board-game-end")
 
     @property
     def prisoner_count(
@@ -279,13 +286,17 @@ class Game:
         def player_name(player_info):
             return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
 
+        root_properties = self.root.properties
+        x_properties = {}
         if "KaTrain" in self.root.get_property("AP", ""):
             for bw in "BW":
-                self.root.set_property("P" + bw, player_name(self.katrain.players_info[bw]))
+                x_properties["P" + bw] = player_name(self.katrain.players_info[bw])
                 player_info = self.katrain.players_info[bw]
                 if player_info.player_type == PLAYER_AI:
-                    self.root.set_property(bw + "R", rank_label(player_info.calculated_rank))
-
+                    x_properties[bw + "R"] = rank_label(player_info.calculated_rank)
+        if "+" in str(self.end_result):
+            x_properties["RE"] = self.end_result
+        self.root.properties = {**root_properties, **{k: [v] for k, v in x_properties.items()}}
         player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
         game_name = f"katrain_{player_names['B']} vs {player_names['W']} {self.game_id}"
         file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
@@ -299,6 +310,7 @@ class Game:
         )
         with open(file_name, "w", encoding="utf-8") as f:
             f.write(sgf)
+        self.root.properties = root_properties
         return i18n._("sgf written").format(file_name=file_name)
 
     def analyze_extra(self, mode, **kwargs):
@@ -310,7 +322,9 @@ class Game:
 
         if mode == "extra":
             if kwargs.get("continuous", False):
-                visits = max(engine.config["max_visits"], math.ceil(cn.analysis_visits_requested * 1.25))
+                visits = min(
+                    1_000_000_000, max(engine.config["max_visits"], math.ceil(cn.analysis_visits_requested * 1.25))
+                )
             else:
                 visits = cn.analysis_visits_requested + engine.config["max_visits"]
             self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
@@ -355,21 +369,27 @@ class Game:
             visits = engine.config["fast_visits"]
             self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits), STATUS_ANALYSIS)
             priority = -1_000_000_000
-        elif mode == "equalize":
+        elif mode in ["equalize", "alternative"]:
             if not cn.analysis_ready:
                 self.katrain.controls.set_status(i18n._("wait-before-equalize"), STATUS_INFO, self.current_node)
                 return
 
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
-            visits = max(d["visits"] for d in cn.analysis["moves"].values())
-            self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits), STATUS_ANALYSIS)
             priority = -1_000
+            if mode == "alternative":  # also do a quick update on current candidates so it doesn't look too weird
+                self.katrain.controls.set_status(i18n._("alternative analysis"), STATUS_ANALYSIS)
+                cn.analyze(engine, priority=-500, time_limit=False, find_alternatives=True)
+                visits = engine.config["fast_visits"]
+            else:
+                visits = max(d["visits"] for d in cn.analysis["moves"].values())
+                self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits), STATUS_ANALYSIS)
         else:
             raise ValueError("Invalid analysis mode")
         for move in analyze_moves:
-            cn.analyze(
-                engine, priority, visits=visits, refine_move=move, time_limit=False
-            )  # explicitly requested so take as long as you need
+            if cn.analysis["moves"].get(move.gtp(), {"visits": 0})["visits"] < visits:
+                cn.analyze(
+                    engine, priority, visits=visits, refine_move=move, time_limit=False
+                )  # explicitly requested so take as long as you need
 
     def analyze_undo(self, node):
         train_config = self.katrain.config("trainer")

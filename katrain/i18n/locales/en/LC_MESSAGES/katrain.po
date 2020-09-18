@@ -102,6 +102,10 @@ msgstr "Fast analysis of all moves"
 msgid "analysis:game"
 msgstr "Deeper full game analysis"
 
+#. Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "Find alternative moves"
+
 #. Keep improving current position analysis when there is nothing else to do
 msgid "analysis:continuous"
 msgstr "Toggle continuous analysis"
@@ -118,6 +122,10 @@ msgid "sweep analysis"
 msgstr "Analyzing entire board using {visits} visits/move"
 
 #. status message
+msgid "alternative analysis"
+msgstr "Searching for alternative moves"
+
+#. status message
 msgid "equalizing analysis"
 msgstr "Equalizing analysis of candidate moves to {visits} visits"
 
@@ -129,10 +137,16 @@ msgstr "Re-analyzing entire game using {visits} visits"
 msgid "pass-button-text"
 msgstr "Pass"
 
+#. resign the game
+msgid "resign"
+msgstr "Resign"
+
+#. Shown when a move is undone in teaching mode.
 msgid "teaching undo message"
 msgstr ""
-"Undid move {move} as it lost {points_lost:.1f} points. Hover over the move "
-"to see expected refutation. Please try again."
+"Undid move {move} as it lost {points_lost:.1f} points. Please try again. For"
+" a hint, hover over the move to see expected refutation, or check expected "
+"territory (t) to see the areas of the board where point loss is expected."
 
 msgid "ai-ponder"
 msgstr ""

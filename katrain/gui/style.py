@@ -8,6 +8,8 @@ DEFAULT_FONT = "fonts/NotoSansCJKsc-Regular.otf"
 WHITE = [0.95, 0.95, 0.95, 1]
 BLACK = [0.05, 0.05, 0.05, 1]
 LIGHTGREY = [0.7, 0.7, 0.7, 1]
+GREY = [0.5, 0.5, 0.5, 1]
+LIGHTERGREY = [0.85, 0.85, 0.85, 1]
 
 RED = [0.8, 0.1, 0.1, 1]
 GREEN = [0.1, 0.8, 0.1, 1]
@@ -31,7 +33,7 @@ EVAL_COLORS = {
         [0.447, 0.129, 0.42, 1],
         [0.8, 0, 0, 1],
         [0.9, 0.4, 0.1, 1],
-        [0.85, 0.89, 0.3, 1],
+        [0.95, 0.95, 0, 1],
         [0.67, 0.9, 0.18, 1],
         [0.117, 0.588, 0, 1],
     ],
@@ -39,7 +41,7 @@ EVAL_COLORS = {
         [1, 0, 1, 1],
         [1, 0, 0, 1],
         [1, 0.5, 0, 1],
-        [0.85, 0.89, 0.3, 1],
+        [1, 1, 0, 1],
         [0, 1, 1, 1],
         [0, 0, 1, 1],
     ],
@@ -50,6 +52,7 @@ EVAL_DOT_MAX_SIZE = 0.5
 EVAL_DOT_MIN_SIZE = 0.25
 
 STONE_COLORS = {"B": BLACK, "W": WHITE}
+STONE_CONTRAST_COLORS = {"B": LIGHTERGREY, "W": GREY}
 OUTLINE_COLORS = {"B": [0.3, 0.3, 0.3, 0.5], "W": [0.7, 0.7, 0.7, 0.5]}
 STONE_TEXT_COLORS = {"W": BLACK, "B": WHITE}
 
@@ -59,12 +62,16 @@ POLICY_COLOR = [0.9, 0.2, 0.8]
 STARPOINT_SIZE = 0.1
 BOARD_COLOR = [0.85, 0.68, 0.40, 1]
 STONE_SIZE = 0.505  # texture edge is transparent
-VISITS_FRAC_SMALL = 0.1
 
-GHOST_ALPHA = 0.5
-TOP_MOVE_ALPHA = 0.4
-TOP_MOVE_BORDER_COLOR = [46 / 255, 65 / 255, 88 / 255, 0.9]
+HINTS_MIN_ALPHA = 0.2  # single visit
+HINTS_ALPHA = 0.8
+POLICY_ALPHA = 0.6
+TOP_POLICY_ALPHA = 0.3
+TOP_MOVE_BORDER_COLOR = [10 / 255, 200 / 255, 250 / 255, 1.0]
 CHILD_SCALE = 0.95
+HINT_SCALE = 0.975
+UNCERTAIN_HINT_SCALE = 0.7
+
 
 # ponder light
 ENGINE_DOWN_COL = EVAL_COLORS["theme:normal"][1]

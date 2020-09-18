@@ -25,6 +25,8 @@ These commands install [Homebrew](https://brew.sh), which simplifies installing 
  
 To upgrade to a newer version, simply run `pip3 install -U katrain`
 
+If you encounter an error about SDL being missing, try ` brew sdl sdl_image sdl_mixer sdl_ttf portmidi`
+
 ### <a name="MacSources"></a>Troubleshooting and Installation from sources
 
 Installation from sources is essentially the same as for Linux, see [here](#LinuxSources),

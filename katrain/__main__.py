@@ -196,14 +196,14 @@ class KaTrainGui(Screen, KaTrainBase):
                 and cn.analysis_ready
                 and cn.parent.analysis_ready
                 and not cn.children
-                and not self.game.ended
+                and not self.game.end_result
             ):
                 self.game.analyze_undo(cn)  # not via message loop
             if (
                 cn.analysis_ready
                 and next_player.ai
                 and not cn.children
-                and not self.game.ended
+                and not self.game.end_result
                 and not (teaching_undo and cn.auto_undo is None)
             ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                 self._do_ai_move(cn)
@@ -266,7 +266,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 player_info.name = move_tree.root.get_property("P" + bw)
                 self.update_player(bw)
         self.controls.graph.initialize_from_game(self.game.root)
-        self.controls.rank_graph.initialize_from_game(self.game.root)
+        # self.controls.rank_graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 
     def _do_ai_move(self, node=None):
@@ -285,6 +285,9 @@ class KaTrainGui(Screen, KaTrainBase):
                 n_times = 2
         self.board_gui.animating_pv = None
         self.game.undo(n_times)
+
+    def _do_resign(self):
+        self.game.current_node.end_state = f"{self.game.current_node.player}+R"
 
     def _do_redo(self, n_times=1):
         self.board_gui.animating_pv = None
@@ -436,6 +439,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "a": ("analyze-extra", "extra"),
             "s": ("analyze-extra", "equalize"),
             "d": ("analyze-extra", "sweep"),
+            "f": ("analyze-extra", "alternative"),
             "p": ("play", None),
             "down": ("switch-branch", 1),
             "up": ("switch-branch", -1),
@@ -475,9 +479,9 @@ class KaTrainGui(Screen, KaTrainBase):
         elif keycode[1] in ["`", "~", "m"] and "ctrl" not in modifiers:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["left", "z"]:
-            self("undo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
+            self("undo", 1 + ("alt" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] in ["right", "x"]:
-            self("redo", 1 + ("shift" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
+            self("redo", 1 + ("alt" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
         elif keycode[1] == "n" and "ctrl" in modifiers:
             self("new-game-popup")
         elif keycode[1] == "l" and "ctrl" in modifiers:

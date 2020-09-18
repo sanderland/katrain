@@ -127,7 +127,7 @@ class ControlsPanel(BoxLayout):
         lock_ai = katrain.config("trainer/lock_ai") and katrain.play_analyze_mode == MODE_PLAY
         details = self.info.detailed and not lock_ai
         info = ""
-        if current_node.move and not current_node.is_root:
+        if current_node.move or current_node.is_root:
             info = self.active_comment_node.comment(
                 teach=katrain.players_info[self.active_comment_node.player].being_taught, details=details
             )
@@ -144,7 +144,7 @@ class ControlsPanel(BoxLayout):
             self.stats.player = ""
 
         self.graph.update_value(current_node)
-        self.rank_graph.update_value(current_node)
+        # self.rank_graph.update_value(current_node)
         self.note.text = current_node.note
         self.info.text = info
 

@@ -23,6 +23,7 @@ class GameNode(SGFNode):
         self.time_used = 0
         self.analysis_visits_requested = 0
         self.undo_threshold = random.random()  # for fractional undos
+        self.end_state = None
 
     def sgf_properties(self, save_comments_player=None, save_comments_class=None, eval_thresholds=None):
         properties = copy.copy(super().sgf_properties())
@@ -67,15 +68,25 @@ class GameNode(SGFNode):
         )  # analyzed/not undone main, non-teach second, undone last
 
     # various analysis functions
-    def analyze(self, engine, priority=0, visits=None, time_limit=True, refine_move=None, analyze_fast=False):
+    def analyze(
+        self,
+        engine,
+        priority=0,
+        visits=None,
+        time_limit=True,
+        refine_move=None,
+        analyze_fast=False,
+        find_alternatives=False,
+    ):
         engine.request_analysis(
             self,
-            lambda result: self.set_analysis(result, refine_move),
+            lambda result: self.set_analysis(result, refine_move, find_alternatives),
             priority=priority,
             visits=visits,
             analyze_fast=analyze_fast,
             time_limit=time_limit,
             next_move=refine_move,
+            find_alternatives=find_alternatives,
         )
 
     def update_move_analysis(self, move_analysis, move_gtp):
@@ -86,21 +97,30 @@ class GameNode(SGFNode):
                 "order": 999,
                 **move_analysis,
             }  # some default values for keys missing in rootInfo
-        elif cur["visits"] < move_analysis["visits"]:
-            cur.update(move_analysis)
+        else:
+            cur["order"] = min(cur["order"], move_analysis.get("order", 999))  # parent arriving after child
+            if cur["visits"] < move_analysis["visits"]:
+                cur.update(move_analysis)
 
-    def set_analysis(self, analysis_json, refine_move):
+    def set_analysis(self, analysis_json: Dict, refine_move: Optional[Move], alternatives_mode: bool):
         if refine_move:
             pvtail = analysis_json["moveInfos"][0]["pv"] if analysis_json["moveInfos"] else []
             self.update_move_analysis(
                 {"pv": [refine_move.gtp()] + pvtail, **analysis_json["rootInfo"]}, refine_move.gtp()
             )
         else:
+            if alternatives_mode:
+                for m in analysis_json["moveInfos"]:
+                    m["order"] += 10  # offset for not making this top
+            if refine_move is None and not alternatives_mode:
+                for move_dict in self.analysis["moves"].values():
+                    move_dict["order"] = 999  # old moves to end
             for move_analysis in analysis_json["moveInfos"]:
                 self.update_move_analysis(move_analysis, move_analysis["move"])
             self.ownership = analysis_json.get("ownership")
             self.policy = analysis_json.get("policy")
-            self.analysis["root"] = analysis_json["rootInfo"]
+            if not alternatives_mode:
+                self.analysis["root"] = analysis_json["rootInfo"]
             if self.parent and self.move:
                 analysis_json["rootInfo"]["pv"] = [self.move.gtp()] + (
                     analysis_json["moveInfos"][0]["pv"] if analysis_json["moveInfos"] else []
@@ -151,6 +171,8 @@ class GameNode(SGFNode):
     def comment(self, sgf=False, teach=False, details=False, interactive=True):
         single_move = self.move
         if not self.parent or not single_move:  # root
+            if self.root:
+                return f"{i18n._('komi')}: {self.komi:.1f}\n{i18n._('ruleset')}: {i18n._(self.get_property('RU','Japanese').lower())}\n"
             return ""
 
         text = i18n._("move").format(number=self.depth) + f": {single_move.player} {single_move.gtp()}\n"
@@ -193,8 +215,10 @@ class GameNode(SGFNode):
                 text += "\n" + i18n._("Info:AI thoughts").format(thoughts=self.ai_thoughts)
         else:
             text = i18n._("No analysis available") if sgf else i18n._("Analyzing move...")
+
         if "C" in self.properties:
             text += "\n[u]SGF Comments:[/u]\n" + "\n".join(self.properties["C"])
+
         return text
 
     @property

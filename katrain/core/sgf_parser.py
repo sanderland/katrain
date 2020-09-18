@@ -275,7 +275,7 @@ class SGFNode:
     @property
     def next_player(self):
         """Returns player to move"""
-        if "B" in self.properties or "AB" in self.properties:  # root or black moved
+        if "B" in self.properties or ("AB" in self.properties and not "W" in self.properties):  # root or black moved
             return "W"
         else:
             return "B"
@@ -283,7 +283,7 @@ class SGFNode:
     @property
     def player(self):
         """Returns player that moved last. nb root is considered white played if no handicap stones are placed"""
-        if "B" in self.properties or "AB" in self.properties:
+        if "B" in self.properties or ("AB" in self.properties and not "W" in self.properties):
             return "B"
         else:
             return "W"
@@ -332,7 +332,17 @@ class SGF:
         """Parse a string as SGF."""
         match = re.search(cls.SGF_PAT, input_str)
         clipped_str = match.group() if match else input_str
-        return cls(clipped_str).root
+        root = cls(clipped_str).root
+        # Fix weird FoxGo server KM values
+        if "foxwq" in root.get_list_property("AP", []):
+            if int(root.get_property("HA", 0)) >= 1:
+                corrected_komi = 0.5
+            elif root.get_property("RU").lower() in ["chinese", "cn"]:
+                corrected_komi = 7.5
+            else:
+                corrected_komi = 6.5
+            root.set_property("KM", corrected_komi)
+        return root
 
     @classmethod
     def parse_file(cls, filename, encoding=None) -> SGFNode:
@@ -343,7 +353,7 @@ class SGF:
         with open(filename, "rb") as f:
             bin_contents = f.read()
             if not encoding:
-                if is_gib or is_ngf:
+                if is_gib or is_ngf or b"AP[foxwq]" in bin_contents:
                     encoding = "utf8"
                 else:  # sgf
                     match = re.search(rb"CA\[(.*?)\]", bin_contents)

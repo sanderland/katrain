@@ -129,10 +129,6 @@ msgstr "一局全体を再分析中（各{visits}手）"
 msgid "pass-button-text"
 msgstr "パス"
 
-msgid "teaching undo message"
-msgstr ""
-"待った。{move}は{points_lost:.1f}目損です（マウスカーソルをこの手にかざせばとがめる手順が表示されます）。打ち直してください。"
-
 msgid "ai-ponder"
 msgstr "この印はエンジンの状態をシンプルに表します（緑＝空き、オレンジ＝処理中）。エンジンが止まったり起動できなかったりすると赤くなります。"
 
@@ -647,11 +643,11 @@ msgstr "別版KataGoをダウンロード"
 
 #. shown on on the binaries select dropdown
 msgid "katago binaries available"
-msgstr "入手済KataGo実行ファイルの一覧（{num}個みつかりました）"
+msgstr "入手済KataGoの一覧（{num}個みつかりました）"
 
 #. shown on on the katago binary select dropdown
 msgid "default katago option"
-msgstr "内蔵KataGo"
+msgstr "内蔵KataGo（OpenCL版）"
 
 #. error message on trying to download models when already done
 msgid "All binaries downloaded"
@@ -666,3 +662,20 @@ msgstr ""
 #. moves
 msgid "show point loss as text"
 msgstr "損失目数を候補手上に表示"
+
+#. resign the game
+msgid "resign"
+msgstr "投了"
+
+#. Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "他の候補手を分析"
+
+#. message shown when move is undone
+msgid "teaching undo message"
+msgstr ""
+"待った。{move}は{points_lost:.1f}目損です。打ち直してください。ヒント：マウスカーソルをこの手にかざせばとがめる手順が表示されます。あるいは、地合推定をオンに（tキー）すれば盤上どのあたりで損をしたかが見られます。"
+
+#. status message
+msgid "alternative analysis"
+msgstr "他の候補手を分析中"
