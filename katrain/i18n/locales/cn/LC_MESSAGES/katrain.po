@@ -640,3 +640,15 @@ msgstr "寻找其他走法"
 #. status message
 msgid "alternative analysis"
 msgstr "正在搜索其他走法"
+
+#. TODO - ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "Minimal time use in byo-yomi (s)"
+
+#. TODO
+msgid "move too fast"
+msgstr "Think for at least {num} seconds before playing."
+
+#. TODO - in minutes
+msgid "main time"
+msgstr "Main time (min.)"

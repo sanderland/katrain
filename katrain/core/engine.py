@@ -85,7 +85,7 @@ class KataGoEngine:
     def start(self):
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
-            startupinfo = None # stop command box popups on windows/pyinstaller
+            startupinfo = None  # stop command box popups on windows/pyinstaller
             if hasattr(subprocess, "STARTUPINFO"):
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW

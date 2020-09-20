@@ -22,6 +22,8 @@
     "timer": {
         "byo_length": 30,
         "byo_periods": 5,
+        "minimal_use": 0,
+        "main_time": 0,
         "sound": true
     },
     "game": {

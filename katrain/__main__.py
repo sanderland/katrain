@@ -207,7 +207,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 and not (teaching_undo and cn.auto_undo is None)
             ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                 self._do_ai_move(cn)
-                Clock.schedule_once(self.board_gui.play_stone_sound, 0)
+                Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
         if len(self.engine.queries) == 0 and self.idle_analysis:
             self("analyze-extra", "extra", continuous=True)
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
@@ -324,7 +324,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.timer_settings_popup:
             self.timer_settings_popup = I18NPopup(
-                title_key="timer settings", size=[dp(350), dp(400)], content=ConfigTimerPopup(self)
+                title_key="timer settings", size=[dp(600), dp(500)], content=ConfigTimerPopup(self)
             ).__self__
             self.timer_settings_popup.content.popup = self.timer_settings_popup
         self.timer_settings_popup.open()

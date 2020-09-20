@@ -679,3 +679,15 @@ msgstr ""
 #. status message
 msgid "alternative analysis"
 msgstr "他の候補手を分析中"
+
+#. TODO - ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "Minimal time use in byo-yomi (s)"
+
+#. TODO
+msgid "move too fast"
+msgstr "Think for at least {num} seconds before playing."
+
+#. TODO - in minutes
+msgid "main time"
+msgstr "Main time (min.)"

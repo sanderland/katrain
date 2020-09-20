@@ -293,13 +293,24 @@ msgid "timer settings"
 msgstr "Adjust Timer Settings"
 
 msgid "byoyomi length"
-msgstr "Time per Byo-yomi Period"
+msgstr "Time per byo-yomi period (s)"
 
 msgid "byoyomi periods"
-msgstr "Number of Periods"
+msgstr "Number of periods"
 
 msgid "count down sound"
 msgstr "Sound on"
+
+#. in minutes
+msgid "main time"
+msgstr "Main time (min.)"
+
+#. ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "Minimal time use in byo-yomi (s)"
+
+msgid "move too fast"
+msgstr "Think for at least {num} seconds before playing."
 
 #. submit button
 msgid "update timer"

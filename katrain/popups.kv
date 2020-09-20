@@ -319,9 +319,15 @@
 <ConfigTimerPopup>:
     MDGridLayout:
         cols: 2
-        rows: 3
+        rows: 5
         spacing: 1.5 * CP_SPACING
         size_hint: 1,2.5
+        DescriptionLabel:
+            text: i18n._('main time')
+        AnchorLayout:
+            LabelledIntInput:
+                text: "10"
+                input_property: "timer/main_time"
         DescriptionLabel:
             text: i18n._('byoyomi length')
         AnchorLayout:
@@ -334,6 +340,12 @@
             LabelledIntInput:
                 text: "5"
                 input_property: "timer/byo_periods"
+        DescriptionLabel:
+            text: i18n._('minimal time use')
+        AnchorLayout:
+            LabelledIntInput:
+                text: "0"
+                input_property: "timer/minimal_use"
         DescriptionLabel:
             text: i18n._('count down sound')
         AnchorLayout:

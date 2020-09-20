@@ -79,6 +79,7 @@ class Game:
             self.root.set_property("RU", katrain.config("game/rules"))
 
         self.set_current_node(self.root)
+        self.main_time_used = 0
         threading.Thread(
             target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast), daemon=True
         ).start()  # return faster, but bypass Kivy Clock

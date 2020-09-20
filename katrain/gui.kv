@@ -357,14 +357,14 @@
     spacing: CP_SPACING
     padding: CP_PADDING * 4, CP_PADDING * 2
     paused: True
-    timeout: self.state[1] <= 0
+    timeout: root.state[1] is not None and root.state[1] <= 0
     MDBoxLayout:
         size_hint: 0.7,1
         MDFloatLayout:
             size_hint: 0.4,1
             TimerLabel:
                 color: BACKGROUND_COLOR
-                text: '8:88'
+                text: '{}:88'.format('188' if root.state[0] >= 6000 else ('88' if root.state[0] >= 600 else '8'))
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
                 halign: 'right'
@@ -379,20 +379,20 @@
                 valign: 'middle'
         TimerLabel:
             size_hint: 0.05,1
-            text: "x"
+            text: "x" if  root.state[1] is not None else ""
             font_size: self.height * 0.3
             text_size: self.width, self.height * 0.95
             halign: 'right'
             valign: 'top'
             timeout: root.timeout
         TimerLabel:
-            size_hint: 0.1,1
+            size_hint: 0.075,1
             font_size: self.height * 0.35
             text_size: self.size
             halign: 'left'
             valign: 'top'
             id: periods
-            text: str(root.state[1])
+            text: str(root.state[1]) if root.state[1] is not None else ""
             max_lines: 1
             timeout: root.timeout
     MDBoxLayout:

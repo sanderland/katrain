@@ -654,3 +654,15 @@ msgstr "다른 수 찾기"
 
 msgid "alternative analysis"
 msgstr "다른 수를 찾는 중입니다"
+
+#. TODO - ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "Ignore moves faster than <this many> seconds"
+
+#. TODO
+msgid "move too fast"
+msgstr "Think for at least {num} seconds before playing."
+
+#. TODO - in minutes
+msgid "main time"
+msgstr "Main time (min.)"

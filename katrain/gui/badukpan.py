@@ -106,8 +106,21 @@ class BadukPanWidget(Widget):
             return
         katrain = self.katrain
         if self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
-            katrain("play", self.ghost_stone)
-            self.play_stone_sound()
+            current_node = self.katrain and self.katrain.game and self.katrain.game.current_node
+            if (
+                current_node
+                and not current_node.children
+                and not self.katrain.next_player_info.ai
+                and not self.katrain.controls.timer.paused
+                and self.katrain.play_analyze_mode == MODE_PLAY
+                and current_node.time_used < self.katrain.config("timer/minimal_use", 0)
+            ):
+                self.katrain.controls.set_status(
+                    i18n._("move too fast").format(num=self.katrain.config("timer/minimal_use", 0)), STATUS_TEACHING
+                )
+            else:
+                katrain("play", self.ghost_stone)
+                self.play_stone_sound()
         elif not self.ghost_stone:
             xd, xp = self._find_closest(touch.x, self.gridpos_x)
             yd, yp = self._find_closest(touch.y, self.gridpos_y)
