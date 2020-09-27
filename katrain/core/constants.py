@@ -1,6 +1,6 @@
-VERSION = "1.5.0"
+VERSION = "1.5.1"
 HOMEPAGE = "https://github.com/sanderland/katrain"
-CONFIG_MIN_VERSION = "1.4.0"  # keep config files from this version
+CONFIG_MIN_VERSION = "1.5.1"  # keep config files from this version
 
 OUTPUT_ERROR = -1
 OUTPUT_KATAGO_STDERR = -0.5
@@ -33,16 +33,19 @@ AI_TENUKI = "ai:p:tenuki"
 AI_INFLUENCE = "ai:p:influence"
 AI_TERRITORY = "ai:p:territory"
 AI_RANK = "ai:p:rank"
+AI_SIMPLE = "ai:disabled"
+AI_SIMPLE_OWNERSHIP = "ai:simple"
 
 AI_CONFIG_DEFAULT = AI_RANK
 
-AI_STRATEGIES_ENGINE = [AI_DEFAULT, AI_HANDICAP, AI_SCORELOSS, AI_JIGO]
+AI_STRATEGIES_ENGINE = [AI_DEFAULT, AI_HANDICAP, AI_SIMPLE, AI_SCORELOSS, AI_JIGO]
 AI_STRATEGIES_PICK = [AI_PICK, AI_LOCAL, AI_TENUKI, AI_INFLUENCE, AI_TERRITORY, AI_RANK]
 AI_STRATEGIES_POLICY = [AI_WEIGHTED, AI_POLICY] + AI_STRATEGIES_PICK
 AI_STRATEGIES = AI_STRATEGIES_ENGINE + AI_STRATEGIES_POLICY
 AI_STRATEGIES_RECOMMENDED_ORDER = [
     AI_DEFAULT,
     AI_RANK,
+    AI_SIMPLE_OWNERSHIP,
     AI_HANDICAP,
     AI_SCORELOSS,
     AI_POLICY,
@@ -67,6 +70,7 @@ AI_STRENGTH = {  # dan ranks, backup if model is missing. TODO: remove some?
     AI_INFLUENCE: -7,
     AI_TERRITORY: -7,
     AI_RANK: float("nan"),
+    AI_SIMPLE_OWNERSHIP: 9,
 }
 
 AI_OPTION_VALUES = {
@@ -85,6 +89,8 @@ AI_OPTION_VALUES = {
     "threshold": [2, 2.5, 3, 3.5, 4, 4.5],
     "automatic": "bool",
     "pda": [(x / 10, f"{'W' if x<0 else 'B'}+{abs(x/10):.1f}") for x in range(-30, 31)],
+    "max_points_lost": [x/10 for x in range(51)],
+    "settled_weight": [x/10 for x in range(-100,101)],
 }
 AI_KEY_PROPERTIES = {"kyu_rank", "strength", "weaken_fac", "pick_frac", "pick_n", "automatic"}
 
