@@ -281,6 +281,7 @@ class KataGoEngine:
             "boardXSize": size_x,
             "boardYSize": size_y,
             "includeOwnership": ownership and not next_move,
+            "includeMovesOwnership": ownership and not next_move,
             "includePolicy": not next_move,
             "initialStones": [[m.player, m.gtp()] for m in initial_stones],
             "initialPlayer": analysis_node.root.next_player,

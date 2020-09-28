@@ -388,6 +388,7 @@ class KaTrainGui(Screen, KaTrainBase):
             popup_contents.filesel.on_success = readfile
             popup_contents.filesel.on_submit = readfile
         self.fileselect_popup.open()
+        self.fileselect_popup.content.filesel.ids.list_view._trigger_update()
 
     def _do_output_sgf(self):
         msg = self.game.write_sgf(self.config("general/sgf_save"))

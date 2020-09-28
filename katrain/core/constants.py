@@ -89,8 +89,8 @@ AI_OPTION_VALUES = {
     "threshold": [2, 2.5, 3, 3.5, 4, 4.5],
     "automatic": "bool",
     "pda": [(x / 10, f"{'W' if x<0 else 'B'}+{abs(x/10):.1f}") for x in range(-30, 31)],
-    "max_points_lost": [x/10 for x in range(51)],
-    "settled_weight": [x/10 for x in range(-100,101)],
+    "max_points_lost": [x / 10 for x in range(51)],
+    "settled_weight": [x / 10 for x in range(-100, 101)],
 }
 AI_KEY_PROPERTIES = {"kyu_rank", "strength", "weaken_fac", "pick_frac", "pick_n", "automatic"}
 

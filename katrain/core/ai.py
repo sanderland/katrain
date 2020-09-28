@@ -352,7 +352,6 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
         if top_cand.is_pass and ai_mode not in [
             AI_DEFAULT,
             AI_HANDICAP,
-            AI_SIMPLE,
         ]:  # don't play suicidal to balance score
             aimove = top_cand
             ai_thoughts += f"Top move is pass, so passing regardless of strategy. "

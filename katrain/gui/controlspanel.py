@@ -151,13 +151,13 @@ class ControlsPanel(BoxLayout):
         self.info.text = info
 
     def update_timer(self, _dt):
-        game =  self.katrain and self.katrain.game
+        game = self.katrain and self.katrain.game
         current_node = game and self.katrain.game.current_node
         if current_node:
             last_update_node, last_update_time, beeping = self.last_timer_update
             new_beeping = beeping
             now = time.time()
-            main_time =  self.katrain.config("timer/main_time",0) * 60
+            main_time = self.katrain.config("timer/main_time", 0) * 60
             byo_len = max(1, self.katrain.config("timer/byo_length"))
             byo_num = max(1, self.katrain.config("timer/byo_periods"))
             sounds_on = self.katrain.config("timer/sound")
