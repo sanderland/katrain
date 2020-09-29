@@ -70,7 +70,7 @@ AI_STRENGTH = {  # dan ranks, backup if model is missing. TODO: remove some?
     AI_INFLUENCE: -7,
     AI_TERRITORY: -7,
     AI_RANK: float("nan"),
-    AI_SIMPLE_OWNERSHIP: 9,
+    AI_SIMPLE_OWNERSHIP: 3,
 }
 
 AI_OPTION_VALUES = {
@@ -90,7 +90,8 @@ AI_OPTION_VALUES = {
     "automatic": "bool",
     "pda": [(x / 10, f"{'W' if x<0 else 'B'}+{abs(x/10):.1f}") for x in range(-30, 31)],
     "max_points_lost": [x / 10 for x in range(51)],
-    "settled_weight": [x / 10 for x in range(-100, 101)],
+    "settled_weight": [x / 4 for x in range(1, 17)],
+    "opponent_fac": [x / 10 for x in range(-20, 11)],
 }
 AI_KEY_PROPERTIES = {"kyu_rank", "strength", "weaken_fac", "pick_frac", "pick_n", "automatic"}
 

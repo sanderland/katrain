@@ -378,21 +378,22 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                 ai_thoughts += f"ScoreLoss strategy found {len(candidate_ai_moves)} candidate moves (best {top_cand.gtp()}) and chose {aimove.gtp()} (weight {topmove[1]:.3f}, point loss {topmove[0]:.1f}) based on score weights."
             elif ai_mode == AI_SIMPLE_OWNERSHIP:
 
-                def settledness(d):
-                    return sum([abs(o) for o in d["ownership"]])
+                def settledness(d, player_fac):
+                    return sum([abs(o) for o in d["ownership"] if player_fac * o > 0])
 
+                next_player_sign = cn.player_sign(cn.next_player)
                 moves_with_settledness = sorted(
                     [
-                        (Move.from_gtp(d["move"], player=cn.next_player), settledness(d), d)
+                        (Move.from_gtp(d["move"], player=cn.next_player), settledness(d,next_player_sign), settledness(d,-next_player_sign), d)
                         for d in candidate_ai_moves
                         if d["pointsLost"] < ai_settings["max_points_lost"] and "ownership" in d
                     ],
-                    key=lambda t: t[2]["pointsLost"] - ai_settings["settled_weight"] * t[1],
+                    key=lambda t: t[3]["pointsLost"] - ai_settings["settled_weight"] * (t[1] + ai_settings["opponent_fac"] * t[2]),
                 )
                 if moves_with_settledness:
                     cands = [
-                        f"{move.gtp()} ({d['pointsLost']:.1f} pt lost, {settled:.1f} settledness)"
-                        for move, settled, d in moves_with_settledness
+                        f"{move.gtp()} ({d['pointsLost']:.1f} pt lost, {d['visits']} visits, {settled:.1f} settledness, {oppsettled:.1f} opponent settledness)"
+                        for move, settled, oppsettled, d in moves_with_settledness
                     ]
                     ai_thoughts += f"Simple ownership strategy. Candidates {', '.join(cands)} "
                     aimove = moves_with_settledness[0][0]

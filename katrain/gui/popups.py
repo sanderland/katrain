@@ -238,6 +238,7 @@ class ConfigTimerPopup(QuickConfigGui):
             p.periods_used = 0
         self.katrain.controls.timer.paused = True
         self.katrain.game.current_node.time_used = 0
+        self.katrain.game.main_time_used = 0
         self.katrain.update_state()
 
 

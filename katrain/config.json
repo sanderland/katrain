@@ -89,8 +89,9 @@
             "opening_moves": 22.0
         },
         "ai:simple": {
-            "max_points_lost": 2.0,
-            "settled_weight": 1.0
+            "max_points_lost": 1.75,
+            "settled_weight": 1.0,
+            "opponent_fac": 0.5
         },
         "ai:p:weighted": {
             "weaken_fac": 1.25,

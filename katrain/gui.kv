@@ -364,7 +364,7 @@
             size_hint: 0.4,1
             TimerLabel:
                 color: BACKGROUND_COLOR
-                text: '{}:88'.format('188' if root.state[0] >= 6000 else ('88' if root.state[0] >= 600 else '8'))
+                text: '{}:88'.format('188' if root.state[0] >= 6000 else '88')
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
                 halign: 'right'
@@ -372,7 +372,7 @@
             TimerLabel:
                 id: timer
                 timeout: root.timeout
-                text: "{:01d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
+                text: "{:2d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
                 halign: 'right'
