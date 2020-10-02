@@ -384,18 +384,26 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                 next_player_sign = cn.player_sign(cn.next_player)
                 moves_with_settledness = sorted(
                     [
-                        (Move.from_gtp(d["move"], player=cn.next_player), settledness(d,next_player_sign), settledness(d,-next_player_sign), d)
+                        (
+                            Move.from_gtp(d["move"], player=cn.next_player),
+                            settledness(d, next_player_sign),
+                            settledness(d, -next_player_sign),
+                            d,
+                        )
                         for d in candidate_ai_moves
-                        if d["pointsLost"] < ai_settings["max_points_lost"] and "ownership" in d
+                        if d["pointsLost"] < ai_settings["max_points_lost"]
+                        and "ownership" in d
+                        and (d["order"] < 5 or d["visits"] >= ai_settings.get("min_visits", 1))
                     ],
-                    key=lambda t: t[3]["pointsLost"] - ai_settings["settled_weight"] * (t[1] + ai_settings["opponent_fac"] * t[2]),
+                    key=lambda t: t[3]["pointsLost"]
+                    - ai_settings["settled_weight"] * (t[1] + ai_settings["opponent_fac"] * t[2]),
                 )
                 if moves_with_settledness:
                     cands = [
                         f"{move.gtp()} ({d['pointsLost']:.1f} pt lost, {d['visits']} visits, {settled:.1f} settledness, {oppsettled:.1f} opponent settledness)"
-                        for move, settled, oppsettled, d in moves_with_settledness
+                        for move, settled, oppsettled, d in moves_with_settledness[:5]
                     ]
-                    ai_thoughts += f"Simple ownership strategy. Candidates {', '.join(cands)} "
+                    ai_thoughts += f"Simple ownership strategy. Top 5 Candidates {', '.join(cands)} "
                     aimove = moves_with_settledness[0][0]
                 else:
                     game.katrain.log(

@@ -92,6 +92,7 @@ AI_OPTION_VALUES = {
     "max_points_lost": [x / 10 for x in range(51)],
     "settled_weight": [x / 4 for x in range(1, 17)],
     "opponent_fac": [x / 10 for x in range(-20, 11)],
+    "min_visits": range(1,10)
 }
 AI_KEY_PROPERTIES = {"kyu_rank", "strength", "weaken_fac", "pick_frac", "pick_n", "automatic"}
 
