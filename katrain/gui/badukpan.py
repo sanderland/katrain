@@ -106,7 +106,7 @@ class BadukPanWidget(Widget):
             return
         katrain = self.katrain
         if self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
-            game =  self.katrain and self.katrain.game
+            game = self.katrain and self.katrain.game
             current_node = game and self.katrain.game.current_node
             if (
                 current_node
@@ -114,7 +114,7 @@ class BadukPanWidget(Widget):
                 and not self.katrain.next_player_info.ai
                 and not self.katrain.controls.timer.paused
                 and self.katrain.play_analyze_mode == MODE_PLAY
-                and self.katrain.config("timer/main_time",0) * 60 - game.main_time_used <= 0
+                and self.katrain.config("timer/main_time", 0) * 60 - game.main_time_used <= 0
                 and current_node.time_used < self.katrain.config("timer/minimal_use", 0)
             ):
                 self.katrain.controls.set_status(

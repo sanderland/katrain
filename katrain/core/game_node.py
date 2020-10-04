@@ -77,6 +77,7 @@ class GameNode(SGFNode):
         refine_move=None,
         analyze_fast=False,
         find_alternatives=False,
+        report_during_search=False,
     ):
         engine.request_analysis(
             self,
@@ -87,6 +88,7 @@ class GameNode(SGFNode):
             time_limit=time_limit,
             next_move=refine_move,
             find_alternatives=find_alternatives,
+            report_during_search=report_during_search,
         )
 
     def update_move_analysis(self, move_analysis, move_gtp):

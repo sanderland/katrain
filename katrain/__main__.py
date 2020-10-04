@@ -130,9 +130,10 @@ class KaTrainGui(Screen, KaTrainBase):
         return self.play_mode.mode
 
     def toggle_continuous_analysis(self):
-        self.idle_analysis = not self.idle_analysis
-        if not self.idle_analysis:
+        if self.idle_analysis:
+            self.engine.terminate_continuous_query()
             self.controls.set_status("", STATUS_INFO)
+        self.idle_analysis = not self.idle_analysis
         self.update_state()
 
     def start(self):
@@ -208,7 +209,7 @@ class KaTrainGui(Screen, KaTrainBase):
             ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                 self._do_ai_move(cn)
                 Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
-        if len(self.engine.queries) == 0 and self.idle_analysis:
+        if len(self.engine.queries) == 0 and self.idle_analysis:  # TODO on node change, toggle twice?
             self("analyze-extra", "extra", continuous=True)
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
 
