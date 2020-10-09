@@ -211,10 +211,11 @@ class GameNode(SGFNode):
                 top_pv = self.analysis_ready and self.candidate_moves[0].get("pv")
                 if top_pv:
                     text += i18n._("Info:undo predicted PV").format(pv=f"{self.next_player}{' '.join(top_pv)}") + "\n"
-            if self.ai_thoughts and (sgf or details):
-                text += "\n" + i18n._("Info:AI thoughts").format(thoughts=self.ai_thoughts)
         else:
             text = i18n._("No analysis available") if sgf else i18n._("Analyzing move...")
+
+        if self.ai_thoughts and (sgf or details):
+            text += "\n" + i18n._("Info:AI thoughts").format(thoughts=self.ai_thoughts)
 
         if "C" in self.properties:
             text += "\n[u]SGF Comments:[/u]\n" + "\n".join(self.properties["C"])

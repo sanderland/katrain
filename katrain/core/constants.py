@@ -33,12 +33,11 @@ AI_TENUKI = "ai:p:tenuki"
 AI_INFLUENCE = "ai:p:influence"
 AI_TERRITORY = "ai:p:territory"
 AI_RANK = "ai:p:rank"
-AI_SIMPLE = "ai:disabled"
 AI_SIMPLE_OWNERSHIP = "ai:simple"
 
 AI_CONFIG_DEFAULT = AI_RANK
 
-AI_STRATEGIES_ENGINE = [AI_DEFAULT, AI_HANDICAP, AI_SIMPLE, AI_SCORELOSS, AI_JIGO]
+AI_STRATEGIES_ENGINE = [AI_DEFAULT, AI_HANDICAP, AI_SCORELOSS, AI_JIGO]
 AI_STRATEGIES_PICK = [AI_PICK, AI_LOCAL, AI_TENUKI, AI_INFLUENCE, AI_TERRITORY, AI_RANK]
 AI_STRATEGIES_POLICY = [AI_WEIGHTED, AI_POLICY] + AI_STRATEGIES_PICK
 AI_STRATEGIES = AI_STRATEGIES_ENGINE + AI_STRATEGIES_POLICY
@@ -90,11 +89,13 @@ AI_OPTION_VALUES = {
     "automatic": "bool",
     "pda": [(x / 10, f"{'W' if x<0 else 'B'}+{abs(x/10):.1f}") for x in range(-30, 31)],
     "max_points_lost": [x / 10 for x in range(51)],
-    "settled_weight": [x / 4 for x in range(1, 17)],
+    "settled_weight": [x / 4 for x in range(0, 17)],
     "opponent_fac": [x / 10 for x in range(-20, 11)],
-    "min_visits": range(1,10)
+    "min_visits": range(1, 10),
+    "attach_penalty": [x / 10 for x in range(-10, 51)],
+    "tenuki_penalty": [x / 10 for x in range(-10, 51)],
 }
-AI_KEY_PROPERTIES = {"kyu_rank", "strength", "weaken_fac", "pick_frac", "pick_n", "automatic"}
+AI_KEY_PROPERTIES = {"kyu_rank", "strength", "weaken_fac", "pick_frac", "pick_n", "automatic","max_points_lost","min_visits"}
 
 
 CALIBRATED_RANK_ELO = [

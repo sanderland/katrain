@@ -691,3 +691,20 @@ msgstr "Think for at least {num} seconds before playing."
 #. TODO - in minutes
 msgid "main time"
 msgstr "Main time (min.)"
+
+#. TODO - TODO
+msgid "aihelp:simple"
+msgstr ""
+"Plays moves that lead to simplifying the board state. Of moves that lose at "
+"most 'max_points_lost' points and with at least 'min_visits', prefer moves "
+"that lose fewer points, settle own territory more (with importance "
+"settled_weight), settle opponent's territory more (importance settled_weight"
+" * opponent fac), avoid tenuki (more than 5 spaces, importance "
+"tenuki_penalty), and avoid attachments (importance attachment_penalty). "
+"Weights can be negative to make it complicate the game instead, andwide root"
+" noise (in general settings) can be used to further play according to the "
+"style at the cost of strength. "
+
+#. TODO
+msgid "ai:simple"
+msgstr "Simple Style"

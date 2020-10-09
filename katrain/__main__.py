@@ -351,7 +351,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.ai_settings_popup:
             self.ai_settings_popup = I18NPopup(
-                title_key="ai settings", size=[dp(600), dp(650)], content=ConfigAIPopup(self)
+                title_key="ai settings", size=[dp(750), dp(750)], content=ConfigAIPopup(self)
             ).__self__
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()

@@ -709,3 +709,11 @@ msgstr "Think for at least {num} seconds before playing."
 #. TODO - in minutes
 msgid "main time"
 msgstr "Main time (min.)"
+
+#. TODO
+msgid "aihelp:simple"
+msgstr "Plays moves that lead to simplifying the board state."
+
+#. TODO
+msgid "ai:simple"
+msgstr "Simple Style"
