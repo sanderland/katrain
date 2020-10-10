@@ -95,7 +95,16 @@ AI_OPTION_VALUES = {
     "attach_penalty": [x / 10 for x in range(-10, 51)],
     "tenuki_penalty": [x / 10 for x in range(-10, 51)],
 }
-AI_KEY_PROPERTIES = {"kyu_rank", "strength", "weaken_fac", "pick_frac", "pick_n", "automatic","max_points_lost","min_visits"}
+AI_KEY_PROPERTIES = {
+    "kyu_rank",
+    "strength",
+    "weaken_fac",
+    "pick_frac",
+    "pick_n",
+    "automatic",
+    "max_points_lost",
+    "min_visits",
+}
 
 
 CALIBRATED_RANK_ELO = [

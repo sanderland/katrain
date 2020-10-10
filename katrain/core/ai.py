@@ -357,19 +357,26 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                 aimove = topmove[2]
                 ai_thoughts += f"ScoreLoss strategy found {len(candidate_ai_moves)} candidate moves (best {top_cand.gtp()}) and chose {aimove.gtp()} (weight {topmove[1]:.3f}, point loss {topmove[0]:.1f}) based on score weights."
             elif ai_mode == AI_SIMPLE_OWNERSHIP:
-                last_player_stones = {s.coords for s in game.stones if s.player == cn.player}
+                stones_with_player = {(*s.coords, s.player) for s in game.stones}
                 next_player_sign = cn.player_sign(cn.next_player)
 
                 def settledness(d, player_sign):
                     return sum([abs(o) for o in d["ownership"] if player_sign * o > 0])
 
-                def is_attachment(d):
-                    return any(
-                        (d.coords[0] + dx, d.coords[1] + dy) in last_player_stones
+                def is_attachment(move):
+                    attach_opponent_stones = sum(
+                        (move.coords[0] + dx, move.coords[1] + dy, cn.player) in stones_with_player
                         for dx in [-1, 0, 1]
                         for dy in [-1, 0, 1]
                         if abs(dx) + abs(dy) == 1
                     )
+                    nearby_own_stones = sum(
+                        (move.coords[0] + dx, move.coords[1] + dy, cn.next_player) in stones_with_player
+                        for dx in [-2, 0, 1, 2]
+                        for dy in [-2 - 1, 0, 1, 2]
+                        if abs(dx) + abs(dy) <= 2  # allows clamps/jumps
+                    )
+                    return attach_opponent_stones >= 1 and nearby_own_stones == 0
 
                 def is_tenuki(d):
                     return not any(
