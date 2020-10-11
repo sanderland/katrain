@@ -96,6 +96,14 @@
             "attach_penalty": 1,
             "tenuki_penalty": 0.5
         },
+        "ai:settle": {
+            "max_points_lost": 1.75,
+            "settled_weight": 1.0,
+            "opponent_fac": 0.5,
+            "min_visits": 3,
+            "attach_penalty": 1,
+            "tenuki_penalty": 0.5
+        },
         "ai:p:weighted": {
             "weaken_fac": 1.25,
             "pick_override": 1.0,

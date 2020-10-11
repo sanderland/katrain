@@ -32,6 +32,7 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
+    AI_SETTLE_STONES,
 )
 from katrain.core.game import Game, GameNode, Move
 from katrain.core.utils import var_to_grid
@@ -356,14 +357,27 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                 topmove = weighted_selection_without_replacement(moves, 1)[0]
                 aimove = topmove[2]
                 ai_thoughts += f"ScoreLoss strategy found {len(candidate_ai_moves)} candidate moves (best {top_cand.gtp()}) and chose {aimove.gtp()} (weight {topmove[1]:.3f}, point loss {topmove[0]:.1f}) based on score weights."
-            elif ai_mode == AI_SIMPLE_OWNERSHIP:
+            elif ai_mode in [AI_SIMPLE_OWNERSHIP, AI_SETTLE_STONES]:
                 stones_with_player = {(*s.coords, s.player) for s in game.stones}
+                stones_without_player = {s.coords for s in game.stones}
                 next_player_sign = cn.player_sign(cn.next_player)
+                if ai_mode == AI_SIMPLE_OWNERSHIP:
 
-                def settledness(d, player_sign):
-                    return sum([abs(o) for o in d["ownership"] if player_sign * o > 0])
+                    def settledness(d, player_sign, player):
+                        return sum([abs(o) for o in d["ownership"] if player_sign * o > 0])
+
+                else:
+                    board_size_x, board_size_y = game.board_size
+
+                    def settledness(d, player_sign, player):
+                        ownership_grid = var_to_grid(d["ownership"], (board_size_x, board_size_y))
+                        return sum(
+                            [abs(ownership_grid[s.coords[0]][s.coords[1]]) for s in game.stones if s.player == player]
+                        )
 
                 def is_attachment(move):
+                    if move.is_pass:
+                        return False
                     attach_opponent_stones = sum(
                         (move.coords[0] + dx, move.coords[1] + dy, cn.player) in stones_with_player
                         for dx in [-1, 0, 1]
@@ -379,7 +393,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                     return attach_opponent_stones >= 1 and nearby_own_stones == 0
 
                 def is_tenuki(d):
-                    return not any(
+                    return not d.is_pass and not any(
                         not node
                         or not node.move
                         or node.move.is_pass
@@ -391,8 +405,8 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                     [
                         (
                             move,
-                            settledness(d, next_player_sign),
-                            settledness(d, -next_player_sign),
+                            settledness(d, next_player_sign, cn.next_player),
+                            settledness(d, -next_player_sign, cn.player),
                             is_attachment(move),
                             is_tenuki(move),
                             d,
@@ -413,7 +427,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                         f"{move.gtp()} ({d['pointsLost']:.1f} pt lost, {d['visits']} visits, {settled:.1f} settledness, {oppsettled:.1f} opponent settledness{', attachment' if isattach else ''}{', tenuki' if istenuki else ''})"
                         for move, settled, oppsettled, isattach, istenuki, d in moves_with_settledness[:5]
                     ]
-                    ai_thoughts += f"Simple ownership strategy. Top 5 Candidates {', '.join(cands)} "
+                    ai_thoughts += f"{ai_mode} strategy. Top 5 Candidates {', '.join(cands)} "
                     aimove = moves_with_settledness[0][0]
                 else:
                     game.katrain.log(

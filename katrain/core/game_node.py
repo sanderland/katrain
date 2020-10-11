@@ -77,6 +77,7 @@ class GameNode(SGFNode):
         refine_move=None,
         analyze_fast=False,
         find_alternatives=False,
+        report_every=0.25,
     ):
         engine.request_analysis(
             self,
@@ -87,6 +88,7 @@ class GameNode(SGFNode):
             time_limit=time_limit,
             next_move=refine_move,
             find_alternatives=find_alternatives,
+            report_every=report_every,
         )
 
     def update_move_analysis(self, move_analysis, move_gtp):
@@ -111,7 +113,7 @@ class GameNode(SGFNode):
         else:
             if alternatives_mode:
                 for m in analysis_json["moveInfos"]:
-                    m["order"] += 10  # offset for not making this top
+                    m["order"] += 100  # offset for not making this top
             if refine_move is None and not alternatives_mode:
                 for move_dict in self.analysis["moves"].values():
                     move_dict["order"] = 999  # old moves to end
