@@ -414,7 +414,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                         for d in candidate_ai_moves
                         if d["pointsLost"] < ai_settings["max_points_lost"]
                         and "ownership" in d
-                        and (d["order"] < 5 or d["visits"] >= ai_settings.get("min_visits", 1))
+                        and (d["order"] <= 1 or d["visits"] >= ai_settings.get("min_visits", 1))
                         for move in [Move.from_gtp(d["move"], player=cn.next_player)]
                     ],
                     key=lambda t: t[5]["pointsLost"]
