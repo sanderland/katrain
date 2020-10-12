@@ -685,4 +685,4 @@ msgstr ""
 
 #. TODO
 msgid "ai:settle"
-msgstr "Settle Stones Style"
+msgstr "Settle Style"

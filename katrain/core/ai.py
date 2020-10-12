@@ -430,10 +430,9 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                     ai_thoughts += f"{ai_mode} strategy. Top 5 Candidates {', '.join(cands)} "
                     aimove = moves_with_settledness[0][0]
                 else:
-                    game.katrain.log(
-                        "No moves found - are you using an older KataGo with no per-move ownership info?", OUTPUT_ERROR
+                    raise(
+                        Exception("No moves found - are you using an older KataGo with no per-move ownership info?")
                     )
-                    aimove = top_cand
             else:
                 if ai_mode not in [AI_DEFAULT, AI_HANDICAP]:
                     game.katrain.log(f"Unknown AI mode {ai_mode} or policy missing, using default.", OUTPUT_INFO)

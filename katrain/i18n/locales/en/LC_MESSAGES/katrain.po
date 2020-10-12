@@ -587,7 +587,7 @@ msgstr ""
 "the style at the cost of strength. "
 
 msgid "ai:settle"
-msgstr "Settle Stones Style"
+msgstr "Settle Style"
 
 msgid "aihelp:settle"
 msgstr ""
