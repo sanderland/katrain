@@ -1,6 +1,6 @@
 VERSION = "1.5.1"
 HOMEPAGE = "https://github.com/sanderland/katrain"
-CONFIG_MIN_VERSION = "1.5.2"  # keep config files from this version
+CONFIG_MIN_VERSION = "1.5.1"  # keep config files from this version
 
 OUTPUT_ERROR = -1
 OUTPUT_KATAGO_STDERR = -0.5
