@@ -467,7 +467,8 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
             else:
                 return
-
+        ctrl_pressed = "ctrl" in modifiers
+        alt_pressed = "alt" in modifiers
         shortcuts = self.shortcuts
         if keycode[1] == "tab":
             self.play_mode.switch_ui_mode()
@@ -475,26 +476,30 @@ class KaTrainGui(Screen, KaTrainBase):
             self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
-        elif keycode[1] == "b" and "ctrl" not in modifiers:
+        elif keycode[1] == "b" and ctrl_pressed:
             self.controls.timer.paused = not self.controls.timer.paused
-        elif keycode[1] in ["`", "~", "m"] and "ctrl" not in modifiers:
+        elif keycode[1] in ["`", "~", "m"] and ctrl_pressed:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["left", "z"]:
-            self("undo", 1 + ("alt" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
+            self("undo", 1 + alt_pressed * 4 + (ctrl_pressed and not alt_pressed) * 999)
         elif keycode[1] in ["right", "x"]:
-            self("redo", 1 + ("alt" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
-        elif keycode[1] == "n" and "ctrl" in modifiers:
+            self("redo", 1 + alt_pressed * 4 + (ctrl_pressed and not alt_pressed) * 999)
+        elif keycode[1] == "home":
+            self("undo", 999)
+        elif keycode[1] == "end":
+            self("redo", 999)
+        elif keycode[1] == "n" and ctrl_pressed:
             self("new-game-popup")
-        elif keycode[1] == "l" and "ctrl" in modifiers:
+        elif keycode[1] == "l" and ctrl_pressed:
             self("analyze-sgf-popup")
-        elif keycode[1] == "s" and "ctrl" in modifiers:
+        elif keycode[1] == "s" and ctrl_pressed:
             self("output-sgf")
-        elif keycode[1] == "c" and "ctrl" in modifiers:
+        elif keycode[1] == "c" and ctrl_pressed:
             Clipboard.copy(self.game.root.sgf())
             self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
-        elif keycode[1] == "v" and "ctrl" in modifiers:
+        elif keycode[1] == "v" and ctrl_pressed:
             self.load_sgf_from_clipboard()
-        elif keycode[1] in shortcuts.keys() and "ctrl" not in modifiers:
+        elif keycode[1] in shortcuts.keys() and not ctrl_pressed:
             shortcut = shortcuts[keycode[1]]
             if isinstance(shortcut, Widget):
                 shortcut.trigger_action(duration=0)
