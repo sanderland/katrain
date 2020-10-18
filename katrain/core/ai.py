@@ -164,9 +164,10 @@ def request_ai_analysis(game: Game, cn: GameNode, extra_settings: Dict) -> Optio
     error = False
     analysis = None
 
-    def set_analysis(a):
+    def set_analysis(a, partial_result):
         nonlocal analysis
-        analysis = a
+        if not partial_result:
+            analysis = a
 
     def set_error(a):
         nonlocal error
@@ -205,7 +206,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             game.katrain.log(f"Error getting handicap-based move", OUTPUT_ERROR)
             ai_mode = AI_DEFAULT
 
-    while not cn.analysis_ready:
+    while not cn.analysis_complete:
         time.sleep(0.01)
         game.engines[cn.next_player].check_alive(exception_if_dead=True)
 

@@ -123,7 +123,7 @@ class ControlsPanel(BoxLayout):
                 self.active_comment_node = current_node.children[-1]
             elif current_node.parent:
                 self.active_comment_node = current_node.parent
-        elif both_players_are_robots and not current_node.analysis_ready and current_node.parent:
+        elif both_players_are_robots and not current_node.analysis_exists and current_node.parent:
             self.active_comment_node = current_node.parent
 
         lock_ai = katrain.config("trainer/lock_ai") and katrain.play_analyze_mode == MODE_PLAY
@@ -134,7 +134,7 @@ class ControlsPanel(BoxLayout):
                 teach=katrain.players_info[self.active_comment_node.player].being_taught, details=details
             )
 
-        if self.active_comment_node.analysis_ready:
+        if self.active_comment_node.analysis_exists:
             self.stats.score = self.active_comment_node.format_score() or ""
             self.stats.winrate = self.active_comment_node.format_winrate() or ""
             self.stats.points_lost = self.active_comment_node.points_lost

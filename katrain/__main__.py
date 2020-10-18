@@ -193,14 +193,14 @@ class KaTrainGui(Screen, KaTrainBase):
             teaching_undo = cn.player and last_player.being_taught and cn.parent
             if (
                 teaching_undo
-                and cn.analysis_ready
-                and cn.parent.analysis_ready
+                and cn.analysis_complete
+                and cn.parent.analysis_complete
                 and not cn.children
                 and not self.game.end_result
             ):
                 self.game.analyze_undo(cn)  # not via message loop
             if (
-                cn.analysis_ready
+                cn.analysis_complete
                 and next_player.ai
                 and not cn.children
                 and not self.game.end_result

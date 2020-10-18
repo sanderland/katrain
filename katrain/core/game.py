@@ -87,7 +87,7 @@ class Game:
     def analyze_all_nodes(self, priority=0, analyze_fast=False):
         for node in self.root.nodes_in_tree:
             node.analyze(
-                self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast, report_every=None
+                self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast #, report_every=None
             )
 
     # -- move tree functions --
@@ -347,7 +347,7 @@ class Game:
 
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
-            if cn.analysis_ready:
+            if cn.analysis_exists:
                 policy_grid = (
                     var_to_grid(self.current_node.policy, size=(board_size_x, board_size_y))
                     if self.current_node.policy
@@ -373,7 +373,7 @@ class Game:
             self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits), STATUS_ANALYSIS)
             priority = -1_000_000_000
         elif mode in ["equalize", "alternative"]:
-            if not cn.analysis_ready:
+            if not cn.analysis_complete:
                 self.katrain.controls.set_status(i18n._("wait-before-equalize"), STATUS_INFO, self.current_node)
                 return
 
@@ -397,7 +397,7 @@ class Game:
     def analyze_undo(self, node):
         train_config = self.katrain.config("trainer")
         move = node.move
-        if node != self.current_node or node.auto_undo is not None or not node.analysis_ready or not move:
+        if node != self.current_node or node.auto_undo is not None or not node.analysis_complete or not move:
             return
         points_lost = node.points_lost
         thresholds = train_config["eval_thresholds"]

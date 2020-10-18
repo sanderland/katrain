@@ -196,15 +196,17 @@ class KataGoEngine:
                 elif "warning" in analysis:
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
                 else:
-                    if not analysis.get("isDuringSearch", False):
+                    partial_result = analysis.get("isDuringSearch", False)
+                    if not partial_result:
                         del self.queries[query_id]
                     time_taken = time.time() - start_time
                     self.katrain.log(
-                        f"[{time_taken:.1f}][{query_id}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG,
+                        f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo Analysis Received: {analysis.keys()}",
+                        OUTPUT_DEBUG,
                     )
                     self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                     try:
-                        callback(analysis)
+                        callback(analysis, partial_result=partial_result)
                     except Exception as e:
                         self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc

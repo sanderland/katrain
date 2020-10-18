@@ -140,7 +140,7 @@ class BadukPanWidget(Widget):
                     katrain.log(f"\nRoot Stats:\n{nodes_here[-1].analysis['root']}", OUTPUT_DEBUG)
                     katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
                     katrain.controls.active_comment_node = nodes_here[-1]
-                    if nodes_here[-1].parent.analysis_ready:
+                    if nodes_here[-1].parent.analysis_exists:
                         self.set_animating_pv(nodes_here[-1].parent.candidate_moves[0]["pv"], nodes_here[-1].parent)
 
         self.ghost_stone = None
@@ -499,7 +499,7 @@ class BadukPanWidget(Widget):
                 for child_node in current_node.children:
                     move = child_node.move
                     if move and move.coords is not None:
-                        if child_node.analysis_ready:
+                        if child_node.analysis_exists:
                             self.active_pv_moves.append(
                                 (move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node)
                             )
