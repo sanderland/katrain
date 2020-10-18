@@ -71,8 +71,8 @@ AI_STRENGTH = {  # dan ranks, backup if model is missing. TODO: remove some?
     AI_INFLUENCE: -7,
     AI_TERRITORY: -7,
     AI_RANK: float("nan"),
-    AI_SIMPLE_OWNERSHIP: 3,
-    AI_SETTLE_STONES: 4,
+    AI_SIMPLE_OWNERSHIP: 2,
+    AI_SETTLE_STONES: 2,
 }
 
 AI_OPTION_VALUES = {

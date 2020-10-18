@@ -360,7 +360,6 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                 ai_thoughts += f"ScoreLoss strategy found {len(candidate_ai_moves)} candidate moves (best {top_cand.gtp()}) and chose {aimove.gtp()} (weight {topmove[1]:.3f}, point loss {topmove[0]:.1f}) based on score weights."
             elif ai_mode in [AI_SIMPLE_OWNERSHIP, AI_SETTLE_STONES]:
                 stones_with_player = {(*s.coords, s.player) for s in game.stones}
-                stones_without_player = {s.coords for s in game.stones}
                 next_player_sign = cn.player_sign(cn.next_player)
                 if ai_mode == AI_SIMPLE_OWNERSHIP:
 
@@ -417,6 +416,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                         and "ownership" in d
                         and (d["order"] <= 1 or d["visits"] >= ai_settings.get("min_visits", 1))
                         for move in [Move.from_gtp(d["move"], player=cn.next_player)]
+                        if not (move.is_pass and d["pointsLost"] > 0.75)
                     ],
                     key=lambda t: t[5]["pointsLost"]
                     + ai_settings["attach_penalty"] * t[3]
