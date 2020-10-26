@@ -34,6 +34,7 @@ class KataGoEngine:
     def __init__(self, katrain, config):
         self.katrain = katrain
         self.queries = {}  # outstanding query id -> start time and callback
+        self.continuous_query = None
         self.config = config
         self.query_counter = 0
         self.katago_process = None
@@ -85,10 +86,10 @@ class KataGoEngine:
     def start(self):
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
-            startupinfo = None  # stop command box popups on windows/pyinstaller
+            startupinfo = None
             if hasattr(subprocess, "STARTUPINFO"):
                 startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # stop command box popups on win/pyinstaller
             self.katago_process = subprocess.Popen(
                 self.command,
                 startupinfo=startupinfo,
@@ -107,7 +108,10 @@ class KataGoEngine:
 
     def on_new_game(self):
         self.base_priority += 1
+        for query_id in self.queries:
+            self.terminate_query(query_id)
         self.queries = {}
+        self.continuous_query = None
 
     def restart(self):
         self.queries = {}
@@ -206,7 +210,8 @@ class KataGoEngine:
                     )
                     self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                     try:
-                        callback(analysis, partial_result=partial_result)
+                        if callback and not analysis.get("noResults", False):
+                            callback(analysis)
                     except Exception as e:
                         self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
@@ -215,12 +220,16 @@ class KataGoEngine:
                 self.katrain.log(f"Unexpected exception {e} while processing KataGo output {line}", OUTPUT_ERROR)
                 traceback.print_exc()
 
-    def send_query(self, query, callback, error_callback, next_move=None):
+    def send_query(self, query, callback, error_callback, next_move=None, report_during_search=False):
         with self._lock:
             self.query_counter += 1
             if "id" not in query:
                 query["id"] = f"QUERY:{str(self.query_counter)}"
             self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
+        if report_during_search:
+            query["reportDuringSearchEvery"] = 0.25
+            self.terminate_continuous_query()
+            self.continuous_query = query["id"]
         if self.katago_process:
             self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
             try:
@@ -228,7 +237,13 @@ class KataGoEngine:
                 self.katago_process.stdin.flush()
             except OSError as e:
                 self.check_alive(os_error=str(e), exception_if_dead=True)
-                return  # do not raise, since there's nothing to catch it
+
+    def terminate_continuous_query(self):
+        self.terminate_query(self.continuous_query)
+
+    def terminate_query(self, query_id):
+        if query_id is not None:
+            self.send_query({"action": "terminate", "terminateId": query_id}, None, None)
 
     def request_analysis(
         self,
