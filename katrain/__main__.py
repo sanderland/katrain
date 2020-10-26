@@ -131,7 +131,6 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def toggle_continuous_analysis(self):
         if self.idle_analysis:
-            self.engine.terminate_continuous_query()
             self.controls.set_status("", STATUS_INFO)
         self.idle_analysis = not self.idle_analysis
         self.update_state()
@@ -442,6 +441,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "s": ("analyze-extra", "equalize"),
             "d": ("analyze-extra", "sweep"),
             "f": ("analyze-extra", "alternative"),
+            "g": ("analyze-extra", "local"),
             "p": ("play", None),
             "down": ("switch-branch", 1),
             "up": ("switch-branch", -1),

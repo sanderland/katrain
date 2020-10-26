@@ -260,6 +260,19 @@ class NewGamePopup(QuickConfigGui):
             self.katrain.update_player(bw, **player_setup.player_type_dump)
         self.katrain("new-game")
 
+    def update_game(self, save_to_file=True):
+        props = self.collect_properties(self)
+        root = self.katrain.game.root
+        changed = False
+        for k, v in [("RU", props["game/rules"]), ("KM", props["game/komi"])]:
+            current = root.get_property(k)
+            if current != v:
+                changed = True
+                self.katrain.game.root.set_property(k, v)
+        if changed:
+            self.katrain.engine.on_new_game()
+            self.katrain.game.analyze_all_nodes()
+        self.popup.dismiss()
 
 def wrap_anchor(widget):
     anchor = AnchorLayout()

@@ -106,6 +106,10 @@ msgstr "Deeper full game analysis"
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
 
+#. Analyze again but allow only nearby moves
+msgid "analysis:local"
+msgstr "Find local responses"
+
 #. Keep improving current position analysis when there is nothing else to do
 msgid "analysis:continuous"
 msgstr "Toggle continuous analysis"
@@ -124,6 +128,10 @@ msgstr "Analyzing entire board using {visits} visits/move"
 #. status message
 msgid "alternative analysis"
 msgstr "Searching for alternative moves"
+
+#. status message
+msgid "local analysis"
+msgstr "Searching for local responses"
 
 #. status message
 msgid "equalizing analysis"
@@ -361,6 +369,12 @@ msgstr "Use x:y (e.g. 19:9) for non-square size"
 #. submit new game
 msgid "new game"
 msgstr "Start New Game"
+
+#. change komi etc in current game
+msgid "change current game"
+msgstr ""
+"Update komi/rules\n"
+"in active game"
 
 # teacher settings from here
 msgid "teacher settings"

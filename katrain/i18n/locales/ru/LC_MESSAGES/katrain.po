@@ -730,3 +730,17 @@ msgstr ""
 #. TODO
 msgid "ai:settle"
 msgstr "Settle Style"
+
+#. TODO - Analyze again but allow only nearby moves
+msgid "analysis:local"
+msgstr "Find local responses"
+
+#. TODO - status message
+msgid "local analysis"
+msgstr "Searching for local responses"
+
+#. TODO - change komi etc in current game
+msgid "change current game"
+msgstr ""
+"Update komi/rules\n"
+"in active game"

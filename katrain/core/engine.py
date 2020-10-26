@@ -13,6 +13,7 @@ from kivy.utils import platform
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
+from katrain.core.sgf_parser import Move
 from katrain.core.utils import find_package_resource
 
 
@@ -34,7 +35,6 @@ class KataGoEngine:
     def __init__(self, katrain, config):
         self.katrain = katrain
         self.queries = {}  # outstanding query id -> start time and callback
-        self.continuous_query = None
         self.config = config
         self.query_counter = 0
         self.katago_process = None
@@ -108,10 +108,9 @@ class KataGoEngine:
 
     def on_new_game(self):
         self.base_priority += 1
-        for query_id in self.queries:
+        for query_id in list(self.queries.keys()):
             self.terminate_query(query_id)
         self.queries = {}
-        self.continuous_query = None
 
     def restart(self):
         self.queries = {}
@@ -211,7 +210,7 @@ class KataGoEngine:
                     self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                     try:
                         if callback and not analysis.get("noResults", False):
-                            callback(analysis)
+                            callback(analysis, partial_result)
                     except Exception as e:
                         self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
@@ -220,16 +219,12 @@ class KataGoEngine:
                 self.katrain.log(f"Unexpected exception {e} while processing KataGo output {line}", OUTPUT_ERROR)
                 traceback.print_exc()
 
-    def send_query(self, query, callback, error_callback, next_move=None, report_during_search=False):
+    def send_query(self, query, callback, error_callback, next_move=None):
         with self._lock:
             self.query_counter += 1
             if "id" not in query:
                 query["id"] = f"QUERY:{str(self.query_counter)}"
             self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
-        if report_during_search:
-            query["reportDuringSearchEvery"] = 0.25
-            self.terminate_continuous_query()
-            self.continuous_query = query["id"]
         if self.katago_process:
             self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
             try:
@@ -237,9 +232,6 @@ class KataGoEngine:
                 self.katago_process.stdin.flush()
             except OSError as e:
                 self.check_alive(os_error=str(e), exception_if_dead=True)
-
-    def terminate_continuous_query(self):
-        self.terminate_query(self.continuous_query)
 
     def terminate_query(self, query_id):
         if query_id is not None:
@@ -254,6 +246,7 @@ class KataGoEngine:
         analyze_fast: bool = False,
         time_limit=True,
         find_alternatives: bool = False,
+        find_local: bool = False,
         priority: int = 0,
         ownership: Optional[bool] = None,
         next_move: Optional[GameNode] = None,
@@ -272,6 +265,8 @@ class KataGoEngine:
             if analyze_fast and self.config.get("fast_visits"):
                 visits = self.config["fast_visits"]
 
+        size_x, size_y = analysis_node.board_size
+
         if find_alternatives:
             avoid = [
                 {
@@ -280,10 +275,26 @@ class KataGoEngine:
                     "untilDepth": 1,
                 }
             ]
+        elif find_local:
+            distance = 5
+            last_move = analysis_node.move
+            if last_move is None or last_move.is_pass:
+                return
+            avoid = [
+                {
+                    "moves": [
+                        Move((x, y)).gtp()
+                        for x in range(0, size_x)
+                        for y in range(0, size_y)
+                        if max(abs(x - last_move.coords[0]), abs(y - last_move.coords[1])) > distance
+                    ],
+                    "player": analysis_node.next_player,
+                    "untilDepth": 1,
+                }
+            ]
         else:
             avoid = []
 
-        size_x, size_y = analysis_node.board_size
         settings = copy.copy(self.override_settings)
         if time_limit:
             settings["maxTime"] = self.config["max_time"]
@@ -296,7 +307,6 @@ class KataGoEngine:
             "analyzeTurns": [len(moves)],
             "maxVisits": visits,
             "komi": analysis_node.komi,
-            "avoidMoves": avoid,
             "boardXSize": size_x,
             "boardYSize": size_y,
             "includeOwnership": ownership and not next_move,
@@ -309,5 +319,7 @@ class KataGoEngine:
         }
         if report_every is not None:
             query["reportDuringSearchEvery"] = report_every
+        if avoid:
+            query["avoidMoves"] = avoid
         self.send_query(query, callback, error_callback, next_move)
         analysis_node.analysis_visits_requested = max(analysis_node.analysis_visits_requested, visits)
