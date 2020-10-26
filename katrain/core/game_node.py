@@ -81,7 +81,7 @@ class GameNode(SGFNode):
     ):
         engine.request_analysis(
             self,
-            lambda result, partial_result: self.set_analysis(result, refine_move, find_alternatives, partial_result),
+            callback=lambda result, partial_result: self.set_analysis(result, refine_move, find_alternatives, partial_result),
             priority=priority,
             visits=visits,
             analyze_fast=analyze_fast,

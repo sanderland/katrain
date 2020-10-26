@@ -175,7 +175,7 @@
             font_size: DESC_FONT_SIZE * 1.5
             text: i18n._('engine settings')
     BoxLayout:
-        size_hint: 1,5
+        size_hint: 1,6
         orientation: 'horizontal'
         GridLayout:
             cols: 2
@@ -199,6 +199,11 @@
                     input_property: "general/debug_level"
                     helper_text: i18n._("general:debug_level:hint")
                     helper_text_mode: "on_focus"
+            DescriptionLabel:
+                text: i18n._('count down sound')
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "timer/sound"
             SmallDescriptionLabel:
                 text: i18n._('config file path')
             SmallDescriptionLabel:
@@ -319,7 +324,7 @@
 <ConfigTimerPopup>:
     MDGridLayout:
         cols: 2
-        rows: 5
+        rows: 4
         spacing: 1.5 * CP_SPACING
         size_hint: 1,2.5
         DescriptionLabel:
@@ -346,11 +351,6 @@
             LabelledIntInput:
                 text: "0"
                 input_property: "timer/minimal_use"
-        DescriptionLabel:
-            text: i18n._('count down sound')
-        AnchorLayout:
-            LabelledCheckBox:
-                input_property: "timer/sound"
     AnchorLayout:
         size_hint: 1,1
         AutoSizedRoundedRectangleButton:
