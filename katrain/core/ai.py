@@ -18,7 +18,6 @@ from katrain.core.constants import (
     AI_RANK,
     AI_SCORELOSS,
     AI_SCORELOSS_ELO,
-    AI_SIMPLE,
     AI_SIMPLE_OWNERSHIP,
     AI_STRATEGIES_PICK,
     AI_STRATEGIES_POLICY,
@@ -33,6 +32,7 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
+    AI_SETTLE_STONES,
 )
 from katrain.core.game import Game, GameNode, Move
 from katrain.core.utils import var_to_grid
@@ -164,9 +164,10 @@ def request_ai_analysis(game: Game, cn: GameNode, extra_settings: Dict) -> Optio
     error = False
     analysis = None
 
-    def set_analysis(a):
+    def set_analysis(a, partial_result):
         nonlocal analysis
-        analysis = a
+        if not partial_result:
+            analysis = a
 
     def set_error(a):
         nonlocal error
@@ -205,14 +206,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             game.katrain.log(f"Error getting handicap-based move", OUTPUT_ERROR)
             ai_mode = AI_DEFAULT
 
-    if ai_mode == AI_SIMPLE:
-        simple_moves = ai_settings["simple_moves"]
-        simple_analysis = request_ai_analysis(game, cn, {"simpleMovesBias": simple_moves, "wideRootNoise": 0.10})
-        if not simple_analysis:
-            game.katrain.log(f"Error getting simple-biased move", OUTPUT_ERROR)
-            ai_mode = AI_DEFAULT
-
-    while not cn.analysis_ready:
+    while not cn.analysis_complete:
         time.sleep(0.01)
         game.engines[cn.next_player].check_alive(exception_if_dead=True)
 
@@ -335,18 +329,6 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
         candidate_ai_moves = cn.candidate_moves
         if ai_mode == AI_HANDICAP:
             candidate_ai_moves = handicap_analysis["moveInfos"]
-        if ai_mode == AI_SIMPLE:
-            candidate_ai_moves = simple_analysis["moveInfos"]
-            for data in candidate_ai_moves:
-                print(
-                    "{order} {move}: visits {visits} utility {util} utilityLcb {lcb}".format(
-                        visits=data["visits"],
-                        order=data["order"],
-                        move=data["move"],
-                        util=data["utility"],
-                        lcb=data["utilityLcb"],
-                    )
-                )
 
         top_cand = Move.from_gtp(candidate_ai_moves[0]["move"], player=cn.next_player)
         if top_cand.is_pass and ai_mode not in [
@@ -376,49 +358,87 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                 topmove = weighted_selection_without_replacement(moves, 1)[0]
                 aimove = topmove[2]
                 ai_thoughts += f"ScoreLoss strategy found {len(candidate_ai_moves)} candidate moves (best {top_cand.gtp()}) and chose {aimove.gtp()} (weight {topmove[1]:.3f}, point loss {topmove[0]:.1f}) based on score weights."
-            elif ai_mode == AI_SIMPLE_OWNERSHIP:
-
-                def settledness(d, player_fac):
-                    return sum([abs(o) for o in d["ownership"] if player_fac * o > 0])
-
+            elif ai_mode in [AI_SIMPLE_OWNERSHIP, AI_SETTLE_STONES]:
+                stones_with_player = {(*s.coords, s.player) for s in game.stones}
                 next_player_sign = cn.player_sign(cn.next_player)
+                if ai_mode == AI_SIMPLE_OWNERSHIP:
+
+                    def settledness(d, player_sign, player):
+                        return sum([abs(o) for o in d["ownership"] if player_sign * o > 0])
+
+                else:
+                    board_size_x, board_size_y = game.board_size
+
+                    def settledness(d, player_sign, player):
+                        ownership_grid = var_to_grid(d["ownership"], (board_size_x, board_size_y))
+                        return sum(
+                            [abs(ownership_grid[s.coords[0]][s.coords[1]]) for s in game.stones if s.player == player]
+                        )
+
+                def is_attachment(move):
+                    if move.is_pass:
+                        return False
+                    attach_opponent_stones = sum(
+                        (move.coords[0] + dx, move.coords[1] + dy, cn.player) in stones_with_player
+                        for dx in [-1, 0, 1]
+                        for dy in [-1, 0, 1]
+                        if abs(dx) + abs(dy) == 1
+                    )
+                    nearby_own_stones = sum(
+                        (move.coords[0] + dx, move.coords[1] + dy, cn.next_player) in stones_with_player
+                        for dx in [-2, 0, 1, 2]
+                        for dy in [-2 - 1, 0, 1, 2]
+                        if abs(dx) + abs(dy) <= 2  # allows clamps/jumps
+                    )
+                    return attach_opponent_stones >= 1 and nearby_own_stones == 0
+
+                def is_tenuki(d):
+                    return not d.is_pass and not any(
+                        not node
+                        or not node.move
+                        or node.move.is_pass
+                        or max(abs(last_c - cand_c) for last_c, cand_c in zip(node.move.coords, d.coords)) < 5
+                        for node in [cn, cn.parent]
+                    )
+
                 moves_with_settledness = sorted(
                     [
                         (
-                            Move.from_gtp(d["move"], player=cn.next_player),
-                            settledness(d, next_player_sign),
-                            settledness(d, -next_player_sign),
+                            move,
+                            settledness(d, next_player_sign, cn.next_player),
+                            settledness(d, -next_player_sign, cn.player),
+                            is_attachment(move),
+                            is_tenuki(move),
                             d,
                         )
                         for d in candidate_ai_moves
                         if d["pointsLost"] < ai_settings["max_points_lost"]
                         and "ownership" in d
-                        and (d["order"] < 5 or d["visits"] >= ai_settings.get("min_visits", 1))
+                        and (d["order"] <= 1 or d["visits"] >= ai_settings.get("min_visits", 1))
+                        for move in [Move.from_gtp(d["move"], player=cn.next_player)]
+                        if not (move.is_pass and d["pointsLost"] > 0.75)
                     ],
-                    key=lambda t: t[3]["pointsLost"]
+                    key=lambda t: t[5]["pointsLost"]
+                    + ai_settings["attach_penalty"] * t[3]
+                    + ai_settings["tenuki_penalty"] * t[4]
                     - ai_settings["settled_weight"] * (t[1] + ai_settings["opponent_fac"] * t[2]),
                 )
                 if moves_with_settledness:
                     cands = [
-                        f"{move.gtp()} ({d['pointsLost']:.1f} pt lost, {d['visits']} visits, {settled:.1f} settledness, {oppsettled:.1f} opponent settledness)"
-                        for move, settled, oppsettled, d in moves_with_settledness[:5]
+                        f"{move.gtp()} ({d['pointsLost']:.1f} pt lost, {d['visits']} visits, {settled:.1f} settledness, {oppsettled:.1f} opponent settledness{', attachment' if isattach else ''}{', tenuki' if istenuki else ''})"
+                        for move, settled, oppsettled, isattach, istenuki, d in moves_with_settledness[:5]
                     ]
-                    ai_thoughts += f"Simple ownership strategy. Top 5 Candidates {', '.join(cands)} "
+                    ai_thoughts += f"{ai_mode} strategy. Top 5 Candidates {', '.join(cands)} "
                     aimove = moves_with_settledness[0][0]
                 else:
-                    game.katrain.log(
-                        "No moves found - are you using an older KataGo with no per-move ownership info?", OUTPUT_ERROR
-                    )
-                    aimove = top_cand
+                    raise (Exception("No moves found - are you using an older KataGo with no per-move ownership info?"))
             else:
-                if ai_mode not in [AI_DEFAULT, AI_HANDICAP, AI_SIMPLE]:
+                if ai_mode not in [AI_DEFAULT, AI_HANDICAP]:
                     game.katrain.log(f"Unknown AI mode {ai_mode} or policy missing, using default.", OUTPUT_INFO)
                     ai_thoughts += f"Strategy {ai_mode} not found or unexpected fallback."
                 aimove = top_cand
                 if ai_mode == AI_HANDICAP:
                     ai_thoughts += f"Handicap strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move. PDA based score {cn.format_score(handicap_analysis['rootInfo']['scoreLead'])} and win rate {cn.format_winrate(handicap_analysis['rootInfo']['winrate'])}"
-                elif ai_mode == AI_SIMPLE:
-                    ai_thoughts += f"Simple moves strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move. "
                 else:
                     ai_thoughts += f"Default strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move"
     game.katrain.log(f"AI thoughts: {ai_thoughts}", OUTPUT_DEBUG)

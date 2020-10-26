@@ -680,14 +680,37 @@ msgstr ""
 msgid "alternative analysis"
 msgstr "他の候補手を分析中"
 
-#. TODO - ignore moves if timer is on and less than this is used
+#. ignore moves if timer is on and less than this is used
 msgid "minimal time use"
-msgstr "Minimal time use in byo-yomi (s)"
+msgstr "早打ち禁止秒数"
 
-#. TODO
 msgid "move too fast"
-msgstr "Think for at least {num} seconds before playing."
+msgstr "早打ちすぎです。{num}秒は考えてください。"
 
-#. TODO - in minutes
+#. in minutes
 msgid "main time"
-msgstr "Main time (min.)"
+msgstr "持ち時間（分）"
+
+msgid "aihelp:simple"
+msgstr ""
+"盤面の単純化をめざして, 次の基準で手を選びます (括弧内は重視度): 損する目数が少ない, 自分の確定地が多い (settled_weight), "
+"相手も確定地が多い (settled_weight × opponent fac), 相手が打った手の近辺…縦横とも3間以内 "
+"(tenuki_penalty), 相手の石に接触しない (attachment_penalty). ただし, 損が大きすぎたり "
+"(max_points_lost目以上) 探索手数が少なすぎたり (min_visits手未満) する候補手は除きます. 重視度を負にすれば, "
+"逆に盤面の複雑化をめざします. また, 一般設定のwide root noiseを大きくすれば, 強さは犠牲になりますが, "
+"より前述の基準に忠実な打ち方をします."
+
+msgid "ai:simple"
+msgstr "簡明派"
+
+msgid "aihelp:settle"
+msgstr ""
+"複雑なサバキよりも, 石の生死をはっきりさせる堅実な手を好みます. 具体的には, 次の基準で手を選びます (括弧内は重視度): 損する目数が少ない, "
+"自分の生死が明確 (settled_weight), 相手の生死も明確 (settled_weight × opponent fac), "
+"相手が打った手の近辺…縦横とも3間以内 (tenuki_penalty), 相手の石に接触しない (attachment_penalty). ただし, "
+"損が大きすぎたり (max_points_lost目以上) 探索手数が少なすぎたり (min_visits手未満) する候補手は除きます. "
+"重視度を負にすれば, 逆に盤面の複雑化をめざします. また, 一般設定のwide root noiseを大きくすれば, 強さは犠牲になりますが, "
+"より前述の基準に忠実な打ち方をします."
+
+msgid "ai:settle"
+msgstr "堅実派"

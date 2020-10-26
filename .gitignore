@@ -16,6 +16,8 @@ tmp.pickle
 my
 logs
 callgrind.*
+cpp/out
+.vs
 
 # debug
 outdated_log.txt

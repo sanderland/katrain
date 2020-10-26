@@ -200,11 +200,13 @@ class KataGoEngine:
                 elif "warning" in analysis:
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
                 else:
-                    if not analysis.get("isDuringSearch", False):
+                    partial_result = analysis.get("isDuringSearch", False)
+                    if not partial_result:
                         del self.queries[query_id]
                     time_taken = time.time() - start_time
                     self.katrain.log(
-                        f"[{time_taken:.1f}][{query_id}] KataGo Analysis Received: {analysis.keys()}", OUTPUT_DEBUG,
+                        f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo Analysis Received: {analysis.keys()}",
+                        OUTPUT_DEBUG,
                     )
                     self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                     try:
@@ -256,7 +258,7 @@ class KataGoEngine:
         ownership: Optional[bool] = None,
         next_move: Optional[GameNode] = None,
         extra_settings: Optional[Dict] = None,
-        report_during_search: bool = False,
+        report_every: Optional[float] = None,
     ):
         nodes = analysis_node.nodes_from_root
         moves = [m for node in nodes for m in node.moves]
@@ -305,5 +307,7 @@ class KataGoEngine:
             "moves": [[m.player, m.gtp()] for m in moves],
             "overrideSettings": {**settings, **(extra_settings or {})},
         }
-        self.send_query(query, callback, error_callback, next_move, report_during_search)
+        if report_every is not None:
+            query["reportDuringSearchEvery"] = report_every
+        self.send_query(query, callback, error_callback, next_move)
         analysis_node.analysis_visits_requested = max(analysis_node.analysis_visits_requested, visits)
