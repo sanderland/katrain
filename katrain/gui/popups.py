@@ -246,7 +246,7 @@ class NewGamePopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
         for bw, info in katrain.players_info.items():
-            self.player_setup.update_players(bw, info)
+            self.player_setup.update_player_info(bw, info)
 
         self.rules_spinner.value_refs = [name for abbr, name in katrain.engine.RULESETS_ABBR]
 
@@ -260,7 +260,7 @@ class NewGamePopup(QuickConfigGui):
             self.katrain.update_player(bw, **player_setup.player_type_dump)
         self.katrain("new-game")
 
-    def update_game(self, save_to_file=True):
+    def update_game(self):
         props = self.collect_properties(self)
         root = self.katrain.game.root
         changed = False

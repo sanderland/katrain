@@ -218,7 +218,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.update_players()
             self.update_state()
         for player_setup_block in PlayerSetupBlock.INSTANCES:
-            player_setup_block.update_players(bw, self.players_info[bw])
+            player_setup_block.update_player_info(bw, self.players_info[bw])
 
     def set_note(self, note):
         self.game.current_node.note = note

@@ -342,9 +342,12 @@ class PlayerSetupBlock(MDBoxLayout):
     def swap_players(self):
         player_dump = {bw: p.player_type_dump for bw, p in self.players.items()}
         for bw in "BW":
-            self.update_players(bw, player_dump["B" if bw == "W" else "W"])
+            self.update_player_params(bw, player_dump["B" if bw == "W" else "W"])
 
-    def update_players(self, bw, player_info):  # update sub widget based on gui state change
+    def update_player_params(self, bw, params):
+        self.players[bw].update_widget(**params)
+
+    def update_player_info(self, bw, player_info):  # update sub widget based on gui state change
         self.players[bw].update_widget(player_type=player_info.player_type, player_subtype=player_info.player_subtype)
 
 
@@ -558,6 +561,8 @@ class StatsBox(MDBoxLayout, BackgroundMixin):
 class ClickableLabel(LeftButtonBehavior, Label):
     pass
 
+class ClickableCircle(LeftButtonBehavior,CircleWithText):
+    pass
 
 class ScrollableLabel(ScrollView, BackgroundMixin):
     __events__ = ["on_ref_press"]

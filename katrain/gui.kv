@@ -171,8 +171,6 @@
         size: image.size
         font_size: root.min_size * 1.2 / (1 + 1 * len(self.text))
 
-
-
 # UI components
 
 <BadukPanWidget>:
@@ -858,11 +856,12 @@
     player_subtype_ai: player_subtype_ai
     MDBoxLayout:
         size_hint: 0.25, 1
-        CircleWithText:
+        ClickableCircle:
             size_hint: 0.8, 0.8
             pos_hint: {'center_x':0.5,'center_y':0.5}
             text: root.player[0]
             player: root.player
+            on_left_press: root.parent.swap_players()
     MDBoxLayout:
         size_hint: 0.5, 1
         orientation: 'vertical'
