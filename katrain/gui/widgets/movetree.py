@@ -85,6 +85,19 @@ class MoveTreeCanvas(Widget):
             self.set_game_node(parent)
         self.is_open = False
 
+    def make_selected_node_main_branch(self):
+
+        if self.menu_selected_node and self.menu_selected_node.parent:
+            node = self.menu_selected_node
+            while node.parent is not None:
+                node.parent.children.remove(node)
+                node.parent.children.insert(0,node)
+                node = node.parent
+            self.set_game_node(self.menu_selected_node)
+        self.is_open = False
+
+
+
     def switch_branch(self, direction=1):
         pos = self.move_pos.get(self.scroll_view_widget.current_node)
         if not self.scroll_view_widget:
@@ -176,6 +189,9 @@ class MoveTree(ScrollView, BackgroundMixin):
     def delete_selected_node(self):
         self.move_tree_canvas.delete_selected_node()
 
+    def make_selected_node_main_branch(self):
+        self.move_tree_canvas.make_selected_node_main_branch()
+
     def scroll_to_pixel(self, x, y):
         if not self._viewport:
             return
@@ -218,6 +234,12 @@ Builder.load_string(
         icon: 'img/delete.png'
         shortcut: ''
         on_action: root.katrain.controls.move_tree.delete_selected_node()
+        -background_color: LIGHTER_BACKGROUND_COLOR
+    MoveTreeDropdownItem:
+        text: i18n._("Make Main Branch")
+        icon: 'img/Branch.png'
+        shortcut: ''
+        on_action: root.katrain.controls.move_tree.make_selected_node_main_branch()
         -background_color: LIGHTER_BACKGROUND_COLOR
     """
 )

@@ -746,6 +746,10 @@ msgstr "Number of visits per move"
 msgid "Delete Node"
 msgstr "Delete Node"
 
+#. on move tree editing
+msgid "Make Main Branch"
+msgstr "Make Main Branch"
+
 #. theme label
 msgid "theme"
 msgstr "Colour Theme"

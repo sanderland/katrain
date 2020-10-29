@@ -711,3 +711,7 @@ msgid "change current game"
 msgstr ""
 "Update komi/rules\n"
 "in active game"
+
+#. TODO - on move tree editing
+msgid "Make Main Branch"
+msgstr "Make Main Branch"
