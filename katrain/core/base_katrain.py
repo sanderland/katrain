@@ -49,13 +49,13 @@ class KaTrainBase:
 
     """Settings, logging, and players functionality, so other classes like bots who need a katrain instance can be used without a GUI"""
 
-    def __init__(self, force_package_config=False, debug_level=0, **kwargs):
-        self.debug_level = debug_level
+    def __init__(self, force_package_config=False, debug_level=None, **kwargs):
+        self.debug_level = debug_level or 0
         self.game = None
 
         self.logger = lambda message, level=OUTPUT_INFO: self.log(message, level)
         self.config_file = self._load_config(force_package_config=force_package_config)
-        self.debug_level = debug_level or self.config("general/debug_level", OUTPUT_INFO)
+        self.debug_level = self.config("general/debug_level", OUTPUT_INFO) if debug_level is None else debug_level
 
         Config.set("kivy", "log_level", "warning")
         if self.debug_level >= OUTPUT_DEBUG:

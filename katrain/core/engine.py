@@ -134,11 +134,14 @@ class KataGoEngine:
             raise EngineDiedException(died_msg)
         return ok
 
+    def wait_to_finish(self):
+        while self.queries and self.katago_process and self.katago_process.poll() is None:
+            time.sleep(0.1)
+
     def shutdown(self, finish=False):
         process = self.katago_process
         if finish and process:
-            while self.queries and process.poll() is None:
-                time.sleep(0.1)
+            self.wait_to_finish()
         if process:
             self.katago_process = None
             process.terminate()
