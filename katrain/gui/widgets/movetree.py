@@ -109,7 +109,7 @@ class MoveTreeCanvas(Widget):
         self.set_game_node(same_x_moves[new_index][1])
 
     def draw_move_tree(self, current_node):
-        if not self.scroll_view_widget:
+        if not self.scroll_view_widget or not current_node:
             return
 
         spacing = 5
