@@ -42,7 +42,7 @@ class BadukPanWidget(Widget):
         Window.bind(mouse_pos=self.on_mouse_pos)
         self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents)
         self.redraw_trigger = Clock.create_trigger(self.redraw)
-        self.bind(size=self.redraw_trigger)
+        self.bind(size=self.redraw_trigger, pos=self.redraw_trigger)
         Clock.schedule_interval(self.animate_pv, 0.1)
 
     # stone placement functions
