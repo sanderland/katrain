@@ -715,20 +715,20 @@ msgstr ""
 msgid "ai:settle"
 msgstr "堅実派"
 
-#. TODO - Analyze again but allow only nearby moves
+#. Analyze again but allow only nearby moves
 msgid "analysis:local"
-msgstr "Find local responses"
+msgstr "近辺の応手に絞って分析"
 
-#. TODO - status message
+#. status message
 msgid "local analysis"
-msgstr "Searching for local responses"
+msgstr "近辺の応手を分析中"
 
 #. TODO - change komi etc in current game
 msgid "change current game"
 msgstr ""
-"Update komi/rules\n"
-"in active game"
+"現対局のコミ・\n"
+"ルールを変更"
 
-#. TODO - on move tree editing
+#. on move tree editing
 msgid "Make Main Branch"
-msgstr "Make Main Branch"
+msgstr "こちらを主分岐に"
