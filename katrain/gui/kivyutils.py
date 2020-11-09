@@ -561,8 +561,10 @@ class StatsBox(MDBoxLayout, BackgroundMixin):
 class ClickableLabel(LeftButtonBehavior, Label):
     pass
 
-class ClickableCircle(LeftButtonBehavior,CircleWithText):
+
+class ClickableCircle(LeftButtonBehavior, CircleWithText):
     pass
+
 
 class ScrollableLabel(ScrollView, BackgroundMixin):
     __events__ = ["on_ref_press"]

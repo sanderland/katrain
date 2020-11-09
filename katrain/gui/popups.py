@@ -274,6 +274,7 @@ class NewGamePopup(QuickConfigGui):
             self.katrain.game.analyze_all_nodes()
         self.popup.dismiss()
 
+
 def wrap_anchor(widget):
     anchor = AnchorLayout()
     anchor.add_widget(widget)
@@ -496,20 +497,20 @@ class ConfigPopup(QuickConfigGui):
 
     KATAGOS = {
         "win": {
-            "OpenCL v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-opencl-windows-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-avx2-windows-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-windows-x64.zip",
-            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
+            "OpenCL v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-opencl-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-avx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-windows-x64.zip",
+            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.7.0%2Bbs29/katago-v1.7.0+bs29-gpu-opencl-windows-x64.zip",
         },
         "linux": {
-            "OpenCL v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-opencl-linux-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-avx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-linux-x64.zip",
-            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
+            "OpenCL v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-opencl-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-avx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-linux-x64.zip",
+            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.7.0%2Bbs29/katago-v1.7.0+bs29-gpu-opencl-linux-x64.zip",
         },
         "just-descriptions": {
-            "CUDA v1.6.1 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-windows-x64.zip",
-            "CUDA v1.6.1 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-linux-x64.zip",
+            "CUDA v1.7.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-cuda10.2-windows-x64.zip",
+            "CUDA v1.7.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-cuda10.2-linux-x64.zip",
         },
     }
 

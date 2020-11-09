@@ -91,12 +91,10 @@ class MoveTreeCanvas(Widget):
             node = self.menu_selected_node
             while node.parent is not None:
                 node.parent.children.remove(node)
-                node.parent.children.insert(0,node)
+                node.parent.children.insert(0, node)
                 node = node.parent
             self.set_game_node(self.menu_selected_node)
         self.is_open = False
-
-
 
     def switch_branch(self, direction=1):
         pos = self.move_pos.get(self.scroll_view_widget.current_node)
