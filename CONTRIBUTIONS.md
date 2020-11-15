@@ -52,6 +52,7 @@ Many thanks to these additional authors:
 * "fohristiwhirl" for the Gibo and NGF formats parsing code.
 * "kaorahi" for bug fixes and SGF parser improvements.
 * "ajkenny84" for the red-green colourblind theme.
+* Lukasz Wierzbowski for the ability to paste urls for sgfs and helping fix alt-gr issues.
 
 ## Translators
 

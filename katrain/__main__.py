@@ -403,13 +403,12 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.", STATUS_INFO)
             return
 
-        url_match = re.match("(?P<url>https?://[^\s]+)", clipboard)
+        url_match = re.match(r"(?P<url>https?://[^\s]+)", clipboard)
         if url_match:
-            self.log("Recognized url: " + url_match.group())
-
+            self.log("Recognized url: " + url_match.group(), OUTPUT_INFO)
             http = urllib3.PoolManager()
-            response = http.request('GET', url_match.group())
-            clipboard = response.data.decode('utf-8')
+            response = http.request("GET", url_match.group())
+            clipboard = response.data.decode("utf-8")
 
         try:
             move_tree = KaTrainSGF.parse_sgf(clipboard)
