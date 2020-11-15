@@ -126,7 +126,7 @@
         pos: [root.pos[i] + (root.size[i] - root.icon_size[i])/2 for i in [0,1]]
         source: root.icon
         mipmap: True
-        color: [1,1,1,0.4] if root.disabled else [1,1,1,1]
+        color: [1,1,1,0.4] if root.disabled else root.color
 
 
 <I18NSpinnerOption@SpinnerOption>:
@@ -185,7 +185,6 @@
 
 <BadukPanControls>:
     katrain: app.gui
-    branch: branch
     circles: [black_circle,white_circle]
     mid_circles_container: mid_circles_container
     pass_btn: pass_btn
@@ -236,10 +235,9 @@
             icon: 'img/Next-End.png'
             on_press: root.katrain('redo',999)
         NavIconButton:
-            id: branch
-            icon: 'img/Branch.png'
-            on_press: root.katrain('cycle-children',1)
-            disabled: True
+            icon: 'img/Next-Mistake.png'
+            color: [0.65,0.05,0.05,1]
+            on_press: root.katrain('next-mistake')
     ClickableLabel:
         pos_hint: {'center_x': 0.85,'center_y':0.5}
         size_hint: None, 1

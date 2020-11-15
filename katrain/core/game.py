@@ -185,12 +185,22 @@ class Game:
                 cn = cn.parent
         self.set_current_node(cn)
 
-    def redo(self, n_times=1):
+    def redo(self, n_times=1, stop_on_mistake=None):
         cn = self.current_node  # avoid race conditions
-        for _ in range(n_times):
+        for move in range(n_times):
             if cn.children:
                 cn = cn.ordered_children[0]
-        self.set_current_node(cn)
+            if (
+                move > 0
+                and stop_on_mistake is not None
+                and cn.points_lost is not None
+                and cn.points_lost >= stop_on_mistake
+                and self.katrain.players_info[cn.player].player_type != PLAYER_AI
+            ):
+                self.set_current_node(cn.parent)
+                return
+        if stop_on_mistake is None:
+            self.set_current_node(cn)
 
     def cycle_children(self, direction):
         cn = self.current_node  # avoid race conditions

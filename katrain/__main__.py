@@ -159,7 +159,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
-        self.board_controls.branch.disabled = not cn.parent or len(cn.parent.children) <= 1
         self.controls.players["W"].captures = prisoners["W"]
         self.controls.players["B"].captures = prisoners["B"]
 
@@ -295,6 +294,10 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.game.redo(n_times)
 
+    def _do_next_mistake(self):
+        self.board_gui.animating_pv = None
+        self.game.redo(999, stop_on_mistake=self.config("trainer/eval_thresholds")[-4])
+
     def _do_cycle_children(self, *args):
         self.board_gui.animating_pv = None
         self.game.cycle_children(*args)
@@ -358,7 +361,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
-    def load_sgf_file(self, file, fast=False, rewind=False):
+    def load_sgf_file(self, file, fast=False, rewind=True):
         try:
             move_tree = KaTrainSGF.parse_file(file)
         except ParseError as e:
