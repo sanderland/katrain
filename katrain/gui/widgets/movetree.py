@@ -3,7 +3,7 @@ from collections import defaultdict
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Line, Rectangle
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty, Clock, NumericProperty, BooleanProperty
+from kivy.properties import BooleanProperty, Clock, NumericProperty, ObjectProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.widget import Widget
@@ -11,15 +11,15 @@ from kivymd.app import MDApp
 
 from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.style import (
-    WHITE,
-    STONE_COLORS,
-    LIGHTGREY,
     BACKGROUND_COLOR,
-    OUTLINE_COLORS,
     LIGHTER_BACKGROUND_COLOR,
-    YELLOW,
-    STONE_TEXT_COLORS,
+    LIGHTGREY,
+    OUTLINE_COLORS,
     RED,
+    STONE_COLORS,
+    STONE_TEXT_COLORS,
+    WHITE,
+    YELLOW,
 )
 
 
@@ -120,6 +120,7 @@ class MoveTreeCanvas(Widget):
         stack = root.ordered_children[::-1]
         next_y_pos = defaultdict(int)  # x pos -> max y pos
         children = defaultdict(list)  # since AI self-play etc may modify the tree between layout and draw!
+        children[root] = root.ordered_children
         while stack:
             move = stack.pop()
             x = move.depth
