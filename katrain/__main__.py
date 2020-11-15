@@ -483,6 +483,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
         ctrl_pressed = "ctrl" in modifiers
         alt_pressed = "alt" in modifiers
+        shift_pressed = "shift" in modifiers
         shortcuts = self.shortcuts
         if keycode[1] == "tab":
             self.play_mode.switch_ui_mode()
@@ -495,9 +496,9 @@ class KaTrainGui(Screen, KaTrainBase):
         elif keycode[1] in ["`", "~", "m"] and ctrl_pressed:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["left", "z"]:
-            self("undo", 1 + alt_pressed * 9 + (ctrl_pressed and not alt_pressed) * 999)
+            self("undo", 1 + (alt_pressed or shift_pressed) * 9 + (ctrl_pressed and not alt_pressed) * 999)
         elif keycode[1] in ["right", "x"]:
-            self("redo", 1 + alt_pressed * 9 + (ctrl_pressed and not alt_pressed) * 999)
+            self("redo", 1 + (alt_pressed or shift_pressed) * 9 + (ctrl_pressed and not alt_pressed) * 999)
         elif keycode[1] == "home":
             self("undo", 999)
         elif keycode[1] == "end":
