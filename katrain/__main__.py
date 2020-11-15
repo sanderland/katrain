@@ -30,11 +30,13 @@ Config.set("graphics", "width", max(400, int(WINDOW_X * WINDOW_SCALE_FAC)))
 Config.set("graphics", "height", max(400, int(WINDOW_Y * WINDOW_SCALE_FAC)))
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
+import re
 import signal
 import sys
 import threading
 import traceback
 from queue import Queue
+import urllib3
 import webbrowser
 
 from kivy.base import ExceptionHandler, ExceptionManager
@@ -399,6 +401,15 @@ class KaTrainGui(Screen, KaTrainBase):
         if not clipboard:
             self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.", STATUS_INFO)
             return
+
+        url_match = re.match("(?P<url>https?://[^\s]+)", clipboard)
+        if url_match:
+            self.log("Recognized url: " + url_match.group())
+
+            http = urllib3.PoolManager()
+            response = http.request('GET', url_match.group())
+            clipboard = response.data.decode('utf-8')
+
         try:
             move_tree = KaTrainSGF.parse_sgf(clipboard)
         except Exception as exc:
