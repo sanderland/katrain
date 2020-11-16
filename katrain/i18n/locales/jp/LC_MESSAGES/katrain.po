@@ -723,7 +723,6 @@ msgstr "近辺の応手に絞って分析"
 msgid "local analysis"
 msgstr "近辺の応手を分析中"
 
-#. TODO - change komi etc in current game
 msgid "change current game"
 msgstr ""
 "現対局のコミ・\n"

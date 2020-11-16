@@ -751,7 +751,7 @@ msgstr ""
 msgid "ai:simple"
 msgstr "Simple Style"
 
-#. TODO
+#. TODO - DEPRECATED
 msgid "aihelp:settle"
 msgstr ""
 "Plays moves that lead to clarity on stones' status, favouring solid moves "

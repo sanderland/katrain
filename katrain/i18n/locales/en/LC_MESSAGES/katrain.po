@@ -600,9 +600,11 @@ msgstr ""
 "root noise (in general settings) can be used to further play according to "
 "the style at the cost of strength. "
 
+#. DEPRECATED
 msgid "ai:settle"
 msgstr "Settle Style"
 
+#. DEPRECATED
 msgid "aihelp:settle"
 msgstr ""
 "Plays moves that lead to clarity on stones' status, favouring solid moves "
