@@ -456,6 +456,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "f": ("analyze-extra", "alternative"),
             "g": ("analyze-extra", "local"),
             "p": ("play", None),
+            "n": ("next-mistake",),
             "down": ("switch-branch", 1),
             "up": ("switch-branch", -1),
             "f5": ("timer-popup",),

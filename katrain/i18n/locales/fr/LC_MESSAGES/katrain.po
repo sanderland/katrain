@@ -525,10 +525,10 @@ msgstr ""
 #. TODO: updated
 msgid "teaching undo message"
 msgstr ""
-"Le coup {move} a été annulé car il perdait {points_lost:.1f} points."
-"Vous pouvez consulter les Prévisions territoriales (t) pour identifier "
-"les régions concernées, et survoler le coup pour connaître sa réfutation."
-"Pour continuer la partie, veuillez jouer un nouveau coup."
+"Le coup {move} a été annulé car il perdait {points_lost:.1f} points.Vous "
+"pouvez consulter les Prévisions territoriales (t) pour identifier les "
+"régions concernées, et survoler le coup pour connaître sa réfutation.Pour "
+"continuer la partie, veuillez jouer un nouveau coup."
 
 msgid "sweep analysis"
 msgstr "Analyse de tous les possibles ({visits} visites/coup)."
@@ -725,7 +725,7 @@ msgstr "Recherche de coups différents."
 
 msgid "minimal time use"
 msgstr ""
-"Temps de réflexion \n" 
+"Temps de réflexion \n"
 "minimum (s/période)"
 
 msgid "move too fast"
@@ -742,8 +742,6 @@ msgstr ""
 "'tenuki_penalty' le pousse à jouer localement ; 'attach_penalty' à éviter les coups de contact direct. \n"
 "Quand elles sont possibles, les valeurs négatives favorisent au contraire un style de jeu compliqué. \n"
 "Élargir le Champ des possibles (cf. Paramètres généraux) peaufine le style au détriment du niveau de jeu."
-
-
 
 msgid "ai:simple"
 msgstr "Modéré"
