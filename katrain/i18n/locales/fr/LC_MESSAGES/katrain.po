@@ -93,7 +93,7 @@ msgid "analysis:extra"
 msgstr "Analyser davantage"
 
 msgid "analysis:equalize"
-msgstr "Égaliser l’analyse des coups"
+msgstr "Égaliser l'analyse des coups"
 
 msgid "analysis:sweep"
 msgstr "Analyser tous les possibles"
@@ -105,7 +105,7 @@ msgid "analysis:continuous"
 msgstr "Lancer/Arrêter l'analyse continue"
 
 msgid "analysis:aimove"
-msgstr "Jouer le coup de l’IA"
+msgstr "Jouer le coup de l'IA"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
@@ -525,9 +525,10 @@ msgstr ""
 #. TODO: updated
 msgid "teaching undo message"
 msgstr ""
-"Le coup {move} a été annulé car il perdait {points_lost:.1f} points. Vous "
-"pouvez survoler le coup pour voir la réfutation. Veuillez jouer un nouveau "
-"coup."
+"Le coup {move} a été annulé car il perdait {points_lost:.1f} points."
+"Vous pouvez consulter les Prévisions territoriales (t) pour identifier "
+"les régions concernées, et survoler le coup pour connaître sa réfutation."
+"Pour continuer la partie, veuillez jouer un nouveau coup."
 
 msgid "sweep analysis"
 msgstr "Analyse de tous les possibles ({visits} visites/coup)."
@@ -722,34 +723,30 @@ msgstr "Proposer des coups différents"
 msgid "alternative analysis"
 msgstr "Recherche de coups différents."
 
-#. TODO - ignore moves if timer is on and less than this is used
 msgid "minimal time use"
-msgstr "Minimal time use in byo-yomi (s)"
+msgstr ""
+"Temps de réflexion \n" 
+"minimum (s/période)"
 
-#. TODO
 msgid "move too fast"
-msgstr "Think for at least {num} seconds before playing."
+msgstr "Réfléchissez au moins {num} secondes avant de jouer."
 
-#. TODO - in minutes
 msgid "main time"
-msgstr "Main time (min.)"
+msgstr "Temps principal (min)"
 
-#. TODO
 msgid "aihelp:simple"
 msgstr ""
-"Plays moves that lead to simplifying the board state. Of moves that lose at "
-"most 'max_points_lost' points and with at least 'min_visits', prefer moves "
-"that lose fewer points, settle own territory more (with importance "
-"settled_weight), settle opponent's territory more (importance settled_weight"
-" * opponent fac), avoid tenuki (more than 5 spaces, importance "
-"tenuki_penalty), and avoid attachments (importance attachment_penalty). "
-"Weights can be negative to make it complicate the game instead, and wide "
-"root noise (in general settings) can be used to further play according to "
-"the style at the cost of strength. "
+"Par défaut, le moteur de jeu cherche à simplifier la position. \n"
+"Il joue un coup parmi ceux considérés au moins 'min_visits' fois et perdant au plus 'max_points_lost'. \n"
+"'settled_weight' le pousse à consolider ses territoires, et ceux adverses une fois multiplié par 'opponent_fac'. \n"
+"'tenuki_penalty' le pousse à jouer localement ; 'attach_penalty' à éviter les coups de contact direct. \n"
+"Quand elles sont possibles, les valeurs négatives favorisent au contraire un style de jeu compliqué. \n"
+"Élargir le Champ des possibles (cf. Paramètres généraux) peaufine le style au détriment du niveau de jeu."
 
-#. TODO
+
+
 msgid "ai:simple"
-msgstr "Simple Style"
+msgstr "Modéré"
 
 #. TODO - DEPRECATED
 msgid "aihelp:settle"
@@ -764,24 +761,20 @@ msgstr ""
 " instead, and wide root noise (in general settings) can be used to further "
 "play according to the style at the cost of strength. "
 
-#. TODO
+#. TODO - DEPRECATED
 msgid "ai:settle"
 msgstr "Settle Stones Style"
 
-#. TODO - Analyze again but allow only nearby moves
 msgid "analysis:local"
-msgstr "Find local responses"
+msgstr "Proposer des coups locaux"
 
-#. TODO - status message
 msgid "local analysis"
-msgstr "Searching for local responses"
+msgstr "Recherche de coups locaux."
 
-#. TODO - change komi etc in current game
 msgid "change current game"
 msgstr ""
-"Update komi/rules\n"
-"in active game"
+"Mettre à jour\n"
+"la partie en cours"
 
-#. TODO - on move tree editing
 msgid "Make Main Branch"
-msgstr "Make Main Branch"
+msgstr "Mettre en branche principale"
