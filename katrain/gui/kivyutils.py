@@ -23,6 +23,7 @@ from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavi
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BaseFlatButton, BasePressedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
+from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, MODE_PLAY, PLAYER_AI
@@ -372,14 +373,36 @@ class Timer(BGBoxLayout):
     timeout = BooleanProperty(False)
 
 
+class TriStateMDCheckbox(MDCheckbox):
+    tri_state = BooleanProperty(False)
+    slashed = BooleanProperty(False)
+
+    def _do_press(self):
+        if not self.tri_state:
+            return super()._do_press()
+        if self.slashed:
+            self.state = "normal"
+            self.slashed = False
+            self.icon = "checkbox-blank-outline"
+        elif self.state == "down":
+            self.state = "normal"
+            self.slashed = True
+            self.icon = "checkbox-blank-off-outline"
+        else:
+            self.state = "down"
+            self.slashed = False
+            self.icon = "checkbox-marked-outline"
+
+
 class AnalysisToggle(MDBoxLayout):
     text = StringProperty("")
     default_active = BooleanProperty(False)
     font_name = StringProperty(DEFAULT_FONT)
     disabled = BooleanProperty(False)
+    tri_state = BooleanProperty(False)
 
     def trigger_action(self, *args, **kwargs):
-        return self.checkbox.trigger_action(*args, **kwargs)
+        return self.checkbox._do_press()
 
     def activate(self, *_args):
         self.checkbox.active = True

@@ -272,6 +272,7 @@ class BadukPanWidget(Widget):
             current_node = katrain.game.current_node
             game_ended = katrain.game.end_result
             full_eval_on = katrain.analysis_controls.eval.active
+            all_dots_off = katrain.analysis_controls.eval.checkbox.slashed
             has_stone = {}
             drawn_stone = {}
             for m in katrain.game.stones:
@@ -295,7 +296,10 @@ class BadukPanWidget(Widget):
                 placements = node.placements
                 for m in node.moves + placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
-                        move_eval_on = show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
+                        move_eval_on = (
+                            not all_dots_off and show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
+                        )
+                        print(move_eval_on, all_dots_off, show_dots_for.get(m.player), i < show_n_eval, full_eval_on)
                         if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost, show_dots_for_class)
                         else:
