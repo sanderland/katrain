@@ -641,34 +641,42 @@ msgstr "寻找其他走法"
 msgid "alternative analysis"
 msgstr "正在搜索其他走法"
 
-#. TODO - ignore moves if timer is on and less than this is used
+msgid "teaching undo message"
+msgstr "撤销第 {move} 手棋因为损失超过 {points_lost:.1f} 目. 悬停在该手棋 上方查看信息. 请再次尝试."
+
 msgid "minimal time use"
-msgstr "Minimal time use in byo-yomi (s)"
+msgstr "最少思考时间 (秒)"
 
-#. TODO
 msgid "move too fast"
-msgstr "Think for at least {num} seconds before playing."
+msgstr "请思考 {num} 秒再下棋"
 
-#. TODO - in minutes
 msgid "main time"
-msgstr "Main time (min.)"
+msgstr "保留时间 (分钟)"
 
-#. TODO
 msgid "aihelp:simple"
 msgstr ""
-"Plays moves that lead to simplifying the board state. Of moves that lose at "
-"most 'max_points_lost' points and with at least 'min_visits', prefer moves "
-"that lose fewer points, settle own territory more (with importance "
-"settled_weight), settle opponent's territory more (importance settled_weight"
-" * opponent fac), avoid tenuki (more than 5 spaces, importance "
-"tenuki_penalty), and avoid attachments (importance attachment_penalty). "
-"Weights can be negative to make it complicate the game instead, and wide "
-"root noise (in general settings) can be used to further play according to "
-"the style at the cost of strength. "
+"简化局面的风格。 "
+"所有损失最高'max_points_lost'目和至少'min_visits'计算深度的着法当中，偏向于损失较小，乙方空定型（偏向值settled_weight），对方空定型（偏向值settled_weight"
+" * opponent "
+"fac），避免脱先（5路以上，偏向值tenuki_penalty），避免碰（偏向值attachment_penalty）的手法。偏向值可以设为复数捣乱局面，宽根噪声（通用设置）可以棋力代价更加符合风格。"
+" "
 
-#. TODO
 msgid "ai:simple"
-msgstr "Simple Style"
+msgstr "简明风格"
+
+msgid "analysis:local"
+msgstr "寻找局部走法"
+
+msgid "local analysis"
+msgstr "正在寻找局部走法"
+
+msgid "change current game"
+msgstr ""
+"更新贴目\n"
+"规则在当前对局"
+
+msgid "Make Main Branch"
+msgstr "设为实战变化"
 
 #. TODO - DEPRECATED
 msgid "aihelp:settle"
@@ -686,21 +694,3 @@ msgstr ""
 #. TODO - DEPRECATED
 msgid "ai:settle"
 msgstr "Settle Style"
-
-#. TODO - Analyze again but allow only nearby moves
-msgid "analysis:local"
-msgstr "Find local responses"
-
-#. TODO - status message
-msgid "local analysis"
-msgstr "Searching for local responses"
-
-#. TODO - change komi etc in current game
-msgid "change current game"
-msgstr ""
-"Update komi/rules\n"
-"in active game"
-
-#. TODO - on move tree editing
-msgid "Make Main Branch"
-msgstr "Make Main Branch"
