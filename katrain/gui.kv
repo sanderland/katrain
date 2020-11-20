@@ -242,7 +242,7 @@
         pos_hint: {'center_x': 0.85,'center_y':0.5}
         size_hint: None, 1
         width: self.height
-        canvas:
+        canvas.before:
             Color:
                 rgba: YELLOW
             Ellipse:
@@ -260,6 +260,9 @@
             Line:
                 circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.width/6
                 width: 1
+        text: str(root.queries_remaining) if root.queries_remaining >= 3 else ''
+        color: BLACK
+        font_size: 0.5 * self.width / max(2,len(self.text))
         on_press: app.gui.controls.set_status(i18n._('ai-ponder'),STATUS_INFO)
 
 
@@ -503,8 +506,6 @@
     katrain: app.gui
     orientation: 'vertical'
     players: {'B':B_player,'W':W_player}
-    engine_status_col: [1,1,1,1]
-    engine_status_pondering: -1
     timer:timer
     graph: graph
     stats: stats

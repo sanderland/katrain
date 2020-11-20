@@ -634,3 +634,4 @@ class AnalysisControls(MDBoxLayout):
 class BadukPanControls(MDFloatLayout):
     engine_status_col = ListProperty(ENGINE_DOWN_COL)
     engine_status_pondering = NumericProperty(-1)
+    queries_remaining = NumericProperty(0)

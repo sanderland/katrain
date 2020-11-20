@@ -169,6 +169,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.board_controls.engine_status_col = ENGINE_READY_COL
         else:
             self.board_controls.engine_status_col = ENGINE_BUSY_COL
+        self.board_controls.queries_remaining = len(self.engine.queries)
 
         # redraw board/stones
         if redraw_board:
