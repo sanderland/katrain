@@ -299,7 +299,6 @@ class BadukPanWidget(Widget):
                         move_eval_on = (
                             not all_dots_off and show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
                         )
-                        print(move_eval_on, all_dots_off, show_dots_for.get(m.player), i < show_n_eval, full_eval_on)
                         if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost, show_dots_for_class)
                         else:

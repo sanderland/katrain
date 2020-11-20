@@ -521,7 +521,6 @@ msgstr "读秒声音开启"
 msgid "tab:info-details"
 msgstr "详细"
 
-#. TODO: updated
 msgid "teaching undo message"
 msgstr "撤销第 {move} 手棋因为损失超过 {points_lost:.1f} 目. 悬停在该手棋 上方查看信息. 请再次尝试."
 
@@ -640,9 +639,6 @@ msgstr "寻找其他走法"
 #. status message
 msgid "alternative analysis"
 msgstr "正在搜索其他走法"
-
-msgid "teaching undo message"
-msgstr "撤销第 {move} 手棋因为损失超过 {points_lost:.1f} 目. 悬停在该手棋 上方查看信息. 请再次尝试."
 
 msgid "minimal time use"
 msgstr "最少思考时间 (秒)"
