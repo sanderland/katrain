@@ -1067,14 +1067,14 @@
                         AnalysisControls:
                             id: analysis_controls
                             size_hint_y: None
-                            height: 1 if root.zen > 0 else max(dp(50),min(dp(75),self.width / 13.5))
+                            height: 1 if root.zen > 0 else max(sp(50),min(sp(75),self.width / 13.5))
                             opacity: 0 if root.zen > 0 else 1
                         BadukPanWidget:
                             id: board_gui
                         BadukPanControls:
                             id: board_controls
                             size_hint_y: None
-                            height: 1 if root.zen > 0 else max(dp(50),min(dp(75),self.width / 13.5))
+                            height: 1 if root.zen > 0 else max(sp(50),min(sp(75),self.width / 13.5))
                             opacity: 0 if root.zen > 0 else 1
                     MDBoxLayout:
                         size_hint_x: None
