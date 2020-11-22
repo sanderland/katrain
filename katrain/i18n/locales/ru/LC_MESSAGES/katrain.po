@@ -707,7 +707,7 @@ msgstr ""
 "увеличения вариативности игры за счёт небольшой потери силы. "
 
 msgid "ai:simple"
-msgstr "Упрощающий стиль"
+msgstr "Простой стиль"
 
 msgid "aihelp:settle"
 msgstr ""
