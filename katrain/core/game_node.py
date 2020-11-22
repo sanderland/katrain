@@ -219,7 +219,7 @@ class GameNode(SGFNode):
                     if currmove_pol_rank is not None:
                         policy_rank_msg = i18n._("Info:policy rank")
                         text += policy_rank_msg.format(rank=currmove_pol_rank, probability=currmove_pol_prob) + "\n"
-                    if currmove_pol_rank is None or currmove_pol_rank != 1 and (sgf or details):
+                    if currmove_pol_rank != 1 and policy_ranking and (sgf or details):
                         policy_best_msg = i18n._("Info:policy best")
                         pol_move, pol_prob = policy_ranking[0][1].gtp(), policy_ranking[0][0]
                         text += policy_best_msg.format(move=pol_move, probability=pol_prob) + "\n"
