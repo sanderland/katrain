@@ -153,8 +153,8 @@ Keyboard shortcuts are shown with **[key]**.
 * The checkboxes at the top of the screen:
     * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when 
                wanting to guess the next move.
-    * **[w]**: Show all dots: Show all evaluation dots instead of the last few.
-        * You can configure how many are shown with this setting off, and whether they are shown for AIs under 'Configure Teacher'.
+    * **[w]**: Show all dots: Cycles through showingall evaluation dots, showing the last few, and showing none.
+        * You can configure whether they are shown for AIs under 'Teaching/Analysis Settings'.
     * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. 
            Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). 
            Hover over any of them to see the principal variation.
@@ -203,14 +203,13 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
-[![Contributors](https://img.shields.io/static/v1?label=contributors&message=19&color=dcb424)](CONTRIBUTIONS.md)
+[![Contributors](https://img.shields.io/static/v1?label=contributors&message=22&color=dcb424)](CONTRIBUTIONS.md)
 [![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=7&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
     * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
-* You can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278), [KakaoTalk](https://open.kakao.com/o/gTsMJCac) 
- or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
+* You can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278) or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
 * You can also donate to the project through [Github Sponsors](https://github.com/sponsors/sanderland).
 
 
