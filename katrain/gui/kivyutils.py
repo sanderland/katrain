@@ -1,5 +1,7 @@
 from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
+from kivy.core.text.markup import MarkupLabel as CoreMarkupLabel
+
 from kivy.core.window import Window
 from kivy.graphics import *
 from kivy.properties import (
@@ -218,6 +220,13 @@ class KeyValueSpinner(Spinner):
         super().__init__(**kwargs)
         self.build_values()
         self.bind(size=self.update_dropdown_props, pos=self.update_dropdown_props, value_refs=self.build_values)
+
+    @property
+    def input_value(self):
+        try:
+            return self.value_refs[self.selected_index]
+        except:
+            return ""
 
     @property
     def selected(self):
@@ -601,8 +610,9 @@ class ScrollableLabel(ScrollView, BackgroundMixin):
         pass
 
 
-def draw_text(pos, text, font_name=None, **kw):
-    label = CoreLabel(text=text, bold=True, font_name=font_name or i18n.font_name, **kw)  #
+def draw_text(pos, text, font_name=None, markup=False, **kw):
+    label_cls = CoreMarkupLabel if markup else CoreLabel
+    label = label_cls(text=text, bold=True, font_name=font_name or i18n.font_name, **kw)
     label.refresh()
     Rectangle(
         texture=label.texture,

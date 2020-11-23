@@ -17,10 +17,22 @@ from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.constants import MODE_PLAY, OUTPUT_DEBUG, STATUS_TEACHING, OUTPUT_EXTRA_DEBUG
+from katrain.core.constants import (
+    MODE_PLAY,
+    OUTPUT_DEBUG,
+    STATUS_TEACHING,
+    OUTPUT_EXTRA_DEBUG,
+    TOP_MOVE_OPTIONS,
+    TOP_MOVE_NOTHING,
+    TOP_MOVE_DELTA_SCORE,
+    TOP_MOVE_SCORE,
+    TOP_MOVE_WINRATE,
+    TOP_MOVE_DELTA_WINRATE,
+    TOP_MOVE_VISITS,
+)
 from katrain.core.game import Move
 from katrain.core.lang import i18n
-from katrain.core.utils import evaluation_class, var_to_grid
+from katrain.core.utils import evaluation_class, var_to_grid, format_visits
 from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
 from katrain.gui.style import *
@@ -446,6 +458,14 @@ class BadukPanWidget(Widget):
             top_move_coords = None
             if hint_moves:
                 low_visits_threshold = katrain.config("trainer/low_visits", 25)
+                top_moves_show = [
+                    opt
+                    for opt in [
+                        katrain.config("trainer/top_moves_show"),
+                        katrain.config("trainer/top_moves_show_secondary"),
+                    ]
+                    if opt in TOP_MOVE_OPTIONS and opt != TOP_MOVE_NOTHING
+                ]
                 for move_dict in hint_moves:
                     move = Move.from_gtp(move_dict["move"])
                     if move.coords is not None:
@@ -471,18 +491,34 @@ class BadukPanWidget(Widget):
                             size=(2 * evalsize, 2 * evalsize),
                             source="img/topmove.png",
                         )
-                        if self.trainer_config["text_point_loss"] and text_on:
-                            if -0.05 < move_dict["pointsLost"] < 0.05:
-                                ptloss_text = "0.0"
+                        if text_on and top_moves_show:
+                            keys = {"size": self.grid_size / 3, "smallsize": self.grid_size / 3.5}
+                            if len(top_moves_show) == 1:
+                                fmt = "[size={size:.0f}]{" + top_moves_show[0] + "}[/size]"
                             else:
-                                ptloss_text = f"{-move_dict['pointsLost']:+.1f}"
-                            sizefac = 1
+                                fmt = (
+                                    "[size={size:.0f}]{"
+                                    + top_moves_show[0]
+                                    + "}[/size]\n[size={smallsize:.0f}]{"
+                                    + top_moves_show[1]
+                                    + "}[/size]"
+                                )
+
+
+                            keys[TOP_MOVE_DELTA_SCORE] = (
+                                "0.0" if -0.05 < move_dict["pointsLost"] < 0.05 else f"{-move_dict['pointsLost']:+.1f}"
+                            )
+                            keys[TOP_MOVE_SCORE] = move_dict["scoreLead"]
+                            keys[TOP_MOVE_WINRATE] = f"{move_dict['winrate']*100:.1f}"
+                            keys[TOP_MOVE_DELTA_WINRATE] = f"{-move_dict['winrateLost']:+.1%}"
+                            keys[TOP_MOVE_VISITS] = format_visits(move_dict["visits"])
+                            print(fmt,keys)
                             Color(*BLACK)
                             draw_text(
                                 pos=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
-                                text=ptloss_text,
-                                font_size=self.grid_size * sizefac / 2.5,
+                                text=fmt.format(**keys),
                                 font_name="Roboto",
+                                markup=True, line_height=0.8, halign='center'
                             )
 
                         if engine_best_move:

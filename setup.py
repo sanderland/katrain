@@ -57,10 +57,11 @@ setup(
     python_requires=">=3.6, <4",
     entry_points={"console_scripts": ["katrain=katrain.__main__:run_app"]},
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3",
+        "Topic :: Games/Entertainment :: Board Games",
     ],
     packages=packages,
     package_data=package_data,

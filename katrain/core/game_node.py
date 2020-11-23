@@ -276,6 +276,7 @@ class GameNode(SGFNode):
                 {
                     **self.analysis["root"],
                     "pointsLost": 0,
+                    "winrateLost": 0,
                     "order": 0,
                     "move": top_polmove.gtp(),
                     "pv": [top_polmove.gtp()],
@@ -283,10 +284,15 @@ class GameNode(SGFNode):
             ]  # single visit -> go by policy/root
 
         root_score = self.analysis["root"]["scoreLead"]
+        root_winrate = self.analysis["root"]["winrate"]
         move_dicts = list(self.analysis["moves"].values())  # prevent incoming analysis from causing crash
         return sorted(
             [
-                {"pointsLost": self.player_sign(self.next_player) * (root_score - d["scoreLead"]), **d}
+                {
+                    "pointsLost": self.player_sign(self.next_player) * (root_score - d["scoreLead"]),
+                    "winrateLost": self.player_sign(self.next_player) * (root_winrate - d["winrate"]),
+                    **d,
+                }
                 for d in move_dicts
             ],
             key=lambda d: (d["order"], d["pointsLost"]),

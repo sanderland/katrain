@@ -53,3 +53,14 @@ def find_package_resource(path, silent_errors=False):
         return os.path.join(PATHS["PACKAGE"], path.replace("katrain\\", "katrain/").replace("katrain/", ""))
     else:
         return os.path.abspath(os.path.expanduser(path))  # absolute path
+
+
+def format_visits(n):
+    if n < 1000:
+        return str(n)
+    if n < 1e6:
+        return f"{n/1000:.1f}k"
+    if n < 1e6:
+        return f"{n/1000:.0f}k"
+    return f"{n/1e6:.0f}k"
+
