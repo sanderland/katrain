@@ -72,7 +72,8 @@ class ControlsPanel(BoxLayout):
         self.last_timer_update = (None, 0, False)
         self.beep = SoundLoader.load("sounds/countdownbeep.wav")
         self.boing = SoundLoader.load("sounds/boing.wav")
-        self.boing.volume = 0.1
+        if self.boing:
+            self.boing.volume = 0.1
         self.beep_start = 5.2
         self.timer_interval = 0.07
 

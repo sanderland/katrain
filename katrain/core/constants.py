@@ -1,4 +1,4 @@
-VERSION = "1.6.0"
+VERSION = "1.6.1"
 HOMEPAGE = "https://github.com/sanderland/katrain"
 CONFIG_MIN_VERSION = "1.6.0"  # keep config files from this version
 
