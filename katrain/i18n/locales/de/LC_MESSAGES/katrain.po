@@ -284,12 +284,12 @@ msgid "aga"
 msgstr "AGA"
 
 msgid "clear cache"
-msgstr "Cache Leeren"
+msgstr "Cache leeren"
 
 #. clear cache help
 msgid "avoids replaying"
 msgstr ""
-"Vermeidet Identische\n"
+"Vermeidet, identische\n"
 "Partien zu spielen"
 
 #. hints on new game

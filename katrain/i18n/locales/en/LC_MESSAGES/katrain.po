@@ -354,7 +354,7 @@ msgid "aga"
 msgstr "AGA"
 
 msgid "clear cache"
-msgstr "Clear Cache"
+msgstr "Clear cache"
 
 #. clear cache help
 msgid "avoids replaying"
