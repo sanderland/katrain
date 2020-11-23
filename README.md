@@ -120,6 +120,7 @@ This estimate should be reasonably accurate as long as you have not changed the 
     * **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced
      game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found
       [here](https://github.com/sanderland/katrain/issues/44) and [here](https://github.com/sanderland/katrain/issues/74).
+    * **Simple Style** Prefers moves that solidify both player's territory, leading to relatively simpler moves.
     * **ScoreLoss** is KataGo analyzing as usual, but
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
     * **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
@@ -166,6 +167,7 @@ Keyboard shortcuts are shown with **[key]**.
     * **[s]**: Equalize visits: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
     * **[d]**: Analyze all moves: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but can be useful to see how many reasonable next moves are available.
     * **[f]**: Find alternatives: Increases analysis of current candidate moves to at least the 'fast visits' level, and request a new query that excludes all current candidate moves.    
+    * **[g]**: Find local responses: Searches within 5 spaces of the last move only.
     * **[spacebar]**: Turn continuous analysis on/off. This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.
     * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
 
