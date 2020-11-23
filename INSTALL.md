@@ -53,7 +53,7 @@ Simply download and run, everything is included.
 
 ### <a name="LinuxQuick"></a>Quick install guide
 
-If you have a working Python 3.6/3.7 available, you should be able to simply:
+If you have a working Python 3.6/3.7/3.8 available, you should be able to simply:
 
 * Run `pip3 install -U katrain`
 * Run the program by executing `katrain` in a terminal.

@@ -127,7 +127,7 @@ KV = """
         Label:
             id: label
             text: slider.values[slider.index][1]
-            font_size: dp(12)
+            font_size: sp(12)
             lang_change_tracking: i18n._('') # for font
             halign: "center"
             color: root.thumb_color if root.active else [0, 0, 0, 0]

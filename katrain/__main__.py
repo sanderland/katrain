@@ -30,11 +30,13 @@ Config.set("graphics", "width", max(400, int(WINDOW_X * WINDOW_SCALE_FAC)))
 Config.set("graphics", "height", max(400, int(WINDOW_Y * WINDOW_SCALE_FAC)))
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
+import re
 import signal
 import sys
 import threading
 import traceback
 from queue import Queue
+import urllib3
 import webbrowser
 
 from kivy.base import ExceptionHandler, ExceptionManager
@@ -130,9 +132,9 @@ class KaTrainGui(Screen, KaTrainBase):
         return self.play_mode.mode
 
     def toggle_continuous_analysis(self):
-        self.idle_analysis = not self.idle_analysis
-        if not self.idle_analysis:
+        if self.idle_analysis:
             self.controls.set_status("", STATUS_INFO)
+        self.idle_analysis = not self.idle_analysis
         self.update_state()
 
     def start(self):
@@ -157,7 +159,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
-        self.board_controls.branch.disabled = not cn.parent or len(cn.parent.children) <= 1
         self.controls.players["W"].captures = prisoners["W"]
         self.controls.players["B"].captures = prisoners["B"]
 
@@ -168,6 +169,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.board_controls.engine_status_col = ENGINE_READY_COL
         else:
             self.board_controls.engine_status_col = ENGINE_BUSY_COL
+        self.board_controls.queries_remaining = len(self.engine.queries)
 
         # redraw board/stones
         if redraw_board:
@@ -193,21 +195,21 @@ class KaTrainGui(Screen, KaTrainBase):
             teaching_undo = cn.player and last_player.being_taught and cn.parent
             if (
                 teaching_undo
-                and cn.analysis_ready
-                and cn.parent.analysis_ready
+                and cn.analysis_complete
+                and cn.parent.analysis_complete
                 and not cn.children
                 and not self.game.end_result
             ):
                 self.game.analyze_undo(cn)  # not via message loop
             if (
-                cn.analysis_ready
+                cn.analysis_complete
                 and next_player.ai
                 and not cn.children
                 and not self.game.end_result
                 and not (teaching_undo and cn.auto_undo is None)
             ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                 self._do_ai_move(cn)
-                Clock.schedule_once(self.board_gui.play_stone_sound, 0)
+                Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
         if len(self.engine.queries) == 0 and self.idle_analysis:
             self("analyze-extra", "extra", continuous=True)
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
@@ -218,7 +220,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.update_players()
             self.update_state()
         for player_setup_block in PlayerSetupBlock.INSTANCES:
-            player_setup_block.update_players(bw, self.players_info[bw])
+            player_setup_block.update_player_info(bw, self.players_info[bw])
 
     def set_note(self, note):
         self.game.current_node.note = note
@@ -293,6 +295,10 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.game.redo(n_times)
 
+    def _do_next_mistake(self):
+        self.board_gui.animating_pv = None
+        self.game.redo(999, stop_on_mistake=self.config("trainer/eval_thresholds")[-4])
+
     def _do_cycle_children(self, *args):
         self.board_gui.animating_pv = None
         self.game.cycle_children(*args)
@@ -324,7 +330,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.timer_settings_popup:
             self.timer_settings_popup = I18NPopup(
-                title_key="timer settings", size=[dp(350), dp(400)], content=ConfigTimerPopup(self)
+                title_key="timer settings", size=[dp(600), dp(500)], content=ConfigTimerPopup(self)
             ).__self__
             self.timer_settings_popup.content.popup = self.timer_settings_popup
         self.timer_settings_popup.open()
@@ -351,12 +357,12 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.ai_settings_popup:
             self.ai_settings_popup = I18NPopup(
-                title_key="ai settings", size=[dp(600), dp(650)], content=ConfigAIPopup(self)
+                title_key="ai settings", size=[dp(750), dp(750)], content=ConfigAIPopup(self)
             ).__self__
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
-    def load_sgf_file(self, file, fast=False, rewind=False):
+    def load_sgf_file(self, file, fast=False, rewind=True):
         try:
             move_tree = KaTrainSGF.parse_file(file)
         except ParseError as e:
@@ -388,6 +394,7 @@ class KaTrainGui(Screen, KaTrainBase):
             popup_contents.filesel.on_success = readfile
             popup_contents.filesel.on_submit = readfile
         self.fileselect_popup.open()
+        self.fileselect_popup.content.filesel.ids.list_view._trigger_update()
 
     def _do_output_sgf(self):
         msg = self.game.write_sgf(self.config("general/sgf_save"))
@@ -399,6 +406,14 @@ class KaTrainGui(Screen, KaTrainBase):
         if not clipboard:
             self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.", STATUS_INFO)
             return
+
+        url_match = re.match(r"(?P<url>https?://[^\s]+)", clipboard)
+        if url_match:
+            self.log("Recognized url: " + url_match.group(), OUTPUT_INFO)
+            http = urllib3.PoolManager()
+            response = http.request("GET", url_match.group())
+            clipboard = response.data.decode("utf-8")
+
         try:
             move_tree = KaTrainSGF.parse_sgf(clipboard)
         except Exception as exc:
@@ -440,7 +455,9 @@ class KaTrainGui(Screen, KaTrainBase):
             "s": ("analyze-extra", "equalize"),
             "d": ("analyze-extra", "sweep"),
             "f": ("analyze-extra", "alternative"),
+            "g": ("analyze-extra", "local"),
             "p": ("play", None),
+            "n": ("next-mistake",),
             "down": ("switch-branch", 1),
             "up": ("switch-branch", -1),
             "f5": ("timer-popup",),
@@ -466,7 +483,9 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
             else:
                 return
-
+        ctrl_pressed = "ctrl" in modifiers
+        alt_pressed = "alt" in modifiers
+        shift_pressed = "shift" in modifiers
         shortcuts = self.shortcuts
         if keycode[1] == "tab":
             self.play_mode.switch_ui_mode()
@@ -474,26 +493,30 @@ class KaTrainGui(Screen, KaTrainBase):
             self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
-        elif keycode[1] == "b" and "ctrl" not in modifiers:
+        elif keycode[1] == "b" and ctrl_pressed:
             self.controls.timer.paused = not self.controls.timer.paused
-        elif keycode[1] in ["`", "~", "m"] and "ctrl" not in modifiers:
+        elif keycode[1] in ["`", "~", "m"] and ctrl_pressed:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["left", "z"]:
-            self("undo", 1 + ("alt" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
+            self("undo", 1 + (alt_pressed or shift_pressed) * 9 + (ctrl_pressed and not alt_pressed) * 999)
         elif keycode[1] in ["right", "x"]:
-            self("redo", 1 + ("alt" in modifiers) * 9 + ("ctrl" in modifiers) * 999)
-        elif keycode[1] == "n" and "ctrl" in modifiers:
+            self("redo", 1 + (alt_pressed or shift_pressed) * 9 + (ctrl_pressed and not alt_pressed) * 999)
+        elif keycode[1] == "home":
+            self("undo", 999)
+        elif keycode[1] == "end":
+            self("redo", 999)
+        elif keycode[1] == "n" and ctrl_pressed:
             self("new-game-popup")
-        elif keycode[1] == "l" and "ctrl" in modifiers:
+        elif keycode[1] == "l" and ctrl_pressed:
             self("analyze-sgf-popup")
-        elif keycode[1] == "s" and "ctrl" in modifiers:
+        elif keycode[1] == "s" and ctrl_pressed:
             self("output-sgf")
-        elif keycode[1] == "c" and "ctrl" in modifiers:
+        elif keycode[1] == "c" and ctrl_pressed:
             Clipboard.copy(self.game.root.sgf())
             self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
-        elif keycode[1] == "v" and "ctrl" in modifiers:
+        elif keycode[1] == "v" and ctrl_pressed:
             self.load_sgf_from_clipboard()
-        elif keycode[1] in shortcuts.keys() and "ctrl" not in modifiers:
+        elif keycode[1] in shortcuts.keys() and not ctrl_pressed:
             shortcut = shortcuts[keycode[1]]
             if isinstance(shortcut, Widget):
                 shortcut.trigger_action(duration=0)

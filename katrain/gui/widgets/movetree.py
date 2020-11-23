@@ -3,7 +3,7 @@ from collections import defaultdict
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Line, Rectangle
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty, Clock, NumericProperty, BooleanProperty
+from kivy.properties import BooleanProperty, Clock, NumericProperty, ObjectProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.widget import Widget
@@ -11,15 +11,15 @@ from kivymd.app import MDApp
 
 from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.style import (
-    WHITE,
-    STONE_COLORS,
-    LIGHTGREY,
     BACKGROUND_COLOR,
-    OUTLINE_COLORS,
     LIGHTER_BACKGROUND_COLOR,
-    YELLOW,
-    STONE_TEXT_COLORS,
+    LIGHTGREY,
+    OUTLINE_COLORS,
     RED,
+    STONE_COLORS,
+    STONE_TEXT_COLORS,
+    WHITE,
+    YELLOW,
 )
 
 
@@ -85,6 +85,17 @@ class MoveTreeCanvas(Widget):
             self.set_game_node(parent)
         self.is_open = False
 
+    def make_selected_node_main_branch(self):
+
+        if self.menu_selected_node and self.menu_selected_node.parent:
+            node = self.menu_selected_node
+            while node.parent is not None:
+                node.parent.children.remove(node)
+                node.parent.children.insert(0, node)
+                node = node.parent
+            self.set_game_node(self.menu_selected_node)
+        self.is_open = False
+
     def switch_branch(self, direction=1):
         pos = self.move_pos.get(self.scroll_view_widget.current_node)
         if not self.scroll_view_widget:
@@ -96,7 +107,7 @@ class MoveTreeCanvas(Widget):
         self.set_game_node(same_x_moves[new_index][1])
 
     def draw_move_tree(self, current_node):
-        if not self.scroll_view_widget:
+        if not self.scroll_view_widget or not current_node:
             return
 
         spacing = 5
@@ -109,6 +120,7 @@ class MoveTreeCanvas(Widget):
         stack = root.ordered_children[::-1]
         next_y_pos = defaultdict(int)  # x pos -> max y pos
         children = defaultdict(list)  # since AI self-play etc may modify the tree between layout and draw!
+        children[root] = root.ordered_children
         while stack:
             move = stack.pop()
             x = move.depth
@@ -176,6 +188,9 @@ class MoveTree(ScrollView, BackgroundMixin):
     def delete_selected_node(self):
         self.move_tree_canvas.delete_selected_node()
 
+    def make_selected_node_main_branch(self):
+        self.move_tree_canvas.make_selected_node_main_branch()
+
     def scroll_to_pixel(self, x, y):
         if not self._viewport:
             return
@@ -218,6 +233,12 @@ Builder.load_string(
         icon: 'img/delete.png'
         shortcut: ''
         on_action: root.katrain.controls.move_tree.delete_selected_node()
+        -background_color: LIGHTER_BACKGROUND_COLOR
+    MoveTreeDropdownItem:
+        text: i18n._("Make Main Branch")
+        icon: 'img/Branch.png'
+        shortcut: ''
+        on_action: root.katrain.controls.move_tree.make_selected_node_main_branch()
         -background_color: LIGHTER_BACKGROUND_COLOR
     """
 )

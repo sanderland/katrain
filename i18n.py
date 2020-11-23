@@ -26,7 +26,7 @@ for lang in locales:
     pofile[lang] = os.path.join(localedir, lang, "LC_MESSAGES", "katrain.po")
     po[lang] = polib.pofile(pofile[lang])
     for entry in po[lang].translated_entries():
-        if "TODO" in entry.comment:
+        if "TODO" in entry.comment and not "DEPRECATED" in entry.comment:
             todos[lang].append(entry)
         strings_to_langs[entry.msgid][lang] = entry
         strings_to_keys[entry.msgid][lang] = set(re.findall("{.*?}", entry.msgstr))

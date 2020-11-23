@@ -238,6 +238,7 @@ class ConfigTimerPopup(QuickConfigGui):
             p.periods_used = 0
         self.katrain.controls.timer.paused = True
         self.katrain.game.current_node.time_used = 0
+        self.katrain.game.main_time_used = 0
         self.katrain.update_state()
 
 
@@ -245,7 +246,7 @@ class NewGamePopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
         for bw, info in katrain.players_info.items():
-            self.player_setup.update_players(bw, info)
+            self.player_setup.update_player_info(bw, info)
 
         self.rules_spinner.value_refs = [name for abbr, name in katrain.engine.RULESETS_ABBR]
 
@@ -258,6 +259,20 @@ class NewGamePopup(QuickConfigGui):
         for bw, player_setup in self.player_setup.players.items():
             self.katrain.update_player(bw, **player_setup.player_type_dump)
         self.katrain("new-game")
+
+    def update_game(self):
+        props = self.collect_properties(self)
+        root = self.katrain.game.root
+        changed = False
+        for k, v in [("RU", props["game/rules"]), ("KM", props["game/komi"])]:
+            current = root.get_property(k)
+            if current != v:
+                changed = True
+                self.katrain.game.root.set_property(k, v)
+        if changed:
+            self.katrain.engine.on_new_game()
+            self.katrain.game.analyze_all_nodes()
+        self.popup.dismiss()
 
 
 def wrap_anchor(widget):
@@ -341,7 +356,7 @@ class ConfigAIPopup(QuickConfigGui):
         self.options_grid.clear_widgets()
         self.help_label.text = i18n._(strategy.replace("ai:", "aihelp:"))
         for k, v in sorted(mode_settings.items(), key=lambda kv: (kv[0] not in AI_KEY_PROPERTIES, kv[0])):
-            self.options_grid.add_widget(DescriptionLabel(text=k, size_hint_x=0.25))
+            self.options_grid.add_widget(DescriptionLabel(text=k, size_hint_x=0.275))
             if k in AI_OPTION_VALUES:
                 values = AI_OPTION_VALUES[k]
                 if values == "bool":
@@ -482,20 +497,20 @@ class ConfigPopup(QuickConfigGui):
 
     KATAGOS = {
         "win": {
-            "OpenCL v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-opencl-windows-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-avx2-windows-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-windows-x64.zip",
+            "OpenCL v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-opencl-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-avx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-windows-x64.zip",
             "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
         },
         "linux": {
-            "OpenCL v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-opencl-linux-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-avx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.6.1": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-cpu-eigen-linux-x64.zip",
+            "OpenCL v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-opencl-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-avx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-linux-x64.zip",
             "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
         },
         "just-descriptions": {
-            "CUDA v1.6.1 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-windows-x64.zip",
-            "CUDA v1.6.1 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1/katago-v1.6.1-gpu-cuda10.2-linux-x64.zip",
+            "CUDA v1.7.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-cuda10.2-windows-x64.zip",
+            "CUDA v1.7.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-cuda10.2-linux-x64.zip",
         },
     }
 

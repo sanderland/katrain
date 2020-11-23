@@ -52,6 +52,7 @@ Many thanks to these additional authors:
 * "fohristiwhirl" for the Gibo and NGF formats parsing code.
 * "kaorahi" for bug fixes and SGF parser improvements.
 * "ajkenny84" for the red-green colourblind theme.
+* Lukasz Wierzbowski for the ability to paste urls for sgfs and helping fix alt-gr issues.
 
 ## Translators
 
@@ -62,7 +63,7 @@ Many thanks to the following contributors for translations.
 * German: "nimets123" with contributions from "trohde"
 * Spanish: Sergio Villegas ("serpiente") with contributions from the Spanish OGS community
 * Russian: Dmitry Ivankov and Alexander Kiselev
-* Simplified Chinese: Qing Mu with contributions from "Medwin"
+* Simplified Chinese: Qing Mu with contributions from "Medwin" and Viktor Lin
 * Japanese: "kaorahi"
 
 ## Additional thanks to

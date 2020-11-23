@@ -32,7 +32,7 @@
 #:set CP_SPACING dp(6)
 #:set CP_SMALL_SPACING dp(3)
 #:set CP_PADDING dp(6)
-#:set NOTES_FONT_SIZE dp(18)
+#:set NOTES_FONT_SIZE sp(18)
 
 #:set EPSILON 1e-9
 
@@ -126,7 +126,7 @@
         pos: [root.pos[i] + (root.size[i] - root.icon_size[i])/2 for i in [0,1]]
         source: root.icon
         mipmap: True
-        color: [1,1,1,0.4] if root.disabled else [1,1,1,1]
+        color: [1,1,1,0.4] if root.disabled else root.color
 
 
 <I18NSpinnerOption@SpinnerOption>:
@@ -171,8 +171,6 @@
         size: image.size
         font_size: root.min_size * 1.2 / (1 + 1 * len(self.text))
 
-
-
 # UI components
 
 <BadukPanWidget>:
@@ -187,7 +185,6 @@
 
 <BadukPanControls>:
     katrain: app.gui
-    branch: branch
     circles: [black_circle,white_circle]
     mid_circles_container: mid_circles_container
     pass_btn: pass_btn
@@ -209,7 +206,7 @@
             on_press: root.katrain('undo',999)
         NavIconButton:
             icon: 'img/Previous-5.png'
-            on_press: root.katrain('undo',5)
+            on_press: root.katrain('undo',10)
         NavIconButton:
             icon: 'img/Previous.png'
             on_press: root.katrain('undo')
@@ -233,20 +230,19 @@
             on_press: root.katrain('redo')
         NavIconButton:
             icon: 'img/Next-5.png'
-            on_press: root.katrain('redo',5)
+            on_press: root.katrain('redo',10)
         NavIconButton:
             icon: 'img/Next-End.png'
             on_press: root.katrain('redo',999)
         NavIconButton:
-            id: branch
-            icon: 'img/Branch.png'
-            on_press: root.katrain('cycle-children',1)
-            disabled: True
+            icon: 'img/Next-Mistake.png'
+            color: [0.65,0.05,0.05,1]
+            on_press: root.katrain('next-mistake')
     ClickableLabel:
         pos_hint: {'center_x': 0.85,'center_y':0.5}
         size_hint: None, 1
         width: self.height
-        canvas:
+        canvas.before:
             Color:
                 rgba: YELLOW
             Ellipse:
@@ -264,6 +260,9 @@
             Line:
                 circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.width/6
                 width: 1
+        text: str(root.queries_remaining) if root.queries_remaining >= 3 else ''
+        color: BLACK
+        font_size: 0.5 * self.width / max(2,len(self.text))
         on_press: app.gui.controls.set_status(i18n._('ai-ponder'),STATUS_INFO)
 
 
@@ -357,14 +356,14 @@
     spacing: CP_SPACING
     padding: CP_PADDING * 4, CP_PADDING * 2
     paused: True
-    timeout: self.state[1] <= 0
+    timeout: root.state[1] is not None and root.state[1] <= 0
     MDBoxLayout:
         size_hint: 0.7,1
         MDFloatLayout:
             size_hint: 0.4,1
             TimerLabel:
                 color: BACKGROUND_COLOR
-                text: '8:88'
+                text: '{}:88'.format('188' if root.state[0] >= 6000 else '88')
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
                 halign: 'right'
@@ -372,27 +371,27 @@
             TimerLabel:
                 id: timer
                 timeout: root.timeout
-                text: "{:01d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
+                text: "{:2d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
                 halign: 'right'
                 valign: 'middle'
         TimerLabel:
             size_hint: 0.05,1
-            text: "x"
+            text: "x" if  root.state[1] is not None else ""
             font_size: self.height * 0.3
             text_size: self.width, self.height * 0.95
             halign: 'right'
             valign: 'top'
             timeout: root.timeout
         TimerLabel:
-            size_hint: 0.1,1
+            size_hint: 0.075,1
             font_size: self.height * 0.35
             text_size: self.size
             halign: 'left'
             valign: 'top'
             id: periods
-            text: str(root.state[1])
+            text: str(root.state[1]) if root.state[1] is not None else ""
             max_lines: 1
             timeout: root.timeout
     MDBoxLayout:
@@ -507,8 +506,6 @@
     katrain: app.gui
     orientation: 'vertical'
     players: {'B':B_player,'W':W_player}
-    engine_status_col: [1,1,1,1]
-    engine_status_pondering: -1
     timer:timer
     graph: graph
     stats: stats
@@ -685,6 +682,7 @@
         color: LIGHTGREY
 
 
+
 <AnalysisToggle>:
     adaptive_width: True
     spacing: CP_SPACING
@@ -700,15 +698,18 @@
         color: checkbox.disabled_color if root.disabled else (checkbox.selected_color if checkbox.active else checkbox.unselected_color)
         size_hint_x: None
         width: self.texture_size[0] + 4
-        on_left_press: checkbox.active = not checkbox.active
-    MDCheckbox:
+        on_left_press: checkbox.trigger_action()
+    TriStateMDCheckbox:
         id: checkbox
         disabled: root.disabled
+        tri_state: root.tri_state
         size_hint: None,0.5
         pos_hint: {'center_y': 0.5}
         width: self.height
         active: root.default_active
         on_active: if app.gui: app.gui.update_state()
+        on_slashed: if app.gui: app.gui.update_state()
+
 
 <AnalysisMenuItem@MenuItem>:
     on_close: app.gui.analysis_controls.close_dropdown()
@@ -749,6 +750,11 @@
         icon: 'img/Alternative.png'
         shortcut: 'f'
         on_action: root.katrain("analyze-extra", "alternative")
+    AnalysisMenuItem:
+        text: i18n._("analysis:local")
+        icon: 'img/local.png'
+        shortcut: 'g'
+        on_action: root.katrain("analyze-extra", "local")
     AnalysisMenuItem:
         text: i18n._("analysis:game")
         icon: 'img/analysis.png'
@@ -792,6 +798,7 @@
             AnalysisToggle:
                 id: eval
                 text: i18n._("analysis:dots")
+                tri_state: True
             AnalysisToggle:
                 id: hints
                 text: i18n._("analysis:topmoves")
@@ -853,11 +860,12 @@
     player_subtype_ai: player_subtype_ai
     MDBoxLayout:
         size_hint: 0.25, 1
-        CircleWithText:
+        ClickableCircle:
             size_hint: 0.8, 0.8
             pos_hint: {'center_x':0.5,'center_y':0.5}
             text: root.player[0]
             player: root.player
+            on_left_press: root.parent.swap_players()
     MDBoxLayout:
         size_hint: 0.5, 1
         orientation: 'vertical'
@@ -1059,14 +1067,14 @@
                         AnalysisControls:
                             id: analysis_controls
                             size_hint_y: None
-                            height: 1 if root.zen > 0 else max(dp(50),min(dp(75),self.width / 13.5))
+                            height: 1 if root.zen > 0 else max(sp(50),min(sp(75),self.width / 13.5))
                             opacity: 0 if root.zen > 0 else 1
                         BadukPanWidget:
                             id: board_gui
                         BadukPanControls:
                             id: board_controls
                             size_hint_y: None
-                            height: 1 if root.zen > 0 else max(dp(50),min(dp(75),self.width / 13.5))
+                            height: 1 if root.zen > 0 else max(sp(50),min(sp(75),self.width / 13.5))
                             opacity: 0 if root.zen > 0 else 1
                     MDBoxLayout:
                         size_hint_x: None

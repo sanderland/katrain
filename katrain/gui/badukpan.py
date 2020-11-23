@@ -42,7 +42,7 @@ class BadukPanWidget(Widget):
         Window.bind(mouse_pos=self.on_mouse_pos)
         self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents)
         self.redraw_trigger = Clock.create_trigger(self.redraw)
-        self.bind(size=self.redraw_trigger)
+        self.bind(size=self.redraw_trigger, pos=self.redraw_trigger)
         Clock.schedule_interval(self.animate_pv, 0.1)
 
     # stone placement functions
@@ -106,8 +106,23 @@ class BadukPanWidget(Widget):
             return
         katrain = self.katrain
         if self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
-            katrain("play", self.ghost_stone)
-            self.play_stone_sound()
+            game = self.katrain and self.katrain.game
+            current_node = game and self.katrain.game.current_node
+            if (
+                current_node
+                and not current_node.children
+                and not self.katrain.next_player_info.ai
+                and not self.katrain.controls.timer.paused
+                and self.katrain.play_analyze_mode == MODE_PLAY
+                and self.katrain.config("timer/main_time", 0) * 60 - game.main_time_used <= 0
+                and current_node.time_used < self.katrain.config("timer/minimal_use", 0)
+            ):
+                self.katrain.controls.set_status(
+                    i18n._("move too fast").format(num=self.katrain.config("timer/minimal_use", 0)), STATUS_TEACHING
+                )
+            else:
+                katrain("play", self.ghost_stone)
+                self.play_stone_sound()
         elif not self.ghost_stone:
             xd, xp = self._find_closest(touch.x, self.gridpos_x)
             yd, yp = self._find_closest(touch.y, self.gridpos_y)
@@ -125,7 +140,7 @@ class BadukPanWidget(Widget):
                     katrain.log(f"\nRoot Stats:\n{nodes_here[-1].analysis['root']}", OUTPUT_DEBUG)
                     katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
                     katrain.controls.active_comment_node = nodes_here[-1]
-                    if nodes_here[-1].parent.analysis_ready:
+                    if nodes_here[-1].parent.analysis_exists:
                         self.set_animating_pv(nodes_here[-1].parent.candidate_moves[0]["pv"], nodes_here[-1].parent)
 
         self.ghost_stone = None
@@ -257,6 +272,7 @@ class BadukPanWidget(Widget):
             current_node = katrain.game.current_node
             game_ended = katrain.game.end_result
             full_eval_on = katrain.analysis_controls.eval.active
+            all_dots_off = katrain.analysis_controls.eval.checkbox.slashed
             has_stone = {}
             drawn_stone = {}
             for m in katrain.game.stones:
@@ -280,7 +296,9 @@ class BadukPanWidget(Widget):
                 placements = node.placements
                 for m in node.moves + placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
-                        move_eval_on = show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
+                        move_eval_on = (
+                            not all_dots_off and show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
+                        )
                         if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost, show_dots_for_class)
                         else:
@@ -454,7 +472,7 @@ class BadukPanWidget(Widget):
                             source="img/topmove.png",
                         )
                         if self.trainer_config["text_point_loss"] and text_on:
-                            if move_dict["pointsLost"] < 0.05:
+                            if -0.05 < move_dict["pointsLost"] < 0.05:
                                 ptloss_text = "0.0"
                             else:
                                 ptloss_text = f"{-move_dict['pointsLost']:+.1f}"
@@ -484,7 +502,7 @@ class BadukPanWidget(Widget):
                 for child_node in current_node.children:
                     move = child_node.move
                     if move and move.coords is not None:
-                        if child_node.analysis_ready:
+                        if child_node.analysis_exists:
                             self.active_pv_moves.append(
                                 (move.coords, [move.gtp()] + child_node.candidate_moves[0]["pv"], current_node)
                             )
@@ -619,3 +637,4 @@ class AnalysisControls(MDBoxLayout):
 class BadukPanControls(MDFloatLayout):
     engine_status_col = ListProperty(ENGINE_DOWN_COL)
     engine_status_pondering = NumericProperty(-1)
+    queries_remaining = NumericProperty(0)

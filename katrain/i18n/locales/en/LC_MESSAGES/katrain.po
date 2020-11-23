@@ -106,6 +106,10 @@ msgstr "Deeper full game analysis"
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
 
+#. Analyze again but allow only nearby moves
+msgid "analysis:local"
+msgstr "Find local responses"
+
 #. Keep improving current position analysis when there is nothing else to do
 msgid "analysis:continuous"
 msgstr "Toggle continuous analysis"
@@ -124,6 +128,10 @@ msgstr "Analyzing entire board using {visits} visits/move"
 #. status message
 msgid "alternative analysis"
 msgstr "Searching for alternative moves"
+
+#. status message
+msgid "local analysis"
+msgstr "Searching for local responses"
 
 #. status message
 msgid "equalizing analysis"
@@ -293,13 +301,24 @@ msgid "timer settings"
 msgstr "Adjust Timer Settings"
 
 msgid "byoyomi length"
-msgstr "Time per Byo-yomi Period"
+msgstr "Time per byo-yomi period (s)"
 
 msgid "byoyomi periods"
-msgstr "Number of Periods"
+msgstr "Number of periods"
 
 msgid "count down sound"
 msgstr "Sound on"
+
+#. in minutes
+msgid "main time"
+msgstr "Main time (min.)"
+
+#. ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "Minimal time use in byo-yomi (s)"
+
+msgid "move too fast"
+msgstr "Think for at least {num} seconds before playing."
 
 #. submit button
 msgid "update timer"
@@ -350,6 +369,12 @@ msgstr "Use x:y (e.g. 19:9) for non-square size"
 #. submit new game
 msgid "new game"
 msgstr "Start New Game"
+
+#. change komi etc in current game
+msgid "change current game"
+msgstr ""
+"Update komi/rules\n"
+"in active game"
 
 # teacher settings from here
 msgid "teacher settings"
@@ -560,6 +585,38 @@ msgstr ""
 "perspective. When `automatic` is set, KaTrain will find a suitable value "
 "automatically."
 
+msgid "ai:simple"
+msgstr "Simple Style"
+
+msgid "aihelp:simple"
+msgstr ""
+"Plays moves that lead to simplifying the board state. Of moves that lose at "
+"most 'max_points_lost' points and with at least 'min_visits', prefer moves "
+"that lose fewer points, settle own territory more (with importance "
+"settled_weight), settle opponent's territory more (importance settled_weight"
+" * opponent_fac), avoid tenuki (more than 5 spaces, importance "
+"tenuki_penalty), and avoid attachments (importance attachment_penalty). "
+"Weights can be negative to make it complicate the game instead, and wide "
+"root noise (in general settings) can be used to increase play according to "
+"the style at the cost of strength. "
+
+#. DEPRECATED
+msgid "ai:settle"
+msgstr "Settle Style"
+
+#. DEPRECATED
+msgid "aihelp:settle"
+msgstr ""
+"Plays moves that lead to clarity on stones' status, favouring solid moves "
+"rather than complex sabaki. Of moves that lose at most 'max_points_lost' "
+"points and with at least 'min_visits', prefer moves that lose fewer points, "
+"settle own stones more (with importance settled_weight), settle opponent's "
+"stones more (importance settled_weight * opponent_fac), avoid tenuki (more "
+"than 5 spaces, importance tenuki_penalty), and avoid attachments (importance"
+" attachment_penalty). Weights can be negative to make it complicate the game"
+" instead, and wide root noise (in general settings) can be used to further "
+"play according to the style at the cost of strength. "
+
 msgid "ai:jigo"
 msgstr "KataJigo"
 
@@ -690,6 +747,10 @@ msgstr "Number of visits per move"
 #. on move tree editing
 msgid "Delete Node"
 msgstr "Delete Node"
+
+#. on move tree editing
+msgid "Make Main Branch"
+msgstr "Make Main Branch"
 
 #. theme label
 msgid "theme"

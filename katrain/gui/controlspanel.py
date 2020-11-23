@@ -71,6 +71,8 @@ class ControlsPanel(BoxLayout):
         self.active_comment_node = None
         self.last_timer_update = (None, 0, False)
         self.beep = SoundLoader.load("sounds/countdownbeep.wav")
+        self.boing = SoundLoader.load("sounds/boing.wav")
+        self.boing.volume = 0.1
         self.beep_start = 5.2
         self.timer_interval = 0.07
 
@@ -121,7 +123,7 @@ class ControlsPanel(BoxLayout):
                 self.active_comment_node = current_node.children[-1]
             elif current_node.parent:
                 self.active_comment_node = current_node.parent
-        elif both_players_are_robots and not current_node.analysis_ready and current_node.parent:
+        elif both_players_are_robots and not current_node.analysis_exists and current_node.parent:
             self.active_comment_node = current_node.parent
 
         lock_ai = katrain.config("trainer/lock_ai") and katrain.play_analyze_mode == MODE_PLAY
@@ -132,7 +134,7 @@ class ControlsPanel(BoxLayout):
                 teach=katrain.players_info[self.active_comment_node.player].being_taught, details=details
             )
 
-        if self.active_comment_node.analysis_ready:
+        if self.active_comment_node.analysis_exists:
             self.stats.score = self.active_comment_node.format_score() or ""
             self.stats.winrate = self.active_comment_node.format_winrate() or ""
             self.stats.points_lost = self.active_comment_node.points_lost
@@ -149,11 +151,13 @@ class ControlsPanel(BoxLayout):
         self.info.text = info
 
     def update_timer(self, _dt):
-        current_node = self.katrain and self.katrain.game and self.katrain.game.current_node
+        game = self.katrain and self.katrain.game
+        current_node = game and self.katrain.game.current_node
         if current_node:
             last_update_node, last_update_time, beeping = self.last_timer_update
             new_beeping = beeping
             now = time.time()
+            main_time = self.katrain.config("timer/main_time", 0) * 60
             byo_len = max(1, self.katrain.config("timer/byo_length"))
             byo_num = max(1, self.katrain.config("timer/byo_periods"))
             sounds_on = self.katrain.config("timer/sound")
@@ -161,9 +165,16 @@ class ControlsPanel(BoxLayout):
             ai = player.ai
             used_period = False
 
+            min_use = self.katrain.config("timer/minimal_use", 0)
+            boing_at_remaining = byo_len - min_use
+            main_time_remaining = main_time - game.main_time_used
+
             if not self.timer.paused and not ai and self.katrain.play_analyze_mode == MODE_PLAY:
                 if last_update_node == current_node and not current_node.children:
-                    current_node.time_used += now - last_update_time
+                    if main_time_remaining > 0:
+                        game.main_time_used += now - last_update_time
+                    else:
+                        current_node.time_used += now - last_update_time
                 else:
                     current_node.time_used = 0
                     new_beeping = False
@@ -173,6 +184,7 @@ class ControlsPanel(BoxLayout):
                     time_remaining += byo_len
                     player.periods_used += 1
                     used_period = True
+
                 if (
                     self.beep_start - 2 * self.timer_interval < time_remaining < self.beep_start
                     and player.periods_used < byo_num
@@ -180,6 +192,18 @@ class ControlsPanel(BoxLayout):
                     new_beeping = True
                 elif time_remaining > self.beep_start:
                     new_beeping = False
+
+                if (
+                    min_use
+                    and not new_beeping
+                    and self.boing
+                    and boing_at_remaining - self.timer_interval
+                    < time_remaining
+                    < boing_at_remaining + self.timer_interval
+                    and player.periods_used < byo_num
+                ):
+                    self.boing.play()
+
             else:
                 new_beeping = False
 
@@ -198,4 +222,7 @@ class ControlsPanel(BoxLayout):
 
             self.last_timer_update = (current_node, now, new_beeping)
 
-            self.timer.state = (max(0, time_remaining), max(0, periods_rem), ai)
+            if main_time_remaining > 0:
+                self.timer.state = (main_time_remaining, None, ai)
+            else:
+                self.timer.state = (max(0, time_remaining), max(0, periods_rem), ai)
