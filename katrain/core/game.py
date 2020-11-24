@@ -15,6 +15,7 @@ from katrain.core.constants import (
     STATUS_ANALYSIS,
     STATUS_INFO,
     STATUS_TEACHING,
+    PLAYER_HUMAN,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -296,7 +297,10 @@ class Game:
         eval_thresholds = trainer_config["eval_thresholds"]
 
         def player_name(player_info):
-            return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
+            if player_info.name and player_info.player_type == PLAYER_HUMAN:
+                return player_info.name
+            else:
+                return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
 
         root_properties = self.root.properties
         x_properties = {}

@@ -216,6 +216,8 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def update_player(self, bw, **kwargs):
         super().update_player(bw, **kwargs)
+        if self.game:
+            self.players_info[bw].name = self.game.root.get_property("P" + bw)
         if self.controls:
             self.controls.update_players()
             self.update_state()
@@ -265,7 +267,6 @@ class KaTrainGui(Screen, KaTrainBase):
                 player_info.player_subtype = PLAYING_NORMAL
                 player_info.sgf_rank = move_tree.root.get_property(bw + "R")
                 player_info.calculated_rank = None
-                player_info.name = move_tree.root.get_property("P" + bw)
                 self.update_player(bw)
         self.controls.graph.initialize_from_game(self.game.root)
         # self.controls.rank_graph.initialize_from_game(self.game.root)

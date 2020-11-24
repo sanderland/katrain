@@ -250,14 +250,20 @@ class NewGamePopup(QuickConfigGui):
 
         self.rules_spinner.value_refs = [name for abbr, name in katrain.engine.RULESETS_ABBR]
 
+    def update_playerinfo(self):
+        for bw, player_setup in self.player_setup.players.items():
+            name = self.player_name[bw].text
+            if name:
+                self.katrain.game.root.set_property("P" + bw, name)
+            self.katrain.update_player(bw, **player_setup.player_type_dump)
+
     def update_config(self, save_to_file=True):
         super().update_config(save_to_file=save_to_file)
         self.katrain.log(f"New game settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
         if self.restart.active:
             self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
             self.katrain.engine.restart()
-        for bw, player_setup in self.player_setup.players.items():
-            self.katrain.update_player(bw, **player_setup.player_type_dump)
+        self.update_playerinfo()
         self.katrain("new-game")
 
     def update_game(self):
@@ -269,6 +275,7 @@ class NewGamePopup(QuickConfigGui):
             if current != v:
                 changed = True
                 self.katrain.game.root.set_property(k, v)
+        self.update_playerinfo()
         if changed:
             self.katrain.engine.on_new_game()
             self.katrain.game.analyze_all_nodes()

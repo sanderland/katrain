@@ -383,15 +383,28 @@
     restart: restart
     rules_spinner: rules_spinner
     player_setup: player_setup
+    player_name: {"W": white_player_name, "B": black_player_name}
     PlayerSetupBlock:
         size_hint: 1, 2
         id: player_setup
     GridLayout:
-        rows: 6
+        rows: 7
         cols: 3
-        size_hint: 1, 2.5
+        size_hint: 1, 3
         spacing: CP_SPACING
         padding: CP_PADDING
+        DescriptionLabel:
+            text: i18n._("names")
+        AnchorLayout:
+            LabelledTextInput:
+                text: ''
+                id: black_player_name
+                size_hint: 0.75, None
+        AnchorLayout:
+            LabelledTextInput:
+                text: ''
+                id: white_player_name
+                size_hint: 0.75, None
         DescriptionLabel:
             text: i18n._("board size")
         AnchorLayout:

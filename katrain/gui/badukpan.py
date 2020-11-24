@@ -504,7 +504,6 @@ class BadukPanWidget(Widget):
                                     + "}[/size]"
                                 )
 
-
                             keys[TOP_MOVE_DELTA_SCORE] = (
                                 "0.0" if -0.05 < move_dict["pointsLost"] < 0.05 else f"{-move_dict['pointsLost']:+.1f}"
                             )
@@ -512,13 +511,14 @@ class BadukPanWidget(Widget):
                             keys[TOP_MOVE_WINRATE] = f"{move_dict['winrate']*100:.1f}"
                             keys[TOP_MOVE_DELTA_WINRATE] = f"{-move_dict['winrateLost']:+.1%}"
                             keys[TOP_MOVE_VISITS] = format_visits(move_dict["visits"])
-                            print(fmt,keys)
                             Color(*BLACK)
                             draw_text(
                                 pos=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
                                 text=fmt.format(**keys),
                                 font_name="Roboto",
-                                markup=True, line_height=0.8, halign='center'
+                                markup=True,
+                                line_height=0.8,
+                                halign="center",
                             )
 
                         if engine_best_move:

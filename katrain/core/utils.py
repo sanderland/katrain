@@ -63,4 +63,3 @@ def format_visits(n):
     if n < 1e6:
         return f"{n/1000:.0f}k"
     return f"{n/1e6:.0f}k"
-
