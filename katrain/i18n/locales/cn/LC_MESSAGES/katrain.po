@@ -613,9 +613,6 @@ msgstr "覆盖引擎命令"
 msgid "download katago button"
 msgstr "下载KataGo 版本"
 
-msgid "show point loss as text"
-msgstr "在棋子上显示目数损失"
-
 msgid "katago binaries available"
 msgstr "{num} 个exe文件可用"
 
@@ -690,3 +687,35 @@ msgstr ""
 #. TODO - DEPRECATED
 msgid "ai:settle"
 msgstr "Settle Style"
+
+#. TODO - setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "Stats on top moves"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "Change in win rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_visits"
+msgstr "Visits"
+
+#. TODO - Dropdown menu option
+msgid "top_move_score"
+msgstr "Score"
+
+#. TODO - Dropdown menu option
+msgid "top_move_nothing"
+msgstr "---"
+
+#. TODO - Dropdown menu option
+msgid "top_move_winrate"
+msgstr "Win rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "Change in score"
+
+#. TODO - top move stats show threshold description
+msgid "show stats if"
+msgstr "Show stats if more than ... visits"

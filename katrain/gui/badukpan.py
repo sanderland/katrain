@@ -476,9 +476,7 @@ class BadukPanWidget(Widget):
                         if move_dict["visits"] < low_visits_threshold and not engine_best_move:
                             scale = UNCERTAIN_HINT_SCALE
                             text_on = False
-                            alpha = HINTS_MIN_ALPHA + (HINTS_ALPHA - HINTS_MIN_ALPHA) * (
-                                move_dict["visits"] / low_visits_threshold
-                            )
+                            alpha = HINTS_LO_ALPHA
                         if "pv" in move_dict:
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:

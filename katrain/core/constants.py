@@ -222,12 +222,12 @@ AI_PICK_ELO_GRID = [
 ]
 
 
-TOP_MOVE_DELTA_SCORE = "delta score"
-TOP_MOVE_SCORE = "score"
-TOP_MOVE_DELTA_WINRATE = "delta winrate"
-TOP_MOVE_WINRATE = "winrate"
-TOP_MOVE_VISITS = "visits"
-TOP_MOVE_NOTHING = "<nothing>"
+TOP_MOVE_DELTA_SCORE = "top_move_delta_score"
+TOP_MOVE_SCORE = "top_move_score"
+TOP_MOVE_DELTA_WINRATE = "top_move_delta_winrate"
+TOP_MOVE_WINRATE = "top_move_winrate"
+TOP_MOVE_VISITS = "top_move_visits"
+TOP_MOVE_NOTHING = "top_move_nothing"
 
 TOP_MOVE_OPTIONS = [
     TOP_MOVE_DELTA_SCORE,

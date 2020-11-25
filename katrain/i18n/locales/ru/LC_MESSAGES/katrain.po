@@ -673,9 +673,6 @@ msgstr ""
 "Не удалось запустить KataGo из-за отсутствующих DLL. Проверьте требования "
 "или запустите бинарный файл сам по себе для получения подробностей."
 
-msgid "show point loss as text"
-msgstr "Показывать потерянные очки текстом"
-
 msgid "resign"
 msgstr "Сдаться"
 
@@ -738,3 +735,35 @@ msgstr ""
 
 msgid "Make Main Branch"
 msgstr "Сделать главной веткой"
+
+#. TODO - setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "Stats on top moves"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "Change in win rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_visits"
+msgstr "Visits"
+
+#. TODO - Dropdown menu option
+msgid "top_move_score"
+msgstr "Score"
+
+#. TODO - Dropdown menu option
+msgid "top_move_nothing"
+msgstr "-"
+
+#. TODO - Dropdown menu option
+msgid "top_move_winrate"
+msgstr "Win rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "Change in score"
+
+#. TODO - top move stats show threshold description
+msgid "show stats if"
+msgstr "Show stats if more than ... visits"

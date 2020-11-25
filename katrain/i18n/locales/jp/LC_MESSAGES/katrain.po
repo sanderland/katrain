@@ -658,11 +658,6 @@ msgstr ""
 "KataGoの起動に失敗しました. DLLがみつかりません. 必要なものをKataGoの説明書で確認するか, "
 "KataGo実行ファイル自体を直接実行して詳細を調べてください."
 
-#. in addition to colour, show point loss as -0.1 etc on hints/top
-#. moves
-msgid "show point loss as text"
-msgstr "損失目数を候補手上に表示"
-
 #. resign the game
 msgid "resign"
 msgstr "投了"
@@ -731,3 +726,35 @@ msgstr ""
 #. on move tree editing
 msgid "Make Main Branch"
 msgstr "こちらを主分岐に"
+
+#. TODO - setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "Stats on top moves"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "Change in win rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_visits"
+msgstr "Visits"
+
+#. TODO - Dropdown menu option
+msgid "top_move_score"
+msgstr "Score"
+
+#. TODO - Dropdown menu option
+msgid "top_move_nothing"
+msgstr "Nothing"
+
+#. TODO - Dropdown menu option
+msgid "top_move_winrate"
+msgstr "Win rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "Change in score"
+
+#. TODO - top move stats show threshold description
+msgid "show stats if"
+msgstr "Show stats if more than ... visits"

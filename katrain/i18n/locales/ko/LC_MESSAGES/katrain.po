@@ -638,9 +638,6 @@ msgid "Engine missing DLL"
 msgstr ""
 "없는 DLL 파일이 있어 KataGo가 실행되지 않습니다. 요구사항을 점검하시거나, 실행 파일을 따로 실행해 세부사항을 알아보십시오."
 
-msgid "show point loss as text"
-msgstr "돌 위에 집 손해 표시하기"
-
 msgid "resign"
 msgstr "기권"
 
@@ -704,3 +701,35 @@ msgstr ""
 
 msgid "Make Main Branch"
 msgstr "주 변화로 만들기"
+
+#. TODO - setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "Stats on top moves"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "Change in win rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_visits"
+msgstr "Visits"
+
+#. TODO - Dropdown menu option
+msgid "top_move_score"
+msgstr "Score"
+
+#. TODO - Dropdown menu option
+msgid "top_move_nothing"
+msgstr "---"
+
+#. TODO - Dropdown menu option
+msgid "top_move_winrate"
+msgstr "Win rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "Change in score"
+
+#. TODO - top move stats show threshold description
+msgid "show stats if"
+msgstr "Show stats if more than ... visits"

@@ -69,8 +69,8 @@
         ],
         "low_visits": 25,
         "eval_off_show_last": 3,
-        "top_moves_show": "delta_score",
-        "top_moves_show_secondary": "visits",
+        "top_moves_show": "top_move_delta_score",
+        "top_moves_show_secondary": "top_move_visits",
         "eval_show_ai": true,
         "lock_ai": false
     },

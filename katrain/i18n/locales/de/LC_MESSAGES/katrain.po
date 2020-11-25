@@ -668,9 +668,6 @@ msgstr ""
 "in der KataGo-Dokumentation oder versuch, KataGo alleine zu starten, um "
 "Einzelheiten zu erfahren."
 
-msgid "show point loss as text"
-msgstr "Zeig den Punkteverlust auf Beste Züge"
-
 msgid "teaching undo message"
 msgstr ""
 "Zug {move} zurückgenommen, da er {points_lost:.1f} Punkte verliert. Bitte "
@@ -704,8 +701,8 @@ msgid "aihelp:simple"
 msgstr ""
 "Spielt Züge, die dazu zu einer Vereinfachung des Brettzustandes führen. Von "
 "Zügen,die höchstens 'max_points_lost' Punkte verlieren und mit wenigstens "
-"'min_visits' Visits, bevorzuge die Züge, die weniger Punkte verlieren und"
-"eigenes Gebiet mehr sichern."
+"'min_visits' Visits, bevorzuge die Züge, die weniger Punkte verlieren "
+"undeigenes Gebiet mehr sichern."
 
 msgid "ai:simple"
 msgstr "Einfacher Stil"
@@ -735,3 +732,35 @@ msgstr ""
 
 msgid "Make Main Branch"
 msgstr "Zum Hauptzweig machen"
+
+#. TODO - setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "Stats on top moves"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "Change in Win Rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_visits"
+msgstr "Visits"
+
+#. TODO - Dropdown menu option
+msgid "top_move_score"
+msgstr "Score"
+
+#. TODO - Dropdown menu option
+msgid "top_move_nothing"
+msgstr "---"
+
+#. TODO - Dropdown menu option
+msgid "top_move_winrate"
+msgstr "Win Rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "Change in Score"
+
+#. TODO - top move stats show threshold description
+msgid "show stats if"
+msgstr "Show stats if more than ... visits"

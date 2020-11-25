@@ -63,7 +63,7 @@ STARPOINT_SIZE = 0.1
 BOARD_COLOR = [0.85, 0.68, 0.40, 1]
 STONE_SIZE = 0.505  # texture edge is transparent
 
-HINTS_MIN_ALPHA = 0.2  # single visit
+HINTS_LO_ALPHA = 0.6
 HINTS_ALPHA = 0.8
 POLICY_ALPHA = 0.6
 TOP_POLICY_ALPHA = 0.3
