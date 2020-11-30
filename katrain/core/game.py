@@ -16,7 +16,8 @@ from katrain.core.constants import (
     STATUS_INFO,
     STATUS_TEACHING,
     PLAYER_HUMAN,
-    VERSION, PROGRAM_NAME,
+    VERSION,
+    PROGRAM_NAME,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -45,7 +46,7 @@ class Game:
         move_tree: GameNode = None,
         analyze_fast=False,
         game_properties: Optional[Dict] = None,
-        loaded_from_file = None
+        loaded_from_file=None,
     ):
         self.katrain = katrain
         self._lock = threading.Lock()
@@ -54,7 +55,6 @@ class Game:
         self.engines = engine
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
         self.loaded_from_file = loaded_from_file
-
 
         if move_tree:
             self.root = move_tree
@@ -326,7 +326,12 @@ class Game:
         base_game_name = f"katrain_{player_names['B']} vs {player_names['W']}"
         game_name = f"{base_game_name} {self.game_id}"
 
-        if self.loaded_from_file and base_game_name in self.loaded_from_file and PROGRAM_NAME in self.root.get_property("AP","") and self.loaded_from_file.endswith('sgf'):
+        if (
+            self.loaded_from_file
+            and base_game_name in self.loaded_from_file
+            and PROGRAM_NAME in self.root.get_property("AP", "")
+            and self.loaded_from_file.endswith("sgf")
+        ):
             file_name = self.loaded_from_file
         else:
             file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))

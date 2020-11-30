@@ -1,4 +1,5 @@
 import os
+import struct
 import sys
 from typing import List, Tuple, TypeVar
 
@@ -53,6 +54,11 @@ def find_package_resource(path, silent_errors=False):
         return os.path.join(PATHS["PACKAGE"], path.replace("katrain\\", "katrain/").replace("katrain/", ""))
     else:
         return os.path.abspath(os.path.expanduser(path))  # absolute path
+
+
+def pack_floats(float_list):
+    return struct.pack('%sf' % len(float_list), *float_list)
+
 
 
 def format_visits(n):

@@ -260,7 +260,9 @@ class KaTrainGui(Screen, KaTrainBase):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
-        self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast,loaded_from_file=loaded_from_file)
+        self.game = Game(
+            self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast, loaded_from_file=loaded_from_file
+        )
         if move_tree:
             for bw, player_info in self.players_info.items():
                 player_info.player_type = PLAYER_HUMAN
@@ -369,7 +371,7 @@ class KaTrainGui(Screen, KaTrainBase):
         except ParseError as e:
             self.log(i18n._("Failed to load SGF").format(error=e), OUTPUT_ERROR)
             return
-        self._do_new_game(move_tree=move_tree, analyze_fast=fast,loaded_from_file=file)
+        self._do_new_game(move_tree=move_tree, analyze_fast=fast, loaded_from_file=file)
         if not rewind:
             self.game.redo(999)
 
