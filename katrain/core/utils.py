@@ -57,8 +57,11 @@ def find_package_resource(path, silent_errors=False):
 
 
 def pack_floats(float_list):
-    return struct.pack('%sf' % len(float_list), *float_list)
+    return struct.pack(f"{len(float_list)}e", *float_list)
 
+
+def unpack_floats(str, num):
+    return struct.unpack(f"{num}e", str)
 
 
 def format_visits(n):

@@ -7,14 +7,42 @@ from katrain.core.constants import (
     SGF_INTERNAL_COMMENTS_MARKER,
     SGF_SEPARATOR_MARKER,
     PROGRAM_NAME,
+    ANALYSIS_FORMAT_VERSION,
 )
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
-from katrain.core.utils import evaluation_class, var_to_grid
+from katrain.core.utils import evaluation_class, var_to_grid, pack_floats, unpack_floats
 from katrain.gui.style import INFO_PV_COLOR
 import base64
 import gzip
 import json
+
+
+def analysis_dumps(analysis):
+    analysis = copy.deepcopy(analysis)
+    for movedict in analysis["moves"].values():
+        if "ownership" in movedict:  # per-move ownership rarely used
+            del movedict["ownership"]
+    ownership_data = pack_floats(analysis.pop("ownership"))
+    policy_data = pack_floats(analysis.pop("policy"))
+    main_data = json.dumps(analysis).encode("utf-8")
+    return [
+        base64.standard_b64encode(gzip.compress(data)).decode("utf-8")
+        for data in [ownership_data, policy_data, main_data]
+    ]
+
+
+def analysis_loads(property_array, board_squares, version):
+    if version > ANALYSIS_FORMAT_VERSION:
+        raise ValueError(f"Can not decode analysis data with version {version}, please update {PROGRAM_NAME}")
+    ownership_data, policy_data, main_data, *_ = [
+        gzip.decompress(base64.standard_b64decode(data)) for data in property_array
+    ]
+    return {
+        **json.loads(main_data),
+        "policy": unpack_floats(policy_data, board_squares + 1),
+        "ownership": unpack_floats(ownership_data, board_squares),
+    }
 
 
 class GameNode(SGFNode):
@@ -35,7 +63,9 @@ class GameNode(SGFNode):
     def add_list_property(self, property: str, values: List):
         if property == "KT":
             try:
-                self.analysis = json.loads(gzip.decompress(base64.standard_b64decode(values[0])))
+                szx, szy = self.root.board_size
+                version = self.root.get_property("KTV", "<unknown>")
+                self.analysis = analysis_loads(values, szx * szy, version)
                 self.analysis_loaded = True
             except Exception as e:
                 print(f"Error in loading analysis: {e}")
@@ -61,13 +91,7 @@ class GameNode(SGFNode):
         note = self.note.strip()
         if save_analysis and self.analysis_complete:
             try:
-                analysis = copy.deepcopy(self.analysis)
-                for movedict in analysis["moves"].values():
-                    if "ownership" in movedict:
-                        del movedict["ownership"]
-                properties["KT"] = [
-                    base64.standard_b64encode(gzip.compress(json.dumps(analysis).encode("utf-8"))).decode("utf-8")
-                ]
+                properties["KT"] = analysis_dumps(self.analysis)
             except Exception as e:
                 print(f"Error in saving analysis: {e}")
         if self.points_lost and save_comments_class is not None and eval_thresholds is not None:

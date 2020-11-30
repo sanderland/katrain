@@ -18,6 +18,7 @@ from katrain.core.constants import (
     PLAYER_HUMAN,
     VERSION,
     PROGRAM_NAME,
+    ANALYSIS_FORMAT_VERSION,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -93,7 +94,6 @@ class Game:
     def analyze_all_nodes(self, priority=0, analyze_fast=False, even_if_present=True):
         for node in self.root.nodes_in_tree:
             if even_if_present or not node.analysis_loaded:
-                print(even_if_present, node.analysis_loaded, node.move)
                 node.clear_analysis()
                 node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast)
 
@@ -321,6 +321,8 @@ class Game:
                     x_properties[bw + "R"] = rank_label(player_info.calculated_rank)
         if "+" in str(self.end_result):
             x_properties["RE"] = self.end_result
+        if save_analysis:
+            x_properties["KTV"] = ANALYSIS_FORMAT_VERSION
         self.root.properties = {**root_properties, **{k: [v] for k, v in x_properties.items()}}
         player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
         base_game_name = f"katrain_{player_names['B']} vs {player_names['W']}"
