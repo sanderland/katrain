@@ -97,8 +97,9 @@ pip3 install screeninfo # Skip on MacOS, not working
 In case the sound is not working, or there is no available wheel for your OS or Python version, try:
 ```bash
 pip3 uninstall kivy
-pip3 install --no-binary kivy kivy==2.0.0rc2
+pip3 install kivy --extra-index-url https://kivy.org/downloads/simple/
 ```
+
 You can now start KaTrain by running `python3 -m katrain`
 
 In case KataGo does not start, an alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.

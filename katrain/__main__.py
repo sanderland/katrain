@@ -253,14 +253,14 @@ class KaTrainGui(Screen, KaTrainBase):
             else:  # game related actions
                 self.message_queue.put([self.game.game_id, message, args, kwargs])
 
-    def _do_new_game(self, move_tree=None, analyze_fast=False):
+    def _do_new_game(self, move_tree=None, analyze_fast=False, loaded_from_file=None):
         self.idle_analysis = False
         mode = self.play_analyze_mode
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
-        self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast)
+        self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast,loaded_from_file=loaded_from_file)
         if move_tree:
             for bw, player_info in self.players_info.items():
                 player_info.player_type = PLAYER_HUMAN
@@ -340,7 +340,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.teacher_settings_popup:
             self.teacher_settings_popup = I18NPopup(
-                title_key="teacher settings", size=[dp(800), dp(750)], content=ConfigTeacherPopup(self)
+                title_key="teacher settings", size=[dp(800), dp(800)], content=ConfigTeacherPopup(self)
             ).__self__
             self.teacher_settings_popup.content.popup = self.teacher_settings_popup
         self.teacher_settings_popup.open()
@@ -369,7 +369,7 @@ class KaTrainGui(Screen, KaTrainBase):
         except ParseError as e:
             self.log(i18n._("Failed to load SGF").format(error=e), OUTPUT_ERROR)
             return
-        self._do_new_game(move_tree=move_tree, analyze_fast=fast)
+        self._do_new_game(move_tree=move_tree, analyze_fast=fast,loaded_from_file=file)
         if not rewind:
             self.game.redo(999)
 

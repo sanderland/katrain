@@ -280,10 +280,10 @@
         DescriptionLabel:
             text: i18n._("save dots")
     AnchorLayout:
-        size_hint: 1, 3
+        size_hint: 1, 4
         GridLayout:
             cols: 2
-            rows: 4
+            rows: 5
             padding: 4
             size_hint: 0.95, 1
             DescriptionLabel:
@@ -293,25 +293,25 @@
                 LabelledSpinner:
                     size_hint: 0.95,0.8
                     input_property: 'trainer/theme'
-                    font_size: DESC_FONT_SIZE * 0.8
                     id: themes_spinner
             DescriptionLabel:
                 font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("stats on top move")
-            BoxLayout:
-                orientation: 'horizontal'
-                size_hint: 1.5,1
-                LabelledSpinner:
-                    id: top_moves_show
-                    value_refs: TOP_MOVE_OPTIONS
-                    input_property: "trainer/top_moves_show"
-                Label:
-                    size_hint: 0.1, 1
-                    text: '&'
-                LabelledSpinner:
-                    id: top_moves_show_secondary
-                    value_refs: TOP_MOVE_OPTIONS
-                    input_property: "trainer/top_moves_show_secondary"
+            AnchorLayout:
+                BoxLayout:
+                    size_hint: 1, 0.8
+                    orientation: 'horizontal'
+                    LabelledSpinner:
+                        id: top_moves_show
+                        value_refs: TOP_MOVE_OPTIONS
+                        input_property: "trainer/top_moves_show"
+                    Label:
+                        size_hint: 0.1, 1
+                        text: '&'
+                    LabelledSpinner:
+                        id: top_moves_show_secondary
+                        value_refs: TOP_MOVE_OPTIONS
+                        input_property: "trainer/top_moves_show_secondary"
             DescriptionLabel:
                 font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("show stats if")
@@ -332,6 +332,12 @@
             AnchorLayout:
                 LabelledCheckBox:
                     input_property: "trainer/eval_show_ai"
+            DescriptionLabel:
+                font_size: DESC_FONT_SIZE * 0.8
+                text: i18n._("cache analysis to sgf")
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/save_analysis"
     AnchorLayout:
         size_hint: 1,1.5
         AutoSizedRoundedRectangleButton:

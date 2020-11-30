@@ -764,3 +764,9 @@ msgstr "Change in Score"
 #. TODO - top move stats show threshold description
 msgid "show stats if"
 msgstr "Show stats if more than ... visits"
+
+#. TODO - analysis option
+msgid "cache analysis to sgf"
+msgstr ""
+"cache analysis to sgf\n"
+"(larger files, only compatible with KaTrain)"

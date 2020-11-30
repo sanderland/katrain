@@ -733,3 +733,7 @@ msgstr "Change in score"
 #. TODO - top move stats show threshold description
 msgid "show stats if"
 msgstr "Show stats if more than ... visits"
+
+#. TODO - analysis option
+msgid "cache analysis to sgf"
+msgstr "ache analysis in SGF"

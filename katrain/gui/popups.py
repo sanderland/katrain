@@ -274,6 +274,9 @@ class NewGamePopup(QuickConfigGui):
             current = root.get_property(k)
             if current != v:
                 changed = True
+                self.katrain.log(
+                    f"Property {k} changed from {current} to {v}, triggering re-analysis of entire game.", OUTPUT_INFO
+                )
                 self.katrain.game.root.set_property(k, v)
         self.update_playerinfo()
         if changed:

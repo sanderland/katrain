@@ -378,7 +378,7 @@ msgstr ""
 
 # teacher settings from here
 msgid "teacher settings"
-msgstr "Edit Teacher Settings"
+msgstr "Edit Teaching/Analysis Settings"
 
 msgid "point loss threshold"
 msgstr "Point loss greater than"
@@ -404,6 +404,10 @@ msgid "show ai dots"
 msgstr ""
 "Show dots/SGF comments\n"
 " for AI players"
+
+#. analysis option
+msgid "cache analysis to sgf"
+msgstr "Cache analysis in SGF"
 
 #. removed as an option / can ignore
 msgid "lock ai when playing"

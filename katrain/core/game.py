@@ -16,6 +16,7 @@ from katrain.core.constants import (
     STATUS_INFO,
     STATUS_TEACHING,
     PLAYER_HUMAN,
+    VERSION, PROGRAM_NAME,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -35,7 +36,7 @@ class KaTrainSGF(SGF):
 class Game:
     """Represents a game of go, including an implementation of capture rules."""
 
-    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": f"KaTrain:{HOMEPAGE}", "CA": "UTF-8"}
+    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": f"{PROGRAM_NAME}:{VERSION}", "CA": "UTF-8"}
 
     def __init__(
         self,
@@ -44,6 +45,7 @@ class Game:
         move_tree: GameNode = None,
         analyze_fast=False,
         game_properties: Optional[Dict] = None,
+        loaded_from_file = None
     ):
         self.katrain = katrain
         self._lock = threading.Lock()
@@ -51,6 +53,8 @@ class Game:
             engine = {"B": engine, "W": engine}
         self.engines = engine
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
+        self.loaded_from_file = loaded_from_file
+
 
         if move_tree:
             self.root = move_tree
@@ -82,13 +86,16 @@ class Game:
         self.set_current_node(self.root)
         self.main_time_used = 0
         threading.Thread(
-            target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast), daemon=True
+            target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast, even_if_present=False),
+            daemon=True,
         ).start()  # return faster, but bypass Kivy Clock
 
-    def analyze_all_nodes(self, priority=0, analyze_fast=False):
+    def analyze_all_nodes(self, priority=0, analyze_fast=False, even_if_present=True):
         for node in self.root.nodes_in_tree:
-            node.clear_analysis()
-            node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast)
+            if even_if_present or not node.analysis_loaded:
+                print(even_if_present, node.analysis_loaded, node.move)
+                node.clear_analysis()
+                node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast)
 
     # -- move tree functions --
     def _calculate_groups(self):
@@ -292,9 +299,11 @@ class Game:
         self, path: str, trainer_config: Optional[Dict] = None,
     ):
         if trainer_config is None:
-            trainer_config = self.katrain.config("trainer")
-        save_feedback = trainer_config["save_feedback"]
+            trainer_config = self.katrain.config("trainer", {})
+        save_feedback = trainer_config.get("save_feedback", False)
         eval_thresholds = trainer_config["eval_thresholds"]
+        print(trainer_config)
+        save_analysis = trainer_config.get("save_analysis", False)
 
         def player_name(player_info):
             if player_info.name and player_info.player_type == PLAYER_HUMAN:
@@ -314,15 +323,23 @@ class Game:
             x_properties["RE"] = self.end_result
         self.root.properties = {**root_properties, **{k: [v] for k, v in x_properties.items()}}
         player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
-        game_name = f"katrain_{player_names['B']} vs {player_names['W']} {self.game_id}"
-        file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
+        base_game_name = f"katrain_{player_names['B']} vs {player_names['W']}"
+        game_name = f"{base_game_name} {self.game_id}"
+
+        if self.loaded_from_file and base_game_name in self.loaded_from_file and PROGRAM_NAME in self.root.get_property("AP","") and self.loaded_from_file.endswith('sgf'):
+            file_name = self.loaded_from_file
+        else:
+            file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
         os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
         show_dots_for = {
             bw: trainer_config.get("eval_show_ai", True) or self.katrain.players_info[bw].human for bw in "BW"
         }
         sgf = self.root.sgf(
-            save_comments_player=show_dots_for, save_comments_class=save_feedback, eval_thresholds=eval_thresholds
+            save_comments_player=show_dots_for,
+            save_comments_class=save_feedback,
+            eval_thresholds=eval_thresholds,
+            save_analysis=save_analysis,
         )
         with open(file_name, "w", encoding="utf-8") as f:
             f.write(sgf)

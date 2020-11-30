@@ -1,3 +1,4 @@
+PROGRAM_NAME = "KaTrain"
 VERSION = "1.7.0"
 HOMEPAGE = "https://github.com/sanderland/katrain"
 CONFIG_MIN_VERSION = "1.7.0"  # keep config files from this version
@@ -237,3 +238,7 @@ TOP_MOVE_OPTIONS = [
     TOP_MOVE_VISITS,
     TOP_MOVE_NOTHING,
 ]
+
+SGF_COMMENTS_MARKER = "\u200b\u3164"
+SGF_NOTE_MARKER = "\u200b\u200b"
+SGF_SEPARATOR_MARKER = "\u3164\u3164"
