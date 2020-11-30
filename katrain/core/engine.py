@@ -207,7 +207,7 @@ class KataGoEngine:
                         del self.queries[query_id]
                     time_taken = time.time() - start_time
                     self.katrain.log(
-                        f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo Analysis Received: {analysis.keys()}",
+                        f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo analysis received: {len(analysis.get('moveInfos',[]))} candidate moves, {analysis['rootInfo']['visits']} visits",
                         OUTPUT_DEBUG,
                     )
                     self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
