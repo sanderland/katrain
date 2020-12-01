@@ -490,7 +490,8 @@ class BadukPanWidget(Widget):
                             source="img/topmove.png",
                         )
                         if text_on and top_moves_show:
-                            keys = {"size": self.grid_size / 3, "smallsize": self.grid_size / 3.5}
+                            keys = {"size": self.grid_size / 3, "smallsize": self.grid_size / 3.33}
+                            player_sign = current_node.player_sign(current_node.next_player)
                             if len(top_moves_show) == 1:
                                 fmt = "[size={size:.0f}]{" + top_moves_show[0] + "}[/size]"
                             else:
@@ -505,8 +506,9 @@ class BadukPanWidget(Widget):
                             keys[TOP_MOVE_DELTA_SCORE] = (
                                 "0.0" if -0.05 < move_dict["pointsLost"] < 0.05 else f"{-move_dict['pointsLost']:+.1f}"
                             )
-                            keys[TOP_MOVE_SCORE] = move_dict["scoreLead"]
-                            keys[TOP_MOVE_WINRATE] = f"{move_dict['winrate']*100:.1f}"
+                            keys[TOP_MOVE_SCORE] = f"{player_sign * move_dict['scoreLead']:.1f}"
+                            winrate = move_dict["winrate"] if player_sign == 1 else 1 - move_dict["winrate"]
+                            keys[TOP_MOVE_WINRATE] = f"{winrate*100:.1f}"
                             keys[TOP_MOVE_DELTA_WINRATE] = f"{-move_dict['winrateLost']:+.1%}"
                             keys[TOP_MOVE_VISITS] = format_visits(move_dict["visits"])
                             Color(*BLACK)
@@ -515,7 +517,7 @@ class BadukPanWidget(Widget):
                                 text=fmt.format(**keys),
                                 font_name="Roboto",
                                 markup=True,
-                                line_height=0.8,
+                                line_height=0.85,
                                 halign="center",
                             )
 
