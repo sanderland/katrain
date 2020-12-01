@@ -21,7 +21,7 @@ include_data_files("katrain/models")
 include_data_files("katrain/fonts")
 include_data_files("katrain/sounds")
 include_data_files("katrain/img/")
-include_data_files("katrain/img/flaticon")
+include_data_files("katrain/img/flags")
 include_data_files("katrain/i18n")
 
 print(packages, package_data)

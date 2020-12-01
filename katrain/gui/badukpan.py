@@ -94,7 +94,9 @@ class BadukPanWidget(Widget):
                 near_move = [
                     (pv, node)
                     for move, pv, node in self.active_pv_moves
-                    if abs(rel_pos[0] - self.gridpos_x[move[0]]) < self.grid_size / 2
+                    if move[0] < len(self.gridpos_x)
+                    and move[1] < len(self.gridpos_y)
+                    and abs(rel_pos[0] - self.gridpos_x[move[0]]) < self.grid_size / 2
                     and abs(rel_pos[1] - self.gridpos_y[move[1]]) < self.grid_size / 2
                 ]
                 if near_move:

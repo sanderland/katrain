@@ -16,6 +16,9 @@ msgstr "New Game"
 msgid "menu:save"
 msgstr "Save Game"
 
+msgid "menu:save-as"
+msgstr "Save Game As..."
+
 msgid "menu:load"
 msgstr "Load Game"
 

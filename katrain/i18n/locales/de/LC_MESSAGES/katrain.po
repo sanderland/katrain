@@ -770,3 +770,7 @@ msgid "cache analysis to sgf"
 msgstr ""
 "cache analysis to sgf\n"
 "(larger files, only compatible with KaTrain)"
+
+#. TODO
+msgid "menu:save-as"
+msgstr "Save Game As..."

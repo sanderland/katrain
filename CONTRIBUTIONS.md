@@ -27,7 +27,7 @@ For those who have some python experience as well, you can:
 * Find `gui.kv` and add a button near the others: 
     ```
     LangButton:
-        icon: 'img/flaticon/flag-<lang>.png'
+        icon: 'img/flags/flag-<lang>.png'
         on_press: app.language = '<lang>'
     ```
 * The language should now show up in the app.

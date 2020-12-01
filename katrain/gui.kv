@@ -947,7 +947,12 @@
             text: i18n._('menu:save')
             icon: 'img/Save-Game.png'
             shortcut: 'Ctrl-S'
-            on_action: root.katrain("output-sgf")
+            on_action: root.katrain("save-game")
+        MainMenuItem:
+            text: i18n._('menu:save-as')
+            icon: 'img/Save-Game.png'
+            shortcut: 'Ctrl-Shift-S'
+            on_action: root.katrain("save-game-as")
         MainMenuItem:
             text: i18n._('menu:load')
             icon: 'img/Load-Game.png'
@@ -980,28 +985,28 @@
         height: 1.5 * root.item_height
         padding: CP_PADDING, 0
         LangButton:
-            icon: 'img/flaticon/flag-uk.png'
+            icon: 'img/flags/flag-uk.png'
             on_press: app.language = 'en'
         LangButton:
-            icon: 'img/flaticon/flag-de.png'
+            icon: 'img/flags/flag-de.png'
             on_press: app.language = 'de'
         LangButton:
-            icon: 'img/flaticon/flag-fr.png'
+            icon: 'img/flags/flag-fr.png'
             on_press: app.language = 'fr'
+#        LangButton:
+#            icon: 'img/flags/flag-es.png'
+#            on_press: app.language = 'es'
         LangButton:
-            icon: 'img/flaticon/flag-es.png'
-            on_press: app.language = 'es'
-        LangButton:
-            icon: 'img/flaticon/flag-ru.png'
+            icon: 'img/flags/flag-ru.png'
             on_press: app.language = 'ru'
         LangButton:
-            icon: 'img/flaticon/flag-cn.png'
+            icon: 'img/flags/flag-cn.png'
             on_press: app.language = 'cn'
         LangButton:
-            icon: 'img/flaticon/flag-ko.png'
+            icon: 'img/flags/flag-ko.png'
             on_press: app.language = 'ko'
         LangButton:
-            icon: 'img/flaticon/flag-jp.png'
+            icon: 'img/flags/flag-jp.png'
             on_press: app.language = 'jp'
     BoxLayout:
         size_hint: 1,None
