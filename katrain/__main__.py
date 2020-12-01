@@ -66,7 +66,7 @@ from katrain.core.constants import (
     PLAYING_NORMAL,
     PLAYER_HUMAN,
 )
-from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup
+from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
@@ -227,6 +227,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def set_note(self, note):
         self.game.current_node.note = note
 
+    # The message loop is here to make sure moves happen in the right order, and slow operations don't hang the GUI
     def _message_loop_thread(self):
         while True:
             game, msg, args, kwargs = self.message_queue.get()
@@ -253,16 +254,14 @@ class KaTrainGui(Screen, KaTrainBase):
             else:  # game related actions
                 self.message_queue.put([self.game.game_id, message, args, kwargs])
 
-    def _do_new_game(self, move_tree=None, analyze_fast=False, loaded_from_file=None):
+    def _do_new_game(self, move_tree=None, analyze_fast=False, sgf_filename=None):
         self.idle_analysis = False
         mode = self.play_analyze_mode
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
-        self.game = Game(
-            self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast, loaded_from_file=loaded_from_file
-        )
+        self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast, sgf_filename=sgf_filename)
         if move_tree:
             for bw, player_info in self.players_info.items():
                 player_info.player_type = PLAYER_HUMAN
@@ -371,7 +370,7 @@ class KaTrainGui(Screen, KaTrainBase):
         except ParseError as e:
             self.log(i18n._("Failed to load SGF").format(error=e), OUTPUT_ERROR)
             return
-        self._do_new_game(move_tree=move_tree, analyze_fast=fast, loaded_from_file=file)
+        self._do_new_game(move_tree=move_tree, analyze_fast=fast, sgf_filename=file)
         if not rewind:
             self.game.redo(999)
 
@@ -387,9 +386,8 @@ class KaTrainGui(Screen, KaTrainBase):
                 filename = popup_contents.filesel.filename
                 self.fileselect_popup.dismiss()
                 path, file = os.path.split(filename)
-                settings_path = self.config("general/sgf_load")
-                if path != settings_path:
-                    self.log(f"Updating sgf load path default to {path}", OUTPUT_INFO)
+                if path != self.config("general/sgf_load"):
+                    self.log(f"Updating sgf load path default to {path}", OUTPUT_DEBUG)
                     self._config["general"]["sgf_load"] = path
                     self.save_config("general")
                 self.load_sgf_file(filename, popup_contents.fast.active, popup_contents.rewind.active)
@@ -399,10 +397,38 @@ class KaTrainGui(Screen, KaTrainBase):
         self.fileselect_popup.open()
         self.fileselect_popup.content.filesel.ids.list_view._trigger_update()
 
-    def _do_output_sgf(self):
+    def _do_save_game(self, filename=None):
+        filename = filename or self.game.sgf_filename
+        if not filename:
+            return self("save-game-as")
         msg = self.game.write_sgf(self.config("general/sgf_save"))
         self.log(msg, OUTPUT_INFO)
         self.controls.set_status(msg, STATUS_INFO)
+
+    def _do_save_game_as_popup(self):
+        popup_contents = SaveSGFPopup()
+        save_game_popup = I18NPopup(
+            title_key="save sgf title", size=[dp(1200), dp(800)], content=popup_contents
+        ).__self__
+
+        def readfile(*_args):
+            filename = popup_contents.filesel.filename
+            if not filename.lower().endswith('.sgf'):
+                filename += '.sgf'
+            save_game_popup.dismiss()
+            path, file = os.path.split(filename)
+            if path != self.config("general/sgf_save"):
+                self.log(f"Updating sgf save path default to {path}", OUTPUT_DEBUG)
+                self._config["general"]["sgf_save"] = path
+                self.save_config("general")
+            self._do_save_game(filename)
+
+        popup_contents.filesel.on_success = readfile
+        popup_contents.filesel.on_submit = readfile
+        save_game_popup.open()
+        popup_contents.filesel.ids.file_text = self.game.generate_filename() # TODO: ???
+        popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_save", ".")))
+    #        save_game_popup.content.filesel.ids.list_view._trigger_update()
 
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()
@@ -513,7 +539,9 @@ class KaTrainGui(Screen, KaTrainBase):
         elif keycode[1] == "l" and ctrl_pressed:
             self("analyze-sgf-popup")
         elif keycode[1] == "s" and ctrl_pressed:
-            self("output-sgf")
+            self("save-game")
+        elif keycode[1] == "d" and ctrl_pressed:
+            self("save-game-as-popup")
         elif keycode[1] == "c" and ctrl_pressed:
             Clipboard.copy(self.game.root.sgf())
             self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)

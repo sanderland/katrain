@@ -787,3 +787,18 @@ msgstr "Cache analysis in SGF"
 #. TODO
 msgid "menu:save-as"
 msgstr "Save Game As..."
+
+#. TODO
+# sgf load button
+msgid "Load File"
+msgstr "Load File"
+
+#. TODO
+# sgf save popup
+msgid "save sgf title"
+msgstr "Save SGF File"
+
+#. TODO
+# sgf save as button
+msgid "Save File"
+msgstr "Save File"

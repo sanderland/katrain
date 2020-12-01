@@ -47,7 +47,7 @@ class Game:
         move_tree: GameNode = None,
         analyze_fast=False,
         game_properties: Optional[Dict] = None,
-        loaded_from_file=None,
+        sgf_filename=None,
     ):
         self.katrain = katrain
         self._lock = threading.Lock()
@@ -55,7 +55,7 @@ class Game:
             engine = {"B": engine, "W": engine}
         self.engines = engine
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
-        self.loaded_from_file = loaded_from_file
+        self.sgf_filename = sgf_filename
 
         if move_tree:
             self.root = move_tree
@@ -295,14 +295,18 @@ class Game:
             + f"\ncaptures: {self.prisoner_count}"
         )
 
+    def generate_filename(self):
+        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
+        base_game_name = f"katrain_{player_names['B']} vs {player_names['W']}"
+        return f"{base_game_name} {self.game_id}"
+
     def write_sgf(
-        self, path: str, trainer_config: Optional[Dict] = None,
+        self, file_name: str=None, trainer_config: Optional[Dict] = None,
     ):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer", {})
         save_feedback = trainer_config.get("save_feedback", False)
         eval_thresholds = trainer_config["eval_thresholds"]
-        print(trainer_config)
         save_analysis = trainer_config.get("save_analysis", False)
 
         def player_name(player_info):
@@ -324,20 +328,6 @@ class Game:
         if save_analysis:
             x_properties["KTV"] = ANALYSIS_FORMAT_VERSION
         self.root.properties = {**root_properties, **{k: [v] for k, v in x_properties.items()}}
-        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
-        base_game_name = f"katrain_{player_names['B']} vs {player_names['W']}"
-        game_name = f"{base_game_name} {self.game_id}"
-
-        if (
-            self.loaded_from_file
-            and base_game_name in self.loaded_from_file
-            and PROGRAM_NAME in self.root.get_property("AP", "")
-            and self.loaded_from_file.endswith("sgf")
-        ):
-            file_name = self.loaded_from_file
-        else:
-            file_name = os.path.abspath(os.path.join(path, f"{game_name}.sgf"))
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
 
         show_dots_for = {
             bw: trainer_config.get("eval_show_ai", True) or self.katrain.players_info[bw].human for bw in "BW"
@@ -348,6 +338,8 @@ class Game:
             eval_thresholds=eval_thresholds,
             save_analysis=save_analysis,
         )
+        file_name = file_name or self.generate_filename()
+        os.makedirs(os.path.dirname(file_name), exist_ok=True)
         with open(file_name, "w", encoding="utf-8") as f:
             f.write(sgf)
         self.root.properties = root_properties

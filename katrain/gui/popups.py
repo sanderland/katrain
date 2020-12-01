@@ -669,11 +669,23 @@ class LoadSGFPopup(BoxLayout):
         super().__init__(**kwargs)
         app = MDApp.get_running_app()
         self.filesel.favorites = [
-            (os.path.abspath(app.gui.config("general/sgf_load")), "Last Used Dir"),
-            (os.path.abspath(app.gui.config("general/sgf_save")), "SGF Save Dir"),
+            (os.path.abspath(app.gui.config("general/sgf_load")), "Last Load Dir"),
+            (os.path.abspath(app.gui.config("general/sgf_save")), "Last Save Dir"),
         ]
         self.filesel.path = os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load")))
         self.filesel.select_string = i18n._("Load File")
+
+
+class SaveSGFPopup(BoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        app = MDApp.get_running_app()
+        self.filesel.favorites = [
+            (os.path.abspath(app.gui.config("general/sgf_load")), "Last Load Dir"),
+            (os.path.abspath(app.gui.config("general/sgf_save")), "Last Save Dir"),
+        ]
+        self.filesel.path = os.path.abspath(os.path.expanduser(MDApp.get_running_app().gui.config("general/sgf_save")))
+        self.filesel.select_string = i18n._("Save File")
 
 
 class ReAnalyzeGamePopup(BoxLayout):
