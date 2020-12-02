@@ -677,15 +677,25 @@ class LoadSGFPopup(BoxLayout):
 
 
 class SaveSGFPopup(BoxLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, suggested_filename, **kwargs):
         super().__init__(**kwargs)
+        self.suggested_filename = suggested_filename
         app = MDApp.get_running_app()
         self.filesel.favorites = [
             (os.path.abspath(app.gui.config("general/sgf_load")), "Last Load Dir"),
             (os.path.abspath(app.gui.config("general/sgf_save")), "Last Save Dir"),
         ]
-        self.filesel.path = os.path.abspath(os.path.expanduser(MDApp.get_running_app().gui.config("general/sgf_save")))
+        save_path = os.path.expanduser(MDApp.get_running_app().gui.config("general/sgf_save") or ".")
+
+        def set_suggested(_widget, path):
+            self.filesel.ids.file_text.text = os.path.join(path, self.suggested_filename)
+
+        self.filesel.ids.list_view.bind(path=set_suggested)
+        self.filesel.path = os.path.abspath(save_path)
         self.filesel.select_string = i18n._("Save File")
+
+    def on_submit(self):
+        self.filesel.dispatch("on_success")
 
 
 class ReAnalyzeGamePopup(BoxLayout):

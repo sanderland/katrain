@@ -225,7 +225,7 @@ Builder.load_string(
         spacing: [5]
         TextInput:
             id: file_text
-            text: (root.selection and (root._shorten_filenames(root.selection) if root.multiselect else root.selection[0])) or ''
+            text: (root.selection and (root._shorten_filenames(root.selection) if root.multiselect else root.selection[0])) or self.text
             hint_text: i18n._('Filename')
             multiline: False
             height: '40dp'

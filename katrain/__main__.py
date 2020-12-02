@@ -400,21 +400,24 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_save_game(self, filename=None):
         filename = filename or self.game.sgf_filename
         if not filename:
-            return self("save-game-as")
-        msg = self.game.write_sgf(self.config("general/sgf_save"))
-        self.log(msg, OUTPUT_INFO)
-        self.controls.set_status(msg, STATUS_INFO)
+            return self("save-game-as-popup")
+        try:
+            msg = self.game.write_sgf(filename)
+            self.log(msg, OUTPUT_INFO)
+            self.controls.set_status(msg, STATUS_INFO)
+        except Exception as e:
+            self.log(f"Failed to save SGF to {filename}: {e}", OUTPUT_ERROR)
 
     def _do_save_game_as_popup(self):
-        popup_contents = SaveSGFPopup()
+        popup_contents = SaveSGFPopup(suggested_filename=self.game.generate_filename())
         save_game_popup = I18NPopup(
             title_key="save sgf title", size=[dp(1200), dp(800)], content=popup_contents
         ).__self__
 
         def readfile(*_args):
             filename = popup_contents.filesel.filename
-            if not filename.lower().endswith('.sgf'):
-                filename += '.sgf'
+            if not filename.lower().endswith(".sgf"):
+                filename += ".sgf"
             save_game_popup.dismiss()
             path, file = os.path.split(filename)
             if path != self.config("general/sgf_save"):
@@ -426,9 +429,6 @@ class KaTrainGui(Screen, KaTrainBase):
         popup_contents.filesel.on_success = readfile
         popup_contents.filesel.on_submit = readfile
         save_game_popup.open()
-        popup_contents.filesel.ids.file_text = self.game.generate_filename() # TODO: ???
-        popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_save", ".")))
-    #        save_game_popup.content.filesel.ids.list_view._trigger_update()
 
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()
@@ -509,6 +509,11 @@ class KaTrainGui(Screen, KaTrainBase):
         if popup:
             if keycode[1] in ["f5", "f6", "f7", "f8"]:  # switch between popups
                 popup.dismiss()
+                return
+            elif keycode[1] in ["enter", "numpadenter"]:
+                fn = getattr(popup.content, "on_submit", None)
+                if fn:
+                    fn()
                 return
             else:
                 return

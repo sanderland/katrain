@@ -440,7 +440,6 @@ class BadukPanWidget(Widget):
         with self.canvas.after:
             self.canvas.after.clear()
             self.active_pv_moves = []
-
             # hints or PV
             hint_moves = []
             if (
@@ -479,12 +478,21 @@ class BadukPanWidget(Widget):
                             scale = UNCERTAIN_HINT_SCALE
                             text_on = False
                             alpha = HINTS_LO_ALPHA
+
                         if "pv" in move_dict:
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:
                             katrain.log(f"PV missing for move_dict {move_dict}", OUTPUT_DEBUG)
                         evalsize = self.stone_size * scale
                         evalcol = self.eval_color(move_dict["pointsLost"])
+                        if text_on and top_moves_show:  # remove grid lines using a board colored circle
+                            Color(0.95, 0.75, 0.47, 1)
+                            draw_circle(
+                                (self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
+                                self.stone_size * scale * 0.98,
+                                [0.95, 0.75, 0.47, 1],
+                            )
+
                         Color(*evalcol[:3], alpha)
                         Rectangle(
                             pos=(self.gridpos_x[move.coords[0]] - evalsize, self.gridpos_y[move.coords[1]] - evalsize),

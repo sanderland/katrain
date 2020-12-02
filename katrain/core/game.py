@@ -296,19 +296,6 @@ class Game:
         )
 
     def generate_filename(self):
-        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
-        base_game_name = f"katrain_{player_names['B']} vs {player_names['W']}"
-        return f"{base_game_name} {self.game_id}"
-
-    def write_sgf(
-        self, file_name: str=None, trainer_config: Optional[Dict] = None,
-    ):
-        if trainer_config is None:
-            trainer_config = self.katrain.config("trainer", {})
-        save_feedback = trainer_config.get("save_feedback", False)
-        eval_thresholds = trainer_config["eval_thresholds"]
-        save_analysis = trainer_config.get("save_analysis", False)
-
         def player_name(player_info):
             if player_info.name and player_info.player_type == PLAYER_HUMAN:
                 return player_info.name
@@ -317,7 +304,7 @@ class Game:
 
         root_properties = self.root.properties
         x_properties = {}
-        if "KaTrain" in self.root.get_property("AP", ""):
+        if PROGRAM_NAME in self.root.get_property("AP", ""):
             for bw in "BW":
                 x_properties["P" + bw] = player_name(self.katrain.players_info[bw])
                 player_info = self.katrain.players_info[bw]
@@ -325,9 +312,20 @@ class Game:
                     x_properties[bw + "R"] = rank_label(player_info.calculated_rank)
         if "+" in str(self.end_result):
             x_properties["RE"] = self.end_result
-        if save_analysis:
-            x_properties["KTV"] = ANALYSIS_FORMAT_VERSION
+        x_properties["KTV"] = ANALYSIS_FORMAT_VERSION
         self.root.properties = {**root_properties, **{k: [v] for k, v in x_properties.items()}}
+        player_names = {bw: re.sub(r"['<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
+        base_game_name = f"{PROGRAM_NAME}_{player_names['B']} vs {player_names['W']}"
+        return f"{base_game_name} {self.game_id}.sgf"
+
+    def write_sgf(
+        self, filename: str = None, trainer_config: Optional[Dict] = None,
+    ):
+        if trainer_config is None:
+            trainer_config = self.katrain.config("trainer", {})
+        save_feedback = trainer_config.get("save_feedback", False)
+        eval_thresholds = trainer_config["eval_thresholds"]
+        save_analysis = trainer_config.get("save_analysis", False)
 
         show_dots_for = {
             bw: trainer_config.get("eval_show_ai", True) or self.katrain.players_info[bw].human for bw in "BW"
@@ -338,12 +336,11 @@ class Game:
             eval_thresholds=eval_thresholds,
             save_analysis=save_analysis,
         )
-        file_name = file_name or self.generate_filename()
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
-        with open(file_name, "w", encoding="utf-8") as f:
+        self.sgf_filename = filename
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        with open(filename, "w", encoding="utf-8") as f:
             f.write(sgf)
-        self.root.properties = root_properties
-        return i18n._("sgf written").format(file_name=file_name)
+        return i18n._("sgf written").format(file_name=filename)
 
     def analyze_extra(self, mode, **kwargs):
         stones = {s.coords for s in self.stones}
