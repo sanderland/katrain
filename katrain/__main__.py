@@ -324,6 +324,10 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_analyze_extra(self, mode, **kwargs):
         self.game.analyze_extra(mode, **kwargs)
 
+    def _do_select_box(self):
+        self.controls.set_status(i18n._("analysis:region:start"), STATUS_INFO)
+        self.board_gui.selecting_region_of_interest = True
+
     def _do_new_game_popup(self):
         self.controls.timer.paused = True
         if not self.new_game_popup:
@@ -489,7 +493,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "s": ("analyze-extra", "equalize"),
             "d": ("analyze-extra", "sweep"),
             "f": ("analyze-extra", "alternative"),
-            "g": ("analyze-extra", "local"),
+            "g": ("select-box",),
             "i": ("insert-mode",),
             "p": ("play", None),
             "n": ("next-mistake",),

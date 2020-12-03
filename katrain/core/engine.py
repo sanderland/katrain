@@ -6,7 +6,7 @@ import subprocess
 import threading
 import time
 import traceback
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, Optional, List
 
 from kivy.utils import platform
 
@@ -111,6 +111,7 @@ class KataGoEngine:
         for query_id in list(self.queries.keys()):
             self.terminate_query(query_id)
         self.queries = {}
+
 
     def restart(self):
         self.queries = {}
@@ -249,7 +250,7 @@ class KataGoEngine:
         analyze_fast: bool = False,
         time_limit=True,
         find_alternatives: bool = False,
-        find_local: bool = False,
+            region_of_interest: Optional[List] = None,
         priority: int = 0,
         ownership: Optional[bool] = None,
         next_move: Optional[GameNode] = None,
@@ -278,22 +279,20 @@ class KataGoEngine:
                     "untilDepth": 1,
                 }
             ]
-        elif find_local:
-            distance = 5
-            last_move = analysis_node.move
-            if last_move is None or last_move.is_pass:
-                return
+        elif region_of_interest:
+            xmin, xmax, ymin, ymax = region_of_interest
             avoid = [
                 {
                     "moves": [
                         Move((x, y)).gtp()
                         for x in range(0, size_x)
                         for y in range(0, size_y)
-                        if max(abs(x - last_move.coords[0]), abs(y - last_move.coords[1])) > distance
+                        if x < xmin or x > xmax or y < ymin or y > ymax
                     ],
-                    "player": analysis_node.next_player,
-                    "untilDepth": 1,
+                    "player": player,
+                    "untilDepth": 10000,
                 }
+                for player in "BW"
             ]
         else:
             avoid = []

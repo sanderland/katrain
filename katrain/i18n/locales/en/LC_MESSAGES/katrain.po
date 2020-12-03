@@ -109,9 +109,14 @@ msgstr "Deeper full game analysis"
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
 
-#. Analyze again but allow only nearby moves
-msgid "analysis:local"
-msgstr "Find local responses"
+#. Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "Set region of interest"
+
+#. Status message
+msgid "analysis:region:start"
+msgstr ""
+"Drag to select the region of interest. Selecting a single point removes it."
 
 #. Keep improving current position analysis when there is nothing else to do
 msgid "analysis:continuous"
@@ -119,6 +124,10 @@ msgstr "Toggle continuous analysis"
 
 msgid "analysis:aimove"
 msgstr "Force AI Move"
+
+#. Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "Insert moves"
 
 #. status message
 msgid "extra analysis"
@@ -342,6 +351,10 @@ msgstr "Update Timer"
 # new game settings from here
 msgid "New Game title"
 msgstr "Setup New Game"
+
+#. in new game options
+msgid "player names"
+msgstr "Player Names"
 
 msgid "board size"
 msgstr "Board size"

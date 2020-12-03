@@ -48,6 +48,9 @@ class BadukPanWidget(Widget):
         self.gridpos_y = []
         self.grid_size = 0
         self.stone_size = 0
+        self.selecting_region_of_interest = False
+        self.region_of_interest = []
+
         self.active_pv_moves = []
         self.animating_pv = None
         self.last_mouse_pos = (0, 0)
@@ -56,6 +59,12 @@ class BadukPanWidget(Widget):
         self.redraw_trigger = Clock.create_trigger(self.redraw)
         self.bind(size=self.redraw_trigger, pos=self.redraw_trigger)
         Clock.schedule_interval(self.animate_pv, 0.1)
+
+    def play_stone_sound(self, *_args):
+        if self.katrain.config("timer/sound"):
+            sound = random.choice(self.stones_sounds)
+            if sound:
+                sound.play()
 
     # stone placement functions
     def _find_closest(self, pos, gridpos):
@@ -74,23 +83,42 @@ class BadukPanWidget(Widget):
         if prev_ghost != self.ghost_stone:
             self.draw_hover_contents()
 
+    def update_box_selection(self, touch, second_point=True):
+        if not self.gridpos_x:
+            return
+        _, xp = self._find_closest(touch.x, self.gridpos_x)
+        _, yp = self._find_closest(touch.y, self.gridpos_y)
+        if second_point and len(self.region_of_interest) == 4:
+            self.region_of_interest[1] = xp
+            self.region_of_interest[3] = yp
+        else:
+            self.region_of_interest = [xp, xp, yp, yp]
+        self.draw_hover_contents()
+
     def on_touch_down(self, touch):
         self.set_animating_pv(None, None)  # any click kills PV from label/move
         if "button" in touch.profile and touch.button != "left":
             return
-        self.check_next_move_ghost(touch)
+        if self.selecting_region_of_interest:
+            self.update_box_selection(touch, second_point=False)
+        else:
+            self.check_next_move_ghost(touch)
 
     def on_touch_move(self, touch):
         if "button" in touch.profile and touch.button != "left":
             return
-        return self.check_next_move_ghost(touch)
+        if self.selecting_region_of_interest:
+            return self.update_box_selection(touch)
+        else:
+            return self.check_next_move_ghost(touch)
 
     def on_mouse_pos(self, *args):  # https://gist.github.com/opqopq/15c707dc4cffc2b6455f
         if self.get_root_window():  # don't proceed if I'm not displayed <=> If have no parent
             pos = args[1]
             rel_pos = self.to_widget(*pos)  # compensate for relative layout
             inside = self.collide_point(*rel_pos)
-            if inside and self.active_pv_moves:
+
+            if inside and self.active_pv_moves and not self.selecting_region_of_interest:
                 near_move = [
                     (pv, node)
                     for move, pv, node in self.active_pv_moves
@@ -109,17 +137,17 @@ class BadukPanWidget(Widget):
                     self.set_animating_pv(None, None)  # any click kills PV from label/move
             self.last_mouse_pos = pos
 
-    def play_stone_sound(self, *_args):
-        if self.katrain.config("timer/sound"):
-            sound = random.choice(self.stones_sounds)
-            if sound:
-                sound.play()
-
     def on_touch_up(self, touch):
         if ("button" in touch.profile and touch.button != "left") or not self.gridpos_x:
             return
         katrain = self.katrain
-        if self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
+        if self.selecting_region_of_interest:
+            if len(self.region_of_interest) == 4:
+                self.katrain.game.set_region_of_interest(self.region_of_interest)
+                self.region_of_interest = []
+                self.selecting_region_of_interest = False
+
+        elif self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
             game = self.katrain and self.katrain.game
             current_node = game and self.katrain.game.current_node
             if (
@@ -429,6 +457,20 @@ class BadukPanWidget(Widget):
 
         self.draw_hover_contents()
 
+    def draw_roi_box(self,region_of_interest,width=2):
+        xmin, xmax, ymin, ymax = region_of_interest
+        Color(*LIGHTER_BACKGROUND_COLOR)
+        Line(
+            rectangle=(
+                self.gridpos_x[xmin] - self.grid_size/6,
+                self.gridpos_y[ymin] - self.grid_size/6,
+                (xmax - xmin + 1/3) * self.grid_size,
+                (ymax - ymin + 1/3) * self.grid_size,
+            ),
+            dash_length=10,dash_offset=10,
+            width=width,
+        )
+
     def draw_hover_contents(self, *_args):
         ghost_alpha = POLICY_ALPHA
         katrain = self.katrain
@@ -442,6 +484,7 @@ class BadukPanWidget(Widget):
 
         with self.canvas.after:
             self.canvas.after.clear()
+
             self.active_pv_moves = []
             # hints or PV
             hint_moves = []
@@ -582,16 +625,24 @@ class BadukPanWidget(Widget):
                                 width=dp(1.2),
                             )
 
-            # hover next move ghost stone
-            if self.ghost_stone:
-                self.draw_stone(*self.ghost_stone, next_player, alpha=ghost_alpha)
+            if self.selecting_region_of_interest and len(self.region_of_interest) == 4:
+                x1, x2, y1, y2 = self.region_of_interest
+                self.draw_roi_box([min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2)],width=2)
+            else:
+                # hover next move ghost stone
+                if self.ghost_stone:
+                    self.draw_stone(*self.ghost_stone, next_player, alpha=ghost_alpha)
 
-            animating_pv = self.animating_pv
-            if animating_pv:
-                pv, node, start_time, _ = animating_pv
-                delay = self.katrain.config("general/anim_pv_time", 0.5)
-                up_to_move = (time.time() - start_time) / delay
-                self.draw_pv(pv, node, up_to_move)
+                animating_pv = self.animating_pv
+                if animating_pv:
+                    pv, node, start_time, _ = animating_pv
+                    delay = self.katrain.config("general/anim_pv_time", 0.5)
+                    up_to_move = (time.time() - start_time) / delay
+                    self.draw_pv(pv, node, up_to_move)
+
+                if self.katrain.game.region_of_interest:
+                    self.draw_roi_box(self.katrain.game.region_of_interest, width=1) # dashed
+
 
     def animate_pv(self, _dt):
         if self.animating_pv:

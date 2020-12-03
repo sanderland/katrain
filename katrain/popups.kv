@@ -310,17 +310,9 @@
             DescriptionLabel:
                 font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("show stats if")
-            BoxLayout:
-                Label:
-                    text: '>'
-                    size_hint: 0.1, 1
-                AnchorLayout:
-                    LabelledIntInput:
-                        input_property: "trainer/low_visits"
-                Label:
-                    size_hint: 0.1, 1
-                    text: i18n._('visits')
-                Label:
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "trainer/low_visits"
             DescriptionLabel:
                 font_size: DESC_FONT_SIZE * 0.8
                 text: i18n._("show ai dots")
@@ -396,7 +388,7 @@
         spacing: CP_SPACING
         padding: CP_PADDING
         DescriptionLabel:
-            text: i18n._("names")
+            text: i18n._("player names")
         AnchorLayout:
             LabelledTextInput:
                 text: ''

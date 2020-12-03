@@ -145,13 +145,14 @@ class GameNode(SGFNode):
         refine_move=None,
         analyze_fast=False,
         find_alternatives=False,
-        find_local=False,
+        region_of_interest = None,
         report_every=0.25,
     ):
+        additional_moves = bool(find_alternatives or region_of_interest)
         engine.request_analysis(
             self,
             callback=lambda result, partial_result: self.set_analysis(
-                result, refine_move, find_alternatives or find_local, partial_result
+                result, refine_move, additional_moves, partial_result
             ),
             priority=priority,
             visits=visits,
@@ -159,7 +160,7 @@ class GameNode(SGFNode):
             time_limit=time_limit,
             next_move=refine_move,
             find_alternatives=find_alternatives,
-            find_local=find_local,
+            region_of_interest=region_of_interest,
             report_every=report_every,
         )
 

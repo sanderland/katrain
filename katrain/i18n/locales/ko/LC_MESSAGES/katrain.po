@@ -671,9 +671,6 @@ msgstr ""
 msgid "ai:simple"
 msgstr "간명한 기풍"
 
-msgid "analysis:local"
-msgstr "국지적인 응수 찾기"
-
 msgid "local analysis"
 msgstr "국지적인 응수를 찾고 있습니다"
 
@@ -753,3 +750,19 @@ msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
 msgid "finish inserting before navigating"
 msgstr ""
 "Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "
+
+#. TODO - in new game options
+msgid "player names"
+msgstr "Player Names"
+
+#. TODO - Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "Insert moves"
+
+#. TODO - Status message
+msgid "analysis:region:start"
+msgstr "Drag to select the region of interest."
+
+#. TODO - Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "Set region of interest"

@@ -62,6 +62,8 @@ class Game:
         self.insert_mode = False
         self.insert_after = None
 
+        self.region_of_interest = None
+
         if move_tree:
             self.root = move_tree
             self.komi = self.root.komi
@@ -233,7 +235,11 @@ class Game:
             played_node = self.current_node.play(move)
             self.current_node = played_node
         if analyze:
-            played_node.analyze(self.engines[played_node.next_player])
+            if self.region_of_interest:
+                played_node.analyze(self.engines[played_node.next_player],analyze_fast=True)
+                played_node.analyze(self.engines[played_node.next_player],region_of_interest=self.region_of_interest)
+            else:
+                played_node.analyze(self.engines[played_node.next_player])
         return played_node
 
     def set_current_node(self, node):
@@ -410,6 +416,17 @@ class Game:
             f.write(sgf)
         return i18n._("sgf written").format(file_name=filename)
 
+    def set_region_of_interest(self,region_of_interest):
+        x1, x2, y1, y2 =region_of_interest
+        xmin, xmax = min(x1, x2), max(x1, x2)
+        ymin, ymax = min(y1, y2), max(y1, y2)
+        if not (xmin==xmax and ymin==ymax):
+            self.region_of_interest = [xmin,xmax,ymin,ymax]
+        else:
+            self.region_of_interest = None
+        self.katrain.controls.set_status("",OUTPUT_INFO)
+
+
     def analyze_extra(self, mode, **kwargs):
         stones = {s.coords for s in self.stones}
         cn = self.current_node
@@ -426,7 +443,7 @@ class Game:
                 visits = cn.analysis_visits_requested + engine.config["max_visits"]
                 self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
             self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
-            cn.analyze(engine, visits=visits, priority=-1_000, time_limit=False)
+            cn.analyze(engine, visits=visits, priority=-1_000, region_of_interest=self.region_of_interest, time_limit=False)
             return
         if mode == "game":
             nodes = self.root.nodes_in_tree
@@ -467,10 +484,6 @@ class Game:
             visits = engine.config["fast_visits"]
             self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits), STATUS_ANALYSIS)
             priority = -1_000_000_000
-        elif mode == "local":  # also do a quick update on current candidates so it doesn't look too weird
-            self.katrain.controls.set_status(i18n._("local analysis"), STATUS_ANALYSIS)
-            cn.analyze(engine, priority=-500, time_limit=False, find_local="local")
-            return
         elif mode in ["equalize", "alternative", "local"]:
             if not cn.analysis_complete and mode != "local":
                 self.katrain.controls.set_status(i18n._("wait-before-equalize"), STATUS_INFO, self.current_node)
