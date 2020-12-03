@@ -79,12 +79,14 @@ class Game:
             self.root.set_property("RU", katrain.config("game/rules"))
 
         self.set_current_node(self.root)
+        self.main_time_used = 0
         threading.Thread(
             target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast), daemon=True
         ).start()  # return faster, but bypass Kivy Clock
 
     def analyze_all_nodes(self, priority=0, analyze_fast=False):
         for node in self.root.nodes_in_tree:
+            node.clear_analysis()
             node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast)
 
     # -- move tree functions --
@@ -183,12 +185,22 @@ class Game:
                 cn = cn.parent
         self.set_current_node(cn)
 
-    def redo(self, n_times=1):
+    def redo(self, n_times=1, stop_on_mistake=None):
         cn = self.current_node  # avoid race conditions
-        for _ in range(n_times):
+        for move in range(n_times):
             if cn.children:
                 cn = cn.ordered_children[0]
-        self.set_current_node(cn)
+            if (
+                move > 0
+                and stop_on_mistake is not None
+                and cn.points_lost is not None
+                and cn.points_lost >= stop_on_mistake
+                and self.katrain.players_info[cn.player].player_type != PLAYER_AI
+            ):
+                self.set_current_node(cn.parent)
+                return
+        if stop_on_mistake is None:
+            self.set_current_node(cn)
 
     def cycle_children(self, direction):
         cn = self.current_node  # avoid race conditions
@@ -327,6 +339,7 @@ class Game:
                 )
             else:
                 visits = cn.analysis_visits_requested + engine.config["max_visits"]
+                self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
             self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
             cn.analyze(engine, visits=visits, priority=-1_000, time_limit=False)
             return
@@ -338,13 +351,13 @@ class Game:
                 min_visits = min(node.analysis_visits_requested for node in nodes)
                 visits = min_visits + engine.config["max_visits"]
             for node in nodes:
-                node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False)
+                node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
             self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)
             return
 
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
-            if cn.analysis_ready:
+            if cn.analysis_exists:
                 policy_grid = (
                     var_to_grid(self.current_node.policy, size=(board_size_x, board_size_y))
                     if self.current_node.policy
@@ -369,32 +382,35 @@ class Game:
             visits = engine.config["fast_visits"]
             self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits), STATUS_ANALYSIS)
             priority = -1_000_000_000
-        elif mode in ["equalize", "alternative"]:
-            if not cn.analysis_ready:
+        elif mode == "local":  # also do a quick update on current candidates so it doesn't look too weird
+            self.katrain.controls.set_status(i18n._("local analysis"), STATUS_ANALYSIS)
+            cn.analyze(engine, priority=-500, time_limit=False, find_local="local")
+            return
+        elif mode in ["equalize", "alternative", "local"]:
+            if not cn.analysis_complete and mode != "local":
                 self.katrain.controls.set_status(i18n._("wait-before-equalize"), STATUS_INFO, self.current_node)
                 return
-
-            analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
-            priority = -1_000
             if mode == "alternative":  # also do a quick update on current candidates so it doesn't look too weird
                 self.katrain.controls.set_status(i18n._("alternative analysis"), STATUS_ANALYSIS)
-                cn.analyze(engine, priority=-500, time_limit=False, find_alternatives=True)
+                cn.analyze(engine, priority=-500, time_limit=False, find_alternatives="alternative")
                 visits = engine.config["fast_visits"]
-            else:
+            else:  # equalize
                 visits = max(d["visits"] for d in cn.analysis["moves"].values())
                 self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits), STATUS_ANALYSIS)
+            priority = -1_000
+            analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
         else:
             raise ValueError("Invalid analysis mode")
         for move in analyze_moves:
             if cn.analysis["moves"].get(move.gtp(), {"visits": 0})["visits"] < visits:
                 cn.analyze(
-                    engine, priority, visits=visits, refine_move=move, time_limit=False
+                    engine, priority=priority, visits=visits, refine_move=move, time_limit=False, report_every=None
                 )  # explicitly requested so take as long as you need
 
     def analyze_undo(self, node):
         train_config = self.katrain.config("trainer")
         move = node.move
-        if node != self.current_node or node.auto_undo is not None or not node.analysis_ready or not move:
+        if node != self.current_node or node.auto_undo is not None or not node.analysis_complete or not move:
             return
         points_lost = node.points_lost
         thresholds = train_config["eval_thresholds"]

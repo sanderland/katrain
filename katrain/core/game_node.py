@@ -13,7 +13,6 @@ class GameNode(SGFNode):
 
     def __init__(self, parent=None, properties=None, move=None):
         super().__init__(parent=parent, properties=properties, move=move)
-        self.analysis = {"moves": {}, "root": None}
         self.ownership = None
         self.policy = None
         self.auto_undo = None  # None = not analyzed. False: not undone (good move). True: undone (bad move)
@@ -21,9 +20,13 @@ class GameNode(SGFNode):
         self.note = ""
         self.move_number = 0
         self.time_used = 0
-        self.analysis_visits_requested = 0
         self.undo_threshold = random.random()  # for fractional undos
         self.end_state = None
+        self.clear_analysis()
+
+    def clear_analysis(self):
+        self.analysis_visits_requested = 0
+        self.analysis = {"moves": {}, "root": None, "completed": False}
 
     def sgf_properties(self, save_comments_player=None, save_comments_class=None, eval_thresholds=None):
         properties = copy.copy(super().sgf_properties())
@@ -34,8 +37,8 @@ class GameNode(SGFNode):
             show_class = False
         if (
             self.parent
-            and self.parent.analysis_ready
-            and self.analysis_ready
+            and self.parent.analysis_exists
+            and self.analysis_exists
             and (note or ((save_comments_player or {}).get(self.player, False) and show_class))
         ):
             candidate_moves = self.parent.candidate_moves
@@ -77,16 +80,22 @@ class GameNode(SGFNode):
         refine_move=None,
         analyze_fast=False,
         find_alternatives=False,
+        find_local=False,
+        report_every=0.25,
     ):
         engine.request_analysis(
             self,
-            lambda result: self.set_analysis(result, refine_move, find_alternatives),
+            callback=lambda result, partial_result: self.set_analysis(
+                result, refine_move, find_alternatives or find_local, partial_result
+            ),
             priority=priority,
             visits=visits,
             analyze_fast=analyze_fast,
             time_limit=time_limit,
             next_move=refine_move,
             find_alternatives=find_alternatives,
+            find_local=find_local,
+            report_every=report_every,
         )
 
     def update_move_analysis(self, move_analysis, move_gtp):
@@ -102,24 +111,26 @@ class GameNode(SGFNode):
             if cur["visits"] < move_analysis["visits"]:
                 cur.update(move_analysis)
 
-    def set_analysis(self, analysis_json: Dict, refine_move: Optional[Move], alternatives_mode: bool):
+    def set_analysis(
+        self, analysis_json: Dict, refine_move: Optional[Move], additional_moves: bool, partial_result: bool = False
+    ):
         if refine_move:
             pvtail = analysis_json["moveInfos"][0]["pv"] if analysis_json["moveInfos"] else []
             self.update_move_analysis(
                 {"pv": [refine_move.gtp()] + pvtail, **analysis_json["rootInfo"]}, refine_move.gtp()
             )
         else:
-            if alternatives_mode:
+            if additional_moves:
                 for m in analysis_json["moveInfos"]:
-                    m["order"] += 10  # offset for not making this top
-            if refine_move is None and not alternatives_mode:
+                    del m["order"]  # avoid changing order
+            if refine_move is None and not additional_moves:
                 for move_dict in self.analysis["moves"].values():
                     move_dict["order"] = 999  # old moves to end
             for move_analysis in analysis_json["moveInfos"]:
                 self.update_move_analysis(move_analysis, move_analysis["move"])
             self.ownership = analysis_json.get("ownership")
             self.policy = analysis_json.get("policy")
-            if not alternatives_mode:
+            if not additional_moves:
                 self.analysis["root"] = analysis_json["rootInfo"]
             if self.parent and self.move:
                 analysis_json["rootInfo"]["pv"] = [self.move.gtp()] + (
@@ -128,14 +139,20 @@ class GameNode(SGFNode):
                 self.parent.update_move_analysis(
                     analysis_json["rootInfo"], self.move.gtp()
                 )  # update analysis in parent for consistency
+            is_normal_query = refine_move is None and not additional_moves
+            self.analysis["completed"] = self.analysis["completed"] or (is_normal_query and not partial_result)
 
     @property
-    def analysis_ready(self):
+    def analysis_exists(self):
         return self.analysis["root"] is not None
 
     @property
+    def analysis_complete(self):
+        return self.analysis["completed"] and self.analysis["root"] is not None
+
+    @property
     def score(self) -> Optional[float]:
-        if self.analysis_ready:
+        if self.analysis_exists:
             return self.analysis["root"].get("scoreLead")
 
     def format_score(self, score=None):
@@ -145,7 +162,7 @@ class GameNode(SGFNode):
 
     @property
     def winrate(self) -> Optional[float]:
-        if self.analysis_ready:
+        if self.analysis_exists:
             return self.analysis["root"].get("winrate")
 
     def format_winrate(self, win_rate=None):
@@ -176,12 +193,12 @@ class GameNode(SGFNode):
             return ""
 
         text = i18n._("move").format(number=self.depth) + f": {single_move.player} {single_move.gtp()}\n"
-        if self.analysis_ready:
+        if self.analysis_exists:
             score = self.score
             if sgf:
                 text += i18n._("Info:score").format(score=self.format_score(score)) + "\n"
                 text += i18n._("Info:winrate").format(winrate=self.format_winrate()) + "\n"
-            if self.parent and self.parent.analysis_ready:
+            if self.parent and self.parent.analysis_exists:
                 previous_top_move = self.parent.candidate_moves[0]
                 if sgf or details:
                     if previous_top_move["move"] != single_move.gtp():
@@ -202,19 +219,20 @@ class GameNode(SGFNode):
                     if currmove_pol_rank is not None:
                         policy_rank_msg = i18n._("Info:policy rank")
                         text += policy_rank_msg.format(rank=currmove_pol_rank, probability=currmove_pol_prob) + "\n"
-                    if currmove_pol_rank is None or currmove_pol_rank != 1 and (sgf or details):
+                    if currmove_pol_rank != 1 and policy_ranking and (sgf or details):
                         policy_best_msg = i18n._("Info:policy best")
                         pol_move, pol_prob = policy_ranking[0][1].gtp(), policy_ranking[0][0]
                         text += policy_best_msg.format(move=pol_move, probability=pol_prob) + "\n"
             if self.auto_undo and sgf:
                 text += i18n._("Info:teaching undo") + "\n"
-                top_pv = self.analysis_ready and self.candidate_moves[0].get("pv")
+                top_pv = self.analysis_exists and self.candidate_moves[0].get("pv")
                 if top_pv:
                     text += i18n._("Info:undo predicted PV").format(pv=f"{self.next_player}{' '.join(top_pv)}") + "\n"
-            if self.ai_thoughts and (sgf or details):
-                text += "\n" + i18n._("Info:AI thoughts").format(thoughts=self.ai_thoughts)
         else:
             text = i18n._("No analysis available") if sgf else i18n._("Analyzing move...")
+
+        if self.ai_thoughts and (sgf or details):
+            text += "\n" + i18n._("Info:AI thoughts").format(thoughts=self.ai_thoughts)
 
         if "C" in self.properties:
             text += "\n[u]SGF Comments:[/u]\n" + "\n".join(self.properties["C"])
@@ -224,7 +242,7 @@ class GameNode(SGFNode):
     @property
     def points_lost(self) -> Optional[float]:
         single_move = self.move
-        if single_move and self.parent and self.analysis_ready and self.parent.analysis_ready:
+        if single_move and self.parent and self.analysis_exists and self.parent.analysis_exists:
             parent_score = self.parent.score
             score = self.score
             return self.player_sign(single_move.player) * (parent_score - score)
@@ -236,8 +254,8 @@ class GameNode(SGFNode):
             single_move
             and self.parent
             and self.parent.parent
-            and self.analysis_ready
-            and self.parent.parent.analysis_ready
+            and self.analysis_exists
+            and self.parent.parent.analysis_exists
         ):
             parent_parent_score = self.parent.parent.score
             score = self.score
@@ -249,7 +267,7 @@ class GameNode(SGFNode):
 
     @property
     def candidate_moves(self) -> List[Dict]:
-        if not self.analysis_ready:
+        if not self.analysis_exists:
             return []
         if not self.analysis["moves"]:
             polmoves = self.policy_ranking

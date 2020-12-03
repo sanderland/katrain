@@ -671,12 +671,12 @@ msgstr ""
 msgid "show point loss as text"
 msgstr "Zeig den Punkteverlust auf Beste Züge"
 
-#. TODO - updated
 msgid "teaching undo message"
 msgstr ""
-"Zug {move} zurückgenommen, da er {points_lost:.1f} Punkte verliert. Bewege "
-"Mauszeiger über den Zug,um die erwartete Widerlegung zu sehen. Bitte "
-"versuche es erneut."
+"Zug {move} zurückgenommen, da er {points_lost:.1f} Punkte verliert. Bitte "
+"versuche es erneut. Bewege den Mauszeiger über den Zug, um die erwartete "
+"Widerlegung zu sehen, oder setze ein Häkchen bei “Erwartetes Gebiet” (t), um"
+" die Bereiche des Bretts zu sehen, wo Punktverlust zu erwarten ist."
 
 #. resign the game
 msgid "resign"
@@ -689,3 +689,49 @@ msgstr "Finde alternative Züge"
 #.  - status message
 msgid "alternative analysis"
 msgstr "Suche nach alternativen Zügen"
+
+#. TODO - ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "Minimal time use in byo-yomi (s)"
+
+msgid "move too fast"
+msgstr "Denke mindestens {num} Sekunden nach, bevor Du setzt."
+
+msgid "main time"
+msgstr "Hauptbedenkzeit  (Min.)"
+
+msgid "aihelp:simple"
+msgstr ""
+"Spielt Züge, die dazu zu einer Vereinfachung des Brettzustandes führen. Von "
+"Zügen,die höchstens 'max_points_lost' Punkte verlieren und mit wenigstens "
+"'min_visits' Visits, bevorzuge die Züge, die weniger Punkte verlieren und"
+"eigenes Gebiet mehr sichern."
+
+msgid "ai:simple"
+msgstr "Einfacher Stil"
+
+#. TODO - DEPRECATED
+msgid "aihelp:settle"
+msgstr ""
+"Spielt Züge, die dazu zu einer Vereinfachung des Brettzustandes führen. Von "
+"Zügen,die höchstens 'max_points_lost' Punkte verlieren und mit wenigstens "
+"'min_visits' Visits, bevorzuge die Züge, die weniger Punkte verlieren, "
+"eigenes Gebiet mehr sichern"
+
+#. TODO - DEPRECATED
+msgid "ai:settle"
+msgstr "Settle Style"
+
+msgid "analysis:local"
+msgstr "Finde lokale Antworten"
+
+msgid "local analysis"
+msgstr "Suche nach lokalen Antworten"
+
+msgid "change current game"
+msgstr ""
+"Aktualisiere Komi/Regeln\n"
+" im aktuellen Spiel"
+
+msgid "Make Main Branch"
+msgstr "Zum Hauptzweig machen"

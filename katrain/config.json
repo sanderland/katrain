@@ -17,11 +17,13 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.5.0"
+        "version": "1.6.1"
     },
     "timer": {
         "byo_length": 30,
         "byo_periods": 5,
+        "minimal_use": 0,
+        "main_time": 0,
         "sound": true
     },
     "game": {
@@ -85,6 +87,22 @@
         },
         "ai:policy": {
             "opening_moves": 22.0
+        },
+        "ai:simple": {
+            "max_points_lost": 1.75,
+            "settled_weight": 1.0,
+            "opponent_fac": 0.5,
+            "min_visits": 3,
+            "attach_penalty": 1,
+            "tenuki_penalty": 0.5
+        },
+        "ai:settle": {
+            "max_points_lost": 1.75,
+            "settled_weight": 1.0,
+            "opponent_fac": 0.5,
+            "min_visits": 3,
+            "attach_penalty": 1,
+            "tenuki_penalty": 0.5
         },
         "ai:p:weighted": {
             "weaken_fac": 1.25,

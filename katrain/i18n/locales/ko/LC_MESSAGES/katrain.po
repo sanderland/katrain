@@ -546,11 +546,6 @@ msgstr ""
 "`threshold`선 밑의 수를 더 많이 뽑은 후 그 중 최선의 수를 둡니다. `line_weight`을 증가시키면 바둑판 중앙에 있는"
 " 수를 더욱 꺼리게 됩니다. 판이 `endgame` 비율만큼 차면 평범하게 둡니다."
 
-#. TODO: updated
-msgid "teaching undo message"
-msgstr ""
-"{points_lost:.1f}집 손해이므로 {move}을/를 물렀습니다. 커서를 올려 상대의 대응책을 보십시오. 다시 두어 주세요."
-
 msgid "aihelp:p:rank"
 msgstr ""
 "제한적인 착수 가능 목록에서 무작위로 다음 착수를 선택한 후 그 중 최선의 수를 둡니다. 더 강한 설정은 최선의 수를 더 큰 목록에서 "
@@ -654,3 +649,58 @@ msgstr "다른 수 찾기"
 
 msgid "alternative analysis"
 msgstr "다른 수를 찾는 중입니다"
+
+msgid "teaching undo message"
+msgstr ""
+"{points_lost:.1f}집 손해이므로 {move}을/를 물렀습니다. 다시 두어 주세요. 힌트를 보려면, 커서를 올려 상대의 "
+"대응책을 보거나, 어디서 집 손해를 보는지 집 모양을 통해 (t) 알아보십시오. "
+
+msgid "minimal time use"
+msgstr "이보다 빨리 착수한 수 무시"
+
+msgid "move too fast"
+msgstr "최소한 {num}초만큼 생각하고 착수해 주십시오"
+
+msgid "main time"
+msgstr "제한 시간(분)"
+
+msgid "aihelp:simple"
+msgstr ""
+"국면을 단순화하는 수를 둡니다. 최대 'max_point_lost'집 손해를 보고 최소 'min_visits'번 탐색한 수 중에, 집 "
+"손해가 적고, 자신의 집을 굳히며(settled_weight에 따라 조절), 상대의 집도 굳히고(settled_weight * "
+"opponent fac에 따라 조절), 붙임수를 피하는(attachment_penalty에 따라 조절) 수를 둡니다. 가중치가 음수일 "
+"때는 반대로 국면을 복잡하게 만듭니다."
+
+msgid "ai:simple"
+msgstr "간명한 기풍"
+
+msgid "analysis:local"
+msgstr "국지적인 응수 찾기"
+
+msgid "local analysis"
+msgstr "국지적인 응수를 찾고 있습니다"
+
+msgid "change current game"
+msgstr ""
+"이 판에 대해\n"
+"덤과 규칙 등 조절"
+
+#. TODO - DEPRECATED
+msgid "ai:settle"
+msgstr "Settle Style"
+
+#. TODO - DEPRECATED
+msgid "aihelp:settle"
+msgstr ""
+"Plays moves that lead to clarity on stones' status, favouring solid moves "
+"rather than complex sabaki. Of moves that lose at most 'max_points_lost' "
+"points and with at least 'min_visits', prefer moves that lose fewer points, "
+"settle own stones more (with importance settled_weight), settle opponent's "
+"stones more (importance settled_weight * opponent_fac), avoid tenuki (more "
+"than 5 spaces, importance tenuki_penalty), and avoid attachments (importance"
+" attachment_penalty). Weights can be negative to make it complicate the game"
+" instead, and wide root noise (in general settings) can be used to further "
+"play according to the style at the cost of strength. "
+
+msgid "Make Main Branch"
+msgstr "주 변화로 만들기"

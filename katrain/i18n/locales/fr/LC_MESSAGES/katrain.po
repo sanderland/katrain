@@ -93,7 +93,7 @@ msgid "analysis:extra"
 msgstr "Analyser davantage"
 
 msgid "analysis:equalize"
-msgstr "Égaliser l’analyse des coups"
+msgstr "Égaliser l'analyse des coups"
 
 msgid "analysis:sweep"
 msgstr "Analyser tous les possibles"
@@ -105,7 +105,7 @@ msgid "analysis:continuous"
 msgstr "Lancer/Arrêter l'analyse continue"
 
 msgid "analysis:aimove"
-msgstr "Jouer le coup de l’IA"
+msgstr "Jouer le coup de l'IA"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
@@ -525,9 +525,10 @@ msgstr ""
 #. TODO: updated
 msgid "teaching undo message"
 msgstr ""
-"Le coup {move} a été annulé car il perdait {points_lost:.1f} points. Vous "
-"pouvez survoler le coup pour voir la réfutation. Veuillez jouer un nouveau "
-"coup."
+"Le coup {move} a été annulé car il perdait {points_lost:.1f} points.Vous "
+"pouvez consulter les Prévisions territoriales (t) pour identifier les "
+"régions concernées, et survoler le coup pour connaître sa réfutation.Pour "
+"continuer la partie, veuillez jouer un nouveau coup."
 
 msgid "sweep analysis"
 msgstr "Analyse de tous les possibles ({visits} visites/coup)."
@@ -721,3 +722,57 @@ msgstr "Proposer des coups différents"
 
 msgid "alternative analysis"
 msgstr "Recherche de coups différents."
+
+msgid "minimal time use"
+msgstr ""
+"Temps de réflexion \n"
+"minimum (s/période)"
+
+msgid "move too fast"
+msgstr "Réfléchissez au moins {num} secondes avant de jouer."
+
+msgid "main time"
+msgstr "Temps principal (min)"
+
+msgid "aihelp:simple"
+msgstr ""
+"Par défaut, le moteur de jeu cherche à simplifier la position. \n"
+"Il joue un coup parmi ceux considérés au moins 'min_visits' fois et perdant au plus 'max_points_lost'. \n"
+"'settled_weight' le pousse à consolider ses territoires, et ceux adverses une fois multiplié par 'opponent_fac'. \n"
+"'tenuki_penalty' le pousse à jouer localement ; 'attach_penalty' à éviter les coups de contact direct. \n"
+"Quand elles sont possibles, les valeurs négatives favorisent au contraire un style de jeu compliqué. \n"
+"Élargir le Champ des possibles (cf. Paramètres généraux) peaufine le style au détriment du niveau de jeu."
+
+msgid "ai:simple"
+msgstr "Modéré"
+
+#. TODO - DEPRECATED
+msgid "aihelp:settle"
+msgstr ""
+"Plays moves that lead to clarity on stones' status, favouring solid moves "
+"rather than complex sabaki. Of moves that lose at most 'max_points_lost' "
+"points and with at least 'min_visits', prefer moves that lose fewer points, "
+"settle own stones more (with importance settled_weight), settle opponent's "
+"stones more (importance settled_weight * opponent_fac), avoid tenuki (more "
+"than 5 spaces, importance tenuki_penalty), and avoid attachments (importance"
+" attachment_penalty). Weights can be negative to make it complicate the game"
+" instead, and wide root noise (in general settings) can be used to further "
+"play according to the style at the cost of strength. "
+
+#. TODO - DEPRECATED
+msgid "ai:settle"
+msgstr "Settle Stones Style"
+
+msgid "analysis:local"
+msgstr "Proposer des coups locaux"
+
+msgid "local analysis"
+msgstr "Recherche de coups locaux."
+
+msgid "change current game"
+msgstr ""
+"Mettre à jour\n"
+"la partie en cours"
+
+msgid "Make Main Branch"
+msgstr "Mettre en branche principale"
