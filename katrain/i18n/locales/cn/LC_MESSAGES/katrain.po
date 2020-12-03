@@ -671,23 +671,6 @@ msgstr ""
 msgid "Make Main Branch"
 msgstr "设为实战变化"
 
-#. TODO - DEPRECATED
-msgid "aihelp:settle"
-msgstr ""
-"Plays moves that lead to clarity on stones' status, favouring solid moves "
-"rather than complex sabaki. Of moves that lose at most 'max_points_lost' "
-"points and with at least 'min_visits', prefer moves that lose fewer points, "
-"settle own stones more (with importance settled_weight), settle opponent's "
-"stones more (importance settled_weight * opponent_fac), avoid tenuki (more "
-"than 5 spaces, importance tenuki_penalty), and avoid attachments (importance"
-" attachment_penalty). Weights can be negative to make it complicate the game"
-" instead, and wide root noise (in general settings) can be used to further "
-"play according to the style at the cost of strength. "
-
-#. TODO - DEPRECATED
-msgid "ai:settle"
-msgstr "Settle Style"
-
 #. TODO - setting: what to show on top move (e.g. point loss, visits, ...)
 msgid "stats on top move"
 msgstr "Stats on top moves"
@@ -742,3 +725,17 @@ msgstr "Save SGF File"
 # sgf save as button
 msgid "Save File"
 msgstr "Save File"
+
+#. TODO - status message on starting insert mode
+msgid "starting insert mode"
+msgstr "Starting insert mode, press 'i' to finish inserting."
+
+#. TODO - status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
+
+#. TODO - when a user tries to go to a different move/node while in insert
+#. mode
+msgid "finish inserting before navigating"
+msgstr ""
+"Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "

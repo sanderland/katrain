@@ -2,11 +2,11 @@ import time
 
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
-from kivy.properties import ObjectProperty, OptionProperty, NumericProperty
+from kivy.properties import NumericProperty, ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.constants import MODE_PLAY, MODE_ANALYZE, STATUS_ERROR, STATUS_ANALYSIS, PLAYER_HUMAN
+from katrain.core.constants import MODE_ANALYZE, MODE_PLAY, PLAYER_HUMAN, STATUS_ANALYSIS, STATUS_ERROR
 from katrain.core.lang import rank_label
 from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
 

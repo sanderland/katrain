@@ -18,6 +18,7 @@ from katrain.core.constants import (
     AI_RANK,
     AI_SCORELOSS,
     AI_SCORELOSS_ELO,
+    AI_SETTLE_STONES,
     AI_SIMPLE_OWNERSHIP,
     AI_STRATEGIES_PICK,
     AI_STRATEGIES_POLICY,
@@ -32,7 +33,6 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
-    AI_SETTLE_STONES,
 )
 from katrain.core.game import Game, GameNode, Move
 from katrain.core.utils import var_to_grid

@@ -20,19 +20,19 @@ from kivymd.uix.floatlayout import MDFloatLayout
 from katrain.core.constants import (
     MODE_PLAY,
     OUTPUT_DEBUG,
-    STATUS_TEACHING,
     OUTPUT_EXTRA_DEBUG,
-    TOP_MOVE_OPTIONS,
-    TOP_MOVE_NOTHING,
+    STATUS_TEACHING,
     TOP_MOVE_DELTA_SCORE,
-    TOP_MOVE_SCORE,
-    TOP_MOVE_WINRATE,
     TOP_MOVE_DELTA_WINRATE,
+    TOP_MOVE_NOTHING,
+    TOP_MOVE_OPTIONS,
+    TOP_MOVE_SCORE,
     TOP_MOVE_VISITS,
+    TOP_MOVE_WINRATE,
 )
 from katrain.core.game import Move
 from katrain.core.lang import i18n
-from katrain.core.utils import evaluation_class, var_to_grid, format_visits
+from katrain.core.utils import evaluation_class, format_visits, var_to_grid
 from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
 from katrain.gui.style import *
@@ -226,7 +226,10 @@ class BadukPanWidget(Widget):
                 for i in range(board_size_y)
             ]
 
-            Color(1, 0.95, 0.8, 1)  # image is a bit too light
+            if katrain.game.insert_mode:
+                Color(1, 1, 1, 0.75)  # dreamy
+            else:
+                Color(1, 0.95, 0.8, 1)  # image is a bit too light
             Rectangle(
                 pos=(self.gridpos_x[0] - self.grid_size * 1.5, self.gridpos_y[0] - self.grid_size * 1.5),
                 size=(self.grid_size * x_grid_spaces, self.grid_size * y_grid_spaces),

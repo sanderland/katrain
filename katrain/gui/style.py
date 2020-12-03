@@ -16,7 +16,7 @@ GREEN = [0.1, 0.8, 0.1, 1]
 YELLOW = [0.8, 0.8, 0.1, 1]
 DARKRED = [0.3, 0.1, 0.1, 1]
 ORANGE = [242 / 255, 96 / 255, 34 / 255, 1]
-
+LIGHT_ORANGE = [1, 0.5, 0.25, 1]
 # gui colors
 BACKGROUND_COLOR = [36 / 255, 48 / 255, 62 / 255, 1]
 BOX_BACKGROUND_COLOR = [46 / 255, 65 / 255, 88 / 255, 1]

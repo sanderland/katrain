@@ -1,21 +1,21 @@
+import base64
 import copy
+import gzip
+import json
 import random
 from typing import Dict, List, Optional, Tuple
 
 from katrain.core.constants import (
-    VERSION,
+    ANALYSIS_FORMAT_VERSION,
+    PROGRAM_NAME,
     SGF_INTERNAL_COMMENTS_MARKER,
     SGF_SEPARATOR_MARKER,
-    PROGRAM_NAME,
-    ANALYSIS_FORMAT_VERSION,
+    VERSION,
 )
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
-from katrain.core.utils import evaluation_class, var_to_grid, pack_floats, unpack_floats
+from katrain.core.utils import evaluation_class, pack_floats, unpack_floats, var_to_grid
 from katrain.gui.style import INFO_PV_COLOR
-import base64
-import gzip
-import json
 
 
 def analysis_dumps(analysis):

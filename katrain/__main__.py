@@ -273,6 +273,11 @@ class KaTrainGui(Screen, KaTrainBase):
         # self.controls.rank_graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 
+    def _do_insert_mode(self, mode="toggle"):
+        self.game.set_insert_mode(mode)
+        if self.play_analyze_mode != MODE_ANALYZE:
+            self.play_mode.switch_ui_mode()
+
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
             mode = self.next_player_info.strategy
@@ -485,6 +490,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "d": ("analyze-extra", "sweep"),
             "f": ("analyze-extra", "alternative"),
             "g": ("analyze-extra", "local"),
+            "i": ("insert-mode",),
             "p": ("play", None),
             "n": ("next-mistake",),
             "down": ("switch-branch", 1),

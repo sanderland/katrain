@@ -706,22 +706,6 @@ msgstr ""
 msgid "ai:simple"
 msgstr "Простой стиль"
 
-msgid "aihelp:settle"
-msgstr ""
-"Делает ходы, ведущие к ясности в статусе камней, предпочитая надёжные ходы, "
-"нежели сложное сабаки. Из ходов, теряющих не более чем 'max_points_lost' "
-"очков и имеющих как минимум 'min_visits', предпочитает ходы, укрепляющие "
-"собственную территорию (коэффициент settled_weight), укрепляющие территорию "
-"оппонента (коэффициент settled_weight * opponent_fac), избегает тэнуки "
-"(более 5 пунктов, коэффициент tenuki_penalty), и избегает прилипаний "
-"(коэффициент attachment_penalty). Коэффициенты могут быть отрицательными, "
-"чтобы напротив сделать игру сложнее. 'Уровень шума' (в 'Настройках системы')"
-" может быть использован для увеличения вариативности игры за счёт небольшой "
-"потери силы. "
-
-msgid "ai:settle"
-msgstr "Надёжный стиль"
-
 msgid "analysis:local"
 msgstr "Найти локальные ответы"
 
@@ -790,3 +774,17 @@ msgstr "Save SGF File"
 # sgf save as button
 msgid "Save File"
 msgstr "Save File"
+
+#. TODO - status message on starting insert mode
+msgid "starting insert mode"
+msgstr "Starting insert mode, press 'i' to finish inserting."
+
+#. TODO - status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
+
+#. TODO - when a user tries to go to a different move/node while in insert
+#. mode
+msgid "finish inserting before navigating"
+msgstr ""
+"Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "

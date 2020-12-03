@@ -1,7 +1,6 @@
 from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
 from kivy.core.text.markup import MarkupLabel as CoreMarkupLabel
-
 from kivy.core.window import Window
 from kivy.graphics import *
 from kivy.properties import (
@@ -12,7 +11,7 @@ from kivy.properties import (
     OptionProperty,
     StringProperty,
 )
-from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior, FocusBehavior
+from kivy.uix.behaviors import ButtonBehavior, FocusBehavior, ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label

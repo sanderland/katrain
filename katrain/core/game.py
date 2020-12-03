@@ -1,3 +1,4 @@
+import copy
 import math
 import os
 import re
@@ -8,17 +9,18 @@ from typing import Dict, List, Optional, Union
 from kivy.clock import Clock
 
 from katrain.core.constants import (
+    ANALYSIS_FORMAT_VERSION,
     HOMEPAGE,
     OUTPUT_DEBUG,
     OUTPUT_INFO,
     PLAYER_AI,
+    PLAYER_HUMAN,
+    PROGRAM_NAME,
     STATUS_ANALYSIS,
+    STATUS_ERROR,
     STATUS_INFO,
     STATUS_TEACHING,
-    PLAYER_HUMAN,
     VERSION,
-    PROGRAM_NAME,
-    ANALYSIS_FORMAT_VERSION,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -56,6 +58,9 @@ class Game:
         self.engines = engine
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
         self.sgf_filename = sgf_filename
+
+        self.insert_mode = False
+        self.insert_after = None
 
         if move_tree:
             self.root = move_tree
@@ -165,6 +170,55 @@ class Game:
         if -1 not in neighbours(self.chains[this_chain]):  # TODO: NZ rules?
             raise IllegalMoveException("Suicide")
 
+    def set_insert_mode(self, mode):
+        if mode == "toggle":
+            mode = not self.insert_mode
+        if mode == self.insert_mode:
+            return
+        self.insert_mode = mode
+        if mode:
+            children = self.current_node.ordered_children
+            if not children:
+                self.insert_mode = False
+            else:
+                self.insert_after = self.current_node.ordered_children[0]
+                self.katrain.controls.set_status(i18n._("starting insert mode"), STATUS_INFO)
+        else:
+            copy_from_node = self.insert_after
+            copy_to_node = self.current_node
+            num_copied = 0
+            if copy_to_node != self.insert_after.parent:
+                above_insertion_root = self.insert_after.parent.nodes_from_root
+                already_inserted_moves = [
+                    n.move for n in copy_to_node.nodes_from_root if n not in above_insertion_root and n.move
+                ]
+                print(already_inserted_moves)
+                try:
+                    while True:
+                        if copy_from_node.move not in already_inserted_moves:
+                            for m in copy_from_node.move_with_placements:
+                                self._validate_move_and_update_chains(m, True)
+                            # this inserts
+                            copy_to_node = GameNode(
+                                parent=copy_to_node, properties=copy.deepcopy(copy_from_node.properties)
+                            )
+                            num_copied += 1
+                        if not copy_from_node.children:
+                            break
+                        copy_from_node = copy_from_node.ordered_children[0]
+                except:
+                    pass  # illegal move = stop
+                self._calculate_groups()  # recalculate groups
+                self.katrain.controls.set_status(
+                    i18n._("ending insert mode").format(num_copied=num_copied), STATUS_INFO
+                )
+                self.analyze_all_nodes(analyze_fast=True, even_if_present=False)
+            else:
+                self.katrain.controls.set_status("", STATUS_INFO)
+        self.katrain.controls.move_tree.insert_node = self.insert_after if self.insert_mode else None
+        self.katrain.controls.move_tree.redraw()
+        self.katrain.update_state(redraw_board=True)
+
     # Play a Move from the current position, raise IllegalMoveException if invalid.
     def play(self, move: Move, ignore_ko: bool = False, analyze=True):
         board_size_x, board_size_y = self.board_size
@@ -183,17 +237,31 @@ class Game:
         return played_node
 
     def set_current_node(self, node):
+        if self.insert_mode:
+            self.katrain.controls.set_status(i18n._("finish inserting before navigating"), STATUS_ERROR)
+            return
+
         self.current_node = node
         self._calculate_groups()
 
     def undo(self, n_times=1):
+        # allow undo/delete only in insert mode
         cn = self.current_node  # avoid race conditions
+        if self.insert_mode:
+            if n_times == 1 and cn not in self.insert_after.nodes_from_root:
+                cn.parent.children = [c for c in cn.parent.children if c != cn]
+                self.current_node = cn.parent
+                self._calculate_groups()
+            return
+
         for _ in range(n_times):
             if not cn.is_root:
                 cn = cn.parent
         self.set_current_node(cn)
 
     def redo(self, n_times=1, stop_on_mistake=None):
+        if self.insert_mode:
+            return
         cn = self.current_node  # avoid race conditions
         for move in range(n_times):
             if cn.children:

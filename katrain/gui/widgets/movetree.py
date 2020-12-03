@@ -12,8 +12,12 @@ from kivymd.app import MDApp
 from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.style import (
     BACKGROUND_COLOR,
+    DARKRED,
+    GREEN,
+    LIGHT_ORANGE,
     LIGHTER_BACKGROUND_COLOR,
     LIGHTGREY,
+    ORANGE,
     OUTLINE_COLORS,
     RED,
     STONE_COLORS,
@@ -106,10 +110,9 @@ class MoveTreeCanvas(Widget):
             return
         self.set_game_node(same_x_moves[new_index][1])
 
-    def draw_move_tree(self, current_node):
+    def draw_move_tree(self, current_node, insert_node):
         if not self.scroll_view_widget or not current_node:
             return
-
         spacing = 5
         moves_vert = 3
         self.move_size = (self.scroll_view_widget.height - (moves_vert + 1) * spacing) / moves_vert
@@ -148,6 +151,15 @@ class MoveTreeCanvas(Widget):
 
         self.move_xy_pos = {n: xy_pos(x, y) for n, (x, y) in self.move_pos.items()}
 
+        special_nodes = {self.menu_selected_node: RED, current_node: YELLOW}
+
+        if insert_node:
+            special_nodes[insert_node.parent] = GREEN
+            insert_path = current_node
+            while insert_path != insert_node.parent and insert_path.parent:
+                special_nodes[insert_path] = ORANGE if insert_path == current_node else LIGHT_ORANGE
+                insert_path = insert_path.parent
+
         with self.canvas:
             self.canvas.clear()
             Color(*LIGHTGREY)
@@ -157,8 +169,8 @@ class MoveTreeCanvas(Widget):
                     Line(points=[x, y, x, cy, cx, cy], width=1)
 
             for node, pos in self.move_xy_pos.items():
-                if node == self.menu_selected_node or node == current_node:
-                    Color(*(RED if node == self.menu_selected_node else YELLOW))
+                if node in special_nodes:
+                    Color(*special_nodes[node])
                     Rectangle(
                         pos=[c - self.move_size / 2 - spacing / 2 for c in self.move_xy_pos[node]],
                         size=(self.move_size + spacing, self.move_size + spacing),
@@ -177,10 +189,14 @@ class MoveTree(ScrollView, BackgroundMixin):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.insert_node = None
         self.redraw_tree_trigger = Clock.create_trigger(
-            lambda _dt: self.move_tree_canvas.draw_move_tree(self.current_node)
+            lambda _dt: self.move_tree_canvas.draw_move_tree(self.current_node, self.insert_node)
         )
         self.bind(current_node=self.redraw_tree_trigger, size=self.redraw_tree_trigger)
+
+    def redraw(self):
+        self.redraw_tree_trigger()
 
     def switch_branch(self, direction):
         self.move_tree_canvas.switch_branch(direction)

@@ -707,18 +707,6 @@ msgstr ""
 msgid "ai:simple"
 msgstr "Einfacher Stil"
 
-#. TODO - DEPRECATED
-msgid "aihelp:settle"
-msgstr ""
-"Spielt Züge, die dazu zu einer Vereinfachung des Brettzustandes führen. Von "
-"Zügen,die höchstens 'max_points_lost' Punkte verlieren und mit wenigstens "
-"'min_visits' Visits, bevorzuge die Züge, die weniger Punkte verlieren, "
-"eigenes Gebiet mehr sichern"
-
-#. TODO - DEPRECATED
-msgid "ai:settle"
-msgstr "Settle Style"
-
 msgid "analysis:local"
 msgstr "Finde lokale Antworten"
 
@@ -789,3 +777,17 @@ msgstr "Save SGF File"
 # sgf save as button
 msgid "Save File"
 msgstr "Save File"
+
+#. TODO - status message on starting insert mode
+msgid "starting insert mode"
+msgstr "Starting insert mode, press 'i' to finish inserting."
+
+#. TODO - status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
+
+#. TODO - when a user tries to go to a different move/node while in insert
+#. mode
+msgid "finish inserting before navigating"
+msgstr ""
+"Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "
