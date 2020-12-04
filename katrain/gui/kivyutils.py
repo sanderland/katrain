@@ -372,7 +372,7 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     active = BooleanProperty(True)
 
 
-class TimerOrMoveTree(BoxLayout):
+class TimerOrMoveTree(MDBoxLayout):
     mode = StringProperty(MODE_PLAY)
 
 

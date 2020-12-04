@@ -14,6 +14,7 @@
 #:import WHITE katrain.gui.style.WHITE
 #:import BLACK katrain.gui.style.BLACK
 #:import LIGHTGREY katrain.gui.style.LIGHTGREY
+#:import LIGHTERGREY katrain.gui.style.LIGHTERGREY
 #:import GREEN katrain.gui.style.GREEN
 #:import YELLOW katrain.gui.style.YELLOW
 #:import RED katrain.gui.style.RED
@@ -534,7 +535,7 @@
     TimerOrMoveTree:
         id: timer_or_movetree
         size_hint_y: None
-        height: root.timer_box_height
+        height: root.timer_box_height + max(0,int(self.mode != MODE_PLAY) * (root.tab_option_height + root.graph_height - graph_panel.height))
         BoxLayout:
             size_hint_x: EPSILON if self.parent.mode != MODE_PLAY else 1
             opacity: 0 if self.parent.mode != MODE_PLAY else 1
@@ -557,11 +558,12 @@
                     on_left_release: root.katrain("resign")
         MoveTree:
             id: move_tree
+            min_height: root.timer_box_height
             size_hint_x: EPSILON if self.parent.mode == MODE_PLAY else 1
             opacity: 0 if self.parent.mode == MODE_PLAY else 1
     CollapsablePanel:
         id: graph_panel
-        content_height: graph.height # + rank_graph.height
+        content_height: graph.height
         options_height: root.tab_option_height
         closed_label: 'closedlabel:scoregraph'
         options: ['score','winrate']
@@ -574,7 +576,7 @@
             id: graph
             opacity: 0 if self.hidden else 1
             size_hint_y: None
-            height: EPSILON if self.hidden else root.graph_height
+            height: root.graph_height
     CollapsablePanel:
         id: stats_panel
         num_active: 3
@@ -626,7 +628,7 @@
                 padding: 0
                 id: notebox
                 size_hint: 1,0
-                IMETextField:
+                LabelledTextInput:
                     id: note
                     font_size: NOTES_FONT_SIZE
                     multiline: True
@@ -637,7 +639,7 @@
                     size_hint: 1, 1
                     canvas.before:
                         Color:
-                            rgba: LIGHTGREY
+                            rgba: LIGHTERGREY
                         Line:
                             points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
                             width: 1

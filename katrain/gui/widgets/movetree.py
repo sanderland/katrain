@@ -3,6 +3,7 @@ from collections import defaultdict
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Line, Rectangle
 from kivy.lang import Builder
+from kivy.metrics import dp
 from kivy.properties import BooleanProperty, Clock, NumericProperty, ObjectProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.scrollview import ScrollView
@@ -115,7 +116,7 @@ class MoveTreeCanvas(Widget):
             return
         spacing = 5
         moves_vert = 3
-        self.move_size = (self.scroll_view_widget.height - (moves_vert + 1) * spacing) / moves_vert
+        self.move_size = (self.scroll_view_widget.min_height - (moves_vert + 1) * spacing) / moves_vert
 
         root = current_node.root
 
@@ -186,6 +187,7 @@ class MoveTreeCanvas(Widget):
 
 class MoveTree(ScrollView, BackgroundMixin):
     current_node = ObjectProperty(None)
+    min_height = NumericProperty(dp(50)) # non-expanded height, to determine the node size
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
