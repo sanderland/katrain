@@ -112,7 +112,6 @@ class KataGoEngine:
             self.terminate_query(query_id)
         self.queries = {}
 
-
     def restart(self):
         self.queries = {}
         self.shutdown(finish=False)
@@ -250,7 +249,7 @@ class KataGoEngine:
         analyze_fast: bool = False,
         time_limit=True,
         find_alternatives: bool = False,
-            region_of_interest: Optional[List] = None,
+        region_of_interest: Optional[List] = None,
         priority: int = 0,
         ownership: Optional[bool] = None,
         next_move: Optional[GameNode] = None,

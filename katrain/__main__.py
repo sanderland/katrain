@@ -430,12 +430,12 @@ class KaTrainGui(Screen, KaTrainBase):
             save_game_popup.dismiss()
             path, file = os.path.split(filename.strip())
             if not path:
-                path = popup_contents.filesel.path # whatever dir is shown
+                path = popup_contents.filesel.path  # whatever dir is shown
             if path != self.config("general/sgf_save"):
                 self.log(f"Updating sgf save path default to {path}", OUTPUT_DEBUG)
                 self._config["general"]["sgf_save"] = path
                 self.save_config("general")
-            self._do_save_game(os.path.join(path,file))
+            self._do_save_game(os.path.join(path, file))
 
         popup_contents.filesel.on_success = readfile
         popup_contents.filesel.on_submit = readfile
@@ -499,6 +499,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "i": ("insert-mode",),
             "p": ("play", None),
             "n": ("next-mistake",),
+            "b": ("undo", "branch"),
             "down": ("switch-branch", 1),
             "up": ("switch-branch", -1),
             "f5": ("timer-popup",),

@@ -187,7 +187,7 @@ class MoveTreeCanvas(Widget):
 
 class MoveTree(ScrollView, BackgroundMixin):
     current_node = ObjectProperty(None)
-    min_height = NumericProperty(dp(50)) # non-expanded height, to determine the node size
+    min_height = NumericProperty(dp(50))  # non-expanded height, to determine the node size
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

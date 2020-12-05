@@ -457,17 +457,16 @@ class BadukPanWidget(Widget):
 
         self.draw_hover_contents()
 
-    def draw_roi_box(self,region_of_interest,width=2):
+    def draw_roi_box(self, region_of_interest, width=2):
         xmin, xmax, ymin, ymax = region_of_interest
         Color(*LIGHTER_BACKGROUND_COLOR)
         Line(
             rectangle=(
-                self.gridpos_x[xmin] - self.grid_size/6,
-                self.gridpos_y[ymin] - self.grid_size/6,
-                (xmax - xmin + 1/3) * self.grid_size,
-                (ymax - ymin + 1/3) * self.grid_size,
+                self.gridpos_x[xmin] - self.grid_size / 3,
+                self.gridpos_y[ymin] - self.grid_size / 3,
+                (xmax - xmin + 2 / 3) * self.grid_size,
+                (ymax - ymin + 2 / 3) * self.grid_size,
             ),
-            dash_length=10,dash_offset=10,
             width=width,
         )
 
@@ -627,7 +626,7 @@ class BadukPanWidget(Widget):
 
             if self.selecting_region_of_interest and len(self.region_of_interest) == 4:
                 x1, x2, y1, y2 = self.region_of_interest
-                self.draw_roi_box([min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2)],width=2)
+                self.draw_roi_box([min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2)], width=dp(2))
             else:
                 # hover next move ghost stone
                 if self.ghost_stone:
@@ -641,8 +640,7 @@ class BadukPanWidget(Widget):
                     self.draw_pv(pv, node, up_to_move)
 
                 if self.katrain.game.region_of_interest:
-                    self.draw_roi_box(self.katrain.game.region_of_interest, width=1) # dashed
-
+                    self.draw_roi_box(self.katrain.game.region_of_interest, width=dp(1.25))
 
     def animate_pv(self, _dt):
         if self.animating_pv:

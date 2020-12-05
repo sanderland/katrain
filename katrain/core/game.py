@@ -236,8 +236,8 @@ class Game:
             self.current_node = played_node
         if analyze:
             if self.region_of_interest:
-                played_node.analyze(self.engines[played_node.next_player],analyze_fast=True)
-                played_node.analyze(self.engines[played_node.next_player],region_of_interest=self.region_of_interest)
+                played_node.analyze(self.engines[played_node.next_player], analyze_fast=True)
+                played_node.analyze(self.engines[played_node.next_player], region_of_interest=self.region_of_interest)
             else:
                 played_node.analyze(self.engines[played_node.next_player])
         return played_node
@@ -259,10 +259,15 @@ class Game:
                 self.current_node = cn.parent
                 self._calculate_groups()
             return
-
+        break_on_branch = False
+        if n_times == "branch":
+            n_times = 9999
+            break_on_branch = True
         for _ in range(n_times):
             if not cn.is_root:
                 cn = cn.parent
+            if break_on_branch and len(cn.children) > 1:
+                break
         self.set_current_node(cn)
 
     def redo(self, n_times=1, stop_on_mistake=None):
@@ -416,16 +421,16 @@ class Game:
             f.write(sgf)
         return i18n._("sgf written").format(file_name=filename)
 
-    def set_region_of_interest(self,region_of_interest):
-        x1, x2, y1, y2 =region_of_interest
+    def set_region_of_interest(self, region_of_interest):
+        x1, x2, y1, y2 = region_of_interest
         xmin, xmax = min(x1, x2), max(x1, x2)
         ymin, ymax = min(y1, y2), max(y1, y2)
-        if not (xmin==xmax and ymin==ymax):
-            self.region_of_interest = [xmin,xmax,ymin,ymax]
+        szx, szy = self.board_size
+        if not (xmin == xmax and ymin == ymax) and not (xmax - xmin + 1 >= szx and ymax - ymin + 1 >= szy):
+            self.region_of_interest = [xmin, xmax, ymin, ymax]
         else:
             self.region_of_interest = None
-        self.katrain.controls.set_status("",OUTPUT_INFO)
-
+        self.katrain.controls.set_status("", OUTPUT_INFO)
 
     def analyze_extra(self, mode, **kwargs):
         stones = {s.coords for s in self.stones}
@@ -443,7 +448,9 @@ class Game:
                 visits = cn.analysis_visits_requested + engine.config["max_visits"]
                 self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
             self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
-            cn.analyze(engine, visits=visits, priority=-1_000, region_of_interest=self.region_of_interest, time_limit=False)
+            cn.analyze(
+                engine, visits=visits, priority=-1_000, region_of_interest=self.region_of_interest, time_limit=False
+            )
             return
         if mode == "game":
             nodes = self.root.nodes_in_tree

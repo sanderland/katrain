@@ -145,7 +145,7 @@ class GameNode(SGFNode):
         refine_move=None,
         analyze_fast=False,
         find_alternatives=False,
-        region_of_interest = None,
+        region_of_interest=None,
         report_every=0.25,
     ):
         additional_moves = bool(find_alternatives or region_of_interest)

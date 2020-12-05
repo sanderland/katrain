@@ -179,10 +179,11 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[p]**: Pass
 * **[b]**: Pause/Resume timer
 * **[arrow left]** or **[z]**: Undo move. Hold alt for 10 moves at a time, or ctrl to skip to the start.
-* **[arrow right]** or **[x]**: Redo move. Hold alt for 10 moves at a time, or ctrl to skip to the start.
+* **[arrow right]** or **[x]**: Redo move. Hold alt for 10 moves at a time, or ctrl to skip to the end.
 * **[arrow up/down]** Switch branch, as would be expected from the move tree.
-* **[n]** As in clicking the red arrow, go to one move before the next mistake (orange or worse) by a human player.
 * **[home/end]** Go to the beginning/end of the game.
+* **[b]** Go back to the previous branching point.
+* **[n]** As in clicking the red arrow, go to one move before the next mistake (orange or worse) by a human player.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
 * **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
