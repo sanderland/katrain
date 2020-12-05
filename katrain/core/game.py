@@ -554,7 +554,7 @@ class Game:
                 analyze_and_play_policy(new_node)
 
             self.engines[node.next_player].request_analysis(
-                new_node, callback=set_analysis, visits=1,
+                new_node, callback=set_analysis, priority=-1000, analyze_fast=True,
             )
 
         threading.Thread(target=analyze_and_play_policy, args=(cn,), daemon=True).start()
