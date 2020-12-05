@@ -650,9 +650,10 @@
 <MenuItem>
     font_size: self.height * 0.5
     size_hint_y: None
-    height: 50
+    height: dp(50)
     background_color: BOX_BACKGROUND_COLOR
-    content_width: icon.width + label.texture_size[0] * 1.33
+    width_margin: 1.33
+    content_width: icon.width + label.texture_size[0] * self.width_margin
     MDFloatLayout:
         id: icon
         size_hint: None, 1
@@ -716,7 +717,7 @@
 <AnalysisMenuItem@MenuItem>:
     on_close: app.gui.analysis_controls.close_dropdown()
     background_color: LIGHTER_BACKGROUND_COLOR
-    height: 45
+    height: dp(45)
     canvas.before:
         Color:
             rgba: WHITE
@@ -777,6 +778,11 @@
         icon: 'img/ai.png'
         shortcut: 'enter'
         on_action: root.katrain("ai-move")
+    AnalysisMenuItem:
+        text: i18n._("analysis:playtoend")
+        icon: 'img/ai.png'
+        shortcut: 'l'
+        on_action: root.katrain("play-to-end")
 
 
 <AnalysisControls>:

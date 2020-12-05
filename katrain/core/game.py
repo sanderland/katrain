@@ -93,6 +93,14 @@ class Game:
 
         self.set_current_node(self.root)
         self.main_time_used = 0
+
+        # restore shortcuts
+        shortcut_id_to_node = {node.get_property("KTSID", None): node for node in self.root.nodes_in_tree}
+        for node in self.root.nodes_in_tree:
+            shortcut_id = node.get_property("KTSF", None)
+            if shortcut_id and shortcut_id in shortcut_id_to_node:
+                shortcut_id_to_node[shortcut_id].add_shortcut(node)
+
         threading.Thread(
             target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast, even_if_present=False),
             daemon=True,
@@ -264,7 +272,9 @@ class Game:
             n_times = 9999
             break_on_branch = True
         for _ in range(n_times):
-            if not cn.is_root:
+            if cn.shortcut_from:
+                cn = cn.shortcut_from
+            elif not cn.is_root:
                 cn = cn.parent
             if break_on_branch and len(cn.children) > 1:
                 break
@@ -276,7 +286,11 @@ class Game:
         cn = self.current_node  # avoid race conditions
         for move in range(n_times):
             if cn.children:
-                cn = cn.ordered_children[0]
+                child = cn.ordered_children[0]
+                shortcut_to = [m for m, v in cn.shortcuts_to if child == v]  # are we about to go to a shortcut node?
+                if shortcut_to:
+                    child = shortcut_to[0]
+                cn = child
             if (
                 move > 0
                 and stop_on_mistake is not None
@@ -511,6 +525,39 @@ class Game:
                 cn.analyze(
                     engine, priority=priority, visits=visits, refine_move=move, time_limit=False, report_every=None
                 )  # explicitly requested so take as long as you need
+
+    def play_to_end(self):
+        cn = self.current_node
+        count = 0
+        if not cn.analysis_exists:
+            return
+
+        def analyze_and_play_policy(node):
+            nonlocal count, cn
+            cand = node.candidate_moves
+            if cand:
+                move = Move.from_gtp(cand[0]["move"], player=node.next_player)
+            else:
+                polmoves = node.policy_ranking
+                move = polmoves[0][1] if polmoves else Move(None)
+            if move.is_pass:
+                cn.add_shortcut(node)
+                self.set_current_node(node)
+                self.katrain.controls.set_status("", STATUS_INFO)
+                return
+            count += 1
+            new_node = GameNode(parent=node, move=move)
+            self.katrain.controls.set_status(i18n._("playtoend:status").format(num_moves=count), STATUS_INFO)
+
+            def set_analysis(result, _partial):
+                new_node.set_analysis(result)
+                analyze_and_play_policy(new_node)
+
+            self.engines[node.next_player].request_analysis(
+                new_node, callback=set_analysis, visits=1,
+            )
+
+        threading.Thread(target=analyze_and_play_policy, args=(cn,), daemon=True).start()
 
     def analyze_undo(self, node):
         train_config = self.katrain.config("trainer")

@@ -839,3 +839,17 @@ msgstr ""
 #. TODO - Restrict analysis to a specific region
 msgid "analysis:region"
 msgstr "Set region of interest"
+
+#. TODO - on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "Expand/Collapse"
+
+#. TODO - Menu option
+msgid "analysis:playtoend"
+msgstr "Fast playout to game end"
+
+#. TODO - Status message
+msgid "playtoend:status"
+msgstr ""
+"Playing game to the end with policy strategy, please wait ... {num_moves} "
+"moves played."

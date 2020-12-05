@@ -25,6 +25,7 @@ from katrain.gui.style import (
     STONE_TEXT_COLORS,
     WHITE,
     YELLOW,
+    GREY,
 )
 
 
@@ -84,22 +85,42 @@ class MoveTreeCanvas(Widget):
         self.menu_selected_node = selected_node
 
     def delete_selected_node(self):
-        if self.menu_selected_node and self.menu_selected_node.parent:
-            parent = self.menu_selected_node.parent
-            parent.children.remove(self.menu_selected_node)
+        selected_node = self.menu_selected_node or self.scroll_view_widget.current_node
+        if selected_node and selected_node.parent:
+            if selected_node.shortcut_from:
+                parent = selected_node.shortcut_from
+                via = [v for m, v in parent.shortcuts_to if m == selected_node]
+                selected_node.remove_shortcut()
+                if via:  # should always be
+                    parent.children.remove(via[0])
+            else:
+                parent = selected_node.parent
+                parent.children.remove(selected_node)
             self.set_game_node(parent)
         self.is_open = False
 
     def make_selected_node_main_branch(self):
-
-        if self.menu_selected_node and self.menu_selected_node.parent:
-            node = self.menu_selected_node
+        selected_node = self.menu_selected_node or self.scroll_view_widget.current_node
+        if selected_node and selected_node.parent:
+            node = selected_node
             while node.parent is not None:
                 node.parent.children.remove(node)
                 node.parent.children.insert(0, node)
                 node = node.parent
-            self.set_game_node(self.menu_selected_node)
+            self.set_game_node(selected_node)
         self.is_open = False
+
+    def toggle_selected_node_collapse(self):
+        selected_node = self.menu_selected_node or self.scroll_view_widget.current_node
+        if selected_node and selected_node.parent:
+            if selected_node.shortcut_from:
+                selected_node.remove_shortcut()
+            else:  # find branching point
+                node = selected_node.parent
+                while len(node.children) == 1 and not node.is_root and not node.shortcut_from:
+                    node = node.parent
+                node.add_shortcut(selected_node)
+            self.scroll_view_widget.redraw_tree_trigger()
 
     def switch_branch(self, direction=1):
         pos = self.move_pos.get(self.scroll_view_widget.current_node)
@@ -120,24 +141,36 @@ class MoveTreeCanvas(Widget):
 
         root = current_node.root
 
+        def children_with_shortcuts(move):
+            shortcuts = move.shortcuts_to
+            via = [v for m, v in shortcuts]  # children that are shortcut
+            return [m for m in move.ordered_children if m not in via] + [m for m, v in shortcuts]
+
         self.move_pos = {root: (0, 0)}
-        stack = root.ordered_children[::-1]
+        stack = children_with_shortcuts(root)[::-1]
         next_y_pos = defaultdict(int)  # x pos -> max y pos
         children = defaultdict(list)  # since AI self-play etc may modify the tree between layout and draw!
-        children[root] = root.ordered_children
+        children[root] = [*stack]
         while stack:
             move = stack.pop()
-            x = move.depth
-            y = max(next_y_pos[x], self.move_pos[move.parent][1])
+            if move.shortcut_from:
+                parent = move.shortcut_from
+            else:
+                parent = move.parent
+
+            if parent:
+                x = self.move_pos[parent][0] + 1
+            else:
+                x = 0
+            y = max(next_y_pos[x], self.move_pos[parent][1])
             next_y_pos[x] = y + 1
             next_y_pos[x - 1] = max(next_y_pos[x], next_y_pos[x - 1])
             self.move_pos[move] = (x, y)
-            children[move] = move.ordered_children
-            for c in children[move][::-1]:  # stack, so push top child last to process first
-                stack.append(c)
+            children[move] = children_with_shortcuts(move)
+            stack += children[move][::-1]  # stack, so push top child last to process first
 
-        def draw_stone(pos, player):
-            draw_circle(pos, self.move_size / 2 - 0.5, STONE_COLORS[player])
+        def draw_stone(pos, player, special_color=None):
+            draw_circle(pos, self.move_size / 2 - 0.5, (special_color or STONE_COLORS[player]))
             Color(*STONE_TEXT_COLORS[player])
             Line(circle=(*pos, self.move_size / 2), width=1)
 
@@ -152,7 +185,7 @@ class MoveTreeCanvas(Widget):
 
         self.move_xy_pos = {n: xy_pos(x, y) for n, (x, y) in self.move_pos.items()}
 
-        special_nodes = {self.menu_selected_node: RED, current_node: YELLOW}
+        special_nodes = {current_node: YELLOW, self.menu_selected_node: RED}
 
         if insert_node:
             special_nodes[insert_node.parent] = GREEN
@@ -176,9 +209,10 @@ class MoveTreeCanvas(Widget):
                         pos=[c - self.move_size / 2 - spacing / 2 for c in self.move_xy_pos[node]],
                         size=(self.move_size + spacing, self.move_size + spacing),
                     )
-                draw_stone(pos, node.player)
+                collapsed_color = LIGHTGREY if node.shortcut_from else None
+                draw_stone(pos, node.player, collapsed_color)
                 text = str(node.depth)
-                Color(*STONE_COLORS["W" if node.player == "B" else "B"])
+                Color(*STONE_COLORS["W" if node.player == "B" and not node.shortcut_from else "B"])
                 draw_text(pos=pos, text=text, font_size=self.move_size * 1.75 / (1 + 1 * len(text)), font_name="Roboto")
 
             if current_node in self.move_xy_pos:
@@ -208,6 +242,9 @@ class MoveTree(ScrollView, BackgroundMixin):
 
     def make_selected_node_main_branch(self):
         self.move_tree_canvas.make_selected_node_main_branch()
+
+    def toggle_selected_node_collapse(self):
+        self.move_tree_canvas.toggle_selected_node_collapse()
 
     def scroll_to_pixel(self, x, y):
         if not self._viewport:
@@ -249,14 +286,26 @@ Builder.load_string(
     MoveTreeDropdownItem:
         text: i18n._("Delete Node")
         icon: 'img/delete.png'
-        shortcut: ''
+        shortcut: 'Ctrl+Del'
         on_action: root.katrain.controls.move_tree.delete_selected_node()
         -background_color: LIGHTER_BACKGROUND_COLOR
+        -height: dp(45)
+        -width_margin: 1.6
     MoveTreeDropdownItem:
         text: i18n._("Make Main Branch")
         icon: 'img/Branch.png'
-        shortcut: ''
+        shortcut: 'PgUp'
         on_action: root.katrain.controls.move_tree.make_selected_node_main_branch()
         -background_color: LIGHTER_BACKGROUND_COLOR
+        -height: dp(45)
+        -width_margin: 1.6
+    MoveTreeDropdownItem:
+        text: i18n._("Toggle Collapse Branch")
+        icon: 'img/Collapse.png'
+        shortcut: 'c'
+        on_action: root.katrain.controls.move_tree.toggle_selected_node_collapse()
+        -background_color: LIGHTER_BACKGROUND_COLOR
+        -height: dp(45)
+        -width_margin: 1.6
     """
 )

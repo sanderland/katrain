@@ -118,6 +118,16 @@ msgid "analysis:region:start"
 msgstr ""
 "Drag to select the region of interest. Selecting a single point removes it."
 
+#. Menu option
+msgid "analysis:playtoend"
+msgstr "Fast playout to game end"
+
+#. Status message
+msgid "playtoend:status"
+msgstr ""
+"Playing game to the end with policy strategy, please wait ... {num_moves} "
+"moves played."
+
 #. Keep improving current position analysis when there is nothing else to do
 msgid "analysis:continuous"
 msgstr "Toggle continuous analysis"
@@ -758,6 +768,10 @@ msgstr "Number of visits per move"
 #. on move tree editing
 msgid "Delete Node"
 msgstr "Delete Node"
+
+#. on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "Expand/Collapse"
 
 #. on move tree editing
 msgid "Make Main Branch"

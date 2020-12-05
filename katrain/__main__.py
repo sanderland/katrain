@@ -324,6 +324,9 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_analyze_extra(self, mode, **kwargs):
         self.game.analyze_extra(mode, **kwargs)
 
+    def _do_play_to_end(self):
+        self.game.play_to_end()
+
     def _do_select_box(self):
         self.controls.set_status(i18n._("analysis:region:start"), STATUS_INFO)
         self.board_gui.selecting_region_of_interest = True
@@ -498,6 +501,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "g": ("select-box",),
             "i": ("insert-mode",),
             "p": ("play", None),
+            "l": ("play-to-end",),
             "n": ("next-mistake",),
             "b": ("undo", "branch"),
             "down": ("switch-branch", 1),
@@ -517,7 +521,6 @@ class KaTrainGui(Screen, KaTrainBase):
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
-
         popup = self.popup_open
         if popup:
             if keycode[1] in ["f5", "f6", "f7", "f8"]:  # switch between popups
@@ -552,6 +555,12 @@ class KaTrainGui(Screen, KaTrainBase):
             self("undo", 999)
         elif keycode[1] == "end":
             self("redo", 999)
+        elif keycode[1] == "pageup":
+            self.controls.move_tree.make_selected_node_main_branch()
+        elif keycode[1] == "delete" and ctrl_pressed:
+            self.controls.move_tree.delete_selected_node()
+        elif keycode[1] == "c" and not ctrl_pressed:
+            self.controls.move_tree.toggle_selected_node_collapse()
         elif keycode[1] == "n" and ctrl_pressed:
             self("new-game-popup")
         elif keycode[1] == "l" and ctrl_pressed:
