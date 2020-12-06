@@ -192,7 +192,12 @@ class SGFNode:
     @property
     def komi(self) -> float:
         """Retrieves the root's KM property, or 6.5 if missing"""
-        return float(self.root.get_property("KM", 6.5))
+        try:
+            km = float(self.root.get_property("KM", 6.5))
+        except ValueError:
+            km = 6.5
+
+        return km
 
     @property
     def ruleset(self) -> str:
