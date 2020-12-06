@@ -851,5 +851,5 @@ msgstr "Fast playout to game end"
 #. TODO - Status message
 msgid "playtoend:status"
 msgstr ""
-"Playing game to the end with policy strategy, please wait ... {num_moves} "
-"moves played."
+"Playing the game quickly to the end, please wait ... {num_moves} moved "
+"played.moves played."

@@ -227,7 +227,7 @@ class MoveTree(ScrollView, BackgroundMixin):
         super().__init__(**kwargs)
         self.insert_node = None
         self.redraw_tree_trigger = Clock.create_trigger(
-            lambda _dt: self.move_tree_canvas.draw_move_tree(self.current_node, self.insert_node)
+            lambda _dt: self.move_tree_canvas.draw_move_tree(self.current_node, self.insert_node), 0.1
         )
         self.bind(current_node=self.redraw_tree_trigger, size=self.redraw_tree_trigger)
 

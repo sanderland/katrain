@@ -339,6 +339,7 @@ class KaTrainGui(Screen, KaTrainBase):
             ).__self__
             self.new_game_popup.content.popup = self.new_game_popup
         self.new_game_popup.open()
+        self.new_game_popup.content.update_from_current_game()
 
     def _do_timer_popup(self):
         self.controls.timer.paused = True

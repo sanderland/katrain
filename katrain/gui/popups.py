@@ -35,7 +35,6 @@ from katrain.core.lang import i18n, rank_label
 from katrain.core.utils import PATHS, find_package_resource
 from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
 from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
-from katrain.gui.widgets import RankGraph
 from katrain.gui.widgets.progress_loader import ProgressLoader
 
 
@@ -249,13 +248,34 @@ class NewGamePopup(QuickConfigGui):
             self.player_setup.update_player_info(bw, info)
 
         self.rules_spinner.value_refs = [name for abbr, name in katrain.engine.RULESETS_ABBR]
+        Clock.schedule_once(self.update_from_current_game, 0.1)
 
-    def update_playerinfo(self):
+    def normalized_rules(self):
+        rules = self.katrain.game.root.get_property("RU", "japanese").strip().lower()
+        for abbr, name in self.katrain.engine.RULESETS_ABBR:
+            if abbr==rules or abbr==rules:
+                return name
+
+
+    def update_playerinfo(self,*args):
         for bw, player_setup in self.player_setup.players.items():
             name = self.player_name[bw].text
             if name:
                 self.katrain.game.root.set_property("P" + bw, name)
             self.katrain.update_player(bw, **player_setup.player_type_dump)
+
+    def update_from_current_game(self):
+        for bw in "BW":
+            name = self.katrain.game.root.get_property("P" + bw, None)
+            if name:
+                self.player_name[bw].text = name
+        komi = self.katrain.game.root.komi
+        rules = self.normalized_rules()
+        if komi is not None:
+            self.km.text = str(komi)
+        if rules is not None:
+            self.rules_spinner.select_key(rules.strip())
+
 
     def update_config(self, save_to_file=True):
         super().update_config(save_to_file=save_to_file)
@@ -270,14 +290,13 @@ class NewGamePopup(QuickConfigGui):
         props = self.collect_properties(self)
         root = self.katrain.game.root
         changed = False
-        for k, v in [("RU", props["game/rules"]), ("KM", props["game/komi"])]:
-            current = root.get_property(k)
-            if current != v:
+        for k, currentval, newval in [("RU",self.normalized_rules(), props["game/rules"]), ("KM", root.komi, props["game/komi"])]:
+            if currentval !=newval:
                 changed = True
                 self.katrain.log(
-                    f"Property {k} changed from {current} to {v}, triggering re-analysis of entire game.", OUTPUT_INFO
+                    f"Property {k} changed from {currentval} to {newval}, triggering re-analysis of entire game.", OUTPUT_INFO
                 )
-                self.katrain.game.root.set_property(k, v)
+                self.katrain.game.root.set_property(k, newval)
         self.update_playerinfo()
         if changed:
             self.katrain.engine.on_new_game()

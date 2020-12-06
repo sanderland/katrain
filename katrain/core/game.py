@@ -535,18 +535,25 @@ class Game:
         def analyze_and_play_policy(node):
             nonlocal count, cn
             cand = node.candidate_moves
+            if self.katrain.game is not self:
+                return # a new game happened
             if cand:
                 move = Move.from_gtp(cand[0]["move"], player=node.next_player)
             else:
                 polmoves = node.policy_ranking
                 move = polmoves[0][1] if polmoves else Move(None)
+
             if move.is_pass:
-                cn.add_shortcut(node)
                 self.set_current_node(node)
                 self.katrain.controls.set_status("", STATUS_INFO)
                 return
             count += 1
             new_node = GameNode(parent=node, move=move)
+            if node != cn:
+                node.remove_shortcut()
+            cn.add_shortcut(new_node)
+            self.katrain.controls.move_tree.redraw_tree_trigger()
+
             self.katrain.controls.set_status(i18n._("playtoend:status").format(num_moves=count), STATUS_INFO)
 
             def set_analysis(result, _partial):
