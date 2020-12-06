@@ -269,10 +269,8 @@ class NewGamePopup(QuickConfigGui):
             name = self.katrain.game.root.get_property("P" + bw, None)
             if name:
                 self.player_name[bw].text = name
-        komi = self.katrain.game.root.komi
         rules = self.normalized_rules()
-        if komi is not None:
-            self.km.text = str(komi)
+        self.km.text = str(self.katrain.game.root.komi)
         if rules is not None:
             self.rules_spinner.select_key(rules.strip())
 

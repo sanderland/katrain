@@ -64,7 +64,7 @@ from katrain.core.constants import (
     STATUS_ERROR,
     STATUS_INFO,
     PLAYING_NORMAL,
-    PLAYER_HUMAN,
+    PLAYER_HUMAN, SGF_INTERNAL_COMMENTS_MARKER,
 )
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup
 from katrain.core.base_katrain import KaTrainBase
@@ -217,7 +217,8 @@ class KaTrainGui(Screen, KaTrainBase):
     def update_player(self, bw, **kwargs):
         super().update_player(bw, **kwargs)
         if self.game:
-            self.players_info[bw].name = self.game.root.get_property("P" + bw)
+            sgf_name = self.game.root.get_property("P" + bw)
+            self.players_info[bw].name = None if SGF_INTERNAL_COMMENTS_MARKER in sgf_name else sgf_name
         if self.controls:
             self.controls.update_players()
             self.update_state()
