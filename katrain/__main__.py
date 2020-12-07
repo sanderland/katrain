@@ -617,7 +617,7 @@ class KaTrainApp(MDApp):
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
         resource_add_path(PATHS["PACKAGE"])
-        DEFAULT_FONT = cached_resource_find(DEFAULT_FONT)
+        DEFAULT_FONT = resource_find(DEFAULT_FONT)
         Builder.load_file(kv_file)
 
         Window.bind(on_request_close=self.on_request_close)

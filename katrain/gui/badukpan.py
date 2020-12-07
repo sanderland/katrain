@@ -33,7 +33,7 @@ from katrain.core.constants import (
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid
-from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text, cached_resource_find
+from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text, cached_texture
 from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
 from katrain.gui.style import *
 
@@ -200,7 +200,7 @@ class BadukPanWidget(Widget):
         Rectangle(
             pos=(self.gridpos_x[x] - stone_size, self.gridpos_y[y] - stone_size),
             size=(2 * stone_size, 2 * stone_size),
-            source=cached_resource_find(f"img/{player}_stone.png"),
+            texture=cached_texture(f"img/{player}_stone.png"),
         )
         if evalcol:
             eval_radius = math.sqrt(evalscale)  # scale area by evalscale
@@ -209,7 +209,7 @@ class BadukPanWidget(Widget):
             Rectangle(
                 pos=(self.gridpos_x[x] - evalsize, self.gridpos_y[y] - evalsize),
                 size=(2 * evalsize, 2 * evalsize),
-                source=cached_resource_find(f"img/dot.png"),
+                texture=cached_texture(f"img/dot.png"),
             )
         if innercol:
             Color(*innercol)
@@ -217,7 +217,7 @@ class BadukPanWidget(Widget):
             Rectangle(
                 pos=(self.gridpos_x[x] - inner_size, self.gridpos_y[y] - inner_size),
                 size=(2 * inner_size, 2 * inner_size),
-                source=cached_resource_find(f"img/inner.png"),
+                texture=cached_texture(f"img/inner.png"),
             )
 
     def eval_color(self, points_lost, show_dots_for_class: List[bool] = None) -> Optional[List[float]]:
@@ -262,7 +262,7 @@ class BadukPanWidget(Widget):
             Rectangle(
                 pos=(self.gridpos_x[0] - self.grid_size * 1.5, self.gridpos_y[0] - self.grid_size * 1.5),
                 size=(self.grid_size * x_grid_spaces, self.grid_size * y_grid_spaces),
-                source=cached_resource_find("img/board.png"),
+                texture=cached_texture("img/board.png"),
             )
 
             Color(*LINE_COLOR)
@@ -548,7 +548,7 @@ class BadukPanWidget(Widget):
                         Rectangle(
                             pos=(self.gridpos_x[move.coords[0]] - evalsize, self.gridpos_y[move.coords[1]] - evalsize),
                             size=(2 * evalsize, 2 * evalsize),
-                            source=cached_resource_find("img/topmove.png"),
+                            texture=cached_texture("img/topmove.png"),
                         )
                         if text_on and top_moves_show:  # TODO: faster if not sized?
                             keys = {"size": self.grid_size / 3, "smallsize": self.grid_size / 3.33}
@@ -685,7 +685,7 @@ class BadukPanWidget(Widget):
             Rectangle(  # not sure why the -1 here, but seems to center better
                 pos=(board_coords[0] - stone_size - 1, board_coords[1] - stone_size),
                 size=(2 * stone_size + 1, 2 * stone_size + 1),
-                source=cached_resource_find(f"img/{move_player}_stone.png"),
+                texture=cached_texture(f"img/{move_player}_stone.png"),
             )
             Color(*STONE_TEXT_COLORS[move_player])
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
