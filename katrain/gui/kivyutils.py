@@ -1,3 +1,5 @@
+import functools
+
 from kivy.clock import Clock
 from kivy.core.text import Label as CoreLabel
 from kivy.core.text.markup import MarkupLabel as CoreMarkupLabel
@@ -11,6 +13,7 @@ from kivy.properties import (
     OptionProperty,
     StringProperty,
 )
+from kivy.resources import resource_find
 from kivy.uix.behaviors import ButtonBehavior, FocusBehavior, ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -623,3 +626,12 @@ def draw_text(pos, text, font_name=None, markup=False, **kw):
 def draw_circle(pos, r, col):
     Color(*col)
     Ellipse(pos=(pos[0] - r, pos[1] - r), size=(2 * r, 2 * r))
+
+
+def cached_resource_find(path,force_reload=False,_cache={}):
+    return path
+    result = _cache.get(path)
+    if force_reload or not result:
+        result = _cache[path] = resource_find(path)
+    return result
+
