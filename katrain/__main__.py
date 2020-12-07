@@ -584,14 +584,16 @@ class KaTrainGui(Screen, KaTrainBase):
                 self(*shortcut)
         elif keycode[1] == "f9" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
             import yappi
+
             yappi.set_clock_type("cpu")
             yappi.start()
-            self.log("starting profiler",OUTPUT_ERROR)
+            self.log("starting profiler", OUTPUT_ERROR)
         elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
             import yappi, time
+
             stats = yappi.get_func_stats()
-            filename =f"callgrind.{int(time.time())}.prof"
-            stats.save(filename, type='callgrind')
+            filename = f"callgrind.{int(time.time())}.prof"
+            stats.save(filename, type="callgrind")
             self.log(f"wrote profiling results to {filename}", OUTPUT_ERROR)
         return True
 

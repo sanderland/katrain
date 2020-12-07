@@ -628,10 +628,8 @@ def draw_circle(pos, r, col):
     Ellipse(pos=(pos[0] - r, pos[1] - r), size=(2 * r, 2 * r))
 
 
-def cached_resource_find(path,force_reload=False,_cache={}):
-    return path
+def cached_resource_find(path, force_reload=False, _cache={}):
     result = _cache.get(path)
     if force_reload or not result:
         result = _cache[path] = resource_find(path)
     return result
-

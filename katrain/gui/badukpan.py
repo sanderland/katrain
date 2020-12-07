@@ -38,7 +38,6 @@ from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
 from katrain.gui.style import *
 
 
-
 class BadukPanWidget(Widget):
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
@@ -56,9 +55,9 @@ class BadukPanWidget(Widget):
         self.animating_pv = None
         self.last_mouse_pos = (0, 0)
         Window.bind(mouse_pos=self.on_mouse_pos)
-        self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents,0.05)
-        self.redraw_trigger = Clock.create_trigger(self.redraw,0.05)
-        self.redraw_hover_contents_trigger = Clock.create_trigger(self.draw_hover_contents,0.01)
+        self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents, 0.05)
+        self.redraw_trigger = Clock.create_trigger(self.redraw, 0.05)
+        self.redraw_hover_contents_trigger = Clock.create_trigger(self.draw_hover_contents, 0.01)
         self.bind(size=self.redraw_trigger, pos=self.redraw_trigger)
         Clock.schedule_interval(self.animate_pv, 0.1)
 
@@ -551,7 +550,7 @@ class BadukPanWidget(Widget):
                             size=(2 * evalsize, 2 * evalsize),
                             source=cached_resource_find("img/topmove.png"),
                         )
-                        if text_on and top_moves_show: # TODO: faster if not sized?
+                        if text_on and top_moves_show:  # TODO: faster if not sized?
                             keys = {"size": self.grid_size / 3, "smallsize": self.grid_size / 3.33}
                             player_sign = current_node.player_sign(current_node.next_player)
                             if len(top_moves_show) == 1:
