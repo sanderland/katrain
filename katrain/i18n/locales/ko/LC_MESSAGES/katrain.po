@@ -775,8 +775,3 @@ msgstr "Expand/Collapse"
 msgid "analysis:playtoend"
 msgstr "Fast playout to game end"
 
-#. TODO - Status message
-msgid "playtoend:status"
-msgstr ""
-"Playing the game quickly to the end, please wait ... {num_moves} moves "
-"played."

@@ -228,13 +228,13 @@ class KataGoEngine:
             if "id" not in query:
                 query["id"] = f"QUERY:{str(self.query_counter)}"
             self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
-        if self.katago_process:
-            self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
-            try:
-                self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
-                self.katago_process.stdin.flush()
-            except OSError as e:
-                self.check_alive(os_error=str(e), exception_if_dead=True)
+            if self.katago_process:
+                self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
+                try:
+                    self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
+                    self.katago_process.stdin.flush()
+                except OSError as e:
+                    self.check_alive(os_error=str(e), exception_if_dead=True)
 
     def terminate_query(self, query_id):
         if query_id is not None:

@@ -550,7 +550,6 @@ class Game:
             if move.is_pass:
                 if self.current_node == cn:
                     self.set_current_node(node)
-                self.katrain.controls.set_status("", STATUS_INFO, cn)
                 return
             count += 1
             new_node = GameNode(parent=node, move=move)
@@ -558,8 +557,6 @@ class Game:
                 node.remove_shortcut()
             cn.add_shortcut(new_node)
             self.katrain.controls.move_tree.redraw_tree_trigger()
-
-            self.katrain.controls.set_status(i18n._("playtoend:status").format(num_moves=count), STATUS_INFO, cn)
 
             def set_analysis(result, _partial):
                 new_node.set_analysis(result)
@@ -569,7 +566,7 @@ class Game:
                 new_node, callback=set_analysis, priority=-1000, analyze_fast=True,
             )
 
-        threading.Thread(target=analyze_and_play_policy, args=(cn,), daemon=True).start()
+        analyze_and_play_policy(cn)
 
     def analyze_undo(self, node):
         train_config = self.katrain.config("trainer")
