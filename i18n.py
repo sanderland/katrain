@@ -101,14 +101,18 @@ for lang in locales:
     print("Fixed", pofile[lang], "and converted ->", mofile)
 
 
-for file in glob.glob("**/*.py") + glob.glob("**/*.kv"):
-    with open(file, "r") as f:
-        for i, line in enumerate(f.readlines()):
-            matches = [m.strip() for m in re.findall(r"i18n._\((.*?)\)", line)]
-            for msgid in matches:
-                stripped_msgid = msgid.strip("\"'")
-                if stripped_msgid and msgid[0] in ['"', "'"] and stripped_msgid not in strings_to_langs:  # not code
-                    print(f"Missing {msgid} used in code at \t{file}:{i} \t'{line.strip()}'")
-                    errors += 1
-
+for ext in ["py", "kv"]:
+    lc = 0
+    for file in glob.glob(f"katrain/*.{ext}") + glob.glob(f"katrain/**/*.{ext}"):
+        with open(file, "r") as f:
+            for i, line in enumerate(f.readlines()):
+                if line.strip():
+                    lc += 1
+                matches = [m.strip() for m in re.findall(r"i18n._\((.*?)\)", line)]
+                for msgid in matches:
+                    stripped_msgid = msgid.strip("\"'")
+                    if stripped_msgid and msgid[0] in ['"', "'"] and stripped_msgid not in strings_to_langs:  # not code
+                        print(f"Missing {msgid} used in code at \t{file}:{i} \t'{line.strip()}'")
+                        errors += 1
+    print(f"Checked {lc} lines of {ext} code for missing i18n entries.")
 sys.exit(int(errors))

@@ -64,7 +64,8 @@ from katrain.core.constants import (
     STATUS_ERROR,
     STATUS_INFO,
     PLAYING_NORMAL,
-    PLAYER_HUMAN, SGF_INTERNAL_COMMENTS_MARKER,
+    PLAYER_HUMAN,
+    SGF_INTERNAL_COMMENTS_MARKER,
 )
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup
 from katrain.core.base_katrain import KaTrainBase

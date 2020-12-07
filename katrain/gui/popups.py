@@ -253,18 +253,17 @@ class NewGamePopup(QuickConfigGui):
     def normalized_rules(self):
         rules = self.katrain.game.root.get_property("RU", "japanese").strip().lower()
         for abbr, name in self.katrain.engine.RULESETS_ABBR:
-            if abbr==rules or abbr==rules:
+            if abbr == rules or abbr == rules:
                 return name
 
-
-    def update_playerinfo(self,*args):
+    def update_playerinfo(self, *args):
         for bw, player_setup in self.player_setup.players.items():
             name = self.player_name[bw].text
             if name:
                 self.katrain.game.root.set_property("P" + bw, name)
             self.katrain.update_player(bw, **player_setup.player_type_dump)
 
-    def update_from_current_game(self):
+    def update_from_current_game(self, *args):
         for bw in "BW":
             name = self.katrain.game.root.get_property("P" + bw, None)
             if name:
@@ -273,7 +272,6 @@ class NewGamePopup(QuickConfigGui):
         self.km.text = str(self.katrain.game.root.komi)
         if rules is not None:
             self.rules_spinner.select_key(rules.strip())
-
 
     def update_config(self, save_to_file=True):
         super().update_config(save_to_file=save_to_file)
@@ -288,11 +286,15 @@ class NewGamePopup(QuickConfigGui):
         props = self.collect_properties(self)
         root = self.katrain.game.root
         changed = False
-        for k, currentval, newval in [("RU",self.normalized_rules(), props["game/rules"]), ("KM", root.komi, props["game/komi"])]:
-            if currentval !=newval:
+        for k, currentval, newval in [
+            ("RU", self.normalized_rules(), props["game/rules"]),
+            ("KM", root.komi, props["game/komi"]),
+        ]:
+            if currentval != newval:
                 changed = True
                 self.katrain.log(
-                    f"Property {k} changed from {currentval} to {newval}, triggering re-analysis of entire game.", OUTPUT_INFO
+                    f"Property {k} changed from {currentval} to {newval}, triggering re-analysis of entire game.",
+                    OUTPUT_INFO,
                 )
                 self.katrain.game.root.set_property(k, newval)
         self.update_playerinfo()

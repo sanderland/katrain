@@ -20,7 +20,8 @@ from katrain.core.constants import (
     STATUS_ERROR,
     STATUS_INFO,
     STATUS_TEACHING,
-    VERSION, SGF_INTERNAL_COMMENTS_MARKER,
+    VERSION,
+    SGF_INTERNAL_COMMENTS_MARKER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -407,7 +408,9 @@ class Game:
             x_properties["RE"] = self.end_result
         x_properties["KTV"] = ANALYSIS_FORMAT_VERSION
         self.root.properties = {**root_properties, **{k: [v] for k, v in x_properties.items()}}
-        player_names = {bw: re.sub(r"[\u200b\u3164'<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
+        player_names = {
+            bw: re.sub(r"[\u200b\u3164'<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"
+        }
         base_game_name = f"{PROGRAM_NAME}_{player_names['B']} vs {player_names['W']}"
         return f"{base_game_name} {self.game_id}.sgf"
 
@@ -536,7 +539,7 @@ class Game:
             nonlocal count, cn
             cand = node.candidate_moves
             if self.katrain.game is not self:
-                return # a new game happened
+                return  # a new game happened
             if cand:
                 move = Move.from_gtp(cand[0]["move"], player=node.next_player)
             else:
