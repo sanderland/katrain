@@ -452,7 +452,7 @@ msgstr "AI設定を更新"
 msgid "sgf written"
 msgstr "分析結果入りSGFを{file_name}に保存"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "初期分析が完了しないと均等分析はできません"
 
 msgid "Copied SGF to clipboard."

@@ -424,7 +424,7 @@ msgstr "인공지능 설정 갱신"
 msgid "sgf written"
 msgstr "SGF와 분석 결과를 {file_name}에 기록했습니다."
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "추가적인 분석을 요청하기 전에, 먼저 일차적인 분석이 끝날 때까지 기다려 주십시오."
 
 msgid "Copied SGF to clipboard."

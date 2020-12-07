@@ -20,7 +20,8 @@ from katrain.core.constants import (
     STATUS_ERROR,
     STATUS_INFO,
     STATUS_TEACHING,
-    VERSION, SGF_INTERNAL_COMMENTS_MARKER,
+    VERSION,
+    SGF_INTERNAL_COMMENTS_MARKER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -407,7 +408,9 @@ class Game:
             x_properties["RE"] = self.end_result
         x_properties["KTV"] = ANALYSIS_FORMAT_VERSION
         self.root.properties = {**root_properties, **{k: [v] for k, v in x_properties.items()}}
-        player_names = {bw: re.sub(r"[\u200b\u3164'<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"}
+        player_names = {
+            bw: re.sub(r"[\u200b\u3164'<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"
+        }
         base_game_name = f"{PROGRAM_NAME}_{player_names['B']} vs {player_names['W']}"
         return f"{base_game_name} {self.game_id}.sgf"
 
@@ -507,7 +510,7 @@ class Game:
             priority = -1_000_000_000
         elif mode in ["equalize", "alternative", "local"]:
             if not cn.analysis_complete and mode != "local":
-                self.katrain.controls.set_status(i18n._("wait-before-equalize"), STATUS_INFO, self.current_node)
+                self.katrain.controls.set_status(i18n._("wait-before-extra-analysis"), STATUS_INFO, self.current_node)
                 return
             if mode == "alternative":  # also do a quick update on current candidates so it doesn't look too weird
                 self.katrain.controls.set_status(i18n._("alternative analysis"), STATUS_ANALYSIS)
@@ -530,13 +533,14 @@ class Game:
         cn = self.current_node
         count = 0
         if not cn.analysis_exists:
+            self.katrain.controls.set_status(i18n._("wait-before-extra-analysis"), STATUS_INFO, cn)
             return
 
         def analyze_and_play_policy(node):
             nonlocal count, cn
             cand = node.candidate_moves
             if self.katrain.game is not self:
-                return # a new game happened
+                return  # a new game happened
             if cand:
                 move = Move.from_gtp(cand[0]["move"], player=node.next_player)
             else:
@@ -544,8 +548,9 @@ class Game:
                 move = polmoves[0][1] if polmoves else Move(None)
 
             if move.is_pass:
-                self.set_current_node(node)
-                self.katrain.controls.set_status("", STATUS_INFO)
+                if self.current_node == cn:
+                    self.set_current_node(node)
+                self.katrain.controls.set_status("", STATUS_INFO, cn)
                 return
             count += 1
             new_node = GameNode(parent=node, move=move)
@@ -554,7 +559,7 @@ class Game:
             cn.add_shortcut(new_node)
             self.katrain.controls.move_tree.redraw_tree_trigger()
 
-            self.katrain.controls.set_status(i18n._("playtoend:status").format(num_moves=count), STATUS_INFO)
+            self.katrain.controls.set_status(i18n._("playtoend:status").format(num_moves=count), STATUS_INFO, cn)
 
             def set_analysis(result, _partial):
                 new_node.set_analysis(result)

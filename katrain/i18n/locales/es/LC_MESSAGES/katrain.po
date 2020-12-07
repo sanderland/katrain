@@ -430,7 +430,7 @@ msgstr "Actualizar conf IA"
 msgid "sgf written"
 msgstr "SGF con análisis escrito en {file_name}"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr ""
 "Esperar completar análisis inicial antes de solicitar un refinamiento."
 

@@ -450,7 +450,7 @@ msgstr "Сохранить настройки ИИ"
 msgid "sgf written"
 msgstr "SGF с анализом сохранён в {file_name}"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "Дождитесь начального анализа перед запросом уточнений."
 
 msgid "Copied SGF to clipboard."

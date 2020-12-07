@@ -177,15 +177,15 @@ Keyboard shortcuts are shown with **[key]**.
 In addition to shortcuts mentioned above and those shown in the main menu:
 
 * **[Shift]**: Open the main menu.
-* **[~]** or **[ ` ]** or **[m]**: Cycles through more minimalistic UI modes.
+* **[~]** or **[ ` ]** or **[f12]**: Cycles through more minimalistic UI modes.
 * **[p]**: Pass
-* **[b]**: Pause/Resume timer
+* **[pause]**: Pause/Resume timer
 * **[arrow left]** or **[z]**: Undo move. Hold alt for 10 moves at a time, or ctrl to skip to the start.
 * **[arrow right]** or **[x]**: Redo move. Hold alt for 10 moves at a time, or ctrl to skip to the end.
 * **[arrow up/down]** Switch branch, as would be expected from the move tree.
 * **[home/end]** Go to the beginning/end of the game.
 * **[pageup]** Make the currently selected node the main branch
-* **[ctrl-delete]** Delete current node.
+* **[Ctrl-delete]** Delete current node.
 * **[c]** Collapse/Uncollapse the branch from the current node to the previous branching point.
 * **[b]** Go back to the previous branching point.
 * **[n]** As in clicking the red arrow, go to one move before the next mistake (orange or worse) by a human player.

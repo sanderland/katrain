@@ -415,7 +415,7 @@ msgstr "保存AI设置"
 msgid "sgf written"
 msgstr "带分析的SGF文件保存到 {file_name}"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "优化前等待初始分析完成"
 
 msgid "Copied SGF to clipboard."

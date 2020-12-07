@@ -476,7 +476,7 @@ msgstr "Mettre à jour"
 msgid "sgf written"
 msgstr "Analyse SGF rédigée dans {file_name}"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "Attendez la fin de l'analyse en cours avant de l'approfondir."
 
 msgid "Copied SGF to clipboard."

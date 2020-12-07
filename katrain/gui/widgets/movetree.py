@@ -143,8 +143,8 @@ class MoveTreeCanvas(Widget):
 
         def children_with_shortcuts(move):
             shortcuts = move.shortcuts_to
-            via = [v for m, v in shortcuts]  # children that are shortcut
-            return [m for m in move.ordered_children if m not in via] + [m for m, v in shortcuts]
+            via = {v: m for m, v in shortcuts}  # children that are shortcut
+            return [m if m not in via else via[m] for m in move.ordered_children]
 
         self.move_pos = {root: (0, 0)}
         stack = children_with_shortcuts(root)[::-1]

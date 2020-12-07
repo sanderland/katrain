@@ -11,6 +11,14 @@ This is not enforced, and contributions with incorrect formatting will be accept
 
 ## Translations
 
+### Contributing to an existing translation
+
+* Go [here](https://github.com/sanderland/katrain/blob/master/katrain/i18n/locales/) and locate the `.po` file for your language. 
+  Alternatively, find the same file in the branch for the next version. 
+* Correct the relevant `msgstr` entries.
+
+### Adding a translation
+
 Adding a translation requires making a new `.po` file with entries for that languages.
 
 * Copy the [English .po file](https://github.com/sanderland/katrain/blob/master/katrain/i18n/locales/en/LC_MESSAGES/katrain.po)
@@ -19,19 +27,6 @@ Adding a translation requires making a new `.po` file with entries for that lang
     * The information at the top of the file should also not be translated.
 
 You can send me the resulting `.po` file and I will integrate it into the program.
- 
-For those who have some python experience as well, you can:
-
-* Replicate the directory structure `katrain/i18n/<lang>/LC_MESSAGES/katrain.po`.
-* Run `python i18.py` which will generate the `.mo` files and check for any errors.
-* Find `gui.kv` and add a button near the others: 
-    ```
-    LangButton:
-        icon: 'img/flags/flag-<lang>.png'
-        on_press: app.language = '<lang>'
-    ```
-* The language should now show up in the app.
-* Pull request your changes to the latest minor version branch.
 
 # Contributors 
 
@@ -53,6 +48,7 @@ Many thanks to these additional authors:
 * "kaorahi" for bug fixes and SGF parser improvements.
 * "ajkenny84" for the red-green colourblind theme.
 * Lukasz Wierzbowski for the ability to paste urls for sgfs and helping fix alt-gr issues.
+* Carton He for a fix to handling empty komi values in sgfs.
 
 ## Translators
 

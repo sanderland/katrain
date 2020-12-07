@@ -553,7 +553,7 @@ msgstr "Update AI Settings"
 msgid "sgf written"
 msgstr "SGF with analysis written to {file_name}"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "Wait for initial analysis to complete before requesting a refinement."
 
 msgid "Copied SGF to clipboard."

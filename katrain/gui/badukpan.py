@@ -502,6 +502,7 @@ class BadukPanWidget(Widget):
                 ]
 
             top_move_coords = None
+            child_moves = {c.move.gtp() for c in current_node.children if c.move}
             if hint_moves:
                 low_visits_threshold = katrain.config("trainer/low_visits", 25)
                 top_moves_show = [
@@ -519,7 +520,11 @@ class BadukPanWidget(Widget):
                         scale = HINT_SCALE
                         text_on = True
                         alpha = HINTS_ALPHA
-                        if move_dict["visits"] < low_visits_threshold and not engine_best_move:
+                        if (
+                            move_dict["visits"] < low_visits_threshold
+                            and not engine_best_move
+                            and not move_dict["move"] in child_moves
+                        ):
                             scale = UNCERTAIN_HINT_SCALE
                             text_on = False
                             alpha = HINTS_LO_ALPHA

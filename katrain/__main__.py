@@ -64,7 +64,8 @@ from katrain.core.constants import (
     STATUS_ERROR,
     STATUS_INFO,
     PLAYING_NORMAL,
-    PLAYER_HUMAN, SGF_INTERNAL_COMMENTS_MARKER,
+    PLAYER_HUMAN,
+    SGF_INTERNAL_COMMENTS_MARKER,
 )
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup
 from katrain.core.base_katrain import KaTrainBase
@@ -545,9 +546,9 @@ class KaTrainGui(Screen, KaTrainBase):
             self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
-        elif keycode[1] == "b" and ctrl_pressed:
+        elif keycode[1] in ["pause", "break", "f15"] and not ctrl_pressed:
             self.controls.timer.paused = not self.controls.timer.paused
-        elif keycode[1] in ["`", "~", "m"] and ctrl_pressed:
+        elif keycode[1] in ["`", "~", "f12"]:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["left", "z"]:
             self("undo", 1 + (alt_pressed or shift_pressed) * 9 + (ctrl_pressed and not alt_pressed) * 999)

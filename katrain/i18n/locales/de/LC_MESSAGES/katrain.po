@@ -425,7 +425,7 @@ msgstr "AI Einstellungen aktualisieren"
 msgid "sgf written"
 msgstr "SGF mit Analyse gespeichert unter {file_name}"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr ""
 "Auf Abschluss der Initialanalyse warten, bevor eine Verfeinerung erfolgt."
 
