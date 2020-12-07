@@ -263,7 +263,7 @@ class NewGamePopup(QuickConfigGui):
                 self.katrain.game.root.set_property("P" + bw, name)
             self.katrain.update_player(bw, **player_setup.player_type_dump)
 
-    def update_from_current_game(self):
+    def update_from_current_game(self, *args):
         for bw in "BW":
             name = self.katrain.game.root.get_property("P" + bw, None)
             if name:

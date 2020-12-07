@@ -125,8 +125,8 @@ msgstr "Fast playout to game end"
 #. Status message
 msgid "playtoend:status"
 msgstr ""
-"Playing the game quickly to the end, please wait ... {num_moves} moved "
-"played.moves played."
+"Playing the game quickly to the end, please wait ... {num_moves} moves "
+"played."
 
 #. Keep improving current position analysis when there is nothing else to do
 msgid "analysis:continuous"
