@@ -1,4 +1,8 @@
+import functools
+
+from kivy.cache import Cache
 from kivy.clock import Clock
+from kivy.core.image import Image
 from kivy.core.text import Label as CoreLabel
 from kivy.core.text.markup import MarkupLabel as CoreMarkupLabel
 from kivy.core.window import Window
@@ -11,6 +15,7 @@ from kivy.properties import (
     OptionProperty,
     StringProperty,
 )
+from kivy.resources import resource_find
 from kivy.uix.behaviors import ButtonBehavior, FocusBehavior, ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -623,3 +628,11 @@ def draw_text(pos, text, font_name=None, markup=False, **kw):
 def draw_circle(pos, r, col):
     Color(*col)
     Ellipse(pos=(pos[0] - r, pos[1] - r), size=(2 * r, 2 * r))
+
+
+# direct cache to texture, bypassing resource_find
+def cached_texture(path,_cache={}):
+    tex = _cache.get(path)
+    if not tex:
+        tex = _cache[path] = Image(resource_find(path)).texture
+    return tex

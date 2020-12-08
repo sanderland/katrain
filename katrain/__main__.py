@@ -537,12 +537,11 @@ class KaTrainGui(Screen, KaTrainBase):
             else:
                 return
         ctrl_pressed = "ctrl" in modifiers
-        alt_pressed = "alt" in modifiers
         shift_pressed = "shift" in modifiers
         shortcuts = self.shortcuts
         if keycode[1] == "tab":
             self.play_mode.switch_ui_mode()
-        elif keycode[1] == "shift":
+        elif keycode[1] == "alt":
             self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
@@ -551,9 +550,9 @@ class KaTrainGui(Screen, KaTrainBase):
         elif keycode[1] in ["`", "~", "f12"]:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["left", "z"]:
-            self("undo", 1 + (alt_pressed or shift_pressed) * 9 + (ctrl_pressed and not alt_pressed) * 999)
+            self("undo", 1 + shift_pressed * 9 + ctrl_pressed * 999)
         elif keycode[1] in ["right", "x"]:
-            self("redo", 1 + (alt_pressed or shift_pressed) * 9 + (ctrl_pressed and not alt_pressed) * 999)
+            self("redo", 1 + shift_pressed * 9 + ctrl_pressed * 999)
         elif keycode[1] == "home":
             self("undo", 999)
         elif keycode[1] == "end":
@@ -583,6 +582,19 @@ class KaTrainGui(Screen, KaTrainBase):
                 shortcut.trigger_action(duration=0)
             else:
                 self(*shortcut)
+        elif keycode[1] == "f9" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
+            import yappi
+
+            yappi.set_clock_type("cpu")
+            yappi.start()
+            self.log("starting profiler", OUTPUT_ERROR)
+        elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
+            import yappi, time
+
+            stats = yappi.get_func_stats()
+            filename = f"callgrind.{int(time.time())}.prof"
+            stats.save(filename, type="callgrind")
+            self.log(f"wrote profiling results to {filename}", OUTPUT_ERROR)
         return True
 
 
@@ -594,6 +606,7 @@ class KaTrainApp(MDApp):
         super().__init__()
 
     def build(self):
+        global DEFAULT_FONT
         self.icon = ICON  # how you're supposed to set an icon
 
         self.title = f"KaTrain v{VERSION}"
@@ -604,6 +617,7 @@ class KaTrainApp(MDApp):
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
         resource_add_path(PATHS["PACKAGE"])
+        DEFAULT_FONT = resource_find(DEFAULT_FONT)
         Builder.load_file(kv_file)
 
         Window.bind(on_request_close=self.on_request_close)
