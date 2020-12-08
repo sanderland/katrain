@@ -138,6 +138,9 @@ class KaTrainGui(Screen, KaTrainBase):
         self.idle_analysis = not self.idle_analysis
         self.update_state()
 
+    def toggle_board_coordinates(self):
+        self.board_gui.enable_coordinates(not self.board_gui.get_enable_coordinates())
+
     def start(self):
         if self.engine:
             return
@@ -545,6 +548,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
+        elif keycode[1] == "k":
+            self.toggle_board_coordinates()
         elif keycode[1] in ["pause", "break", "f15"] and not ctrl_pressed:
             self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in ["`", "~", "f12"]:
