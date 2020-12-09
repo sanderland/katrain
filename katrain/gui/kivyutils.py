@@ -1,6 +1,3 @@
-import functools
-
-from kivy.cache import Cache
 from kivy.clock import Clock
 from kivy.core.image import Image
 from kivy.core.text import Label as CoreLabel
@@ -16,13 +13,12 @@ from kivy.properties import (
     StringProperty,
 )
 from kivy.resources import resource_find
-from kivy.uix.behaviors import ButtonBehavior, FocusBehavior, ToggleButtonBehavior
+from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
-from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
@@ -229,7 +225,7 @@ class KeyValueSpinner(Spinner):
     def input_value(self):
         try:
             return self.value_refs[self.selected_index]
-        except:
+        except KeyError:
             return ""
 
     @property

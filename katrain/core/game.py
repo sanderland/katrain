@@ -10,7 +10,6 @@ from kivy.clock import Clock
 
 from katrain.core.constants import (
     ANALYSIS_FORMAT_VERSION,
-    HOMEPAGE,
     OUTPUT_DEBUG,
     OUTPUT_INFO,
     PLAYER_AI,

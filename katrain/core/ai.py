@@ -203,7 +203,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             game, cn, {"playoutDoublingAdvantage": pda, "playoutDoublingAdvantagePla": "BLACK"}
         )
         if not handicap_analysis:
-            game.katrain.log(f"Error getting handicap-based move", OUTPUT_ERROR)
+            game.katrain.log("Error getting handicap-based move", OUTPUT_ERROR)
             ai_mode = AI_DEFAULT
 
     while not cn.analysis_complete:
@@ -225,7 +225,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             ai_mode in [AI_LOCAL, AI_TENUKI] and not (cn.move and cn.move.coords)
         ):
             ai_mode = AI_WEIGHTED
-            ai_thoughts += f"Strategy override, using policy-weighted strategy instead. "
+            ai_thoughts += "Strategy override, using policy-weighted strategy instead. "
             ai_settings = {"pick_override": 0.9, "weaken_fac": 1, "lower_bound": 0.02}
 
         if top_5_pass:
@@ -336,7 +336,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             AI_HANDICAP,
         ]:  # don't play suicidal to balance score
             aimove = top_cand
-            ai_thoughts += f"Top move is pass, so passing regardless of strategy. "
+            ai_thoughts += "Top move is pass, so passing regardless of strategy. "
         else:
             if ai_mode == AI_JIGO:
                 sign = cn.player_sign(cn.next_player)

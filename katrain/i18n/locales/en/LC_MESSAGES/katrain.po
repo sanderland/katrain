@@ -360,6 +360,14 @@ msgstr "Setup New Game"
 msgid "player names"
 msgstr "Player Names"
 
+#. hint on player name input
+msgid "black player name hint"
+msgstr "Black player's name"
+
+#. hint on player name input
+msgid "white player name hint"
+msgstr "White player's name"
+
 msgid "board size"
 msgstr "Board size"
 

@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 package_data = {"": ["*.json", "*.kv", "*.wav"], "katrain": [], "tests": []}
 packages = find_packages(exclude=["tests"])
-version = re.search('^VERSION\s*=\s*"(.*)"', open("katrain/core/constants.py").read(), re.M).group(1)
+version = re.search(r'^VERSION\s*=\s*"(.*)"', open("katrain/core/constants.py").read(), re.M).group(1)
 
 
 def include_data_files(directory):

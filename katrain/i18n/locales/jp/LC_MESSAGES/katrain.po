@@ -804,3 +804,11 @@ msgstr "Expand/Collapse"
 #. TODO - Menu option
 msgid "analysis:playtoend"
 msgstr "Fast playout to game end"
+
+#. TODO - hint on player name input
+msgid "black player name hint"
+msgstr "Black player's name"
+
+#. TODO - hint on player name input
+msgid "white player name hint"
+msgstr "White player's name"

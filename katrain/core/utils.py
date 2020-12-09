@@ -5,7 +5,7 @@ from typing import List, Tuple, TypeVar
 
 try:
     import importlib.resources as pkg_resources
-except:
+except ImportError:
     import importlib_resources as pkg_resources
 
 T = TypeVar("T")

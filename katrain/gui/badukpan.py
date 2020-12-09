@@ -1,4 +1,3 @@
-import copy
 import math
 import random
 import time
@@ -33,7 +32,7 @@ from katrain.core.constants import (
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid
-from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text, cached_texture
+from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
 from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
 from katrain.gui.style import *
 
@@ -209,7 +208,7 @@ class BadukPanWidget(Widget):
             Rectangle(
                 pos=(self.gridpos_x[x] - evalsize, self.gridpos_y[y] - evalsize),
                 size=(2 * evalsize, 2 * evalsize),
-                texture=cached_texture(f"img/dot.png"),
+                texture=cached_texture("img/dot.png"),
             )
         if innercol:
             Color(*innercol)
@@ -217,7 +216,7 @@ class BadukPanWidget(Widget):
             Rectangle(
                 pos=(self.gridpos_x[x] - inner_size, self.gridpos_y[y] - inner_size),
                 size=(2 * inner_size, 2 * inner_size),
-                texture=cached_texture(f"img/inner.png"),
+                texture=cached_texture("img/inner.png"),
             )
 
     def eval_color(self, points_lost, show_dots_for_class: List[bool] = None) -> Optional[List[float]]:
@@ -504,7 +503,7 @@ class BadukPanWidget(Widget):
         katrain = self.katrain
         game_ended = katrain.game.end_result
         current_node = katrain.game.current_node
-        player, next_player = current_node.player, current_node.next_player
+        next_player = current_node.next_player
 
         board_size_x, board_size_y = katrain.game.board_size
         if len(self.gridpos_x) < board_size_x or len(self.gridpos_y) < board_size_y:
@@ -580,7 +579,7 @@ class BadukPanWidget(Widget):
                         )
                         if text_on and top_moves_show:  # TODO: faster if not sized?
                             keys = {"size": self.grid_size / 3, "smallsize": self.grid_size / 3.33}
-                            player_sign = current_node.player_sign(current_node.next_player)
+                            player_sign = current_node.player_sign(next_player)
                             if len(top_moves_show) == 1:
                                 fmt = "[size={size:.0f}]{" + top_moves_show[0] + "}[/size]"
                             else:

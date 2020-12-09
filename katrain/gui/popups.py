@@ -207,7 +207,7 @@ class QuickConfigGui(MDBoxLayout):
                 selected = 0
                 try:
                     selected = widget.value_refs.index(value)
-                except:
+                except:  # noqa: E722
                     pass
                 widget.text = widget.values[selected]
             else:
