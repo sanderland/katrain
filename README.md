@@ -178,6 +178,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 
 * **[Alt]**: Open the main menu.
 * **[~]** or **[ ` ]** or **[F12]**: Cycles through more minimalistic UI modes.
+* **[k]**: Toggle display of board coordinates.
 * **[p]**: Pass
 * **[pause]**: Pause/Resume timer
 * **[arrow left]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.

@@ -62,10 +62,10 @@ class BadukPanWidget(Widget):
         self.bind(size=self.redraw_trigger, pos=self.redraw_trigger)
         Clock.schedule_interval(self.animate_pv, 0.1)
 
-    def enable_coordinates(self, enabled):
-        self.draw_coords_enabled = enabled
-        self.draw_board()
-        self.draw_board_contents()
+    def toggle_coordinates(self):
+        self.draw_coords_enabled = not self.draw_coords_enabled
+        self.redraw_trigger()
+        return self.draw_coords_enabled
 
     def get_enable_coordinates(self):
         return self.draw_coords_enabled
