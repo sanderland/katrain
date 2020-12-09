@@ -817,7 +817,7 @@ msgstr "Visits"
 
 #. Dropdown menu option
 msgid "top_move_nothing"
-msgstr "---"
+msgstr "(nothing)"
 
 #. top move stats show threshold description
 msgid "show stats if"

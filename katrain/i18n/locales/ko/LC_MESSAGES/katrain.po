@@ -700,7 +700,7 @@ msgstr "Score"
 
 #. TODO - Dropdown menu option
 msgid "top_move_nothing"
-msgstr "---"
+msgstr "(nothing)"
 
 #. TODO - Dropdown menu option
 msgid "top_move_winrate"
