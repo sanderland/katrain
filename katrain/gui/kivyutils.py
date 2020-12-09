@@ -614,14 +614,22 @@ class ScrollableLabel(ScrollView, BackgroundMixin):
         pass
 
 
-def draw_text(pos, text, font_name=None, markup=False, **kw):
+def cached_text_texture(text, font_name, markup, _cache={}, **kwargs):
+    args = (text, font_name, markup, *[(k, v) for k, v in kwargs.items()])
+    texture = _cache.get(args)
+    if texture:
+        return texture
     label_cls = CoreMarkupLabel if markup else CoreLabel
-    label = label_cls(text=text, bold=True, font_name=font_name or i18n.font_name, **kw)
+    label = label_cls(text=text, bold=True, font_name=font_name or i18n.font_name, **kwargs)
     label.refresh()
+    texture = _cache[args] = label.texture
+    return texture
+
+
+def draw_text(pos, text, font_name=None, markup=False, **kwargs):
+    texture = cached_text_texture(text, font_name, markup, **kwargs)
     Rectangle(
-        texture=label.texture,
-        pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2),
-        size=label.texture.size,
+        texture=texture, pos=(pos[0] - texture.size[0] / 2, pos[1] - texture.size[1] / 2), size=texture.size,
     )
 
 
@@ -631,7 +639,7 @@ def draw_circle(pos, r, col):
 
 
 # direct cache to texture, bypassing resource_find
-def cached_texture(path,_cache={}):
+def cached_texture(path, _cache={}):
     tex = _cache.get(path)
     if not tex:
         tex = _cache[path] = Image(resource_find(path)).texture

@@ -420,24 +420,52 @@ class BadukPanWidget(Widget):
             if katrain.analysis_controls.policy.active and policy:
                 policy_grid = var_to_grid(policy, (board_size_x, board_size_y))
                 best_move_policy = max(*policy)
+                colors = EVAL_COLORS[self.trainer_config["theme"]]
+                text_lb = 0.01 * 0.01
                 for y in range(board_size_y - 1, -1, -1):
                     for x in range(board_size_x):
-                        if policy_grid[y][x] > 0:
-                            polsize = 1.1 * math.sqrt(policy_grid[y][x])
-                            policy_circle_color = (
-                                *POLICY_COLOR,
-                                POLICY_ALPHA + TOP_POLICY_ALPHA * (policy_grid[y][x] == best_move_policy),
-                            )
+                        move_policy = policy_grid[y][x]
+                        pol_order = 5 - int(-math.log10(max(1e-9, move_policy - 1e-9)))
+                        if pol_order >= 0:
+                            if move_policy > text_lb:
+                                Color(0.95, 0.75, 0.47, 1)
+                                draw_circle(
+                                    (self.gridpos_x[x], self.gridpos_y[y]),
+                                    self.stone_size * HINT_SCALE * 0.98,
+                                    [0.95, 0.75, 0.47, 1],
+                                )
+                                scale = 0.95
+                            else:
+                                scale = 0.5
                             draw_circle(
-                                (self.gridpos_x[x], self.gridpos_y[y]), polsize * self.stone_size, policy_circle_color
+                                (self.gridpos_x[x], self.gridpos_y[y]),
+                                HINT_SCALE * self.stone_size * scale,
+                                (*colors[pol_order][:3], POLICY_ALPHA),
                             )
-                polsize = math.sqrt(policy[-1])
+                            if move_policy > text_lb:
+                                Color(*BLACK)
+                                draw_text(
+                                    pos=(self.gridpos_x[x], self.gridpos_y[y]),
+                                    text=f"{100 * move_policy :.2f}"[:4] + "%",
+                                    font_name="Roboto",
+                                    halign="center",
+                                )
+                            if move_policy == best_move_policy:
+                                Color(*TOP_MOVE_BORDER_COLOR[:3], POLICY_ALPHA)
+                                Line(
+                                    circle=(self.gridpos_x[x], self.gridpos_y[y], self.stone_size - dp(1.2),),
+                                    width=dp(2),
+                                )
+
                 with pass_btn.canvas.after:
-                    draw_circle(
-                        (pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2),
-                        polsize * pass_btn.height / 2,
-                        POLICY_COLOR,
-                    )
+                    move_policy = policy[-1]
+                    pol_order = 5 - int(-math.log10(max(1e-9, move_policy - 1e-9)))
+                    if pol_order >= 0:
+                        draw_circle(
+                            (pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2),
+                            pass_btn.height / 2,
+                            (*colors[pol_order][:3], GHOST_ALPHA),
+                        )
 
             # pass circle
             passed = len(nodes) > 1 and current_node.is_pass
@@ -472,7 +500,7 @@ class BadukPanWidget(Widget):
         )
 
     def draw_hover_contents(self, *_args):
-        ghost_alpha = POLICY_ALPHA
+        ghost_alpha = GHOST_ALPHA
         katrain = self.katrain
         game_ended = katrain.game.end_result
         current_node = katrain.game.current_node
