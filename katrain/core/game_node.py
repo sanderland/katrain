@@ -131,7 +131,7 @@ class GameNode(SGFNode):
                 properties["SQ"] = best_sq
             if top_x and "MA" not in properties:
                 properties["MA"] = [top_x]
-            comments.append(self.comment(sgf=True, interactive=False))
+            comments.append(self.comment(sgf=True, interactive=False)+SGF_INTERNAL_COMMENTS_MARKER)
         if self.is_root:
             comments = [
                 i18n._("SGF start message") + SGF_INTERNAL_COMMENTS_MARKER + "\n",

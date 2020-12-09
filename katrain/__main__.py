@@ -522,6 +522,7 @@ class KaTrainGui(Screen, KaTrainBase):
         return first_child if isinstance(first_child, Popup) else None
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
+        ctrl_pressed = "ctrl" in modifiers
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
         popup = self.popup_open
@@ -536,7 +537,6 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
             else:
                 return
-        ctrl_pressed = "ctrl" in modifiers
         shift_pressed = "shift" in modifiers
         shortcuts = self.shortcuts
         if keycode[1] == "tab":
