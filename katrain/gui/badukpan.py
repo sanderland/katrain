@@ -49,6 +49,7 @@ class BadukPanWidget(Widget):
         self.stone_size = 0
         self.selecting_region_of_interest = False
         self.region_of_interest = []
+        self.draw_coords_enabled = True
 
         self.active_pv_moves = []
         self.animating_pv = None
@@ -59,6 +60,14 @@ class BadukPanWidget(Widget):
         self.redraw_hover_contents_trigger = Clock.create_trigger(self.draw_hover_contents, 0.01)
         self.bind(size=self.redraw_trigger, pos=self.redraw_trigger)
         Clock.schedule_interval(self.animate_pv, 0.1)
+
+    def toggle_coordinates(self):
+        self.draw_coords_enabled = not self.draw_coords_enabled
+        self.redraw_trigger()
+        return self.draw_coords_enabled
+
+    def get_enable_coordinates(self):
+        return self.draw_coords_enabled
 
     def play_stone_sound(self, *_args):
         if self.katrain.config("timer/sound"):
@@ -234,8 +243,12 @@ class BadukPanWidget(Widget):
         with self.canvas.before:
             self.canvas.before.clear()
             # set up margins and grid lines
-            grid_spaces_margin_x = [1.5, 0.75]  # left, right
-            grid_spaces_margin_y = [1.5, 0.75]  # bottom, top
+            if self.draw_coords_enabled:
+                grid_spaces_margin_x = [1.5, 0.75]  # left, right
+                grid_spaces_margin_y = [1.5, 0.75]  # bottom, top
+            else: #no coordinates means remove the offset
+                grid_spaces_margin_x = [0.75, 0.75]  # left, right
+                grid_spaces_margin_y = [0.75, 0.75]  # bottom, top
             x_grid_spaces = board_size_x - 1 + sum(grid_spaces_margin_x)
             y_grid_spaces = board_size_y - 1 + sum(grid_spaces_margin_y)
             self.grid_size = min(self.width / x_grid_spaces, self.height / y_grid_spaces)
@@ -259,7 +272,7 @@ class BadukPanWidget(Widget):
             else:
                 Color(1, 0.95, 0.8, 1)  # image is a bit too light
             Rectangle(
-                pos=(self.gridpos_x[0] - self.grid_size * 1.5, self.gridpos_y[0] - self.grid_size * 1.5),
+                pos=(self.gridpos_x[0] - self.grid_size * grid_spaces_margin_x[0], self.gridpos_y[0] - self.grid_size * grid_spaces_margin_y[0]),
                 size=(self.grid_size * x_grid_spaces, self.grid_size * y_grid_spaces),
                 texture=cached_texture("img/board.png"),
             )
@@ -285,22 +298,23 @@ class BadukPanWidget(Widget):
                     draw_circle((self.gridpos_x[x], self.gridpos_y[y]), starpt_size, LINE_COLOR)
 
             # coordinates
-            Color(0.25, 0.25, 0.25)
-            coord_offset = self.grid_size * 1.5 / 2
-            for i in range(board_size_x):
-                draw_text(
-                    pos=(self.gridpos_x[i], self.gridpos_y[0] - coord_offset),
-                    text=Move.GTP_COORD[i],
-                    font_size=self.grid_size / 1.5,
-                    font_name="Roboto",
-                )
-            for i in range(board_size_y):
-                draw_text(
-                    pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]),
-                    text=str(i + 1),
-                    font_size=self.grid_size / 1.5,
-                    font_name="Roboto",
-                )
+            if self.draw_coords_enabled:
+                Color(0.25, 0.25, 0.25)
+                coord_offset = self.grid_size * 1.5 / 2
+                for i in range(board_size_x):
+                    draw_text(
+                        pos=(self.gridpos_x[i], self.gridpos_y[0] - coord_offset),
+                        text=Move.GTP_COORD[i],
+                        font_size=self.grid_size / 1.5,
+                        font_name="Roboto",
+                    )
+                for i in range(board_size_y):
+                    draw_text(
+                        pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]),
+                        text=str(i + 1),
+                        font_size=self.grid_size / 1.5,
+                        font_name="Roboto",
+                    )
 
     def draw_board_contents(self, *_args):
         if not (self.katrain and self.katrain.game):

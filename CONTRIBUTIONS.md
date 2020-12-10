@@ -49,6 +49,7 @@ Many thanks to these additional authors:
 * "ajkenny84" for the red-green colourblind theme.
 * Lukasz Wierzbowski for the ability to paste urls for sgfs and helping fix alt-gr issues.
 * Carton He for a fix to handling empty komi values in sgfs.
+* "blamarche" for adding the board coordinates toggle 
 
 ## Translators
 

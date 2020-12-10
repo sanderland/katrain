@@ -545,6 +545,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
+        elif keycode[1] == "k":
+            self.board_gui.toggle_coordinates()
         elif keycode[1] in ["pause", "break", "f15"] and not ctrl_pressed:
             self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in ["`", "~", "f12"]:
