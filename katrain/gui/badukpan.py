@@ -246,7 +246,7 @@ class BadukPanWidget(Widget):
             if self.draw_coords_enabled:
                 grid_spaces_margin_x = [1.5, 0.75]  # left, right
                 grid_spaces_margin_y = [1.5, 0.75]  # bottom, top
-            else: #no coordinates means remove the offset
+            else:  # no coordinates means remove the offset
                 grid_spaces_margin_x = [0.75, 0.75]  # left, right
                 grid_spaces_margin_y = [0.75, 0.75]  # bottom, top
             x_grid_spaces = board_size_x - 1 + sum(grid_spaces_margin_x)
@@ -272,7 +272,10 @@ class BadukPanWidget(Widget):
             else:
                 Color(1, 0.95, 0.8, 1)  # image is a bit too light
             Rectangle(
-                pos=(self.gridpos_x[0] - self.grid_size * grid_spaces_margin_x[0], self.gridpos_y[0] - self.grid_size * grid_spaces_margin_y[0]),
+                pos=(
+                    self.gridpos_x[0] - self.grid_size * grid_spaces_margin_x[0],
+                    self.gridpos_y[0] - self.grid_size * grid_spaces_margin_y[0],
+                ),
                 size=(self.grid_size * x_grid_spaces, self.grid_size * y_grid_spaces),
                 texture=cached_texture("img/board.png"),
             )
@@ -494,7 +497,7 @@ class BadukPanWidget(Widget):
                 Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
                 Color(0.85, 0.85, 0.85)
                 draw_text(
-                    pos=center, text=text, font_size=size * 0.25, halign="center", outline_color=[0.95, 0.95, 0.95]
+                    pos=center, text=text, font_size=size * 0.25, halign="center"
                 )
 
         self.redraw_hover_contents_trigger()

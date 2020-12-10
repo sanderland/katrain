@@ -19,7 +19,6 @@ from katrain.core.constants import (
     STATUS_ERROR,
     STATUS_INFO,
     STATUS_TEACHING,
-    VERSION,
     SGF_INTERNAL_COMMENTS_MARKER,
 )
 from katrain.core.engine import KataGoEngine
@@ -40,7 +39,7 @@ class KaTrainSGF(SGF):
 class Game:
     """Represents a game of go, including an implementation of capture rules."""
 
-    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4, "AP": f"{PROGRAM_NAME}:{VERSION}", "CA": "UTF-8"}
+    DEFAULT_PROPERTIES = {"GM": 1, "FF": 4}
 
     def __init__(
         self,

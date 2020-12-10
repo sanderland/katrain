@@ -4,7 +4,7 @@
 [![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
 [![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)](https://github.com/sanderland/katrain/releases)
 [![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
-[![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=6&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
+[![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 [![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
 
 <table>
@@ -152,7 +152,7 @@ Keyboard shortcuts are shown with **[key]**.
 * The checkboxes at the top of the screen:
     * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when 
                wanting to guess the next move.
-    * **[w]**: Show all dots: Cycles through showingall evaluation dots, showing the last few, and showing none.
+    * **[w]**: Show all dots: Cycles through showing all evaluation dots, showing the last few, and showing none.
         * You can configure whether they are shown for AIs under 'Teaching/Analysis Settings'.
     * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. 
            Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). 
@@ -209,8 +209,8 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
-[![Contributors](https://img.shields.io/static/v1?label=contributors&message=22&color=dcb424)](CONTRIBUTIONS.md)
-[![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=7&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
+[![Contributors](https://img.shields.io/static/v1?label=contributors&message=24&color=dcb424)](CONTRIBUTIONS.md)
+[![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
