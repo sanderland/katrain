@@ -74,7 +74,7 @@ from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.kivyutils import *
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
-from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL, LIGHTGREY
+from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
 from katrain.gui.widgets import *
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
 from katrain.gui.controlspanel import ControlsPanel
@@ -108,14 +108,14 @@ class KaTrainGui(Screen, KaTrainBase):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
             if "starting" in message.lower():
-                self.controls.set_status(f"KataGo engine starting...", STATUS_INFO)
+                self.controls.set_status("KataGo engine starting...", STATUS_INFO)
             if message.startswith("Tuning"):
                 self.controls.set_status(
-                    f"KataGo is tuning settings for first startup, please wait." + message, STATUS_INFO
+                    "KataGo is tuning settings for first startup, please wait." + message, STATUS_INFO
                 )
                 return
             if "ready" in message.lower():
-                self.controls.set_status(f"KataGo engine ready.", STATUS_INFO)
+                self.controls.set_status("KataGo engine ready.", STATUS_INFO)
         if (
             level == OUTPUT_ERROR
             or (level == OUTPUT_KATAGO_STDERR and "error" in message.lower() and "tuning" not in message.lower())
@@ -450,7 +450,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()
         if not clipboard:
-            self.controls.set_status(f"Ctrl-V pressed but clipboard is empty.", STATUS_INFO)
+            self.controls.set_status("Ctrl-V pressed but clipboard is empty.", STATUS_INFO)
             return
 
         url_match = re.match(r"(?P<url>https?://[^\s]+)", clipboard)
@@ -522,6 +522,7 @@ class KaTrainGui(Screen, KaTrainBase):
         return first_child if isinstance(first_child, Popup) else None
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
+        ctrl_pressed = "ctrl" in modifiers
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
         popup = self.popup_open
@@ -536,7 +537,6 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
             else:
                 return
-        ctrl_pressed = "ctrl" in modifiers
         shift_pressed = "shift" in modifiers
         shortcuts = self.shortcuts
         if keycode[1] == "tab":
@@ -545,6 +545,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
+        elif keycode[1] == "k":
+            self.board_gui.toggle_coordinates()
         elif keycode[1] in ["pause", "break", "f15"] and not ctrl_pressed:
             self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in ["`", "~", "f12"]:

@@ -1,4 +1,3 @@
-import copy
 import math
 import random
 import time
@@ -33,7 +32,7 @@ from katrain.core.constants import (
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid
-from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text, cached_texture
+from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
 from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
 from katrain.gui.style import *
 
@@ -50,6 +49,7 @@ class BadukPanWidget(Widget):
         self.stone_size = 0
         self.selecting_region_of_interest = False
         self.region_of_interest = []
+        self.draw_coords_enabled = True
 
         self.active_pv_moves = []
         self.animating_pv = None
@@ -60,6 +60,14 @@ class BadukPanWidget(Widget):
         self.redraw_hover_contents_trigger = Clock.create_trigger(self.draw_hover_contents, 0.01)
         self.bind(size=self.redraw_trigger, pos=self.redraw_trigger)
         Clock.schedule_interval(self.animate_pv, 0.1)
+
+    def toggle_coordinates(self):
+        self.draw_coords_enabled = not self.draw_coords_enabled
+        self.redraw_trigger()
+        return self.draw_coords_enabled
+
+    def get_enable_coordinates(self):
+        return self.draw_coords_enabled
 
     def play_stone_sound(self, *_args):
         if self.katrain.config("timer/sound"):
@@ -209,7 +217,7 @@ class BadukPanWidget(Widget):
             Rectangle(
                 pos=(self.gridpos_x[x] - evalsize, self.gridpos_y[y] - evalsize),
                 size=(2 * evalsize, 2 * evalsize),
-                texture=cached_texture(f"img/dot.png"),
+                texture=cached_texture("img/dot.png"),
             )
         if innercol:
             Color(*innercol)
@@ -217,7 +225,7 @@ class BadukPanWidget(Widget):
             Rectangle(
                 pos=(self.gridpos_x[x] - inner_size, self.gridpos_y[y] - inner_size),
                 size=(2 * inner_size, 2 * inner_size),
-                texture=cached_texture(f"img/inner.png"),
+                texture=cached_texture("img/inner.png"),
             )
 
     def eval_color(self, points_lost, show_dots_for_class: List[bool] = None) -> Optional[List[float]]:
@@ -235,8 +243,12 @@ class BadukPanWidget(Widget):
         with self.canvas.before:
             self.canvas.before.clear()
             # set up margins and grid lines
-            grid_spaces_margin_x = [1.5, 0.75]  # left, right
-            grid_spaces_margin_y = [1.5, 0.75]  # bottom, top
+            if self.draw_coords_enabled:
+                grid_spaces_margin_x = [1.5, 0.75]  # left, right
+                grid_spaces_margin_y = [1.5, 0.75]  # bottom, top
+            else: #no coordinates means remove the offset
+                grid_spaces_margin_x = [0.75, 0.75]  # left, right
+                grid_spaces_margin_y = [0.75, 0.75]  # bottom, top
             x_grid_spaces = board_size_x - 1 + sum(grid_spaces_margin_x)
             y_grid_spaces = board_size_y - 1 + sum(grid_spaces_margin_y)
             self.grid_size = min(self.width / x_grid_spaces, self.height / y_grid_spaces)
@@ -260,7 +272,7 @@ class BadukPanWidget(Widget):
             else:
                 Color(1, 0.95, 0.8, 1)  # image is a bit too light
             Rectangle(
-                pos=(self.gridpos_x[0] - self.grid_size * 1.5, self.gridpos_y[0] - self.grid_size * 1.5),
+                pos=(self.gridpos_x[0] - self.grid_size * grid_spaces_margin_x[0], self.gridpos_y[0] - self.grid_size * grid_spaces_margin_y[0]),
                 size=(self.grid_size * x_grid_spaces, self.grid_size * y_grid_spaces),
                 texture=cached_texture("img/board.png"),
             )
@@ -286,22 +298,23 @@ class BadukPanWidget(Widget):
                     draw_circle((self.gridpos_x[x], self.gridpos_y[y]), starpt_size, LINE_COLOR)
 
             # coordinates
-            Color(0.25, 0.25, 0.25)
-            coord_offset = self.grid_size * 1.5 / 2
-            for i in range(board_size_x):
-                draw_text(
-                    pos=(self.gridpos_x[i], self.gridpos_y[0] - coord_offset),
-                    text=Move.GTP_COORD[i],
-                    font_size=self.grid_size / 1.5,
-                    font_name="Roboto",
-                )
-            for i in range(board_size_y):
-                draw_text(
-                    pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]),
-                    text=str(i + 1),
-                    font_size=self.grid_size / 1.5,
-                    font_name="Roboto",
-                )
+            if self.draw_coords_enabled:
+                Color(0.25, 0.25, 0.25)
+                coord_offset = self.grid_size * 1.5 / 2
+                for i in range(board_size_x):
+                    draw_text(
+                        pos=(self.gridpos_x[i], self.gridpos_y[0] - coord_offset),
+                        text=Move.GTP_COORD[i],
+                        font_size=self.grid_size / 1.5,
+                        font_name="Roboto",
+                    )
+                for i in range(board_size_y):
+                    draw_text(
+                        pos=(self.gridpos_x[0] - coord_offset, self.gridpos_y[i]),
+                        text=str(i + 1),
+                        font_size=self.grid_size / 1.5,
+                        font_name="Roboto",
+                    )
 
     def draw_board_contents(self, *_args):
         if not (self.katrain and self.katrain.game):
@@ -420,24 +433,52 @@ class BadukPanWidget(Widget):
             if katrain.analysis_controls.policy.active and policy:
                 policy_grid = var_to_grid(policy, (board_size_x, board_size_y))
                 best_move_policy = max(*policy)
+                colors = EVAL_COLORS[self.trainer_config["theme"]]
+                text_lb = 0.01 * 0.01
                 for y in range(board_size_y - 1, -1, -1):
                     for x in range(board_size_x):
-                        if policy_grid[y][x] > 0:
-                            polsize = 1.1 * math.sqrt(policy_grid[y][x])
-                            policy_circle_color = (
-                                *POLICY_COLOR,
-                                POLICY_ALPHA + TOP_POLICY_ALPHA * (policy_grid[y][x] == best_move_policy),
-                            )
+                        move_policy = policy_grid[y][x]
+                        pol_order = 5 - int(-math.log10(max(1e-9, move_policy - 1e-9)))
+                        if pol_order >= 0:
+                            if move_policy > text_lb:
+                                Color(0.95, 0.75, 0.47, 1)
+                                draw_circle(
+                                    (self.gridpos_x[x], self.gridpos_y[y]),
+                                    self.stone_size * HINT_SCALE * 0.98,
+                                    [0.95, 0.75, 0.47, 1],
+                                )
+                                scale = 0.95
+                            else:
+                                scale = 0.5
                             draw_circle(
-                                (self.gridpos_x[x], self.gridpos_y[y]), polsize * self.stone_size, policy_circle_color
+                                (self.gridpos_x[x], self.gridpos_y[y]),
+                                HINT_SCALE * self.stone_size * scale,
+                                (*colors[pol_order][:3], POLICY_ALPHA),
                             )
-                polsize = math.sqrt(policy[-1])
+                            if move_policy > text_lb:
+                                Color(*BLACK)
+                                draw_text(
+                                    pos=(self.gridpos_x[x], self.gridpos_y[y]),
+                                    text=f"{100 * move_policy :.2f}"[:4] + "%",
+                                    font_name="Roboto",
+                                    halign="center",
+                                )
+                            if move_policy == best_move_policy:
+                                Color(*TOP_MOVE_BORDER_COLOR[:3], POLICY_ALPHA)
+                                Line(
+                                    circle=(self.gridpos_x[x], self.gridpos_y[y], self.stone_size - dp(1.2),),
+                                    width=dp(2),
+                                )
+
                 with pass_btn.canvas.after:
-                    draw_circle(
-                        (pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2),
-                        polsize * pass_btn.height / 2,
-                        POLICY_COLOR,
-                    )
+                    move_policy = policy[-1]
+                    pol_order = 5 - int(-math.log10(max(1e-9, move_policy - 1e-9)))
+                    if pol_order >= 0:
+                        draw_circle(
+                            (pass_btn.pos[0] + pass_btn.width / 2, pass_btn.pos[1] + pass_btn.height / 2),
+                            pass_btn.height / 2,
+                            (*colors[pol_order][:3], GHOST_ALPHA),
+                        )
 
             # pass circle
             passed = len(nodes) > 1 and current_node.is_pass
@@ -472,11 +513,11 @@ class BadukPanWidget(Widget):
         )
 
     def draw_hover_contents(self, *_args):
-        ghost_alpha = POLICY_ALPHA
+        ghost_alpha = GHOST_ALPHA
         katrain = self.katrain
         game_ended = katrain.game.end_result
         current_node = katrain.game.current_node
-        player, next_player = current_node.player, current_node.next_player
+        next_player = current_node.next_player
 
         board_size_x, board_size_y = katrain.game.board_size
         if len(self.gridpos_x) < board_size_x or len(self.gridpos_y) < board_size_y:
@@ -552,7 +593,7 @@ class BadukPanWidget(Widget):
                         )
                         if text_on and top_moves_show:  # TODO: faster if not sized?
                             keys = {"size": self.grid_size / 3, "smallsize": self.grid_size / 3.33}
-                            player_sign = current_node.player_sign(current_node.next_player)
+                            player_sign = current_node.player_sign(next_player)
                             if len(top_moves_show) == 1:
                                 fmt = "[size={size:.0f}]{" + top_moves_show[0] + "}[/size]"
                             else:

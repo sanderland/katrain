@@ -1,8 +1,6 @@
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty
 from kivy.uix.widget import Widget
-from kivymd.uix.label import MDLabel
-from kivymd.uix.selectioncontrol import Thumb
 
 
 class SelectionSlider(Widget):
@@ -122,7 +120,7 @@ KV = """
         size:
             (max(dp(28), label.texture_size[0]+4) , dp(28))
         pos:
-            (slider.px_pos - dp(9), slider.center_y - hint_box.height / 2 + dp(30)) 
+            (slider.px_pos - dp(9), slider.center_y - hint_box.height / 2 + dp(30))
 
         Label:
             id: label

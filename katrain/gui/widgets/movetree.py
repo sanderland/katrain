@@ -12,20 +12,14 @@ from kivymd.app import MDApp
 
 from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.style import (
-    BACKGROUND_COLOR,
-    DARKRED,
     GREEN,
     LIGHT_ORANGE,
-    LIGHTER_BACKGROUND_COLOR,
     LIGHTGREY,
     ORANGE,
-    OUTLINE_COLORS,
     RED,
     STONE_COLORS,
     STONE_TEXT_COLORS,
-    WHITE,
     YELLOW,
-    GREY,
 )
 
 
@@ -268,7 +262,7 @@ Builder.load_string(
         scroll_view_widget: root
         id: move_tree_canvas
         size_hint: None, None
-        
+
 <MoveTreeDropdownItem@MenuItem>:
     canvas.before:
         Color:

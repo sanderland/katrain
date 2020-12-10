@@ -736,7 +736,7 @@ msgstr "Score"
 
 #. TODO - Dropdown menu option
 msgid "top_move_nothing"
-msgstr "---"
+msgstr "(nothing)"
 
 #. TODO - Dropdown menu option
 msgid "top_move_winrate"
@@ -814,3 +814,10 @@ msgstr "Expand/Collapse"
 msgid "analysis:playtoend"
 msgstr "Fast playout to game end"
 
+#. TODO - hint on player name input
+msgid "black player name hint"
+msgstr "Black player's name"
+
+#. TODO - hint on player name input
+msgid "white player name hint"
+msgstr "White player's name"

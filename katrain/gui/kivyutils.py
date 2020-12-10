@@ -1,6 +1,3 @@
-import functools
-
-from kivy.cache import Cache
 from kivy.clock import Clock
 from kivy.core.image import Image
 from kivy.core.text import Label as CoreLabel
@@ -16,13 +13,12 @@ from kivy.properties import (
     StringProperty,
 )
 from kivy.resources import resource_find
-from kivy.uix.behaviors import ButtonBehavior, FocusBehavior, ToggleButtonBehavior
+from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
-from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
@@ -229,7 +225,7 @@ class KeyValueSpinner(Spinner):
     def input_value(self):
         try:
             return self.value_refs[self.selected_index]
-        except:
+        except KeyError:
             return ""
 
     @property
@@ -614,14 +610,22 @@ class ScrollableLabel(ScrollView, BackgroundMixin):
         pass
 
 
-def draw_text(pos, text, font_name=None, markup=False, **kw):
+def cached_text_texture(text, font_name, markup, _cache={}, **kwargs):
+    args = (text, font_name, markup, *[(k, v) for k, v in kwargs.items()])
+    texture = _cache.get(args)
+    if texture:
+        return texture
     label_cls = CoreMarkupLabel if markup else CoreLabel
-    label = label_cls(text=text, bold=True, font_name=font_name or i18n.font_name, **kw)
+    label = label_cls(text=text, bold=True, font_name=font_name or i18n.font_name, **kwargs)
     label.refresh()
+    texture = _cache[args] = label.texture
+    return texture
+
+
+def draw_text(pos, text, font_name=None, markup=False, **kwargs):
+    texture = cached_text_texture(text, font_name, markup, **kwargs)
     Rectangle(
-        texture=label.texture,
-        pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2),
-        size=label.texture.size,
+        texture=texture, pos=(pos[0] - texture.size[0] / 2, pos[1] - texture.size[1] / 2), size=texture.size,
     )
 
 
@@ -631,7 +635,7 @@ def draw_circle(pos, r, col):
 
 
 # direct cache to texture, bypassing resource_find
-def cached_texture(path,_cache={}):
+def cached_texture(path, _cache={}):
     tex = _cache.get(path)
     if not tex:
         tex = _cache[path] = Image(resource_find(path)).texture
