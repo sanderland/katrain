@@ -199,6 +199,8 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 
 ## <a name="faq"></a> FAQ
 
+* How can I create themes?
+   * See [these instructions](THEMES.md).
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
 * KataGo crashes with out of memory errors, how can I prevent this?

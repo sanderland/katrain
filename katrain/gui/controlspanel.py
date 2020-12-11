@@ -9,6 +9,7 @@ from kivymd.uix.floatlayout import MDFloatLayout
 from katrain.core.constants import MODE_ANALYZE, MODE_PLAY, PLAYER_HUMAN, STATUS_ANALYSIS, STATUS_ERROR
 from katrain.core.lang import rank_label
 from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
+from katrain.gui.theme import Theme
 
 
 class PlayAnalyzeSelect(MDFloatLayout):
@@ -70,8 +71,8 @@ class ControlsPanel(BoxLayout):
         self.status_state = (None, -1e9, None)
         self.active_comment_node = None
         self.last_timer_update = (None, 0, False)
-        self.beep = SoundLoader.load("sounds/countdownbeep.wav")
-        self.boing = SoundLoader.load("sounds/boing.wav")
+        self.beep = SoundLoader.load(Theme.COUNTDOWN_SOUND)
+        self.boing = SoundLoader.load(Theme.MINIMUM_TIME_PASSED_SOUND)
         if self.boing:
             self.boing.volume = 0.1
         self.beep_start = 5.2
