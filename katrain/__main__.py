@@ -1,6 +1,10 @@
 """isort:skip_file"""
 # first, logging level lower
+import json
 import os
+
+from kivy.core.window import Window
+from kivy.uix.widget import Widget
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 if "KIVY_AUDIO" not in os.environ:
@@ -46,9 +50,11 @@ from kivy.lang import Builder
 from kivy.resources import resource_add_path
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
-from katrain.core.ai import generate_ai_move
-from kivy.core.window import Window
+from kivy.resources import resource_find
+from kivy.properties import NumericProperty, ObjectProperty, StringProperty
+from kivy.clock import Clock
 from kivy.metrics import dp
+from katrain.core.ai import generate_ai_move
 
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
 from katrain.core.constants import (
@@ -57,7 +63,6 @@ from katrain.core.constants import (
     OUTPUT_INFO,
     OUTPUT_DEBUG,
     OUTPUT_EXTRA_DEBUG,
-    MODE_PLAY,
     MODE_ANALYZE,
     HOMEPAGE,
     VERSION,
@@ -66,18 +71,23 @@ from katrain.core.constants import (
     PLAYING_NORMAL,
     PLAYER_HUMAN,
     SGF_INTERNAL_COMMENTS_MARKER,
+    MODE_PLAY,
+    DATA_FOLDER,
 )
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
-from katrain.gui.kivyutils import *
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
-from katrain.gui.style import ENGINE_BUSY_COL, ENGINE_DOWN_COL, ENGINE_READY_COL
-from katrain.gui.widgets import *
-from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget
-from katrain.gui.controlspanel import ControlsPanel
+from katrain.gui.theme import Theme
+from kivymd.app import MDApp
+
+# used in kv
+from katrain.gui.kivyutils import *
+from katrain.gui.widgets import MoveTree, I18NFileBrowser, SelectionSlider, ScoreGraph  # noqa F401
+from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget  # noqa F401
+from katrain.gui.controlspanel import ControlsPanel  # noqa F401
 
 
 class KaTrainGui(Screen, KaTrainBase):
@@ -165,11 +175,11 @@ class KaTrainGui(Screen, KaTrainBase):
 
         # update engine status dot
         if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
-            self.board_controls.engine_status_col = ENGINE_DOWN_COL
+            self.board_controls.engine_status_col = Theme.ENGINE_DOWN_COLOR
         elif len(self.engine.queries) == 0:
-            self.board_controls.engine_status_col = ENGINE_READY_COL
+            self.board_controls.engine_status_col = Theme.ENGINE_READY_COLOR
         else:
-            self.board_controls.engine_status_col = ENGINE_BUSY_COL
+            self.board_controls.engine_status_col = Theme.ENGINE_BUSY_COLOR
         self.board_controls.queries_remaining = len(self.engine.queries)
 
         # redraw board/stones
@@ -590,7 +600,8 @@ class KaTrainGui(Screen, KaTrainBase):
             yappi.start()
             self.log("starting profiler", OUTPUT_ERROR)
         elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
-            import yappi, time
+            import time
+            import yappi
 
             stats = yappi.get_func_stats()
             filename = f"callgrind.{int(time.time())}.prof"
@@ -607,7 +618,6 @@ class KaTrainApp(MDApp):
         super().__init__()
 
     def build(self):
-        global DEFAULT_FONT
         self.icon = ICON  # how you're supposed to set an icon
 
         self.title = f"KaTrain v{VERSION}"
@@ -617,8 +627,22 @@ class KaTrainApp(MDApp):
 
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
-        resource_add_path(PATHS["PACKAGE"])
-        DEFAULT_FONT = resource_find(DEFAULT_FONT)
+        resource_add_path(PATHS["PACKAGE"] + "/sounds")
+        resource_add_path(PATHS["PACKAGE"] + "/img")
+        resource_add_path(os.path.abspath(os.path.expanduser(DATA_FOLDER)))  # prefer resources in .katrain
+
+        theme_file = resource_find("theme.json")
+        if theme_file:
+            try:
+                with open(theme_file) as f:
+                    theme_overrides = json.load(f)
+                for k, v in theme_overrides.items():
+                    setattr(Theme, k, v)
+                    print(f"[{theme_file}] Found theme override {k} = {v}")
+            except Exception as e:  # noqa E722
+                print(f"Failed to load theme file {theme_file}: {e}")
+
+        Theme.DEFAULT_FONT = resource_find(Theme.DEFAULT_FONT)
         Builder.load_file(kv_file)
 
         Window.bind(on_request_close=self.on_request_close)

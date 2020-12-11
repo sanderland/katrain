@@ -3,6 +3,7 @@ VERSION = "1.7.0"
 HOMEPAGE = "https://github.com/sanderland/katrain"
 CONFIG_MIN_VERSION = "1.7.0"  # keep config files from this version
 ANALYSIS_FORMAT_VERSION = "1.0"
+DATA_FOLDER = "~/.katrain"
 
 OUTPUT_ERROR = -1
 OUTPUT_KATAGO_STDERR = -0.5

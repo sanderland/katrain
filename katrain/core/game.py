@@ -215,7 +215,7 @@ class Game:
                         if not copy_from_node.children:
                             break
                         copy_from_node = copy_from_node.ordered_children[0]
-                except:
+                except IllegalMoveException:
                     pass  # illegal move = stop
                 self._calculate_groups()  # recalculate groups
                 self.katrain.controls.set_status(

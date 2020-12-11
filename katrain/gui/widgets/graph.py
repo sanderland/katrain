@@ -7,10 +7,12 @@ from kivy.properties import BooleanProperty, Clock, ListProperty, NumericPropert
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 
+from katrain.gui.theme import Theme
+
 
 class Graph(Widget):
     marker_font_size = NumericProperty(0)
-    background_image = StringProperty("img/graph_bg.png")
+    background_image = StringProperty(Theme.GRAPH_TEXTURE)
     background_color = ListProperty([1, 1, 1, 1])
     highlighted_index = NumericProperty(0)
     nodes = ListProperty([])
@@ -157,21 +159,10 @@ class ScoreGraph(Graph):
 
 Builder.load_string(
     """
-#:set GRAPH_CENTER_COLOR [0.5,0.5,0.5]
-#:set GRAPH_DOT_COLOR [0.85,0.3,0.3,1]
-#:set WINRATE_MARKER_COLOR [0.05, 0.7, 0.05, 1]
-#:set SCORE_MARKER_COLOR [0.2, 0.6, 0.8, 1]
-
-#:import LIGHTER_BACKGROUND_COLOR katrain.gui.style.LIGHTER_BACKGROUND_COLOR
-#:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
-#:import SCORE_COLOR katrain.gui.style.SCORE_COLOR
-#:import WINRATE_COLOR katrain.gui.style.WINRATE_COLOR
-#:import BLACK katrain.gui.style.BLACK
-#:import WHITE katrain.gui.style.WHITE
-#:import YELLOW katrain.gui.style.YELLOW
+#:import Theme katrain.gui.theme.Theme    
 
 <Graph>:
-    background_color: BOX_BACKGROUND_COLOR
+    background_color: Theme.BOX_BACKGROUND_COLOR
     marker_font_size: 0.1 * self.height
     canvas.before:
         Color:
@@ -189,12 +180,12 @@ Builder.load_string(
 <ScoreGraph>:
     canvas:
         Color:
-            rgba: SCORE_COLOR
+            rgba: Theme.SCORE_COLOR
         Line:
             points: root.score_points if root.show_score else []
             width: dp(1.1)
         Color:
-            rgba: WINRATE_COLOR
+            rgba: Theme.WINRATE_COLOR
         Line:
             points: root.winrate_points if root.show_winrate else []
             width: dp(1.1)
@@ -204,13 +195,13 @@ Builder.load_string(
             points: root.navigate_move[1], root.y, root.navigate_move[1], root.y+root.height
             width: 1
         Color:
-            rgba: GRAPH_DOT_COLOR
+            rgba: Theme.GRAPH_DOT_COLOR
         Ellipse:
             id: score_dot
             pos: [c - self.highlight_size / 2 for c in (self.score_dot_pos if not self.navigate_move[0] else [self.navigate_move[1],self.navigate_move[2]] ) ]
             size: (self.highlight_size,self.highlight_size) if root.show_score else (0.0001,0.0001)
         Color:
-            rgba: GRAPH_DOT_COLOR
+            rgba: Theme.GRAPH_DOT_COLOR
         Ellipse:
             id: winrate_dot
             pos: [c - self.highlight_size / 2 for c in (self.winrate_dot_pos if not self.navigate_move[0] else [self.navigate_move[1],self.navigate_move[3]] ) ]
@@ -218,32 +209,32 @@ Builder.load_string(
     # score ticks
     GraphMarkerLabel:
         font_size: root.marker_font_size
-        color: SCORE_MARKER_COLOR
+        color: Theme.SCORE_MARKER_COLOR
         pos: root.x + root.width - self.width-1, root.pos[1]+root.height - self.font_size - 1
         text: 'B+{}'.format(root.score_scale)
         opacity: int(root.show_score)
     GraphMarkerLabel:
         font_size: root.marker_font_size
-        color: SCORE_MARKER_COLOR
+        color: Theme.SCORE_MARKER_COLOR
         pos: root.x + root.width - self.width-1, root.y + root.height*0.5 - self.height/2 + 2
         text: i18n._('Jigo')
         opacity: int(root.show_score)
     GraphMarkerLabel:
         font_size: root.marker_font_size
-        color: SCORE_MARKER_COLOR
+        color: Theme.SCORE_MARKER_COLOR
         pos: root.x + root.width - self.width-1, root.pos[1]
         text: 'W+' + str(int(root.score_scale))
         opacity: int(root.show_score)
     # wr ticks
     GraphMarkerLabel:
         font_size: root.marker_font_size
-        color: WINRATE_MARKER_COLOR
+        color: Theme.WINRATE_MARKER_COLOR
         pos: root.pos[0]+1,  root.pos[1] + root.height - self.font_size - 1
         text: "{}%".format(50 + root.winrate_scale)
         opacity: int(root.show_winrate)
     GraphMarkerLabel:
         font_size: root.marker_font_size
-        color: WINRATE_MARKER_COLOR
+        color: Theme.WINRATE_MARKER_COLOR
         pos:root.pos[0]+1, root.pos[1]
         text: "{}%".format(50 - root.winrate_scale)
         opacity: int(root.show_winrate)

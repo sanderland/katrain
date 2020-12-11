@@ -29,18 +29,19 @@ from katrain.core.constants import (
     OUTPUT_ERROR,
     OUTPUT_INFO,
     STATUS_INFO,
+    DATA_FOLDER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
 from katrain.core.utils import PATHS, find_package_resource
 from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
-from katrain.gui.style import DEFAULT_FONT, EVAL_COLORS
+from katrain.gui.theme import Theme
 from katrain.gui.widgets.progress_loader import ProgressLoader
 
 
 class I18NPopup(Popup):
     title_key = StringProperty("")
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -326,14 +327,14 @@ class ConfigTeacherPopup(QuickConfigGui):
         savesgfs = self.katrain.config("trainer/save_feedback")
         show_dots = self.katrain.config("trainer/show_dots")
 
-        self.themes_spinner.value_refs = list(EVAL_COLORS.keys())
+        self.themes_spinner.value_refs = list(Theme.EVAL_COLORS.keys())
         self.options_grid.clear_widgets()
 
         for k in ["dot color", "point loss threshold", "num undos", "show dots", "save dots"]:
             self.options_grid.add_widget(DescriptionLabel(text=i18n._(k), font_name=i18n.font_name, font_size=dp(17)))
 
         for i, (color, threshold, undo, show_dot, savesgf) in enumerate(
-            zip(EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs)
+            zip(Theme.EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs)
         ):
             self.add_option_widgets(
                 [
@@ -420,8 +421,8 @@ class ConfigAIPopup(QuickConfigGui):
 class ConfigPopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
-        self.paths = [self.katrain.config("engine/model"), "katrain/models", "~/.katrain"]
-        self.katago_paths = [self.katrain.config("engine/katago"), "~/.katrain"]
+        self.paths = [self.katrain.config("engine/model"), "katrain/models", DATA_FOLDER]
+        self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
         Clock.schedule_once(self.check_katas)
         MDApp.get_running_app().bind(language=self.check_models)
         MDApp.get_running_app().bind(language=self.check_katas)
@@ -560,7 +561,7 @@ class ConfigPopup(QuickConfigGui):
         for name, url in self.MODELS.items():
             filename = os.path.split(url)[1]
             if not any(os.path.split(f)[1] == filename for f in self.model_files.values):
-                savepath = os.path.expanduser(os.path.join("~/.katrain", filename))
+                savepath = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 savepath_tmp = savepath + ".part"
                 self.katrain.log(f"Downloading {name} model from {url} to {savepath_tmp}", OUTPUT_INFO)
                 progress = ProgressLoader(
@@ -627,8 +628,8 @@ class ConfigPopup(QuickConfigGui):
             filename = os.path.split(url)[1]
             exe_name = unzipped_name(filename)
             if not any(os.path.split(f)[1] == exe_name for f in self.katago_files.values):
-                savepath_tmp = os.path.expanduser(os.path.join("~/.katrain", filename))
-                exe_path_name = os.path.expanduser(os.path.join("~/.katrain", exe_name))
+                savepath_tmp = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
+                exe_path_name = os.path.expanduser(os.path.join(DATA_FOLDER, exe_name))
                 self.katrain.log(f"Downloading binary {name} from {url} to {savepath_tmp}", OUTPUT_INFO)
                 progress = ProgressLoader(
                     download_url=url,

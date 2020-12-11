@@ -51,7 +51,7 @@ from kivy.uix.filechooser import FileChooserListLayout, FileChooserListView
 from kivy.uix.treeview import TreeView, TreeViewLabel
 from kivy.utils import platform
 
-from katrain.gui.style import DEFAULT_FONT
+from katrain.gui.theme import Theme
 
 if platform == "win":
     from ctypes import windll, create_unicode_buffer
@@ -106,7 +106,7 @@ def get_drives():
 
 
 class I18NFileChooserListView(FileChooserListView):
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
     show_hidden = BooleanProperty(True)  # avoid errors
 
 

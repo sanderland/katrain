@@ -11,7 +11,7 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 
 from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
-from katrain.gui.style import GREEN, LIGHT_ORANGE, LIGHTGREY, ORANGE, RED, STONE_COLORS, STONE_TEXT_COLORS, YELLOW
+from katrain.gui.theme import Theme
 
 
 class MoveTreeDropdown(DropDown):
@@ -155,8 +155,8 @@ class MoveTreeCanvas(Widget):
             stack += children[move][::-1]  # stack, so push top child last to process first
 
         def draw_stone(pos, player, special_color=None):
-            draw_circle(pos, self.move_size / 2 - 0.5, (special_color or STONE_COLORS[player]))
-            Color(*STONE_TEXT_COLORS[player])
+            draw_circle(pos, self.move_size / 2 - 0.5, (special_color or Theme.STONE_COLORS[player]))
+            Color(*Theme.MOVE_TREE_STONE_OUTLINE_COLORS[player])
             Line(circle=(*pos, self.move_size / 2), width=1)
 
         def coord_pos(coord):
@@ -170,18 +170,20 @@ class MoveTreeCanvas(Widget):
 
         self.move_xy_pos = {n: xy_pos(x, y) for n, (x, y) in self.move_pos.items()}
 
-        special_nodes = {current_node: YELLOW, self.menu_selected_node: RED}
+        special_nodes = {current_node: Theme.MOVE_TREE_CURRENT, self.menu_selected_node: Theme.MOVE_TREE_SELECTED}
 
         if insert_node:
-            special_nodes[insert_node.parent] = GREEN
+            special_nodes[insert_node.parent] = Theme.MOVE_TREE_INSERT_NODE_PARENT
             insert_path = current_node
             while insert_path != insert_node.parent and insert_path.parent:
-                special_nodes[insert_path] = ORANGE if insert_path == current_node else LIGHT_ORANGE
+                special_nodes[insert_path] = (
+                    Theme.MOVE_TREE_INSERT_CURRENT if insert_path == current_node else Theme.MOVE_TREE_INSERT_OTHER
+                )
                 insert_path = insert_path.parent
 
         with self.canvas:
             self.canvas.clear()
-            Color(*LIGHTGREY)
+            Color(*Theme.MOVE_TREE_LINE)
             for node, (x, y) in self.move_xy_pos.items():
                 for ci, c in enumerate(children[node]):
                     cx, cy = self.move_xy_pos[c]
@@ -194,10 +196,10 @@ class MoveTreeCanvas(Widget):
                         pos=[c - self.move_size / 2 - spacing / 2 for c in self.move_xy_pos[node]],
                         size=(self.move_size + spacing, self.move_size + spacing),
                     )
-                collapsed_color = LIGHTGREY if node.shortcut_from else None
+                collapsed_color = Theme.MOVE_TREE_COLLAPSED if node.shortcut_from else None
                 draw_stone(pos, node.player, collapsed_color)
                 text = str(node.depth)
-                Color(*STONE_COLORS["W" if node.player == "B" and not node.shortcut_from else "B"])
+                Color(*Theme.STONE_COLORS["W" if node.player == "B" and not node.shortcut_from else "B"])
                 draw_text(pos=pos, text=text, font_size=self.move_size * 1.75 / (1 + 1 * len(text)), font_name="Roboto")
 
             if current_node in self.move_xy_pos:
@@ -245,8 +247,11 @@ class MoveTree(ScrollView, BackgroundMixin):
 
 Builder.load_string(
     """
+#:import Theme katrain.gui.theme.Theme
+#:import WHITE katrain.gui.theme.WHITE
+#:import LIGHT_GREY katrain.gui.theme.LIGHT_GREY
 <MoveTree>:
-    background_color: BOX_BACKGROUND_COLOR
+    background_color: Theme.BOX_BACKGROUND_COLOR
     move_tree_canvas: move_tree_canvas
     scroll_distance: 0 # scroll wheel is for forward/backward
     MoveTreeCanvas:
@@ -261,7 +266,7 @@ Builder.load_string(
         Line:
             points: self.x, self.y, self.x, self.y+self.height
         Color:
-            rgba: LIGHTGREY
+            rgba: LIGHT_GREY
         Line
             points: self.x,self.y,self.x+self.width,self.y
             width: 1
@@ -270,27 +275,27 @@ Builder.load_string(
     katrain: app.gui
     MoveTreeDropdownItem:
         text: i18n._("Delete Node")
-        icon: 'img/delete.png'
+        icon: 'delete.png'
         shortcut: 'Ctrl+Del'
         on_action: root.katrain.controls.move_tree.delete_selected_node()
-        -background_color: LIGHTER_BACKGROUND_COLOR
+        -background_color: Theme.LIGHTER_BACKGROUND_COLOR
         -height: dp(45)
         -width_margin: 1.6
     MoveTreeDropdownItem:
         text: i18n._("Make Main Branch")
-        icon: 'img/Branch.png'
+        icon: 'Branch.png'
         shortcut: 'PgUp'
         on_action: root.katrain.controls.move_tree.make_selected_node_main_branch()
-        -background_color: LIGHTER_BACKGROUND_COLOR
+        -background_color: Theme.LIGHTER_BACKGROUND_COLOR
         -height: dp(45)
         -width_margin: 1.6
     MoveTreeDropdownItem:
         text: i18n._("Toggle Collapse Branch")
-        icon: 'img/Collapse.png'
+        icon: 'Collapse.png'
         shortcut: 'c'
         on_action: root.katrain.controls.move_tree.toggle_selected_node_collapse()
-        -background_color: LIGHTER_BACKGROUND_COLOR
+        -background_color: Theme.LIGHTER_BACKGROUND_COLOR
         -height: dp(45)
         -width_margin: 1.6
-    """
+"""
 )

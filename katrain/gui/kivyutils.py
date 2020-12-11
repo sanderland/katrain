@@ -3,7 +3,7 @@ from kivy.core.image import Image
 from kivy.core.text import Label as CoreLabel
 from kivy.core.text.markup import MarkupLabel as CoreMarkupLabel
 from kivy.core.window import Window
-from kivy.graphics import *
+from kivy.graphics import Color, Ellipse, Rectangle
 from kivy.properties import (
     BooleanProperty,
     ListProperty,
@@ -30,7 +30,7 @@ from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, MODE_PLAY, PLAYER_AI
 from katrain.core.lang import i18n
-from katrain.gui.style import DEFAULT_FONT, WHITE
+from katrain.gui.theme import Theme
 
 
 class BackgroundMixin(Widget):  # -- mixins
@@ -69,14 +69,14 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
 # -- resizeable buttons / avoid baserectangular for sizing
 class SizedButton(LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin):
     text = StringProperty("")
-    text_color = ListProperty(WHITE)
+    text_color = ListProperty(Theme.BUTTON_TEXT_COLOR)
     text_size = ListProperty([100, 100])
     halign = OptionProperty("center", options=["left", "center", "right", "justify", "auto"])
     label = ObjectProperty(None)
     padding_x = NumericProperty(6)
     padding_y = NumericProperty(0)
     _font_size = NumericProperty(None)
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
 
 
 class AutoSizedButton(SizedButton):
@@ -143,7 +143,7 @@ class StatsLabel(MDBoxLayout):
     label = StringProperty("")
     color = ListProperty([1, 1, 1, 1])
     hidden = BooleanProperty(False)
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
 
 
 class MyNavigationDrawer(MDNavigationDrawer):
@@ -214,7 +214,7 @@ class KeyValueSpinner(Spinner):
     sync_height_frac = NumericProperty(1.0)
     value_refs = ListProperty()
     selected_index = NumericProperty(0)
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -283,7 +283,7 @@ class I18NSpinner(KeyValueSpinner):
     sync_height_frac = NumericProperty(1.0)
     value_refs = ListProperty()
     selected_index = NumericProperty(0)
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -406,7 +406,7 @@ class TriStateMDCheckbox(MDCheckbox):
 class AnalysisToggle(MDBoxLayout):
     text = StringProperty("")
     default_active = BooleanProperty(False)
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
     disabled = BooleanProperty(False)
     tri_state = BooleanProperty(False)
 
@@ -426,7 +426,7 @@ class MenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, Backg
     icon = StringProperty("")
     text = StringProperty("")
     shortcut = StringProperty("")
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
     content_width = NumericProperty(100)
 
     def on_left_release(self):
@@ -466,8 +466,8 @@ class CollapsablePanel(MDBoxLayout):
     closed_label = StringProperty("Closed Panel")
 
     state = OptionProperty("open", options=["open", "close"])
-    close_icon = "img/Previous-5.png"
-    open_icon = "img/Next-5.png"
+    close_icon = "Previous-5.png"
+    open_icon = "Next-5.png"
 
     def __init__(self, **kwargs):
         self.open_close_button, self.header = None, None

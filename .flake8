@@ -1,0 +1,3 @@
+[flake8]
+ignore = E501, E203, W503, E402 # line length, space before binary op, line break before binary op, import not at top
+exclude = .git,__pycache__,build,dist

@@ -125,11 +125,11 @@ def policy_weighted_move(policy_moves, lower_bound, weaken_fac):
 def generate_influence_territory_weights(ai_mode, ai_settings, policy_grid, size):
     thr_line = ai_settings["threshold"] - 1  # zero-based
     if ai_mode == AI_INFLUENCE:
-        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (
+        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (  # noqa E731
             max(0, thr_line - min(size[0] - 1 - x, x)) + max(0, thr_line - min(size[1] - 1 - y, y))
-        )
+        )  # noqa E731
     else:
-        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (
+        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (  # noqa E731
             max(0, min(size[0] - 1 - x, x, size[1] - 1 - y, y) - thr_line)
         )
     weighted_coords = [

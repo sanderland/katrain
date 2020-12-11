@@ -5,7 +5,7 @@ import sys
 from kivy._event import Observable
 
 from katrain.core.utils import find_package_resource
-from katrain.gui.style import DEFAULT_FONT
+from katrain.gui.theme import Theme
 
 
 class Lang(Observable):
@@ -53,7 +53,7 @@ class Lang(Observable):
             return
         # get the right locales directory, and instantiate a gettext
         self.lang = lang
-        self.font_name = self.FONTS.get(lang) or DEFAULT_FONT
+        self.font_name = self.FONTS.get(lang) or Theme.DEFAULT_FONT
         i18n_dir, _ = os.path.split(find_package_resource("katrain/i18n/__init__.py"))
         locale_dir = os.path.join(i18n_dir, "locales")
         locales = gettext.translation("katrain", locale_dir, languages=[lang, DEFAULT_LANGUAGE])

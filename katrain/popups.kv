@@ -4,16 +4,12 @@
 #:import abspath os.path.abspath
 #:import kivy_version kivy.__version__
 
-#:set CP_SPACING 6
-#:set CP_SMALL_SPACING 3
-#:set CP_PADDING 6
+#:import Theme katrain.gui.theme.Theme
+#:import LIGHT_GREY katrain.gui.theme.LIGHT_GREY
 
-#:set INPUT_FONT_SIZE sp(25)
-#:set DESC_FONT_SIZE  sp(20)
-
-#:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
-#:import LIGHTGREY katrain.gui.style.LIGHTGREY
-#:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
+#:set CP_SPACING Theme.CP_SPACING
+#:set CP_SMALL_SPACING Theme.CP_SMALL_SPACING
+#:set CP_PADDING Theme.CP_PADDING
 
 #:import TOP_MOVE_OPTIONS katrain.core.constants.TOP_MOVE_OPTIONS
 
@@ -22,15 +18,15 @@
 #    hint_text: "Helper text on focus"
 #    helper_text: "This will disappear when you click off"
 #    helper_text_mode: "on_focus"
-#    font_size: INPUT_FONT_SIZE
+#    font_size: Theme.INPUT_FONT_SIZE
 
 <LabelledTextInput>:
-    font_size: INPUT_FONT_SIZE
+    font_size: Theme.INPUT_FONT_SIZE
     helper_text_mode: "none"
     hint_text: ""
     helper_text: ""
     color_mode: 'custom'
-    line_color_focus: TEXT_COLOR
+    line_color_focus: Theme.TEXT_COLOR
 
 <LabelledPathInput>:
     font_size: sp(16)
@@ -39,27 +35,27 @@
     helper_text: i18n._("file not found")
 
 <LabelledIntInput>:
-    font_size: INPUT_FONT_SIZE
+    font_size: Theme.INPUT_FONT_SIZE
     size_hint: 0.5, None
 
 <LabelledFloatInput>:
-    font_size: INPUT_FONT_SIZE
+    font_size: Theme.INPUT_FONT_SIZE
     size_hint: 0.5, None
 
 <LabelledCheckBox>:
-    size: DESC_FONT_SIZE*2,DESC_FONT_SIZE*2
+    size: Theme.DESC_FONT_SIZE*2,Theme.DESC_FONT_SIZE*2
     size_hint: None,None
 
 <QuickInputButton@SizedRectangleButton>
     on_left_press: if self.target: self.target.text = self.text
-    size: DESC_FONT_SIZE * 2, DESC_FONT_SIZE * 2
-    font_size: DESC_FONT_SIZE
+    size: Theme.DESC_FONT_SIZE * 2, Theme.DESC_FONT_SIZE * 2
+    font_size: Theme.DESC_FONT_SIZE
 
 <I18NPopup>:
-    background_color: BACKGROUND_COLOR
+    background_color: Theme.BACKGROUND_COLOR
     background: self.background if kivy_version < '2.0' else ''
     title: i18n._(self.title_key)
-    title_size: DESC_FONT_SIZE
+    title_size: Theme.DESC_FONT_SIZE
     title_font: self.font_name
     size_hint: None, None
 
@@ -69,14 +65,14 @@
     padding: 4*CP_PADDING,CP_PADDING, 4*CP_PADDING, CP_PADDING
 
 <DescriptionLabel>:
-    font_size: DESC_FONT_SIZE
+    font_size: Theme.DESC_FONT_SIZE
     multiline: True
     text_size: self.width, None
     halign: 'center'
     valign: 'center'
 
 <SmallDescriptionLabel@DescriptionLabel>
-    font_size: DESC_FONT_SIZE * 0.66
+    font_size: Theme.DESC_FONT_SIZE * 0.66
 
 <ConfigPopup>:
     configfile: configfile
@@ -88,7 +84,7 @@
     katago_download_progress_box: katago_download_progress_box
     DescriptionLabel:
         text: i18n._('katago settings')
-        font_size: DESC_FONT_SIZE * 1.5
+        font_size: Theme.DESC_FONT_SIZE * 1.5
     GridLayout:
         cols: 2
         rows: 6
@@ -123,7 +119,7 @@
                 size_hint_y: 0.7
                 sync_height_frac: 1.0
                 -font_size: self.height * 0.5
-                -background_color: [*[c*255/88 for c in BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+                -background_color: [*[c*255/88 for c in Theme.BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
         DescriptionLabel:
             text: i18n._("engine:config")
             size_hint: 0.33, 1
@@ -158,7 +154,7 @@
                 size_hint_y: 0.7
                 sync_height_frac: 1.0
                 -font_size: self.height * 0.5
-                -background_color: [*[c*255/88 for c in BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+                -background_color: [*[c*255/88 for c in Theme.BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
         DescriptionLabel:
             text: i18n._("engine:altcommand")
             size_hint: 0.33, 1
@@ -171,9 +167,9 @@
         orientation: 'horizontal'
         DescriptionLabel:
             text: i18n._('general settings')
-            font_size: DESC_FONT_SIZE * 1.5
+            font_size: Theme.DESC_FONT_SIZE * 1.5
         DescriptionLabel:
-            font_size: DESC_FONT_SIZE * 1.5
+            font_size: Theme.DESC_FONT_SIZE * 1.5
             text: i18n._('engine settings')
     BoxLayout:
         size_hint: 1,5
@@ -206,7 +202,7 @@
                 id: configfile
                 text: app.gui.config_file
         BackgroundMixin:
-            background_color: LIGHTGREY
+            background_color: LIGHT_GREY
             size_hint: None, 1
             width: 2
         GridLayout:
@@ -281,7 +277,7 @@
             padding: 4
             size_hint: 0.95, 1
             DescriptionLabel:
-                font_size: DESC_FONT_SIZE * 0.8
+                font_size: Theme.DESC_FONT_SIZE * 0.8
                 text: i18n._("theme")
             AnchorLayout:
                 LabelledSpinner:
@@ -289,7 +285,7 @@
                     input_property: 'trainer/theme'
                     id: themes_spinner
             DescriptionLabel:
-                font_size: DESC_FONT_SIZE * 0.8
+                font_size: Theme.DESC_FONT_SIZE * 0.8
                 text: i18n._("stats on top move")
             AnchorLayout:
                 BoxLayout:
@@ -307,19 +303,19 @@
                         value_refs: TOP_MOVE_OPTIONS
                         input_property: "trainer/top_moves_show_secondary"
             DescriptionLabel:
-                font_size: DESC_FONT_SIZE * 0.8
+                font_size: Theme.DESC_FONT_SIZE * 0.8
                 text: i18n._("show stats if")
             AnchorLayout:
                 LabelledIntInput:
                     input_property: "trainer/low_visits"
             DescriptionLabel:
-                font_size: DESC_FONT_SIZE * 0.8
+                font_size: Theme.DESC_FONT_SIZE * 0.8
                 text: i18n._("show ai dots")
             AnchorLayout:
                 LabelledCheckBox:
                     input_property: "trainer/eval_show_ai"
             DescriptionLabel:
-                font_size: DESC_FONT_SIZE * 0.8
+                font_size: Theme.DESC_FONT_SIZE * 0.8
                 text: i18n._("cache analysis to sgf")
             AnchorLayout:
                 LabelledCheckBox:
@@ -472,7 +468,7 @@
             LabelledSpinner:
                 size_hint: 0.8,0.8
                 input_property: 'game/rules'
-                font_size: DESC_FONT_SIZE
+                font_size: Theme.DESC_FONT_SIZE
                 id: rules_spinner
         Label:
         DescriptionLabel:
@@ -509,7 +505,7 @@
         size_hint: 2.25,1
         values: root.values
         on_change: textbox.text = str(slider.value)
-        track_color: LIGHTGREY
+        track_color: LIGHT_GREY
         thumb_color: (0.6, 0.7, 0.9, 1) if root.key_option else (0.3, 0.4, 0.6, 1)
     LabelledFloatInput:
         id: textbox
@@ -522,7 +518,7 @@
     BoxLayout:
         size_hint: 1,1
         DescriptionLabel:
-            font_size: DESC_FONT_SIZE
+            font_size: Theme.DESC_FONT_SIZE
             text: i18n._('Select AI')
         AnchorLayout:
             I18NSpinner:
@@ -531,12 +527,12 @@
     BoxLayout:
         size_hint: 1,1
         DescriptionLabel:
-            font_size: DESC_FONT_SIZE
+            font_size: Theme.DESC_FONT_SIZE
             size_hint: 1, 1
             text: i18n._('estimated strength')
         DescriptionLabel:
             size_hint: 0.8, 1
-            font_size: DESC_FONT_SIZE
+            font_size: Theme.DESC_FONT_SIZE
             id: estimated_rank_label
             text: '?' + i18n._('strength:kyu')
     SmallDescriptionLabel:

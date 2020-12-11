@@ -439,7 +439,7 @@ class SGF:
                 re = "W+"
             elif "lack win" in lines[10]:
                 re = "B+"
-        except:
+        except IndexError:
             pass
 
         if handicap < 0 or handicap > 9:
@@ -527,7 +527,7 @@ class SGF:
             try:
                 grlt = int(re.search(grlt_regex, line).group(1))
                 zipsu = int(re.search(zipsu_regex, line).group(1))
-            except:
+            except:  # noqa E722
                 return ""
             return gib_make_result(grlt, zipsu)
 
@@ -561,7 +561,7 @@ class SGF:
                         komi = int(re.search(r"GONGJE:(\d+),", line).group(1)) / 10
                         if komi:
                             root.set_property("KM", komi)
-                    except:
+                    except:  # noqa E722
                         pass
 
             if line.startswith("\\[GAMETAG="):
@@ -570,7 +570,7 @@ class SGF:
                         match = re.search(r"C(\d\d\d\d):(\d\d):(\d\d)", line)
                         date = "{}-{}-{}".format(match.group(1), match.group(2), match.group(3))
                         root.set_property("DT", date)
-                    except:
+                    except:  # noqa E722
                         pass
 
                 if "RE" not in root.properties:
@@ -583,7 +583,7 @@ class SGF:
                         komi = int(re.search(r",G(\d+),", line).group(1)) / 10
                         if komi:
                             root.set_property("KM", komi)
-                    except:
+                    except:  # noqa E722
                         pass
 
             if line[0:3] == "INI":
@@ -592,7 +592,7 @@ class SGF:
                 setup = line.split()
                 try:
                     handicap = int(setup[3])
-                except IndexError:
+                except ParseError:
                     continue
 
                 if handicap < 0 or handicap > 9:
