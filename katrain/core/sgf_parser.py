@@ -326,6 +326,7 @@ class SGFNode:
 
 
 class SGF:
+    DEFAULT_ENCODING = "ISO-8859-1"  # as specified by the standard
 
     _NODE_CLASS = SGFNode  # Class used for SGF Nodes, can change this to something that inherits from SGFNode
     # https://xkcd.com/1171/
@@ -365,8 +366,11 @@ class SGF:
                     if match:
                         encoding = match[1].decode("ascii", errors="ignore")
                     else:
-                        encoding = "ISO-8859-1"  # default
-                decoded = bin_contents.decode(encoding=encoding, errors="ignore")
+                        encoding = cls.DEFAULT_ENCODING
+                try:
+                    decoded = bin_contents.decode(encoding=encoding, errors="ignore")
+                except LookupError:
+                    decoded = bin_contents.decode(encoding=cls.DEFAULT_ENCODING, errors="ignore")
             if is_ngf:
                 return cls.parse_ngf(decoded)
             if is_gib:
