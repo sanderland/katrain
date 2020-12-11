@@ -1,6 +1,3 @@
-from kivy.metrics import sp
-
-
 def to_hexcol(kivycol):
     return "#" + "".join(f"{round(c * 255):02x}" for c in kivycol[:3])
 
@@ -22,9 +19,9 @@ BLUE = [0.3, 0.7, 0.9, 1]
 class Theme:
     # font
     DEFAULT_FONT = "fonts/NotoSansCJKsc-Regular.otf"
-    INPUT_FONT_SIZE = sp(25)
-    DESC_FONT_SIZE = sp(20)
-    NOTES_FONT_SIZE = sp(18)
+    INPUT_FONT_SIZE = 25  # sp
+    DESC_FONT_SIZE = 20  # sp
+    NOTES_FONT_SIZE = 18  # sp
 
     # gui colors
     BACKGROUND_COLOR = [36 / 255, 48 / 255, 62 / 255, 1]

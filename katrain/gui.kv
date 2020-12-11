@@ -460,7 +460,7 @@
         lang_change_tracking: i18n._('')
         markup: root.markup
         padding: 5, 5
-        font_size: Theme.NOTES_FONT_SIZE
+        font_size: sp(Theme.NOTES_FONT_SIZE)
         line_height: root.line_height
         color: Theme.TEXT_COLOR
         size_hint_y: None
@@ -613,7 +613,7 @@
                 size_hint: 1,0
                 LabelledTextInput:
                     id: note
-                    font_size: Theme.NOTES_FONT_SIZE
+                    font_size: sp(Theme.NOTES_FONT_SIZE)
                     multiline: True
                     on_text: root.katrain.set_note(self.text)
                     hint_text: i18n._('SGF Notes Hint')
