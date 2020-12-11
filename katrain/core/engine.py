@@ -6,7 +6,7 @@ import subprocess
 import threading
 import time
 import traceback
-from typing import Callable, Dict, Optional, List
+from typing import Callable, Dict, List, Optional
 
 from kivy.utils import platform
 

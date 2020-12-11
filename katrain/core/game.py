@@ -15,11 +15,11 @@ from katrain.core.constants import (
     PLAYER_AI,
     PLAYER_HUMAN,
     PROGRAM_NAME,
+    SGF_INTERNAL_COMMENTS_MARKER,
     STATUS_ANALYSIS,
     STATUS_ERROR,
     STATUS_INFO,
     STATUS_TEACHING,
-    SGF_INTERNAL_COMMENTS_MARKER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode

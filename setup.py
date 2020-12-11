@@ -41,16 +41,11 @@ setup(
     install_requires=[
         "wheel",
         "setuptools",
-        "urllib3",
-        "importlib_resources ;python_version<'3.7'",
-        "cython>=0.24,<=0.29.14,!=0.27,!=0.27.2",  # kivy wants this
-        "kivy==2.0.0rc2;platform_system=='Darwin'",  # rc3 failing on mac
-        "kivy>=2.0.0rc2;platform_system!='Darwin'",  # just use the latest on linux?
-        "pygame;platform_system=='Darwin'",  # some mac versions need this for kivy
-        "kivy_deps.glew;platform_system=='Windows'",
-        "kivy_deps.sdl2;platform_system=='Windows'",
-        "kivy_deps.gstreamer;platform_system=='Windows'",
+        "kivy[full]>=2.0.0",
         "kivymd>=0.104.1",
+        "importlib_resources ;python_version<'3.7'",
+        "urllib3",
+        "pygame;platform_system=='Darwin'",  # some mac versions need this for kivy
         "screeninfo;platform_system!='Darwin'",  # for screen resolution, has problems on macos
     ],
     dependency_links=["https://kivy.org/downloads/simple/"],

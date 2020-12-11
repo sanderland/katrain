@@ -496,9 +496,7 @@ class BadukPanWidget(Widget):
                 size = min(self.width, self.height) * 0.227
                 Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
                 Color(0.85, 0.85, 0.85)
-                draw_text(
-                    pos=center, text=text, font_size=size * 0.25, halign="center"
-                )
+                draw_text(pos=center, text=text, font_size=size * 0.25, halign="center")
 
         self.redraw_hover_contents_trigger()
 

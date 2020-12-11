@@ -272,7 +272,6 @@ class KaTrainGui(Screen, KaTrainBase):
                 player_info.calculated_rank = None
                 self.update_player(bw)
         self.controls.graph.initialize_from_game(self.game.root)
-        # self.controls.rank_graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 
     def _do_insert_mode(self, mode="toggle"):

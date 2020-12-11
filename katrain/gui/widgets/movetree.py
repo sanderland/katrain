@@ -11,16 +11,7 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 
 from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
-from katrain.gui.style import (
-    GREEN,
-    LIGHT_ORANGE,
-    LIGHTGREY,
-    ORANGE,
-    RED,
-    STONE_COLORS,
-    STONE_TEXT_COLORS,
-    YELLOW,
-)
+from katrain.gui.style import GREEN, LIGHT_ORANGE, LIGHTGREY, ORANGE, RED, STONE_COLORS, STONE_TEXT_COLORS, YELLOW
 
 
 class MoveTreeDropdown(DropDown):
