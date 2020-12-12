@@ -488,7 +488,7 @@ msgstr ""
 "Contenu du presse-papier : {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "Impossible de charger le SGF. Erreur d'analyse : {error}"
+msgstr "Impossible de charger le SGF: {error}"
 
 msgid "Kata model not found"
 msgstr ""

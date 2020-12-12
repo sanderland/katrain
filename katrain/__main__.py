@@ -391,7 +391,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def load_sgf_file(self, file, fast=False, rewind=True):
         try:
             move_tree = KaTrainSGF.parse_file(file)
-        except ParseError as e:
+        except (ParseError, FileNotFoundError) as e:
             self.log(i18n._("Failed to load SGF").format(error=e), OUTPUT_ERROR)
             return
         self._do_new_game(move_tree=move_tree, analyze_fast=fast, sgf_filename=file)

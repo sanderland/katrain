@@ -567,7 +567,7 @@ msgstr ""
 "Clipboard contents: {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "Failed to load SGF. Parse Error: {error}"
+msgstr "Failed to load SGF: {error}"
 
 msgid "Kata exe not found"
 msgstr "KataGo binary {exe} does not exist, please check general settings."

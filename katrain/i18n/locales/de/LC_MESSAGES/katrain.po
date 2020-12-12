@@ -438,7 +438,7 @@ msgstr ""
 "Clipboard contents: {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "SGF konnte nicht geladen werden. Parse Error: {error}"
+msgstr "SGF konnte nicht geladen werde: {error}"
 
 msgid "Starting Kata failed"
 msgstr ""

@@ -464,7 +464,7 @@ msgstr ""
 "クリップボードの内容：{contents}..."
 
 msgid "Failed to load SGF"
-msgstr "SGFのロードに失敗しました。Parse Error: {error}"
+msgstr "SGFのロードに失敗しました: {error}"
 
 msgid "Kata exe not found"
 msgstr "KataGoの実行ファイル {exe} がありません。一般設定を確認してください。"

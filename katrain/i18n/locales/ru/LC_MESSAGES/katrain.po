@@ -462,7 +462,7 @@ msgstr ""
 "Содержимое буфера: {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "Ошибка загрузки SGF. Ошибка парсинга: {error}"
+msgstr "Ошибка загрузки SGF: {error}"
 
 msgid "Kata exe not found"
 msgstr ""

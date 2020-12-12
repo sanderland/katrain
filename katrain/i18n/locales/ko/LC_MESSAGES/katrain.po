@@ -436,7 +436,7 @@ msgstr ""
 "클립보드 내용: {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "SGF 파일을 불러올 수 없습니다. Parse Error: {error}"
+msgstr "SGF 파일을 불러올 수 없습니다: {error}"
 
 msgid "Kata exe not found"
 msgstr "KataGo 실행 파일 {exe}이 존재하지 않습니다. 일반 설정을 확인해 주십시오."

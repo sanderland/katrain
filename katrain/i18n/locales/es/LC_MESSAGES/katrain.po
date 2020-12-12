@@ -443,7 +443,7 @@ msgstr ""
 "Contenido portapapeles: {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "Error al cargar SGF. Error de parseo: {error}"
+msgstr "Error al cargar SGF: {error}"
 
 msgid "Starting Kata failed"
 msgstr ""
