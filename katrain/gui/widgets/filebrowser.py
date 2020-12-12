@@ -175,6 +175,7 @@ Builder.load_string(
     filename: file_text.text
     browser: list_view
     on_favorites: link_tree.reload_favs(self.favorites)
+    on_selection: file_text.text = root.selection[0] if root.selection else ""
     BoxLayout:
         orientation: 'horizontal'
         spacing: 5
@@ -222,7 +223,6 @@ Builder.load_string(
         spacing: [5]
         TextInput:
             id: file_text
-            text: (root.selection and (root._shorten_filenames(root.selection) if root.multiselect else root.selection[0])) or self.text
             hint_text: i18n._('Filename')
             multiline: False
             height: '40dp'
