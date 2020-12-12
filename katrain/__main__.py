@@ -313,9 +313,9 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.game.redo(n_times)
 
-    def _do_next_mistake(self):
+    def _do_find_mistake(self, fn="redo"):
         self.board_gui.animating_pv = None
-        self.game.redo(999, stop_on_mistake=self.config("trainer/eval_thresholds")[-4])
+        getattr(self.game, fn)(9999, stop_on_mistake=self.config("trainer/eval_thresholds")[-4])
 
     def _do_cycle_children(self, *args):
         self.board_gui.animating_pv = None
@@ -480,7 +480,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.engine, analyze_fast=False
         )  # speed up result for looking at end of game
         self._do_new_game(move_tree=move_tree, analyze_fast=True)
-        self("redo", 999)
+        self("redo", 9999)
         self.log("Imported game from clipboard.", OUTPUT_INFO)
 
     def on_touch_up(self, touch):
@@ -514,7 +514,6 @@ class KaTrainGui(Screen, KaTrainBase):
             "i": ("insert-mode",),
             "p": ("play", None),
             "l": ("play-to-end",),
-            "n": ("next-mistake",),
             "b": ("undo", "branch"),
             "down": ("switch-branch", 1),
             "up": ("switch-branch", -1),
@@ -561,15 +560,17 @@ class KaTrainGui(Screen, KaTrainBase):
         elif keycode[1] in ["`", "~", "f12"]:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in ["left", "z"]:
-            self("undo", 1 + shift_pressed * 9 + ctrl_pressed * 999)
+            self("undo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
         elif keycode[1] in ["right", "x"]:
-            self("redo", 1 + shift_pressed * 9 + ctrl_pressed * 999)
+            self("redo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
         elif keycode[1] == "home":
-            self("undo", 999)
+            self("undo", 9999)
         elif keycode[1] == "end":
-            self("redo", 999)
+            self("redo", 9999)
         elif keycode[1] == "pageup":
             self.controls.move_tree.make_selected_node_main_branch()
+        elif keycode[1] == "n":
+            self("find-mistake", "undo" if shift_pressed else "redo")
         elif keycode[1] == "delete" and ctrl_pressed:
             self.controls.move_tree.delete_selected_node()
         elif keycode[1] == "c" and not ctrl_pressed:

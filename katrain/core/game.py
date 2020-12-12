@@ -257,10 +257,10 @@ class Game:
         self.current_node = node
         self._calculate_groups()
 
-    def undo(self, n_times=1):
+    def undo(self, n_times=1, stop_on_mistake=None):
         # allow undo/delete only in insert mode
         cn = self.current_node  # avoid race conditions
-        if self.insert_mode:
+        if self.insert_mode:  # in insert mode, undo = delete
             if n_times == 1 and cn not in self.insert_after.nodes_from_root:
                 cn.parent.children = [c for c in cn.parent.children if c != cn]
                 self.current_node = cn.parent
@@ -270,7 +270,15 @@ class Game:
         if n_times == "branch":
             n_times = 9999
             break_on_branch = True
-        for _ in range(n_times):
+        for move in range(n_times):
+            if (
+                stop_on_mistake is not None
+                and cn.points_lost is not None
+                and cn.points_lost >= stop_on_mistake
+                and self.katrain.players_info[cn.player].player_type != PLAYER_AI
+            ):
+                self.set_current_node(cn.parent)
+                return
             if cn.shortcut_from:
                 cn = cn.shortcut_from
             elif not cn.is_root:

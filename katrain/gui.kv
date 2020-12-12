@@ -187,8 +187,12 @@
         Label:
             size_hint: 0.075, 0.5
         NavIconButton:
+            icon: 'Previous-Mistake.png'
+            color: Theme.MISTAKE_BUTTON_COLOR
+            on_press: root.katrain('find-mistake','undo')
+        NavIconButton:
             icon: 'Previous-End.png'
-            on_press: root.katrain('undo',999)
+            on_press: root.katrain('undo',9999)
         NavIconButton:
             icon: 'Previous-5.png'
             on_press: root.katrain('undo',10)
@@ -218,11 +222,11 @@
             on_press: root.katrain('redo',10)
         NavIconButton:
             icon: 'Next-End.png'
-            on_press: root.katrain('redo',999)
+            on_press: root.katrain('redo',9999)
         NavIconButton:
             icon: 'Next-Mistake.png'
-            color: [0.79,0.06,0.06,1]
-            on_press: root.katrain('next-mistake')
+            color: Theme.MISTAKE_BUTTON_COLOR
+            on_press: root.katrain('find-mistake','redo')
     ClickableLabel:
         pos_hint: {'center_x': 0.85,'center_y':0.5}
         size_hint: None, 1

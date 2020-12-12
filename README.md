@@ -189,7 +189,8 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[Ctrl-delete]** Delete current node.
 * **[c]** Collapse/Uncollapse the branch from the current node to the previous branching point.
 * **[b]** Go back to the previous branching point.
-* **[n]** As in clicking the red arrow, go to one move before the next mistake (orange or worse) by a human player.
+* **[n]** As in clicking the forward red arrow, go to one move before the next mistake (orange or worse) by a human player.
+* **[Shift-n]** As in clicking the backward red arrow, go to one move before the previous mistake.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
 * **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
 * **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
