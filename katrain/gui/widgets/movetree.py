@@ -226,12 +226,15 @@ class MoveTree(ScrollView, BackgroundMixin):
 
     def delete_selected_node(self):
         self.move_tree_canvas.delete_selected_node()
+        self.redraw_tree_trigger()
 
     def make_selected_node_main_branch(self):
         self.move_tree_canvas.make_selected_node_main_branch()
+        self.redraw_tree_trigger()
 
     def toggle_selected_node_collapse(self):
         self.move_tree_canvas.toggle_selected_node_collapse()
+        self.redraw_tree_trigger()
 
     def scroll_to_pixel(self, x, y):
         if not self._viewport:

@@ -569,7 +569,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self("redo", 9999)
         elif keycode[1] == "pageup":
             self.controls.move_tree.make_selected_node_main_branch()
-        elif keycode[1] == "n":
+        elif keycode[1] == "n" and not ctrl_pressed:
             self("find-mistake", "undo" if shift_pressed else "redo")
         elif keycode[1] == "delete" and ctrl_pressed:
             self.controls.move_tree.delete_selected_node()

@@ -103,8 +103,10 @@ class KataGoEngine:
                 i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
             )
             return  # don't start
-        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
-        self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
+        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)
+        self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True)
+        self.analysis_thread.start()
+        self.stderr_thread.start()
 
     def on_new_game(self):
         self.base_priority += 1
@@ -201,18 +203,21 @@ class KataGoEngine:
                         self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
                 elif "warning" in analysis:
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
+                elif "terminateId" in analysis:
+                    self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
                 else:
                     partial_result = analysis.get("isDuringSearch", False)
                     if not partial_result:
                         del self.queries[query_id]
                     time_taken = time.time() - start_time
+                    results_exist = not analysis.get("noResults", False)
                     self.katrain.log(
-                        f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo analysis received: {len(analysis.get('moveInfos',[]))} candidate moves, {analysis['rootInfo']['visits']} visits",
+                        f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo analysis received: {len(analysis.get('moveInfos',[]))} candidate moves, {analysis['rootInfo']['visits'] if results_exist else 'n/a'} visits",
                         OUTPUT_DEBUG,
                     )
                     self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                     try:
-                        if callback and not analysis.get("noResults", False):
+                        if callback and results_exist:
                             callback(analysis, partial_result)
                     except Exception as e:
                         self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
