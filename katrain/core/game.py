@@ -75,11 +75,12 @@ class Game:
                 self.root.place_handicap_stones(handicap)
         else:
             board_size = katrain.config("game/size")
+            rules = katrain.config("game/rules")
             self.komi = katrain.config("game/komi")
             self.root = GameNode(
                 properties={
                     **Game.DEFAULT_PROPERTIES,
-                    **{"SZ": board_size, "KM": self.komi, "DT": self.game_id},
+                    **{"SZ": board_size, "KM": self.komi, "DT": self.game_id, "RU": rules},
                     **(game_properties or {}),
                 }
             )

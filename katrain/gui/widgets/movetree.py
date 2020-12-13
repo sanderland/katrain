@@ -247,6 +247,12 @@ class MoveTree(ScrollView, BackgroundMixin):
             sy = (y - self.height / 2) / (vp.height - self.height)
             self.scroll_y = max(0, min(1, sy))
 
+    # disable mousewheel
+    def on_scroll_start(self, touch, check_children=True):
+        if "button" in touch.profile and touch.button.startswith("scroll"):
+            return False
+        return super().on_scroll_start(touch, check_children)
+
 
 Builder.load_string(
     """
@@ -256,7 +262,6 @@ Builder.load_string(
 <MoveTree>:
     background_color: Theme.BOX_BACKGROUND_COLOR
     move_tree_canvas: move_tree_canvas
-    scroll_distance: 0 # scroll wheel is for forward/backward
     MoveTreeCanvas:
         scroll_view_widget: root
         id: move_tree_canvas

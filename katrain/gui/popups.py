@@ -254,7 +254,7 @@ class NewGamePopup(QuickConfigGui):
     def normalized_rules(self):
         rules = self.katrain.game.root.get_property("RU", "japanese").strip().lower()
         for abbr, name in self.katrain.engine.RULESETS_ABBR:
-            if abbr == rules or abbr == rules:
+            if abbr == rules or name == rules:
                 return name
 
     def update_playerinfo(self, *args):

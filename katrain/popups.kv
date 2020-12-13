@@ -389,12 +389,14 @@
             LabelledTextInput:
                 text: ''
                 id: black_player_name
+                write_tab: False
                 hint_text: i18n._("black player name hint")
                 size_hint: 0.75, None
         AnchorLayout:
             LabelledTextInput:
                 text: ''
                 id: white_player_name
+                write_tab: False
                 hint_text: i18n._("white player name hint")
                 size_hint: 0.75, None
         DescriptionLabel:
@@ -404,6 +406,7 @@
                 text: '19'
                 id: boardsize
                 input_property: 'game/size'
+                write_tab: False
                 size_hint: 0.5, None
                 hint_text: i18n._("non square board hint")
         AnchorLayout:
@@ -425,6 +428,7 @@
             LabelledIntInput:
                 text: '0'
                 input_property: 'game/handicap'
+                write_tab: False
                 id: handicap
         AnchorLayout:
             MDBoxLayout:

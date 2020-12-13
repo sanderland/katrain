@@ -752,9 +752,7 @@ msgstr "Show stats if more than ... visits"
 
 #. TODO - analysis option
 msgid "cache analysis to sgf"
-msgstr ""
-"cache analysis to sgf\n"
-"(larger files, only compatible with KaTrain)"
+msgstr "Cache analysis in SGF"
 
 #. TODO
 msgid "menu:save-as"

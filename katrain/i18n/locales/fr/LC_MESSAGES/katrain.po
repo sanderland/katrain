@@ -522,7 +522,6 @@ msgstr ""
 "possiblement pour cause de \n"
 "mémoire insuffisante : {error}"
 
-#. TODO: updated
 msgid "teaching undo message"
 msgstr ""
 "Le coup {move} a été annulé car il perdait {points_lost:.1f} points.Vous "

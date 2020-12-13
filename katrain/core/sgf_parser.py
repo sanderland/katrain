@@ -82,6 +82,10 @@ class SGFNode:
             self.parent.children.append(self)
         if parent and move:
             self.set_property(move.player, move.sgf(self.board_size))
+        self._clear_cache()
+
+    def _clear_cache(self):
+        self.moves_cache = None
 
     def sgf_properties(self, **xargs) -> Dict:
         """For hooking into in a subclass and overriding/formatting any additional properties to be output."""
@@ -134,6 +138,7 @@ class SGFNode:
         """Add some values to the property list."""
         # SiZe[19] ==> SZ[19] etc. for old SGF
         normalized_property = re.sub("[a-z]", "", property)
+        self._clear_cache()
         self.properties[normalized_property] += values
 
     def get_list_property(self, property, default=None) -> Any:
@@ -144,6 +149,7 @@ class SGFNode:
         """Add some values to the property. If not a list, it will be made into a single-value list."""
         if not isinstance(value, list):
             value = [value]
+        self._clear_cache()
         self.properties[property] = value
 
     def get_property(self, property, default=None) -> Any:
@@ -207,11 +213,13 @@ class SGFNode:
     @property
     def moves(self) -> List[Move]:
         """Returns all moves in the node - typically 'move' will be better."""
-        return [
-            Move.from_sgf(move, player=pl, board_size=self.board_size)
-            for pl in Move.PLAYERS
-            for move in self.get_list_property(pl, [])
-        ]
+        if self.moves_cache is None:
+            self.moves_cache = [
+                Move.from_sgf(move, player=pl, board_size=self.board_size)
+                for pl in Move.PLAYERS
+                for move in self.get_list_property(pl, [])
+            ]
+        return self.moves_cache
 
     @property
     def placements(self) -> List[Move]:
