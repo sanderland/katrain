@@ -682,103 +682,98 @@ msgstr ""
 msgid "Make Main Branch"
 msgstr "주 변화로 만들기"
 
-#. TODO - setting: what to show on top move (e.g. point loss, visits, ...)
+#. setting: what to show on top move (e.g. point loss, visits, ...)
 msgid "stats on top move"
-msgstr "Stats on top moves"
+msgstr "후보수 위에 표시할 정보"
 
-#. TODO - Dropdown menu option
+#. Dropdown menu option
 msgid "top_move_delta_winrate"
-msgstr "Change in win rate"
+msgstr "승률 변동"
 
-#. TODO - Dropdown menu option
+#. Dropdown menu option
 msgid "top_move_visits"
-msgstr "Visits"
+msgstr "Visit수"
 
-#. TODO - Dropdown menu option
+#. Dropdown menu option
 msgid "top_move_score"
-msgstr "Score"
+msgstr "집 차이"
 
-#. TODO - Dropdown menu option
+#. Dropdown menu option
 msgid "top_move_nothing"
-msgstr "(nothing)"
+msgstr "(없음)"
 
-#. TODO - Dropdown menu option
+#. Dropdown menu option
 msgid "top_move_winrate"
-msgstr "Win rate"
+msgstr "승률"
 
-#. TODO - Dropdown menu option
+#. Dropdown menu option
 msgid "top_move_delta_score"
-msgstr "Change in score"
+msgstr "집 변동"
 
-#. TODO - top move stats show threshold description
+#. top move stats show threshold description
 msgid "show stats if"
-msgstr "Show stats if more than ... visits"
+msgstr "... visit 이상일 때만 정보 보이기"
 
-#. TODO - analysis option
+#. analysis option
 msgid "cache analysis to sgf"
-msgstr "ache analysis in SGF"
+msgstr "분석 결과 SGF 파일에 캐싱"
 
-#. TODO
 msgid "menu:save-as"
-msgstr "Save Game As..."
+msgstr "이 판을 다음으로 저장..."
 
-#. TODO
 # sgf load button
 msgid "Load File"
-msgstr "Load File"
+msgstr "파일 불러오기"
 
-#. TODO
 # sgf save popup
 msgid "save sgf title"
-msgstr "Save SGF File"
+msgstr "SGF 파일 저장하기"
 
-#. TODO
 # sgf save as button
 msgid "Save File"
-msgstr "Save File"
+msgstr "파일 저장하기"
 
-#. TODO - status message on starting insert mode
+#. status message on starting insert mode
 msgid "starting insert mode"
-msgstr "Starting insert mode, press 'i' to finish inserting."
+msgstr "삽입 모드를 시작하고 있습니다. 삽입을 끝내려면 'i'를 누르십시오."
 
-#. TODO - status message on ending insert mode and copying the moves
+#. status message on ending insert mode and copying the moves
 msgid "ending insert mode"
-msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
+msgstr "수순을 삽입하고, {num_copied}개의 수를 복사했습니다."
 
-#. TODO - when a user tries to go to a different move/node while in insert
+#. when a user tries to go to a different move/node while in insert
 #. mode
 msgid "finish inserting before navigating"
-msgstr ""
-"Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "
+msgstr "삽입 모드에서는 탐색할 수 없습니다. 삽입을 끝내려면 'i'를 누르십시오. "
 
-#. TODO - in new game options
+#. in new game options
 msgid "player names"
-msgstr "Player Names"
+msgstr "대국자"
 
-#. TODO - Option in dropdown to insert some moves between the current and next
+#. Option in dropdown to insert some moves between the current and next
 msgid "analysis:insert"
-msgstr "Insert moves"
+msgstr "기보 중간에 수 추가"
 
-#. TODO - Status message
+#. Status message
 msgid "analysis:region:start"
-msgstr "Drag to select the region of interest."
+msgstr "드래그해서 분석할 범위를 지정하십시오."
 
-#. TODO - Restrict analysis to a specific region
+#. Restrict analysis to a specific region
 msgid "analysis:region"
-msgstr "Set region of interest"
+msgstr "분석할 범위 지정"
 
-#. TODO - on move tree editing
+#. on move tree editing
 msgid "Toggle Collapse Branch"
-msgstr "Expand/Collapse"
+msgstr "펼치기/접기"
 
-#. TODO - Menu option
+#. Menu option
 msgid "analysis:playtoend"
-msgstr "Fast playout to game end"
+msgstr "종국까지 빠르게 알아서 두기"
 
-#. TODO - hint on player name input
+#. hint on player name input
 msgid "black player name hint"
-msgstr "Black player's name"
+msgstr "흑 대국자"
 
-#. TODO - hint on player name input
+#. hint on player name input
 msgid "white player name hint"
-msgstr "White player's name"
+msgstr "백 대국자"
