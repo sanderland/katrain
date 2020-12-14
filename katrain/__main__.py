@@ -3,9 +3,6 @@
 import json
 import os
 
-from kivy.core.window import Window
-from kivy.uix.widget import Widget
-
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 if "KIVY_AUDIO" not in os.environ:
     os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
@@ -50,6 +47,8 @@ from kivy.lang import Builder
 from kivy.resources import resource_add_path
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
+from kivy.core.window import Window
+from kivy.uix.widget import Widget
 from kivy.resources import resource_find
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
