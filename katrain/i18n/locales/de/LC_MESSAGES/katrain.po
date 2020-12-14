@@ -798,7 +798,8 @@ msgstr "Insert moves"
 #. TODO - Status message
 msgid "analysis:region:start"
 msgstr ""
-"Drag to select the region of interest. Selecting a single point removes it."
+"Drag to select the region of interest. Select a single point to cancel the "
+"region."
 
 #. TODO - Restrict analysis to a specific region
 msgid "analysis:region"

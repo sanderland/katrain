@@ -116,7 +116,8 @@ msgstr "Set region of interest"
 #. Status message
 msgid "analysis:region:start"
 msgstr ""
-"Drag to select the region of interest. Selecting a single point removes it."
+"Drag to select the region of interest. Select a single point to cancel the "
+"region."
 
 #. Menu option
 msgid "analysis:playtoend"
