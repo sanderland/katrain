@@ -11,6 +11,7 @@ from katrain.core.constants import (
     SGF_INTERNAL_COMMENTS_MARKER,
     SGF_SEPARATOR_MARKER,
     VERSION,
+    REPORT_DT,
 )
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
@@ -173,7 +174,7 @@ class GameNode(SGFNode):
         analyze_fast=False,
         find_alternatives=False,
         region_of_interest=None,
-        report_every=0.25,
+        report_every=REPORT_DT,
     ):
         additional_moves = bool(find_alternatives or region_of_interest)
         engine.request_analysis(
