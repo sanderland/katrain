@@ -628,6 +628,7 @@ class KaTrainApp(MDApp):
 
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
+        resource_add_path(PATHS["PACKAGE"] + "/fonts")
         resource_add_path(PATHS["PACKAGE"] + "/sounds")
         resource_add_path(PATHS["PACKAGE"] + "/img")
         resource_add_path(os.path.abspath(os.path.expanduser(DATA_FOLDER)))  # prefer resources in .katrain

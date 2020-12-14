@@ -76,7 +76,7 @@ class ScoreGraph(Graph):
     navigate_move = ListProperty([None, 0, 0, 0])
 
     def on_touch_down(self, touch):
-        if self.collide_point(*touch.pos) and "scroll" not in getattr(touch, "button",''):
+        if self.collide_point(*touch.pos) and "scroll" not in getattr(touch, "button", ""):
             print(touch)
             ix, _ = min(enumerate(self.score_points[::2]), key=lambda ix_v: abs(ix_v[1] - touch.x))
             self.navigate_move = [
@@ -92,7 +92,7 @@ class ScoreGraph(Graph):
         return self.on_touch_down(touch)
 
     def on_touch_up(self, touch):
-        if self.collide_point(*touch.pos) and self.navigate_move[0] and "scroll" not in getattr(touch, "button",''):
+        if self.collide_point(*touch.pos) and self.navigate_move[0] and "scroll" not in getattr(touch, "button", ""):
             katrain = MDApp.get_running_app().gui
             if katrain and katrain.game:
                 katrain.game.set_current_node(self.navigate_move[0])
