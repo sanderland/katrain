@@ -281,7 +281,7 @@ class SGFNode:
     def play(self, move) -> "SGFNode":
         """Either find an existing child or create a new one with the given move."""
         for c in self.children:
-            if c.move == move:
+            if c.move and c.move == move:
                 return c
         return self.__class__(parent=self, move=move)
 

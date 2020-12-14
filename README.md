@@ -158,7 +158,9 @@ Keyboard shortcuts are shown with **[key]**.
     * **[s]**: Equalize visits: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
     * **[d]**: Analyze all moves: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but can be useful to see how many reasonable next moves are available.
     * **[f]**: Find alternatives: Increases analysis of current candidate moves to at least the 'fast visits' level, and request a new query that excludes all current candidate moves.    
-    * **[g]**: Select area of interest: set an area and search only for moves in this box, including variations. Good for solving tsumegos.
+    * **[g]**: Select area of interest: set an area and search only for moves in this box.
+               Good for solving tsumegos. Note that some results may appear outside the box due to establishing a baseline for the best move,
+               and the opponent can tenuki in variations.
     * **[i]**: Start insertion mode. Allows you to insert moves, to improve analysis when both players ignore an important exchange or life and death situation. Press again to stop inserting and copy the rest of the branch.
     * **[l]**: Play out the game until the end and add as a collapsed branch, to visualize the potential effect of mistakes. This is done in the background, and can be started at several nodes at once when comparing the results at different starting positions.      
     * **[spacebar]**: Turn continuous analysis on/off. This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.

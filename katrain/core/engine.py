@@ -294,7 +294,7 @@ class KataGoEngine:
                         if x < xmin or x > xmax or y < ymin or y > ymax
                     ],
                     "player": player,
-                    "untilDepth": 10000,
+                    "untilDepth": 1,  # tried a large number here, or 2, but this seems more natural
                 }
                 for player in "BW"
             ]
