@@ -2,6 +2,8 @@
 # first, logging level lower
 import json
 import os
+import kivy
+kivy.require("2.0.0")
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 if "KIVY_AUDIO" not in os.environ:

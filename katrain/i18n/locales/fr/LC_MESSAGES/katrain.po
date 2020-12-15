@@ -796,10 +796,14 @@ msgid "starting insert mode"
 msgstr "Pour clore/valider l'insertion des coups, veuillez appuyer sur 'i'."
 
 msgid "ending insert mode"
-msgstr "L'insertion a été effectuée dans une nouvelle branche complétée par {num_copied} coup(s) d'origine."
+msgstr ""
+"L'insertion a été effectuée dans une nouvelle branche complétée par "
+"{num_copied} coup(s) d'origine."
 
 msgid "finish inserting before navigating"
-msgstr "Il est impossible de parcourir l'arbre de jeu tant que l'insertion des coups n'est pas close/validée (en appuyant sur 'i')."
+msgstr ""
+"Il est impossible de parcourir l'arbre de jeu tant que l'insertion des coups"
+" n'est pas close/validée (en appuyant sur 'i')."
 
 msgid "player names"
 msgstr "Nom des joueurs"
