@@ -105,7 +105,7 @@ msgid "analysis:continuous"
 msgstr "Lancer/Arrêter l'analyse continue"
 
 msgid "analysis:aimove"
-msgstr "Jouer le coup de l'IA"
+msgstr "Jouer le coup du joueur artificiel"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
@@ -753,104 +753,76 @@ msgstr ""
 msgid "Make Main Branch"
 msgstr "Mettre en branche principale"
 
-#. TODO - setting: what to show on top move (e.g. point loss, visits, ...)
 msgid "stats on top move"
-msgstr "Stats on top moves"
+msgstr "Données des coups recommandés :"
 
-#. TODO - Dropdown menu option
 msgid "top_move_delta_winrate"
-msgstr "Change in win rate"
+msgstr "Variation pronostiq."
 
-#. TODO - Dropdown menu option
 msgid "top_move_visits"
-msgstr "Visits"
+msgstr "Nombre de Visites"
 
-#. TODO - Dropdown menu option
 msgid "top_move_score"
 msgstr "Score"
 
-#. TODO - Dropdown menu option
 msgid "top_move_nothing"
-msgstr "(nothing)"
+msgstr "(Néant)"
 
-#. TODO - Dropdown menu option
 msgid "top_move_winrate"
-msgstr "Win rate"
+msgstr "Pronostic"
 
-#. TODO - Dropdown menu option
 msgid "top_move_delta_score"
-msgstr "Change in score"
+msgstr "Variation du score"
 
-#. TODO - top move stats show threshold description
 msgid "show stats if"
-msgstr "Show stats if more than ... visits"
+msgstr "Nombre de visites minimum requis pour afficher les données :"
 
-#. TODO - analysis option
 msgid "cache analysis to sgf"
-msgstr "Cache analysis in SGF"
+msgstr "Sauvegarder un cache SGF de l'analyse"
 
-#. TODO
 msgid "menu:save-as"
-msgstr "Save Game As..."
+msgstr "Enregistrer sous..."
 
-#. TODO
-# sgf load button
 msgid "Load File"
-msgstr "Load File"
+msgstr "Charger"
 
-#. TODO
-# sgf save popup
 msgid "save sgf title"
-msgstr "Save SGF File"
+msgstr "Sauvegarder un fichier SGF"
 
-#. TODO
-# sgf save as button
 msgid "Save File"
-msgstr "Save File"
+msgstr "Enregistrer"
 
-#. TODO - status message on starting insert mode
 msgid "starting insert mode"
-msgstr "Starting insert mode, press 'i' to finish inserting."
+msgstr "Pour clore/valider l'insertion des coups, veuillez appuyer sur 'i'."
 
-#. TODO - status message on ending insert mode and copying the moves
 msgid "ending insert mode"
-msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
+msgstr "L'insertion a été effectuée dans une nouvelle branche complétée par {num_copied} coup(s) d'origine."
 
-#. TODO - when a user tries to go to a different move/node while in insert
-#. mode
 msgid "finish inserting before navigating"
-msgstr ""
-"Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "
+msgstr "Il est impossible de parcourir l'arbre de jeu tant que l'insertion des coups n'est pas close/validée (en appuyant sur 'i')."
 
-#. TODO - in new game options
 msgid "player names"
-msgstr "Player Names"
+msgstr "Nom des joueurs"
 
-#. TODO - Option in dropdown to insert some moves between the current and next
 msgid "analysis:insert"
-msgstr "Insert moves"
+msgstr "Insérer des coups"
 
-#. TODO - Status message
 msgid "analysis:region:start"
 msgstr ""
-"Drag to select the region of interest. Selecting a single point removes it."
+"Cliquez et glissez pour sélectionner la région à analyser en priorité. \n"
+"Appuyez sur 'g' puis sélectionnez une intersection pour tout annuler."
 
-#. TODO - Restrict analysis to a specific region
 msgid "analysis:region"
-msgstr "Set region of interest"
+msgstr "Définir la zone d'intérêt"
 
-#. TODO - on move tree editing
 msgid "Toggle Collapse Branch"
-msgstr "Expand/Collapse"
+msgstr "Nouer/Dénouer la branche"
 
-#. TODO - Menu option
 msgid "analysis:playtoend"
-msgstr "Fast playout to game end"
+msgstr "Simuler la fin de partie"
 
-#. TODO - hint on player name input
 msgid "black player name hint"
-msgstr "Black player's name"
+msgstr "Noir"
 
-#. TODO - hint on player name input
 msgid "white player name hint"
-msgstr "White player's name"
+msgstr "Blanc"
