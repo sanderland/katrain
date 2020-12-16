@@ -696,7 +696,7 @@ class BadukPanWidget(Widget):
 
     def draw_pv(self, pv, node, up_to_move):
         katrain = self.katrain
-        next_last_player = [node.next_player, node.player]
+        next_last_player = [node.next_player, Move.opponent_player(node.next_player)]
         cn = katrain.game.current_node
         if node != cn and node.parent != cn:
             hide_node = cn

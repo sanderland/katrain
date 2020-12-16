@@ -152,3 +152,16 @@ def test_foxwq():
         while game.current_node.children:
             assert 1 == len(game.current_node.children)
             game.redo(1)
+
+
+def test_next_player():
+    input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb])"
+    assert "B" == SGF.parse_sgf(input_sgf).next_player
+    input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb]PL[B])"
+    assert "B" == SGF.parse_sgf(input_sgf).next_player
+    input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb]PL[W])"
+    assert "W" == SGF.parse_sgf(input_sgf).next_player
+    input_sgf = "(;GM[1]FF[4]AB[aa])"
+    assert "W" == SGF.parse_sgf(input_sgf).next_player
+    input_sgf = "(;GM[1]FF[4]AB[aa]PL[B])"
+    assert "B" == SGF.parse_sgf(input_sgf).next_player
