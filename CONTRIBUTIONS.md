@@ -57,7 +57,7 @@ Many thanks to the following contributors for translations.
 
 * French: "Dontbtme" with contributions from "wonderingabout"
 * Korean: "isty2e"
-* German: "nimets123" with contributions from "trohde"
+* German: "nimets123", "trohde", and "Harleqin"
 * Spanish: Sergio Villegas ("serpiente") with contributions from the Spanish OGS community
 * Russian: Dmitry Ivankov and Alexander Kiselev
 * Simplified Chinese: Qing Mu with contributions from "Medwin" and Viktor Lin
