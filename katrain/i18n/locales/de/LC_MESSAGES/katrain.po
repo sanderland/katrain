@@ -688,7 +688,7 @@ msgstr "Finde alternative Züge"
 msgid "alternative analysis"
 msgstr "Suche nach alternativen Zügen"
 
-#. TODO - ignore moves if timer is on and less than this is used
+#. ignore moves if timer is on and less than this is used
 msgid "minimal time use"
 msgstr "Mindest-Zeitnutzung im Byo-Yomi (s)"
 
@@ -723,7 +723,7 @@ msgstr "Zum Hauptzweig machen"
 msgid "stats on top move"
 msgstr "Anzeige für den besten Zug"
 
-#. TODO - Dropdown menu option
+#. Dropdown menu option
 msgid "top_move_delta_winrate"
 msgstr "Änderung der Gewinnrate"
 
