@@ -26,7 +26,7 @@ msgid "menu:clocksettings"
 msgstr "Контроль времени"
 
 msgid "menu:teachsettings"
-msgstr "Настройки обучающей игры"
+msgstr "Настройки анализа"
 
 msgid "menu:aisettings"
 msgstr "Настройки ИИ"
@@ -325,7 +325,7 @@ msgstr "Начать новую игру"
 
 # teacher settings from here
 msgid "teacher settings"
-msgstr "Редактировать настройки учителя"
+msgstr "Редактировать настройки анализа"
 
 msgid "point loss threshold"
 msgstr "Потеря очков более"
@@ -360,7 +360,7 @@ msgstr ""
 
 #. submit button
 msgid "update teacher"
-msgstr "Сохранить настройки обратной связи"
+msgstr "Сохранить настройки анализа"
 
 # main config settings
 msgid "restarting engine"
@@ -717,105 +717,79 @@ msgstr ""
 msgid "Make Main Branch"
 msgstr "Сделать главной веткой"
 
-#. TODO - setting: what to show on top move (e.g. point loss, visits, ...)
 msgid "stats on top move"
-msgstr "Stats on top moves"
+msgstr "Показывать числа поверх ходов"
 
-#. TODO - Dropdown menu option
 msgid "top_move_delta_winrate"
-msgstr "Change in win rate"
+msgstr "Изменение процента"
 
-#. TODO - Dropdown menu option
 msgid "top_move_visits"
-msgstr "Visits"
+msgstr "Посещения"
 
-#. TODO - Dropdown menu option
 msgid "top_move_score"
-msgstr "Score"
+msgstr "Счёт"
 
-#. TODO - Dropdown menu option
 msgid "top_move_nothing"
 msgstr "-"
 
-#. TODO - Dropdown menu option
 msgid "top_move_winrate"
-msgstr "Win rate"
+msgstr "Процент побед"
 
-#. TODO - Dropdown menu option
 msgid "top_move_delta_score"
-msgstr "Change in score"
+msgstr "Изменение счёта"
 
-#. TODO - top move stats show threshold description
 msgid "show stats if"
-msgstr "Show stats if more than ... visits"
+msgstr "Числа только если посещений больше чем"
 
-#. TODO - analysis option
 msgid "cache analysis to sgf"
-msgstr "Cache analysis in SGF"
+msgstr "Кэшировать анализ в SGF"
 
-#. TODO
 msgid "menu:save-as"
-msgstr "Save Game As..."
+msgstr "Сохранить игру как..."
 
-#. TODO
 # sgf load button
 msgid "Load File"
-msgstr "Load File"
+msgstr "Загрузить файл"
 
-#. TODO
 # sgf save popup
 msgid "save sgf title"
-msgstr "Save SGF File"
+msgstr "Сохранить SGF файл"
 
-#. TODO
 # sgf save as button
 msgid "Save File"
-msgstr "Save File"
+msgstr "Сохранить файл"
 
-#. TODO - status message on starting insert mode
 msgid "starting insert mode"
-msgstr "Starting insert mode, press 'i' to finish inserting."
+msgstr "Активен режим вставки, нажмите 'i' для завершения."
 
-#. TODO - status message on ending insert mode and copying the moves
 msgid "ending insert mode"
-msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
+msgstr "Режим вставки завершён, скопировано {num_copied} следующих ходов."
 
-#. TODO - when a user tries to go to a different move/node while in insert
-#. mode
 msgid "finish inserting before navigating"
 msgstr ""
-"Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "
+"Навигация отключена в режиме вставки, сначала завершите режим вставки нажав "
+"'i'."
 
-#. TODO - in new game options
 msgid "player names"
-msgstr "Player Names"
+msgstr "Имена игроков"
 
-#. TODO - Option in dropdown to insert some moves between the current and next
 msgid "analysis:insert"
-msgstr "Insert moves"
+msgstr "Вставить ходы"
 
-#. TODO - Status message
 msgid "analysis:region:start"
-msgstr ""
-"Drag to select the region of interest. Select a single point to cancel the "
-"region."
+msgstr "Выберите регион интереса. Выберите одну точку для сброса региона."
 
-#. TODO - Restrict analysis to a specific region
 msgid "analysis:region"
-msgstr "Set region of interest"
+msgstr "Выбрать регион интереса"
 
-#. TODO - on move tree editing
 msgid "Toggle Collapse Branch"
-msgstr "Expand/Collapse"
+msgstr "Развернуть/Свернуть"
 
-#. TODO - Menu option
 msgid "analysis:playtoend"
-msgstr "Fast playout to game end"
+msgstr "Быстро доиграть до конца"
 
-#. TODO - hint on player name input
 msgid "black player name hint"
-msgstr "Black player's name"
+msgstr "Имя игрока чёрными"
 
-#. TODO - hint on player name input
 msgid "white player name hint"
-msgstr "White player's name"
+msgstr "Имя игрока белыми"

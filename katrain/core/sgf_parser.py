@@ -64,10 +64,15 @@ class Move:
         """Returns True if the move is a pass"""
         return self.coords is None
 
+    @staticmethod
+    def opponent_player(player):
+        """Returns the opposing player, i.e. W <-> B"""
+        return "W" if player == "B" else "B"
+
     @property
     def opponent(self):
         """Returns the opposing player, i.e. W <-> B"""
-        return "W" if self.player == "B" else "B"
+        return self.opponent_player(self.player)
 
 
 class SGFNode:
@@ -288,7 +293,11 @@ class SGFNode:
     @property
     def next_player(self):
         """Returns player to move"""
-        if "B" in self.properties or ("AB" in self.properties and "W" not in self.properties):  # root or black moved
+        if "PL" in self.properties:  # explicit
+            return "B" if self.get_property("PL").upper().strip() == "B" else "W"
+        elif "B" in self.properties or (
+            "AB" in self.properties and "W" not in self.properties and "AW" not in self.properties
+        ):  # b move or setup with only black moves like root handicap
             return "W"
         else:
             return "B"
