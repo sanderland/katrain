@@ -2,13 +2,14 @@ import time
 
 from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
-from kivy.properties import ObjectProperty, OptionProperty, NumericProperty
+from kivy.properties import ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.constants import MODE_PLAY, MODE_ANALYZE, STATUS_ERROR, STATUS_ANALYSIS, PLAYER_HUMAN
+from katrain.core.constants import MODE_ANALYZE, MODE_PLAY, PLAYER_HUMAN, STATUS_ANALYSIS, STATUS_ERROR
 from katrain.core.lang import rank_label
 from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
+from katrain.gui.theme import Theme
 
 
 class PlayAnalyzeSelect(MDFloatLayout):
@@ -70,8 +71,8 @@ class ControlsPanel(BoxLayout):
         self.status_state = (None, -1e9, None)
         self.active_comment_node = None
         self.last_timer_update = (None, 0, False)
-        self.beep = SoundLoader.load("sounds/countdownbeep.wav")
-        self.boing = SoundLoader.load("sounds/boing.wav")
+        self.beep = SoundLoader.load(Theme.COUNTDOWN_SOUND)
+        self.boing = SoundLoader.load(Theme.MINIMUM_TIME_PASSED_SOUND)
         if self.boing:
             self.boing.volume = 0.1
         self.beep_start = 5.2
@@ -90,9 +91,14 @@ class ControlsPanel(BoxLayout):
                 else rank_label(player_info.calculated_rank)
             )
 
-    def set_status(self, msg, status_type, at_node=None):
+    def set_status(self, msg, status_type, at_node=None, check_level=True):
         at_node = at_node or self.katrain and self.katrain.game and self.katrain.game.current_node
-        if at_node != self.status_state[2] or int(status_type) >= int(self.status_state[1]) or msg == "":
+        if (
+            at_node != self.status_state[2]
+            or not check_level
+            or int(status_type) >= int(self.status_state[1])
+            or msg == ""
+        ):
             if self.status_state != (msg, status_type, at_node):  # prevent loop if error in update eval
                 Clock.schedule_once(self.update_evaluation, 0)
             self.status_state = (msg, status_type, at_node)
@@ -130,7 +136,7 @@ class ControlsPanel(BoxLayout):
         lock_ai = katrain.config("trainer/lock_ai") and katrain.play_analyze_mode == MODE_PLAY
         details = self.info.detailed and not lock_ai
         info = ""
-        if current_node.move or current_node.is_root:
+        if move or current_node.is_root:
             info = self.active_comment_node.comment(
                 teach=katrain.players_info[self.active_comment_node.player].being_taught, details=details
             )
@@ -147,7 +153,6 @@ class ControlsPanel(BoxLayout):
             self.stats.player = ""
 
         self.graph.update_value(current_node)
-        # self.rank_graph.update_value(current_node)
         self.note.text = current_node.note
         self.info.text = info
 

@@ -26,7 +26,7 @@ msgid "menu:clocksettings"
 msgstr "Контроль времени"
 
 msgid "menu:teachsettings"
-msgstr "Настройки обучающей игры"
+msgstr "Настройки анализа"
 
 msgid "menu:aisettings"
 msgstr "Настройки ИИ"
@@ -325,7 +325,7 @@ msgstr "Начать новую игру"
 
 # teacher settings from here
 msgid "teacher settings"
-msgstr "Редактировать настройки учителя"
+msgstr "Редактировать настройки анализа"
 
 msgid "point loss threshold"
 msgstr "Потеря очков более"
@@ -360,7 +360,7 @@ msgstr ""
 
 #. submit button
 msgid "update teacher"
-msgstr "Сохранить настройки обратной связи"
+msgstr "Сохранить настройки анализа"
 
 # main config settings
 msgid "restarting engine"
@@ -450,7 +450,7 @@ msgstr "Сохранить настройки ИИ"
 msgid "sgf written"
 msgstr "SGF с анализом сохранён в {file_name}"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "Дождитесь начального анализа перед запросом уточнений."
 
 msgid "Copied SGF to clipboard."
@@ -462,7 +462,7 @@ msgstr ""
 "Содержимое буфера: {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "Ошибка загрузки SGF. Ошибка парсинга: {error}"
+msgstr "Ошибка загрузки SGF: {error}"
 
 msgid "Kata exe not found"
 msgstr ""
@@ -673,9 +673,6 @@ msgstr ""
 "Не удалось запустить KataGo из-за отсутствующих DLL. Проверьте требования "
 "или запустите бинарный файл сам по себе для получения подробностей."
 
-msgid "show point loss as text"
-msgstr "Показывать потерянные очки текстом"
-
 msgid "resign"
 msgstr "Сдаться"
 
@@ -709,25 +706,6 @@ msgstr ""
 msgid "ai:simple"
 msgstr "Простой стиль"
 
-msgid "aihelp:settle"
-msgstr ""
-"Делает ходы, ведущие к ясности в статусе камней, предпочитая надёжные ходы, "
-"нежели сложное сабаки. Из ходов, теряющих не более чем 'max_points_lost' "
-"очков и имеющих как минимум 'min_visits', предпочитает ходы, укрепляющие "
-"собственную территорию (коэффициент settled_weight), укрепляющие территорию "
-"оппонента (коэффициент settled_weight * opponent_fac), избегает тэнуки "
-"(более 5 пунктов, коэффициент tenuki_penalty), и избегает прилипаний "
-"(коэффициент attachment_penalty). Коэффициенты могут быть отрицательными, "
-"чтобы напротив сделать игру сложнее. 'Уровень шума' (в 'Настройках системы')"
-" может быть использован для увеличения вариативности игры за счёт небольшой "
-"потери силы. "
-
-msgid "ai:settle"
-msgstr "Надёжный стиль"
-
-msgid "analysis:local"
-msgstr "Найти локальные ответы"
-
 msgid "local analysis"
 msgstr "Поиск локальных ответов"
 
@@ -738,3 +716,80 @@ msgstr ""
 
 msgid "Make Main Branch"
 msgstr "Сделать главной веткой"
+
+msgid "stats on top move"
+msgstr "Показывать числа поверх ходов"
+
+msgid "top_move_delta_winrate"
+msgstr "Изменение процента"
+
+msgid "top_move_visits"
+msgstr "Посещения"
+
+msgid "top_move_score"
+msgstr "Счёт"
+
+msgid "top_move_nothing"
+msgstr "-"
+
+msgid "top_move_winrate"
+msgstr "Процент побед"
+
+msgid "top_move_delta_score"
+msgstr "Изменение счёта"
+
+msgid "show stats if"
+msgstr "Числа только если посещений больше чем"
+
+msgid "cache analysis to sgf"
+msgstr "Кэшировать анализ в SGF"
+
+msgid "menu:save-as"
+msgstr "Сохранить игру как..."
+
+# sgf load button
+msgid "Load File"
+msgstr "Загрузить файл"
+
+# sgf save popup
+msgid "save sgf title"
+msgstr "Сохранить SGF файл"
+
+# sgf save as button
+msgid "Save File"
+msgstr "Сохранить файл"
+
+msgid "starting insert mode"
+msgstr "Активен режим вставки, нажмите 'i' для завершения."
+
+msgid "ending insert mode"
+msgstr "Режим вставки завершён, скопировано {num_copied} следующих ходов."
+
+msgid "finish inserting before navigating"
+msgstr ""
+"Навигация отключена в режиме вставки, сначала завершите режим вставки нажав "
+"'i'."
+
+msgid "player names"
+msgstr "Имена игроков"
+
+msgid "analysis:insert"
+msgstr "Вставить ходы"
+
+msgid "analysis:region:start"
+msgstr "Выберите регион интереса. Выберите одну точку для сброса региона."
+
+msgid "analysis:region"
+msgstr "Выбрать регион интереса"
+
+msgid "Toggle Collapse Branch"
+msgstr "Развернуть/Свернуть"
+
+msgid "analysis:playtoend"
+msgstr "Быстро доиграть до конца"
+
+msgid "black player name hint"
+msgstr "Имя игрока чёрными"
+
+msgid "white player name hint"
+msgstr "Имя игрока белыми"

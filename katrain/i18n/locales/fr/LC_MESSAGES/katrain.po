@@ -105,7 +105,7 @@ msgid "analysis:continuous"
 msgstr "Lancer/Arrêter l'analyse continue"
 
 msgid "analysis:aimove"
-msgstr "Jouer le coup de l'IA"
+msgstr "Jouer le coup du joueur artificiel"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
@@ -476,7 +476,7 @@ msgstr "Mettre à jour"
 msgid "sgf written"
 msgstr "Analyse SGF rédigée dans {file_name}"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "Attendez la fin de l'analyse en cours avant de l'approfondir."
 
 msgid "Copied SGF to clipboard."
@@ -488,7 +488,7 @@ msgstr ""
 "Contenu du presse-papier : {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "Impossible de charger le SGF. Erreur d'analyse : {error}"
+msgstr "Impossible de charger le SGF: {error}"
 
 msgid "Kata model not found"
 msgstr ""
@@ -522,7 +522,6 @@ msgstr ""
 "possiblement pour cause de \n"
 "mémoire insuffisante : {error}"
 
-#. TODO: updated
 msgid "teaching undo message"
 msgstr ""
 "Le coup {move} a été annulé car il perdait {points_lost:.1f} points.Vous "
@@ -711,9 +710,6 @@ msgstr ""
 "votre configuration système, ou bien essayez l'exécutable seul pour plus de "
 "détails."
 
-msgid "show point loss as text"
-msgstr "Indiquer les points perdus"
-
 msgid "resign"
 msgstr "Abandon"
 
@@ -746,26 +742,6 @@ msgstr ""
 msgid "ai:simple"
 msgstr "Modéré"
 
-#. TODO - DEPRECATED
-msgid "aihelp:settle"
-msgstr ""
-"Plays moves that lead to clarity on stones' status, favouring solid moves "
-"rather than complex sabaki. Of moves that lose at most 'max_points_lost' "
-"points and with at least 'min_visits', prefer moves that lose fewer points, "
-"settle own stones more (with importance settled_weight), settle opponent's "
-"stones more (importance settled_weight * opponent_fac), avoid tenuki (more "
-"than 5 spaces, importance tenuki_penalty), and avoid attachments (importance"
-" attachment_penalty). Weights can be negative to make it complicate the game"
-" instead, and wide root noise (in general settings) can be used to further "
-"play according to the style at the cost of strength. "
-
-#. TODO - DEPRECATED
-msgid "ai:settle"
-msgstr "Settle Stones Style"
-
-msgid "analysis:local"
-msgstr "Proposer des coups locaux"
-
 msgid "local analysis"
 msgstr "Recherche de coups locaux."
 
@@ -776,3 +752,81 @@ msgstr ""
 
 msgid "Make Main Branch"
 msgstr "Mettre en branche principale"
+
+msgid "stats on top move"
+msgstr "Données des coups recommandés :"
+
+msgid "top_move_delta_winrate"
+msgstr "Variation pronostiq."
+
+msgid "top_move_visits"
+msgstr "Nombre de Visites"
+
+msgid "top_move_score"
+msgstr "Score"
+
+msgid "top_move_nothing"
+msgstr "(Néant)"
+
+msgid "top_move_winrate"
+msgstr "Pronostic"
+
+msgid "top_move_delta_score"
+msgstr "Variation du score"
+
+msgid "show stats if"
+msgstr "Nombre de visites minimum requis pour afficher les données :"
+
+msgid "cache analysis to sgf"
+msgstr "Sauvegarder un cache SGF de l'analyse"
+
+msgid "menu:save-as"
+msgstr "Enregistrer sous..."
+
+msgid "Load File"
+msgstr "Charger"
+
+msgid "save sgf title"
+msgstr "Sauvegarder un fichier SGF"
+
+msgid "Save File"
+msgstr "Enregistrer"
+
+msgid "starting insert mode"
+msgstr "Pour clore/valider l'insertion des coups, veuillez appuyer sur 'i'."
+
+msgid "ending insert mode"
+msgstr ""
+"L'insertion a été effectuée dans une nouvelle branche complétée par "
+"{num_copied} coup(s) d'origine."
+
+msgid "finish inserting before navigating"
+msgstr ""
+"Il est impossible de parcourir l'arbre de jeu tant que l'insertion des coups"
+" n'est pas close/validée (en appuyant sur 'i')."
+
+msgid "player names"
+msgstr "Nom des joueurs"
+
+msgid "analysis:insert"
+msgstr "Insérer des coups"
+
+msgid "analysis:region:start"
+msgstr ""
+"Cliquez et glissez pour sélectionner la région à analyser en priorité. \n"
+"Appuyez sur 'g' puis sélectionnez une intersection pour tout annuler."
+
+msgid "analysis:region"
+msgstr "Définir la zone d'intérêt"
+
+msgid "Toggle Collapse Branch"
+msgstr "Nouer/Dénouer la branche"
+
+msgid "analysis:playtoend"
+msgstr "Simuler la fin de partie"
+
+msgid "black player name hint"
+msgstr "Noir"
+
+msgid "white player name hint"
+msgstr "Blanc"

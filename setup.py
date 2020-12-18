@@ -1,11 +1,11 @@
-import re
 import os
+import re
 
 from setuptools import find_packages, setup
 
 package_data = {"": ["*.json", "*.kv", "*.wav"], "katrain": [], "tests": []}
 packages = find_packages(exclude=["tests"])
-version = re.search('^VERSION\s*=\s*"(.*)"', open("katrain/core/constants.py").read(), re.M).group(1)
+version = re.search(r'^VERSION\s*=\s*"(.*)"', open("katrain/core/constants.py").read(), re.M).group(1)
 
 
 def include_data_files(directory):
@@ -21,7 +21,7 @@ include_data_files("katrain/models")
 include_data_files("katrain/fonts")
 include_data_files("katrain/sounds")
 include_data_files("katrain/img/")
-include_data_files("katrain/img/flaticon")
+include_data_files("katrain/img/flags")
 include_data_files("katrain/i18n")
 
 print(packages, package_data)
@@ -41,26 +41,22 @@ setup(
     install_requires=[
         "wheel",
         "setuptools",
-        "urllib3",
-        "importlib_resources ;python_version<'3.7'",
-        "cython>=0.24,<=0.29.14,!=0.27,!=0.27.2",  # kivy wants this
-        "kivy==2.0.0rc2;platform_system=='Darwin'",  # rc3 failing on mac
-        "kivy>=2.0.0rc2;platform_system!='Darwin'",  # just use the latest on linux?
-        "pygame;platform_system=='Darwin'",  # some mac versions need this for kivy
-        "kivy_deps.glew;platform_system=='Windows'",
-        "kivy_deps.sdl2;platform_system=='Windows'",
-        "kivy_deps.gstreamer;platform_system=='Windows'",
+        "kivy[full]>=2.0.0",
         "kivymd>=0.104.1",
+        "importlib_resources ;python_version<'3.7'",
+        "urllib3",
+        "pygame;platform_system=='Darwin'",  # some mac versions need this for kivy
         "screeninfo;platform_system!='Darwin'",  # for screen resolution, has problems on macos
     ],
     dependency_links=["https://kivy.org/downloads/simple/"],
     python_requires=">=3.6, <4",
     entry_points={"console_scripts": ["katrain=katrain.__main__:run_app"]},
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3",
+        "Topic :: Games/Entertainment :: Board Games",
     ],
     packages=packages,
     package_data=package_data,

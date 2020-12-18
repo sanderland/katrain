@@ -1,11 +1,49 @@
+import base64
 import copy
+import gzip
+import json
 import random
 from typing import Dict, List, Optional, Tuple
 
+from katrain.core.constants import (
+    ANALYSIS_FORMAT_VERSION,
+    PROGRAM_NAME,
+    SGF_INTERNAL_COMMENTS_MARKER,
+    SGF_SEPARATOR_MARKER,
+    VERSION,
+    REPORT_DT,
+)
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
-from katrain.core.utils import evaluation_class, var_to_grid
-from katrain.gui.style import INFO_PV_COLOR
+from katrain.core.utils import evaluation_class, pack_floats, unpack_floats, var_to_grid
+from katrain.gui.theme import Theme
+
+
+def analysis_dumps(analysis):
+    analysis = copy.deepcopy(analysis)
+    for movedict in analysis["moves"].values():
+        if "ownership" in movedict:  # per-move ownership rarely used
+            del movedict["ownership"]
+    ownership_data = pack_floats(analysis.pop("ownership"))
+    policy_data = pack_floats(analysis.pop("policy"))
+    main_data = json.dumps(analysis).encode("utf-8")
+    return [
+        base64.standard_b64encode(gzip.compress(data)).decode("utf-8")
+        for data in [ownership_data, policy_data, main_data]
+    ]
+
+
+def analysis_loads(property_array, board_squares, version):
+    if version > ANALYSIS_FORMAT_VERSION:
+        raise ValueError(f"Can not decode analysis data with version {version}, please update {PROGRAM_NAME}")
+    ownership_data, policy_data, main_data, *_ = [
+        gzip.decompress(base64.standard_b64decode(data)) for data in property_array
+    ]
+    return {
+        **json.loads(main_data),
+        "policy": unpack_floats(policy_data, board_squares + 1),
+        "ownership": unpack_floats(ownership_data, board_squares),
+    }
 
 
 class GameNode(SGFNode):
@@ -13,8 +51,6 @@ class GameNode(SGFNode):
 
     def __init__(self, parent=None, properties=None, move=None):
         super().__init__(parent=parent, properties=properties, move=move)
-        self.ownership = None
-        self.policy = None
         self.auto_undo = None  # None = not analyzed. False: not undone (good move). True: undone (bad move)
         self.ai_thoughts = ""
         self.note = ""
@@ -22,19 +58,65 @@ class GameNode(SGFNode):
         self.time_used = 0
         self.undo_threshold = random.random()  # for fractional undos
         self.end_state = None
+        self.shortcuts_to = []
+        self.shortcut_from = None
+        self.analysis_loaded = False
         self.clear_analysis()
+
+    def add_shortcut(self, to_node):  # collapses the branch between them
+        nodes = [to_node]
+        while nodes[-1].parent and nodes[-1] != self:  # ensure on path
+            nodes.append(nodes[-1].parent)
+        if nodes[-1] == self and len(nodes) > 2:
+            via = nodes[-2]
+            self.shortcuts_to.append((to_node, via))  # and first child
+            to_node.shortcut_from = self
+
+    def remove_shortcut(self):
+        from_node = self.shortcut_from
+        if from_node:
+            from_node.shortcuts_to = [(m, v) for m, v in from_node.shortcuts_to if m != self]
+            self.shortcut_from = None
+
+    def add_list_property(self, property: str, values: List):
+        if property == "KT":
+            try:
+                szx, szy = self.root.board_size
+                version = self.root.get_property("KTV", "<unknown>")
+                self.analysis = analysis_loads(values, szx * szy, version)
+                self.analysis_loaded = True
+            except Exception as e:
+                print(f"Error in loading analysis: {e}")
+        elif property == "C":
+            comments = [  # strip out all previously auto generated comments
+                c
+                for v in values
+                for c in v.split(SGF_SEPARATOR_MARKER)
+                if c.strip() and SGF_INTERNAL_COMMENTS_MARKER not in c
+            ]
+            self.note = "".join(comments)  # no super call intended, just save as note to be editable
+        else:
+            return super().add_list_property(property, values)
 
     def clear_analysis(self):
         self.analysis_visits_requested = 0
-        self.analysis = {"moves": {}, "root": None, "completed": False}
+        self.analysis = {"moves": {}, "root": None, "ownership": None, "policy": None, "completed": False}
 
-    def sgf_properties(self, save_comments_player=None, save_comments_class=None, eval_thresholds=None):
+    def sgf_properties(
+        self, save_comments_player=None, save_comments_class=None, eval_thresholds=None, save_analysis=False
+    ):
         properties = copy.copy(super().sgf_properties())
         note = self.note.strip()
+        if save_analysis and self.analysis_complete:
+            try:
+                properties["KT"] = analysis_dumps(self.analysis)
+            except Exception as e:
+                print(f"Error in saving analysis: {e}")
         if self.points_lost and save_comments_class is not None and eval_thresholds is not None:
             show_class = save_comments_class[evaluation_class(self.points_lost, eval_thresholds)]
         else:
             show_class = False
+        comments = properties.get("C", [])
         if (
             self.parent
             and self.parent.analysis_exists
@@ -50,18 +132,29 @@ class GameNode(SGFNode):
                 properties["SQ"] = best_sq
             if top_x and "MA" not in properties:
                 properties["MA"] = [top_x]
-            comment = self.comment(sgf=True, interactive=False)
-            if comment:
-                properties["C"] = ["\n".join(properties.get("C", "")) + comment]
+            comments.append(self.comment(sgf=True, interactive=False) + SGF_INTERNAL_COMMENTS_MARKER)
         if self.is_root:
-            properties["C"] = [
-                i18n._("SGF start message")
-                + "\n"
-                + "\n".join(properties.get("C", ""))
-                + "\nSGF with review generated by KaTrain."
+            comments = [
+                i18n._("SGF start message") + SGF_INTERNAL_COMMENTS_MARKER + "\n",
+                *comments,
+                f"\nSGF generated by {PROGRAM_NAME} {VERSION}{SGF_INTERNAL_COMMENTS_MARKER}\n",
             ]
+            properties["CA"] = ["UTF-8"]
+            properties["AP"] = [f"{PROGRAM_NAME}:{VERSION}"]
+        if self.shortcut_from:
+            properties["KTSF"] = [id(self.shortcut_from)]
+        elif "KTSF" in properties:
+            del properties["KTSF"]
+        if self.shortcuts_to:
+            properties["KTSID"] = [id(self)]
+        elif "KTSID" in properties:
+            del properties["KTSID"]
         if note:
-            properties["C"] = ["\n".join(properties.get("C", "")) + f"\nNote: {self.note}"]
+            comments.append(f"{self.note}")
+        if comments:
+            properties["C"] = [SGF_SEPARATOR_MARKER.join(comments)]
+        elif "C" in properties:
+            del properties["C"]
         return properties
 
     @staticmethod
@@ -80,13 +173,14 @@ class GameNode(SGFNode):
         refine_move=None,
         analyze_fast=False,
         find_alternatives=False,
-        find_local=False,
-        report_every=0.25,
+        region_of_interest=None,
+        report_every=REPORT_DT,
     ):
+        additional_moves = bool(find_alternatives or region_of_interest)
         engine.request_analysis(
             self,
             callback=lambda result, partial_result: self.set_analysis(
-                result, refine_move, find_alternatives or find_local, partial_result
+                result, refine_move, additional_moves, partial_result
             ),
             priority=priority,
             visits=visits,
@@ -94,7 +188,7 @@ class GameNode(SGFNode):
             time_limit=time_limit,
             next_move=refine_move,
             find_alternatives=find_alternatives,
-            find_local=find_local,
+            region_of_interest=region_of_interest,
             report_every=report_every,
         )
 
@@ -112,7 +206,11 @@ class GameNode(SGFNode):
                 cur.update(move_analysis)
 
     def set_analysis(
-        self, analysis_json: Dict, refine_move: Optional[Move], additional_moves: bool, partial_result: bool = False
+        self,
+        analysis_json: Dict,
+        refine_move: Optional[Move] = None,
+        additional_moves: bool = False,
+        partial_result: bool = False,
     ):
         if refine_move:
             pvtail = analysis_json["moveInfos"][0]["pv"] if analysis_json["moveInfos"] else []
@@ -128,8 +226,8 @@ class GameNode(SGFNode):
                     move_dict["order"] = 999  # old moves to end
             for move_analysis in analysis_json["moveInfos"]:
                 self.update_move_analysis(move_analysis, move_analysis["move"])
-            self.ownership = analysis_json.get("ownership")
-            self.policy = analysis_json.get("policy")
+            self.analysis["ownership"] = analysis_json.get("ownership")
+            self.analysis["policy"] = analysis_json.get("policy")
             if not additional_moves:
                 self.analysis["root"] = analysis_json["rootInfo"]
             if self.parent and self.move:
@@ -141,6 +239,14 @@ class GameNode(SGFNode):
                 )  # update analysis in parent for consistency
             is_normal_query = refine_move is None and not additional_moves
             self.analysis["completed"] = self.analysis["completed"] or (is_normal_query and not partial_result)
+
+    @property
+    def ownership(self):
+        return self.analysis.get("ownership")
+
+    @property
+    def policy(self):
+        return self.analysis.get("policy")
 
     @property
     def analysis_exists(self):
@@ -182,7 +288,7 @@ class GameNode(SGFNode):
     def make_pv(self, player, pv, interactive):
         pvtext = f"{player}{' '.join(pv)}"
         if interactive:
-            pvtext = f"[u][ref={pvtext}][color={INFO_PV_COLOR}]{pvtext}[/color][/ref][/u]"
+            pvtext = f"[u][ref={pvtext}][color={Theme.INFO_PV_COLOR}]{pvtext}[/color][/ref][/u]"
         return pvtext
 
     def comment(self, sgf=False, teach=False, details=False, interactive=True):
@@ -276,6 +382,7 @@ class GameNode(SGFNode):
                 {
                     **self.analysis["root"],
                     "pointsLost": 0,
+                    "winrateLost": 0,
                     "order": 0,
                     "move": top_polmove.gtp(),
                     "pv": [top_polmove.gtp()],
@@ -283,10 +390,15 @@ class GameNode(SGFNode):
             ]  # single visit -> go by policy/root
 
         root_score = self.analysis["root"]["scoreLead"]
+        root_winrate = self.analysis["root"]["winrate"]
         move_dicts = list(self.analysis["moves"].values())  # prevent incoming analysis from causing crash
         return sorted(
             [
-                {"pointsLost": self.player_sign(self.next_player) * (root_score - d["scoreLead"]), **d}
+                {
+                    "pointsLost": self.player_sign(self.next_player) * (root_score - d["scoreLead"]),
+                    "winrateLost": self.player_sign(self.next_player) * (root_winrate - d["winrate"]),
+                    **d,
+                }
                 for d in move_dicts
             ],
             key=lambda d: (d["order"], d["pointsLost"]),

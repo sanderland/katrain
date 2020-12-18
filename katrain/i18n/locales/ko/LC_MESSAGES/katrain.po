@@ -424,7 +424,7 @@ msgstr "인공지능 설정 갱신"
 msgid "sgf written"
 msgstr "SGF와 분석 결과를 {file_name}에 기록했습니다."
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "추가적인 분석을 요청하기 전에, 먼저 일차적인 분석이 끝날 때까지 기다려 주십시오."
 
 msgid "Copied SGF to clipboard."
@@ -436,7 +436,7 @@ msgstr ""
 "클립보드 내용: {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "SGF 파일을 불러올 수 없습니다. Parse Error: {error}"
+msgstr "SGF 파일을 불러올 수 없습니다: {error}"
 
 msgid "Kata exe not found"
 msgstr "KataGo 실행 파일 {exe}이 존재하지 않습니다. 일반 설정을 확인해 주십시오."
@@ -638,9 +638,6 @@ msgid "Engine missing DLL"
 msgstr ""
 "없는 DLL 파일이 있어 KataGo가 실행되지 않습니다. 요구사항을 점검하시거나, 실행 파일을 따로 실행해 세부사항을 알아보십시오."
 
-msgid "show point loss as text"
-msgstr "돌 위에 집 손해 표시하기"
-
 msgid "resign"
 msgstr "기권"
 
@@ -674,9 +671,6 @@ msgstr ""
 msgid "ai:simple"
 msgstr "간명한 기풍"
 
-msgid "analysis:local"
-msgstr "국지적인 응수 찾기"
-
 msgid "local analysis"
 msgstr "국지적인 응수를 찾고 있습니다"
 
@@ -685,22 +679,101 @@ msgstr ""
 "이 판에 대해\n"
 "덤과 규칙 등 조절"
 
-#. TODO - DEPRECATED
-msgid "ai:settle"
-msgstr "Settle Style"
-
-#. TODO - DEPRECATED
-msgid "aihelp:settle"
-msgstr ""
-"Plays moves that lead to clarity on stones' status, favouring solid moves "
-"rather than complex sabaki. Of moves that lose at most 'max_points_lost' "
-"points and with at least 'min_visits', prefer moves that lose fewer points, "
-"settle own stones more (with importance settled_weight), settle opponent's "
-"stones more (importance settled_weight * opponent_fac), avoid tenuki (more "
-"than 5 spaces, importance tenuki_penalty), and avoid attachments (importance"
-" attachment_penalty). Weights can be negative to make it complicate the game"
-" instead, and wide root noise (in general settings) can be used to further "
-"play according to the style at the cost of strength. "
-
 msgid "Make Main Branch"
 msgstr "주 변화로 만들기"
+
+#. setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "후보수 위에 표시할 정보"
+
+#. Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "승률 변동"
+
+#. Dropdown menu option
+msgid "top_move_visits"
+msgstr "Visit수"
+
+#. Dropdown menu option
+msgid "top_move_score"
+msgstr "집 차이"
+
+#. Dropdown menu option
+msgid "top_move_nothing"
+msgstr "(없음)"
+
+#. Dropdown menu option
+msgid "top_move_winrate"
+msgstr "승률"
+
+#. Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "집 변동"
+
+#. top move stats show threshold description
+msgid "show stats if"
+msgstr "... visit 이상일 때만 정보 보이기"
+
+#. analysis option
+msgid "cache analysis to sgf"
+msgstr "분석 결과 SGF 파일에 캐싱"
+
+msgid "menu:save-as"
+msgstr "이 판을 다음으로 저장..."
+
+# sgf load button
+msgid "Load File"
+msgstr "파일 불러오기"
+
+# sgf save popup
+msgid "save sgf title"
+msgstr "SGF 파일 저장하기"
+
+# sgf save as button
+msgid "Save File"
+msgstr "파일 저장하기"
+
+#. status message on starting insert mode
+msgid "starting insert mode"
+msgstr "삽입 모드를 시작하고 있습니다. 삽입을 끝내려면 'i'를 누르십시오."
+
+#. status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "수순을 삽입하고, {num_copied}개의 수를 복사했습니다."
+
+#. when a user tries to go to a different move/node while in insert
+#. mode
+msgid "finish inserting before navigating"
+msgstr "삽입 모드에서는 탐색할 수 없습니다. 삽입을 끝내려면 'i'를 누르십시오. "
+
+#. in new game options
+msgid "player names"
+msgstr "대국자"
+
+#. Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "기보 중간에 수 추가"
+
+#. Status message
+msgid "analysis:region:start"
+msgstr "드래그해서 분석할 범위를 지정하십시오."
+
+#. Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "분석할 범위 지정"
+
+#. on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "펼치기/접기"
+
+#. Menu option
+msgid "analysis:playtoend"
+msgstr "종국까지 빠르게 알아서 두기"
+
+#. hint on player name input
+msgid "black player name hint"
+msgstr "흑 대국자"
+
+#. hint on player name input
+msgid "white player name hint"
+msgstr "백 대국자"

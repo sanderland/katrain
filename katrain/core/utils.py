@@ -1,10 +1,11 @@
 import os
+import struct
 import sys
 from typing import List, Tuple, TypeVar
 
 try:
     import importlib.resources as pkg_resources
-except:
+except ImportError:
     import importlib_resources as pkg_resources
 
 T = TypeVar("T")
@@ -53,3 +54,21 @@ def find_package_resource(path, silent_errors=False):
         return os.path.join(PATHS["PACKAGE"], path.replace("katrain\\", "katrain/").replace("katrain/", ""))
     else:
         return os.path.abspath(os.path.expanduser(path))  # absolute path
+
+
+def pack_floats(float_list):
+    return struct.pack(f"{len(float_list)}e", *float_list)
+
+
+def unpack_floats(str, num):
+    return struct.unpack(f"{num}e", str)
+
+
+def format_visits(n):
+    if n < 1000:
+        return str(n)
+    if n < 1e5:
+        return f"{n/1000:.1f}k"
+    if n < 1e6:
+        return f"{n/1000:.0f}k"
+    return f"{n/1e6:.0f}k"

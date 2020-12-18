@@ -1,11 +1,12 @@
-import pytest
 import os
-from katrain.core.ai import generate_ai_move, ai_rank_estimation
-from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, AI_STRATEGIES, OUTPUT_INFO
+
+import pytest
+
+from katrain.core.ai import ai_rank_estimation, generate_ai_move
 from katrain.core.base_katrain import KaTrainBase
+from katrain.core.constants import AI_STRATEGIES, AI_STRATEGIES_RECOMMENDED_ORDER, OUTPUT_INFO
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game
-from katrain.core.constants import AI_STRATEGIES
 
 
 class TestAI:

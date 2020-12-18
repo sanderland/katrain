@@ -64,10 +64,15 @@ class Move:
         """Returns True if the move is a pass"""
         return self.coords is None
 
+    @staticmethod
+    def opponent_player(player):
+        """Returns the opposing player, i.e. W <-> B"""
+        return "W" if player == "B" else "B"
+
     @property
     def opponent(self):
         """Returns the opposing player, i.e. W <-> B"""
-        return "W" if self.player == "B" else "B"
+        return self.opponent_player(self.player)
 
 
 class SGFNode:
@@ -82,6 +87,10 @@ class SGFNode:
             self.parent.children.append(self)
         if parent and move:
             self.set_property(move.player, move.sgf(self.board_size))
+        self._clear_cache()
+
+    def _clear_cache(self):
+        self.moves_cache = None
 
     def sgf_properties(self, **xargs) -> Dict:
         """For hooking into in a subclass and overriding/formatting any additional properties to be output."""
@@ -134,6 +143,7 @@ class SGFNode:
         """Add some values to the property list."""
         # SiZe[19] ==> SZ[19] etc. for old SGF
         normalized_property = re.sub("[a-z]", "", property)
+        self._clear_cache()
         self.properties[normalized_property] += values
 
     def get_list_property(self, property, default=None) -> Any:
@@ -144,6 +154,7 @@ class SGFNode:
         """Add some values to the property. If not a list, it will be made into a single-value list."""
         if not isinstance(value, list):
             value = [value]
+        self._clear_cache()
         self.properties[property] = value
 
     def get_property(self, property, default=None) -> Any:
@@ -192,7 +203,12 @@ class SGFNode:
     @property
     def komi(self) -> float:
         """Retrieves the root's KM property, or 6.5 if missing"""
-        return float(self.root.get_property("KM", 6.5))
+        try:
+            km = float(self.root.get_property("KM", 6.5))
+        except ValueError:
+            km = 6.5
+
+        return km
 
     @property
     def ruleset(self) -> str:
@@ -202,11 +218,13 @@ class SGFNode:
     @property
     def moves(self) -> List[Move]:
         """Returns all moves in the node - typically 'move' will be better."""
-        return [
-            Move.from_sgf(move, player=pl, board_size=self.board_size)
-            for pl in Move.PLAYERS
-            for move in self.get_list_property(pl, [])
-        ]
+        if self.moves_cache is None:
+            self.moves_cache = [
+                Move.from_sgf(move, player=pl, board_size=self.board_size)
+                for pl in Move.PLAYERS
+                for move in self.get_list_property(pl, [])
+            ]
+        return self.moves_cache
 
     @property
     def placements(self) -> List[Move]:
@@ -268,14 +286,18 @@ class SGFNode:
     def play(self, move) -> "SGFNode":
         """Either find an existing child or create a new one with the given move."""
         for c in self.children:
-            if c.move == move:
+            if c.move and c.move == move:
                 return c
         return self.__class__(parent=self, move=move)
 
     @property
     def next_player(self):
         """Returns player to move"""
-        if "B" in self.properties or ("AB" in self.properties and not "W" in self.properties):  # root or black moved
+        if "PL" in self.properties:  # explicit
+            return "B" if self.get_property("PL").upper().strip() == "B" else "W"
+        elif "B" in self.properties or (
+            "AB" in self.properties and "W" not in self.properties and "AW" not in self.properties
+        ):  # b move or setup with only black moves like root handicap
             return "W"
         else:
             return "B"
@@ -283,7 +305,7 @@ class SGFNode:
     @property
     def player(self):
         """Returns player that moved last. nb root is considered white played if no handicap stones are placed"""
-        if "B" in self.properties or ("AB" in self.properties and not "W" in self.properties):
+        if "B" in self.properties or ("AB" in self.properties and "W" not in self.properties):
             return "B"
         else:
             return "W"
@@ -321,6 +343,7 @@ class SGFNode:
 
 
 class SGF:
+    DEFAULT_ENCODING = "ISO-8859-1"  # as specified by the standard
 
     _NODE_CLASS = SGFNode  # Class used for SGF Nodes, can change this to something that inherits from SGFNode
     # https://xkcd.com/1171/
@@ -360,8 +383,11 @@ class SGF:
                     if match:
                         encoding = match[1].decode("ascii", errors="ignore")
                     else:
-                        encoding = "ISO-8859-1"  # default
-                decoded = bin_contents.decode(encoding=encoding, errors="ignore")
+                        encoding = cls.DEFAULT_ENCODING
+                try:
+                    decoded = bin_contents.decode(encoding=encoding, errors="ignore")
+                except LookupError:
+                    decoded = bin_contents.decode(encoding=cls.DEFAULT_ENCODING, errors="ignore")
             if is_ngf:
                 return cls.parse_ngf(decoded)
             if is_gib:
@@ -434,7 +460,7 @@ class SGF:
                 re = "W+"
             elif "lack win" in lines[10]:
                 re = "B+"
-        except:
+        except IndexError:
             pass
 
         if handicap < 0 or handicap > 9:
@@ -522,7 +548,7 @@ class SGF:
             try:
                 grlt = int(re.search(grlt_regex, line).group(1))
                 zipsu = int(re.search(zipsu_regex, line).group(1))
-            except:
+            except:  # noqa E722
                 return ""
             return gib_make_result(grlt, zipsu)
 
@@ -556,7 +582,7 @@ class SGF:
                         komi = int(re.search(r"GONGJE:(\d+),", line).group(1)) / 10
                         if komi:
                             root.set_property("KM", komi)
-                    except:
+                    except:  # noqa E722
                         pass
 
             if line.startswith("\\[GAMETAG="):
@@ -565,7 +591,7 @@ class SGF:
                         match = re.search(r"C(\d\d\d\d):(\d\d):(\d\d)", line)
                         date = "{}-{}-{}".format(match.group(1), match.group(2), match.group(3))
                         root.set_property("DT", date)
-                    except:
+                    except:  # noqa E722
                         pass
 
                 if "RE" not in root.properties:
@@ -578,7 +604,7 @@ class SGF:
                         komi = int(re.search(r",G(\d+),", line).group(1)) / 10
                         if komi:
                             root.set_property("KM", komi)
-                    except:
+                    except:  # noqa E722
                         pass
 
             if line[0:3] == "INI":
@@ -587,7 +613,7 @@ class SGF:
                 setup = line.split()
                 try:
                     handicap = int(setup[3])
-                except IndexError:
+                except ParseError:
                     continue
 
                 if handicap < 0 or handicap > 9:

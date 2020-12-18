@@ -1,7 +1,8 @@
+import copy
+import glob
 import os
 import re
 import sys
-import copy
 from collections import defaultdict
 
 import polib
@@ -26,7 +27,7 @@ for lang in locales:
     pofile[lang] = os.path.join(localedir, lang, "LC_MESSAGES", "katrain.po")
     po[lang] = polib.pofile(pofile[lang])
     for entry in po[lang].translated_entries():
-        if "TODO" in entry.comment and not "DEPRECATED" in entry.comment:
+        if "TODO" in entry.comment and "DEPRECATED" not in entry.comment:
             todos[lang].append(entry)
         strings_to_langs[entry.msgid][lang] = entry
         strings_to_keys[entry.msgid][lang] = set(re.findall("{.*?}", entry.msgstr))
@@ -74,7 +75,7 @@ for lang in locales:
 
     for msgid, lang_entries in strings_to_langs.items():
         if lang in lang_entries and "TODO" in lang_entries[lang].comment:
-            if any(e.msgstr == lang_entries[lang].msgstr for l, e in lang_entries.items() if l != lang):
+            if any(e.msgstr == lang_entries[lang].msgstr for ll, e in lang_entries.items() if ll != lang):
                 todo_comment = (
                     f"TODO - {lang_entries[DEFAULT_LANG].comment}" if lang_entries[DEFAULT_LANG].comment else "TODO"
                 )  # update todo
@@ -100,4 +101,18 @@ for lang in locales:
     print("Fixed", pofile[lang], "and converted ->", mofile)
 
 
+for ext in ["py", "kv"]:
+    lc = 0
+    for file in glob.glob(f"katrain/*.{ext}") + glob.glob(f"katrain/**/*.{ext}"):
+        with open(file, "r") as f:
+            for i, line in enumerate(f.readlines()):
+                if line.strip():
+                    lc += 1
+                matches = [m.strip() for m in re.findall(r"i18n._\((.*?)\)", line)]
+                for msgid in matches:
+                    stripped_msgid = msgid.strip("\"'")
+                    if stripped_msgid and msgid[0] in ['"', "'"] and stripped_msgid not in strings_to_langs:  # not code
+                        print(f"Missing {msgid} used in code at \t{file}:{i} \t'{line.strip()}'")
+                        errors += 1
+    print(f"Checked {lc} lines of {ext} code for missing i18n entries.")
 sys.exit(int(errors))

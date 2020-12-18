@@ -11,10 +11,13 @@ msgid "menu:playersetup"
 msgstr "Player Setup"
 
 msgid "menu:newgame"
-msgstr "New Game"
+msgstr "New Game/Change Rules"
 
 msgid "menu:save"
 msgstr "Save Game"
+
+msgid "menu:save-as"
+msgstr "Save Game As..."
 
 msgid "menu:load"
 msgstr "Load Game"
@@ -106,9 +109,19 @@ msgstr "Deeper full game analysis"
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
 
-#. Analyze again but allow only nearby moves
-msgid "analysis:local"
-msgstr "Find local responses"
+#. Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "Set region of interest"
+
+#. Status message
+msgid "analysis:region:start"
+msgstr ""
+"Drag to select the region of interest. Select a single point to cancel the "
+"region."
+
+#. Menu option
+msgid "analysis:playtoend"
+msgstr "Fast playout to game end"
 
 #. Keep improving current position analysis when there is nothing else to do
 msgid "analysis:continuous"
@@ -116,6 +129,10 @@ msgstr "Toggle continuous analysis"
 
 msgid "analysis:aimove"
 msgstr "Force AI Move"
+
+#. Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "Insert moves"
 
 #. status message
 msgid "extra analysis"
@@ -290,6 +307,18 @@ msgstr "Your SGF notes for this position here."
 msgid "load sgf title"
 msgstr "Load SGF File to Analyze"
 
+# sgf load button
+msgid "Load File"
+msgstr "Load File"
+
+# sgf save as button
+msgid "Save File"
+msgstr "Save File"
+
+# sgf save popup
+msgid "save sgf title"
+msgstr "Save SGF File"
+
 msgid "load sgf fast analysis"
 msgstr "Use fast analysis"
 
@@ -328,6 +357,18 @@ msgstr "Update Timer"
 msgid "New Game title"
 msgstr "Setup New Game"
 
+#. in new game options
+msgid "player names"
+msgstr "Player Names"
+
+#. hint on player name input
+msgid "black player name hint"
+msgstr "Black player's name"
+
+#. hint on player name input
+msgid "white player name hint"
+msgstr "White player's name"
+
 msgid "board size"
 msgstr "Board size"
 
@@ -354,7 +395,7 @@ msgid "aga"
 msgstr "AGA"
 
 msgid "clear cache"
-msgstr "Clear Cache"
+msgstr "Clear cache"
 
 #. clear cache help
 msgid "avoids replaying"
@@ -378,7 +419,7 @@ msgstr ""
 
 # teacher settings from here
 msgid "teacher settings"
-msgstr "Edit Teacher Settings"
+msgstr "Edit Teaching/Analysis Settings"
 
 msgid "point loss threshold"
 msgstr "Point loss greater than"
@@ -405,9 +446,9 @@ msgstr ""
 "Show dots/SGF comments\n"
 " for AI players"
 
-#. in addition to colour, show point loss as -0.1 etc on hints/top moves
-msgid "show point loss as text"
-msgstr "Show point loss on top moves"
+#. analysis option
+msgid "cache analysis to sgf"
+msgstr "Cache analysis in SGF"
 
 #. removed as an option / can ignore
 msgid "lock ai when playing"
@@ -515,7 +556,7 @@ msgstr "Update AI Settings"
 msgid "sgf written"
 msgstr "SGF with analysis written to {file_name}"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "Wait for initial analysis to complete before requesting a refinement."
 
 msgid "Copied SGF to clipboard."
@@ -527,7 +568,7 @@ msgstr ""
 "Clipboard contents: {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "Failed to load SGF. Parse Error: {error}"
+msgstr "Failed to load SGF: {error}"
 
 msgid "Kata exe not found"
 msgstr "KataGo binary {exe} does not exist, please check general settings."
@@ -599,23 +640,6 @@ msgstr ""
 "Weights can be negative to make it complicate the game instead, and wide "
 "root noise (in general settings) can be used to increase play according to "
 "the style at the cost of strength. "
-
-#. DEPRECATED
-msgid "ai:settle"
-msgstr "Settle Style"
-
-#. DEPRECATED
-msgid "aihelp:settle"
-msgstr ""
-"Plays moves that lead to clarity on stones' status, favouring solid moves "
-"rather than complex sabaki. Of moves that lose at most 'max_points_lost' "
-"points and with at least 'min_visits', prefer moves that lose fewer points, "
-"settle own stones more (with importance settled_weight), settle opponent's "
-"stones more (importance settled_weight * opponent_fac), avoid tenuki (more "
-"than 5 spaces, importance tenuki_penalty), and avoid attachments (importance"
-" attachment_penalty). Weights can be negative to make it complicate the game"
-" instead, and wide root noise (in general settings) can be used to further "
-"play according to the style at the cost of strength. "
 
 msgid "ai:jigo"
 msgstr "KataJigo"
@@ -749,6 +773,10 @@ msgid "Delete Node"
 msgstr "Delete Node"
 
 #. on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "Expand/Collapse"
+
+#. on move tree editing
 msgid "Make Main Branch"
 msgstr "Make Main Branch"
 
@@ -763,3 +791,48 @@ msgstr "Default Theme"
 #. theme name
 msgid "theme:red-green-colourblind"
 msgstr "Red-Green Colourblind"
+
+#. setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "Stats on top moves"
+
+#. Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "Change in score"
+
+#. Dropdown menu option
+msgid "top_move_score"
+msgstr "Score"
+
+#. Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "Change in win rate"
+
+#. Dropdown menu option
+msgid "top_move_winrate"
+msgstr "Win rate"
+
+#. Dropdown menu option
+msgid "top_move_visits"
+msgstr "Visits"
+
+#. Dropdown menu option
+msgid "top_move_nothing"
+msgstr "(nothing)"
+
+#. top move stats show threshold description
+msgid "show stats if"
+msgstr "Show stats if more than ... visits"
+
+#. status message on starting insert mode
+msgid "starting insert mode"
+msgstr "Starting insert mode, press 'i' to finish inserting."
+
+#. status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
+
+#. when a user tries to go to a different move/node while in insert mode
+msgid "finish inserting before navigating"
+msgstr ""
+"Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "

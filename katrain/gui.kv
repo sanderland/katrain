@@ -10,29 +10,14 @@
 #:import MODE_ANALYZE katrain.core.constants.MODE_ANALYZE
 #:import STATUS_INFO katrain.core.constants.STATUS_INFO
 
+#:import Theme katrain.gui.theme.Theme
+#:import BLACK katrain.gui.theme.BLACK
+#:import LIGHTER_GREY katrain.gui.theme.LIGHTER_GREY
 
-#:import WHITE katrain.gui.style.WHITE
-#:import BLACK katrain.gui.style.BLACK
-#:import LIGHTGREY katrain.gui.style.LIGHTGREY
-#:import GREEN katrain.gui.style.GREEN
-#:import YELLOW katrain.gui.style.YELLOW
-#:import RED katrain.gui.style.RED
-#:import DARKRED katrain.gui.style.DARKRED
-#:import ORANGE katrain.gui.style.ORANGE
 
-#:import BACKGROUND_COLOR katrain.gui.style.BACKGROUND_COLOR
-#:import BOX_BACKGROUND_COLOR katrain.gui.style.BOX_BACKGROUND_COLOR
-#:import LIGHTER_BACKGROUND_COLOR katrain.gui.style.LIGHTER_BACKGROUND_COLOR
-#:import TEXT_COLOR katrain.gui.style.TEXT_COLOR
-#:import SCORE_COLOR katrain.gui.style.SCORE_COLOR
-#:import WINRATE_COLOR katrain.gui.style.WINRATE_COLOR
-#:import POINTLOSS_COLOR katrain.gui.style.POINTLOSS_COLOR
-#:set BUTTON_INACTIVE_COLOR LIGHTGREY
-
-#:set CP_SPACING dp(6)
-#:set CP_SMALL_SPACING dp(3)
-#:set CP_PADDING dp(6)
-#:set NOTES_FONT_SIZE sp(18)
+#:set CP_SPACING Theme.CP_SPACING
+#:set CP_SMALL_SPACING Theme.CP_SMALL_SPACING
+#:set CP_PADDING Theme.CP_PADDING
 
 #:set EPSILON 1e-9
 
@@ -67,8 +52,8 @@
 
 <SizedButton>:
     ripple_duration_in_slow: 0.6
-    text_color: TEXT_COLOR
-    background_color: BOX_BACKGROUND_COLOR
+    text_color: Theme.TEXT_COLOR
+    background_color: Theme.BOX_BACKGROUND_COLOR
     label: label
     text_size: root.size
     Label:
@@ -84,27 +69,27 @@
     width: root.label.texture_size[0]
 
 <ToggleButtonMixin>:
-    inactive_background_color: BACKGROUND_COLOR
-    active_background_color: BOX_BACKGROUND_COLOR
+    inactive_background_color: Theme.BACKGROUND_COLOR
+    active_background_color: Theme.BOX_BACKGROUND_COLOR
     background_color: self.active_background_color if self.state=='down' else self.inactive_background_color
     outline_color: self.active_outline_color if self.state=='down' else self.inactive_outline_color
 
 <SizedRectangleButton>:
-    outline_color: WHITE
+    outline_color: Theme.BUTTON_BORDER_COLOR
     text_color: self.outline_color
 
 <AutoSizedRectangleButton>:
-    outline_color: WHITE
+    outline_color: Theme.BUTTON_BORDER_COLOR
     text_color: self.outline_color
 
 <SizedRectangleToggleButton>:
-    inactive_outline_color: BUTTON_INACTIVE_COLOR
-    active_outline_color: WHITE
+    inactive_outline_color: Theme.BUTTON_INACTIVE_COLOR
+    active_outline_color: Theme.BUTTON_BORDER_COLOR
     text_color: self.outline_color
 
 <AutoSizedRectangleToggleButton>:
-    inactive_outline_color: BUTTON_INACTIVE_COLOR
-    active_outline_color: WHITE
+    inactive_outline_color: Theme.BUTTON_INACTIVE_COLOR
+    active_outline_color: Theme.BUTTON_BORDER_COLOR
     text_color: self.outline_color
 
 <SizedRoundedRectangleButton@SizedRectangleButton>:
@@ -114,7 +99,7 @@
     background_radius: self.height/3.5
 
 <BGBoxLayout>:
-    background_color: BOX_BACKGROUND_COLOR
+    background_color: Theme.BOX_BACKGROUND_COLOR
 
 <TransparentIconButton>:
     background_normal: ''
@@ -130,20 +115,20 @@
 
 
 <I18NSpinnerOption@SpinnerOption>:
-    background_color: LIGHTER_BACKGROUND_COLOR
+    background_color: Theme.LIGHTER_BACKGROUND_COLOR
     background_normal: ''
     lang_change_tracking: i18n._('') # for font
-    color: WHITE
+    color: Theme.INPUT_FONT_COLOR
     canvas.after:
         Color:
-            rgba: LIGHTGREY
+            rgba: LIGHT_GREY
         Line
             points: self.x,self.y,self.x+self.width,self.y
             width: 1
 
 <Spinner>:
     -font_size: self.height * 0.5
-    background_color: [*[c*255/88 for c in BACKGROUND_COLOR[:3]], 1] # compensate for texture
+    background_color: [*[c*255/88 for c in Theme.BACKGROUND_COLOR[:3]], 1] # compensate for texture
     option_cls: 'I18NSpinnerOption'
 
 <Button>:
@@ -158,7 +143,7 @@
         id: image
         pos: (root.pos[0] + (root.width - root.min_size)/2,root.pos[1] + (root.height - root.min_size)/2)
         size: (root.min_size,root.min_size)
-        source: 'img/white.png' if root.player=='W' else 'img/black.png'
+        source: 'white_circle.png' if root.player=='W' else 'black_circle.png'
         mipmap: True
     Label:
         id: lbl
@@ -166,7 +151,7 @@
         text_size: None, root.min_size
         bold: True
         valign: 'center'
-        color: BLACK if root.player=='W' else WHITE
+        color: Theme.CIRCLE_TEXT_COLORS[root.player]
         pos: (image.x, image.y)
         size: image.size
         font_size: root.min_size * 1.2 / (1 + 1 * len(self.text))
@@ -202,13 +187,17 @@
         Label:
             size_hint: 0.075, 0.5
         NavIconButton:
-            icon: 'img/Previous-End.png'
-            on_press: root.katrain('undo',999)
+            icon: 'Previous-Mistake.png'
+            color: Theme.MISTAKE_BUTTON_COLOR
+            on_press: root.katrain('find-mistake','undo')
         NavIconButton:
-            icon: 'img/Previous-5.png'
+            icon: 'Previous-End.png'
+            on_press: root.katrain('undo',9999)
+        NavIconButton:
+            icon: 'Previous-5.png'
             on_press: root.katrain('undo',10)
         NavIconButton:
-            icon: 'img/Previous.png'
+            icon: 'Previous.png'
             on_press: root.katrain('undo')
         MDFloatLayout:
             size_hint: 0.05, 1
@@ -226,25 +215,25 @@
                 player: 'W'
                 text: ''
         NavIconButton:
-            icon: 'img/Next.png'
+            icon: 'Next.png'
             on_press: root.katrain('redo')
         NavIconButton:
-            icon: 'img/Next-5.png'
+            icon: 'Next-5.png'
             on_press: root.katrain('redo',10)
         NavIconButton:
-            icon: 'img/Next-End.png'
-            on_press: root.katrain('redo',999)
+            icon: 'Next-End.png'
+            on_press: root.katrain('redo',9999)
         NavIconButton:
-            icon: 'img/Next-Mistake.png'
-            color: [0.65,0.05,0.05,1]
-            on_press: root.katrain('next-mistake')
+            icon: 'Next-Mistake.png'
+            color: Theme.MISTAKE_BUTTON_COLOR
+            on_press: root.katrain('find-mistake','redo')
     ClickableLabel:
         pos_hint: {'center_x': 0.85,'center_y':0.5}
         size_hint: None, 1
         width: self.height
         canvas.before:
             Color:
-                rgba: YELLOW
+                rgba: Theme.ENGINE_PONDERING_COLOR
             Ellipse:
                 pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
                 size: self.width/3, self.width/3
@@ -267,7 +256,7 @@
 
 
 <HamburgerButton@TransparentIconButton>:
-    icon: 'img/hamburger.png'
+    icon: 'hamburger.png'
     width: self.height
     icon_size: [self.height * 0.5, self.height * 0.5]
 
@@ -278,8 +267,8 @@
     player: 'B'
     player_type: 'player:human'
     player_subtype: 'game:normal'
-    background_color: BOX_BACKGROUND_COLOR if self.active else BACKGROUND_COLOR
-    outline_color: BOX_BACKGROUND_COLOR
+    background_color: Theme.BOX_BACKGROUND_COLOR if self.active else Theme.BACKGROUND_COLOR
+    outline_color: Theme.BOX_BACKGROUND_COLOR
     outline_width: 2
     padding: [2*CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING]
     CircleWithText:
@@ -313,9 +302,9 @@
     height: self.width
     size_hint: 1, None
     min_size: min(self.height,self.width)
-    inactive_line_color: WHITE
+    inactive_line_color: Theme.BUTTON_BORDER_COLOR
     inactive_fill_color: [1,1,1,0]
-    active_line_color: ORANGE
+    active_line_color: Theme.PAUSE_ACTIVE_COLOR
     active_fill_color: [1,1,1,0]
     line_width: max(1.1,self.min_size/20)
     line_color: root.active_line_color if self.active else root.inactive_line_color
@@ -344,13 +333,12 @@
             cap: 'square'
 
 
-
 <TimerLabel@Label>
     timeout: False
-    color: ORANGE if self.timeout else GREEN
+    color: Theme.TIMER_TEXT_TIMEOUT_COLOR if self.timeout else Theme.TIMER_TEXT_COLOR
     markup: True
     max_lines: 1
-    font_name: 'fonts/digital-7 (mono).ttf'
+    font_name: 'digital-7 (mono).ttf'
 
 <Timer>:
     spacing: CP_SPACING
@@ -362,7 +350,7 @@
         MDFloatLayout:
             size_hint: 0.4,1
             TimerLabel:
-                color: BACKGROUND_COLOR
+                color: Theme.BACKGROUND_COLOR
                 text: '{}:88'.format('188' if root.state[0] >= 6000 else '88')
                 font_size: 0.85*self.height
                 pos_hint: {'right':1,'center_y':0.5}
@@ -440,30 +428,30 @@
 
 <StatsBox>
     orientation: 'vertical'
-    background_color: BOX_BACKGROUND_COLOR
+    background_color: Theme.BOX_BACKGROUND_COLOR
     labels: {'score':score_label,'winrate':winrate_label,'points':pointloss_label}
     StatsLabel:
         id: winrate_label
         label: i18n._('stats:winrate')
         text: root.winrate
-        color: WINRATE_COLOR
+        color: Theme.WINRATE_COLOR
     StatsLabel:
         id: score_label
         label: i18n._('stats:score')
         text: root.score
-        color: SCORE_COLOR
+        color: Theme.SCORE_COLOR
     StatsLabel:
         id: pointloss_label
         label: i18n._('stats:pointslost') if root.points_lost is None or root.points_lost > 0 else i18n._('stats:pointsgained')
         text: '{}: {:.1f}'.format(root.player,abs(root.points_lost)) if root.points_lost is not None else '...'
-        color: POINTLOSS_COLOR
+        color: Theme.POINTLOSS_COLOR
 
 <ScrollableLabel>:
-    background_color: BOX_BACKGROUND_COLOR
+    background_color: Theme.BOX_BACKGROUND_COLOR
     do_scroll_x: False
     scroll_type: ['bars']
     bar_width: 5
-    bar_color: LIGHTGREY
+    bar_color: Theme.SCROLLBAR_COLOR
     label: label
     canvas.before:
         Color:
@@ -476,9 +464,9 @@
         lang_change_tracking: i18n._('')
         markup: root.markup
         padding: 5, 5
-        font_size: NOTES_FONT_SIZE
+        font_size: sp(Theme.NOTES_FONT_SIZE)
         line_height: root.line_height
-        color: TEXT_COLOR
+        color: Theme.TEXT_COLOR
         size_hint_y: None
         height: self.texture_size[1]
         text_size: self.width, None
@@ -496,7 +484,7 @@
 <CollapsablePanelHeader>:
     canvas.after:
         Color:
-            rgba: BOX_BACKGROUND_COLOR
+            rgba: Theme.BOX_BACKGROUND_COLOR
         Line:
             width: 1
             points: (self.x,self.y+1,self.x+self.width,self.y+1)
@@ -534,7 +522,7 @@
     TimerOrMoveTree:
         id: timer_or_movetree
         size_hint_y: None
-        height: root.timer_box_height
+        height: root.timer_box_height + max(0,int(self.mode != MODE_PLAY) * (root.tab_option_height + root.graph_height - graph_panel.height))
         BoxLayout:
             size_hint_x: EPSILON if self.parent.mode != MODE_PLAY else 1
             opacity: 0 if self.parent.mode != MODE_PLAY else 1
@@ -557,15 +545,16 @@
                     on_left_release: root.katrain("resign")
         MoveTree:
             id: move_tree
+            min_height: root.timer_box_height
             size_hint_x: EPSILON if self.parent.mode == MODE_PLAY else 1
             opacity: 0 if self.parent.mode == MODE_PLAY else 1
     CollapsablePanel:
         id: graph_panel
-        content_height: graph.height # + rank_graph.height
+        content_height: graph.height
         options_height: root.tab_option_height
         closed_label: 'closedlabel:scoregraph'
         options: ['score','winrate']
-        option_colors: [SCORE_COLOR,WINRATE_COLOR]
+        option_colors: [Theme.SCORE_COLOR,Theme.WINRATE_COLOR]
         option_active: [True,False,False]
         on_option_state:
             graph.show_graphs(args[1])
@@ -574,7 +563,7 @@
             id: graph
             opacity: 0 if self.hidden else 1
             size_hint_y: None
-            height: EPSILON if self.hidden else root.graph_height
+            height: root.graph_height
     CollapsablePanel:
         id: stats_panel
         num_active: 3
@@ -582,7 +571,7 @@
         options_height: root.tab_option_height
         closed_label: 'closedlabel:movestats'
         options: ['score','winrate','points']
-        option_colors: [SCORE_COLOR,WINRATE_COLOR,POINTLOSS_COLOR]
+        option_colors: [Theme.SCORE_COLOR,Theme.WINRATE_COLOR,Theme.POINTLOSS_COLOR]
         option_active: [True,True,True]
         on_option_state:
             for k, v in args[1].items(): stats.labels[k].hidden = not v
@@ -594,26 +583,26 @@
         size_hint_y_open: 1
         closed_label: 'closedlabel:info&notes'
         options: ['info','info-details','notes']
-        option_colors: [WHITE,WHITE,YELLOW]
+        option_colors: [Theme.INFO_TAB_FONT_COLOR,Theme.INFO_TAB_FONT_COLOR,Theme.NOTES_TAB_FONT_COLOR]
         option_active: [True,False,False]
         on_option_state:
             info.detailed = args[1]['info-details']
-            info.size_hint_y = int(args[1]['info'] or info.detailed)+1e-9
+            info.size_hint_y = int(args[1]['info'] or info.detailed)+EPSILON
             info.opacity =  int(args[1]['info'] or info.detailed)
-            notebox.size_hint_y = int(args[1]['notes'])*0.66+1e-9
+            notebox.size_hint_y = int(args[1]['notes'])*0.66+EPSILON
             notebox.opacity = int(args[1]['notes'])
             app.gui.update_state()
         options_height: root.tab_option_height
         BGBoxLayout:
-            background_color: BOX_BACKGROUND_COLOR
+            background_color: Theme.BOX_BACKGROUND_COLOR
             orientation: 'vertical'
             ScrollableLabel:
                 id: status
                 error: False
                 size_hint: 1, None
                 height: min(self.parent.height*0.66,self.label.texture_size[1])
-                outline_color: RED if self.error else WHITE
-                background_color: LIGHTER_BACKGROUND_COLOR # DARKRED
+                outline_color: Theme.ERROR_BORDER_COLOR if self.error else Theme.INFO_TAB_FONT_COLOR
+                background_color: Theme.LIGHTER_BACKGROUND_COLOR
             ScrollableLabel:
                 id: info
                 detailed: False
@@ -626,31 +615,32 @@
                 padding: 0
                 id: notebox
                 size_hint: 1,0
-                IMETextField:
+                LabelledTextInput:
                     id: note
-                    font_size: NOTES_FONT_SIZE
+                    font_size: sp(Theme.NOTES_FONT_SIZE)
                     multiline: True
                     on_text: root.katrain.set_note(self.text)
                     hint_text: i18n._('SGF Notes Hint')
                     color_mode: 'custom'
-                    line_color_focus: TEXT_COLOR
+                    line_color_focus: Theme.TEXT_COLOR
                     size_hint: 1, 1
                     canvas.before:
                         Color:
-                            rgba: LIGHTGREY
+                            rgba: LIGHTER_GREY
                         Line:
                             points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
                             width: 1
     Label:
-        size_hint_y: 1e-9 # takes up remaining space if info is closed
+        size_hint_y: EPSILON # takes up remaining space if info is closed
 
 
 <MenuItem>
     font_size: self.height * 0.5
     size_hint_y: None
-    height: 50
-    background_color: BOX_BACKGROUND_COLOR
-    content_width: icon.width + label.texture_size[0] * 1.33
+    height: dp(50)
+    background_color: Theme.BOX_BACKGROUND_COLOR
+    width_margin: 1.33
+    content_width: icon.width + label.texture_size[0] * self.width_margin
     MDFloatLayout:
         id: icon
         size_hint: None, 1
@@ -671,7 +661,7 @@
             size_hint: None, None
             font_size: root.font_size
             font_name: root.font_name
-            color: WHITE
+            color: Theme.MENU_ITEM_FONT_COLOR
     Label:
         text: root.shortcut
         halign: 'left'
@@ -679,7 +669,7 @@
         size_hint_x: 1/3
         font_size: root.font_size
         font_name: root.font_name
-        color: LIGHTGREY
+        color: Theme.MENU_ITEM_SHORTCUT_COLOR
 
 
 
@@ -713,15 +703,15 @@
 
 <AnalysisMenuItem@MenuItem>:
     on_close: app.gui.analysis_controls.close_dropdown()
-    background_color: LIGHTER_BACKGROUND_COLOR
-    height: 45
+    background_color: Theme.LIGHTER_BACKGROUND_COLOR
+    height: dp(45)
     canvas.before:
         Color:
-            rgba: WHITE
+            rgba: Theme.MENU_ITEM_FONT_COLOR
         Line:
             points: self.x,self.y, self.x,self.y+self.height
         Color:
-            rgba: LIGHTGREY
+            rgba: Theme.MENU_ITEM_SHORTCUT_COLOR
         Line
             points: self.x,self.y,self.x+self.width,self.y
             width: 1
@@ -732,42 +722,52 @@
     katrain: app.gui
     AnalysisMenuItem:
         text: i18n._("analysis:extra")
-        icon: 'img/Extra.png'
+        icon: 'Extra.png'
         shortcut: 'a'
         on_action: root.katrain("analyze-extra", "extra")
     AnalysisMenuItem:
         text: i18n._("analysis:equalize")
-        icon: 'img/Equalize.png'
+        icon: 'Equalize.png'
         shortcut: 's'
         on_action: root.katrain("analyze-extra", "equalize")
     AnalysisMenuItem:
         text: i18n._("analysis:sweep")
-        icon: 'img/Sweep.png'
+        icon: 'Sweep.png'
         shortcut: 'd'
         on_action: root.katrain("analyze-extra", "sweep")
     AnalysisMenuItem:
         text: i18n._("analysis:alternatives")
-        icon: 'img/Alternative.png'
+        icon: 'Alternative.png'
         shortcut: 'f'
         on_action: root.katrain("analyze-extra", "alternative")
     AnalysisMenuItem:
-        text: i18n._("analysis:local")
-        icon: 'img/local.png'
+        text: i18n._("analysis:region")
+        icon: 'local.png'
         shortcut: 'g'
-        on_action: root.katrain("analyze-extra", "local")
+        on_action: root.katrain("select-box",)
+    AnalysisMenuItem:
+        text: i18n._("analysis:insert")
+        icon: 'Insert-Move.png'
+        shortcut: 'i'
+        on_action: root.katrain("insert-mode")
+    AnalysisMenuItem:
+        text: i18n._("analysis:playtoend")
+        icon: 'Finish.png'
+        shortcut: 'l'
+        on_action: root.katrain("play-to-end")
     AnalysisMenuItem:
         text: i18n._("analysis:game")
-        icon: 'img/analysis.png'
+        icon: 'analysis.png'
         shortcut: ''
         on_action: root.open_game_analysis_popup()
     AnalysisMenuItem:
         text: i18n._("analysis:continuous")
-        icon: 'img/play.png'
+        icon: 'play.png'
         shortcut: 'space'
         on_action: root.katrain.toggle_continuous_analysis()
     AnalysisMenuItem:
         text: i18n._("analysis:aimove")
-        icon: 'img/ai.png'
+        icon: 'ai.png'
         shortcut: 'enter'
         on_action: root.katrain("ai-move")
 
@@ -814,7 +814,7 @@
                 width: analysis_button.width
                 size_hint: None, 1
                 AutoSizedRectangleButton:
-                    background_color: BOX_BACKGROUND_COLOR
+                    background_color: Theme.BOX_BACKGROUND_COLOR
                     size_hint_y: 0.5
                     pos_hint: {'center_y': 0.5, 'x': 0}
                     id: analysis_button
@@ -825,7 +825,7 @@
                     x: self.parent.x + 2
                     size_hint: None, 0.4
                     width: self.height/2
-                    source: 'img/menu.png'
+                    source: 'menu.png'
                     mipmap: True
 
 
@@ -841,7 +841,7 @@
 
 
 <MenuLabel@BackgroundMixin+Label>:
-    background_color: BACKGROUND_COLOR
+    background_color: Theme.BACKGROUND_COLOR
     font_size: self.height * 0.5
     height: self.parent.item_height or 50
     size_hint: 1,None
@@ -921,7 +921,7 @@
 <HamburgerMenuContents@MDBoxLayout+BackgroundMixin>:
     katrain: app.gui
     player_setup: player_setup
-    background_color: BOX_BACKGROUND_COLOR
+    background_color: Theme.BOX_BACKGROUND_COLOR
     orientation: 'vertical'
     item_height: self.height/20
     MenuLabel:
@@ -939,38 +939,43 @@
         item_height: root.item_height
         MainMenuItem:
             text: i18n._('menu:newgame')
-            icon: 'img/New-Game.png'
+            icon: 'New-Game.png'
             shortcut: 'Ctrl-N'
             on_action: root.katrain("new-game-popup")
             height: root.item_height
         MainMenuItem:
             text: i18n._('menu:save')
-            icon: 'img/Save-Game.png'
+            icon: 'Save-Game.png'
             shortcut: 'Ctrl-S'
-            on_action: root.katrain("output-sgf")
+            on_action: root.katrain("save-game")
+        MainMenuItem:
+            text: i18n._('menu:save-as')
+            icon: 'Save-Game-As.png'
+            shortcut: 'Ctrl-D'
+            on_action: root.katrain("save-game-as-popup")
         MainMenuItem:
             text: i18n._('menu:load')
-            icon: 'img/Load-Game.png'
+            icon: 'Load-Game.png'
             shortcut: 'Ctrl-L'
             on_action: root.katrain("analyze-sgf-popup")
         MainMenuItem:
             text: i18n._('menu:clocksettings')
-            icon: 'img/Time-Settings.png'
+            icon: 'Time-Settings.png'
             shortcut: 'F5'
             on_action: root.katrain('timer-popup')
         MainMenuItem:
             text: i18n._('menu:teachsettings')
-            icon: 'img/Teaching-Settings.png'
+            icon: 'Teaching-Settings.png'
             shortcut: 'F6'
             on_action: root.katrain('teacher-popup')
         MainMenuItem:
             text: i18n._('menu:aisettings')
-            icon: 'img/AI-Settings.png'
+            icon: 'AI-Settings.png'
             shortcut: 'F7'
             on_action: root.katrain('ai-popup')
         MainMenuItem:
             text: i18n._('menu:settings')
-            icon: 'img/General-Settings.png'
+            icon: 'General-Settings.png'
             shortcut: 'F8'
             on_action: root.katrain('config-popup')
     MenuLabel:
@@ -980,28 +985,28 @@
         height: 1.5 * root.item_height
         padding: CP_PADDING, 0
         LangButton:
-            icon: 'img/flaticon/flag-uk.png'
+            icon: 'flags/flag-uk.png'
             on_press: app.language = 'en'
         LangButton:
-            icon: 'img/flaticon/flag-de.png'
+            icon: 'flags/flag-de.png'
             on_press: app.language = 'de'
         LangButton:
-            icon: 'img/flaticon/flag-fr.png'
+            icon: 'flags/flag-fr.png'
             on_press: app.language = 'fr'
+#        LangButton:
+#            icon: 'flags/flag-es.png'
+#            on_press: app.language = 'es'
         LangButton:
-            icon: 'img/flaticon/flag-es.png'
-            on_press: app.language = 'es'
-        LangButton:
-            icon: 'img/flaticon/flag-ru.png'
+            icon: 'flags/flag-ru.png'
             on_press: app.language = 'ru'
         LangButton:
-            icon: 'img/flaticon/flag-cn.png'
+            icon: 'flags/flag-cn.png'
             on_press: app.language = 'cn'
         LangButton:
-            icon: 'img/flaticon/flag-ko.png'
+            icon: 'flags/flag-ko.png'
             on_press: app.language = 'ko'
         LangButton:
-            icon: 'img/flaticon/flag-jp.png'
+            icon: 'flags/flag-jp.png'
             on_press: app.language = 'jp'
     BoxLayout:
         size_hint: 1,None
@@ -1019,10 +1024,10 @@
 
 
 <PlayAnalyzeButton@SizedToggleButton>:
-    inactive_background_color: BOX_BACKGROUND_COLOR
-    active_background_color: YELLOW
-    ripple_color: BACKGROUND_COLOR
-    text_color:  self.inactive_background_color if self.state=='down' else self.active_background_color
+    inactive_background_color: Theme.BOX_BACKGROUND_COLOR
+    active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
+    ripple_color: Theme.BACKGROUND_COLOR
+    text_color: self.inactive_background_color if self.state=='down' else self.active_background_color
     size_hint: 0.5,1
     _font_size: self.height * 0.5
     group: 'play_analyze'
@@ -1033,7 +1038,6 @@
     play: play
     analyze: analyze
     OutlineBox:
-        outline_color: WHITE
         size_hint: 0.7,0.7
         pos_hint: {'center_x':0.5,'center_y':0.45}
         PlayAnalyzeButton:
@@ -1061,7 +1065,7 @@
             Screen:
                 name: 'gui'
                 BGBoxLayout:
-                    background_color: BACKGROUND_COLOR
+                    background_color: Theme.BACKGROUND_COLOR
                     MDBoxLayout:
                         orientation: 'vertical'
                         AnalysisControls:
@@ -1098,7 +1102,3 @@
             on_state: if self.state=='close': root.update_state() # ai move etc on nav drawer close
             HamburgerMenuContents:
                 id: nav_drawer_contents
-
-
-
-

@@ -1,7 +1,7 @@
 import pytest
 
+from katrain.core.base_katrain import KaTrainBase
 from katrain.core.game import Game, IllegalMoveException, Move
-from katrain.core.base_katrain import KaTrainBase, OUTPUT_INFO
 from katrain.core.game_node import GameNode
 
 

@@ -1,7 +1,9 @@
 from kivy.clock import Clock
+from kivy.core.image import Image
 from kivy.core.text import Label as CoreLabel
+from kivy.core.text.markup import MarkupLabel as CoreMarkupLabel
 from kivy.core.window import Window
-from kivy.graphics import *
+from kivy.graphics import Color, Ellipse, Rectangle
 from kivy.properties import (
     BooleanProperty,
     ListProperty,
@@ -10,13 +12,13 @@ from kivy.properties import (
     OptionProperty,
     StringProperty,
 )
-from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior, FocusBehavior
+from kivy.resources import resource_find
+from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
-from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
@@ -28,7 +30,7 @@ from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, MODE_PLAY, PLAYER_AI
 from katrain.core.lang import i18n
-from katrain.gui.style import DEFAULT_FONT, WHITE
+from katrain.gui.theme import Theme
 
 
 class BackgroundMixin(Widget):  # -- mixins
@@ -67,14 +69,14 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
 # -- resizeable buttons / avoid baserectangular for sizing
 class SizedButton(LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin):
     text = StringProperty("")
-    text_color = ListProperty(WHITE)
+    text_color = ListProperty(Theme.BUTTON_TEXT_COLOR)
     text_size = ListProperty([100, 100])
     halign = OptionProperty("center", options=["left", "center", "right", "justify", "auto"])
     label = ObjectProperty(None)
     padding_x = NumericProperty(6)
     padding_y = NumericProperty(0)
     _font_size = NumericProperty(None)
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
 
 
 class AutoSizedButton(SizedButton):
@@ -141,7 +143,7 @@ class StatsLabel(MDBoxLayout):
     label = StringProperty("")
     color = ListProperty([1, 1, 1, 1])
     hidden = BooleanProperty(False)
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
 
 
 class MyNavigationDrawer(MDNavigationDrawer):
@@ -212,12 +214,19 @@ class KeyValueSpinner(Spinner):
     sync_height_frac = NumericProperty(1.0)
     value_refs = ListProperty()
     selected_index = NumericProperty(0)
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.build_values()
         self.bind(size=self.update_dropdown_props, pos=self.update_dropdown_props, value_refs=self.build_values)
+
+    @property
+    def input_value(self):
+        try:
+            return self.value_refs[self.selected_index]
+        except KeyError:
+            return ""
 
     @property
     def selected(self):
@@ -274,7 +283,7 @@ class I18NSpinner(KeyValueSpinner):
     sync_height_frac = NumericProperty(1.0)
     value_refs = ListProperty()
     selected_index = NumericProperty(0)
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -364,7 +373,7 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     active = BooleanProperty(True)
 
 
-class TimerOrMoveTree(BoxLayout):
+class TimerOrMoveTree(MDBoxLayout):
     mode = StringProperty(MODE_PLAY)
 
 
@@ -397,7 +406,7 @@ class TriStateMDCheckbox(MDCheckbox):
 class AnalysisToggle(MDBoxLayout):
     text = StringProperty("")
     default_active = BooleanProperty(False)
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
     disabled = BooleanProperty(False)
     tri_state = BooleanProperty(False)
 
@@ -417,7 +426,7 @@ class MenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, Backg
     icon = StringProperty("")
     text = StringProperty("")
     shortcut = StringProperty("")
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
     content_width = NumericProperty(100)
 
     def on_left_release(self):
@@ -457,8 +466,8 @@ class CollapsablePanel(MDBoxLayout):
     closed_label = StringProperty("Closed Panel")
 
     state = OptionProperty("open", options=["open", "close"])
-    close_icon = "img/Previous-5.png"
-    open_icon = "img/Next-5.png"
+    close_icon = "Previous-5.png"
+    open_icon = "Next-5.png"
 
     def __init__(self, **kwargs):
         self.open_close_button, self.header = None, None
@@ -601,16 +610,33 @@ class ScrollableLabel(ScrollView, BackgroundMixin):
         pass
 
 
-def draw_text(pos, text, font_name=None, **kw):
-    label = CoreLabel(text=text, bold=True, font_name=font_name or i18n.font_name, **kw)  #
+def cached_text_texture(text, font_name, markup, _cache={}, **kwargs):
+    args = (text, font_name, markup, *[(k, v) for k, v in kwargs.items()])
+    texture = _cache.get(args)
+    if texture:
+        return texture
+    label_cls = CoreMarkupLabel if markup else CoreLabel
+    label = label_cls(text=text, bold=True, font_name=font_name or i18n.font_name, **kwargs)
     label.refresh()
+    texture = _cache[args] = label.texture
+    return texture
+
+
+def draw_text(pos, text, font_name=None, markup=False, **kwargs):
+    texture = cached_text_texture(text, font_name, markup, **kwargs)
     Rectangle(
-        texture=label.texture,
-        pos=(pos[0] - label.texture.size[0] / 2, pos[1] - label.texture.size[1] / 2),
-        size=label.texture.size,
+        texture=texture, pos=(pos[0] - texture.size[0] / 2, pos[1] - texture.size[1] / 2), size=texture.size,
     )
 
 
 def draw_circle(pos, r, col):
     Color(*col)
     Ellipse(pos=(pos[0] - r, pos[1] - r), size=(2 * r, 2 * r))
+
+
+# direct cache to texture, bypassing resource_find
+def cached_texture(path, _cache={}):
+    tex = _cache.get(path)
+    if not tex:
+        tex = _cache[path] = Image(resource_find(path)).texture
+    return tex

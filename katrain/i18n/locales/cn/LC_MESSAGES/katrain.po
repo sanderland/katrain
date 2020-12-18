@@ -415,7 +415,7 @@ msgstr "保存AI设置"
 msgid "sgf written"
 msgstr "带分析的SGF文件保存到 {file_name}"
 
-msgid "wait-before-equalize"
+msgid "wait-before-extra-analysis"
 msgstr "优化前等待初始分析完成"
 
 msgid "Copied SGF to clipboard."
@@ -613,9 +613,6 @@ msgstr "覆盖引擎命令"
 msgid "download katago button"
 msgstr "下载KataGo 版本"
 
-msgid "show point loss as text"
-msgstr "在棋子上显示目数损失"
-
 msgid "katago binaries available"
 msgstr "{num} 个exe文件可用"
 
@@ -660,9 +657,6 @@ msgstr ""
 msgid "ai:simple"
 msgstr "简明风格"
 
-msgid "analysis:local"
-msgstr "寻找局部走法"
-
 msgid "local analysis"
 msgstr "正在寻找局部走法"
 
@@ -674,19 +668,99 @@ msgstr ""
 msgid "Make Main Branch"
 msgstr "设为实战变化"
 
-#. TODO - DEPRECATED
-msgid "aihelp:settle"
-msgstr ""
-"Plays moves that lead to clarity on stones' status, favouring solid moves "
-"rather than complex sabaki. Of moves that lose at most 'max_points_lost' "
-"points and with at least 'min_visits', prefer moves that lose fewer points, "
-"settle own stones more (with importance settled_weight), settle opponent's "
-"stones more (importance settled_weight * opponent_fac), avoid tenuki (more "
-"than 5 spaces, importance tenuki_penalty), and avoid attachments (importance"
-" attachment_penalty). Weights can be negative to make it complicate the game"
-" instead, and wide root noise (in general settings) can be used to further "
-"play according to the style at the cost of strength. "
+#. save as
+msgid "menu:save-as"
+msgstr "保存为..."
 
-#. TODO - DEPRECATED
-msgid "ai:settle"
-msgstr "Settle Style"
+#. sgf load button
+msgid "Load File"
+msgstr "载入"
+
+#. sgf save popup
+msgid "save sgf title"
+msgstr "保存SGF"
+
+#. sgf save as button
+msgid "Save File"
+msgstr "Save File"
+
+#. status message on starting insert mode
+msgid "starting insert mode"
+msgstr "嵌入模式，按 i 结束嵌入"
+
+#. status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "嵌入完毕， 复制{num_copied}手棋"
+
+#. when a user tries to go to a different move/node while in insert
+#. mode
+msgid "finish inserting before navigating"
+msgstr "此功能在嵌入模式无法使用， 按 i 结束嵌入 "
+
+#. in new game options
+msgid "player names"
+msgstr "棋手信息"
+
+#. Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "嵌入"
+
+#. Status message
+msgid "analysis:region:start"
+msgstr "拖放选择局部。点击一次取消局部"
+
+#. Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "选择局部"
+
+#. on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "放大/缩小"
+
+#. Menu option
+msgid "analysis:playtoend"
+msgstr "自动下完"
+
+#. hint on player name input
+msgid "black player name hint"
+msgstr "黑方"
+
+#. hint on player name input
+msgid "white player name hint"
+msgstr "白方"
+
+#. setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "最佳选点统计"
+
+#. Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "胜率波动"
+
+#. Dropdown menu option
+msgid "top_move_visits"
+msgstr "计算深度"
+
+#. Dropdown menu option
+msgid "top_move_score"
+msgstr "分数"
+
+#. Dropdown menu option
+msgid "top_move_nothing"
+msgstr "(无)"
+
+#. Dropdown menu option
+msgid "top_move_winrate"
+msgstr "胜率"
+
+#. Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "分数波动"
+
+#. top move stats show threshold description
+msgid "show stats if"
+msgstr "计算深度...以上时显示"
+
+#. analysis option
+msgid "cache analysis to sgf"
+msgstr "分析缓存到SGF"
