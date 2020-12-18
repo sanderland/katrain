@@ -55,7 +55,7 @@ but has since grown to include a wide range of features, including:
 
 | **Local Joseki Analysis**                  | **Analysis Tutorial**                                                                              | **Teaching Game Tutorial**                                                                                   |
 |:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
-| [![Local Joseki Analysi Video](http://i.imgur.com/YcpmSBx.png)](https://www.youtube.com/watch?v=tXniX57KtKk) | [![Analysis Tutorial](http://i.imgur.com/3EP4IEr.png)](http://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](http://i.imgur.com/jAdcSL5.png)](http://www.youtube.com/watch?v=wFl4Bab_eGM)   |
+| [![Local Joseki Analysis Video](http://i.imgur.com/YcpmSBx.png)](https://www.youtube.com/watch?v=tXniX57KtKk) | [![Analysis Tutorial](http://i.imgur.com/3EP4IEr.png)](http://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](http://i.imgur.com/jAdcSL5.png)](http://www.youtube.com/watch?v=wFl4Bab_eGM)   |
 
 
 
