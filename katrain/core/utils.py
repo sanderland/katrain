@@ -67,7 +67,7 @@ def unpack_floats(str, num):
 def format_visits(n):
     if n < 1000:
         return str(n)
-    if n < 1e6:
+    if n < 1e5:
         return f"{n/1000:.1f}k"
     if n < 1e6:
         return f"{n/1000:.0f}k"
