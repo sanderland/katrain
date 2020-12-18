@@ -203,7 +203,6 @@ class Game:
                 already_inserted_moves = [
                     n.move for n in copy_to_node.nodes_from_root if n not in above_insertion_root and n.move
                 ]
-                print(already_inserted_moves)
                 try:
                     while True:
                         if copy_from_node.move not in already_inserted_moves:

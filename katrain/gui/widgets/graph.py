@@ -77,7 +77,6 @@ class ScoreGraph(Graph):
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos) and "scroll" not in getattr(touch, "button", ""):
-            print(touch)
             ix, _ = min(enumerate(self.score_points[::2]), key=lambda ix_v: abs(ix_v[1] - touch.x))
             self.navigate_move = [
                 self.nodes[ix],
