@@ -1,11 +1,11 @@
 # <a name="manual"></a> KaTrain
 
-[![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
-[![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
-[![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)](https://github.com/sanderland/katrain/releases)
-[![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
-[![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
-[![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
+[![Latest Release](http://img.shields.io/github/release/sanderland/katrain?label=download)](http://github.com/sanderland/katrain/releases)
+[![License:MIT](http://img.shields.io/pypi/l/katrain)](http://en.wikipedia.org/wiki/MIT_License)
+[![GitHub Downloads](http://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)](http://github.com/sanderland/katrain/releases)
+[![PyPI Downloads](http://pepy.tech/badge/katrain)](http://pepy.tech/project/katrain)
+[![Github sponsors](http://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=http://github.com/sponsors/sanderland/)](http://github.com/sponsors/sanderland)
+[![Discord](http://img.shields.io/discord/417022162348802048?logo=discord)](http://discord.com/channels/417022162348802048/629446365688365067)
 
 <table>
 <td>
@@ -24,14 +24,14 @@
 </td>
 <td>
 
-<a href="https://github.com/sanderland/katrain/blob/master/README.md"><img alt="English" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-uk.png" width=50></a>
-<a href="https://translate.google.com/translate?sl=en&tl=de&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="German" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-de.png" width=50></a>
-<a href="https://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-fr.png" width=50></a>
-<a href="https://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ru.png" width=50></a>
+<a href="http://github.com/sanderland/katrain/blob/master/README.md"><img alt="English" src="http://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-uk.png" width=50></a>
+<a href="http://translate.google.com/translate?sl=en&tl=de&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="German" src="http://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-de.png" width=50></a>
+<a href="http://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="http://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-fr.png" width=50></a>
+<a href="http://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="http://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ru.png" width=50></a>
 <br/>
-<a href="https://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-cn.png" width=50></a>
-<a href="https://translate.google.com/translate?sl=en&tl=ko&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Korean" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ko.png" width=50></a>
-<a href="https://translate.google.com/translate?sl=en&tl=ja&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Japanese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-jp.png" width=50></a>
+<a href="http://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Chinese" src="http://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-cn.png" width=50></a>
+<a href="http://translate.google.com/translate?sl=en&tl=ko&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Korean" src="http://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ko.png" width=50></a>
+<a href="http://translate.google.com/translate?sl=en&tl=ja&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Japanese" src="http://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-jp.png" width=50></a>
 
 </td>
 </table>
@@ -51,16 +51,16 @@ but has since grown to include a wide range of features, including:
 
 ## <a name="preview"></a>  Preview and Youtube Videos
 
-![screenshot](https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.png)
+![screenshot](http://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.png)
 
-| **New Features in v1.4**                  | **Analysis Tutorial**                                                                              | **Teaching Game Tutorial**                                                                                   |
+| **Local Joseki Analysis**                  | **Analysis Tutorial**                                                                              | **Teaching Game Tutorial**                                                                                   |
 |:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
-| [![New Features Video](https://i.imgur.com/IXNwTHL.png)](https://www.youtube.com/watch?v=ujjRWGSZJrQ&feature=youtu.be) | [![Analysis Tutorial](https://i.imgur.com/3EP4IEr.png)](https://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
+| [![New Features Video](http://i.imgur.com/YcpmSBx.png)](http://www.youtube.com/watch?v=ujjRWGSZJrQ&feature=youtu.be) | [![Analysis Tutorial](http://i.imgur.com/3EP4IEr.png)](http://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](http://i.imgur.com/jAdcSL5.png)](http://www.youtube.com/watch?v=wFl4Bab_eGM)   |
 
 
 
 ## <a name="install"></a> Installation
-* See the [releases page](https://github.com/sanderland/katrain/releases) for downloadable executables for Windows.
+* See the [releases page](http://github.com/sanderland/katrain/releases) for downloadable executables for Windows.
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
 * [This page](INSTALL.md) has detailed instructions for Window, Linux and MacOS,
   as well as troubleshooting and setting up KataGo to use multiple GPUs.
@@ -110,7 +110,7 @@ This estimate should be reasonably accurate as long as you have not changed the 
     * **KataGo** is full KataGo, above professional level. The analysis and feedback given is always based on this full strength KataGo AI.
     * **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced
      game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found
-      [here](https://github.com/sanderland/katrain/issues/44) and [here](https://github.com/sanderland/katrain/issues/74).
+      [here](http://github.com/sanderland/katrain/issues/44) and [here](http://github.com/sanderland/katrain/issues/74).
     * **Simple Style** Prefers moves that solidify both player's territory, leading to relatively simpler moves.
     * **ScoreLoss** is KataGo analyzing as usual, but
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
@@ -128,7 +128,7 @@ This estimate should be reasonably accurate as long as you have not changed the 
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
  while the policy net based AIs are affected by the choice of model file, but work identically with 1 visit.
 
-Further technical details and discussion on these AIs can be found on [this](https://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
+Further technical details and discussion on these AIs can be found on [this](http://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
 
 ## <a name="analysis"></a> Analysis
 
@@ -203,19 +203,19 @@ In addition to shortcuts mentioned above and those shown in the main menu:
   * If still encountering problems, please start KataGo by itself to check for any errors it gives.
   * Note that if you don't have a GPU, or your GPU does not support OpenCL, you should use the 'eigen' binaries which run on CPU only.
 * The font size is too small
-  * On some ultra-high resolution monitors, font scale is not set correctly. Please see [these](https://github.com/sanderland/katrain/issues/250) instructions to adjust them.
+  * On some ultra-high resolution monitors, font scale is not set correctly. Please see [these](http://github.com/sanderland/katrain/issues/250) instructions to adjust them.
 
 ## <a name="support"></a> Support / Contribute
 
-[![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
-[![Contributors](https://img.shields.io/static/v1?label=contributors&message=24&color=dcb424)](CONTRIBUTIONS.md)
-[![Github sponsors](https://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=https://github.com/sponsors/sanderland/)](https://github.com/sponsors/sanderland)
+[![GitHub issues](http://img.shields.io/github/issues/sanderland/katrain)](http://github.com/sanderland/katrain/issues)
+[![Contributors](http://img.shields.io/static/v1?label=contributors&message=24&color=dcb424)](CONTRIBUTIONS.md)
+[![Github sponsors](http://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=http://github.com/sponsors/sanderland/)](http://github.com/sponsors/sanderland)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
-    * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
+    * For suggestions and planned improvements, see [open issues](http://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
     * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
-* You can contact me on [discord](https://discord.gg/AjTPFpN) (Sander#3278) or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
-* You can also donate to the project through [Github Sponsors](https://github.com/sponsors/sanderland).
+* You can contact me on [discord](http://discord.gg/AjTPFpN) (Sander#3278) or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
+* You can also donate to the project through [Github Sponsors](http://github.com/sponsors/sanderland).
 
 
 
