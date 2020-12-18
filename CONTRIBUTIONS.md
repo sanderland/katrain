@@ -14,7 +14,7 @@ This is not enforced, and contributions with incorrect formatting will be accept
 ### Contributing to an existing translation
 
 * Go [here](https://github.com/sanderland/katrain/blob/master/katrain/i18n/locales/) and locate the `.po` file for your language. 
-  Alternatively, find the same file in the branch for the next version. 
+  * Alternatively, find the same file in the branch for the next version. 
 * Correct the relevant `msgstr` entries.
 
 ### Adding a translation

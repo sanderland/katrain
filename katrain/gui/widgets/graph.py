@@ -159,7 +159,7 @@ class ScoreGraph(Graph):
 
 Builder.load_string(
     """
-#:import Theme katrain.gui.theme.Theme    
+#:import Theme katrain.gui.theme.Theme
 
 <Graph>:
     background_color: Theme.BOX_BACKGROUND_COLOR
