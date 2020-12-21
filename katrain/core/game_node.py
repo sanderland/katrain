@@ -141,6 +141,7 @@ class GameNode(SGFNode):
             ]
             properties["CA"] = ["UTF-8"]
             properties["AP"] = [f"{PROGRAM_NAME}:{VERSION}"]
+            properties["KTV"] = [ANALYSIS_FORMAT_VERSION]
         if self.shortcut_from:
             properties["KTSF"] = [id(self.shortcut_from)]
         elif "KTSF" in properties:

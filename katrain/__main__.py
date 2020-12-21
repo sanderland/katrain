@@ -707,6 +707,11 @@ def run_app():
                 print(f"Exception {inst.__class__}: {inst.args}\n{trace}")
             return ExceptionManager.PASS
 
+    import yappi
+
+    yappi.set_clock_type("cpu")
+    yappi.start()
+
     ExceptionManager.add_handler(CrashHandler())
     app = KaTrainApp()
     signal.signal(signal.SIGINT, app.signal_handler)

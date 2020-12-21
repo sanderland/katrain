@@ -396,7 +396,7 @@ class Game:
             + f"\ncaptures: {self.prisoner_count}"
         )
 
-    def generate_filename(self):
+    def update_root_properties(self):
         def player_name(player_info):
             if player_info.name and player_info.player_type == PLAYER_HUMAN:
                 return player_info.name
@@ -413,8 +413,10 @@ class Game:
                     x_properties[bw + "R"] = rank_label(player_info.calculated_rank)
         if "+" in str(self.end_result):
             x_properties["RE"] = self.end_result
-        x_properties["KTV"] = ANALYSIS_FORMAT_VERSION
         self.root.properties = {**root_properties, **{k: [v] for k, v in x_properties.items()}}
+
+    def generate_filename(self):
+        self.update_root_properties()
         player_names = {
             bw: re.sub(r"[\u200b\u3164'<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"
         }
@@ -422,14 +424,14 @@ class Game:
         return f"{base_game_name} {self.game_id}.sgf"
 
     def write_sgf(
-        self, filename: str = None, trainer_config: Optional[Dict] = None,
+        self, filename: str, trainer_config: Optional[Dict] = None,
     ):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer", {})
         save_feedback = trainer_config.get("save_feedback", False)
         eval_thresholds = trainer_config["eval_thresholds"]
         save_analysis = trainer_config.get("save_analysis", False)
-
+        self.update_root_properties()
         show_dots_for = {
             bw: trainer_config.get("eval_show_ai", True) or self.katrain.players_info[bw].human for bw in "BW"
         }

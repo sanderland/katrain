@@ -29,7 +29,7 @@ from katrain.core.constants import (
     OUTPUT_ERROR,
     OUTPUT_INFO,
     STATUS_INFO,
-    DATA_FOLDER,
+    DATA_FOLDER, SGF_INTERNAL_COMMENTS_MARKER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
@@ -267,7 +267,7 @@ class NewGamePopup(QuickConfigGui):
     def update_from_current_game(self, *args):
         for bw in "BW":
             name = self.katrain.game.root.get_property("P" + bw, None)
-            if name:
+            if name and SGF_INTERNAL_COMMENTS_MARKER not in name:
                 self.player_name[bw].text = name
         rules = self.normalized_rules()
         self.km.text = str(self.katrain.game.root.komi)
