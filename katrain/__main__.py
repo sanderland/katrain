@@ -7,6 +7,7 @@ if "KIVY_AUDIO" not in os.environ:
     os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
 
 import kivy
+
 kivy.require("2.0.0")
 
 # next, icon
@@ -706,11 +707,6 @@ def run_app():
             else:
                 print(f"Exception {inst.__class__}: {inst.args}\n{trace}")
             return ExceptionManager.PASS
-
-    import yappi
-
-    yappi.set_clock_type("cpu")
-    yappi.start()
 
     ExceptionManager.add_handler(CrashHandler())
     app = KaTrainApp()

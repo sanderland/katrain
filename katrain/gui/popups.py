@@ -29,7 +29,8 @@ from katrain.core.constants import (
     OUTPUT_ERROR,
     OUTPUT_INFO,
     STATUS_INFO,
-    DATA_FOLDER, SGF_INTERNAL_COMMENTS_MARKER,
+    DATA_FOLDER,
+    SGF_INTERNAL_COMMENTS_MARKER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
