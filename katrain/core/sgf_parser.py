@@ -384,10 +384,10 @@ class SGF:
                         encoding = match[1].decode("ascii", errors="ignore")
                     else:
                         encoding = cls.DEFAULT_ENCODING
-                try:
-                    decoded = bin_contents.decode(encoding=encoding, errors="ignore")
-                except LookupError:
-                    decoded = bin_contents.decode(encoding=cls.DEFAULT_ENCODING, errors="ignore")
+            try:
+                decoded = bin_contents.decode(encoding=encoding, errors="ignore")
+            except LookupError:
+                decoded = bin_contents.decode(encoding=cls.DEFAULT_ENCODING, errors="ignore")
             if is_ngf:
                 return cls.parse_ngf(decoded)
             if is_gib:
