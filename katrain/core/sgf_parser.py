@@ -29,7 +29,7 @@ class Move:
     @classmethod
     def from_sgf(cls, sgf_coords, board_size, player="B"):
         """Initialize a move from SGF coordinates and player"""
-        if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size[0]:  # some servers use [tt] for pass
+        if sgf_coords == "" or (sgf_coords == "tt" and board_size[0] <= 19 and board_size[1] <= 19):  # [tt] can be used as "pass" for <= 19x19 board
             return cls(coords=None, player=player)
         return cls(
             coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[1] - Move.SGF_COORD.index(sgf_coords[1]) - 1),
