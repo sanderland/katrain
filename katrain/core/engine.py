@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import queue
 import shlex
 import subprocess
 import threading
@@ -40,9 +41,9 @@ class KataGoEngine:
         self.katago_process = None
         self.base_priority = 0
         self.override_settings = {"reportAnalysisWinratesAs": "BLACK"}  # force these settings
-        self._lock = threading.Lock()
         self.analysis_thread = None
         self.stderr_thread = None
+        self.write_stdin_thread = None
         self.shell = False
 
         exe = config.get("katago", "").strip()
@@ -103,10 +104,13 @@ class KataGoEngine:
                 i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
             )
             return  # don't start
+        self.write_queue = queue.Queue()
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)
         self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True)
+        self.write_stdin_thread = threading.Thread(target=self._write_stdin_thread, daemon=True)
         self.analysis_thread.start()
         self.stderr_thread.start()
+        self.write_stdin_thread.start()
 
     def on_new_game(self):
         self.base_priority += 1
@@ -147,10 +151,9 @@ class KataGoEngine:
         if process:
             self.katago_process = None
             process.terminate()
-        if self.stderr_thread:
-            self.stderr_thread.join()
-        if self.analysis_thread:
-            self.analysis_thread.join()
+        for t in [self.stderr_thread, self.analysis_thread, self.write_stdin_thread]:
+            if t:
+                t.join()
 
     def is_idle(self):
         return not self.queries
@@ -227,19 +230,25 @@ class KataGoEngine:
                 self.katrain.log(f"Unexpected exception {e} while processing KataGo output {line}", OUTPUT_ERROR)
                 traceback.print_exc()
 
-    def send_query(self, query, callback, error_callback, next_move=None):
-        with self._lock:
-            self.query_counter += 1
+    def _write_stdin_thread(self):  # flush only in a thread since it returns only when the other program reads
+        while self.katago_process is not None:
+            try:
+                query, callback, error_callback, next_move = self.write_queue.get(block=True, timeout=0.1)
+            except queue.Empty:
+                continue
             if "id" not in query:
+                self.query_counter += 1
                 query["id"] = f"QUERY:{str(self.query_counter)}"
             self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
-            if self.katago_process:
-                self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
-                try:
-                    self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
-                    self.katago_process.stdin.flush()
-                except OSError as e:
-                    self.check_alive(os_error=str(e), exception_if_dead=True)
+            self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
+            try:
+                self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
+                self.katago_process.stdin.flush()
+            except OSError as e:
+                self.check_alive(os_error=str(e), exception_if_dead=False)
+
+    def send_query(self, query, callback, error_callback, next_move=None):
+        self.write_queue.put((query, callback, error_callback, next_move))
 
     def terminate_query(self, query_id):
         if query_id is not None:
