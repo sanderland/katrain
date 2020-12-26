@@ -696,6 +696,9 @@ class LoadSGFPopup(BoxLayout):
         self.filesel.path = os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load")))
         self.filesel.select_string = i18n._("Load File")
 
+    def on_submit(self):
+        self.filesel.button_clicked()
+
 
 class SaveSGFPopup(BoxLayout):
     def __init__(self, suggested_filename, **kwargs):
@@ -716,7 +719,7 @@ class SaveSGFPopup(BoxLayout):
         self.filesel.select_string = i18n._("Save File")
 
     def on_submit(self):
-        self.filesel.dispatch("on_success")
+        self.filesel.button_clicked()
 
 
 class ReAnalyzeGamePopup(BoxLayout):

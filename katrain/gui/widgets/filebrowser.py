@@ -40,7 +40,7 @@ a shortcut to the Documents directory added to the favorites bar::
 import string
 from functools import partial
 from os import walk
-from os.path import dirname, expanduser, getmtime, isdir, join, sep
+from os.path import dirname, expanduser, getmtime, isdir, isfile, join, sep
 
 from kivy import Config
 from kivy.clock import Clock
@@ -172,6 +172,7 @@ Builder.load_string(
     spacing: 5
     padding: [6, 6, 6, 6]
     select_state: select_button.state
+    file_text: file_text
     filename: file_text.text
     browser: list_view
     on_favorites: link_tree.reload_favs(self.favorites)
@@ -232,7 +233,7 @@ Builder.load_string(
             height: '40dp'
             size_hint_x: None
             text: root.select_string
-            on_release: root.dispatch('on_success')
+            on_release: root.button_clicked()
 """
 )
 
@@ -318,6 +319,8 @@ class I18NFileBrowser(BoxLayout):
     """
 
     __events__ = ("on_success", "on_submit")
+
+    file_must_exist = BooleanProperty(False)  # whether new file paths can be pointed at
 
     select_state = OptionProperty("normal", options=("normal", "down"))
     """State of the 'select' button, must be one of 'normal' or 'down'.
@@ -464,3 +467,9 @@ class I18NFileBrowser(BoxLayout):
 
     def _attr_callback(self, attr, obj, value):
         setattr(self, attr, getattr(obj, attr))
+
+    def button_clicked(self):
+        if isdir(self.file_text.text):
+            self.path = self.file_text.text
+        elif not self.file_must_exist or isfile(self.file_text.text):
+            self.dispatch("on_success")
