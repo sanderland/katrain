@@ -114,7 +114,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.message_queue = Queue()
 
         self._keyboard = Window.request_keyboard(None, self, "")
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down,on_key_up=self._on_keyboard_up)
         Clock.schedule_interval(self.animate_pondering, 0.1)
 
     def log(self, message, level=OUTPUT_INFO):
@@ -549,11 +549,10 @@ class KaTrainGui(Screen, KaTrainBase):
             else:
                 return
         shift_pressed = "shift" in modifiers
+        alt_pressed = "alt" in modifiers
         shortcuts = self.shortcuts
-        if keycode[1] == "tab":
+        if keycode[1] == "tab" and not alt_pressed:
             self.play_mode.switch_ui_mode()
-        elif keycode[1] == "alt":
-            self.nav_drawer.set_state("toggle")
         elif keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
         elif keycode[1] == "k":
@@ -611,7 +610,13 @@ class KaTrainGui(Screen, KaTrainBase):
             filename = f"callgrind.{int(time.time())}.prof"
             stats.save(filename, type="callgrind")
             self.log(f"wrote profiling results to {filename}", OUTPUT_ERROR)
-        return True
+
+    def _on_keyboard_up(self, _keyboard, keycode):
+        if self.controls.note.focus or self.popup_open:
+            return  # when making notes, don't allow keyboard shortcuts
+        if keycode[1] == "alt":
+            self.nav_drawer.set_state("toggle")
+
 
 
 class KaTrainApp(MDApp):

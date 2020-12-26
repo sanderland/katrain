@@ -392,15 +392,21 @@ class TriStateMDCheckbox(MDCheckbox):
         if self.slashed:
             self.state = "normal"
             self.slashed = False
-            self.icon = "checkbox-blank-outline"
         elif self.state == "down":
             self.state = "normal"
             self.slashed = True
-            self.icon = "checkbox-blank-off-outline"
         else:
             self.state = "down"
             self.slashed = False
+        self.set_icon()
+
+    def set_icon(self):
+        if self.slashed:
+            self.icon = "checkbox-blank-off-outline"
+        elif self.state == "down":
             self.icon = "checkbox-marked-outline"
+        else:
+            self.icon = "checkbox-blank-outline"
 
 
 class AnalysisToggle(MDBoxLayout):
