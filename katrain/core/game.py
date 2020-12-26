@@ -67,7 +67,7 @@ class Game:
             self.root = move_tree
             self.external_game = PROGRAM_NAME not in self.root.get_property("AP", "")
             self.komi = self.root.komi
-            handicap = int(self.root.get_property("HA", 0))
+            handicap = int(self.root.handicap)
             if (
                 handicap >= 2
                 and not self.root.placements

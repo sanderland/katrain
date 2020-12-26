@@ -207,7 +207,7 @@ Builder.load_string(
                 id: list_view
                 path: root.path
                 sort_func: root.sort_func
-                filters: root.filters
+                filters: root.filters + [f.upper() for f in root.filters]
                 filter_dirs: root.filter_dirs
                 show_hidden: root.show_hidden
                 multiselect: root.multiselect

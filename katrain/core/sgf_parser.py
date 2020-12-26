@@ -211,6 +211,13 @@ class SGFNode:
         return km
 
     @property
+    def handicap(self) -> int:
+        try:
+            return int(self.root.get_property("HA", 0))
+        except ValueError:
+            return 0
+
+    @property
     def ruleset(self) -> str:
         """Retrieves the root's RU property, or 'japanese' if missing"""
         return self.root.get_property("RU", "japanese")
