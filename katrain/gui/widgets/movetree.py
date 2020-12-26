@@ -109,7 +109,7 @@ class MoveTreeCanvas(Widget):
 
     def switch_branch(self, direction=1):
         pos = self.move_pos.get(self.scroll_view_widget.current_node)
-        if not self.scroll_view_widget:
+        if not self.scroll_view_widget or not pos:
             return
         same_x_moves = sorted([(y, n) for n, (x, y) in self.move_pos.items() if x == pos[0]])
         new_index = next((i for i, (y, n) in enumerate(same_x_moves) if y == pos[1]), 0) + direction
@@ -284,7 +284,7 @@ Builder.load_string(
     MoveTreeDropdownItem:
         text: i18n._("Delete Node")
         icon: 'delete.png'
-        shortcut: 'Ctrl+Del'
+        shortcut: 'Ctr+Del'
         on_action: root.katrain.controls.move_tree.delete_selected_node()
         -background_color: Theme.LIGHTER_BACKGROUND_COLOR
         -height: dp(45)
