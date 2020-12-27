@@ -300,22 +300,32 @@ class SGFNode:
         return self.__class__(parent=self, move=move)
 
     @property
-    def next_player(self):
-        """Returns player to move"""
-        if "PL" in self.properties:  # explicit
+    def initial_player(self):  # player for first node
+        root = self.root
+        if "PL" in root.properties:  # explicit
             return "B" if self.get_property("PL").upper().strip() == "B" else "W"
-        elif self.children:  # child exist, use it if not placement
-            for child in self.children:
+        elif root.children:  # child exist, use it if not placement
+            for child in root.children:
                 for color in "BW":
                     if color in child.properties:
                         return color
-        # b move or setup with only black moves like root handicap
-        if "B" in self.properties or (
-            "AB" in self.properties and "W" not in self.properties and "AW" not in self.properties
-        ):
+        # b move or setup with only black moves like handicap
+        if "AB" in self.properties and "AW" not in self.properties:
             return "W"
         else:
             return "B"
+
+    @property
+    def next_player(self):
+        """Returns player to move"""
+        if self.is_root:
+            return self.initial_player
+        elif "B" in self.properties:
+            return "W"
+        elif "W" in self.properties:
+            return "B"
+        else:  # only placements, find a parent node with a real move. TODO: better placement support
+            return self.parent.next_player
 
     @property
     def player(self):

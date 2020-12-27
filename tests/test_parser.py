@@ -157,11 +157,22 @@ def test_foxwq():
 def test_next_player():
     input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb])"
     assert "B" == SGF.parse_sgf(input_sgf).next_player
+    assert "B" == SGF.parse_sgf(input_sgf).initial_player
     input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb]PL[B])"
     assert "B" == SGF.parse_sgf(input_sgf).next_player
+    assert "B" == SGF.parse_sgf(input_sgf).initial_player
     input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb]PL[W])"
     assert "W" == SGF.parse_sgf(input_sgf).next_player
+    assert "W" == SGF.parse_sgf(input_sgf).initial_player
     input_sgf = "(;GM[1]FF[4]AB[aa])"
     assert "W" == SGF.parse_sgf(input_sgf).next_player
+    assert "W" == SGF.parse_sgf(input_sgf).initial_player
     input_sgf = "(;GM[1]FF[4]AB[aa]PL[B])"
     assert "B" == SGF.parse_sgf(input_sgf).next_player
+    assert "B" == SGF.parse_sgf(input_sgf).initial_player
+    input_sgf = "(;GM[1]FF[4]AB[aa];B[dd])"  # branch exists
+    assert "B" == SGF.parse_sgf(input_sgf).next_player
+    assert "B" == SGF.parse_sgf(input_sgf).initial_player
+    input_sgf = "(;GM[1]FF[4]AB[aa];W[dd])"  # branch exists
+    assert "W" == SGF.parse_sgf(input_sgf).next_player
+    assert "W" == SGF.parse_sgf(input_sgf).initial_player
