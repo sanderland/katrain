@@ -133,7 +133,7 @@ class KataGoEngine:
                 else:
                     os_error += f"status {code}"
                     died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
-                if code != 1: # deliberate exit, already showed message?
+                if code != 1:  # deliberate exit, already showed message?
                     self.katrain.log(died_msg, OUTPUT_ERROR)
                 self.katago_process = None
             else:
