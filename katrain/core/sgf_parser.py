@@ -304,9 +304,15 @@ class SGFNode:
         """Returns player to move"""
         if "PL" in self.properties:  # explicit
             return "B" if self.get_property("PL").upper().strip() == "B" else "W"
-        elif "B" in self.properties or (
+        elif self.children:  # child exist, use it if not placement
+            for child in self.children:
+                for color in "BW":
+                    if color in child.properties:
+                        return color
+        # b move or setup with only black moves like root handicap
+        if "B" in self.properties or (
             "AB" in self.properties and "W" not in self.properties and "AW" not in self.properties
-        ):  # b move or setup with only black moves like root handicap
+        ):
             return "W"
         else:
             return "B"
