@@ -15,7 +15,7 @@ from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBU
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move
-from katrain.core.utils import find_package_resource
+from katrain.core.utils import find_package_resource, json_truncate_arrays
 
 
 class EngineDiedException(Exception):
@@ -219,7 +219,7 @@ class KataGoEngine:
                         f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo analysis received: {len(analysis.get('moveInfos',[]))} candidate moves, {analysis['rootInfo']['visits'] if results_exist else 'n/a'} visits",
                         OUTPUT_DEBUG,
                     )
-                    self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
+                    self.katrain.log(json_truncate_arrays(analysis), OUTPUT_EXTRA_DEBUG)
                     try:
                         if callback and results_exist:
                             callback(analysis, partial_result)

@@ -43,6 +43,7 @@ import traceback
 from queue import Queue
 import urllib3
 import webbrowser
+import time
 
 from kivy.base import ExceptionHandler, ExceptionManager
 from kivy.app import App
@@ -113,9 +114,8 @@ class KaTrainGui(Screen, KaTrainBase):
         self.idle_analysis = False
         self.message_queue = Queue()
 
-        self._keyboard = Window.request_keyboard(None, self, "")
-        self._keyboard.bind(on_key_down=self._on_keyboard_down, on_key_up=self._on_keyboard_up)
-        Clock.schedule_interval(self.animate_pondering, 0.1)
+        self.last_key_down = None
+        self.last_focus_event = 0
 
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
@@ -161,6 +161,14 @@ class KaTrainGui(Screen, KaTrainBase):
             self.load_sgf_file(sys.argv[1], fast=True, rewind=True)
         else:
             self._do_new_game()
+
+        Clock.schedule_interval(self.animate_pondering, 0.1)
+        Window.request_keyboard(None, self, "").bind(on_key_down=self._on_keyboard_down, on_key_up=self._on_keyboard_up)
+
+        def set_focus_event(*args):
+            self.last_focus_event = time.time()
+
+        MDApp.get_running_app().root_window.bind(focus=set_focus_event)
 
     def update_gui(self, cn, redraw_board=False):
         # Handle prisoners and next player display
@@ -536,6 +544,7 @@ class KaTrainGui(Screen, KaTrainBase):
         return first_child if isinstance(first_child, Popup) else None
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
+        self.last_key_down = keycode
         ctrl_pressed = "ctrl" in modifiers
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
@@ -552,11 +561,8 @@ class KaTrainGui(Screen, KaTrainBase):
             else:
                 return
         shift_pressed = "shift" in modifiers
-        alt_pressed = "alt" in modifiers
         shortcuts = self.shortcuts
-        if keycode[1] == "tab" and not alt_pressed:
-            self.play_mode.switch_ui_mode()
-        elif keycode[1] == "spacebar":
+        if keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
         elif keycode[1] == "k":
             self.board_gui.toggle_coordinates()
@@ -615,10 +621,21 @@ class KaTrainGui(Screen, KaTrainBase):
             self.log(f"wrote profiling results to {filename}", OUTPUT_ERROR)
 
     def _on_keyboard_up(self, _keyboard, keycode):
-        if self.controls.note.focus or self.popup_open:
-            return  # when making notes, don't allow keyboard shortcuts
+        if keycode[1] in ["alt", "tab"]:
+            Clock.schedule_once(lambda *_args: self._single_key_action(keycode), 0.05)
+
+    def _single_key_action(self, keycode):
+        if (
+            self.controls.note.focus
+            or self.popup_open
+            or keycode != self.last_key_down
+            or time.time() - self.last_focus_event < 0.2 # this is here to prevent alt-tab from firing alt or tab
+        ):
+            return
         if keycode[1] == "alt":
             self.nav_drawer.set_state("toggle")
+        elif keycode[1] == "tab":
+            self.play_mode.switch_ui_mode()
 
 
 class KaTrainApp(MDApp):
@@ -659,7 +676,6 @@ class KaTrainApp(MDApp):
 
         Window.bind(on_request_close=self.on_request_close)
         Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file.decode("utf8")))
-
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
         return self.gui

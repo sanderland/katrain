@@ -72,3 +72,16 @@ def format_visits(n):
     if n < 1e6:
         return f"{n/1000:.0f}k"
     return f"{n/1e6:.0f}k"
+
+
+def json_truncate_arrays(data, lim=20):
+    if isinstance(data, list):
+        if data and isinstance(data[0], dict):
+            return [json_truncate_arrays(d) for d in data]
+        if len(data) > lim:
+            data = [f"{len(data)} x {type(data[0]).__name__}"]
+        return data
+    elif isinstance(data, dict):
+        return {k: json_truncate_arrays(v) for k, v in data.items()}
+    else:
+        return data
