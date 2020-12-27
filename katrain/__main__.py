@@ -227,7 +227,7 @@ class KaTrainGui(Screen, KaTrainBase):
             ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                 self._do_ai_move(cn)
                 Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
-        if len(self.engine.queries) == 0 and self.idle_analysis:
+        if self.engine.is_idle() and self.idle_analysis:
             self("analyze-extra", "extra", continuous=True)
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
 

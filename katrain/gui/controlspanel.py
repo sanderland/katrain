@@ -43,7 +43,6 @@ class PlayAnalyzeSelect(MDFloatLayout):
             cb.active = bool(active)
             if cb.tri_state:
                 cb.slashed = active is None
-                cb.set_icon()
         for id, (panel_state, button_state) in state.get("panels", {}).items():
             self.katrain.controls.ids[id].set_option_state(button_state)
             self.katrain.controls.ids[id].state = panel_state

@@ -109,7 +109,8 @@ class Game:
 
     def analyze_all_nodes(self, priority=0, analyze_fast=False, even_if_present=True):
         for node in self.root.nodes_in_tree:
-            if even_if_present or not node.analysis_loaded:
+            # forced, or not present, or something went wrong in loading
+            if even_if_present or not node.analysis_from_sgf or not node.load_analysis():
                 node.clear_analysis()
                 node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast)
 

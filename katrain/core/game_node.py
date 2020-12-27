@@ -33,19 +33,6 @@ def analysis_dumps(analysis):
     ]
 
 
-def analysis_loads(property_array, board_squares, version):
-    if version > ANALYSIS_FORMAT_VERSION:
-        raise ValueError(f"Can not decode analysis data with version {version}, please update {PROGRAM_NAME}")
-    ownership_data, policy_data, main_data, *_ = [
-        gzip.decompress(base64.standard_b64decode(data)) for data in property_array
-    ]
-    return {
-        **json.loads(main_data),
-        "policy": unpack_floats(policy_data, board_squares + 1),
-        "ownership": unpack_floats(ownership_data, board_squares),
-    }
-
-
 class GameNode(SGFNode):
     """Represents a single game node, with one or more moves and placements."""
 
@@ -60,7 +47,7 @@ class GameNode(SGFNode):
         self.end_state = None
         self.shortcuts_to = []
         self.shortcut_from = None
-        self.analysis_loaded = False
+        self.analysis_from_sgf = None
         self.clear_analysis()
 
     def add_shortcut(self, to_node):  # collapses the branch between them
@@ -78,15 +65,31 @@ class GameNode(SGFNode):
             from_node.shortcuts_to = [(m, v) for m, v in from_node.shortcuts_to if m != self]
             self.shortcut_from = None
 
+    def load_analysis(self):
+        if not self.analysis_from_sgf:
+            return False
+        try:
+            szx, szy = self.root.board_size
+            board_squares = szx * szy
+            version = self.root.get_property("KTV", ANALYSIS_FORMAT_VERSION)
+            if version > ANALYSIS_FORMAT_VERSION:
+                raise ValueError(f"Can not decode analysis data with version {version}, please update {PROGRAM_NAME}")
+            ownership_data, policy_data, main_data, *_ = [
+                gzip.decompress(base64.standard_b64decode(data)) for data in self.analysis_from_sgf
+            ]
+            self.analysis = {
+                **json.loads(main_data),
+                "policy": unpack_floats(policy_data, board_squares + 1),
+                "ownership": unpack_floats(ownership_data, board_squares),
+            }
+            return True
+        except Exception as e:
+            print(f"Error in loading analysis: {e}")
+            return False
+
     def add_list_property(self, property: str, values: List):
         if property == "KT":
-            try:
-                szx, szy = self.root.board_size
-                version = self.root.get_property("KTV", "<unknown>")
-                self.analysis = analysis_loads(values, szx * szy, version)
-                self.analysis_loaded = True
-            except Exception as e:
-                print(f"Error in loading analysis: {e}")
+            self.analysis_from_sgf = values
         elif property == "C":
             comments = [  # strip out all previously auto generated comments
                 c
