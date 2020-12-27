@@ -41,7 +41,6 @@ class PlayAnalyzeSelect(MDFloatLayout):
         for id, active in state.get("analysis_controls", {}).items():
             cb = self.katrain.analysis_controls.ids[id].checkbox
             cb.active = bool(active)
-            print(cb,cb.tri_state,active)
             if cb.tri_state:
                 cb.slashed = active is None
                 cb.set_icon()
