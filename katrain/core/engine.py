@@ -85,6 +85,7 @@ class KataGoEngine:
         self.start()
 
     def start(self):
+        self.write_queue = queue.Queue()
         try:
             self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
             startupinfo = None
@@ -104,7 +105,6 @@ class KataGoEngine:
                 i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
             )
             return  # don't start
-        self.write_queue = queue.Queue()
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)
         self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True)
         self.write_stdin_thread = threading.Thread(target=self._write_stdin_thread, daemon=True)
