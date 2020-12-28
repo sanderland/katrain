@@ -2,6 +2,8 @@
 # first, logging level lower and force audio framework
 import os
 
+from katrain.core.contribute_engine import KataGoContributeEngine
+
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 if "KIVY_AUDIO" not in os.environ:
     os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
@@ -77,11 +79,12 @@ from katrain.core.constants import (
     SGF_INTERNAL_COMMENTS_MARKER,
     MODE_PLAY,
     DATA_FOLDER,
+    AI_DISTRIBUTED,
 )
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
-from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
+from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
 from katrain.gui.theme import Theme
@@ -103,6 +106,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.engine = None
+        self.contributing = False
 
         self.new_game_popup = None
         self.fileselect_popup = None
@@ -120,14 +124,16 @@ class KaTrainGui(Screen, KaTrainBase):
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
-            if "starting" in message.lower():
+            if self.contributing:
+                self.controls.set_status(message, STATUS_INFO)
+            elif "starting" in message.lower():
                 self.controls.set_status("KataGo engine starting...", STATUS_INFO)
-            if message.startswith("Tuning"):
+            elif message.startswith("Tuning"):
                 self.controls.set_status(
                     "KataGo is tuning settings for first startup, please wait." + message, STATUS_INFO
                 )
                 return
-            if "ready" in message.lower():
+            elif "ready" in message.lower():
                 self.controls.set_status("KataGo engine ready.", STATUS_INFO)
         if (
             level == OUTPUT_ERROR
@@ -135,11 +141,15 @@ class KaTrainGui(Screen, KaTrainBase):
         ) and getattr(self, "controls", None):
             self.controls.set_status(f"ERROR: {message}", STATUS_ERROR)
 
-    def animate_pondering(self, *_args):
-        if not self.idle_analysis:
-            self.board_controls.engine_status_pondering = -1
-        else:
+    def interval_handler(self, *_args):
+        if self.contributing:
             self.board_controls.engine_status_pondering += 5
+            self.engine.advance_showing_game()
+        else:
+            if not self.idle_analysis:
+                self.board_controls.engine_status_pondering = -1
+            else:
+                self.board_controls.engine_status_pondering += 5
 
     @property
     def play_analyze_mode(self):
@@ -162,7 +172,7 @@ class KaTrainGui(Screen, KaTrainBase):
         else:
             self._do_new_game()
 
-        Clock.schedule_interval(self.animate_pondering, 0.1)
+        Clock.schedule_interval(self.interval_handler, 0.1)
         Window.request_keyboard(None, self, "").bind(on_key_down=self._on_keyboard_down, on_key_up=self._on_keyboard_up)
 
         def set_focus_event(*args):
@@ -190,11 +200,11 @@ class KaTrainGui(Screen, KaTrainBase):
         # update engine status dot
         if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
             self.board_controls.engine_status_col = Theme.ENGINE_DOWN_COLOR
-        elif len(self.engine.queries) == 0:
+        elif self.engine.is_idle():
             self.board_controls.engine_status_col = Theme.ENGINE_READY_COLOR
         else:
             self.board_controls.engine_status_col = Theme.ENGINE_BUSY_COLOR
-        self.board_controls.queries_remaining = len(self.engine.queries)
+        self.board_controls.queries_remaining = self.engine.queries_remaining()
 
         # redraw board/stones
         if redraw_board:
@@ -215,28 +225,29 @@ class KaTrainGui(Screen, KaTrainBase):
         if not self.game or not self.game.current_node:
             return
         cn = self.game.current_node
-        last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
-        if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
-            teaching_undo = cn.player and last_player.being_taught and cn.parent
-            if (
-                teaching_undo
-                and cn.analysis_complete
-                and cn.parent.analysis_complete
-                and not cn.children
-                and not self.game.end_result
-            ):
-                self.game.analyze_undo(cn)  # not via message loop
-            if (
-                cn.analysis_complete
-                and next_player.ai
-                and not cn.children
-                and not self.game.end_result
-                and not (teaching_undo and cn.auto_undo is None)
-            ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
-                self._do_ai_move(cn)
-                Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
-        if self.engine.is_idle() and self.idle_analysis:
-            self("analyze-extra", "extra", continuous=True)
+        if not self.contributing:
+            last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
+            if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
+                teaching_undo = cn.player and last_player.being_taught and cn.parent
+                if (
+                    teaching_undo
+                    and cn.analysis_complete
+                    and cn.parent.analysis_complete
+                    and not cn.children
+                    and not self.game.end_result
+                ):
+                    self.game.analyze_undo(cn)  # not via message loop
+                if (
+                    cn.analysis_complete
+                    and next_player.ai
+                    and not cn.children
+                    and not self.game.end_result
+                    and not (teaching_undo and cn.auto_undo is None)
+                ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
+                    self._do_ai_move(cn)
+                    Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
+            if self.engine.is_idle() and self.idle_analysis:
+                self("analyze-extra", "extra", continuous=True)
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
 
     def update_player(self, bw, **kwargs):
@@ -298,6 +309,21 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 
+    def _do_katago_contribute(self):
+        if self.contributing:
+            return
+        if self.play_analyze_mode == MODE_PLAY:  # switch to analysis view
+            self.play_mode.switch_ui_mode()
+        self.contributing = True
+        self.idle_analysis = False
+        self.board_gui.animating_pv = None
+        for bw, player_info in self.players_info.items():
+            player_info.player_type = PLAYER_AI
+            player_info.player_subtype = AI_DISTRIBUTED
+        self.engine.shutdown(finish=False)
+        self.engine = KataGoContributeEngine(self)
+        self.game = BaseGame(self)
+
     def _do_insert_mode(self, mode="toggle"):
         self.game.set_insert_mode(mode)
         if self.play_analyze_mode != MODE_ANALYZE:
@@ -340,6 +366,8 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.move_tree.switch_branch(*args)
 
     def _do_play(self, coords):
+        if self.contributing:  # TODO: lock down more?
+            return
         self.board_gui.animating_pv = None
         try:
             self.game.play(Move(coords, player=self.next_player_info.player))
@@ -629,7 +657,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.note.focus
             or self.popup_open
             or keycode != self.last_key_down
-            or time.time() - self.last_focus_event < 0.2 # this is here to prevent alt-tab from firing alt or tab
+            or time.time() - self.last_focus_event < 0.2  # this is here to prevent alt-tab from firing alt or tab
         ):
             return
         if keycode[1] == "alt":

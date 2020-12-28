@@ -119,7 +119,7 @@ class ControlsPanel(BoxLayout):
             game.current_node is not self.status_state[2]
             and not (self.status_state[1] == STATUS_ERROR and self.status_state[2] is None)
         ) or (
-            len(game.engines["B"].queries) == 0 and self.status_state[1] == STATUS_ANALYSIS
+            self.katrain.engine.is_idle() and self.status_state[1] == STATUS_ANALYSIS
         ):  # clear status if node changes, except startup errors on root. also clear analysis message when no queries
             self.status.text = ""
             self.status_state = (None, -1e9, None)
@@ -139,8 +139,12 @@ class ControlsPanel(BoxLayout):
         lock_ai = katrain.config("trainer/lock_ai") and katrain.play_analyze_mode == MODE_PLAY
         details = self.info.detailed and not lock_ai
         info = ""
+        if katrain.contributing:
+            info += f"Contributing to distributed training\n{len(katrain.engine.active_games)} games in buffer, {len(katrain.engine.finished_games)} games finished showing\n"
+            if katrain.engine.showing_game is not None:
+                info += f"Showing Game #{katrain.engine.showing_game}\n"
         if move or current_node.is_root:
-            info = self.active_comment_node.comment(
+            info += self.active_comment_node.comment(
                 teach=katrain.players_info[self.active_comment_node.player].being_taught, details=details
             )
 

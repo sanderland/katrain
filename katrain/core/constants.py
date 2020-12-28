@@ -1,5 +1,5 @@
 PROGRAM_NAME = "KaTrain"
-VERSION = "1.7.1"
+VERSION = "1.8.0"
 HOMEPAGE = "https://github.com/sanderland/katrain"
 CONFIG_MIN_VERSION = "1.7.0"  # keep config files from this version
 ANALYSIS_FORMAT_VERSION = "1.0"
@@ -38,6 +38,8 @@ AI_TERRITORY = "ai:p:territory"
 AI_RANK = "ai:p:rank"
 AI_SIMPLE_OWNERSHIP = "ai:simple"
 AI_SETTLE_STONES = "ai:settle"
+
+AI_DISTRIBUTED = "ai:distributed"
 
 AI_CONFIG_DEFAULT = AI_RANK
 

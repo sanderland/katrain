@@ -977,6 +977,10 @@
             icon: 'General-Settings.png'
             shortcut: 'F8'
             on_action: root.katrain('config-popup')
+        MainMenuItem:
+            text: 'Distributed Self-play Training'
+            icon: 'collaboration.png'
+            on_action: root.katrain('katago-contribute')
     MenuLabel:
         text: i18n._('menu:lang')
     MDBoxLayout:

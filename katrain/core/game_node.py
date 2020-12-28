@@ -286,9 +286,10 @@ class GameNode(SGFNode):
         single_move = self.move
         if single_move and self.parent:
             policy_ranking = self.parent.policy_ranking
-            for ix, (p, m) in enumerate(policy_ranking):
-                if m == single_move:
-                    return ix + 1, p, policy_ranking
+            if policy_ranking:
+                for ix, (p, m) in enumerate(policy_ranking):
+                    if m == single_move:
+                        return ix + 1, p, policy_ranking
         return None, 0.0, []
 
     def make_pv(self, player, pv, interactive):
@@ -301,7 +302,10 @@ class GameNode(SGFNode):
         single_move = self.move
         if not self.parent or not single_move:  # root
             if self.root:
-                return f"{i18n._('komi')}: {self.komi:.1f}\n{i18n._('ruleset')}: {i18n._(self.get_property('RU','Japanese').lower())}\n"
+                rules = self.get_property("RU", "Japanese")
+                if isinstance(rules, str):  # else katago dict
+                    rules = i18n._(rules.lower())
+                return f"{i18n._('komi')}: {self.komi:.1f}\n{i18n._('ruleset')}: {rules}\n"
             return ""
 
         text = i18n._("move").format(number=self.depth) + f": {single_move.player} {single_move.gtp()}\n"

@@ -687,7 +687,7 @@ class BadukPanWidget(Widget):
                     up_to_move = (time.time() - start_time) / delay
                     self.draw_pv(pv, node, up_to_move)
 
-                if self.katrain.game.region_of_interest:
+                if getattr(self.katrain.game, "region_of_interest", None):
                     self.draw_roi_box(self.katrain.game.region_of_interest, width=dp(1.25))
 
     def animate_pv(self, _dt):

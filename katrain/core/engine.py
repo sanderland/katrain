@@ -145,6 +145,9 @@ class KataGoEngine:
         while self.queries and self.katago_process and self.katago_process.poll() is None:
             time.sleep(0.1)
 
+    def advance_showing_game(self):
+        pass  # avoid transitional error
+
     def shutdown(self, finish=False):
         process = self.katago_process
         if finish and process:
@@ -158,6 +161,9 @@ class KataGoEngine:
 
     def is_idle(self):
         return not self.queries and self.write_queue.empty()
+
+    def queries_remaining(self):
+        return len(self.queries) + int(not self.write_queue.empty())
 
     def _read_stderr_thread(self):
         while self.katago_process is not None:
