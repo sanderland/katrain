@@ -261,10 +261,6 @@ class BaseGame:
         if not self.current_node.ownership or rules.lower() not in ["jp", "japanese"]:
             if not self.current_node.score:
                 return None
-            self.katrain.log(
-                f"rules '{rules}' are not japanese, or no ownership available ({not self.current_node.ownership}) -> no manual score available",
-                OUTPUT_DEBUG,
-            )
             return self.current_node.format_score(round(2 * self.current_node.score) / 2) + "?"
         board_size_x, board_size_y = self.board_size
         ownership_grid = var_to_grid(self.current_node.ownership, (board_size_x, board_size_y))

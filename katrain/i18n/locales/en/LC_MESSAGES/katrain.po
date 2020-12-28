@@ -629,9 +629,6 @@ msgstr ""
 msgid "ai:simple"
 msgstr "Simple Style"
 
-msgid "ai:distributed"
-msgstr "Distributed KataGo"
-
 msgid "aihelp:simple"
 msgstr ""
 "Plays moves that lead to simplifying the board state. Of moves that lose at "

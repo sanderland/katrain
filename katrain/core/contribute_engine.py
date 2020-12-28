@@ -19,6 +19,7 @@ class KataGoContributeEngine:
     """Starts and communicates with the KataGO contribute program"""
 
     MOVE_SPEED = 0.5
+    SHOW_RESULT_TIME = 5
     GIVE_UP_AFTER = 30
 
     def __init__(self, katrain):
@@ -31,7 +32,7 @@ class KataGoContributeEngine:
         self.active_games = {}
         self.finished_games = set()
         self.showing_game = None
-        self.last_advance = time.time() - 1
+        self.last_advance = 0
 
         exe = os.path.expanduser("~/.katrain/katago.exe")
         self.command = shlex.split(f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}"')
@@ -41,7 +42,7 @@ class KataGoContributeEngine:
     def game_ended(game):
         if game.current_node.analysis_exists:
             if game.current_node.candidate_moves[0]["move"] == "pass" and game.current_node.is_pass:
-                return "Pass-top-move"
+                game.play(Move(None, player=game.current_node.next_player))  # play pass
         return game.end_result
 
     def advance_showing_game(self):
@@ -50,9 +51,10 @@ class KataGoContributeEngine:
             end_result = self.game_ended(current_game)
             if end_result is not None:
                 self.finished_games.add(self.showing_game)
-                del self.active_games[self.showing_game]
-                self.katrain.log(f"Game {self.showing_game} finished ({end_result}), finding a new one", OUTPUT_INFO)
-                self.showing_game = None
+                if time.time() - self.last_advance > self.SHOW_RESULT_TIME:
+                    del self.active_games[self.showing_game]
+                    self.katrain.log(f"Game {self.showing_game} finished, finding a new one", OUTPUT_INFO)
+                    self.showing_game = None
             elif time.time() - self.last_advance > self.MOVE_SPEED:
                 if current_game.current_node.children:
                     current_game.redo(1)
@@ -68,12 +70,11 @@ class KataGoContributeEngine:
         else:
             if self.active_games:
                 self.showing_game = min(self.active_games.keys())
+                self.last_advance = time.time()
                 self.katrain.log(f"Found new game to show: {self.showing_game}", OUTPUT_INFO)
 
                 self.katrain.game = self.active_games[self.showing_game]
                 self.katrain("update-state", redraw_board=True)
-
-        self.katrain.log(f"Game {self.showing_game} tick", OUTPUT_INFO)
 
     def is_idle(self):
         return False
@@ -156,7 +157,7 @@ class KataGoContributeEngine:
                                 new_game = current_game is None
                                 if new_game:
                                     board_size = [analysis["boardXSize"], analysis["boardYSize"]]
-                                    game_properties = {
+                                    placements = {
                                         f"A{bw}": [
                                             Move.from_gtp(move, pl).sgf(board_size)
                                             for pl, move in analysis["initialStones"]
@@ -164,9 +165,10 @@ class KataGoContributeEngine:
                                         ]
                                         for bw in "BW"
                                     }
+                                    game_properties = {k: v for k, v in placements.items() if v}
                                     game_properties["SZ"] = f"{board_size[0]}:{board_size[1]}"
                                     game_properties["KM"] = analysis["rules"]["komi"]
-                                    game_properties["RU"] = analysis["rules"]
+                                    game_properties["RU"] = json.dumps(analysis["rules"])
                                     current_game = BaseGame(self.katrain, game_properties=game_properties)
                                     self.active_games[game_id] = current_game
                                 last_node = current_game.sync_branch(
@@ -176,8 +178,10 @@ class KataGoContributeEngine:
                                 if new_game:
                                     current_game.set_current_node(last_node)
                                 self.katrain.log(
-                                    f"Game {game_id} Move {analysis['turnNumber']} = {analysis['move']}", OUTPUT_INFO
+                                    f"Game {game_id} Move {analysis['turnNumber']}: {' '.join(analysis['move'])}",
+                                    OUTPUT_DEBUG,
                                 )
+                                self.katrain("update-state")
                         except Exception as e:
                             traceback.print_exc()
                             self.katrain.log(f"Exception {e} in parsing or processing JSON: {line}", OUTPUT_ERROR)

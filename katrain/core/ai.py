@@ -33,7 +33,6 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
-    AI_DISTRIBUTED,
 )
 from katrain.core.game import Game, GameNode, Move
 from katrain.core.utils import var_to_grid
@@ -66,7 +65,7 @@ def interp2d(gridspec, x, y):
 
 
 def ai_rank_estimation(strategy, settings) -> int:
-    if strategy in [AI_DEFAULT, AI_HANDICAP, AI_JIGO, AI_DISTRIBUTED]:
+    if strategy in [AI_DEFAULT, AI_HANDICAP, AI_JIGO]:
         return 9
     if strategy == AI_RANK:
         return 1 - settings["kyu_rank"]

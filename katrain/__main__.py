@@ -79,7 +79,7 @@ from katrain.core.constants import (
     SGF_INTERNAL_COMMENTS_MARKER,
     MODE_PLAY,
     DATA_FOLDER,
-    AI_DISTRIBUTED,
+    AI_DEFAULT,
 )
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup
 from katrain.core.base_katrain import KaTrainBase
@@ -142,18 +142,13 @@ class KaTrainGui(Screen, KaTrainBase):
         ) and getattr(self, "controls", None):
             self.controls.set_status(f"ERROR: {message}", STATUS_ERROR)
 
-    def interval_handler(self, *_args):
-        if self.contributing:
-            if self.animate_contributing:
-                self.board_controls.engine_status_pondering += 5
-                self.engine.advance_showing_game()
-            else:
-                self.board_controls.engine_status_pondering = -1
+    def handle_animations(self, *_args):
+        if self.contributing and self.animate_contributing:
+            self.engine.advance_showing_game()
+        if (self.contributing and self.animate_contributing) or self.idle_analysis:
+            self.board_controls.engine_status_pondering += 5
         else:
-            if not self.idle_analysis:
-                self.board_controls.engine_status_pondering = -1
-            else:
-                self.board_controls.engine_status_pondering += 5
+            self.board_controls.engine_status_pondering = -1
 
     @property
     def play_analyze_mode(self):
@@ -179,7 +174,7 @@ class KaTrainGui(Screen, KaTrainBase):
         else:
             self._do_new_game()
 
-        Clock.schedule_interval(self.interval_handler, 0.1)
+        Clock.schedule_interval(self.handle_animations, 0.1)
         Window.request_keyboard(None, self, "").bind(on_key_down=self._on_keyboard_down, on_key_up=self._on_keyboard_up)
 
         def set_focus_event(*args):
@@ -284,7 +279,7 @@ class KaTrainGui(Screen, KaTrainBase):
                     continue
                 msg = msg.replace("-", "_")
                 if self.contributing:
-                    if msg not in ["katago_contribute", "redo", "undo", "update_state", "save_game"]:
+                    if msg not in ["katago_contribute", "redo", "undo", "update_state", "save_game", "find_mistake"]:
                         self.log(i18n._("gui-locked").format(action=msg), OUTPUT_ERROR)
                         continue
                 fn = getattr(self, f"_do_{msg}")
@@ -316,8 +311,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast, sgf_filename=sgf_filename)
         if move_tree:
             for bw, player_info in self.players_info.items():
-                player_info.player_type = PLAYER_HUMAN
-                player_info.player_subtype = PLAYING_NORMAL
                 player_info.sgf_rank = move_tree.root.get_property(bw + "R")
                 player_info.calculated_rank = None
                 self.update_player(bw)
@@ -333,9 +326,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.idle_analysis = False
         self.board_gui.animating_pv = None
         for bw, player_info in self.players_info.items():
-            player_info.player_type = PLAYER_AI
-            player_info.player_subtype = AI_DISTRIBUTED
-            self.update_player(bw)
+            self.update_player(bw, player_type=PLAYER_AI, player_subtype=AI_DEFAULT)
         self.engine.shutdown(finish=False)
         self.engine = KataGoContributeEngine(self)
         self.game = BaseGame(self)

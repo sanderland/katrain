@@ -31,7 +31,15 @@ class KataGoEngine:
 
     @staticmethod
     def get_rules(node):
-        return KataGoEngine.RULESETS.get(str(node.ruleset).lower(), "japanese")
+        ruleset = node.ruleset
+        if ruleset.strip().startswith("{"):
+            try:
+                ruleset = json.loads(ruleset)
+            except:
+                pass
+        if isinstance(ruleset, dict):
+            return ruleset
+        return KataGoEngine.RULESETS.get(str(ruleset).lower(), "japanese")
 
     def __init__(self, katrain, config):
         self.katrain = katrain

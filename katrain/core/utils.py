@@ -57,10 +57,14 @@ def find_package_resource(path, silent_errors=False):
 
 
 def pack_floats(float_list):
+    if float_list is None:
+        return b""
     return struct.pack(f"{len(float_list)}e", *float_list)
 
 
 def unpack_floats(str, num):
+    if not str:
+        return None
     return struct.unpack(f"{num}e", str)
 
 

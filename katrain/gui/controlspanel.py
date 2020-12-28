@@ -142,7 +142,7 @@ class ControlsPanel(BoxLayout):
         if katrain.contributing:
             info += f"Contributing to distributed training\n{len(katrain.engine.active_games)} games in buffer, {len(katrain.engine.finished_games)} games finished showing\n"
             if katrain.engine.showing_game is not None:
-                info += f"Showing Game #{katrain.engine.showing_game}\n"
+                info += f"Showing game #{katrain.engine.showing_game}\n"
         if move or current_node.is_root:
             info += self.active_comment_node.comment(
                 teach=katrain.players_info[self.active_comment_node.player].being_taught, details=details

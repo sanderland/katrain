@@ -829,10 +829,6 @@ msgstr ""
 "Action {action} not allowed in self-play mode. Restart KaTrain to exit "
 "distributed training mode."
 
-#. TODO
-msgid "ai:distributed"
-msgstr "Distributed KataGo"
-
 #. TODO - menu item
 msgid "menu:distributed"
 msgstr "Distributed Self-play Training"

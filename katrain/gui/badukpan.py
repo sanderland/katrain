@@ -465,6 +465,7 @@ class BadukPanWidget(Widget):
                                 pos=(self.gridpos_x[x], self.gridpos_y[y]),
                                 text=f"{100 * move_policy :.2f}"[:4] + "%",
                                 font_name="Roboto",
+                                font_size=self.grid_size / 4,
                                 halign="center",
                             )
                         if move_policy == best_move_policy:
