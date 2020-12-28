@@ -31,7 +31,7 @@ class KataGoContributeEngine:
         self.active_games = {}
         self.finished_games = set()
         self.showing_game = None
-        self.last_advance = time.time()-1
+        self.last_advance = time.time() - 1
 
         exe = os.path.expanduser("~/.katrain/katago.exe")
         self.command = shlex.split(f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}"')
@@ -72,6 +72,8 @@ class KataGoContributeEngine:
 
                 self.katrain.game = self.active_games[self.showing_game]
                 self.katrain("update-state", redraw_board=True)
+
+        self.katrain.log(f"Game {self.showing_game} tick", OUTPUT_INFO)
 
     def is_idle(self):
         return False

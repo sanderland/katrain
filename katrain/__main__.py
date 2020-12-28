@@ -116,6 +116,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.timer_settings_popup = None
 
         self.idle_analysis = False
+        self.animate_contributing = False
         self.message_queue = Queue()
 
         self.last_key_down = None
@@ -143,8 +144,11 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def interval_handler(self, *_args):
         if self.contributing:
-            self.board_controls.engine_status_pondering += 5
-            self.engine.advance_showing_game()
+            if self.animate_contributing:
+                self.board_controls.engine_status_pondering += 5
+                self.engine.advance_showing_game()
+            else:
+                self.board_controls.engine_status_pondering = -1
         else:
             if not self.idle_analysis:
                 self.board_controls.engine_status_pondering = -1
@@ -156,10 +160,13 @@ class KaTrainGui(Screen, KaTrainBase):
         return self.play_mode.mode
 
     def toggle_continuous_analysis(self):
-        if self.idle_analysis:
-            self.controls.set_status("", STATUS_INFO)
-        self.idle_analysis = not self.idle_analysis
-        self.update_state()
+        if self.contributing:
+            self.animate_contributing = not self.animate_contributing
+        else:
+            if self.idle_analysis:
+                self.controls.set_status("", STATUS_INFO)
+            self.idle_analysis = not self.idle_analysis
+            self.update_state()
 
     def start(self):
         if self.engine:
@@ -275,7 +282,12 @@ class KaTrainGui(Screen, KaTrainBase):
                         f"Message skipped as it is outdated (current game is {self.game.game_id}", OUTPUT_EXTRA_DEBUG
                     )
                     continue
-                fn = getattr(self, f"_do_{msg.replace('-','_')}")
+                msg = msg.replace("-", "_")
+                if self.contributing:
+                    if msg not in ["katago_contribute", "redo", "undo", "update_state", "save_game"]:
+                        self.log(i18n._("gui-locked").format(action=msg), OUTPUT_ERROR)
+                        continue
+                fn = getattr(self, f"_do_{msg}")
                 fn(*args, **kwargs)
                 if msg != "update_state":
                     self._do_update_state()
@@ -286,6 +298,9 @@ class KaTrainGui(Screen, KaTrainBase):
     def __call__(self, message, *args, **kwargs):
         if self.game:
             if message.endswith("popup"):  # gui code needs to run in main kivy thread.
+                if self.contributing and "save" not in message:
+                    self.log(i18n._("gui-locked").format(action=message), OUTPUT_ERROR)
+                    return
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")
                 Clock.schedule_once(lambda _dt: fn(*args, **kwargs), -1)
             else:  # game related actions
@@ -312,14 +327,15 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_katago_contribute(self):
         if self.contributing:
             return
+        self.contributing = self.animate_contributing = True  # special mode
         if self.play_analyze_mode == MODE_PLAY:  # switch to analysis view
             self.play_mode.switch_ui_mode()
-        self.contributing = True
         self.idle_analysis = False
         self.board_gui.animating_pv = None
         for bw, player_info in self.players_info.items():
             player_info.player_type = PLAYER_AI
             player_info.player_subtype = AI_DISTRIBUTED
+            self.update_player(bw)
         self.engine.shutdown(finish=False)
         self.engine = KataGoContributeEngine(self)
         self.game = BaseGame(self)
@@ -366,8 +382,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.move_tree.switch_branch(*args)
 
     def _do_play(self, coords):
-        if self.contributing:  # TODO: lock down more?
-            return
         self.board_gui.animating_pv = None
         try:
             self.game.play(Move(coords, player=self.next_player_info.player))

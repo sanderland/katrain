@@ -777,3 +777,17 @@ msgstr "흑 대국자"
 #. hint on player name input
 msgid "white player name hint"
 msgstr "백 대국자"
+
+#. TODO - in self-play mode
+msgid "gui-locked"
+msgstr ""
+"Action {action} not allowed in distributed self-play training mode. Restart "
+"KaTrain to exit this mode."
+
+#. TODO
+msgid "ai:distributed"
+msgstr "Distributed KataGo"
+
+#. TODO - menu item
+msgid "menu:distributed"
+msgstr "Distributed Self-play Training"

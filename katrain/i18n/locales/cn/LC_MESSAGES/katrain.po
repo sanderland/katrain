@@ -764,3 +764,17 @@ msgstr "计算深度...以上时显示"
 #. analysis option
 msgid "cache analysis to sgf"
 msgstr "分析缓存到SGF"
+
+#. TODO - in self-play mode
+msgid "gui-locked"
+msgstr ""
+"Action {action} not allowed in distributed self-play training mode. Restart "
+"KaTrain to exit this mode."
+
+#. TODO
+msgid "ai:distributed"
+msgstr "Distributed KataGo"
+
+#. TODO - menu item
+msgid "menu:distributed"
+msgstr "Distributed Self-play Training"

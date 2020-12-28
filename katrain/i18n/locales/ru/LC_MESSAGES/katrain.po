@@ -793,3 +793,17 @@ msgstr "Имя игрока чёрными"
 
 msgid "white player name hint"
 msgstr "Имя игрока белыми"
+
+#. TODO - in self-play mode
+msgid "gui-locked"
+msgstr ""
+"Action {action} not allowed in distributed self-play training mode. Restart "
+"KaTrain to exit this mode."
+
+#. TODO
+msgid "ai:distributed"
+msgstr "Distributed KataGo"
+
+#. TODO - menu item
+msgid "menu:distributed"
+msgstr "Distributed Self-play Training"

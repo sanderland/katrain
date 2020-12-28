@@ -187,6 +187,7 @@ class BaseGame:
     def undo(self, n_times=1, stop_on_mistake=None):
         break_on_branch = False
         cn = self.current_node  # avoid race conditions
+
         if n_times == "branch":
             n_times = 9999
             break_on_branch = True

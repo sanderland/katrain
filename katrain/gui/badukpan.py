@@ -334,7 +334,6 @@ class BadukPanWidget(Widget):
             self.canvas.clear()
             # stones
             current_node = katrain.game.current_node
-            game_ended = katrain.game.end_result
             full_eval_on = katrain.analysis_controls.eval.active
             all_dots_off = katrain.analysis_controls.eval.checkbox.slashed
             has_stone = {}
@@ -483,21 +482,6 @@ class BadukPanWidget(Widget):
                             pass_btn.height / 2,
                             (*colors[pol_order][:3], Theme.GHOST_ALPHA),
                         )
-
-            # pass circle
-            passed = len(nodes) > 1 and current_node.is_pass
-            if passed or game_ended:
-                if game_ended:
-                    text = game_ended
-                    katrain.controls.timer.paused = True
-                else:
-                    text = i18n._("board-pass")
-                Color(*Theme.PASS_CIRCLE_COLOR)
-                center = (self.gridpos_x[int(board_size_x / 2)], self.gridpos_y[int(board_size_y / 2)])
-                size = min(self.width, self.height) * 0.227
-                Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
-                Color(*Theme.PASS_CIRCLE_TEXT_COLOR)
-                draw_text(pos=center, text=text, font_size=size * 0.25, halign="center")
 
         self.redraw_hover_contents_trigger()
 
@@ -689,6 +673,20 @@ class BadukPanWidget(Widget):
 
                 if getattr(self.katrain.game, "region_of_interest", None):
                     self.draw_roi_box(self.katrain.game.region_of_interest, width=dp(1.25))
+
+            # pass circle
+            if current_node.is_pass or game_ended:
+                if game_ended:
+                    text = game_ended
+                    katrain.controls.timer.paused = True
+                else:
+                    text = i18n._("board-pass")
+                Color(*Theme.PASS_CIRCLE_COLOR)
+                center = (self.gridpos_x[int(board_size_x / 2)], self.gridpos_y[int(board_size_y / 2)])
+                size = min(self.width, self.height) * 0.227
+                Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
+                Color(*Theme.PASS_CIRCLE_TEXT_COLOR)
+                draw_text(pos=center, text=text, font_size=size * 0.25, halign="center")
 
     def animate_pv(self, _dt):
         if self.animating_pv:

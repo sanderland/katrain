@@ -629,6 +629,9 @@ msgstr ""
 msgid "ai:simple"
 msgstr "Simple Style"
 
+msgid "ai:distributed"
+msgstr "Distributed KataGo"
+
 msgid "aihelp:simple"
 msgstr ""
 "Plays moves that lead to simplifying the board state. Of moves that lose at "
@@ -836,3 +839,13 @@ msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
 msgid "finish inserting before navigating"
 msgstr ""
 "Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "
+
+#. menu item
+msgid "menu:distributed"
+msgstr "Distributed Self-play Training"
+
+#. in self-play mode
+msgid "gui-locked"
+msgstr ""
+"Action {action} not allowed in distributed self-play training mode. Restart "
+"KaTrain to exit this mode."
