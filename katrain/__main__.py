@@ -157,7 +157,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.trainer_config = self.config("trainer")
         self.engine = KataGoEngine(self, self.config("engine"))
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
-        if len(sys.argv) == 2 and os.path.isfile(sys.argv[1]):
+        if len(sys.argv) == 2 and os.path.isfile(sys.argv[1]) and not sys.argv[1].endswith('json'):
             self.load_sgf_file(sys.argv[1], fast=True, rewind=True)
         else:
             self._do_new_game()
