@@ -159,6 +159,9 @@ class KataGoEngine:
     def is_idle(self):
         return not self.queries and self.write_queue.empty()
 
+    def queries_remaining(self):
+        return len(self.queries) + int(not self.write_queue.empty())
+
     def _read_stderr_thread(self):
         while self.katago_process is not None:
             try:

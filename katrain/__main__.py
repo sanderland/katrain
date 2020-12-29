@@ -190,11 +190,11 @@ class KaTrainGui(Screen, KaTrainBase):
         # update engine status dot
         if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
             self.board_controls.engine_status_col = Theme.ENGINE_DOWN_COLOR
-        elif len(self.engine.queries) == 0:
+        elif self.engine.is_idle():
             self.board_controls.engine_status_col = Theme.ENGINE_READY_COLOR
         else:
             self.board_controls.engine_status_col = Theme.ENGINE_BUSY_COLOR
-        self.board_controls.queries_remaining = len(self.engine.queries)
+        self.board_controls.queries_remaining = self.engine.queries_remaining()
 
         # redraw board/stones
         if redraw_board:
@@ -629,7 +629,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.note.focus
             or self.popup_open
             or keycode != self.last_key_down
-            or time.time() - self.last_focus_event < 0.2 # this is here to prevent alt-tab from firing alt or tab
+            or time.time() - self.last_focus_event < 0.2  # this is here to prevent alt-tab from firing alt or tab
         ):
             return
         if keycode[1] == "alt":
