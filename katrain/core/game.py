@@ -258,7 +258,7 @@ class BaseGame:
     @property
     def manual_score(self):
         rules = self.rules
-        if not self.current_node.ownership or rules.lower() not in ["jp", "japanese"]:
+        if not self.current_node.ownership or str(rules).lower() not in ["jp", "japanese"]:
             if not self.current_node.score:
                 return None
             return self.current_node.format_score(round(2 * self.current_node.score) / 2) + "?"

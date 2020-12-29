@@ -6,7 +6,15 @@ from kivy.properties import ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.constants import MODE_ANALYZE, MODE_PLAY, PLAYER_HUMAN, STATUS_ANALYSIS, STATUS_ERROR
+from katrain.core.constants import (
+    MODE_ANALYZE,
+    MODE_PLAY,
+    PLAYER_HUMAN,
+    STATUS_ANALYSIS,
+    STATUS_ERROR,
+    AI_DEFAULT,
+    PLAYER_AI,
+)
 from katrain.core.lang import rank_label
 from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
 from katrain.gui.theme import Theme
@@ -141,8 +149,21 @@ class ControlsPanel(BoxLayout):
         info = ""
         if katrain.contributing:
             info += f"Contributing to distributed training\n{len(katrain.engine.active_games)} games in buffer, {len(katrain.engine.finished_games)} games finished showing\n"
-            if katrain.engine.showing_game is not None:
-                info += f"Showing game #{katrain.engine.showing_game}\n"
+            game_id = katrain.engine.showing_game
+            game = katrain.engine.active_games.get(game_id)
+            if game is not None:
+                info += f"Showing game {game_id}\n"
+                for bw in "BW":
+                    self.players[bw].rank = None
+                    network = game.root.get_property(f"P{bw}", AI_DEFAULT)
+                    parts = network.split("-")
+                    if len(parts) == 4:
+                        self.players[bw].player_type = parts[1]
+                        self.players[bw].player_subtype = parts[2]
+                    else:
+                        self.players[bw].player_type = PLAYER_AI
+                        self.players[bw].player_subtype = network
+
         if move or current_node.is_root:
             info += self.active_comment_node.comment(
                 teach=katrain.players_info[self.active_comment_node.player].being_taught, details=details

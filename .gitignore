@@ -18,6 +18,7 @@ logs
 callgrind.*
 cpp/out
 .vs
+dist_sgf
 
 # debug
 outdated_log.txt

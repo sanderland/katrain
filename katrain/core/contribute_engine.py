@@ -1,12 +1,12 @@
 import json
 import os
+import random
 import shlex
 import subprocess
 import threading
 import time
 import traceback
 
-from kivy.clock import Clock
 
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO
 from katrain.core.engine import EngineDiedException
@@ -18,6 +18,7 @@ from katrain.core.sgf_parser import Move
 class KataGoContributeEngine:
     """Starts and communicates with the KataGO contribute program"""
 
+    MAX_BUFFER_GAMES = 8
     MOVE_SPEED = 0.5
     SHOW_RESULT_TIME = 5
     GIVE_UP_AFTER = 30
@@ -34,14 +35,18 @@ class KataGoContributeEngine:
         self.showing_game = None
         self.last_advance = 0
 
+        self.save_sgf = True
+
         exe = os.path.expanduser("~/.katrain/katago.exe")
         self.command = shlex.split(f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}"')
         self.start()
 
     @staticmethod
     def game_ended(game):
-        if game.current_node.analysis_exists:
-            if game.current_node.candidate_moves[0]["move"] == "pass" and game.current_node.is_pass:
+        cn = game.current_node
+        if cn.is_pass and cn.analysis_exists:
+            moves = cn.candidate_moves
+            if moves and moves[0]["move"] == "pass":
                 game.play(Move(None, player=game.current_node.next_player))  # play pass
         return game.end_result
 
@@ -53,13 +58,16 @@ class KataGoContributeEngine:
                 self.finished_games.add(self.showing_game)
                 if time.time() - self.last_advance > self.SHOW_RESULT_TIME:
                     del self.active_games[self.showing_game]
+                    if self.save_sgf:
+                        filename = f"./dist_sgf/{self.showing_game}.sgf"
+                        self.katrain.log(current_game.write_sgf(filename, self.katrain.config("trainer")), OUTPUT_INFO)
+
                     self.katrain.log(f"Game {self.showing_game} finished, finding a new one", OUTPUT_INFO)
                     self.showing_game = None
-            elif time.time() - self.last_advance > self.MOVE_SPEED:
+            elif time.time() - self.last_advance > self.MOVE_SPEED or len(self.active_games) > self.MAX_BUFFER_GAMES:
                 if current_game.current_node.children:
                     current_game.redo(1)
                     self.last_advance = time.time()
-                    Clock.schedule_once(self.katrain.board_gui.play_stone_sound, 0.25)
                     self.katrain("update-state")
                 elif time.time() - self.last_advance > self.GIVE_UP_AFTER:
                     self.katrain.log(
@@ -69,7 +77,11 @@ class KataGoContributeEngine:
                     self.showing_game = None
         else:
             if self.active_games:
-                self.showing_game = min(self.active_games.keys())
+                self.showing_game = random.choice(list(self.active_games.keys()))
+                for game_id, game in self.active_games.items():  # find finished game
+                    if game.root.nodes_in_tree[-1].is_pass:
+                        self.showing_game = game_id
+                        break
                 self.last_advance = time.time()
                 self.katrain.log(f"Found new game to show: {self.showing_game}", OUTPUT_INFO)
 
@@ -150,7 +162,7 @@ class KataGoContributeEngine:
                         try:
                             analysis = json.loads(line)
                             if "gameId" in analysis:
-                                game_id = int(analysis["gameId"])
+                                game_id = analysis["gameId"]
                                 if game_id in self.finished_games:
                                     continue
                                 current_game = self.active_games.get(game_id)
@@ -169,6 +181,8 @@ class KataGoContributeEngine:
                                     game_properties["SZ"] = f"{board_size[0]}:{board_size[1]}"
                                     game_properties["KM"] = analysis["rules"]["komi"]
                                     game_properties["RU"] = json.dumps(analysis["rules"])
+                                    game_properties["PB"] = analysis["blackPlayer"]
+                                    game_properties["PW"] = analysis["whitePlayer"]
                                     current_game = BaseGame(self.katrain, game_properties=game_properties)
                                     self.active_games[game_id] = current_game
                                 last_node = current_game.sync_branch(
