@@ -326,11 +326,6 @@ msgstr ""
 "인공지능 대국자에 대해서도\n"
 "평가를 색으로 표시"
 
-msgid "lock ai when playing"
-msgstr ""
-"대국 중에\n"
-"후보수 분석하지 않기"
-
 #. submit button
 msgid "update teacher"
 msgstr "피드백 설정 갱신"
@@ -391,12 +386,6 @@ msgstr ""
 
 msgid "engine:time:hint"
 msgstr "시간(초)"
-
-msgid "general:sgf_load"
-msgstr "SGF 파일을 불러올 경로"
-
-msgid "general:sgf_save"
-msgstr "SGF 파일을 저장할 경로"
 
 msgid "general:anim_pv_time"
 msgstr "수순을 보여줄 때 수 사이의 시간"

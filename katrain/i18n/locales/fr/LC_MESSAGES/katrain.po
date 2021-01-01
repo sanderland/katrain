@@ -344,11 +344,6 @@ msgstr "Dernier(s) coup(s) à marquer :"
 msgid "show ai dots"
 msgstr "Étudier les coups du joueur artificiel"
 
-msgid "lock ai when playing"
-msgstr ""
-"Ne pas recommander de coups \n"
-"en mode “Partie”"
-
 #. submit button
 msgid "update teacher"
 msgstr "Mettre à jour"
@@ -427,16 +422,6 @@ msgstr ""
 
 msgid "engine:time:hint"
 msgstr "En secondes"
-
-msgid "general:sgf_load"
-msgstr ""
-"Chemin d'accès du \n"
-"fichier SGF à analyser"
-
-msgid "general:sgf_save"
-msgstr ""
-"Chemin d'accès du \n"
-"fichier SGF à enregistrer"
 
 msgid "general:anim_pv_time"
 msgstr ""

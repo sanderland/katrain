@@ -292,7 +292,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
-        self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast, sgf_filename=sgf_filename)
+        self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast or not move_tree, sgf_filename=sgf_filename)
         if move_tree:
             for bw, player_info in self.players_info.items():
                 player_info.player_type = PLAYER_HUMAN

@@ -333,11 +333,6 @@ msgstr ""
 "Mostrar puntos/comentarios\n"
 " para motores de IA"
 
-msgid "lock ai when playing"
-msgstr ""
-"Deshabilitar jugadas superiores top moves\n"
-" en modo juego"
-
 #. submit button
 msgid "update teacher"
 msgstr "Actualizar conf"
@@ -397,12 +392,6 @@ msgstr ""
 
 msgid "engine:time:hint"
 msgstr "Tiempo en segundos"
-
-msgid "general:sgf_load"
-msgstr "Ruta para cargar los archivos SGF"
-
-msgid "general:sgf_save"
-msgstr "Ruta para guardar los archivos SGF"
 
 msgid "general:anim_pv_time"
 msgstr "Tiempo entre juagadas animando una secuencia"

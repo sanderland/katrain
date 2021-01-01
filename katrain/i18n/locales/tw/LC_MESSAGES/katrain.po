@@ -167,14 +167,11 @@ msgstr "認輸"
 #. Shown when a move is undone in teaching mode.
 msgid "teaching undo message"
 msgstr ""
-"復原第 {move} 手損失了 {points_lost:.1f} 目。請再試一次。"
-"若要查看提示，將游標停於該手以查看預期的反制手段；"
-"或查看預估的領地來看可能損失目數的棋盤區域。"
+"復原第 {move} 手損失了 {points_lost:.1f} "
+"目。請再試一次。若要查看提示，將游標停於該手以查看預期的反制手段；或查看預估的領地來看可能損失目數的棋盤區域。"
 
 msgid "ai-ponder"
-msgstr ""
-"AI引擎狀態指示燈，從綠色（閒置）變為橘色（處理中）。當引擎崩潰或無法啟動時，"
-"會變為紅色。"
+msgstr "AI引擎狀態指示燈，從綠色（閒置）變為橘色（處理中）。當引擎崩潰或無法啟動時，會變為紅色。"
 
 #. undo button on the right
 msgid "undo-button-text"
@@ -445,11 +442,6 @@ msgstr ""
 msgid "cache analysis to sgf"
 msgstr "儲存分析到SGF中"
 
-msgid "lock ai when playing"
-msgstr ""
-"在對局模式中\n"
-"停用最佳選點"
-
 #. submit button
 msgid "update teacher"
 msgstr "更新指導棋設定"
@@ -512,24 +504,20 @@ msgstr ""
 msgid "engine:time:hint"
 msgstr "時間單位是秒"
 
-#. no longer used, can ignore
-#  msgid "general:sgf_load"
-#  msgstr "Path for loading SGF files"
+msgid "general:anim_pv_time"
+msgstr "動畫中，兩手棋的時間間隔"
 
-#  msgid "general:sgf_save"
-#  msgstr "Path for saving SGF files"
+msgid "general:debug_level:hint"
+msgstr "設為1時，回報錯誤"
 
-#  msgid "general:anim_pv_time"
-#  msgstr "Time between moves when animating a sequence"
+msgid "general:debug_level"
+msgstr "Console中的偵錯層級"
 
-#  msgid "general:debug_level"
-#  msgstr "Debug level in the console"
+msgid "katago settings"
+msgstr "KataGo設定"
 
-#  msgid "general:debug_level:hint"
-#  msgstr "Set to 1 when reporting errors"
-
-#  msgid "update settings"
-#  msgstr "Update Settings"
+msgid "update settings"
+msgstr "更新設定"
 
 # ai settings from here
 msgid "ai settings"
@@ -564,9 +552,8 @@ msgstr "KataGo執行檔 {exe} 不存在，請檢查一般設定。"
 
 msgid "Kata exe not found in path"
 msgstr ""
-"在 PATH 中找不到KataGo執行檔 `{exe}`，請檢查環境變數"
-"或在一般設定中使用完整路徑代替。若是在 MacOS 上，請先閱讀使用手冊中的"
-"如何使用brew安裝KataGo。"
+"在 PATH 中找不到KataGo執行檔 `{exe}`，請檢查環境變數或在一般設定中使用完整路徑代替。若是在 MacOS "
+"上，請先閱讀使用手冊中的如何使用brew安裝KataGo。"
 
 msgid "Kata model not found"
 msgstr "KataGo模型 {model} 不存在，請檢查一般設定。"
@@ -581,9 +568,7 @@ msgid "Engine died unexpectedly"
 msgstr "引擎意外崩潰沒有輸出，可能為記憶體不足導致: {error}"
 
 msgid "Engine missing DLL"
-msgstr ""
-"遺失DLL因此無法啟動KataGo。請參考KataGo文件中的所需事項，"
-"或嘗試單獨啟動KataGo來取得詳細資訊。"
+msgstr "遺失DLL因此無法啟動KataGo。請參考KataGo文件中的所需事項，或嘗試單獨啟動KataGo來取得詳細資訊。"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -597,8 +582,7 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"最強的KataGo AI。其棋力由在一般設定中 `引擎` 區塊中的 `最大走訪數` 和 "
-"`模型` 以及引擎組態文件決定。此處沒有可供調整的選項。"
+"最強的KataGo AI。其棋力由在一般設定中 `引擎` 區塊中的 `最大走訪數` 和 `模型` 以及引擎組態文件決定。此處沒有可供調整的選項。"
 
 #. ai which handles handicap games better
 msgid "ai:handicap"
@@ -606,20 +590,18 @@ msgstr "Kata讓子棋"
 
 msgid "aihelp:handicap"
 msgstr ""
-"KataGo 對讓子棋做了最佳化的對局版本。以黑棋的觀點來看，KataGo 中的 `pda` 設定對應到的"
-"是 `playoutDoublingAdvantage`。當被設定為 `自動` 時，KaTrain 將會找自動找到適合的值。"
+"KataGo 對讓子棋做了最佳化的對局版本。以黑棋的觀點來看，KataGo 中的 `pda` 設定對應到的是 "
+"`playoutDoublingAdvantage`。當被設定為 `自動` 時，KaTrain 將會找自動找到適合的值。"
 
 msgid "ai:simple"
 msgstr "單純模式"
 
 msgid "aihelp:simple"
 msgstr ""
-"下法會導致盤面狀態簡單化。每步在損失最多 '最大目數損失' 目和最少 '最少走訪數'中，"
-"較傾向於損失較少目數、安定自身領地(搭配 importance settled_weight)、突破對方領地"
-"(importance settled_weight * opponent_fac)、避免脫先(5路以上，importance "
-"tenuki_penalty)和避免碰(importance attachment_penalty)。"
-"權重可以是負數使對局複雜化，而寬根雜訊(在一般設定中)的使用，可以以棋力強度作為代價"
-"，加強風格。"
+"下法會導致盤面狀態簡單化。每步在損失最多 '最大目數損失' 目和最少 '最少走訪數'中，較傾向於損失較少目數、安定自身領地(搭配 importance "
+"settled_weight)、突破對方領地(importance settled_weight * "
+"opponent_fac)、避免脫先(5路以上，importance tenuki_penalty)和避免碰(importance "
+"attachment_penalty)。權重可以是負數使對局複雜化，而寬根雜訊(在一般設定中)的使用，可以以棋力強度作為代價，加強風格。"
 
 msgid "ai:jigo"
 msgstr "Kata控目"
@@ -637,66 +619,61 @@ msgid "ai:policy"
 msgstr "直覺"
 
 msgid "aihelp:policy"
-msgstr ""
-"按最佳直覺行棋，沒有任何計算。棋力主要由引擎設定中的 `模型` 決定。"
-"布局落點設定影響布局中隨機落點的數量。"
+msgstr "按最佳直覺行棋，沒有任何計算。棋力主要由引擎設定中的 `模型` 決定。布局落點設定影響布局中隨機落點的數量。"
 
 msgid "ai:p:weighted"
 msgstr "直覺權重"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"按直覺機率行棋， `weaken_fac` 影響較弱選點的多寡。當機率極低時，它的下棋風格變得很像直覺AI。"
-" `pick_override` 決定在選擇最佳選點時的無隨機性；而 `lower_bound` 決定了允許的直覺值的下限。"
+"按直覺機率行棋， `weaken_fac` 影響較弱選點的多寡。當機率極低時，它的下棋風格變得很像直覺AI。 `pick_override` "
+"決定在選擇最佳選點時的無隨機性；而 `lower_bound` 決定了允許的直覺值的下限。"
 
 msgid "ai:p:pick"
 msgstr "盲選直覺"
 
 msgid "aihelp:p:pick"
 msgstr ""
-"隨機選擇 `pick_n + pick_frac * <number of legal moves>` 並採用最佳的一手。 "
-"當 `pick_frac=1` 時，下棋風格像是直覺AI。 如果直覺值高於 `pick_override`，則採用"
-"最佳的一手以避免明顯錯誤。"
+"隨機選擇 `pick_n + pick_frac * <number of legal moves>` 並採用最佳的一手。 當 "
+"`pick_frac=1` 時，下棋風格像是直覺AI。 如果直覺值高於 `pick_override`，則採用最佳的一手以避免明顯錯誤。"
 
 msgid "ai:p:local"
 msgstr "局部模式"
 
 msgid "aihelp:p:local"
 msgstr ""
-"使加權 `pick_n + pick_frac * <number of legal moves>` 接近最後一手並選出最好的一手。"
-"如果直覺值大於 `pick_override`則採用最佳的一手以避免明顯錯誤。"
+"使加權 `pick_n + pick_frac * <number of legal moves>` 接近最後一手並選出最好的一手。如果直覺值大於 "
+"`pick_override`則採用最佳的一手以避免明顯錯誤。"
 
 msgid "ai:p:tenuki"
 msgstr "脫先模式"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
-"使加權 `pick_n + pick_frac * <number of legal moves>` 遠離最後一手並選出最好的一手。如果"
-"直覺值大於 `pick_override` 則採用最佳的一手以避免明顯錯誤。更高的 `stddev` 使其偏離更多。"
+"使加權 `pick_n + pick_frac * <number of legal moves>` 遠離最後一手並選出最好的一手。如果直覺值大於 "
+"`pick_override` 則採用最佳的一手以避免明顯錯誤。更高的 `stddev` 使其偏離更多。"
 
 msgid "ai:p:influence"
 msgstr "取勢模式"
 
 msgid "aihelp:p:influence"
 msgstr ""
-"在偏移值高於 `threshold` 線的點中選出最好的一手。增加 `line_weight` 以加重"
-"對靠近邊緣選點的懲罰。在 '終局' 部分結束後停止。"
+"在偏移值高於 `threshold` 線的點中選出最好的一手。增加 `line_weight` 以加重對靠近邊緣選點的懲罰。在 '終局' "
+"部分結束後停止。"
 
 msgid "ai:p:territory"
 msgstr "取地模式"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"在偏移值低於 `threshold` 線的點中選出最好的一手。增加 `line_weight` 以加重"
-"對靠近中央選點的懲罰。在 '終局' 部分結束後停止。"
+"在偏移值低於 `threshold` 線的點中選出最好的一手。增加 `line_weight` 以加重對靠近中央選點的懲罰。在 '終局' "
+"部分結束後停止。"
 
 msgid "ai:p:rank"
 msgstr "可變棋力"
 
 msgid "aihelp:p:rank"
-msgstr ""
-"隨機選擇有限數量的合法選點，並下出最佳的一手。愈強的設定有愈多的選擇來選出最佳的一手。"
-"因為沒有0級/段，因此 3段 = -2級。"
+msgstr "隨機選擇有限數量的合法選點，並下出最佳的一手。愈強的設定有愈多的選擇來選出最佳的一手。因為沒有0級/段，因此 3段 = -2級。"
 
 #. in AI settings
 msgid "estimated strength"

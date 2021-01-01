@@ -322,11 +322,6 @@ msgstr ""
 "AI的\n"
 "显示选点/SGF评价"
 
-msgid "lock ai when playing"
-msgstr ""
-"对局模式中\n"
-"不允许最佳选点"
-
 #. submit button
 msgid "update teacher"
 msgstr "更新指导棋设置"
@@ -382,12 +377,6 @@ msgstr ""
 
 msgid "engine:time:hint"
 msgstr "时间单位是秒"
-
-msgid "general:sgf_load"
-msgstr "加载SGF文件路径"
-
-msgid "general:sgf_save"
-msgstr "保存SGF文件路径"
 
 msgid "general:anim_pv_time"
 msgstr "动画中两手棋时间间隔"
