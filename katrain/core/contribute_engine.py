@@ -18,7 +18,8 @@ from katrain.core.sgf_parser import Move
 class KataGoContributeEngine:
     """Starts and communicates with the KataGO contribute program"""
 
-    MAX_BUFFER_GAMES = 8
+    MAX_GAMES = 16
+    MAX_BUFFER_GAMES = 2 * MAX_GAMES
     MOVE_SPEED = 0.5
     SHOW_RESULT_TIME = 5
     GIVE_UP_AFTER = 30
@@ -39,7 +40,7 @@ class KataGoContributeEngine:
 
         exe = os.path.expanduser("~/.katrain/katago.exe")
 
-        settings_dict = {'username':'sander','maxSimultaneousGames':6}
+        settings_dict = {'username':'sander','maxSimultaneousGames':self.MAX_GAMES}
         settings = {f"{k}={v}" for k,v in settings_dict.items()}
         self.command = shlex.split(f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}" -override-config "{",".join(settings)}"')
         self.start()
