@@ -38,7 +38,10 @@ class KataGoContributeEngine:
         self.save_sgf = True
 
         exe = os.path.expanduser("~/.katrain/katago.exe")
-        self.command = shlex.split(f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}"')
+
+        settings_dict = {'username':'sander','maxSimultaneousGames':6}
+        settings = {f"{k}={v}" for k,v in settings_dict.items()}
+        self.command = shlex.split(f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}" -override-config "{",".join(settings)}"')
         self.start()
 
     @staticmethod
