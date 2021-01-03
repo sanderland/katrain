@@ -45,6 +45,7 @@ class KataGoEngine:
         self.stderr_thread = None
         self.write_stdin_thread = None
         self.shell = False
+        self.write_queue = queue.Queue()
 
         exe = config.get("katago", "").strip()
         if config.get("altcommand", ""):

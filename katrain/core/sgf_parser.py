@@ -409,7 +409,7 @@ class SGF:
                     if match:
                         encoding = match[1].decode("ascii", errors="ignore")
                     else:
-                        encoding = chardet.detect(bin_contents[:300])['encoding']
+                        encoding = chardet.detect(bin_contents[:300])["encoding"]
                         # workaround for some compatibility issues for Windows-1252 and GB2312 encodings
                         if encoding == "Windows-1252" or encoding == "GB2312":
                             encoding = "GBK"

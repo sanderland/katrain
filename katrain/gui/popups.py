@@ -44,8 +44,10 @@ class I18NPopup(Popup):
     title_key = StringProperty("")
     font_name = StringProperty(Theme.DEFAULT_FONT)
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, size=None, **kwargs):
+        if size:  # do not exceed window height
+            size[1] = min(MDApp.get_running_app().gui.height, size[1])
+        super().__init__(size=size, **kwargs)
         self.bind(on_dismiss=Clock.schedule_once(lambda _dt: MDApp.get_running_app().gui.update_state(), 1))
 
 
@@ -63,13 +65,15 @@ class LabelledTextInput(MDTextField):
 
 
 class LabelledPathInput(LabelledTextInput):
+    check_path = BooleanProperty(True)
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Clock.schedule_once(self.check_error, 0)
 
     def check_error(self, _dt=None):
         file = find_package_resource(self.input_value, silent_errors=True)
-        self.error = not (file and os.path.exists(file))
+        self.error = self.check_path and not (file and os.path.exists(file))
 
     def on_text(self, widget, text):
         self.check_error()
