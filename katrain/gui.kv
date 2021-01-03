@@ -271,6 +271,7 @@
     outline_color: Theme.BOX_BACKGROUND_COLOR
     outline_width: 2
     padding: [2*CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING]
+    subtype_label: subtype_label
     CircleWithText:
         size_hint: 0.32, 1
         player: root.player
@@ -289,7 +290,8 @@
             halign: 'center'
             valign: 'middle'
         Label: # todo: proper scaling/shortening label instead of this jank
-            text: (root.name if root.name and root.player_type==PLAYER_HUMAN and root.player_subtype == PLAYING_NORMAL else i18n._(root.player_subtype) ) + (" ({})".format(root.rank) if root.rank and root.player_subtype != PLAYING_TEACHING else "")
+            id: subtype_label
+            text: i18n._(root.player_subtype)
             size_hint: 1,0.4
             font_size: self.height * 0.7 if root.player_type==PLAYER_HUMAN else self.height * 0.7 * min(1,18/len(self.text))
             text_size: self.size if root.player_type==PLAYER_HUMAN else (None,self.height)

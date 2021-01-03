@@ -28,7 +28,7 @@ from kivymd.uix.navigationdrawer import MDNavigationDrawer
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
-from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, MODE_PLAY, PLAYER_AI
+from katrain.core.constants import AI_STRATEGIES_RECOMMENDED_ORDER, GAME_TYPES, MODE_PLAY, PLAYER_AI, PLAYER_HUMAN, PLAYING_NORMAL, PLAYING_TEACHING
 from katrain.core.lang import i18n
 from katrain.gui.theme import Theme
 
@@ -371,6 +371,22 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     name = StringProperty("", allownone=True)
     rank = StringProperty("", allownone=True)
     active = BooleanProperty(True)
+
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+        self.bind(player_type=self.set_label,player_subtype=self.set_label,name=self.set_label,rank=self.set_label)
+
+    def set_label(self,*args):
+        if not self.subtype_label: #building
+            return
+        show_player_name = self.name and self.player_type == PLAYER_HUMAN and self.player_subtype == PLAYING_NORMAL
+        if show_player_name:
+            text =  self.name
+        else:
+            text = i18n._(self.player_subtype)
+        if self.rank and self.player_subtype != PLAYING_TEACHING and (show_player_name or self.player_type==PLAYER_AI):
+            text += " ({})".format(self.rank)
+        self.subtype_label.text = text
 
 
 class TimerOrMoveTree(MDBoxLayout):
