@@ -68,10 +68,20 @@ class Game:
             self.external_game = PROGRAM_NAME not in self.root.get_property("AP", "")
             self.komi = self.root.komi
             handicap = int(self.root.handicap)
+            num_starting_moves_black = 0
+            node = self.root
+            while node.children:
+                node = node.children[0]
+                if node.player == "B":
+                    num_starting_moves_black += 1
+                else:
+                    break
+
             if (
                 handicap >= 2
                 and not self.root.placements
-                and not (not self.root.move_with_placements and self.root.children and self.root.children[0].placements)
+                and not (num_starting_moves_black == handicap)
+                and not (self.root.children and self.root.children[0].placements)
             ):  # not really according to sgf, and not sure if still needed, last clause for fox
                 self.root.place_handicap_stones(handicap)
         else:
