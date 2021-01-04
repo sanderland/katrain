@@ -17,7 +17,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.6.1"
+        "version": "1.7.0"
     },
     "timer": {
         "byo_length": 30,
@@ -67,9 +67,11 @@
             true,
             true
         ],
+        "save_analysis": false,
         "low_visits": 25,
         "eval_off_show_last": 3,
-        "text_point_loss": true,
+        "top_moves_show": "top_move_delta_score",
+        "top_moves_show_secondary": "top_move_visits",
         "eval_show_ai": true,
         "lock_ai": false
     },
@@ -89,14 +91,6 @@
             "opening_moves": 22.0
         },
         "ai:simple": {
-            "max_points_lost": 1.75,
-            "settled_weight": 1.0,
-            "opponent_fac": 0.5,
-            "min_visits": 3,
-            "attach_penalty": 1,
-            "tenuki_penalty": 0.5
-        },
-        "ai:settle": {
             "max_points_lost": 1.75,
             "settled_weight": 1.0,
             "opponent_fac": 0.5,

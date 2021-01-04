@@ -6,7 +6,7 @@ import subprocess
 import threading
 import time
 import traceback
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, List, Optional
 
 from kivy.utils import platform
 
@@ -103,8 +103,10 @@ class KataGoEngine:
                 i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
             )
             return  # don't start
-        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True).start()
-        self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True).start()
+        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)
+        self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True)
+        self.analysis_thread.start()
+        self.stderr_thread.start()
 
     def on_new_game(self):
         self.base_priority += 1
@@ -201,18 +203,21 @@ class KataGoEngine:
                         self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
                 elif "warning" in analysis:
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
+                elif "terminateId" in analysis:
+                    self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
                 else:
                     partial_result = analysis.get("isDuringSearch", False)
                     if not partial_result:
                         del self.queries[query_id]
                     time_taken = time.time() - start_time
+                    results_exist = not analysis.get("noResults", False)
                     self.katrain.log(
-                        f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo Analysis Received: {analysis.keys()}",
+                        f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo analysis received: {len(analysis.get('moveInfos',[]))} candidate moves, {analysis['rootInfo']['visits'] if results_exist else 'n/a'} visits",
                         OUTPUT_DEBUG,
                     )
                     self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
                     try:
-                        if callback and not analysis.get("noResults", False):
+                        if callback and results_exist:
                             callback(analysis, partial_result)
                     except Exception as e:
                         self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
@@ -228,13 +233,13 @@ class KataGoEngine:
             if "id" not in query:
                 query["id"] = f"QUERY:{str(self.query_counter)}"
             self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
-        if self.katago_process:
-            self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
-            try:
-                self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
-                self.katago_process.stdin.flush()
-            except OSError as e:
-                self.check_alive(os_error=str(e), exception_if_dead=True)
+            if self.katago_process:
+                self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
+                try:
+                    self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
+                    self.katago_process.stdin.flush()
+                except OSError as e:
+                    self.check_alive(os_error=str(e), exception_if_dead=True)
 
     def terminate_query(self, query_id):
         if query_id is not None:
@@ -249,7 +254,7 @@ class KataGoEngine:
         analyze_fast: bool = False,
         time_limit=True,
         find_alternatives: bool = False,
-        find_local: bool = False,
+        region_of_interest: Optional[List] = None,
         priority: int = 0,
         ownership: Optional[bool] = None,
         next_move: Optional[GameNode] = None,
@@ -278,22 +283,20 @@ class KataGoEngine:
                     "untilDepth": 1,
                 }
             ]
-        elif find_local:
-            distance = 5
-            last_move = analysis_node.move
-            if last_move is None or last_move.is_pass:
-                return
+        elif region_of_interest:
+            xmin, xmax, ymin, ymax = region_of_interest
             avoid = [
                 {
                     "moves": [
                         Move((x, y)).gtp()
                         for x in range(0, size_x)
                         for y in range(0, size_y)
-                        if max(abs(x - last_move.coords[0]), abs(y - last_move.coords[1])) > distance
+                        if x < xmin or x > xmax or y < ymin or y > ymax
                     ],
-                    "player": analysis_node.next_player,
-                    "untilDepth": 1,
+                    "player": player,
+                    "untilDepth": 1,  # tried a large number here, or 2, but this seems more natural
                 }
+                for player in "BW"
             ]
         else:
             avoid = []

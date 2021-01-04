@@ -1,8 +1,7 @@
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from katrain.core.base_katrain import KaTrainBase
-from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, KaTrainSGF
 from katrain.core.sgf_parser import SGF, SGFNode
 
@@ -107,7 +106,7 @@ def test_old_server_style():
 
 def test_ogs():
     file = os.path.join(os.path.dirname(__file__), "data/ogs.sgf")
-    tree = SGF.parse_file(file)
+    SGF.parse_file(file)
 
 
 def test_gibo():
@@ -153,3 +152,16 @@ def test_foxwq():
         while game.current_node.children:
             assert 1 == len(game.current_node.children)
             game.redo(1)
+
+
+def test_next_player():
+    input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb])"
+    assert "B" == SGF.parse_sgf(input_sgf).next_player
+    input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb]PL[B])"
+    assert "B" == SGF.parse_sgf(input_sgf).next_player
+    input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb]PL[W])"
+    assert "W" == SGF.parse_sgf(input_sgf).next_player
+    input_sgf = "(;GM[1]FF[4]AB[aa])"
+    assert "W" == SGF.parse_sgf(input_sgf).next_player
+    input_sgf = "(;GM[1]FF[4]AB[aa]PL[B])"
+    assert "B" == SGF.parse_sgf(input_sgf).next_player

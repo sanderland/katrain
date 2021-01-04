@@ -6,7 +6,18 @@ from kivy import Config
 from kivy.storage.jsonstore import JsonStore
 
 from katrain.core.ai import ai_rank_estimation
-from katrain.core.constants import *
+from katrain.core.constants import (
+    PLAYER_HUMAN,
+    PLAYER_AI,
+    PLAYING_NORMAL,
+    PLAYING_TEACHING,
+    OUTPUT_INFO,
+    OUTPUT_ERROR,
+    OUTPUT_DEBUG,
+    AI_DEFAULT,
+    CONFIG_MIN_VERSION,
+    DATA_FOLDER,
+)
 from katrain.core.utils import find_package_resource
 
 
@@ -44,7 +55,7 @@ class Player:
 
 
 class KaTrainBase:
-    USER_CONFIG_FILE = os.path.expanduser("~/.katrain/config.json")
+    USER_CONFIG_FILE = os.path.expanduser(os.path.join(DATA_FOLDER, "config.json"))
     PACKAGE_CONFIG_FILE = "katrain/config.json"
 
     """Settings, logging, and players functionality, so other classes like bots who need a katrain instance can be used without a GUI"""
@@ -91,7 +102,7 @@ class KaTrainBase:
                     else:  # user file exists
                         try:
                             version = JsonStore(user_config_file).get("general")["version"]
-                        except Exception:  # broken file etc
+                        except Exception:  # noqa E722 broken file etc
                             version = "0.0.0"
                         if version < CONFIG_MIN_VERSION:
                             backup = user_config_file + f".{version}.backup"

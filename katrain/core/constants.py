@@ -1,6 +1,9 @@
-VERSION = "1.6.1"
+PROGRAM_NAME = "KaTrain"
+VERSION = "1.7.0"
 HOMEPAGE = "https://github.com/sanderland/katrain"
-CONFIG_MIN_VERSION = "1.6.0"  # keep config files from this version
+CONFIG_MIN_VERSION = "1.7.0"  # keep config files from this version
+ANALYSIS_FORMAT_VERSION = "1.0"
+DATA_FOLDER = "~/.katrain"
 
 OUTPUT_ERROR = -1
 OUTPUT_KATAGO_STDERR = -0.5
@@ -220,3 +223,24 @@ AI_PICK_ELO_GRID = [
         [514.0, 670.0, 870.0, 1128.0, 1305.0, 1550.0, 1700.0, 1700.0],
     ],
 ]
+
+
+TOP_MOVE_DELTA_SCORE = "top_move_delta_score"
+TOP_MOVE_SCORE = "top_move_score"
+TOP_MOVE_DELTA_WINRATE = "top_move_delta_winrate"
+TOP_MOVE_WINRATE = "top_move_winrate"
+TOP_MOVE_VISITS = "top_move_visits"
+TOP_MOVE_NOTHING = "top_move_nothing"
+
+TOP_MOVE_OPTIONS = [
+    TOP_MOVE_SCORE,
+    TOP_MOVE_DELTA_SCORE,
+    TOP_MOVE_WINRATE,
+    TOP_MOVE_DELTA_WINRATE,
+    TOP_MOVE_VISITS,
+    TOP_MOVE_NOTHING,
+]
+REPORT_DT = 0.25
+
+SGF_INTERNAL_COMMENTS_MARKER = "\u3164\u200b"
+SGF_SEPARATOR_MARKER = "\u3164\u3164"

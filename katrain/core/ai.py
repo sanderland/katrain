@@ -18,6 +18,7 @@ from katrain.core.constants import (
     AI_RANK,
     AI_SCORELOSS,
     AI_SCORELOSS_ELO,
+    AI_SETTLE_STONES,
     AI_SIMPLE_OWNERSHIP,
     AI_STRATEGIES_PICK,
     AI_STRATEGIES_POLICY,
@@ -32,7 +33,6 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
-    AI_SETTLE_STONES,
 )
 from katrain.core.game import Game, GameNode, Move
 from katrain.core.utils import var_to_grid
@@ -125,11 +125,11 @@ def policy_weighted_move(policy_moves, lower_bound, weaken_fac):
 def generate_influence_territory_weights(ai_mode, ai_settings, policy_grid, size):
     thr_line = ai_settings["threshold"] - 1  # zero-based
     if ai_mode == AI_INFLUENCE:
-        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (
+        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (  # noqa E731
             max(0, thr_line - min(size[0] - 1 - x, x)) + max(0, thr_line - min(size[1] - 1 - y, y))
-        )
+        )  # noqa E731
     else:
-        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (
+        weight = lambda x, y: (1 / ai_settings["line_weight"]) ** (  # noqa E731
             max(0, min(size[0] - 1 - x, x, size[1] - 1 - y, y) - thr_line)
         )
     weighted_coords = [
@@ -203,7 +203,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             game, cn, {"playoutDoublingAdvantage": pda, "playoutDoublingAdvantagePla": "BLACK"}
         )
         if not handicap_analysis:
-            game.katrain.log(f"Error getting handicap-based move", OUTPUT_ERROR)
+            game.katrain.log("Error getting handicap-based move", OUTPUT_ERROR)
             ai_mode = AI_DEFAULT
 
     while not cn.analysis_complete:
@@ -225,7 +225,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             ai_mode in [AI_LOCAL, AI_TENUKI] and not (cn.move and cn.move.coords)
         ):
             ai_mode = AI_WEIGHTED
-            ai_thoughts += f"Strategy override, using policy-weighted strategy instead. "
+            ai_thoughts += "Strategy override, using policy-weighted strategy instead. "
             ai_settings = {"pick_override": 0.9, "weaken_fac": 1, "lower_bound": 0.02}
 
         if top_5_pass:
@@ -336,7 +336,7 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
             AI_HANDICAP,
         ]:  # don't play suicidal to balance score
             aimove = top_cand
-            ai_thoughts += f"Top move is pass, so passing regardless of strategy. "
+            ai_thoughts += "Top move is pass, so passing regardless of strategy. "
         else:
             if ai_mode == AI_JIGO:
                 sign = cn.player_sign(cn.next_player)

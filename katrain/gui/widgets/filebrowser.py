@@ -38,7 +38,6 @@ a shortcut to the Documents directory added to the favorites bar::
     :align: right
 """
 import string
-import warnings
 from functools import partial
 from os import walk
 from os.path import dirname, expanduser, getmtime, isdir, join, sep
@@ -52,7 +51,7 @@ from kivy.uix.filechooser import FileChooserListLayout, FileChooserListView
 from kivy.uix.treeview import TreeView, TreeViewLabel
 from kivy.utils import platform
 
-from katrain.gui.style import DEFAULT_FONT
+from katrain.gui.theme import Theme
 
 if platform == "win":
     from ctypes import windll, create_unicode_buffer
@@ -81,27 +80,25 @@ def get_drives():
     drives = []
     if platform == "win":
         bitmask = windll.kernel32.GetLogicalDrives()
-        GetVolumeInformationW = windll.kernel32.GetVolumeInformationW
         for letter in string.ascii_uppercase:
             if bitmask & 1:
                 name = create_unicode_buffer(64)
                 # get name of the drive
-                drive = letter + u":"
-                res = GetVolumeInformationW(drive + sep, name, 64, None, None, None, None, 0)
+                drive = letter + ":"
                 if isdir(drive):
                     drives.append((drive, name.value))
             bitmask >>= 1
     elif platform == "linux":
         drives.append((sep, sep))
-        drives.append((expanduser(u"~"), "~/"))
-        places = (sep + u"mnt", sep + u"media")
+        drives.append((expanduser("~"), "~/"))
+        places = (sep + "mnt", sep + "media")
         for place in places:
             if isdir(place):
                 for directory in next(walk(place))[1]:
                     drives.append((place + sep + directory, directory))
     elif platform == "macosx" or platform == "ios":
-        drives.append((expanduser(u"~"), "~/"))
-        vol = sep + u"Volume"
+        drives.append((expanduser("~"), "~/"))
+        vol = sep + "Volume"
         if isdir(vol):
             for drive in next(walk(vol))[1]:
                 drives.append((vol + sep + drive, drive))
@@ -109,7 +106,7 @@ def get_drives():
 
 
 class I18NFileChooserListView(FileChooserListView):
-    font_name = StringProperty(DEFAULT_FONT)
+    font_name = StringProperty(Theme.DEFAULT_FONT)
     show_hidden = BooleanProperty(True)  # avoid errors
 
 
@@ -154,7 +151,7 @@ Builder.load_string(
     layout: layout
     I18NFileChooserListLayout:
         id: layout
-        controller: root            
+        controller: root
     """
 )
 Config.set("kivy", "log_level", log_level)
@@ -178,6 +175,7 @@ Builder.load_string(
     filename: file_text.text
     browser: list_view
     on_favorites: link_tree.reload_favs(self.favorites)
+    on_selection: file_text.text = root.selection[0] if root.selection else ""
     BoxLayout:
         orientation: 'horizontal'
         spacing: 5
@@ -225,7 +223,6 @@ Builder.load_string(
         spacing: [5]
         TextInput:
             id: file_text
-            text: (root.selection and (root._shorten_filenames(root.selection) if root.multiselect else root.selection[0])) or ''
             hint_text: i18n._('Filename')
             multiline: False
             height: '40dp'
