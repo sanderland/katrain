@@ -308,6 +308,9 @@ msgstr "韓国"
 msgid "aga"
 msgstr "AGA"
 
+msgid "stone_scoring"
+msgstr "古代中国"
+
 msgid "clear cache"
 msgstr "思考記録をクリア"
 

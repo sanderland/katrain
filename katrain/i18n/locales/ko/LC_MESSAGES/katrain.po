@@ -280,6 +280,9 @@ msgstr "한국"
 msgid "aga"
 msgstr "AGA"
 
+msgid "stone_scoring"
+msgstr "고대 중국"
+
 msgid "clear cache"
 msgstr "캐시 지우기"
 
