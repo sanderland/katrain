@@ -779,3 +779,7 @@ msgstr "插入完畢，複製 {num_copied} 手棋。"
 #. mode
 msgid "finish inserting before navigating"
 msgstr "此功能在插入模式無法使用，按 i 結束插入。"
+
+#. TODO
+msgid "stone_scoring"
+msgstr "Ancient Chinese"

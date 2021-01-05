@@ -49,7 +49,8 @@ Many thanks to these additional authors:
 * "ajkenny84" for the red-green colourblind theme.
 * Lukasz Wierzbowski for the ability to paste urls for sgfs and helping fix alt-gr issues.
 * Carton He for contributions to sgf parsing and handling.
-* "blamarche" for adding the board coordinates toggle 
+* "blamarche" for adding the board coordinates toggle.
+* "pdeblanc" for adding the ancient chinese scoring option.
 
 ## Translators
 

@@ -306,6 +306,7 @@ msgstr "Корейские"
 msgid "aga"
 msgstr "AGA"
 
+#. TODO check
 msgid "stone_scoring"
 msgstr "Древние китайские"
 

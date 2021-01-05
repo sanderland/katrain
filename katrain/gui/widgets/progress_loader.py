@@ -71,7 +71,11 @@ class ProgressLoader(BoxLayout):
         Clock.schedule_once(self.animation_show, 1)
 
     def animation_show(self, _dt):
-        animation = Animation(opacity=1, d=0.2, t="out_quad",)
+        animation = Animation(
+            opacity=1,
+            d=0.2,
+            t="out_quad",
+        )
         animation.start(self)
 
     def request_download_file(self, url, path):

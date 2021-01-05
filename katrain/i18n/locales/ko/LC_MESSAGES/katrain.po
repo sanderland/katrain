@@ -280,6 +280,7 @@ msgstr "한국"
 msgid "aga"
 msgstr "AGA"
 
+#. TODO check
 msgid "stone_scoring"
 msgstr "고대 중국"
 

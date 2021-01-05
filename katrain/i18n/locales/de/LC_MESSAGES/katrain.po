@@ -283,6 +283,7 @@ msgstr "Koreanisch"
 msgid "aga"
 msgstr "AGA"
 
+#. TODO check
 msgid "stone_scoring"
 msgstr "Alte Chinesisch"
 
