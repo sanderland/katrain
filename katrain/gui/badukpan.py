@@ -471,14 +471,7 @@ class BadukPanWidget(Widget):
                             )
                         if move_policy == best_move_policy:
                             Color(*Theme.TOP_MOVE_BORDER_COLOR[:3], Theme.POLICY_ALPHA)
-                            Line(
-                                circle=(
-                                    self.gridpos_x[x],
-                                    self.gridpos_y[y],
-                                    self.stone_size - dp(1.2),
-                                ),
-                                width=dp(2),
-                            )
+                            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], self.stone_size - dp(1.2)), width=dp(2))
 
                 with pass_btn.canvas.after:
                     move_policy = policy[-1]

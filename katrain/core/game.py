@@ -434,11 +434,7 @@ class Game:
         base_game_name = f"{PROGRAM_NAME}_{player_names['B']} vs {player_names['W']}"
         return f"{base_game_name} {self.game_id}.sgf"
 
-    def write_sgf(
-        self,
-        filename: str,
-        trainer_config: Optional[Dict] = None,
-    ):
+    def write_sgf(self, filename: str, trainer_config: Optional[Dict] = None):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer", {})
         save_feedback = trainer_config.get("save_feedback", False)
@@ -585,10 +581,7 @@ class Game:
                 analyze_and_play_policy(new_node)
 
             self.engines[node.next_player].request_analysis(
-                new_node,
-                callback=set_analysis,
-                priority=-1000,
-                analyze_fast=True,
+                new_node, callback=set_analysis, priority=-1000, analyze_fast=True
             )
 
         analyze_and_play_policy(cn)
