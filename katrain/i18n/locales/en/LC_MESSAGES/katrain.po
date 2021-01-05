@@ -394,6 +394,9 @@ msgstr "Korean"
 msgid "aga"
 msgstr "AGA"
 
+msgid "stone_scoring"
+msgstr "Ancient Chinese"
+
 msgid "clear cache"
 msgstr "Clear cache"
 

@@ -287,6 +287,9 @@ msgstr "Koreanas"
 msgid "aga"
 msgstr "AGA"
 
+msgid "stone_scoring"
+msgstr "Antiguas Chinas"
+
 msgid "clear cache"
 msgstr "Vaciar Cache"
 
