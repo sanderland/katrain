@@ -303,7 +303,7 @@ msgid "aga"
 msgstr "AGA"
 
 msgid "stone_scoring"
-msgstr "Chinoises anciannes"
+msgstr "Chinoises anciennes"
 
 msgid "clear cache"
 msgstr "Vider le cache"
