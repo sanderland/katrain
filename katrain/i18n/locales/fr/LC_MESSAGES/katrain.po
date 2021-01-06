@@ -302,6 +302,10 @@ msgstr "Coréennes"
 msgid "aga"
 msgstr "AGA"
 
+#. TODO check
+msgid "stone_scoring"
+msgstr "Chinoises anciennes"
+
 msgid "clear cache"
 msgstr "Vider le cache"
 

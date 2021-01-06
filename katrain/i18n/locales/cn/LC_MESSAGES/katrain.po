@@ -276,6 +276,10 @@ msgstr "韩国规则"
 msgid "aga"
 msgstr "AGA规则"
 
+#. TODO check
+msgid "stone_scoring"
+msgstr "古代中国规则"
+
 msgid "clear cache"
 msgstr "清除缓存"
 

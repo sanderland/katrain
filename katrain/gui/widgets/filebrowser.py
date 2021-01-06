@@ -315,8 +315,7 @@ class LinkTree(TreeView):
 
 
 class I18NFileBrowser(BoxLayout):
-    """I18NFileBrowser class, see module documentation for more information.
-    """
+    """I18NFileBrowser class, see module documentation for more information."""
 
     __events__ = ("on_success", "on_submit")
 

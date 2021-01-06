@@ -26,7 +26,13 @@ class KataGoEngine:
     """Starts and communicates with the KataGO analysis engine"""
 
     # TODO: we don't support suicide in game.py, so no  "tt": "tromp-taylor", "nz": "new-zealand"
-    RULESETS_ABBR = [("jp", "japanese"), ("cn", "chinese"), ("ko", "korean"), ("aga", "aga")]
+    RULESETS_ABBR = [
+        ("jp", "japanese"),
+        ("cn", "chinese"),
+        ("ko", "korean"),
+        ("aga", "aga"),
+        ("stone_scoring", "stone_scoring"),
+    ]
     RULESETS = {fromkey: name for abbr, name in RULESETS_ABBR for fromkey in [abbr, name]}
 
     @staticmethod
@@ -103,7 +109,8 @@ class KataGoEngine:
             )
         except (FileNotFoundError, PermissionError, OSError) as e:
             self.katrain.log(
-                i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
+                i18n._("Starting Kata failed").format(command=self.command, error=e),
+                OUTPUT_ERROR,
             )
             return  # don't start
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)

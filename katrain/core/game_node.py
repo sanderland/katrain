@@ -8,10 +8,10 @@ from typing import Dict, List, Optional, Tuple
 from katrain.core.constants import (
     ANALYSIS_FORMAT_VERSION,
     PROGRAM_NAME,
+    REPORT_DT,
     SGF_INTERNAL_COMMENTS_MARKER,
     SGF_SEPARATOR_MARKER,
-    VERSION,
-    REPORT_DT,
+    VERSION
 )
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
@@ -319,7 +319,7 @@ class GameNode(SGFNode):
                             text += i18n._("Info:point loss").format(points_lost=points_lost) + "\n"
                         top_move = previous_top_move["move"]
                         score = self.format_score(previous_top_move["scoreLead"])
-                        text += i18n._("Info:top move").format(top_move=top_move, score=score,) + "\n"
+                        text += i18n._("Info:top move").format(top_move=top_move, score=score) + "\n"
                     else:
                         text += i18n._("Info:best move") + "\n"
                     if previous_top_move.get("pv") and (sgf or details):
