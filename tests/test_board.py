@@ -107,7 +107,8 @@ class TestBoard:
         assert 3 == len(b.prisoners)
 
     def test_handicap_load(self):
-        input_sgf = "(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]RU[Chinese]SZ[19]HA[2]KM[0.50]TM[600]OT[5x30 byo-yomi]PW[kneh]PB[ayabot003]WR[4k]BR[6k]DT[2021-01-04]PC[The KGS Go Server at http://www.gokgs.com/]C[ayabot003 [6k\\]: GTP Engine for ayabot003 (black): Aya version 7.85x]RE[W+Resign];B[pd]BL[599.647];B[dp]BL[599.477];W[pp]WL[597.432];B[cd]BL[598.896];W[ed]WL[595.78];B[ec]BL[598.558])"
+        input_sgf = "(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]RU[Chinese]SZ[19]HA[2]KM[0.50]TM[600]OT[5x30 byo-yomi]PW[kneh]PB[ayabot003]WR[4k]BR[6k]DT[2021-01-04]PC[The KGS Go Server at http://www.gokgs.com/]C[ayabot003 [6k\\" \
+                    "]: GTP Engine for ayabot003 (black): Aya version 7.85x]RE[W+Resign];B[pd]BL[599.647];B[dp]BL[599.477];W[pp]WL[597.432];B[cd]BL[598.896];W[ed]WL[595.78];B[ec]BL[598.558])"
         root = KaTrainSGF.parse_sgf(input_sgf)
         game = Game(MockKaTrain(force_package_config=True), MockEngine(), move_tree=root)
         assert 0 == len(game.root.placements)

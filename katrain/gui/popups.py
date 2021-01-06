@@ -306,7 +306,7 @@ class NewGamePopup(QuickConfigGui):
         self.update_playerinfo()
         if changed:
             self.katrain.engine.on_new_game()
-            self.katrain.game.analyze_all_nodes()
+            self.katrain.game.analyze_all_nodes(analyze_fast=True)
         self.popup.dismiss()
 
 
