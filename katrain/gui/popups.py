@@ -667,7 +667,7 @@ class ConfigPopup(QuickConfigGui):
         updated = super().update_config(save_to_file=save_to_file)
         self.katrain.debug_level = self.katrain.config("general/debug_level", OUTPUT_INFO)
 
-        ignore = {"max_visits", "max_time", "enable_ownership", "wide_root_noise"}
+        ignore = {"max_visits", "fast_visits", "max_time", "enable_ownership", "wide_root_noise"}
         detected_restart = [key for key in updated if "engine" in key and not any(ig in key for ig in ignore)]
         if detected_restart:
 
