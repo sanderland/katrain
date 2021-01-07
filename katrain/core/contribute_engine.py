@@ -196,7 +196,7 @@ class KataGoContributeEngine:
                                 if new_game:
                                     current_game.set_current_node(last_node)
                                 self.katrain.log(
-                                    f"Game {game_id} Move {analysis['turnNumber']}: {' '.join(analysis['move'])}",
+                                    f"Game {game_id} Move {analysis['turnNumber']}: {' '.join(analysis['move'])} Visits {analysis['rootInfo']['visits']}",
                                     OUTPUT_DEBUG,
                                 )
                                 self.katrain("update-state")
