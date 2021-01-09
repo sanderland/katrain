@@ -31,7 +31,7 @@ from katrain.core.constants import (
 )
 from katrain.core.game import Move
 from katrain.core.lang import i18n
-from katrain.core.utils import evaluation_class, format_visits, var_to_grid
+from katrain.core.utils import evaluation_class, format_visits, var_to_grid, json_truncate_arrays
 from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
 from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
 from katrain.gui.theme import Theme
@@ -186,9 +186,16 @@ class BadukPanWidget(Widget):
                     katrain.game.set_current_node(nodes_here[-1].parent)
                     katrain.update_state()
                 else:  # load comments & pv
-                    katrain.log(f"\nAnalysis:\n{nodes_here[-1].analysis}", OUTPUT_EXTRA_DEBUG)
-                    katrain.log(f"\nParent Analysis:\n{nodes_here[-1].parent.analysis}", OUTPUT_EXTRA_DEBUG)
-                    katrain.log(f"\nRoot Stats:\n{nodes_here[-1].analysis['root']}", OUTPUT_DEBUG)
+                    katrain.log(
+                        f"\nAnalysis:\n{json_truncate_arrays(nodes_here[-1].analysis,lim=5)}", OUTPUT_EXTRA_DEBUG
+                    )
+                    katrain.log(
+                        f"\nParent Analysis:\n{json_truncate_arrays(nodes_here[-1].parent.analysis,lim=5)}",
+                        OUTPUT_EXTRA_DEBUG,
+                    )
+                    katrain.log(
+                        f"\nRoot Stats:\n{json_truncate_arrays(nodes_here[-1].analysis['root'],lim=5)}", OUTPUT_DEBUG
+                    )
                     katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
                     katrain.controls.active_comment_node = nodes_here[-1]
                     if nodes_here[-1].parent.analysis_exists:
