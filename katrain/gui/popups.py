@@ -1,10 +1,12 @@
 import glob
+import json
 import os
 import re
 import stat
 from typing import Any, Dict, List, Tuple, Union
 from zipfile import ZipFile
 
+import urllib3
 from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
@@ -25,12 +27,12 @@ from katrain.core.constants import (
     AI_KEY_PROPERTIES,
     AI_OPTION_VALUES,
     AI_STRATEGIES_RECOMMENDED_ORDER,
+    DATA_FOLDER,
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
-    STATUS_INFO,
-    DATA_FOLDER,
     SGF_INTERNAL_COMMENTS_MARKER,
+    STATUS_INFO,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
@@ -424,6 +426,36 @@ class ConfigAIPopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
+    MODEL_ENDPOINTS = {"Latest distributed model": "https://katagotraining.org/api/networks/newest_training/"}
+    MODELS = {
+        "20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
+        "30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
+        "40 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
+    }
+    MODEL_DESC = {
+        "Fat 40 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b40c384x2-s2348692992-d1229892979.zip",
+        "15 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b15c192-s1672170752-d466197061.bin.gz",
+    }
+
+    KATAGOS = {
+        "win": {
+            "OpenCL v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-opencl-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-cpu-eigen-avx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-cpu-eigen-windows-x64.zip",
+            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
+        },
+        "linux": {
+            "OpenCL v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-opencl-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-cpu-eigen-avx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-cpu-eigen-linux-x64.zip",
+            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
+        },
+        "just-descriptions": {
+            "CUDA v1.8.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-cuda10.2-windows-x64.zip",
+            "CUDA v1.8.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-cuda10.2-linux-x64.zip",
+        },
+    }
+
     def __init__(self, katrain):
         super().__init__(katrain)
         self.paths = [self.katrain.config("engine/model"), "katrain/models", DATA_FOLDER]
@@ -436,13 +468,17 @@ class ConfigPopup(QuickConfigGui):
         super().build_and_set_properties()
 
     def check_models(self, *args):
+        all_models = [self.MODELS, self.MODEL_DESC, self.katrain.config("dist_models", {})]
+
+        def extract_model_file(model):
+            try:
+                return re.match(r".*/([^/]+)", model)[1].replace(".zip", ".bin.gz")
+            except (TypeError, IndexError):
+                return None
+
         def find_description(path):
             file = os.path.split(path)[1]
-            file_to_desc = {
-                re.match(r".*/([^/]+)", model)[1].replace(".zip", ".bin.gz"): desc
-                for mods in [self.MODELS, self.MODEL_DESC]
-                for desc, model in mods.items()
-            }
+            file_to_desc = {extract_model_file(model): desc for mods in all_models for desc, model in mods.items()}
             if file in file_to_desc:
                 return f"{file_to_desc[file]}  -  {path}"
             else:
@@ -520,37 +556,6 @@ class ConfigPopup(QuickConfigGui):
         self.katago_files.value_keys = ["", ""] + [path for path, desc in kata_files]
         self.katago_files.text = katas_available_msg
 
-    MODELS = {
-        "20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
-        "30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
-        "40 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
-        "Latest distributed model (40b)": "https://media.katagotraining.org/uploaded/networks/models/kata1/kata1-b40c256-s5663312384-d1363813380.bin.gz",
-        "Strongest distributed model (40b)": "https://media.katagotraining.org/uploaded/networks/models/kata1/kata1-b40c256-s5600995072-d1348643660.bin.gz",
-    }
-    MODEL_DESC = {
-        "Fat 40 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b40c384x2-s2348692992-d1229892979.zip",
-        "15 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b15c192-s1672170752-d466197061.bin.gz",
-    }
-
-    KATAGOS = {
-        "win": {
-            "OpenCL v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-opencl-windows-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-cpu-eigen-avx2-windows-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-cpu-eigen-windows-x64.zip",
-            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
-        },
-        "linux": {
-            "OpenCL v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-opencl-linux-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-cpu-eigen-avx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-cpu-eigen-linux-x64.zip",
-            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
-        },
-        "just-descriptions": {
-            "CUDA v1.8.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-cuda10.2-windows-x64.zip",
-            "CUDA v1.8.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-cuda10.2-linux-x64.zip",
-        },
-    }
-
     def download_models(self, *_largs):
         def download_complete(req, tmp_path, path, model):
             try:
@@ -565,9 +570,23 @@ class ConfigPopup(QuickConfigGui):
                 c.request.cancel()
         self.download_progress_box.clear_widgets()
         downloading = False
-        for name, url in self.MODELS.items():
+
+        dist_models = {k: v for k, v in self.katrain.config("dist_models", {}).items() if k in self.MODEL_ENDPOINTS}
+
+        for name, url in self.MODEL_ENDPOINTS.items():
+            try:
+                http = urllib3.PoolManager()
+                response = http.request("GET", url)
+                dist_models[name] = json.loads(response.data.decode("utf-8"))["model_file"]
+            except Exception as e:
+                self.katrain.log(f"Failed to retrieve info for model: {e}", OUTPUT_INFO)
+
+        self.katrain._config["dist_models"] = dist_models
+        self.katrain.save_config(key="dist_models")
+
+        for name, url in {**self.MODELS, **dist_models}.items():
             filename = os.path.split(url)[1]
-            if not any(os.path.split(f)[1] == filename for f in self.model_files.values) or name:
+            if not any(os.path.split(f)[1] == filename for f in self.model_files.values):
                 savepath = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 savepath_tmp = savepath + ".part"
                 self.katrain.log(f"Downloading {name} model from {url} to {savepath_tmp}", OUTPUT_INFO)

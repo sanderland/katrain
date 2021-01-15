@@ -141,7 +141,7 @@ class KaTrainBase:
                 cat, key = setting.split("/")
                 return self._config.get(cat, {}).get(key, default)
             else:
-                return self._config[setting]
+                return self._config.get(setting, default)
         except KeyError:
             self.log(f"Missing configuration option {setting}", OUTPUT_ERROR)
 
