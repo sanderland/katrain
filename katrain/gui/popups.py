@@ -704,7 +704,7 @@ class ConfigPopup(QuickConfigGui):
                 new_engine = KataGoEngine(self.katrain, self.katrain.config("engine"))
                 self.katrain.engine = new_engine
                 self.katrain.game.engines = {"B": new_engine, "W": new_engine}
-                self.katrain.game.analyze_all_nodes()  # old engine was possibly broken, so make sure we redo any failures
+                self.katrain.game.analyze_all_nodes(analyze_fast=True)  # old engine was possibly broken, so make sure we redo any failures
                 self.katrain.update_state()
 
             Clock.schedule_once(restart_engine, 0)
