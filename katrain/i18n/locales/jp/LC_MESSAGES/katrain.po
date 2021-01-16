@@ -308,6 +308,9 @@ msgstr "韓国"
 msgid "aga"
 msgstr "AGA"
 
+msgid "stone_scoring"
+msgstr "古代中国"
+
 msgid "clear cache"
 msgstr "思考記録をクリア"
 
@@ -353,12 +356,6 @@ msgid "show ai dots"
 msgstr ""
 "AIの手にもドットや\n"
 "SGFコメントをつける"
-
-#. removed as an option / can ignore
-msgid "lock ai when playing"
-msgstr ""
-"Disable top moves\n"
-" while in play mode"
 
 #. submit button
 msgid "update teacher"
@@ -418,13 +415,6 @@ msgstr ""
 
 msgid "engine:time:hint"
 msgstr "秒数"
-
-#. no longer used, can ignore
-msgid "general:sgf_load"
-msgstr "Path for loading SGF files"
-
-msgid "general:sgf_save"
-msgstr "SGFファイルの保存場所"
 
 msgid "general:anim_pv_time"
 msgstr "手順アニメーションの一手毎の時間"

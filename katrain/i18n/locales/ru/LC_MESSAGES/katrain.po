@@ -306,6 +306,10 @@ msgstr "Корейские"
 msgid "aga"
 msgstr "AGA"
 
+#. TODO check
+msgid "stone_scoring"
+msgstr "Древние китайские"
+
 msgid "clear cache"
 msgstr "Очистить кэш"
 
@@ -351,12 +355,6 @@ msgid "show ai dots"
 msgstr ""
 "Показать точки и SGF комментарии\n"
 " для ИИ игроков"
-
-#. removed as an option / can ignore
-msgid "lock ai when playing"
-msgstr ""
-"Отключить лучшие ходы\n"
-" во время игры"
 
 #. submit button
 msgid "update teacher"
@@ -416,13 +414,6 @@ msgstr ""
 
 msgid "engine:time:hint"
 msgstr "Время в секундах"
-
-#. no longer used, can ignore
-msgid "general:sgf_load"
-msgstr "Путь для загрузки файлов SGF"
-
-msgid "general:sgf_save"
-msgstr "Путь для сохранения файлов SGF"
 
 msgid "general:anim_pv_time"
 msgstr "Задержка между ходами в анимации"
