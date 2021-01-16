@@ -636,7 +636,7 @@ class ConfigPopup(QuickConfigGui):
                                 try:
                                     with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:
                                         fout.write(zipObj.read(f))
-                                except: # already there? no problem
+                                except:  # already there? no problem
                                     pass
                     os.remove(tmp_path)
                 else:
