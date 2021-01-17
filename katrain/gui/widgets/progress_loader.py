@@ -59,13 +59,13 @@ class ProgressLoader(BoxLayout):
     request = ObjectProperty()
     """UrlRequest object."""
 
-    def __init__(self, **kwargs):
+    def __init__(self, root_instance, **kwargs):
         super().__init__(**kwargs)
-        self.root_instance = None
-        self.request = None
-
-    def start(self, root_instance):
         self.root_instance = root_instance
+        self.request = None
+        Clock.schedule_once(self.start, 0)
+
+    def start(self, _dt):
         self.root_instance.add_widget(self)
         self.request_download_file(self.download_url, self.path_to_file)
         Clock.schedule_once(self.animation_show, 1)

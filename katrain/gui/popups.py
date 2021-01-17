@@ -598,22 +598,25 @@ class ConfigPopup(QuickConfigGui):
                 savepath = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 savepath_tmp = savepath + ".part"
                 self.katrain.log(f"Downloading {name} model from {url} to {savepath_tmp}", OUTPUT_INFO)
-                progress = ProgressLoader(
-                    download_url=url,
-                    path_to_file=savepath_tmp,
-                    downloading_text=f"Downloading {name} model: " + "{}",
-                    label_downloading_text=f"Starting download for {name} model",
-                    download_complete=lambda req, tmp=savepath_tmp, path=savepath, model=name: download_complete(
-                        req, tmp, path, model
+                Clock.schedule_once(
+                    lambda _dt, _savepath_tmp=savepath_tmp, _url=url: ProgressLoader(
+                        self.download_progress_box,
+                        download_url=url,
+                        path_to_file=savepath_tmp,
+                        downloading_text=f"Downloading {name} model: " + "{}",
+                        label_downloading_text=f"Starting download for {name} model",
+                        download_complete=lambda req, tmp=savepath_tmp, path=savepath, model=name: download_complete(
+                            req, tmp, path, model
+                        ),
+                        download_redirected=lambda req, mname=name: self.katrain.log(
+                            f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
+                        ),
+                        download_error=lambda req, error, mname=name: self.katrain.log(
+                            f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
+                        ),
                     ),
-                    download_redirected=lambda req, mname=name: self.katrain.log(
-                        f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
-                    ),
-                    download_error=lambda req, error, mname=name: self.katrain.log(
-                        f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
-                    ),
-                )
-                Clock.schedule_once(lambda _dt, pl=progress: pl.start(self.download_progress_box), 0)  # main thread
+                    0,
+                )  # main thread
                 downloading = True
         if not downloading:
             Clock.schedule_once(
