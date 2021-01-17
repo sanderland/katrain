@@ -3,6 +3,8 @@ import json
 import os
 import re
 import stat
+import threading
+import time
 from typing import Any, Dict, List, Tuple, Union
 from zipfile import ZipFile
 
@@ -461,6 +463,7 @@ class ConfigPopup(QuickConfigGui):
         self.paths = [self.katrain.config("engine/model"), "katrain/models", DATA_FOLDER]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
         Clock.schedule_once(self.check_katas)
+        self.last_clicked_download_models = 0
         MDApp.get_running_app().bind(language=self.check_models)
         MDApp.get_running_app().bind(language=self.check_katas)
 
@@ -557,6 +560,11 @@ class ConfigPopup(QuickConfigGui):
         self.katago_files.text = katas_available_msg
 
     def download_models(self, *_largs):
+        if time.time() - self.last_clicked_download_models > 5:
+            self.last_clicked_download_models = time.time()
+            threading.Thread(target=self._download_models, daemon=True).start()
+
+    def _download_models(self):
         def download_complete(req, tmp_path, path, model):
             try:
                 os.rename(tmp_path, path)
@@ -568,7 +576,7 @@ class ConfigPopup(QuickConfigGui):
         for c in self.download_progress_box.children:
             if isinstance(c, ProgressLoader) and c.request:
                 c.request.cancel()
-        self.download_progress_box.clear_widgets()
+        Clock.schedule_once(lambda _dt: self.download_progress_box.clear_widgets(), -1)  # main thread
         downloading = False
 
         dist_models = {k: v for k, v in self.katrain.config("dist_models", {}).items() if k in self.MODEL_ENDPOINTS}
@@ -605,12 +613,15 @@ class ConfigPopup(QuickConfigGui):
                         f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
                     ),
                 )
-                progress.start(self.download_progress_box)
+                Clock.schedule_once(lambda _dt, pl=progress: pl.start(self.download_progress_box), 0)  # main thread
                 downloading = True
         if not downloading:
-            self.download_progress_box.add_widget(
-                Label(text=i18n._("All models downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
-            )
+            Clock.schedule_once(
+                lambda _dt: self.download_progress_box.add_widget(
+                    Label(text=i18n._("All models downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
+                ),
+                0,
+            )  # main thread
 
     def download_katas(self, *_largs):
         def unzipped_name(zipfile):
