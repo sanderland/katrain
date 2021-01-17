@@ -599,19 +599,19 @@ class ConfigPopup(QuickConfigGui):
                 savepath_tmp = savepath + ".part"
                 self.katrain.log(f"Downloading {name} model from {url} to {savepath_tmp}", OUTPUT_INFO)
                 Clock.schedule_once(
-                    lambda _dt, _savepath_tmp=savepath_tmp, _url=url: ProgressLoader(
+                    lambda _dt, _savepath=savepath, _savepath_tmp=savepath_tmp, _url=url, _name=name: ProgressLoader(
                         self.download_progress_box,
                         download_url=url,
                         path_to_file=savepath_tmp,
-                        downloading_text=f"Downloading {name} model: " + "{}",
-                        label_downloading_text=f"Starting download for {name} model",
-                        download_complete=lambda req, tmp=savepath_tmp, path=savepath, model=name: download_complete(
+                        downloading_text=f"Downloading {_name}: " + "{}",
+                        label_downloading_text=f"Starting download for {_name}",
+                        download_complete=lambda req, tmp=_savepath_tmp, path=_savepath, model=_name: download_complete(
                             req, tmp, path, model
                         ),
-                        download_redirected=lambda req, mname=name: self.katrain.log(
+                        download_redirected=lambda req, mname=_name: self.katrain.log(
                             f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
                         ),
-                        download_error=lambda req, error, mname=name: self.katrain.log(
+                        download_error=lambda req, error, mname=_name: self.katrain.log(
                             f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
                         ),
                     ),
@@ -655,7 +655,7 @@ class ConfigPopup(QuickConfigGui):
                     os.remove(tmp_path)
                 else:
                     os.rename(tmp_path, path)
-                self.katrain.log(f"Download of katago binary {binary} model complete -> {path}", OUTPUT_INFO)
+                self.katrain.log(f"Download of katago binary {binary} complete -> {path}", OUTPUT_INFO)
             except Exception as e:
                 self.katrain.log(
                     f"Download of katago binary {binary} complete, but could not move file: {e}", OUTPUT_ERROR
