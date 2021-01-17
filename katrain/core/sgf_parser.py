@@ -304,7 +304,7 @@ class SGFNode:
     def initial_player(self):  # player for first node
         root = self.root
         if "PL" in root.properties:  # explicit
-            return "B" if self.get_property("PL").upper().strip() == "B" else "W"
+            return "B" if self.root.get_property("PL").upper().strip() == "B" else "W"
         elif root.children:  # child exist, use it if not placement
             for child in root.children:
                 for color in "BW":
