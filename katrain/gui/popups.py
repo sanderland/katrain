@@ -568,9 +568,9 @@ class ConfigPopup(QuickConfigGui):
         def download_complete(req, tmp_path, path, model):
             try:
                 os.rename(tmp_path, path)
-                self.katrain.log(f"Download of {model} model complete -> {path}", OUTPUT_INFO)
+                self.katrain.log(f"Download of {model} complete -> {path}", OUTPUT_INFO)
             except Exception as e:
-                self.katrain.log(f"Download of {model} model complete, but could not move file: {e}", OUTPUT_ERROR)
+                self.katrain.log(f"Download of {model} complete, but could not move file: {e}", OUTPUT_ERROR)
             self.check_models()
 
         for c in self.download_progress_box.children:
@@ -601,8 +601,8 @@ class ConfigPopup(QuickConfigGui):
                 Clock.schedule_once(
                     lambda _dt, _savepath=savepath, _savepath_tmp=savepath_tmp, _url=url, _name=name: ProgressLoader(
                         self.download_progress_box,
-                        download_url=url,
-                        path_to_file=savepath_tmp,
+                        download_url=_url,
+                        path_to_file=_savepath_tmp,
                         downloading_text=f"Downloading {_name}: " + "{}",
                         label_downloading_text=f"Starting download for {_name}",
                         download_complete=lambda req, tmp=_savepath_tmp, path=_savepath, model=_name: download_complete(
