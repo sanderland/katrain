@@ -296,17 +296,21 @@ class Game:
             ):
                 self.set_current_node(cn.parent)
                 return
+            previous_cn = cn
             if cn.shortcut_from:
                 cn = cn.shortcut_from
             elif not cn.is_root:
                 cn = cn.parent
+            else:
+                break  # root
             if break_on_branch and len(cn.children) > 1:
                 break
-            elif break_on_main_branch and len(cn.children) > 1:
+            elif break_on_main_branch and cn.ordered_children[0] != previous_cn:  # implies > 1 child
                 last_branching_node = cn
         if break_on_main_branch:
             cn = last_branching_node
-        self.set_current_node(cn)
+        if cn is not self.current_node:
+            self.set_current_node(cn)
 
     def redo(self, n_times=1, stop_on_mistake=None):
         if self.insert_mode:
