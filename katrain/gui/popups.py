@@ -428,7 +428,8 @@ class ConfigAIPopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
-    MODEL_ENDPOINTS = {"Latest distributed model": "https://katagotraining.org/api/networks/newest_training/"}
+    MODEL_ENDPOINTS = {"Latest distributed model": "https://katagotraining.org/api/networks/newest_training/",
+                       "Strongest distributed model": "https://katagotraining.org/api/networks/get_strongest/"}
     MODELS = {
         "20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
         "30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
@@ -585,6 +586,8 @@ class ConfigPopup(QuickConfigGui):
             try:
                 http = urllib3.PoolManager()
                 response = http.request("GET", url)
+                if response.status!=200:
+                    raise Exception(f"Request to {url} returned code {response.status} != 200: {response.data.decode()}")
                 dist_models[name] = json.loads(response.data.decode("utf-8"))["model_file"]
             except Exception as e:
                 self.katrain.log(f"Failed to retrieve info for model: {e}", OUTPUT_INFO)
