@@ -279,9 +279,14 @@ class Game:
                 self._calculate_groups()
             return
         break_on_branch = False
+        break_on_main_branch = False
+        last_branching_node = cn
         if n_times == "branch":
             n_times = 9999
             break_on_branch = True
+        elif n_times == "main-branch":
+            n_times = 9999
+            break_on_main_branch = True
         for move in range(n_times):
             if (
                 stop_on_mistake is not None
@@ -297,6 +302,10 @@ class Game:
                 cn = cn.parent
             if break_on_branch and len(cn.children) > 1:
                 break
+            elif break_on_main_branch and len(cn.children) > 1:
+                last_branching_node = cn
+        if break_on_main_branch:
+            cn = last_branching_node
         self.set_current_node(cn)
 
     def redo(self, n_times=1, stop_on_mistake=None):
