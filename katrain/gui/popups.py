@@ -512,7 +512,11 @@ class ConfigPopup(QuickConfigGui):
                 self.paths.append(path)  # persistent on paths with models found
             model_files += files
 
-        model_files = sorted([(find_description(path), path) for path in model_files])
+        # no description to bottom
+        model_files = sorted(
+            [(find_description(path), path) for path in model_files],
+            key=lambda descpath: "Z" * 10 + path if descpath[0] == descpath[1] else descpath[0],
+        )
         models_available_msg = i18n._("models available").format(num=len(model_files))
         self.model_files.values = [models_available_msg] + [desc for desc, path in model_files]
         self.model_files.value_keys = [""] + [path for desc, path in model_files]
