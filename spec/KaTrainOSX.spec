@@ -20,7 +20,7 @@ a = Analysis(
         ("../katrain/KataGo", "katrain/KataGo"),
         ("../katrain/models", "katrain/models"),
         ("../katrain/sounds", "katrain/sounds"),
-        ("../katrain\img", "katrain/img"),
+        ("../katrain/img", "katrain/img"),
         ("../katrain/fonts", "katrain/fonts"),
         ("../katrain/i18n", "katrain/i18n"),
     ],
@@ -81,5 +81,5 @@ for console, name in console_names.items():
 
     app = BUNDLE(coll,
              name='KaTrain.app',
-        icon="./katrain/img/icon.ico",
+        icon="../katrain/img/icon.ico",
          bundle_identifier=None)
