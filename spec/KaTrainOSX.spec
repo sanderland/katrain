@@ -11,7 +11,7 @@ block_cipher = None
 
 a = Analysis(
     ["../katrain/__main__.py"],
-    pathex=['.'],
+    pathex=["."],
     binaries=[],
     datas=[
         ("../katrain/gui.kv", "katrain"),
@@ -33,9 +33,7 @@ a = Analysis(
     noarchive=False,
 )
 
-print("SCRIPTS", len(a.scripts), "BIN", len(a.binaries), "ZIP", len(a.zipfiles), "DATA", len(a.datas))
-
-EXCLUDE_SUFFIX = ["katago","katago.exe"]
+EXCLUDE_SUFFIX = ["katago", "katago.exe"]
 EXCLUDE = ["KataGoData", "anim_", "screenshot_", "__pycache__"]
 a.datas = [
     (ff, ft, tp)
@@ -43,43 +41,30 @@ a.datas = [
     if not any(ff.endswith(suffix) for suffix in EXCLUDE_SUFFIX) and not any(kw in ff for kw in EXCLUDE)
 ]
 
-print("DATA FILTERED", len(a.datas))
+console = False
+name = "KaTrain"
 
-console_names = {True:"DebugKaTrain",False:"KaTrain"}
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+exe = EXE(
+    pyz,
+    a.scripts,
+    exclude_binaries=True,
+    name=name,
+    debug=False,
+    strip=False,
+    upx=False,
+    console=console,
+)
 
-powershell = subprocess.Popen(["powershell"],  stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+coll = COLLECT(
+    exe, #                Tree('/Library/Frameworks/SDL2_ttf.framework/Versions/A/Frameworks/FreeType.framework'),
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name=name,
+)
 
-for console, name in console_names.items():
-
-
-    pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
-    exe = EXE(
-        pyz,
-        a.scripts,
-        [],
-        exclude_binaries=True,
-        name=name,
-        debug=False,
-        bootloader_ignore_signals=False,
-        strip=False,
-        upx=True,
-        console=console,
-        icon="C:/icon.ico",
-    )
-
-    coll = COLLECT(
-        exe,
-        a.binaries,
-        a.zipfiles,
-        a.datas,
-        *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
-        strip=False,
-        upx=True,
-        upx_exclude=[],
-        name=name,
-    )
-
-    app = BUNDLE(coll,
-             name='KaTrain.app',
-        icon="../katrain/img/icon.ico",
-         bundle_identifier=None)
+app = BUNDLE(coll, name="KaTrain.app", icon="../katrain/img/icon.ico", bundle_identifier=None)
