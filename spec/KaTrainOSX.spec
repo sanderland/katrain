@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-from kivy_deps import sdl2, glew
+from kivy.tools.packaging.pyinstaller_hooks import get_deps_all, hookspath, runtime_hooks
 from kivymd import hooks_path as kivymd_hooks_path
 import subprocess
 
