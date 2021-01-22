@@ -53,12 +53,18 @@ exe = EXE(
     console=console,
 )
 
+xargs = []
+import platform
+
+if platform.system() == "Darwin":
+    xargs.append(Tree("/Library/Frameworks/SDL2_ttf.framework/Versions/A/Frameworks/FreeType.framework"))
+
 coll = COLLECT(
     exe,
-    Tree("/Library/Frameworks/SDL2_ttf.framework/Versions/A/Frameworks/FreeType.framework"),
     a.binaries,
     a.zipfiles,
     a.datas,
+    *xargs,
     strip=False,
     upx=True,
     upx_exclude=[],
