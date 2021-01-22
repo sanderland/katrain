@@ -8,20 +8,21 @@ block_cipher = None
 # pyinstaller spec/KaTrain.spec --noconfirm
 # --upx-dir my
 
+
 a = Analysis(
-    ["..\\katrain\\__main__.py"],
-    pathex=["C:\\Users\\sande\\Desktop\\katrain\\spec"],
+    ["../katrain/__main__.py"],
+    pathex=['.'],
     binaries=[],
     datas=[
-        ("..\\katrain\\gui.kv", "katrain"),
-        ("..\\katrain\\popups.kv", "katrain"),
-        ("..\\katrain\\config.json", "katrain"),
-        ("..\\katrain\\KataGo", "katrain\\KataGo"),
-        ("..\\katrain\\models", "katrain\\models"),
-        ("..\\katrain\\sounds", "katrain\\sounds"),
-        ("..\\katrain\img", "katrain\\img"),
-        ("..\\katrain\\fonts", "katrain\\fonts"),
-        ("..\\katrain\\i18n", "katrain\\i18n"),
+        ("../katrain/gui.kv", "katrain"),
+        ("../katrain/popups.kv", "katrain"),
+        ("../katrain/config.json", "katrain"),
+        ("../katrain/KataGo", "katrain/KataGo"),
+        ("../katrain/models", "katrain/models"),
+        ("../katrain/sounds", "katrain/sounds"),
+        ("../katrain\img", "katrain/img"),
+        ("../katrain/fonts", "katrain/fonts"),
+        ("../katrain/i18n", "katrain/i18n"),
     ],
     hiddenimports=["win32file", "win32timezone"],  #  FileChooser in kivy loads this conditionally
     hookspath=[kivymd_hooks_path],
@@ -63,7 +64,7 @@ for console, name in console_names.items():
         strip=False,
         upx=True,
         console=console,
-        icon="C:\\icon.ico",
+        icon="C:/icon.ico",
     )
 
     coll = COLLECT(
