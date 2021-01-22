@@ -34,7 +34,7 @@ a = Analysis(
 
 print("SCRIPTS", len(a.scripts), "BIN", len(a.binaries), "ZIP", len(a.zipfiles), "DATA", len(a.datas))
 
-EXCLUDE_SUFFIX = ["katago"]
+EXCLUDE_SUFFIX = ["katago","katago.exe"]
 EXCLUDE = ["KataGoData", "anim_", "screenshot_", "__pycache__"]
 a.datas = [
     (ff, ft, tp)
@@ -78,23 +78,7 @@ for console, name in console_names.items():
         name=name,
     )
 
-    exe = EXE(
-        pyz,
-        a.scripts,
-        a.binaries,
-        a.zipfiles,
-        a.datas,
-        *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
-        debug=False,
-        strip=False,
-        upx=True,
-        name=name,
-        console=console,
-        icon="C:\\icon.ico",
-    )
-    powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
-    powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
-    powershell.stdin.flush()
-
-while True:
-    print(powershell.stdout.readline())
+    app = BUNDLE(coll,
+             name='KaTrain.app',
+        icon="./katrain/img/icon.ico",
+         bundle_identifier=None)
