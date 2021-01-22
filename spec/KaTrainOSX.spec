@@ -1,17 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
 from kivy.tools.packaging.pyinstaller_hooks import get_deps_all, hookspath, runtime_hooks
 from kivymd import hooks_path as kivymd_hooks_path
-import subprocess
 
 block_cipher = None
 
-# pyinstaller spec/KaTrain.spec --noconfirm
+# pyinstaller spec/KaTrain.spec --noconfirmf
 # --upx-dir my
 
 
 a = Analysis(
     ["../katrain/__main__.py"],
-    pathex=["."],
     binaries=[],
     datas=[
         ("../katrain/gui.kv", "katrain"),
@@ -24,7 +22,6 @@ a = Analysis(
         ("../katrain/fonts", "katrain/fonts"),
         ("../katrain/i18n", "katrain/i18n"),
     ],
-    hiddenimports=["win32file", "win32timezone"],  #  FileChooser in kivy loads this conditionally
     hookspath=[kivymd_hooks_path],
     excludes=["scipy", "pandas", "numpy", "matplotlib", "docutils", "mkl"],
     win_no_prefer_redirects=False,
@@ -57,7 +54,8 @@ exe = EXE(
 )
 
 coll = COLLECT(
-    exe, #                Tree('/Library/Frameworks/SDL2_ttf.framework/Versions/A/Frameworks/FreeType.framework'),
+    exe,
+    Tree("/Library/Frameworks/SDL2_ttf.framework/Versions/A/Frameworks/FreeType.framework"),
     a.binaries,
     a.zipfiles,
     a.datas,
