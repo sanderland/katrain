@@ -56,9 +56,6 @@ exe = EXE(
 xargs = []
 import platform
 
-if platform.system() == "Darwin":
-    xargs.append(Tree("/Library/Frameworks/SDL2_ttf.framework/Versions/A/Frameworks/FreeType.framework"))
-
 coll = COLLECT(
     exe,
     a.binaries,
