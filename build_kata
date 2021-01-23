@@ -1,8 +1,0 @@
-#cd ..
-git clone https://github.com/lightvector/KataGo.git
-pushd KataGo/cpp
-
-cmake . -DUSE_BACKEND=OPENCL
-make
-popd
-
