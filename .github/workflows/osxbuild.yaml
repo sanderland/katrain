@@ -23,10 +23,7 @@ jobs:
         pushd KataGo/cpp
         cmake . -DUSE_BACKEND=OPENCL
         make
-        cp katago ../../katrain/katrain/KataGo/katago-opencl
-        cmake . -DUSE_BACKEND=EIGEN -DUSE_AVX2=1
-        make
-        cp katago ../../katrain/katrain/KataGo/katago-eigen
+        cp katago ../../katrain/katrain/KataGo/katago
     - name: Get Kivy dependencies
       run: |
         cd ..
