@@ -196,7 +196,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 
 ## <a name="faq"></a> FAQ
 
-* How can I create themes?
+* How can I create or install themes?
    * See [these instructions](THEMES.md).
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
@@ -215,7 +215,6 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](http://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
-    * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
 * You can contact me on the [Leela Zero & Friends Discord](http://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation.
 * You can also donate to the project through [Github Sponsors](http://github.com/sponsors/sanderland).
 
