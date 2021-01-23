@@ -13,6 +13,8 @@
 You can find downloadable .app files for MacOSX [here](https://github.com/sanderland/katrain/releases). 
 Simply download, unzip the file, mount the .dmg and drag the .app file to your application folder, everything is included.
 
+Users with the last generation M1 macs with different architecture should download this bundle and then `brew install katago` and point KaTrain to their own binary in general settings, as the built-in binary is not compatible.
+
 ### <a name="MacCommand"></a>Command line install guide
 
 [Open a terminal](https://support.apple.com/guide/terminal/open-or-quit-terminal-apd5265185d-f365-44cb-8b09-71a064a42125/mac) and enter the following commands:
@@ -38,11 +40,6 @@ Installation from sources is essentially the same as for Linux, see [here](#Linu
  note that you will still need to install your own KataGo, using brew or otherwise. 
 
 If you encounter SSL errors on downloading model files, you may need to follow [these](https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate) instructions to fix your certificates.
-
-Users with the new M1 macs likely need to install the latest unreleased version of kivy using:  
-```bash
-pip3 install "kivy[base] @ https://github.com/kivy/kivy/archive/master.zip"
-```
 
 ## <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" alt="Windows" height="35"/> Installation for Windows users
 
