@@ -1,0 +1,39 @@
+name: release
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+
+    - name: Install dependencies
+      run: |
+        pip3 install -e .
+        pip3 install pytest wheel twine polib
+
+    - name: Run tests
+      run: pytest -v -s tests
+
+    - name: Run I18N conversion
+      run: python i18n.py
+
+    - name: Build
+      run: |
+        python3 setup.py sdist
+        python3 setup.py bdist_wheel
+
+    - name: Release to PyPI
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USER }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: twine upload --verbose dist/* || echo 'File exists'
