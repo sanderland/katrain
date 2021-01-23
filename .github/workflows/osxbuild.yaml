@@ -23,7 +23,7 @@ jobs:
         pushd KataGo/cpp
         cmake . -DUSE_BACKEND=OPENCL
         make
-        cp katago ../../katrain/katrain/KataGo/katago
+        cp katago ../../katrain/katrain/KataGo/katago-osx
     - name: Get Kivy dependencies
       run: |
         cd ..

@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import sys
 import queue
 import shlex
 import subprocess
@@ -63,8 +64,10 @@ class KataGoEngine:
                     exe = "katrain/KataGo/katago.exe"
                 elif platform == "linux":
                     exe = "katrain/KataGo/katago"
-                else:  # e.g. MacOS after brewing
-                    exe = "katago"
+                else:
+                    exe = find_package_resource("katrain/KataGo/katago-osx") # github actions built
+                    if not os.path.isfile(exe):
+                        exe = "katago" # e.g. MacOS after brewing
 
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
