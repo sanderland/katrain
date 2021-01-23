@@ -13,6 +13,17 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
+    - name: Build KataGo
+      run: |
+        rm katrain/KataGo/katago
+        rm katrain/KataGo/*.dll
+        rm katrain/KataGo/katago.exe
+        cd ..
+        git clone https://github.com/lightvector/KataGo.git
+        pushd KataGo/cpp
+        cmake . -DUSE_BACKEND=OPENCL
+        make
+        cp katago ../../katrain/katrain/KataGo/katago
     - name: Get Kivy dependencies
       run: |
         cd ..
