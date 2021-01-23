@@ -610,6 +610,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
         elif keycode[1] == "v" and ctrl_pressed:
             self.load_sgf_from_clipboard()
+        elif keycode[1] == "b" and shift_pressed:
+            self("undo", "main-branch")
         elif keycode[1] in shortcuts.keys() and not ctrl_pressed:
             shortcut = shortcuts[keycode[1]]
             if isinstance(shortcut, Widget):

@@ -3,6 +3,8 @@ import json
 import os
 import re
 import stat
+import threading
+import time
 from typing import Any, Dict, List, Tuple, Union
 from zipfile import ZipFile
 
@@ -426,7 +428,10 @@ class ConfigAIPopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
-    MODEL_ENDPOINTS = {"Latest distributed model": "https://katagotraining.org/api/networks/newest_training/"}
+    MODEL_ENDPOINTS = {
+        "Latest distributed model": "https://katagotraining.org/api/networks/newest_training/",
+        "Strongest distributed model": "https://katagotraining.org/api/networks/get_strongest/",
+    }
     MODELS = {
         "20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
         "30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
@@ -461,6 +466,7 @@ class ConfigPopup(QuickConfigGui):
         self.paths = [self.katrain.config("engine/model"), "katrain/models", DATA_FOLDER]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
         Clock.schedule_once(self.check_katas)
+        self.last_clicked_download_models = 0
         MDApp.get_running_app().bind(language=self.check_models)
         MDApp.get_running_app().bind(language=self.check_katas)
 
@@ -506,7 +512,11 @@ class ConfigPopup(QuickConfigGui):
                 self.paths.append(path)  # persistent on paths with models found
             model_files += files
 
-        model_files = sorted([(find_description(path), path) for path in model_files])
+        # no description to bottom
+        model_files = sorted(
+            [(find_description(path), path) for path in model_files],
+            key=lambda descpath: "Z" * 10 + path if descpath[0] == descpath[1] else descpath[0],
+        )
         models_available_msg = i18n._("models available").format(num=len(model_files))
         self.model_files.values = [models_available_msg] + [desc for desc, path in model_files]
         self.model_files.value_keys = [""] + [path for desc, path in model_files]
@@ -557,18 +567,23 @@ class ConfigPopup(QuickConfigGui):
         self.katago_files.text = katas_available_msg
 
     def download_models(self, *_largs):
+        if time.time() - self.last_clicked_download_models > 5:
+            self.last_clicked_download_models = time.time()
+            threading.Thread(target=self._download_models, daemon=True).start()
+
+    def _download_models(self):
         def download_complete(req, tmp_path, path, model):
             try:
                 os.rename(tmp_path, path)
-                self.katrain.log(f"Download of {model} model complete -> {path}", OUTPUT_INFO)
+                self.katrain.log(f"Download of {model} complete -> {path}", OUTPUT_INFO)
             except Exception as e:
-                self.katrain.log(f"Download of {model} model complete, but could not move file: {e}", OUTPUT_ERROR)
+                self.katrain.log(f"Download of {model} complete, but could not move file: {e}", OUTPUT_ERROR)
             self.check_models()
 
         for c in self.download_progress_box.children:
             if isinstance(c, ProgressLoader) and c.request:
                 c.request.cancel()
-        self.download_progress_box.clear_widgets()
+        Clock.schedule_once(lambda _dt: self.download_progress_box.clear_widgets(), -1)  # main thread
         downloading = False
 
         dist_models = {k: v for k, v in self.katrain.config("dist_models", {}).items() if k in self.MODEL_ENDPOINTS}
@@ -577,6 +592,10 @@ class ConfigPopup(QuickConfigGui):
             try:
                 http = urllib3.PoolManager()
                 response = http.request("GET", url)
+                if response.status != 200:
+                    raise Exception(
+                        f"Request to {url} returned code {response.status} != 200: {response.data.decode()}"
+                    )
                 dist_models[name] = json.loads(response.data.decode("utf-8"))["model_file"]
             except Exception as e:
                 self.katrain.log(f"Failed to retrieve info for model: {e}", OUTPUT_INFO)
@@ -590,27 +609,33 @@ class ConfigPopup(QuickConfigGui):
                 savepath = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 savepath_tmp = savepath + ".part"
                 self.katrain.log(f"Downloading {name} model from {url} to {savepath_tmp}", OUTPUT_INFO)
-                progress = ProgressLoader(
-                    download_url=url,
-                    path_to_file=savepath_tmp,
-                    downloading_text=f"Downloading {name} model: " + "{}",
-                    label_downloading_text=f"Starting download for {name} model",
-                    download_complete=lambda req, tmp=savepath_tmp, path=savepath, model=name: download_complete(
-                        req, tmp, path, model
+                Clock.schedule_once(
+                    lambda _dt, _savepath=savepath, _savepath_tmp=savepath_tmp, _url=url, _name=name: ProgressLoader(
+                        self.download_progress_box,
+                        download_url=_url,
+                        path_to_file=_savepath_tmp,
+                        downloading_text=f"Downloading {_name}: " + "{}",
+                        label_downloading_text=f"Starting download for {_name}",
+                        download_complete=lambda req, tmp=_savepath_tmp, path=_savepath, model=_name: download_complete(
+                            req, tmp, path, model
+                        ),
+                        download_redirected=lambda req, mname=_name: self.katrain.log(
+                            f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
+                        ),
+                        download_error=lambda req, error, mname=_name: self.katrain.log(
+                            f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
+                        ),
                     ),
-                    download_redirected=lambda req, mname=name: self.katrain.log(
-                        f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
-                    ),
-                    download_error=lambda req, error, mname=name: self.katrain.log(
-                        f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
-                    ),
-                )
-                progress.start(self.download_progress_box)
+                    0,
+                )  # main thread
                 downloading = True
         if not downloading:
-            self.download_progress_box.add_widget(
-                Label(text=i18n._("All models downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
-            )
+            Clock.schedule_once(
+                lambda _dt: self.download_progress_box.add_widget(
+                    Label(text=i18n._("All models downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
+                ),
+                0,
+            )  # main thread
 
     def download_katas(self, *_largs):
         def unzipped_name(zipfile):
@@ -641,7 +666,7 @@ class ConfigPopup(QuickConfigGui):
                     os.remove(tmp_path)
                 else:
                     os.rename(tmp_path, path)
-                self.katrain.log(f"Download of katago binary {binary} model complete -> {path}", OUTPUT_INFO)
+                self.katrain.log(f"Download of katago binary {binary} complete -> {path}", OUTPUT_INFO)
             except Exception as e:
                 self.katrain.log(
                     f"Download of katago binary {binary} complete, but could not move file: {e}", OUTPUT_ERROR
