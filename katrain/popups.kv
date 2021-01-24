@@ -31,15 +31,18 @@
 <LabelledPathInput>:
     font_size: sp(16)
     multiline: False
+    write_tab: False
     helper_text_mode: "on_error"
     helper_text: i18n._("file not found")
 
 <LabelledIntInput>:
     font_size: sp(Theme.INPUT_FONT_SIZE)
+    write_tab: False
     size_hint: 0.5, None
 
 <LabelledFloatInput>:
     font_size: sp(Theme.INPUT_FONT_SIZE)
+    write_tab: False
     size_hint: 0.5, None
 
 <LabelledCheckBox>:
@@ -332,6 +335,7 @@
                 size_hint: 0.67, 1
                 LabelledTextInput:
                     input_property: "contribute/username"
+                    write_tab: False
             AnchorLayout:
                 size_hint: 0.33, 1
                 AutoSizedRoundedRectangleButton:
@@ -345,6 +349,7 @@
                 size_hint: 0.67, 1
                 LabelledTextInput:
                     input_property: "contribute/password"
+                    write_tab: False
             Label:
                 size_hint: 0.33, 1
     DescriptionLabel:

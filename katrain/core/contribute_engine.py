@@ -13,21 +13,22 @@ from katrain.core.engine import EngineDiedException
 from katrain.core.game import BaseGame
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move
+from katrain.core.utils import find_package_resource
 
 
 class KataGoContributeEngine:
     """Starts and communicates with the KataGO contribute program"""
 
-    MAX_GAMES = 16
-    MAX_BUFFER_GAMES = 2 * MAX_GAMES
+    DEFAULT_MAX_GAMES = 16
     MOVE_SPEED = 0.5
     SHOW_RESULT_TIME = 5
     GIVE_UP_AFTER = 60
 
     def __init__(self, katrain):
         self.katrain = katrain
-        cfg = os.path.expanduser("~/.katrain/contribute.cfg")
+        cfg = find_package_resource("katrain/KataGo/contribute.cfg")
         base_dir = os.path.expanduser("~/.katrain/katago_contribute")
+        self.katago_process = None
         self.stdout_thread = None
         self.stderr_thread = None
         self.shell = False
@@ -38,14 +39,15 @@ class KataGoContributeEngine:
 
         self.save_sgf = True
 
-        exe = katrain.config("engine/katago")
+        exe = katrain.config("contribute/katago")
 
         settings_dict = {
             "username": katrain.config("contribute/username"),
             "password": katrain.config("contribute/password"),
-            "maxSimultaneousGames": katrain.config("contribute/maxgames"),
-            "includeOwnership": katrain.config("contribute/ownership"),
+            "maxSimultaneousGames": katrain.config("contribute/maxgames") or self.DEFAULT_MAX_GAMES,
+            "includeOwnership": katrain.config("contribute/ownership") or False,
         }
+        self.max_buffer_games = 2 * settings_dict["maxSimultaneousGames"]
         settings = {f"{k}={v}" for k, v in settings_dict.items()}
         self.command = shlex.split(
             f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}" -override-config "{",".join(settings)}"'
@@ -75,7 +77,7 @@ class KataGoContributeEngine:
 
                     self.katrain.log(f"Game {self.showing_game} finished, finding a new one", OUTPUT_INFO)
                     self.showing_game = None
-            elif time.time() - self.last_advance > self.MOVE_SPEED or len(self.active_games) > self.MAX_BUFFER_GAMES:
+            elif time.time() - self.last_advance > self.MOVE_SPEED or len(self.active_games) > self.max_buffer_games:
                 if current_game.current_node.children:
                     current_game.redo(1)
                     self.last_advance = time.time()
