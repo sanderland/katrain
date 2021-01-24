@@ -312,7 +312,13 @@ class GameNode(SGFNode):
                             text += i18n._("Info:point loss").format(points_lost=points_lost) + "\n"
                         top_move = previous_top_move["move"]
                         score = self.format_score(previous_top_move["scoreLead"])
-                        text += i18n._("Info:top move").format(top_move=top_move, score=score,) + "\n"
+                        text += (
+                            i18n._("Info:top move").format(
+                                top_move=top_move,
+                                score=score,
+                            )
+                            + "\n"
+                        )
                     else:
                         text += i18n._("Info:best move") + "\n"
                     if previous_top_move.get("pv") and (sgf or details):

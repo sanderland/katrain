@@ -464,6 +464,50 @@ msgstr "Update Feedback Settings"
 msgid "restarting engine"
 msgstr "Restarting Engine after Settings Change."
 
+#. contribute settings popup
+msgid "contribute settings title"
+msgstr "Contribute To KataGo Distributed Training"
+
+#. textbox hint when empty
+msgid "engine:katago:contributehint"
+msgstr ""
+"For contributing to distributed training, please download and select an "
+"official 1.8.0+ binary."
+
+#. title
+msgid "contribute:login"
+msgstr "Login Information"
+
+#. description for input
+msgid "contribute:maxgames"
+msgstr "Simultaneous Games"
+
+#. hint for max games
+msgid "contribute:maxgames:hint"
+msgstr "Top-tier GPU: 32-64, Middle tier: 8-16, Older GPU or low-load: 4"
+
+msgid "contribute:ownership"
+msgstr "Enable Ownership"
+
+#. hint for ownership
+msgid "contribute:ownership:hint"
+msgstr "Slightly slows down training, but allows ownership visualization."
+
+msgid "contribute:username"
+msgstr "Username"
+
+msgid "contribute:password"
+msgstr "Password"
+
+msgid "contribute:register"
+msgstr "Register"
+
+msgid "contribute:warning"
+msgstr "Note that starting contribution mode ..."
+
+msgid "contribute:start"
+msgstr "Start Contributing!"
+
 # title
 msgid "general settings title"
 msgstr "General and Engine Settings"

@@ -110,7 +110,8 @@ class KataGoEngine:
             )
         except (FileNotFoundError, PermissionError, OSError) as e:
             self.katrain.log(
-                i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
+                i18n._("Starting Kata failed").format(command=self.command, error=e),
+                OUTPUT_ERROR,
             )
             return  # don't start
         self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)

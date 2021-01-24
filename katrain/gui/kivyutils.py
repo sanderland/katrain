@@ -636,7 +636,9 @@ def cached_text_texture(text, font_name, markup, _cache={}, **kwargs):
 def draw_text(pos, text, font_name=None, markup=False, **kwargs):
     texture = cached_text_texture(text, font_name, markup, **kwargs)
     Rectangle(
-        texture=texture, pos=(pos[0] - texture.size[0] / 2, pos[1] - texture.size[1] / 2), size=texture.size,
+        texture=texture,
+        pos=(pos[0] - texture.size[0] / 2, pos[1] - texture.size[1] / 2),
+        size=texture.size,
     )
 
 

@@ -41,7 +41,11 @@ class BaseGame:
     DEFAULT_PROPERTIES = {"GM": 1, "FF": 4}
 
     def __init__(
-        self, katrain, move_tree: GameNode = None, game_properties: Optional[Dict] = None, sgf_filename=None,
+        self,
+        katrain,
+        move_tree: GameNode = None,
+        game_properties: Optional[Dict] = None,
+        sgf_filename=None,
     ):
         self.katrain = katrain
         self._lock = threading.Lock()
@@ -335,7 +339,9 @@ class BaseGame:
         return f"{base_game_name} {self.game_id}.sgf"
 
     def write_sgf(
-        self, filename: str, trainer_config: Optional[Dict] = None,
+        self,
+        filename: str,
+        trainer_config: Optional[Dict] = None,
     ):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer", {})
@@ -603,7 +609,10 @@ class Game(BaseGame):
                 analyze_and_play_policy(new_node)
 
             self.engines[node.next_player].request_analysis(
-                new_node, callback=set_analysis, priority=-1000, analyze_fast=True,
+                new_node,
+                callback=set_analysis,
+                priority=-1000,
+                analyze_fast=True,
             )
 
         analyze_and_play_policy(cn)

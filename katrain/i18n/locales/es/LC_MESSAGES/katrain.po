@@ -839,3 +839,53 @@ msgstr ""
 #. TODO - menu item
 msgid "menu:distributed"
 msgstr "Distributed Self-play Training"
+
+#. TODO
+msgid "contribute:warning"
+msgstr "Note that starting contribution mode ..."
+
+#. TODO
+msgid "contribute:register"
+msgstr "Register"
+
+#. TODO
+msgid "contribute:start"
+msgstr "Start Contributing!"
+
+#. TODO - contribute settings popup
+msgid "contribute settings title"
+msgstr "Contribute To KataGo Distributed Training"
+
+#. TODO
+msgid "contribute:username"
+msgstr "Username"
+
+#. TODO - description for input
+msgid "contribute:maxgames"
+msgstr "Simultaneous Games"
+
+#. TODO
+msgid "contribute:password"
+msgstr "Password"
+
+#. TODO - hint for max games
+msgid "contribute:maxgames:hint"
+msgstr "Top-tier GPU: 32-64, Middle tier: 8-16, Older GPU or low-load: 4"
+
+#. TODO - hint for ownership
+msgid "contribute:ownership:hint"
+msgstr "Slightly slows down training, but allows ownership visualization."
+
+#. TODO
+msgid "contribute:ownership"
+msgstr "Enable Ownership"
+
+#. TODO - title
+msgid "contribute:login"
+msgstr "Login Information"
+
+#. TODO - textbox hint when empty
+msgid "engine:katago:contributehint"
+msgstr ""
+"For contributing to distributed training, please download and select an "
+"official 1.8.0+ binary."

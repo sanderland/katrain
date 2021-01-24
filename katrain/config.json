@@ -11,13 +11,20 @@
         "wide_root_noise": 0.0,
         "_enable_ownership": true
     },
+    "contribute": {
+        "katago": "",
+        "ownership": false,
+        "maxgames": 16,
+        "username": "",
+        "password": ""
+    },
     "general": {
         "sgf_load": "~/Downloads",
         "sgf_save": "./sgfout",
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.7.1"
+        "version": "1.8.0"
     },
     "timer": {
         "byo_length": 30,

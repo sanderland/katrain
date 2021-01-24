@@ -22,7 +22,7 @@ class KataGoContributeEngine:
     MAX_BUFFER_GAMES = 2 * MAX_GAMES
     MOVE_SPEED = 0.5
     SHOW_RESULT_TIME = 5
-    GIVE_UP_AFTER = 30
+    GIVE_UP_AFTER = 60
 
     def __init__(self, katrain):
         self.katrain = katrain
@@ -38,11 +38,16 @@ class KataGoContributeEngine:
 
         self.save_sgf = True
 
-        exe = os.path.expanduser("~/.katrain/katago.exe")
+        exe = katrain.config("engine/katago")
 
-        settings_dict = {'username':'sander','maxSimultaneousGames':self.MAX_GAMES}
-        settings = {f"{k}={v}" for k,v in settings_dict.items()}
-        self.command = shlex.split(f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}" -override-config "{",".join(settings)}"')
+        settings_dict = {"username": katrain.config('contribute/username'),
+                         "password": katrain.config('contribute/password'),
+                         "maxSimultaneousGames": katrain.config('contribute/maxgames'),
+                         "includeOwnership": katrain.config('contribute/ownership')}
+        settings = {f"{k}={v}" for k, v in settings_dict.items()}
+        self.command = shlex.split(
+            f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}" -override-config "{",".join(settings)}"'
+        )
         self.start()
 
     @staticmethod
@@ -102,11 +107,15 @@ class KataGoContributeEngine:
         try:
             self.katrain.log(f"Starting Distributed KataGo with {self.command}", OUTPUT_INFO)
             self.katago_process = subprocess.Popen(
-                self.command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=self.shell,
+                self.command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=self.shell,
             )
         except (FileNotFoundError, PermissionError, OSError) as e:
             self.katrain.log(
-                i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
+                i18n._("Starting Kata failed").format(command=self.command, error=e),
+                OUTPUT_ERROR,
             )
             return  # don't start
         self.stdout_thread = threading.Thread(target=self._read_stdout_thread, daemon=True)

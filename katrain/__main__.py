@@ -81,7 +81,7 @@ from katrain.core.constants import (
     DATA_FOLDER,
     AI_DEFAULT,
 )
-from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup
+from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup, ContributePopup
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
@@ -114,6 +114,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.ai_settings_popup = None
         self.teacher_settings_popup = None
         self.timer_settings_popup = None
+        self.contribute_popup = None
 
         self.idle_analysis = False
         self.animate_contributing = False
@@ -432,6 +433,14 @@ class KaTrainGui(Screen, KaTrainBase):
             self.config_popup.content.popup = self.config_popup
         self.config_popup.open()
 
+    def _do_contribute_popup(self):
+        if not self.contribute_popup:
+            self.contribute_popup = I18NPopup(
+                title_key="contribute settings title", size=[dp(1100), dp(700)], content=ContributePopup(self)
+            ).__self__
+            self.contribute_popup.content.popup = self.contribute_popup
+        self.contribute_popup.open()
+
     def _do_ai_popup(self):
         self.controls.timer.paused = True
         if not self.ai_settings_popup:
@@ -576,6 +585,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "f6": ("teacher-popup",),
             "f7": ("ai-popup",),
             "f8": ("config-popup",),
+            "f9": ("contribute-popup",),
         }
 
     @property
@@ -646,13 +656,13 @@ class KaTrainGui(Screen, KaTrainBase):
                 shortcut.trigger_action(duration=0)
             else:
                 self(*shortcut)
-        elif keycode[1] == "f9" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
+        elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
             import yappi
 
             yappi.set_clock_type("cpu")
             yappi.start()
             self.log("starting profiler", OUTPUT_ERROR)
-        elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
+        elif keycode[1] == "f11" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
             import time
             import yappi
 
@@ -731,7 +741,9 @@ class KaTrainApp(MDApp):
             self.gui.controls.set_status("", STATUS_INFO)
 
     def webbrowser(self, site_key):
-        websites = {"homepage": HOMEPAGE + "#manual", "support": HOMEPAGE + "#support"}
+        websites = {"homepage": HOMEPAGE + "#manual",
+                    "support": HOMEPAGE + "#support",
+                    "contribute:signup": "http://katagotraining.org/accounts/signup/"}
         if site_key in websites:
             webbrowser.open(websites[site_key])
 

@@ -217,7 +217,7 @@ class QuickConfigGui(MDBoxLayout):
         for c in widget.children:
             self._set_properties_subtree(c)
 
-    def update_config(self, save_to_file=True):
+    def update_config(self, save_to_file=True, close_popup=True):
         updated = set()
         for multikey, value in self.collect_properties(self).items():
             old_value, conf, key = self.get_setting(multikey)
@@ -227,7 +227,7 @@ class QuickConfigGui(MDBoxLayout):
                 updated.add(multikey)
         if save_to_file:
             self.katrain.save_config()
-        if self.popup:
+        if self.popup and close_popup:
             self.popup.dismiss()
         return updated
 
@@ -419,17 +419,11 @@ class ConfigAIPopup(QuickConfigGui):
         Clock.schedule_once(self.katrain.controls.update_players, 0)
 
 
-class ConfigPopup(QuickConfigGui):
+class BaseConfigPopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
         self.paths = [self.katrain.config("engine/model"), "katrain/models", DATA_FOLDER]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
-        Clock.schedule_once(self.check_katas)
-        MDApp.get_running_app().bind(language=self.check_models)
-        MDApp.get_running_app().bind(language=self.check_katas)
-
-    def build_and_set_properties(self, *_args):
-        super().build_and_set_properties()
 
     def check_models(self, *args):
         def find_description(path):
@@ -446,7 +440,8 @@ class ConfigPopup(QuickConfigGui):
 
         done = set()
         model_files = []
-        for path in self.paths + [self.model_path.text]:
+        distributed_training_models = os.path.expanduser(os.path.join(DATA_FOLDER, "katago_contribute/kata1/models"))
+        for path in self.paths + [self.model_path.text, distributed_training_models]:
             path = path.rstrip("/\\")
             if path.startswith("katrain"):
                 path = path.replace("katrain", PATHS["PACKAGE"].rstrip("/\\"), 1)
@@ -659,6 +654,14 @@ class ConfigPopup(QuickConfigGui):
                     Label(text=i18n._("All binaries downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
                 )
 
+
+class ConfigPopup(BaseConfigPopup):
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        Clock.schedule_once(self.check_katas)
+        MDApp.get_running_app().bind(language=self.check_models)
+        MDApp.get_running_app().bind(language=self.check_katas)
+
     def update_config(self, save_to_file=True):
         updated = super().update_config(save_to_file=save_to_file)
         self.katrain.debug_level = self.katrain.config("general/debug_level", OUTPUT_INFO)
@@ -683,6 +686,26 @@ class ConfigPopup(QuickConfigGui):
                 self.katrain.update_state()
 
             Clock.schedule_once(restart_engine, 0)
+
+
+class ContributePopup(BaseConfigPopup):
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        MDApp.get_running_app().bind(language=self.check_katas)
+        Clock.schedule_once(self.check_katas)
+
+    def start_contributing(self):
+        self.update_config(True,close_popup=False)
+        self.error.text=''
+        self.katrain.log(f"Updating contribution settings {self.katrain.config('contribute')}",OUTPUT_DEBUG)
+        if not self.katrain.config("contribute/katago"):
+            self.error.text =i18n._('engine:katago:contributehint')
+        elif not self.katrain.config("contribute/username") or not self.katrain.config("contribute/pass"):
+            self.error.text = "Please enter your username and password for katagotraining.org"
+        else:
+            self.popup.dismiss()
+
+
 
 
 class LoadSGFPopup(BoxLayout):

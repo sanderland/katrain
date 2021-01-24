@@ -979,8 +979,10 @@
             on_action: root.katrain('config-popup')
         MainMenuItem:
             text: i18n._('menu:distributed')
+            shortcut: 'F9'
             icon: 'collaboration.png'
-            on_action: root.katrain('katago-contribute')
+            on_action: root.katrain('contribute-popup')
+#            on_action: root.katrain('katago-contribute')
     MenuLabel:
         text: i18n._('menu:lang')
     MDBoxLayout:

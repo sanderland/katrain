@@ -251,6 +251,123 @@
                 text: i18n._("update settings")
                 on_press: root.update_config(True)
 
+
+<ContributePopup>:
+    katago_path: katago_path
+    katago_files: katago_files
+    katago_download_progress_box: katago_download_progress_box
+    error: error
+    DescriptionLabel:
+        text: i18n._('katago settings')
+        font_size: sp(Theme.DESC_FONT_SIZE) * 1.25
+    GridLayout:
+        cols: 2
+        rows: 4
+        size_hint: 1, 4
+        spacing: CP_SPACING
+        DescriptionLabel:
+            text: i18n._("engine:katago")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                id: katago_path
+                input_property: "contribute/katago"
+                hint_text: i18n._("engine:katago:contributehint")
+                on_text: root.check_katas()
+        AnchorLayout:
+            size_hint: 0.33, 1
+            AutoSizedRoundedRectangleButton:
+                text: i18n._("download katago button")
+                on_press: root.download_katas()
+                size_hint_y: 0.5
+        AnchorLayout:
+            KeyValueSpinner:
+                id: katago_files
+                text: ''
+                text_autoupdate: True
+                -text_size: self.width, None
+                -halign: 'center'
+                -shorten: True
+                -shorten_from: 'right'
+                on_select:
+                    if self.selected_index != 0: katago_path.text = self.value_keys[self.selected_index]
+                size_hint_y: 0.7
+                sync_height_frac: 1.0
+                -font_size: self.height * 0.5
+                -background_color: [*[c*255/88 for c in Theme.BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+        DescriptionLabel:
+            size_hint: 0.2, 1
+            text: i18n._("contribute:maxgames")
+        BoxLayout:
+            AnchorLayout:
+                size_hint: 0.5, 1
+                LabelledIntInput:
+                    input_property: "contribute/maxgames"
+            SmallDescriptionLabel:
+                text: i18n._("contribute:maxgames:hint")
+        DescriptionLabel:
+            size_hint: 0.2, 1
+            text: i18n._("contribute:ownership")
+        BoxLayout:
+            AnchorLayout:
+                size_hint: 0.5, 1
+                LabelledCheckBox:
+                    input_property: "contribute/ownership"
+            SmallDescriptionLabel:
+                text: i18n._("contribute:ownership:hint")
+    DescriptionLabel:
+        text: i18n._('contribute:login')
+        font_size: sp(Theme.DESC_FONT_SIZE) * 1.25
+    AnchorLayout:
+        size_hint: 1,2
+        GridLayout:
+            cols: 3
+            rows: 2
+            size_hint: 0.75,1
+            DescriptionLabel:
+                size_hint: 0.33, 1
+                text: i18n._("contribute:username")
+            AnchorLayout:
+                size_hint: 0.67, 1
+                LabelledTextInput:
+                    input_property: "contribute/username"
+            AnchorLayout:
+                size_hint: 0.33, 1
+                AutoSizedRoundedRectangleButton:
+                    text: i18n._("contribute:register")
+                    size_hint: 0.8, 0.7
+                    on_press: app.webbrowser('contribute:signup')
+            DescriptionLabel:
+                size_hint: 0.33, 1
+                text: i18n._("contribute:password")
+            AnchorLayout:
+                size_hint: 0.67, 1
+                LabelledTextInput:
+                    input_property: "contribute/password"
+            Label:
+                size_hint: 0.33, 1
+    DescriptionLabel:
+        text: ''
+        id: error
+        font_size: sp(Theme.DESC_FONT_SIZE)
+        color: Theme.ERROR_BORDER_COLOR
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1,1
+        MDBoxLayout:
+            size_hint_x: 2.5 if self.children else 0.0001
+            orientation: 'vertical'
+            id: katago_download_progress_box
+        AnchorLayout:
+            AutoSizedRoundedRectangleButton:
+                padding_x: 15
+                size_hint: None,None
+                height: sp(40)
+                text: i18n._("contribute:start")
+                on_press: root.start_contributing()
+
+
+
 <ConfigTeacherPopup>
     options_grid: options_grid
     themes_spinner: themes_spinner
