@@ -59,10 +59,20 @@ class BaseGame:
             self.external_game = PROGRAM_NAME not in self.root.get_property("AP", "")
             self.komi = self.root.komi
             handicap = int(self.root.handicap)
+            num_starting_moves_black = 0
+            node = self.root
+            while node.children:
+                node = node.children[0]
+                if node.player == "B":
+                    num_starting_moves_black += 1
+                else:
+                    break
+
             if (
                 handicap >= 2
                 and not self.root.placements
-                and not (not self.root.move_with_placements and self.root.children and self.root.children[0].placements)
+                and not (num_starting_moves_black == handicap)
+                and not (self.root.children and self.root.children[0].placements)
             ):  # not really according to sgf, and not sure if still needed, last clause for fox
                 self.root.place_handicap_stones(handicap)
         else:
@@ -191,10 +201,14 @@ class BaseGame:
     def undo(self, n_times=1, stop_on_mistake=None):
         break_on_branch = False
         cn = self.current_node  # avoid race conditions
-
+        break_on_main_branch = False
+        last_branching_node = cn
         if n_times == "branch":
             n_times = 9999
             break_on_branch = True
+        elif n_times == "main-branch":
+            n_times = 9999
+            break_on_main_branch = True
         for move in range(n_times):
             if (
                 stop_on_mistake is not None
@@ -204,13 +218,21 @@ class BaseGame:
             ):
                 self.set_current_node(cn.parent)
                 return
+            previous_cn = cn
             if cn.shortcut_from:
                 cn = cn.shortcut_from
             elif not cn.is_root:
                 cn = cn.parent
+            else:
+                break  # root
             if break_on_branch and len(cn.children) > 1:
                 break
-        self.set_current_node(cn)
+            elif break_on_main_branch and cn.ordered_children[0] != previous_cn:  # implies > 1 child
+                last_branching_node = cn
+        if break_on_main_branch:
+            cn = last_branching_node
+        if cn is not self.current_node:
+            self.set_current_node(cn)
 
     def redo(self, n_times=1, stop_on_mistake=None):
         cn = self.current_node  # avoid race conditions
@@ -338,11 +360,7 @@ class BaseGame:
         base_game_name = f"{PROGRAM_NAME}_{player_names['B']} vs {player_names['W']}"
         return f"{base_game_name} {self.game_id}.sgf"
 
-    def write_sgf(
-        self,
-        filename: str,
-        trainer_config: Optional[Dict] = None,
-    ):
+    def write_sgf(self, filename: str, trainer_config: Optional[Dict] = None):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer", {})
         save_feedback = trainer_config.get("save_feedback", False)
@@ -609,10 +627,7 @@ class Game(BaseGame):
                 analyze_and_play_policy(new_node)
 
             self.engines[node.next_player].request_analysis(
-                new_node,
-                callback=set_analysis,
-                priority=-1000,
-                analyze_fast=True,
+                new_node, callback=set_analysis, priority=-1000, analyze_fast=True
             )
 
         analyze_and_play_policy(cn)

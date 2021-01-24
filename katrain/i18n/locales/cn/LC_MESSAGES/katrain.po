@@ -276,6 +276,10 @@ msgstr "韩国规则"
 msgid "aga"
 msgstr "AGA规则"
 
+#. TODO check
+msgid "stone_scoring"
+msgstr "古代中国规则"
+
 msgid "clear cache"
 msgstr "清除缓存"
 
@@ -321,11 +325,6 @@ msgid "show ai dots"
 msgstr ""
 "AI的\n"
 "显示选点/SGF评价"
-
-msgid "lock ai when playing"
-msgstr ""
-"对局模式中\n"
-"不允许最佳选点"
 
 #. submit button
 msgid "update teacher"
@@ -382,12 +381,6 @@ msgstr ""
 
 msgid "engine:time:hint"
 msgstr "时间单位是秒"
-
-msgid "general:sgf_load"
-msgstr "加载SGF文件路径"
-
-msgid "general:sgf_save"
-msgstr "保存SGF文件路径"
 
 msgid "general:anim_pv_time"
 msgstr "动画中两手棋时间间隔"

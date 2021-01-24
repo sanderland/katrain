@@ -1,7 +1,7 @@
 import pytest
 
 from katrain.core.base_katrain import KaTrainBase
-from katrain.core.game import Game, IllegalMoveException, Move
+from katrain.core.game import Game, IllegalMoveException, Move, KaTrainSGF
 from katrain.core.game_node import GameNode
 
 
@@ -105,3 +105,16 @@ class TestBoard:
         b.play(Move(coords=None, player="B"))
         b.play(Move.from_gtp("A1", player="W"))
         assert 3 == len(b.prisoners)
+
+    def test_handicap_load(self):
+        input_sgf = (
+            "(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]RU[Chinese]SZ[19]HA[2]KM[0.50]TM[600]OT[5x30 byo-yomi]PW[kneh]PB[ayabot003]WR[4k]BR[6k]DT[2021-01-04]PC[The KGS Go Server at http://www.gokgs.com/]C[ayabot003 [6k\\"
+            "]: GTP Engine for ayabot003 (black): Aya version 7.85x]RE[W+Resign];B[pd]BL[599.647];B[dp]BL[599.477];W[pp]WL[597.432];B[cd]BL[598.896];W[ed]WL[595.78];B[ec]BL[598.558])"
+        )
+        root = KaTrainSGF.parse_sgf(input_sgf)
+        game = Game(MockKaTrain(force_package_config=True), MockEngine(), move_tree=root)
+        assert 0 == len(game.root.placements)
+
+        root2 = KaTrainSGF.parse_sgf("(;GM[1]FF[4]SZ[19]HA[2];)")
+        game2 = Game(MockKaTrain(force_package_config=True), MockEngine(), move_tree=root2)
+        assert 2 == len(game2.root.placements)

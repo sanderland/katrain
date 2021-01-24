@@ -1,3 +1,5 @@
+dist_sgf
+
 # additions
 KataGoData
 katrain/KataGo/KataGoData
@@ -6,7 +8,6 @@ experiments
 .buildozer
 bin
 gtp.log
-*.zip
 log.txt
 sgfout
 sgf_selfplay

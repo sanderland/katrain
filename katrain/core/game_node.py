@@ -8,10 +8,10 @@ from typing import Dict, List, Optional, Tuple
 from katrain.core.constants import (
     ANALYSIS_FORMAT_VERSION,
     PROGRAM_NAME,
+    REPORT_DT,
     SGF_INTERNAL_COMMENTS_MARKER,
     SGF_SEPARATOR_MARKER,
     VERSION,
-    REPORT_DT,
 )
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
@@ -171,11 +171,10 @@ class GameNode(SGFNode):
         region_of_interest=None,
         report_every=REPORT_DT,
     ):
-        additional_moves = bool(find_alternatives or region_of_interest)
         engine.request_analysis(
             self,
             callback=lambda result, partial_result: self.set_analysis(
-                result, refine_move, additional_moves, partial_result
+                result, refine_move, find_alternatives, region_of_interest, partial_result
             ),
             priority=priority,
             visits=visits,
@@ -205,6 +204,7 @@ class GameNode(SGFNode):
         analysis_json: Dict,
         refine_move: Optional[Move] = None,
         additional_moves: bool = False,
+        region_of_interest=None,
         partial_result: bool = False,
     ):
         if refine_move:
@@ -213,25 +213,25 @@ class GameNode(SGFNode):
                 {"pv": [refine_move.gtp()] + pvtail, **analysis_json["rootInfo"]}, refine_move.gtp()
             )
         else:
-            if additional_moves:
+            if additional_moves:  # additional moves: old order matters, ignore new order
                 for m in analysis_json["moveInfos"]:
-                    del m["order"]  # avoid changing order
-            if refine_move is None and not additional_moves:
+                    del m["order"]
+            elif refine_move is None:  # normal update: old moves to end, new order matters. also for region?
                 for move_dict in self.analysis["moves"].values():
                     move_dict["order"] = 999  # old moves to end
             for move_analysis in analysis_json["moveInfos"]:
                 self.update_move_analysis(move_analysis, move_analysis["move"])
             self.analysis["ownership"] = analysis_json.get("ownership")
             self.analysis["policy"] = analysis_json.get("policy")
-            if not additional_moves:
+            if not additional_moves and not region_of_interest:
                 self.analysis["root"] = analysis_json["rootInfo"]
-            if self.parent and self.move:
-                analysis_json["rootInfo"]["pv"] = [self.move.gtp()] + (
-                    analysis_json["moveInfos"][0]["pv"] if analysis_json["moveInfos"] else []
-                )
-                self.parent.update_move_analysis(
-                    analysis_json["rootInfo"], self.move.gtp()
-                )  # update analysis in parent for consistency
+                if self.parent and self.move:
+                    analysis_json["rootInfo"]["pv"] = [self.move.gtp()] + (
+                        analysis_json["moveInfos"][0]["pv"] if analysis_json["moveInfos"] else []
+                    )
+                    self.parent.update_move_analysis(
+                        analysis_json["rootInfo"], self.move.gtp()
+                    )  # update analysis in parent for consistency
             is_normal_query = refine_move is None and not additional_moves
             self.analysis["completed"] = self.analysis["completed"] or (is_normal_query and not partial_result)
 

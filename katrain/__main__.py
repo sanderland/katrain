@@ -170,8 +170,13 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.trainer_config = self.config("trainer")
         self.engine = KataGoEngine(self, self.config("engine"))
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
-        if len(sys.argv) == 2 and os.path.isfile(sys.argv[1]):
-            self.load_sgf_file(sys.argv[1], fast=True, rewind=True)
+        sgf_args = [
+            f
+            for f in sys.argv[1:]
+            if os.path.isfile(f) and any(f.lower().endswith(ext) for ext in ["sgf", "ngf", "gib"])
+        ]
+        if sgf_args:
+            self.load_sgf_file(sgf_args[0], fast=True, rewind=True)
         else:
             self._do_new_game()
 
@@ -650,6 +655,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
         elif keycode[1] == "v" and ctrl_pressed:
             self.load_sgf_from_clipboard()
+        elif keycode[1] == "b" and shift_pressed:
+            self("undo", "main-branch")
         elif keycode[1] in shortcuts.keys() and not ctrl_pressed:
             shortcut = shortcuts[keycode[1]]
             if isinstance(shortcut, Widget):
@@ -741,9 +748,11 @@ class KaTrainApp(MDApp):
             self.gui.controls.set_status("", STATUS_INFO)
 
     def webbrowser(self, site_key):
-        websites = {"homepage": HOMEPAGE + "#manual",
-                    "support": HOMEPAGE + "#support",
-                    "contribute:signup": "http://katagotraining.org/accounts/signup/"}
+        websites = {
+            "homepage": HOMEPAGE + "#manual",
+            "support": HOMEPAGE + "#support",
+            "contribute:signup": "http://katagotraining.org/accounts/signup/",
+        }
         if site_key in websites:
             webbrowser.open(websites[site_key])
 

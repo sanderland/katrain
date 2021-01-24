@@ -160,6 +160,7 @@
             size_hint: 0.33, 1
         AnchorLayout:
             LabelledPathInput:
+                check_path: False
                 input_property: "engine/altcommand"
                 hint_text: i18n._("engine:altcommand:hint")
     BoxLayout:
@@ -588,7 +589,7 @@
             text: i18n._("ruleset")
         AnchorLayout:
             LabelledSpinner:
-                size_hint: 0.8,0.8
+                size_hint: 0.95,0.8
                 input_property: 'game/rules'
                 font_size: sp(Theme.DESC_FONT_SIZE)
                 id: rules_spinner

@@ -1,4 +1,5 @@
 import copy
+import chardet
 import math
 import re
 from collections import defaultdict
@@ -303,7 +304,7 @@ class SGFNode:
     def initial_player(self):  # player for first node
         root = self.root
         if "PL" in root.properties:  # explicit
-            return "B" if self.get_property("PL").upper().strip() == "B" else "W"
+            return "B" if self.root.get_property("PL").upper().strip() == "B" else "W"
         elif root.children:  # child exist, use it if not placement
             for child in root.children:
                 for color in "BW":
@@ -368,7 +369,7 @@ class SGFNode:
 
 
 class SGF:
-    DEFAULT_ENCODING = "ISO-8859-1"  # as specified by the standard
+    DEFAULT_ENCODING = "UTF-8"
 
     _NODE_CLASS = SGFNode  # Class used for SGF Nodes, can change this to something that inherits from SGFNode
     # https://xkcd.com/1171/
@@ -408,7 +409,10 @@ class SGF:
                     if match:
                         encoding = match[1].decode("ascii", errors="ignore")
                     else:
-                        encoding = cls.DEFAULT_ENCODING
+                        encoding = chardet.detect(bin_contents[:300])["encoding"]
+                        # workaround for some compatibility issues for Windows-1252 and GB2312 encodings
+                        if encoding == "Windows-1252" or encoding == "GB2312":
+                            encoding = "GBK"
             try:
                 decoded = bin_contents.decode(encoding=encoding, errors="ignore")
             except LookupError:

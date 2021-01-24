@@ -6,7 +6,7 @@
         "config": "katrain/KataGo/analysis_config.cfg",
         "threads": 12,
         "max_visits": 500,
-        "fast_visits": 50,
+        "fast_visits": 25,
         "max_time": 8.0,
         "wide_root_noise": 0.0,
         "_enable_ownership": true

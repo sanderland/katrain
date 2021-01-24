@@ -283,6 +283,10 @@ msgstr "Koreanisch"
 msgid "aga"
 msgstr "AGA"
 
+#. TODO check
+msgid "stone_scoring"
+msgstr "Alte Chinesisch"
+
 msgid "clear cache"
 msgstr "Cache leeren"
 
@@ -328,11 +332,6 @@ msgid "show ai dots"
 msgstr ""
 "Dots/SGF-Kommentare \n"
 " für AI Spieler zeigen"
-
-msgid "lock ai when playing"
-msgstr ""
-"Beste Züge während \n"
-" Spiel deaktivieren"
 
 #. submit button
 msgid "update teacher"
@@ -392,12 +391,6 @@ msgstr ""
 
 msgid "engine:time:hint"
 msgstr "Zeit in Sekunden"
-
-msgid "general:sgf_load"
-msgstr "Pfad um SGF-Dateien zu laden"
-
-msgid "general:sgf_save"
-msgstr "Pfad um SGF-Dateien zu speichern"
 
 msgid "general:anim_pv_time"
 msgstr "Zeit zwischen Zügen, wenn Sequenz animiert wird"

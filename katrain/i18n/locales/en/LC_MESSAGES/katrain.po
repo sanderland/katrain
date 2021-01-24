@@ -394,6 +394,9 @@ msgstr "Korean"
 msgid "aga"
 msgstr "AGA"
 
+msgid "stone_scoring"
+msgstr "Ancient Chinese"
+
 msgid "clear cache"
 msgstr "Clear cache"
 
@@ -449,12 +452,6 @@ msgstr ""
 #. analysis option
 msgid "cache analysis to sgf"
 msgstr "Cache analysis in SGF"
-
-#. removed as an option / can ignore
-msgid "lock ai when playing"
-msgstr ""
-"Disable top moves\n"
-" while in play mode"
 
 #. submit button
 msgid "update teacher"
@@ -566,13 +563,6 @@ msgstr ""
 
 msgid "engine:time:hint"
 msgstr "Time in seconds"
-
-#. no longer used, can ignore
-msgid "general:sgf_load"
-msgstr "Path for loading SGF files"
-
-msgid "general:sgf_save"
-msgstr "Path for saving SGF files"
 
 msgid "general:anim_pv_time"
 msgstr "Time between moves when animating a sequence"

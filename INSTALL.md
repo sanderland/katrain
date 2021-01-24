@@ -10,6 +10,12 @@
 ## <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg" alt="MacOs" height="35"/> Installation for MacOS users
 
 ### <a name="MacQuick"></a>Quick install guide
+You can find downloadable .app files for MacOSX [here](https://github.com/sanderland/katrain/releases). 
+Simply download, unzip the file, mount the .dmg and drag the .app file to your application folder, everything is included.
+
+Users with the last generation M1 macs with different architecture should download this bundle and then `brew install katago` and point KaTrain to their own binary in general settings, as the built-in binary is not compatible.
+
+### <a name="MacCommand"></a>Command line install guide
 
 [Open a terminal](https://support.apple.com/guide/terminal/open-or-quit-terminal-apd5265185d-f365-44cb-8b09-71a064a42125/mac) and enter the following commands:
 ```bash
@@ -18,6 +24,7 @@ brew install python3
 brew install katago
 pip3 install katrain
 ```
+
 Now you can start KaTrain by simply typing `katrain` in a terminal.
 
 These commands install [Homebrew](https://brew.sh), which simplifies installing packages,

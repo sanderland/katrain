@@ -40,10 +40,12 @@ class KataGoContributeEngine:
 
         exe = katrain.config("engine/katago")
 
-        settings_dict = {"username": katrain.config('contribute/username'),
-                         "password": katrain.config('contribute/password'),
-                         "maxSimultaneousGames": katrain.config('contribute/maxgames'),
-                         "includeOwnership": katrain.config('contribute/ownership')}
+        settings_dict = {
+            "username": katrain.config("contribute/username"),
+            "password": katrain.config("contribute/password"),
+            "maxSimultaneousGames": katrain.config("contribute/maxgames"),
+            "includeOwnership": katrain.config("contribute/ownership"),
+        }
         settings = {f"{k}={v}" for k, v in settings_dict.items()}
         self.command = shlex.split(
             f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}" -override-config "{",".join(settings)}"'
