@@ -266,8 +266,8 @@
         font_size: sp(Theme.DESC_FONT_SIZE) * 1.25
     GridLayout:
         cols: 2
-        rows: 4
-        size_hint: 1, 4
+        rows: 5
+        size_hint: 1, 5
         spacing: CP_SPACING
         DescriptionLabel:
             text: i18n._("engine:katago")
@@ -319,6 +319,16 @@
                     input_property: "contribute/ownership"
             SmallDescriptionLabel:
                 text: i18n._("contribute:ownership:hint")
+        DescriptionLabel:
+            size_hint: 0.2, 1
+            text: i18n._("contribute:movespeed")
+        BoxLayout:
+            AnchorLayout:
+                size_hint: 0.5, 1
+                LabelledFloatInput:
+                    input_property: "contribute/movespeed"
+            SmallDescriptionLabel:
+                text: i18n._("contribute:movespeed:hint")
     DescriptionLabel:
         text: i18n._('contribute:login')
         font_size: sp(Theme.DESC_FONT_SIZE) * 1.25
@@ -350,8 +360,14 @@
                 LabelledTextInput:
                     input_property: "contribute/password"
                     write_tab: False
-            Label:
-                size_hint: 0.33, 1
+                    password: True
+                    id: password
+            AnchorLayout:
+                anchor_x: 'left'
+                MDIconButton:
+                    icon: "eye"
+                    pos_hint: {"center_x": 0, "center_y": .5}
+                    on_press: password.password = not password.password
     DescriptionLabel:
         text: ''
         id: error
@@ -359,7 +375,7 @@
         color: Theme.ERROR_BORDER_COLOR
     MDBoxLayout:
         orientation: 'horizontal'
-        size_hint: 1,1
+        size_hint: 1, 1
         MDBoxLayout:
             size_hint_x: 2.5 if self.children else 0.0001
             orientation: 'vertical'

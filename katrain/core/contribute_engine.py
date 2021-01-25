@@ -20,7 +20,7 @@ class KataGoContributeEngine:
     """Starts and communicates with the KataGO contribute program"""
 
     DEFAULT_MAX_GAMES = 16
-    MOVE_SPEED = 0.5
+    
     SHOW_RESULT_TIME = 5
     GIVE_UP_AFTER = 60
 
@@ -38,6 +38,7 @@ class KataGoContributeEngine:
         self.last_advance = 0
         self.server_error = None
         self.save_sgf = True
+        self.move_speed =  katrain.config("contribute/movespeed",2.0)
 
         exe = katrain.config("contribute/katago")
 
@@ -77,7 +78,7 @@ class KataGoContributeEngine:
 
                     self.katrain.log(f"Game {self.showing_game} finished, finding a new one", OUTPUT_INFO)
                     self.showing_game = None
-            elif time.time() - self.last_advance > self.MOVE_SPEED or len(self.active_games) > self.max_buffer_games:
+            elif time.time() - self.last_advance > self.move_speed or len(self.active_games) > self.max_buffer_games:
                 if current_game.current_node.children:
                     current_game.redo(1)
                     self.last_advance = time.time()
@@ -86,7 +87,6 @@ class KataGoContributeEngine:
                     self.katrain.log(
                         f"Giving up on game {self.showing_game} which appears stuck, finding a new one", OUTPUT_INFO
                     )
-                    del self.active_games[self.showing_game]
                     self.showing_game = None
         else:
             if self.active_games:

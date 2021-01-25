@@ -843,3 +843,11 @@ msgstr "Simultaneous Games"
 #. TODO
 msgid "contribute:ownership"
 msgstr "Enable Ownership"
+
+#. TODO - description
+msgid "contribute:movespeed"
+msgstr "Move speed"
+
+#. TODO - hint for ownership
+msgid "contribute:movespeed:hint"
+msgstr "Move playing delay in seconds/move."
