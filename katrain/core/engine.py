@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import sys
 import queue
 import shlex
 import subprocess
@@ -52,7 +53,7 @@ class KataGoEngine:
         self.write_stdin_thread = None
         self.shell = False
         self.write_queue = queue.Queue()
-
+        self.thread_lock = threading.Lock()
         exe = config.get("katago", "").strip()
         if config.get("altcommand", ""):
             self.command = config["altcommand"]
@@ -63,8 +64,10 @@ class KataGoEngine:
                     exe = "katrain/KataGo/katago.exe"
                 elif platform == "linux":
                     exe = "katrain/KataGo/katago"
-                else:  # e.g. MacOS after brewing
-                    exe = "katago"
+                else:
+                    exe = find_package_resource("katrain/KataGo/katago-osx") # github actions built
+                    if not os.path.isfile(exe):
+                        exe = "katago" # e.g. MacOS after brewing
 
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
@@ -92,39 +95,43 @@ class KataGoEngine:
         self.start()
 
     def start(self):
-        self.write_queue = queue.Queue()
-        try:
-            self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
-            startupinfo = None
-            if hasattr(subprocess, "STARTUPINFO"):
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # stop command box popups on win/pyinstaller
-            self.katago_process = subprocess.Popen(
-                self.command,
-                startupinfo=startupinfo,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                shell=self.shell,
-            )
-        except (FileNotFoundError, PermissionError, OSError) as e:
-            self.katrain.log(
-                i18n._("Starting Kata failed").format(command=self.command, error=e),
-                OUTPUT_ERROR,
-            )
-            return  # don't start
-        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)
-        self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True)
-        self.write_stdin_thread = threading.Thread(target=self._write_stdin_thread, daemon=True)
-        self.analysis_thread.start()
-        self.stderr_thread.start()
-        self.write_stdin_thread.start()
+        with self.thread_lock:
+            self.write_queue = queue.Queue()
+            try:
+                self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
+                startupinfo = None
+                if hasattr(subprocess, "STARTUPINFO"):
+                    startupinfo = subprocess.STARTUPINFO()
+                    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # stop command box popups on win/pyinstaller
+                self.katago_process = subprocess.Popen(
+                    self.command,
+                    startupinfo=startupinfo,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    shell=self.shell,
+                )
+            except (FileNotFoundError, PermissionError, OSError) as e:
+                self.katrain.log(
+                    i18n._("Starting Kata failed").format(command=self.command, error=e),
+                    OUTPUT_ERROR,
+                )
+                return  # don't start
+            self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)
+            self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True)
+            self.write_stdin_thread = threading.Thread(target=self._write_stdin_thread, daemon=True)
+            self.analysis_thread.start()
+            self.stderr_thread.start()
+            self.write_stdin_thread.start()
 
     def on_new_game(self):
         self.base_priority += 1
-        for query_id in list(self.queries.keys()):
-            self.terminate_query(query_id)
-        self.queries = {}
+        if not self.is_idle():
+            with self.thread_lock:
+                for query_id in list(self.queries.keys()):
+                    self.terminate_query(query_id)
+                self.queries = {}
+                self.write_queue = queue.Queue()
 
     def restart(self):
         self.queries = {}
@@ -248,16 +255,17 @@ class KataGoEngine:
                 query, callback, error_callback, next_move = self.write_queue.get(block=True, timeout=0.1)
             except queue.Empty:
                 continue
-            if "id" not in query:
-                self.query_counter += 1
-                query["id"] = f"QUERY:{str(self.query_counter)}"
-            self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
-            self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
-            try:
-                self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
-                self.katago_process.stdin.flush()
-            except OSError as e:
-                self.check_alive(os_error=str(e), exception_if_dead=False)
+            with self.thread_lock:
+                if "id" not in query:
+                    self.query_counter += 1
+                    query["id"] = f"QUERY:{str(self.query_counter)}"
+                self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
+                self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
+                try:
+                    self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
+                    self.katago_process.stdin.flush()
+                except OSError as e:
+                    self.check_alive(os_error=str(e), exception_if_dead=False)
 
     def send_query(self, query, callback, error_callback, next_move=None):
         self.write_queue.put((query, callback, error_callback, next_move))

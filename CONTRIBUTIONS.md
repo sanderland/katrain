@@ -51,6 +51,7 @@ Many thanks to these additional authors:
 * Carton He for contributions to sgf parsing and handling.
 * "blamarche" for adding the board coordinates toggle.
 * "pdeblanc" for adding the ancient chinese scoring option.
+* "LiamHz" for adding the undo to main branch keyboard shortcut.
 
 ## Translators
 

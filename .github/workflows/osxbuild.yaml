@@ -1,0 +1,70 @@
+name: build_osx
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  osx_app:  
+    runs-on: macos-10.15
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Build KataGo
+      run: |
+        rm katrain/KataGo/katago
+        rm katrain/KataGo/*.dll
+        rm katrain/KataGo/katago.exe
+        cd ..
+        git clone https://github.com/lightvector/KataGo.git
+        pushd KataGo/cpp
+        cmake . -DUSE_BACKEND=OPENCL
+        make
+        cp katago ../../katrain/katrain/KataGo/katago-osx
+    - name: Get Kivy dependencies
+      run: |
+        cd ..
+        git clone https://github.com/kivy/kivy-sdk-packager.git
+        cd kivy-sdk-packager/osx
+        curl -O -L https://kivy.org/downloads/ci/osx/app/Kivy.dmg
+        hdiutil attach Kivy.dmg -mountroot .
+        cp -R Kivy/Kivy.app KaTrain.app
+    - name: Install KaTrain pip dependencies
+      run: |
+        pushd ../kivy-sdk-packager/osx/KaTrain.app/Contents/Resources/venv/bin
+        source activate
+        popd
+        python -m pip install .
+    - name: Finalize KaTrain bundle
+      run: |
+        cd ../kivy-sdk-packager/osx
+        pushd KaTrain.app/Contents/Resources/
+        ln -s ./venv/bin/KaTrain yourapp
+        popd
+        ./fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "1.8.0" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
+        ./cleanup-app.sh KaTrain.app -g 1
+        ./relocate.sh KaTrain.app
+    - name: Create dmg
+      run: |
+        pushd ../kivy-sdk-packager/osx
+        ./create-osx-dmg.sh KaTrain.app KaTrain
+        popd
+        mkdir osx_app
+        cp ../kivy-sdk-packager/osx/KaTrain.dmg osx_app/
+    - name: Upload app as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: KaTrainOSX
+        path: osx_app
+    - name: Upload to GitHub Release
+      uses: softprops/action-gh-release@78c309ef59fdb9557cd6574f2e0be552936ed728
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: KaTrainOSX/*
+        draft: true
+        fail_on_unmatched_files: true
