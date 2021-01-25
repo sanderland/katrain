@@ -285,7 +285,14 @@ class KaTrainGui(Screen, KaTrainBase):
                     continue
                 msg = msg.replace("-", "_")
                 if self.contributing:
-                    if msg not in ["katago_contribute", "redo", "undo", "update_state", "save_game", "find_mistake"]:
+                    if msg not in [
+                        "katago_contribute",
+                        "redo",
+                        "undo",
+                        "update_state",
+                        "save_game",
+                        "find_mistake",
+                    ]:
                         self.log(i18n._("gui-locked").format(action=msg), OUTPUT_ERROR)
                         continue
                 fn = getattr(self, f"_do_{msg}")
@@ -299,7 +306,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def __call__(self, message, *args, **kwargs):
         if self.game:
             if message.endswith("popup"):  # gui code needs to run in main kivy thread.
-                if self.contributing and "save" not in message:
+                if self.contributing and "save" not in message and message != "contribute-popup":
                     self.log(i18n._("gui-locked").format(action=message), OUTPUT_ERROR)
                     return
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")
@@ -330,7 +337,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.update_state(redraw_board=True)
 
     def _do_katago_contribute(self):
-        if self.contributing:
+        if self.contributing and not self.engine.server_error:
             return
         self.contributing = self.animate_contributing = True  # special mode
         if self.play_analyze_mode == MODE_PLAY:  # switch to analysis view
