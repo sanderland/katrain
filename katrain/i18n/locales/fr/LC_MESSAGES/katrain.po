@@ -879,3 +879,11 @@ msgid "engine:katago:contributehint"
 msgstr ""
 "For contributing to distributed training, please download and select an "
 "official 1.8.0+ binary."
+
+#. TODO - description
+msgid "contribute:movespeed"
+msgstr "Move speed"
+
+#. TODO - hint for ownership
+msgid "contribute:movespeed:hint"
+msgstr "Move playing delay in seconds/move."

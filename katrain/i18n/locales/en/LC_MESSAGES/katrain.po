@@ -490,6 +490,14 @@ msgstr "Enable Ownership"
 msgid "contribute:ownership:hint"
 msgstr "Slightly slows down training, but allows ownership visualization."
 
+#. description
+msgid "contribute:movespeed"
+msgstr "Move speed"
+
+#. hint for ownership
+msgid "contribute:movespeed:hint"
+msgstr "Move playing delay in seconds/move."
+
 msgid "contribute:username"
 msgstr "Username"
 

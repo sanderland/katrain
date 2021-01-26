@@ -15,6 +15,7 @@
         "katago": "",
         "ownership": false,
         "maxgames": 16,
+        "movespeed": 2,
         "username": "",
         "password": ""
     },
