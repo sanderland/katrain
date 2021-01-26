@@ -472,6 +472,10 @@ msgstr ""
 "official 1.8.0+ binary."
 
 #. title
+msgid "contribute:viewer settings"
+msgstr "Viewer Settings"
+
+#. title
 msgid "contribute:login"
 msgstr "Login Information"
 
@@ -494,9 +498,17 @@ msgstr "Slightly slows down training, but allows ownership visualization."
 msgid "contribute:movespeed"
 msgstr "Move speed"
 
-#. hint for ownership
+#. hint for move speed
 msgid "contribute:movespeed:hint"
 msgstr "Move playing delay in seconds/move."
+
+#. description
+msgid "contribute:savesgf"
+msgstr "Save SGFs"
+
+#. hint for save
+msgid "contribute:savesgf:hint"
+msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
 
 msgid "contribute:username"
 msgstr "Username"

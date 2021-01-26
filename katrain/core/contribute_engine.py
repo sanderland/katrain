@@ -37,7 +37,9 @@ class KataGoContributeEngine:
         self.showing_game = None
         self.last_advance = 0
         self.server_error = None
-        self.save_sgf = True
+
+        self.save_sgf = katrain.config("contribute/savesgf",False)
+        self.save_path = katrain.config("contribute/savepath","./dist_sgf/")
         self.move_speed =  katrain.config("contribute/movespeed",2.0)
 
         exe = katrain.config("contribute/katago")
@@ -73,7 +75,7 @@ class KataGoContributeEngine:
                 if time.time() - self.last_advance > self.SHOW_RESULT_TIME:
                     del self.active_games[self.showing_game]
                     if self.save_sgf:
-                        filename = f"./dist_sgf/{self.showing_game}.sgf"
+                        filename = os.path.join( self.save_path, f"{self.showing_game}.sgf")
                         self.katrain.log(current_game.write_sgf(filename, self.katrain.config("trainer")), OUTPUT_INFO)
 
                     self.katrain.log(f"Game {self.showing_game} finished, finding a new one", OUTPUT_INFO)

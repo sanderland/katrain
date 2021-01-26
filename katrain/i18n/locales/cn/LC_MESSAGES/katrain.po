@@ -822,6 +822,18 @@ msgstr ""
 msgid "contribute:movespeed"
 msgstr "Move speed"
 
-#. TODO - hint for ownership
+#. TODO - hint for move speed
 msgid "contribute:movespeed:hint"
 msgstr "Move playing delay in seconds/move."
+
+#. TODO - description
+msgid "contribute:savesgf"
+msgstr "Save SGFs"
+
+#. TODO - hint for save
+msgid "contribute:savesgf:hint"
+msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+
+#. TODO - title
+msgid "contribute:viewer settings"
+msgstr "Viewer Settings"

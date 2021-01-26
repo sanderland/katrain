@@ -17,7 +17,8 @@
         "maxgames": 16,
         "movespeed": 2,
         "username": "",
-        "password": ""
+        "password": "",
+        "savepath": "./dist_sgf/"
     },
     "general": {
         "sgf_load": "~/Downloads",

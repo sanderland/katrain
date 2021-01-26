@@ -266,7 +266,7 @@
         font_size: sp(Theme.DESC_FONT_SIZE) * 1.25
     GridLayout:
         cols: 2
-        rows: 5
+        rows: 4
         size_hint: 1, 5
         spacing: CP_SPACING
         DescriptionLabel:
@@ -319,16 +319,32 @@
                     input_property: "contribute/ownership"
             SmallDescriptionLabel:
                 text: i18n._("contribute:ownership:hint")
+    DescriptionLabel:
+        text: i18n._('contribute:viewer settings')
+        font_size: sp(Theme.DESC_FONT_SIZE) * 1.25
+    GridLayout:
+        cols: 3
+        rows: 2
+        size_hint: 1, 2
+        spacing: CP_SPACING
         DescriptionLabel:
-            size_hint: 0.2, 1
+            size_hint: 0.5, 1
+            text: i18n._("contribute:savesgf")
+        AnchorLayout:
+            size_hint: 0.5, 1
+            LabelledCheckBox:
+                input_property: "contribute/savesgf"
+        SmallDescriptionLabel:
+            text: i18n._("contribute:savesgf:hint")
+        DescriptionLabel:
+            size_hint: 0.5, 1
             text: i18n._("contribute:movespeed")
-        BoxLayout:
-            AnchorLayout:
-                size_hint: 0.5, 1
-                LabelledFloatInput:
-                    input_property: "contribute/movespeed"
-            SmallDescriptionLabel:
-                text: i18n._("contribute:movespeed:hint")
+        AnchorLayout:
+            size_hint: 0.5, 1
+            LabelledFloatInput:
+                input_property: "contribute/movespeed"
+        SmallDescriptionLabel:
+            text: i18n._("contribute:movespeed:hint")
     DescriptionLabel:
         text: i18n._('contribute:login')
         font_size: sp(Theme.DESC_FONT_SIZE) * 1.25

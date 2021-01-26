@@ -448,7 +448,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_contribute_popup(self):
         if not self.contribute_popup:
             self.contribute_popup = I18NPopup(
-                title_key="contribute settings title", size=[dp(1100), dp(750)], content=ContributePopup(self)
+                title_key="contribute settings title", size=[dp(1100), dp(800)], content=ContributePopup(self)
             ).__self__
             self.contribute_popup.content.popup = self.contribute_popup
         self.contribute_popup.open()
