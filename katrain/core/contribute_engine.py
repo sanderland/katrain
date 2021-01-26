@@ -151,9 +151,10 @@ class KataGoContributeEngine:
         if process:
             self.katago_process = None
             process.terminate()
-        for t in [self.stderr_thread, self.stdout_thread]:
-            if t:
-                t.join()
+        if finish is not None:
+            for t in [self.stderr_thread, self.stdout_thread]:
+                if t:
+                    t.join()
 
     def _read_stderr_thread(self):
         while self.katago_process is not None:
