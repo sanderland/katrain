@@ -819,8 +819,8 @@ msgstr "Name von Weiß"
 #. TODO - in self-play mode
 msgid "gui-locked"
 msgstr ""
-"Action {action} not allowed in self-play mode. Restart KaTrain to exit "
-"distributed training mode."
+"Action {action} not allowed in distributed self-play training mode. Restart "
+"KaTrain to exit this mode."
 
 #. TODO - menu item
 msgid "menu:distributed"

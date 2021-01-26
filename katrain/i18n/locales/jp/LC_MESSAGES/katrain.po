@@ -801,7 +801,7 @@ msgstr "白番"
 #. TODO - in self-play mode
 msgid "gui-locked"
 msgstr ""
-"Action {msg} not allowed in self-play mode. Restart KaTrain to exit "
+"Action {action} not allowed in self-play mode. Restart KaTrain to exit "
 "distributed training mode."
 
 #. TODO - menu item

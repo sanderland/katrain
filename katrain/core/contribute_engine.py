@@ -7,8 +7,7 @@ import threading
 import time
 import traceback
 
-
-from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_KATAGO_STDERR, OUTPUT_INFO
+from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_KATAGO_STDERR
 from katrain.core.engine import EngineDiedException
 from katrain.core.game import BaseGame
 from katrain.core.lang import i18n
@@ -20,7 +19,7 @@ class KataGoContributeEngine:
     """Starts and communicates with the KataGO contribute program"""
 
     DEFAULT_MAX_GAMES = 16
-    
+
     SHOW_RESULT_TIME = 5
     GIVE_UP_AFTER = 60
 
@@ -38,7 +37,7 @@ class KataGoContributeEngine:
         self.last_advance = 0
         self.server_error = None
         self.save_sgf = True
-        self.move_speed =  katrain.config("contribute/movespeed",2.0)
+        self.move_speed = katrain.config("contribute/movespeed", 2.0)
 
         exe = katrain.config("contribute/katago")
 
@@ -90,13 +89,19 @@ class KataGoContributeEngine:
                     self.showing_game = None
         else:
             if self.active_games:
-                self.showing_game = random.choice(list(self.active_games.keys()))
-                for game_id, game in self.active_games.items():  # find finished game
-                    if game.root.nodes_in_tree[-1].is_pass:
+                self.showing_game = None
+                best_count = -1
+                for game_id, game in self.active_games.items():  # find game with most moves left to show
+                    count = 0
+                    node = game.current_node
+                    while node.children:
+                        node = node.children[0]
+                        count += 1
+                    if count > best_count:
+                        best_count = count
                         self.showing_game = game_id
-                        break
                 self.last_advance = time.time()
-                self.katrain.log(f"Found new game to show: {self.showing_game}", OUTPUT_INFO)
+                self.katrain.log(f"Showing game {self.showing_game}, {best_count} moves left to show.", OUTPUT_INFO)
 
                 self.katrain.game = self.active_games[self.showing_game]
                 self.katrain("update-state", redraw_board=True)

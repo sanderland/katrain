@@ -679,7 +679,8 @@ class BaseConfigPopup(QuickConfigGui):
                 savepath_tmp = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 exe_path_name = os.path.expanduser(os.path.join(DATA_FOLDER, exe_name))
                 self.katrain.log(f"Downloading binary {name} from {url} to {savepath_tmp}", OUTPUT_INFO)
-                progress = ProgressLoader(
+                ProgressLoader(
+                    root_instance=self.katago_download_progress_box,
                     download_url=url,
                     path_to_file=savepath_tmp,
                     downloading_text=f"Downloading {name}: " + "{}",
@@ -694,7 +695,6 @@ class BaseConfigPopup(QuickConfigGui):
                         f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
                     ),
                 )
-                progress.start(self.katago_download_progress_box)
                 downloading = True
         if not downloading:
             if not self.KATAGOS.get(platform):
@@ -751,7 +751,7 @@ class ContributePopup(BaseConfigPopup):
     def start_contributing(self):
         self.update_config(True, close_popup=False)
         self.error.text = ""
-        log_settings = {**self.katrain.config('contribute'),'password':'***'}
+        log_settings = {**self.katrain.config("contribute"), "password": "***"}
         self.katrain.log(f"Updating contribution settings {log_settings}", OUTPUT_DEBUG)
         if not self.katrain.config("contribute/katago"):
             self.error.text = i18n._("engine:katago:contributehint")
