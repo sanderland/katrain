@@ -603,8 +603,9 @@ class KaTrainGui(Screen, KaTrainBase):
     @property
     def popup_open(self) -> Popup:
         app = App.get_running_app()
-        first_child = app.root_window.children[0]
-        return first_child if isinstance(first_child, Popup) else None
+        if app:
+            first_child = app.root_window.children[0]
+            return first_child if isinstance(first_child, Popup) else None
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         self.last_key_down = keycode
@@ -771,7 +772,7 @@ class KaTrainApp(MDApp):
         if getattr(self, "gui", None):
             self.gui.play_mode.save_ui_state()
             if self.gui.engine:
-                self.gui.engine.shutdown()
+                self.gui.engine.shutdown(finish=None)
 
     def signal_handler(self, _signal, _frame):
         if self.gui.debug_level >= OUTPUT_DEBUG:
