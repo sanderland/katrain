@@ -2,10 +2,10 @@ import copy
 import json
 import os
 import platform
-import sys
 import queue
 import shlex
 import subprocess
+import sys
 import threading
 import time
 import traceback
@@ -167,10 +167,13 @@ class KataGoEngine:
             self.wait_to_finish()
         if process:
             self.katago_process = None
+            self.katrain.log("Terminating KataGo process", OUTPUT_DEBUG)
             process.terminate()
-        for t in [self.stderr_thread, self.analysis_thread, self.write_stdin_thread]:
-            if t:
-                t.join()
+            self.katrain.log("Terminated KataGo process", OUTPUT_DEBUG)
+        if finish is not None:  # don't care if exiting app
+            for t in [self.write_stdin_thread, self.analysis_thread, self.stderr_thread]:
+                if t:
+                    t.join()
 
     def is_idle(self):
         return not self.queries and self.write_queue.empty()
