@@ -834,7 +834,10 @@ msgstr ""
 
 #. TODO - hint for max games
 msgid "contribute:maxgames:hint"
-msgstr "Top-tier GPU: 32-64, Middle tier: 8-16, Older GPU or low-load: 4"
+msgstr ""
+"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
+" set it slightly lower for shorter runs, as half-finished games are not "
+"uploaded."
 
 #. TODO - description for input
 msgid "contribute:maxgames"

@@ -6,6 +6,7 @@ import subprocess
 import threading
 import time
 import traceback
+from collections import defaultdict
 
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_KATAGO_STDERR
 from katrain.core.engine import EngineDiedException
@@ -35,11 +36,16 @@ class KataGoContributeEngine:
         self.finished_games = set()
         self.showing_game = None
         self.last_advance = 0
+        self.move_count = 0
+        self.uploaded_games_count = 0
+        self.last_move_for_game = defaultdict(int)
+        self.visits_count = 0
+        self.start_time = 0
         self.server_error = None
 
-        self.save_sgf = katrain.config("contribute/savesgf",False)
-        self.save_path = katrain.config("contribute/savepath","./dist_sgf/")
-        self.move_speed =  katrain.config("contribute/movespeed",2.0)
+        self.save_sgf = katrain.config("contribute/savesgf", False)
+        self.save_path = katrain.config("contribute/savepath", "./dist_sgf/")
+        self.move_speed = katrain.config("contribute/movespeed", 2.0)
 
         exe = katrain.config("contribute/katago")
 
@@ -74,7 +80,7 @@ class KataGoContributeEngine:
                 if time.time() - self.last_advance > self.SHOW_RESULT_TIME:
                     del self.active_games[self.showing_game]
                     if self.save_sgf:
-                        filename = os.path.join( self.save_path, f"{self.showing_game}.sgf")
+                        filename = os.path.join(self.save_path, f"{self.showing_game}.sgf")
                         self.katrain.log(current_game.write_sgf(filename, self.katrain.config("trainer")), OUTPUT_INFO)
 
                     self.katrain.log(f"Game {self.showing_game} finished, finding a new one", OUTPUT_INFO)
@@ -108,6 +114,9 @@ class KataGoContributeEngine:
                 self.katrain.game = self.active_games[self.showing_game]
                 self.katrain("update-state", redraw_board=True)
 
+    def status(self):
+        return f"Contributing to distributed training\nGames: {self.uploaded_games_count} uploaded, {len(self.active_games)} in buffer, {len(self.finished_games)} shown\n{self.move_count} moves played ({60*self.move_count/(time.time()-self.start_time):.1f}/min, {self.visits_count / (time.time() - self.start_time):.1f} visits/s)\n"
+
     def is_idle(self):
         return False
 
@@ -117,10 +126,15 @@ class KataGoContributeEngine:
     def start(self):
         try:
             self.katrain.log(f"Starting Distributed KataGo with {self.command}", OUTPUT_INFO)
+            startupinfo = None
+            if hasattr(subprocess, "STARTUPINFO"):
+                startupinfo = subprocess.STARTUPINFO()
+                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # stop command box popups on win/pyinstaller
             self.katago_process = subprocess.Popen(
                 self.command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                startupinfo=startupinfo,
                 shell=self.shell,
             )
         except (FileNotFoundError, PermissionError, OSError) as e:
@@ -227,14 +241,22 @@ class KataGoContributeEngine:
                                 last_node.set_analysis(analysis)
                                 if new_game:
                                     current_game.set_current_node(last_node)
+                                self.start_time = self.start_time or time.time() - 1
+                                self.move_count += 1
+                                self.visits_count += analysis["rootInfo"]["visits"]
+                                last_move = self.last_move_for_game[game_id]
+                                self.last_move_for_game[game_id] = time.time()
+                                dt = self.last_move_for_game[game_id] - last_move if last_move else 0
                                 self.katrain.log(
-                                    f"Game {game_id} Move {analysis['turnNumber']}: {' '.join(analysis['move'])} Visits {analysis['rootInfo']['visits']}",
+                                    f"[{time.time()-self.start_time:.1f}] Game {game_id} Move {analysis['turnNumber']}: {' '.join(analysis['move'])} Visits {analysis['rootInfo']['visits']} Time {dt:.1f}s\t Moves/min {60*self.move_count/(time.time()-self.start_time):.1f} Visits/s {self.visits_count/(time.time()-self.start_time):.1f}",
                                     OUTPUT_DEBUG,
                                 )
                                 self.katrain("update-state")
                         except Exception as e:
                             traceback.print_exc()
                             self.katrain.log(f"Exception {e} in parsing or processing JSON: {line}", OUTPUT_ERROR)
+                    elif "uploaded sgf" in line:
+                        self.uploaded_games_count += 1
                     else:
                         self.katrain.log(line, OUTPUT_KATAGO_STDERR)
                 elif self.katago_process:

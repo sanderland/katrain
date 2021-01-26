@@ -172,6 +172,9 @@ class KataGoEngine:
     def advance_showing_game(self):
         pass  # avoid transitional error
 
+    def status(self):
+        return ""  # avoid transitional error
+
     def shutdown(self, finish=False):
         process = self.katago_process
         if finish and process:

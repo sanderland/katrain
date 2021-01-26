@@ -148,7 +148,7 @@ class ControlsPanel(BoxLayout):
         details = self.info.detailed and not lock_ai
         info = ""
         if katrain.contributing:
-            info += f"Contributing to distributed training\n{len(getattr(katrain.engine,'active_games',[]))} games in buffer, {len(getattr(katrain.engine,'finished_games',[]))} games finished showing\n"
+            info += katrain.engine.status()
             game_id = getattr(katrain.engine, "showing_game")
             game = katrain.engine.active_games.get(game_id)
             if game is not None:
