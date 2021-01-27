@@ -465,6 +465,7 @@ class BaseConfigPopup(QuickConfigGui):
         super().__init__(katrain)
         self.paths = [self.katrain.config("engine/model"), "katrain/models", DATA_FOLDER]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
+        self.last_clicked_download_models = 0
 
     def check_models(self, *args):
         all_models = [self.MODELS, self.MODEL_DESC, self.katrain.config("dist_models", {})]
@@ -501,6 +502,7 @@ class BaseConfigPopup(QuickConfigGui):
                 f.replace("/", os.path.sep).replace(PATHS["PACKAGE"], "katrain")
                 for ftype in ["*.bin.gz", "*.txt.gz"]
                 for f in glob.glob(slashpath + "/" + ftype)
+                if '.tmp.' not in f
             ]
             if files and path not in self.paths:
                 self.paths.append(path)  # persistent on paths with models found
@@ -593,7 +595,6 @@ class BaseConfigPopup(QuickConfigGui):
                 dist_models[name] = json.loads(response.data.decode("utf-8"))["model_file"]
             except Exception as e:
                 self.katrain.log(f"Failed to retrieve info for model: {e}", OUTPUT_INFO)
-
         self.katrain._config["dist_models"] = dist_models
         self.katrain.save_config(key="dist_models")
 
