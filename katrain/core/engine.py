@@ -1,16 +1,17 @@
 import copy
 import json
 import os
-import sys
+import platform
 import queue
 import shlex
 import subprocess
+import sys
 import threading
 import time
 import traceback
 from typing import Callable, Dict, List, Optional
 
-from kivy.utils import platform
+from kivy.utils import platform as kivy_platform
 
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from katrain.core.game_node import GameNode
@@ -60,14 +61,14 @@ class KataGoEngine:
             self.shell = True
         else:
             if not exe:
-                if platform == "win":
+                if kivy_platform == "win":
                     exe = "katrain/KataGo/katago.exe"
-                elif platform == "linux":
+                elif kivy_platform == "linux":
                     exe = "katrain/KataGo/katago"
                 else:
-                    exe = find_package_resource("katrain/KataGo/katago-osx") # github actions built
-                    if not os.path.isfile(exe):
-                        exe = "katago" # e.g. MacOS after brewing
+                    exe = find_package_resource("katrain/KataGo/katago-osx")  # github actions built
+                    if not os.path.isfile(exe) or "arm" in platform.machine():
+                        exe = "katago"  # e.g. MacOS after brewing
 
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
@@ -166,10 +167,13 @@ class KataGoEngine:
             self.wait_to_finish()
         if process:
             self.katago_process = None
+            self.katrain.log("Terminating KataGo process", OUTPUT_DEBUG)
             process.terminate()
-        for t in [self.stderr_thread, self.analysis_thread, self.write_stdin_thread]:
-            if t:
-                t.join()
+            self.katrain.log("Terminated KataGo process", OUTPUT_DEBUG)
+        if finish is not None:  # don't care if exiting app
+            for t in [self.write_stdin_thread, self.analysis_thread, self.stderr_thread]:
+                if t:
+                    t.join()
 
     def is_idle(self):
         return not self.queries and self.write_queue.empty()

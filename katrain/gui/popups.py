@@ -225,7 +225,7 @@ class QuickConfigGui(MDBoxLayout):
         for c in widget.children:
             self._set_properties_subtree(c)
 
-    def update_config(self, save_to_file=True):
+    def update_config(self, save_to_file=True, close_popup=True):
         updated = set()
         for multikey, value in self.collect_properties(self).items():
             old_value, conf, key = self.get_setting(multikey)
@@ -235,14 +235,14 @@ class QuickConfigGui(MDBoxLayout):
                 updated.add(multikey)
         if save_to_file:
             self.katrain.save_config()
-        if self.popup:
+        if self.popup and close_popup:
             self.popup.dismiss()
         return updated
 
 
 class ConfigTimerPopup(QuickConfigGui):
-    def update_config(self, save_to_file=True):
-        super().update_config(save_to_file=save_to_file)
+    def update_config(self, save_to_file=True, close_popup=True):
+        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         for p in self.katrain.players_info.values():
             p.periods_used = 0
         self.katrain.controls.timer.paused = True
@@ -283,8 +283,8 @@ class NewGamePopup(QuickConfigGui):
         if rules is not None:
             self.rules_spinner.select_key(rules.strip())
 
-    def update_config(self, save_to_file=True):
-        super().update_config(save_to_file=save_to_file)
+    def update_config(self, save_to_file=True, close_popup=True):
+        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         self.katrain.log(f"New game settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
         if self.restart.active:
             self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
@@ -356,8 +356,8 @@ class ConfigTeacherPopup(QuickConfigGui):
             )
         super().build_and_set_properties()
 
-    def update_config(self, save_to_file=True):
-        super().update_config(save_to_file=save_to_file)
+    def update_config(self, save_to_file=True, close_popup=True):
+        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         self.build_and_set_properties()
 
 
@@ -421,13 +421,13 @@ class ConfigAIPopup(QuickConfigGui):
             self.options_grid.add_widget(Label(size_hint_x=None))
         Clock.schedule_once(self.estimate_rank_from_options)
 
-    def update_config(self, save_to_file=True):
-        super().update_config(save_to_file=save_to_file)
+    def update_config(self, save_to_file=True, close_popup=True):
+        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         self.katrain.update_calculated_ranks()
         Clock.schedule_once(self.katrain.controls.update_players, 0)
 
 
-class ConfigPopup(QuickConfigGui):
+class BaseConfigPopup(QuickConfigGui):
     MODEL_ENDPOINTS = {
         "Latest distributed model": "https://katagotraining.org/api/networks/newest_training/",
         "Strongest distributed model": "https://katagotraining.org/api/networks/get_strongest/",
@@ -465,13 +465,6 @@ class ConfigPopup(QuickConfigGui):
         super().__init__(katrain)
         self.paths = [self.katrain.config("engine/model"), "katrain/models", DATA_FOLDER]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
-        Clock.schedule_once(self.check_katas)
-        self.last_clicked_download_models = 0
-        MDApp.get_running_app().bind(language=self.check_models)
-        MDApp.get_running_app().bind(language=self.check_katas)
-
-    def build_and_set_properties(self, *_args):
-        super().build_and_set_properties()
 
     def check_models(self, *args):
         all_models = [self.MODELS, self.MODEL_DESC, self.katrain.config("dist_models", {})]
@@ -492,7 +485,8 @@ class ConfigPopup(QuickConfigGui):
 
         done = set()
         model_files = []
-        for path in self.paths + [self.model_path.text]:
+        distributed_training_models = os.path.expanduser(os.path.join(DATA_FOLDER, "katago_contribute/kata1/models"))
+        for path in self.paths + [self.model_path.text, distributed_training_models]:
             path = path.rstrip("/\\")
             if path.startswith("katrain"):
                 path = path.replace("katrain", PATHS["PACKAGE"].rstrip("/\\"), 1)
@@ -608,7 +602,7 @@ class ConfigPopup(QuickConfigGui):
             if not any(os.path.split(f)[1] == filename for f in self.model_files.values):
                 savepath = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 savepath_tmp = savepath + ".part"
-                self.katrain.log(f"Downloading {name} model from {url} to {savepath_tmp}", OUTPUT_INFO)
+                self.katrain.log(f"Downloading {name} from {url} to {savepath_tmp}", OUTPUT_INFO)
                 Clock.schedule_once(
                     lambda _dt, _savepath=savepath, _savepath_tmp=savepath_tmp, _url=url, _name=name: ProgressLoader(
                         self.download_progress_box,
@@ -685,7 +679,8 @@ class ConfigPopup(QuickConfigGui):
                 savepath_tmp = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 exe_path_name = os.path.expanduser(os.path.join(DATA_FOLDER, exe_name))
                 self.katrain.log(f"Downloading binary {name} from {url} to {savepath_tmp}", OUTPUT_INFO)
-                progress = ProgressLoader(
+                ProgressLoader(
+                    root_instance=self.katago_download_progress_box,
                     download_url=url,
                     path_to_file=savepath_tmp,
                     downloading_text=f"Downloading {name}: " + "{}",
@@ -700,7 +695,6 @@ class ConfigPopup(QuickConfigGui):
                         f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
                     ),
                 )
-                progress.start(self.katago_download_progress_box)
                 downloading = True
         if not downloading:
             if not self.KATAGOS.get(platform):
@@ -712,8 +706,16 @@ class ConfigPopup(QuickConfigGui):
                     Label(text=i18n._("All binaries downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
                 )
 
-    def update_config(self, save_to_file=True):
-        updated = super().update_config(save_to_file=save_to_file)
+
+class ConfigPopup(BaseConfigPopup):
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        Clock.schedule_once(self.check_katas)
+        MDApp.get_running_app().bind(language=self.check_models)
+        MDApp.get_running_app().bind(language=self.check_katas)
+
+    def update_config(self, save_to_file=True, close_popup=True):
+        updated = super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         self.katrain.debug_level = self.katrain.config("general/debug_level", OUTPUT_INFO)
 
         ignore = {"max_visits", "fast_visits", "max_time", "enable_ownership", "wide_root_noise"}
