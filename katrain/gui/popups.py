@@ -595,7 +595,6 @@ class BaseConfigPopup(QuickConfigGui):
                 dist_models[name] = json.loads(response.data.decode("utf-8"))["model_file"]
             except Exception as e:
                 self.katrain.log(f"Failed to retrieve info for model: {e}", OUTPUT_INFO)
-        print(dist_models)
         self.katrain._config["dist_models"] = dist_models
         self.katrain.save_config(key="dist_models")
 
