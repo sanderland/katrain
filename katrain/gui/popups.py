@@ -241,8 +241,8 @@ class QuickConfigGui(MDBoxLayout):
 
 
 class ConfigTimerPopup(QuickConfigGui):
-    def update_config(self, save_to_file=True):
-        super().update_config(save_to_file=save_to_file)
+    def update_config(self, save_to_file=True, close_popup=True):
+        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         for p in self.katrain.players_info.values():
             p.periods_used = 0
         self.katrain.controls.timer.paused = True
@@ -283,8 +283,8 @@ class NewGamePopup(QuickConfigGui):
         if rules is not None:
             self.rules_spinner.select_key(rules.strip())
 
-    def update_config(self, save_to_file=True):
-        super().update_config(save_to_file=save_to_file)
+    def update_config(self, save_to_file=True, close_popup=True):
+        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         self.katrain.log(f"New game settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
         if self.restart.active:
             self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
@@ -714,8 +714,8 @@ class ConfigPopup(BaseConfigPopup):
         MDApp.get_running_app().bind(language=self.check_models)
         MDApp.get_running_app().bind(language=self.check_katas)
 
-    def update_config(self, save_to_file=True):
-        updated = super().update_config(save_to_file=save_to_file)
+    def update_config(self, save_to_file=True, close_popup=True):
+        updated = super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         self.katrain.debug_level = self.katrain.config("general/debug_level", OUTPUT_INFO)
 
         ignore = {"max_visits", "fast_visits", "max_time", "enable_ownership", "wide_root_noise"}

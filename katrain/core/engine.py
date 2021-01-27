@@ -1,16 +1,17 @@
 import copy
 import json
 import os
-import sys
+import platform
 import queue
 import shlex
 import subprocess
+import sys
 import threading
 import time
 import traceback
 from typing import Callable, Dict, List, Optional
 
-from kivy.utils import platform
+from kivy.utils import platform as kivy_platform
 
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
 from katrain.core.game_node import GameNode
@@ -68,13 +69,13 @@ class KataGoEngine:
             self.shell = True
         else:
             if not exe:
-                if platform == "win":
+                if kivy_platform == "win":
                     exe = "katrain/KataGo/katago.exe"
-                elif platform == "linux":
+                elif kivy_platform == "linux":
                     exe = "katrain/KataGo/katago"
                 else:
                     exe = find_package_resource("katrain/KataGo/katago-osx")  # github actions built
-                    if not os.path.isfile(exe):
+                    if not os.path.isfile(exe) or "arm" in platform.machine():
                         exe = "katago"  # e.g. MacOS after brewing
 
             model = find_package_resource(config["model"])
