@@ -373,6 +373,20 @@ class GameNode(SGFNode):
             score = self.score
             return self.player_sign(single_move.player) * (score - parent_parent_score)
 
+    @property
+    def total_points_lost(self) -> Optional[float]:
+        result = self.points_lost
+        if result is None:
+            return None
+        if result <= 0.0:
+            result = 0.0
+        node = self
+        while node.parent and node.parent.parent:
+            node = node.parent.parent
+            if node.points_lost:
+                result += node.points_lost
+        return result
+
     @staticmethod
     def player_sign(player):
         return {"B": 1, "W": -1, None: 0}[player]

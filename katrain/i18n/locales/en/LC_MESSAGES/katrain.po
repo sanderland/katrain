@@ -247,9 +247,15 @@ msgstr "Estimated Score"
 msgid "stats:pointslost"
 msgstr "Points Lost"
 
+msgid "stats:totalpointslost"
+msgstr "Total Points Lost"
+
 #. better than expected best move
 msgid "stats:pointsgained"
 msgstr "Points Gained"
+
+msgid "stats:totalpointsgained"
+msgstr "Total Points Gained"
 
 #. SGF and move comment messages
 msgid "SGF start message"

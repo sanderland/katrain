@@ -447,6 +447,11 @@
         label: i18n._('stats:pointslost') if root.points_lost is None or root.points_lost > 0 else i18n._('stats:pointsgained')
         text: '{}: {:.1f}'.format(root.player,abs(root.points_lost)) if root.points_lost is not None else '...'
         color: Theme.POINTLOSS_COLOR
+    StatsLabel:
+        id: totalpointloss_label
+        label: i18n._('stats:totalpointslost') if root.total_points_lost is None or root.total_points_lost > 0 else i18n._('stats:totalpointsgained')
+        text: '{}: {:.1f}'.format(root.player,abs(root.total_points_lost)) if root.total_points_lost is not None else '...'
+        color: Theme.POINTLOSS_COLOR
 
 <ScrollableLabel>:
     background_color: Theme.BOX_BACKGROUND_COLOR

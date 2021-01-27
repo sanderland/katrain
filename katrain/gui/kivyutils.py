@@ -627,6 +627,7 @@ class StatsBox(MDBoxLayout, BackgroundMixin):
     winrate = StringProperty("...")
     score = StringProperty("...")
     points_lost = NumericProperty(None, allownone=True)
+    total_points_lost = NumericProperty(None, allownone=True)
     player = StringProperty("")
 
 

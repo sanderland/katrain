@@ -198,9 +198,15 @@ msgstr "推定目差"
 msgid "stats:pointslost"
 msgstr "損失目数"
 
+msgid "stats:totalpointslost"
+msgstr "合計損失目数"
+
 #. better than expected best move
 msgid "stats:pointsgained"
 msgstr "獲得目数"
+
+msgid "stats:totalpointsgained"
+msgstr "合計獲得目数"
 
 #. SGF and move comment messages
 msgid "SGF start message"

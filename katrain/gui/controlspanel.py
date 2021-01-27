@@ -148,11 +148,13 @@ class ControlsPanel(BoxLayout):
             self.stats.score = self.active_comment_node.format_score() or ""
             self.stats.winrate = self.active_comment_node.format_winrate() or ""
             self.stats.points_lost = self.active_comment_node.points_lost
+            self.stats.total_points_lost = self.active_comment_node.total_points_lost
             self.stats.player = self.active_comment_node.player
         else:
             self.stats.score = ""
             self.stats.winrate = ""
             self.stats.points_lost = None
+            self.stats.total_points_lost = None
             self.stats.player = ""
 
         self.graph.update_value(current_node)
