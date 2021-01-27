@@ -67,11 +67,21 @@ class Game:
             self.root = move_tree
             self.external_game = PROGRAM_NAME not in self.root.get_property("AP", "")
             self.komi = self.root.komi
-            handicap = int(self.root.get_property("HA", 0))
+            handicap = int(self.root.handicap)
+            num_starting_moves_black = 0
+            node = self.root
+            while node.children:
+                node = node.children[0]
+                if node.player == "B":
+                    num_starting_moves_black += 1
+                else:
+                    break
+
             if (
                 handicap >= 2
                 and not self.root.placements
-                and not (not self.root.move_with_placements and self.root.children and self.root.children[0].placements)
+                and not (num_starting_moves_black == handicap)
+                and not (self.root.children and self.root.children[0].placements)
             ):  # not really according to sgf, and not sure if still needed, last clause for fox
                 self.root.place_handicap_stones(handicap)
         else:
@@ -109,7 +119,8 @@ class Game:
 
     def analyze_all_nodes(self, priority=0, analyze_fast=False, even_if_present=True):
         for node in self.root.nodes_in_tree:
-            if even_if_present or not node.analysis_loaded:
+            # forced, or not present, or something went wrong in loading
+            if even_if_present or not node.analysis_from_sgf or not node.load_analysis():
                 node.clear_analysis()
                 node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast)
 
@@ -268,9 +279,14 @@ class Game:
                 self._calculate_groups()
             return
         break_on_branch = False
+        break_on_main_branch = False
+        last_branching_node = cn
         if n_times == "branch":
             n_times = 9999
             break_on_branch = True
+        elif n_times == "main-branch":
+            n_times = 9999
+            break_on_main_branch = True
         for move in range(n_times):
             if (
                 stop_on_mistake is not None
@@ -280,13 +296,21 @@ class Game:
             ):
                 self.set_current_node(cn.parent)
                 return
+            previous_cn = cn
             if cn.shortcut_from:
                 cn = cn.shortcut_from
             elif not cn.is_root:
                 cn = cn.parent
+            else:
+                break  # root
             if break_on_branch and len(cn.children) > 1:
                 break
-        self.set_current_node(cn)
+            elif break_on_main_branch and cn.ordered_children[0] != previous_cn:  # implies > 1 child
+                last_branching_node = cn
+        if break_on_main_branch:
+            cn = last_branching_node
+        if cn is not self.current_node:
+            self.set_current_node(cn)
 
     def redo(self, n_times=1, stop_on_mistake=None):
         if self.insert_mode:
@@ -396,7 +420,7 @@ class Game:
             + f"\ncaptures: {self.prisoner_count}"
         )
 
-    def generate_filename(self):
+    def update_root_properties(self):
         def player_name(player_info):
             if player_info.name and player_info.player_type == PLAYER_HUMAN:
                 return player_info.name
@@ -413,23 +437,23 @@ class Game:
                     x_properties[bw + "R"] = rank_label(player_info.calculated_rank)
         if "+" in str(self.end_result):
             x_properties["RE"] = self.end_result
-        x_properties["KTV"] = ANALYSIS_FORMAT_VERSION
         self.root.properties = {**root_properties, **{k: [v] for k, v in x_properties.items()}}
+
+    def generate_filename(self):
+        self.update_root_properties()
         player_names = {
             bw: re.sub(r"[\u200b\u3164'<>:\"/\\|?*]", "", self.root.get_property("P" + bw, bw)) for bw in "BW"
         }
         base_game_name = f"{PROGRAM_NAME}_{player_names['B']} vs {player_names['W']}"
         return f"{base_game_name} {self.game_id}.sgf"
 
-    def write_sgf(
-        self, filename: str = None, trainer_config: Optional[Dict] = None,
-    ):
+    def write_sgf(self, filename: str, trainer_config: Optional[Dict] = None):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer", {})
         save_feedback = trainer_config.get("save_feedback", False)
         eval_thresholds = trainer_config["eval_thresholds"]
         save_analysis = trainer_config.get("save_analysis", False)
-
+        self.update_root_properties()
         show_dots_for = {
             bw: trainer_config.get("eval_show_ai", True) or self.katrain.players_info[bw].human for bw in "BW"
         }
@@ -570,7 +594,7 @@ class Game:
                 analyze_and_play_policy(new_node)
 
             self.engines[node.next_player].request_analysis(
-                new_node, callback=set_analysis, priority=-1000, analyze_fast=True,
+                new_node, callback=set_analysis, priority=-1000, analyze_fast=True
             )
 
         analyze_and_play_policy(cn)

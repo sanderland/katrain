@@ -48,8 +48,10 @@ Many thanks to these additional authors:
 * "kaorahi" for bug fixes and SGF parser improvements.
 * "ajkenny84" for the red-green colourblind theme.
 * Lukasz Wierzbowski for the ability to paste urls for sgfs and helping fix alt-gr issues.
-* Carton He for a fix to handling empty komi values in sgfs.
-* "blamarche" for adding the board coordinates toggle 
+* Carton He for contributions to sgf parsing and handling.
+* "blamarche" for adding the board coordinates toggle.
+* "pdeblanc" for adding the ancient chinese scoring option.
+* "LiamHz" for adding the undo to main branch keyboard shortcut.
 
 ## Translators
 
@@ -62,6 +64,7 @@ Many thanks to the following contributors for translations.
 * Russian: Dmitry Ivankov and Alexander Kiselev
 * Simplified Chinese: Qing Mu with contributions from "Medwin" and Viktor Lin
 * Japanese: "kaorahi"
+* Traditional Chinese: "Tony-Liou"
 
 ## Additional thanks to
 

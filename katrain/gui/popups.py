@@ -1,10 +1,14 @@
 import glob
+import json
 import os
 import re
 import stat
+import threading
+import time
 from typing import Any, Dict, List, Tuple, Union
 from zipfile import ZipFile
 
+import urllib3
 from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
@@ -25,11 +29,12 @@ from katrain.core.constants import (
     AI_KEY_PROPERTIES,
     AI_OPTION_VALUES,
     AI_STRATEGIES_RECOMMENDED_ORDER,
+    DATA_FOLDER,
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
+    SGF_INTERNAL_COMMENTS_MARKER,
     STATUS_INFO,
-    DATA_FOLDER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
@@ -43,8 +48,10 @@ class I18NPopup(Popup):
     title_key = StringProperty("")
     font_name = StringProperty(Theme.DEFAULT_FONT)
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, size=None, **kwargs):
+        if size:  # do not exceed window height
+            size[1] = min(MDApp.get_running_app().gui.height, size[1])
+        super().__init__(size=size, **kwargs)
         self.bind(on_dismiss=Clock.schedule_once(lambda _dt: MDApp.get_running_app().gui.update_state(), 1))
 
 
@@ -62,13 +69,15 @@ class LabelledTextInput(MDTextField):
 
 
 class LabelledPathInput(LabelledTextInput):
+    check_path = BooleanProperty(True)
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Clock.schedule_once(self.check_error, 0)
 
     def check_error(self, _dt=None):
         file = find_package_resource(self.input_value, silent_errors=True)
-        self.error = not (file and os.path.exists(file))
+        self.error = self.check_path and not (file and os.path.exists(file))
 
     def on_text(self, widget, text):
         self.check_error()
@@ -267,7 +276,7 @@ class NewGamePopup(QuickConfigGui):
     def update_from_current_game(self, *args):
         for bw in "BW":
             name = self.katrain.game.root.get_property("P" + bw, None)
-            if name:
+            if name and SGF_INTERNAL_COMMENTS_MARKER not in name:
                 self.player_name[bw].text = name
         rules = self.normalized_rules()
         self.km.text = str(self.katrain.game.root.komi)
@@ -301,7 +310,7 @@ class NewGamePopup(QuickConfigGui):
         self.update_playerinfo()
         if changed:
             self.katrain.engine.on_new_game()
-            self.katrain.game.analyze_all_nodes()
+            self.katrain.game.analyze_all_nodes(analyze_fast=True)
         self.popup.dismiss()
 
 
@@ -419,11 +428,45 @@ class ConfigAIPopup(QuickConfigGui):
 
 
 class ConfigPopup(QuickConfigGui):
+    MODEL_ENDPOINTS = {
+        "Latest distributed model": "https://katagotraining.org/api/networks/newest_training/",
+        "Strongest distributed model": "https://katagotraining.org/api/networks/get_strongest/",
+    }
+    MODELS = {
+        "20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
+        "30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
+        "40 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
+    }
+    MODEL_DESC = {
+        "Fat 40 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b40c384x2-s2348692992-d1229892979.zip",
+        "15 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b15c192-s1672170752-d466197061.bin.gz",
+    }
+
+    KATAGOS = {
+        "win": {
+            "OpenCL v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-opencl-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-eigenavx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-eigen-windows-x64.zip",
+            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
+        },
+        "linux": {
+            "OpenCL v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-opencl-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-eigenavx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-eigen-linux-x64.zip",
+            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
+        },
+        "just-descriptions": {
+            "CUDA v1.8.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-cuda10.2-windows-x64.zip",
+            "CUDA v1.8.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-cuda10.2-linux-x64.zip",
+        },
+    }
+
     def __init__(self, katrain):
         super().__init__(katrain)
         self.paths = [self.katrain.config("engine/model"), "katrain/models", DATA_FOLDER]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
         Clock.schedule_once(self.check_katas)
+        self.last_clicked_download_models = 0
         MDApp.get_running_app().bind(language=self.check_models)
         MDApp.get_running_app().bind(language=self.check_katas)
 
@@ -431,13 +474,17 @@ class ConfigPopup(QuickConfigGui):
         super().build_and_set_properties()
 
     def check_models(self, *args):
+        all_models = [self.MODELS, self.MODEL_DESC, self.katrain.config("dist_models", {})]
+
+        def extract_model_file(model):
+            try:
+                return re.match(r".*/([^/]+)", model)[1].replace(".zip", ".bin.gz")
+            except (TypeError, IndexError):
+                return None
+
         def find_description(path):
             file = os.path.split(path)[1]
-            file_to_desc = {
-                re.match(r".*/([^/]+)", model)[1].replace(".zip", ".bin.gz"): desc
-                for mods in [self.MODELS, self.MODEL_DESC]
-                for desc, model in mods.items()
-            }
+            file_to_desc = {extract_model_file(model): desc for mods in all_models for desc, model in mods.items()}
             if file in file_to_desc:
                 return f"{file_to_desc[file]}  -  {path}"
             else:
@@ -465,7 +512,11 @@ class ConfigPopup(QuickConfigGui):
                 self.paths.append(path)  # persistent on paths with models found
             model_files += files
 
-        model_files = sorted([(find_description(path), path) for path in model_files])
+        # no description to bottom
+        model_files = sorted(
+            [(find_description(path), path) for path in model_files],
+            key=lambda descpath: "Z" * 10 + path if descpath[0] == descpath[1] else descpath[0],
+        )
         models_available_msg = i18n._("models available").format(num=len(model_files))
         self.model_files.values = [models_available_msg] + [desc for desc, path in model_files]
         self.model_files.value_keys = [""] + [path for desc, path in model_files]
@@ -515,76 +566,76 @@ class ConfigPopup(QuickConfigGui):
         self.katago_files.value_keys = ["", ""] + [path for path, desc in kata_files]
         self.katago_files.text = katas_available_msg
 
-    MODELS = {
-        "Latest 20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
-        "Latest 30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
-        "Latest 40 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
-    }
-    MODEL_DESC = {
-        "Fat 40 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b40c384x2-s2348692992-d1229892979.zip",
-        "Latest 15 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b15c192-s1672170752-d466197061.bin.gz",
-    }
-
-    KATAGOS = {
-        "win": {
-            "OpenCL v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-opencl-windows-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-avx2-windows-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-windows-x64.zip",
-            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
-        },
-        "linux": {
-            "OpenCL v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-opencl-linux-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-avx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.7.0": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-cpu-eigen-linux-x64.zip",
-            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
-        },
-        "just-descriptions": {
-            "CUDA v1.7.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-cuda10.2-windows-x64.zip",
-            "CUDA v1.7.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.7.0/katago-v1.7.0-gpu-cuda10.2-linux-x64.zip",
-        },
-    }
-
     def download_models(self, *_largs):
+        if time.time() - self.last_clicked_download_models > 5:
+            self.last_clicked_download_models = time.time()
+            threading.Thread(target=self._download_models, daemon=True).start()
+
+    def _download_models(self):
         def download_complete(req, tmp_path, path, model):
             try:
                 os.rename(tmp_path, path)
-                self.katrain.log(f"Download of {model} model complete -> {path}", OUTPUT_INFO)
+                self.katrain.log(f"Download of {model} complete -> {path}", OUTPUT_INFO)
             except Exception as e:
-                self.katrain.log(f"Download of {model} model complete, but could not move file: {e}", OUTPUT_ERROR)
+                self.katrain.log(f"Download of {model} complete, but could not move file: {e}", OUTPUT_ERROR)
             self.check_models()
 
         for c in self.download_progress_box.children:
             if isinstance(c, ProgressLoader) and c.request:
                 c.request.cancel()
-        self.download_progress_box.clear_widgets()
+        Clock.schedule_once(lambda _dt: self.download_progress_box.clear_widgets(), -1)  # main thread
         downloading = False
-        for name, url in self.MODELS.items():
+
+        dist_models = {k: v for k, v in self.katrain.config("dist_models", {}).items() if k in self.MODEL_ENDPOINTS}
+
+        for name, url in self.MODEL_ENDPOINTS.items():
+            try:
+                http = urllib3.PoolManager()
+                response = http.request("GET", url)
+                if response.status != 200:
+                    raise Exception(
+                        f"Request to {url} returned code {response.status} != 200: {response.data.decode()}"
+                    )
+                dist_models[name] = json.loads(response.data.decode("utf-8"))["model_file"]
+            except Exception as e:
+                self.katrain.log(f"Failed to retrieve info for model: {e}", OUTPUT_INFO)
+
+        self.katrain._config["dist_models"] = dist_models
+        self.katrain.save_config(key="dist_models")
+
+        for name, url in {**self.MODELS, **dist_models}.items():
             filename = os.path.split(url)[1]
             if not any(os.path.split(f)[1] == filename for f in self.model_files.values):
                 savepath = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 savepath_tmp = savepath + ".part"
                 self.katrain.log(f"Downloading {name} model from {url} to {savepath_tmp}", OUTPUT_INFO)
-                progress = ProgressLoader(
-                    download_url=url,
-                    path_to_file=savepath_tmp,
-                    downloading_text=f"Downloading {name} model: " + "{}",
-                    label_downloading_text=f"Starting download for {name} model",
-                    download_complete=lambda req, tmp=savepath_tmp, path=savepath, model=name: download_complete(
-                        req, tmp, path, model
+                Clock.schedule_once(
+                    lambda _dt, _savepath=savepath, _savepath_tmp=savepath_tmp, _url=url, _name=name: ProgressLoader(
+                        self.download_progress_box,
+                        download_url=_url,
+                        path_to_file=_savepath_tmp,
+                        downloading_text=f"Downloading {_name}: " + "{}",
+                        label_downloading_text=f"Starting download for {_name}",
+                        download_complete=lambda req, tmp=_savepath_tmp, path=_savepath, model=_name: download_complete(
+                            req, tmp, path, model
+                        ),
+                        download_redirected=lambda req, mname=_name: self.katrain.log(
+                            f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
+                        ),
+                        download_error=lambda req, error, mname=_name: self.katrain.log(
+                            f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
+                        ),
                     ),
-                    download_redirected=lambda req, mname=name: self.katrain.log(
-                        f"Download {mname} redirected {req.resp_headers}", OUTPUT_DEBUG
-                    ),
-                    download_error=lambda req, error, mname=name: self.katrain.log(
-                        f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
-                    ),
-                )
-                progress.start(self.download_progress_box)
+                    0,
+                )  # main thread
                 downloading = True
         if not downloading:
-            self.download_progress_box.add_widget(
-                Label(text=i18n._("All models downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
-            )
+            Clock.schedule_once(
+                lambda _dt: self.download_progress_box.add_widget(
+                    Label(text=i18n._("All models downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
+                ),
+                0,
+            )  # main thread
 
     def download_katas(self, *_largs):
         def unzipped_name(zipfile):
@@ -607,12 +658,15 @@ class ConfigPopup(QuickConfigGui):
                             os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR | stat.S_IXGRP)
                         for f in zipObj.namelist():
                             if f.lower().endswith("dll"):
-                                with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:
-                                    fout.write(zipObj.read(f))
+                                try:
+                                    with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:
+                                        fout.write(zipObj.read(f))
+                                except:  # already there? no problem
+                                    pass
                     os.remove(tmp_path)
                 else:
                     os.rename(tmp_path, path)
-                self.katrain.log(f"Download of katago binary {binary} model complete -> {path}", OUTPUT_INFO)
+                self.katrain.log(f"Download of katago binary {binary} complete -> {path}", OUTPUT_INFO)
             except Exception as e:
                 self.katrain.log(
                     f"Download of katago binary {binary} complete, but could not move file: {e}", OUTPUT_ERROR
@@ -662,7 +716,7 @@ class ConfigPopup(QuickConfigGui):
         updated = super().update_config(save_to_file=save_to_file)
         self.katrain.debug_level = self.katrain.config("general/debug_level", OUTPUT_INFO)
 
-        ignore = {"max_visits", "max_time", "enable_ownership", "wide_root_noise"}
+        ignore = {"max_visits", "fast_visits", "max_time", "enable_ownership", "wide_root_noise"}
         detected_restart = [key for key in updated if "engine" in key and not any(ig in key for ig in ignore)]
         if detected_restart:
 
@@ -678,7 +732,9 @@ class ConfigPopup(QuickConfigGui):
                 new_engine = KataGoEngine(self.katrain, self.katrain.config("engine"))
                 self.katrain.engine = new_engine
                 self.katrain.game.engines = {"B": new_engine, "W": new_engine}
-                self.katrain.game.analyze_all_nodes()  # old engine was possibly broken, so make sure we redo any failures
+                self.katrain.game.analyze_all_nodes(
+                    analyze_fast=True
+                )  # old engine was possibly broken, so make sure we redo any failures
                 self.katrain.update_state()
 
             Clock.schedule_once(restart_engine, 0)
@@ -694,6 +750,9 @@ class LoadSGFPopup(BoxLayout):
         ]
         self.filesel.path = os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load")))
         self.filesel.select_string = i18n._("Load File")
+
+    def on_submit(self):
+        self.filesel.button_clicked()
 
 
 class SaveSGFPopup(BoxLayout):
@@ -715,7 +774,7 @@ class SaveSGFPopup(BoxLayout):
         self.filesel.select_string = i18n._("Save File")
 
     def on_submit(self):
-        self.filesel.dispatch("on_success")
+        self.filesel.button_clicked()
 
 
 class ReAnalyzeGamePopup(BoxLayout):

@@ -1,4 +1,5 @@
 import copy
+import chardet
 import math
 import re
 from collections import defaultdict
@@ -29,7 +30,9 @@ class Move:
     @classmethod
     def from_sgf(cls, sgf_coords, board_size, player="B"):
         """Initialize a move from SGF coordinates and player"""
-        if sgf_coords == "" or Move.SGF_COORD.index(sgf_coords[0]) == board_size[0]:  # some servers use [tt] for pass
+        if sgf_coords == "" or (
+            sgf_coords == "tt" and board_size[0] <= 19 and board_size[1] <= 19
+        ):  # [tt] can be used as "pass" for <= 19x19 board
             return cls(coords=None, player=player)
         return cls(
             coords=(Move.SGF_COORD.index(sgf_coords[0]), board_size[1] - Move.SGF_COORD.index(sgf_coords[1]) - 1),
@@ -211,6 +214,13 @@ class SGFNode:
         return km
 
     @property
+    def handicap(self) -> int:
+        try:
+            return int(self.root.get_property("HA", 0))
+        except ValueError:
+            return 0
+
+    @property
     def ruleset(self) -> str:
         """Retrieves the root's RU property, or 'japanese' if missing"""
         return self.root.get_property("RU", "japanese")
@@ -291,16 +301,32 @@ class SGFNode:
         return self.__class__(parent=self, move=move)
 
     @property
-    def next_player(self):
-        """Returns player to move"""
-        if "PL" in self.properties:  # explicit
-            return "B" if self.get_property("PL").upper().strip() == "B" else "W"
-        elif "B" in self.properties or (
-            "AB" in self.properties and "W" not in self.properties and "AW" not in self.properties
-        ):  # b move or setup with only black moves like root handicap
+    def initial_player(self):  # player for first node
+        root = self.root
+        if "PL" in root.properties:  # explicit
+            return "B" if self.root.get_property("PL").upper().strip() == "B" else "W"
+        elif root.children:  # child exist, use it if not placement
+            for child in root.children:
+                for color in "BW":
+                    if color in child.properties:
+                        return color
+        # b move or setup with only black moves like handicap
+        if "AB" in self.properties and "AW" not in self.properties:
             return "W"
         else:
             return "B"
+
+    @property
+    def next_player(self):
+        """Returns player to move"""
+        if self.is_root:
+            return self.initial_player
+        elif "B" in self.properties:
+            return "W"
+        elif "W" in self.properties:
+            return "B"
+        else:  # only placements, find a parent node with a real move. TODO: better placement support
+            return self.parent.next_player
 
     @property
     def player(self):
@@ -343,7 +369,7 @@ class SGFNode:
 
 
 class SGF:
-    DEFAULT_ENCODING = "ISO-8859-1"  # as specified by the standard
+    DEFAULT_ENCODING = "UTF-8"
 
     _NODE_CLASS = SGFNode  # Class used for SGF Nodes, can change this to something that inherits from SGFNode
     # https://xkcd.com/1171/
@@ -383,11 +409,14 @@ class SGF:
                     if match:
                         encoding = match[1].decode("ascii", errors="ignore")
                     else:
-                        encoding = cls.DEFAULT_ENCODING
-                try:
-                    decoded = bin_contents.decode(encoding=encoding, errors="ignore")
-                except LookupError:
-                    decoded = bin_contents.decode(encoding=cls.DEFAULT_ENCODING, errors="ignore")
+                        encoding = chardet.detect(bin_contents[:300])["encoding"]
+                        # workaround for some compatibility issues for Windows-1252 and GB2312 encodings
+                        if encoding == "Windows-1252" or encoding == "GB2312":
+                            encoding = "GBK"
+            try:
+                decoded = bin_contents.decode(encoding=encoding, errors="ignore")
+            except LookupError:
+                decoded = bin_contents.decode(encoding=cls.DEFAULT_ENCODING, errors="ignore")
             if is_ngf:
                 return cls.parse_ngf(decoded)
             if is_gib:

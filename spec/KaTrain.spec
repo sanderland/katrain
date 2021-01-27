@@ -5,7 +5,7 @@ import subprocess
 
 block_cipher = None
 
-# pyinstaller spec/katrain.spec --noconfirm
+# pyinstaller spec/KaTrain.spec --noconfirm
 # --upx-dir my
 
 a = Analysis(

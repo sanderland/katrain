@@ -70,7 +70,7 @@ for lang in locales:
             po[lang].append(copied_entry)
             errors = True
         else:
-            print(f"MISSING IN DEFAULT AND {lang}", strings_to_langs[msgid])
+            print(f"MISSING IN DEFAULT AND {lang}", msgid)
             errors = True
 
     for msgid, lang_entries in strings_to_langs.items():

@@ -1,6 +1,8 @@
 import copy
 import json
 import os
+import sys
+import queue
 import shlex
 import subprocess
 import threading
@@ -14,7 +16,7 @@ from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBU
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move
-from katrain.core.utils import find_package_resource
+from katrain.core.utils import find_package_resource, json_truncate_arrays
 
 
 class EngineDiedException(Exception):
@@ -25,7 +27,13 @@ class KataGoEngine:
     """Starts and communicates with the KataGO analysis engine"""
 
     # TODO: we don't support suicide in game.py, so no  "tt": "tromp-taylor", "nz": "new-zealand"
-    RULESETS_ABBR = [("jp", "japanese"), ("cn", "chinese"), ("ko", "korean"), ("aga", "aga")]
+    RULESETS_ABBR = [
+        ("jp", "japanese"),
+        ("cn", "chinese"),
+        ("ko", "korean"),
+        ("aga", "aga"),
+        ("stone_scoring", "stone_scoring"),
+    ]
     RULESETS = {fromkey: name for abbr, name in RULESETS_ABBR for fromkey in [abbr, name]}
 
     @staticmethod
@@ -40,11 +48,12 @@ class KataGoEngine:
         self.katago_process = None
         self.base_priority = 0
         self.override_settings = {"reportAnalysisWinratesAs": "BLACK"}  # force these settings
-        self._lock = threading.Lock()
         self.analysis_thread = None
         self.stderr_thread = None
+        self.write_stdin_thread = None
         self.shell = False
-
+        self.write_queue = queue.Queue()
+        self.thread_lock = threading.Lock()
         exe = config.get("katago", "").strip()
         if config.get("altcommand", ""):
             self.command = config["altcommand"]
@@ -55,8 +64,10 @@ class KataGoEngine:
                     exe = "katrain/KataGo/katago.exe"
                 elif platform == "linux":
                     exe = "katrain/KataGo/katago"
-                else:  # e.g. MacOS after brewing
-                    exe = "katago"
+                else:
+                    exe = find_package_resource("katrain/KataGo/katago-osx") # github actions built
+                    if not os.path.isfile(exe):
+                        exe = "katago" # e.g. MacOS after brewing
 
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
@@ -84,35 +95,43 @@ class KataGoEngine:
         self.start()
 
     def start(self):
-        try:
-            self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
-            startupinfo = None
-            if hasattr(subprocess, "STARTUPINFO"):
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # stop command box popups on win/pyinstaller
-            self.katago_process = subprocess.Popen(
-                self.command,
-                startupinfo=startupinfo,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                shell=self.shell,
-            )
-        except (FileNotFoundError, PermissionError, OSError) as e:
-            self.katrain.log(
-                i18n._("Starting Kata failed").format(command=self.command, error=e), OUTPUT_ERROR,
-            )
-            return  # don't start
-        self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)
-        self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True)
-        self.analysis_thread.start()
-        self.stderr_thread.start()
+        with self.thread_lock:
+            self.write_queue = queue.Queue()
+            try:
+                self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
+                startupinfo = None
+                if hasattr(subprocess, "STARTUPINFO"):
+                    startupinfo = subprocess.STARTUPINFO()
+                    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW  # stop command box popups on win/pyinstaller
+                self.katago_process = subprocess.Popen(
+                    self.command,
+                    startupinfo=startupinfo,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    shell=self.shell,
+                )
+            except (FileNotFoundError, PermissionError, OSError) as e:
+                self.katrain.log(
+                    i18n._("Starting Kata failed").format(command=self.command, error=e),
+                    OUTPUT_ERROR,
+                )
+                return  # don't start
+            self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)
+            self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True)
+            self.write_stdin_thread = threading.Thread(target=self._write_stdin_thread, daemon=True)
+            self.analysis_thread.start()
+            self.stderr_thread.start()
+            self.write_stdin_thread.start()
 
     def on_new_game(self):
         self.base_priority += 1
-        for query_id in list(self.queries.keys()):
-            self.terminate_query(query_id)
-        self.queries = {}
+        if not self.is_idle():
+            with self.thread_lock:
+                for query_id in list(self.queries.keys()):
+                    self.terminate_query(query_id)
+                self.queries = {}
+                self.write_queue = queue.Queue()
 
     def restart(self):
         self.queries = {}
@@ -129,7 +148,8 @@ class KataGoEngine:
                 else:
                     os_error += f"status {code}"
                     died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
-                self.katrain.log(died_msg, OUTPUT_ERROR)
+                if code != 1:  # deliberate exit, already showed message?
+                    self.katrain.log(died_msg, OUTPUT_ERROR)
                 self.katago_process = None
             else:
                 died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
@@ -147,13 +167,15 @@ class KataGoEngine:
         if process:
             self.katago_process = None
             process.terminate()
-        if self.stderr_thread:
-            self.stderr_thread.join()
-        if self.analysis_thread:
-            self.analysis_thread.join()
+        for t in [self.stderr_thread, self.analysis_thread, self.write_stdin_thread]:
+            if t:
+                t.join()
 
     def is_idle(self):
-        return not self.queries
+        return not self.queries and self.write_queue.empty()
+
+    def queries_remaining(self):
+        return len(self.queries) + int(not self.write_queue.empty())
 
     def _read_stderr_thread(self):
         while self.katago_process is not None:
@@ -215,7 +237,7 @@ class KataGoEngine:
                         f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo analysis received: {len(analysis.get('moveInfos',[]))} candidate moves, {analysis['rootInfo']['visits'] if results_exist else 'n/a'} visits",
                         OUTPUT_DEBUG,
                     )
-                    self.katrain.log(line, OUTPUT_EXTRA_DEBUG)
+                    self.katrain.log(json_truncate_arrays(analysis), OUTPUT_EXTRA_DEBUG)
                     try:
                         if callback and results_exist:
                             callback(analysis, partial_result)
@@ -227,19 +249,26 @@ class KataGoEngine:
                 self.katrain.log(f"Unexpected exception {e} while processing KataGo output {line}", OUTPUT_ERROR)
                 traceback.print_exc()
 
-    def send_query(self, query, callback, error_callback, next_move=None):
-        with self._lock:
-            self.query_counter += 1
-            if "id" not in query:
-                query["id"] = f"QUERY:{str(self.query_counter)}"
-            self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
-            if self.katago_process:
+    def _write_stdin_thread(self):  # flush only in a thread since it returns only when the other program reads
+        while self.katago_process is not None:
+            try:
+                query, callback, error_callback, next_move = self.write_queue.get(block=True, timeout=0.1)
+            except queue.Empty:
+                continue
+            with self.thread_lock:
+                if "id" not in query:
+                    self.query_counter += 1
+                    query["id"] = f"QUERY:{str(self.query_counter)}"
+                self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
                 self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
                 try:
                     self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
                     self.katago_process.stdin.flush()
                 except OSError as e:
-                    self.check_alive(os_error=str(e), exception_if_dead=True)
+                    self.check_alive(os_error=str(e), exception_if_dead=False)
+
+    def send_query(self, query, callback, error_callback, next_move=None):
+        self.write_queue.put((query, callback, error_callback, next_move))
 
     def terminate_query(self, query_id):
         if query_id is not None:
@@ -319,7 +348,7 @@ class KataGoEngine:
             "includeMovesOwnership": ownership and not next_move,
             "includePolicy": not next_move,
             "initialStones": [[m.player, m.gtp()] for m in initial_stones],
-            "initialPlayer": analysis_node.root.next_player,
+            "initialPlayer": analysis_node.initial_player,
             "moves": [[m.player, m.gtp()] for m in moves],
             "overrideSettings": {**settings, **(extra_settings or {})},
         }

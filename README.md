@@ -18,6 +18,7 @@
     * [Play against AI](#ai)
     * [Analyzing your Games](#analysis)
     * [Keyboard shortcuts](#keyboard)
+    * [Themes](#themes)
 * [FAQ and Troubleshooting](#faq)
 * [Contributing](#support)
 
@@ -29,7 +30,8 @@
 <a href="http://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-fr.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ru.png" width=50></a>
 <br/>
-<a href="http://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-cn.png" width=50></a>
+<a href="http://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Simplified Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-cn.png" width=50></a>
+<a href="http://translate.google.com/translate?sl=en&tl=zh-TW&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Traditional Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-tw.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=ko&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Korean" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ko.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=ja&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Japanese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-jp.png" width=50></a>
 
@@ -60,19 +62,18 @@ but has since grown to include a wide range of features, including:
 
 
 ## <a name="install"></a> Installation
-* See the [releases page](http://github.com/sanderland/katrain/releases) for downloadable executables for Windows.
+* See the [releases page](http://github.com/sanderland/katrain/releases) for downloadable executables for Windows and Mac.
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
 * [This page](INSTALL.md) has detailed instructions for Window, Linux and MacOS,
   as well as troubleshooting and setting up KataGo to use multiple GPUs.
 
 ## <a name="kata"></a>  Configuring KataGo
 
-KaTrain comes pre-packaged with a working KataGo (OpenCL version) for Windows and Linux operating systems, and the 15 block neural network.
+KaTrain comes pre-packaged with a working KataGo (OpenCL version) for Windows, Linux, and pre-M1 Mac operating systems, and the 15 block neural network.
 
 To change the model, open 'General and Engine settings' in the application and 'Download models'. You can then select the model you want from the dropdown menu.
 
-To change the katago binary,
- e.g. to the Eigen/CPU version if you don't have a GPU, click 'Download KataGo versions'.
+To change the katago binary, e.g. to the Eigen/CPU version if you don't have a GPU, click 'Download KataGo versions'.
   You can then select the KataGo binary from the dropdown menu.
 
 Finally, you can override the entire command used to start the analysis engine, which 
@@ -119,10 +120,10 @@ This estimate should be reasonably accurate as long as you have not changed the 
     * **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn. Calibrated rank is based on the same idea, and recommended over this option.
 *  Options that are more on the 'fun and experimental' side include: 
     * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist:
-        * **Local Style** will consider mostly moves close to the last move.
-        * **Tenuki Style** will consider mostly moves away from the last move.
-        * **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
-        * **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
+       * **Local Style** will consider mostly moves close to the last move.
+       * **Tenuki Style** will consider mostly moves away from the last move.
+       * **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
+       * **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
     * **KataJigo** is KataGo attempting to win by 0.5 points, typically by responding to your mistakes with an immediate mistake of it's own.
     
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
@@ -145,7 +146,7 @@ Keyboard shortcuts are shown with **[key]**.
     * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when 
                wanting to guess the next move.
     * **[w]**: Show all dots: Cycles through showing all evaluation dots, showing the last few, and showing none.
-        * You can configure whether they are shown for AIs under 'Teaching/Analysis Settings'.
+       * You can configure whether they are shown for AIs under 'Teaching/Analysis Settings'.
     * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. 
            Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). 
            Hover over any of them to see the principal variation.
@@ -183,6 +184,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[Ctrl-delete]** Delete current node.
 * **[c]** Collapse/Uncollapse the branch from the current node to the previous branching point.
 * **[b]** Go back to the previous branching point.
+* **[Shift-b]** Go back the the main branch.
 * **[n]** As in clicking the forward red arrow, go to one move before the next mistake (orange or worse) by a human player.
 * **[Shift-n]** As in clicking the backward red arrow, go to one move before the previous mistake.
 * **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
@@ -192,10 +194,12 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[Ctrl-V]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
 * **[Ctrl-C]**: Save SGF to clipboard.
 
+## <a name="themes"></a> Themes
+
+* See [these instructions](THEMES.md) for how to modify the look of any graphics or colours, and creating or instal themes.
+   
 ## <a name="faq"></a> FAQ
 
-* How can I create themes?
-   * See [these instructions](THEMES.md).
 * The program is running too slowly. How can I speed it up?
   *  Adjust the number of visits or maximum time allowed in the settings.
 * KataGo crashes with out of memory errors, how can I prevent this?
@@ -208,13 +212,12 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](http://img.shields.io/github/issues/sanderland/katrain)](http://github.com/sanderland/katrain/issues)
-[![Contributors](http://img.shields.io/static/v1?label=contributors&message=24&color=dcb424)](CONTRIBUTIONS.md)
+[![Contributors](http://img.shields.io/static/v1?label=contributors&message=26&color=dcb424)](CONTRIBUTIONS.md)
 [![Github sponsors](http://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=http://github.com/sponsors/sanderland/)](http://github.com/sponsors/sanderland)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](http://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
-    * I am looking for contributors of more translations of both this manual and the program itself. The best way to help with this is to contact me on discord.
-* You can contact me on [discord](http://discord.gg/AjTPFpN) (Sander#3278) or [Reddit](http://reddit.com/u/sanderbaduk) to get help, discuss improvements, or simply show your appreciation.
+* You can contact me on the [Leela Zero & Friends Discord](http://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation.
 * You can also donate to the project through [Github Sponsors](http://github.com/sponsors/sanderland).
 
 

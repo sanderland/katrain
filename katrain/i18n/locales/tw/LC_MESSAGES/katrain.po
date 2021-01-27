@@ -1,0 +1,785 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: Traditional Chinese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "棋手設定"
+
+msgid "menu:newgame"
+msgstr "新對局/更改規則"
+
+msgid "menu:save"
+msgstr "儲存對局"
+
+msgid "menu:save-as"
+msgstr "另存對局為..."
+
+msgid "menu:load"
+msgstr "載入對局"
+
+msgid "menu:settings"
+msgstr "一般和引擎設定"
+
+msgid "menu:clocksettings"
+msgstr "用時設定"
+
+msgid "menu:teachsettings"
+msgstr "指導/分析設定"
+
+msgid "menu:aisettings"
+msgstr "AI設定"
+
+msgid "menu:lang"
+msgstr "語言"
+
+msgid "menu:support"
+msgstr "幫助"
+
+msgid "menu:manual"
+msgstr "使用手册"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "棋手"
+
+msgid "player:human"
+msgstr "人類"
+
+msgid "player:ai"
+msgstr "AI"
+
+msgid "aistrategy"
+msgstr "AI策略"
+
+msgid "gametype"
+msgstr "對局類型"
+
+msgid "game:normal"
+msgstr "分先對局"
+
+msgid "game:teach"
+msgstr "指導棋"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"下\n"
+"一手"
+
+msgid "analysis:dots"
+msgstr ""
+"顯示\n"
+"選點"
+
+msgid "analysis:topmoves"
+msgstr ""
+"最佳\n"
+"選點"
+
+msgid "analysis:policy"
+msgstr ""
+"自定義下\n"
+"最佳選點"
+
+msgid "analysis:territory"
+msgstr ""
+"形勢\n"
+"判断"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "深度分析"
+
+msgid "analysis:equalize"
+msgstr "選點平均"
+
+msgid "analysis:sweep"
+msgstr "快速全盤分析"
+
+#. Analyze every node in the game more deeply
+msgid "analysis:game"
+msgstr "深度全盤分析"
+
+#. Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "尋找其他選點"
+
+#. Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "設定欲分析區域"
+
+#. Status message
+msgid "analysis:region:start"
+msgstr "拖移以選取區域。選擇其他點來取消已選取的區域。"
+
+#. Menu option
+msgid "analysis:playtoend"
+msgstr "快速下完"
+
+#. Keep improving current position analysis when there is nothing else to do
+msgid "analysis:continuous"
+msgstr "切換持續分析"
+
+msgid "analysis:aimove"
+msgstr "要求AI產生下一手"
+
+#. Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "插入棋子"
+
+#. status message
+msgid "extra analysis"
+msgstr "執行 {visits} 步額外分析"
+
+#. status message
+msgid "sweep analysis"
+msgstr "使用 {visits} 走訪/步來分析整盤棋"
+
+#. status message
+msgid "alternative analysis"
+msgstr "搜尋其他棋步中"
+
+#. status message
+msgid "local analysis"
+msgstr "搜尋局部下法中"
+
+#. status message
+msgid "equalizing analysis"
+msgstr "對所有選點進行 {visits} 步分析"
+
+#. status message
+msgid "game re-analysis"
+msgstr "使用 {visits} 步來重新分析整盤棋"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "虛手"
+
+#. resign the game
+msgid "resign"
+msgstr "認輸"
+
+#. Shown when a move is undone in teaching mode.
+msgid "teaching undo message"
+msgstr ""
+"復原第 {move} 手損失了 {points_lost:.1f} "
+"目。請再試一次。若要查看提示，將游標停於該手以查看預期的反制手段；或查看預估的領地來看可能損失目數的棋盤區域。"
+
+msgid "ai-ponder"
+msgstr "AI引擎狀態指示燈，從綠色（閒置）變為橘色（處理中）。當引擎崩潰或無法啟動時，會變為紅色。"
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "復原"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "分數"
+
+msgid "tab:winrate"
+msgstr "勝率"
+
+#. shown on a graph tab
+msgid "tab:rank_est"
+msgstr "棋力預估"
+
+msgid "tab:points"
+msgstr "目數損失"
+
+msgid "tab:info"
+msgstr "資訊"
+
+msgid "tab:info-details"
+msgstr "詳細資訊"
+
+msgid "tab:notes"
+msgstr "註記"
+
+msgid "closedlabel:scoregraph"
+msgstr "分數圖"
+
+#. on the graph
+msgid "Jigo"
+msgstr "和棋"
+
+msgid "closedlabel:movestats"
+msgstr "每步統計"
+
+msgid "closedlabel:info&notes"
+msgstr "每步資訊和註記"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "虛手"
+
+msgid "board-game-end"
+msgstr ""
+"對局\n"
+"結束"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "下棋"
+
+msgid "btn:Analysis"
+msgstr "分析"
+
+msgid "btn:Analyze"
+msgstr "分析選項"
+
+msgid "stats:winrate"
+msgstr "勝率"
+
+msgid "stats:score"
+msgstr "預估分數"
+
+msgid "stats:pointslost"
+msgstr "目數損失"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "目數增加"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr " 'X' 是KataGo的最佳選點，正方形為損失少於0.5目的選點"
+
+msgid "Info:score"
+msgstr "分數: {score}"
+
+msgid "Info:winrate"
+msgstr "勝率: {winrate}"
+
+msgid "Info:point loss"
+msgstr "目數損失: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "手數 {number}"
+
+msgid "Info:top move"
+msgstr "預測最佳選點為 {top_move} ({score})。"
+
+msgid "Info:best move"
+msgstr "該手為最佳選點"
+
+msgid "Info:PV"
+msgstr "PV: {pv}"
+
+msgid "Info:policy rank"
+msgstr "直覺選點下該手棋是 #{rank} ({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "最佳直覺選點是 {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr "指導棋模式下該手棋自動悔棋"
+
+msgid "Info:undo predicted PV"
+msgstr "建議下一手: {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "AI思考過程: {thoughts}"
+
+msgid "No analysis available"
+msgstr "沒有可用分析"
+
+msgid "Analyzing move..."
+msgstr "分析中..."
+
+msgid "SGF Notes Hint"
+msgstr "SGF註記"
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "載入SGF文件"
+
+# sgf load button
+msgid "Load File"
+msgstr "載入檔案"
+
+# sgf save as button
+msgid "Save File"
+msgstr "儲存檔案"
+
+# sgf save popup
+msgid "save sgf title"
+msgstr "儲存SGF檔案"
+
+msgid "load sgf fast analysis"
+msgstr "快速分析"
+
+msgid "load sgf rewind"
+msgstr "回到第一步"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "用時設定"
+
+msgid "byoyomi length"
+msgstr "讀秒時長"
+
+msgid "byoyomi periods"
+msgstr "讀秒次數"
+
+msgid "count down sound"
+msgstr "開啟讀秒聲音"
+
+#. in minutes
+msgid "main time"
+msgstr "保留時間（分鐘）"
+
+#. ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "讀秒最短時間"
+
+msgid "move too fast"
+msgstr "請最少思考 {num} 秒再落子。"
+
+#. submit button
+msgid "update timer"
+msgstr "更新用時設定"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "新對局設定"
+
+#. in new game options
+msgid "player names"
+msgstr "棋手名稱"
+
+#. hint on player name input
+msgid "black player name hint"
+msgstr "黑棋棋手名稱"
+
+#. hint on player name input
+msgid "white player name hint"
+msgstr "白棋棋手名稱"
+
+msgid "board size"
+msgstr "棋盤大小"
+
+msgid "handicap"
+msgstr "讓子"
+
+msgid "komi"
+msgstr "貼目"
+
+msgid "ruleset"
+msgstr "規則設定"
+
+#. ruleset names
+msgid "japanese"
+msgstr "日本規則"
+
+msgid "chinese"
+msgstr "中國規則"
+
+msgid "korean"
+msgstr "韓國規則"
+
+msgid "aga"
+msgstr "AGA規則"
+
+msgid "clear cache"
+msgstr "清除快取"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"避免重複\n"
+"相同對局"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "使用 x:y 來設定非正方形棋盤(例如19:9)"
+
+#. submit new game
+msgid "new game"
+msgstr "開始新對局"
+
+#. change komi etc in current game
+msgid "change current game"
+msgstr ""
+"在進行中對局\n"
+"更新貼目/規則"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "指導棋設定"
+
+msgid "point loss threshold"
+msgstr "目數損失下限"
+
+msgid "num undos"
+msgstr "悔棋次數"
+
+msgid "dot color"
+msgstr "選點顏色顯示"
+
+msgid "show dots"
+msgstr "顯示選點"
+
+msgid "save dots"
+msgstr "存入SGF"
+
+msgid "show last n dots"
+msgstr ""
+"顯示最後\n"
+"<this many> 手棋的選點"
+
+msgid "show ai dots"
+msgstr ""
+"顯示AI的\n"
+"選點/SGF評論"
+
+#. analysis option
+msgid "cache analysis to sgf"
+msgstr "儲存分析到SGF中"
+
+#. submit button
+msgid "update teacher"
+msgstr "更新指導棋設定"
+
+# main config settings
+msgid "restarting engine"
+msgstr "改變設定後，重新啟動引擎"
+
+# title
+msgid "general settings title"
+msgstr "一般和引擎設定"
+
+msgid "file not found"
+msgstr "路徑不存在"
+
+msgid "general settings"
+msgstr "一般設定"
+
+msgid "engine settings"
+msgstr "KataGo設定"
+
+msgid "config file path"
+msgstr "所有設定儲存在:"
+
+msgid "engine:katago"
+msgstr "KataGo執行檔路徑"
+
+msgid "engine:katago:hint"
+msgstr "留白以使用其他執行檔案"
+
+msgid "engine:model"
+msgstr "KataGo模型檔路徑"
+
+msgid "engine:config"
+msgstr "KataGo設定檔路徑"
+
+msgid "engine:altcommand"
+msgstr "覆寫引擎指令"
+
+msgid "engine:altcommand:hint"
+msgstr "啟動引擎的完整指令。其他所有模型的設定將會被忽略。"
+
+msgid "engine:max_visits"
+msgstr "分析模式中，每手棋最大運算步數"
+
+msgid "engine:fast_visits"
+msgstr "快速分析模式中，每手棋最大運算步數"
+
+msgid "engine:max_time"
+msgstr "分析時間上限"
+
+msgid "engine:wide_root_noise"
+msgstr "寬根雜訊 (增加了納入考慮的選點多樣性)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"使用 0.02-0.1 以顯示\n"
+"更多可能選點"
+
+msgid "engine:time:hint"
+msgstr "時間單位是秒"
+
+msgid "general:anim_pv_time"
+msgstr "動畫中，兩手棋的時間間隔"
+
+msgid "general:debug_level:hint"
+msgstr "設為1時，回報錯誤"
+
+msgid "general:debug_level"
+msgstr "Console中的偵錯層級"
+
+msgid "katago settings"
+msgstr "KataGo設定"
+
+msgid "update settings"
+msgstr "更新設定"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "進階AI設定"
+
+msgid "Select AI"
+msgstr "選擇AI策略"
+
+msgid "update ai settings"
+msgstr "更新AI設定"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "將包含分析的SGF寫入 {file_name}"
+
+msgid "wait-before-extra-analysis"
+msgstr "優化前，等待初始分析完成"
+
+msgid "Copied SGF to clipboard."
+msgstr "複製SGF到剪貼簿"
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"從剪貼簿匯入對局失敗: {error}\n"
+"剪貼簿内容: {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "載入SGF失敗: {error}"
+
+msgid "Kata exe not found"
+msgstr "KataGo執行檔 {exe} 不存在，請檢查一般設定。"
+
+msgid "Kata exe not found in path"
+msgstr ""
+"在 PATH 中找不到KataGo執行檔 `{exe}`，請檢查環境變數或在一般設定中使用完整路徑代替。若是在 MacOS "
+"上，請先閱讀使用手冊中的如何使用brew安裝KataGo。"
+
+msgid "Kata model not found"
+msgstr "KataGo模型 {model} 不存在，請檢查一般設定。"
+
+msgid "Kata config not found"
+msgstr "KataGo組態檔 {config} 不存在，請檢查一般設定。"
+
+msgid "Starting Kata failed"
+msgstr "使用指令 '{command}' 啟動KataGo發生錯誤 {error}。"
+
+msgid "Engine died unexpectedly"
+msgstr "引擎意外崩潰沒有輸出，可能為記憶體不足導致: {error}"
+
+msgid "Engine missing DLL"
+msgstr "遺失DLL因此無法啟動KataGo。請參考KataGo文件中的所需事項，或嘗試單獨啟動KataGo來取得詳細資訊。"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "級"
+
+msgid "strength:dan"
+msgstr "段"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"最強的KataGo AI。其棋力由在一般設定中 `引擎` 區塊中的 `最大走訪數` 和 `模型` 以及引擎組態文件決定。此處沒有可供調整的選項。"
+
+#. ai which handles handicap games better
+msgid "ai:handicap"
+msgstr "Kata讓子棋"
+
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo 對讓子棋做了最佳化的對局版本。以黑棋的觀點來看，KataGo 中的 `pda` 設定對應到的是 "
+"`playoutDoublingAdvantage`。當被設定為 `自動` 時，KaTrain 將會找自動找到適合的值。"
+
+msgid "ai:simple"
+msgstr "單純模式"
+
+msgid "aihelp:simple"
+msgstr ""
+"下法會導致盤面狀態簡單化。每步在損失最多 '最大目數損失' 目和最少 '最少走訪數'中，較傾向於損失較少目數、安定自身領地(搭配 importance "
+"settled_weight)、突破對方領地(importance settled_weight * "
+"opponent_fac)、避免脫先(5路以上，importance tenuki_penalty)和避免碰(importance "
+"attachment_penalty)。權重可以是負數使對局複雜化，而寬根雜訊(在一般設定中)的使用，可以以棋力強度作為代價，加強風格。"
+
+msgid "ai:jigo"
+msgstr "Kata控目"
+
+msgid "aihelp:jigo"
+msgstr "在沒有更多限制的情況下，嘗試按指定目數(預設0.5)赢棋。"
+
+msgid "ai:scoreloss"
+msgstr "分數損失"
+
+msgid "aihelp:scoreloss"
+msgstr "傾向選擇低機率損失較多目數的落點。在較高計算深度次數下，棋力可能更不穩定/更弱。"
+
+msgid "ai:policy"
+msgstr "直覺"
+
+msgid "aihelp:policy"
+msgstr "按最佳直覺行棋，沒有任何計算。棋力主要由引擎設定中的 `模型` 決定。布局落點設定影響布局中隨機落點的數量。"
+
+msgid "ai:p:weighted"
+msgstr "直覺權重"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"按直覺機率行棋， `weaken_fac` 影響較弱選點的多寡。當機率極低時，它的下棋風格變得很像直覺AI。 `pick_override` "
+"決定在選擇最佳選點時的無隨機性；而 `lower_bound` 決定了允許的直覺值的下限。"
+
+msgid "ai:p:pick"
+msgstr "盲選直覺"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"隨機選擇 `pick_n + pick_frac * <number of legal moves>` 並採用最佳的一手。 當 "
+"`pick_frac=1` 時，下棋風格像是直覺AI。 如果直覺值高於 `pick_override`，則採用最佳的一手以避免明顯錯誤。"
+
+msgid "ai:p:local"
+msgstr "局部模式"
+
+msgid "aihelp:p:local"
+msgstr ""
+"使加權 `pick_n + pick_frac * <number of legal moves>` 接近最後一手並選出最好的一手。如果直覺值大於 "
+"`pick_override`則採用最佳的一手以避免明顯錯誤。"
+
+msgid "ai:p:tenuki"
+msgstr "脫先模式"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"使加權 `pick_n + pick_frac * <number of legal moves>` 遠離最後一手並選出最好的一手。如果直覺值大於 "
+"`pick_override` 則採用最佳的一手以避免明顯錯誤。更高的 `stddev` 使其偏離更多。"
+
+msgid "ai:p:influence"
+msgstr "取勢模式"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"在偏移值高於 `threshold` 線的點中選出最好的一手。增加 `line_weight` 以加重對靠近邊緣選點的懲罰。在 '終局' "
+"部分結束後停止。"
+
+msgid "ai:p:territory"
+msgstr "取地模式"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"在偏移值低於 `threshold` 線的點中選出最好的一手。增加 `line_weight` 以加重對靠近中央選點的懲罰。在 '終局' "
+"部分結束後停止。"
+
+msgid "ai:p:rank"
+msgstr "可變棋力"
+
+msgid "aihelp:p:rank"
+msgstr "隨機選擇有限數量的合法選點，並下出最佳的一手。愈強的設定有愈多的選擇來選出最佳的一手。因為沒有0級/段，因此 3段 = -2級。"
+
+#. in AI settings
+msgid "estimated strength"
+msgstr "預估棋力"
+
+#. button in general settings for downloading models
+msgid "download models button"
+msgstr "下載模型"
+
+#. button in general settings for downloading katago executables
+msgid "download katago button"
+msgstr "下載多種 KataGo 版本"
+
+#. shown on on the model select dropdown
+msgid "models available"
+msgstr "找到 {num} 個可用模型"
+
+#. shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "偵測平台並使用所提供OpenCL KataGo執行檔"
+
+#. shown on on the binaries select dropdown
+msgid "katago binaries available"
+msgstr "找到 {num} 個可用的KataGo版本"
+
+#. error message on trying to download models when already done
+msgid "All models downloaded"
+msgstr "已下載所有可用模型"
+
+#. error message on trying to download models when already done
+msgid "All binaries downloaded"
+msgstr "已下載所有可用的執行檔"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze max visits"
+msgstr "每步棋的計算深度"
+
+#. on move tree editing
+msgid "Delete Node"
+msgstr "刪除模式"
+
+#. on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "擴展/摺疊"
+
+#. on move tree editing
+msgid "Make Main Branch"
+msgstr "設為主要變化"
+
+#. theme label
+msgid "theme"
+msgstr "顏色主題"
+
+#. theme name
+msgid "theme:normal"
+msgstr "預設主題"
+
+#. theme name
+msgid "theme:red-green-colourblind"
+msgstr "紅綠色盲友好"
+
+#. setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "最佳選點統計"
+
+#. Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "分數波動"
+
+#. Dropdown menu option
+msgid "top_move_score"
+msgstr "分數"
+
+#. Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "勝率波動"
+
+#. Dropdown menu option
+msgid "top_move_winrate"
+msgstr "勝率"
+
+#. Dropdown menu option
+msgid "top_move_visits"
+msgstr "計算深度"
+
+#. Dropdown menu option
+msgid "top_move_nothing"
+msgstr "(無)"
+
+#. top move stats show threshold description
+msgid "show stats if"
+msgstr "計算深度...以上時顯示統計"
+
+#. status message on starting insert mode
+msgid "starting insert mode"
+msgstr "插入模式，按 i 結束插入。"
+
+#. status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "插入完畢，複製 {num_copied} 手棋。"
+
+#. when a user tries to go to a different move/node while in insert
+#. mode
+msgid "finish inserting before navigating"
+msgstr "此功能在插入模式無法使用，按 i 結束插入。"
+
+#. TODO
+msgid "stone_scoring"
+msgstr "Ancient Chinese"

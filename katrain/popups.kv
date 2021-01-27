@@ -160,6 +160,7 @@
             size_hint: 0.33, 1
         AnchorLayout:
             LabelledPathInput:
+                check_path: False
                 input_property: "engine/altcommand"
                 hint_text: i18n._("engine:altcommand:hint")
     BoxLayout:
@@ -298,6 +299,7 @@
                     Label:
                         size_hint: 0.1, 1
                         text: '&'
+                        font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
                     LabelledSpinner:
                         id: top_moves_show_secondary
                         value_refs: TOP_MOVE_OPTIONS
@@ -470,7 +472,7 @@
             text: i18n._("ruleset")
         AnchorLayout:
             LabelledSpinner:
-                size_hint: 0.8,0.8
+                size_hint: 0.95,0.8
                 input_property: 'game/rules'
                 font_size: sp(Theme.DESC_FONT_SIZE)
                 id: rules_spinner
@@ -608,6 +610,7 @@
     I18NFileBrowser:
         id: filesel
         multiselect: False
+        file_must_exist: True
         filters: ["*.sgf","*.gib","*.ngf"]
         path: "."
         size_hint: 1,7
@@ -618,6 +621,7 @@
     I18NFileBrowser:
         id: filesel
         multiselect: False
+        file_must_exist: False
         filters: ["*.sgf","*.gib","*.ngf"]
         path: "."
         size_hint: 1,7

@@ -24,9 +24,9 @@ class PlayAnalyzeSelect(MDFloatLayout):
         self.katrain._config["ui_state"] = self.katrain._config.get("ui_state", {})
         self.katrain._config["ui_state"][self.mode] = {
             "analysis_controls": {
-                id: checkbox.active
-                for id, checkbox in self.katrain.analysis_controls.ids.items()
-                if isinstance(checkbox, AnalysisToggle)
+                id: toggle.active if not toggle.checkbox.slashed else None  # troolean ftw
+                for id, toggle in self.katrain.analysis_controls.ids.items()
+                if isinstance(toggle, AnalysisToggle)
             },
             "panels": {
                 id: (panel.state, panel.option_state)
@@ -39,7 +39,10 @@ class PlayAnalyzeSelect(MDFloatLayout):
     def load_ui_state(self, _dt=None):
         state = self.katrain.config(f"ui_state/{self.mode}", {})
         for id, active in state.get("analysis_controls", {}).items():
-            self.katrain.analysis_controls.ids[id].checkbox.active = active
+            cb = self.katrain.analysis_controls.ids[id].checkbox
+            cb.active = bool(active)
+            if cb.tri_state:
+                cb.slashed = active is None
         for id, (panel_state, button_state) in state.get("panels", {}).items():
             self.katrain.controls.ids[id].set_option_state(button_state)
             self.katrain.controls.ids[id].state = panel_state

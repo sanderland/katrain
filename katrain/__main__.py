@@ -7,6 +7,7 @@ if "KIVY_AUDIO" not in os.environ:
     os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
 
 import kivy
+
 kivy.require("2.0.0")
 
 # next, icon
@@ -42,6 +43,7 @@ import traceback
 from queue import Queue
 import urllib3
 import webbrowser
+import time
 
 from kivy.base import ExceptionHandler, ExceptionManager
 from kivy.app import App
@@ -112,9 +114,8 @@ class KaTrainGui(Screen, KaTrainBase):
         self.idle_analysis = False
         self.message_queue = Queue()
 
-        self._keyboard = Window.request_keyboard(None, self, "")
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
-        Clock.schedule_interval(self.animate_pondering, 0.1)
+        self.last_key_down = None
+        self.last_focus_event = 0
 
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
@@ -156,7 +157,23 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.trainer_config = self.config("trainer")
         self.engine = KataGoEngine(self, self.config("engine"))
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
-        self._do_new_game()
+        sgf_args = [
+            f
+            for f in sys.argv[1:]
+            if os.path.isfile(f) and any(f.lower().endswith(ext) for ext in ["sgf", "ngf", "gib"])
+        ]
+        if sgf_args:
+            self.load_sgf_file(sgf_args[0], fast=True, rewind=True)
+        else:
+            self._do_new_game()
+
+        Clock.schedule_interval(self.animate_pondering, 0.1)
+        Window.request_keyboard(None, self, "").bind(on_key_down=self._on_keyboard_down, on_key_up=self._on_keyboard_up)
+
+        def set_focus_event(*args):
+            self.last_focus_event = time.time()
+
+        MDApp.get_running_app().root_window.bind(focus=set_focus_event)
 
     def update_gui(self, cn, redraw_board=False):
         # Handle prisoners and next player display
@@ -178,11 +195,11 @@ class KaTrainGui(Screen, KaTrainBase):
         # update engine status dot
         if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
             self.board_controls.engine_status_col = Theme.ENGINE_DOWN_COLOR
-        elif len(self.engine.queries) == 0:
+        elif self.engine.is_idle():
             self.board_controls.engine_status_col = Theme.ENGINE_READY_COLOR
         else:
             self.board_controls.engine_status_col = Theme.ENGINE_BUSY_COLOR
-        self.board_controls.queries_remaining = len(self.engine.queries)
+        self.board_controls.queries_remaining = self.engine.queries_remaining()
 
         # redraw board/stones
         if redraw_board:
@@ -223,7 +240,7 @@ class KaTrainGui(Screen, KaTrainBase):
             ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                 self._do_ai_move(cn)
                 Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
-        if len(self.engine.queries) == 0 and self.idle_analysis:
+        if self.engine.is_idle() and self.idle_analysis:
             self("analyze-extra", "extra", continuous=True)
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
 
@@ -275,7 +292,13 @@ class KaTrainGui(Screen, KaTrainBase):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
         self.engine.on_new_game()  # clear queries
-        self.game = Game(self, self.engine, move_tree=move_tree, analyze_fast=analyze_fast, sgf_filename=sgf_filename)
+        self.game = Game(
+            self,
+            self.engine,
+            move_tree=move_tree,
+            analyze_fast=analyze_fast or not move_tree,
+            sgf_filename=sgf_filename,
+        )
         if move_tree:
             for bw, player_info in self.players_info.items():
                 player_info.player_type = PLAYER_HUMAN
@@ -532,6 +555,7 @@ class KaTrainGui(Screen, KaTrainBase):
         return first_child if isinstance(first_child, Popup) else None
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
+        self.last_key_down = keycode
         ctrl_pressed = "ctrl" in modifiers
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
@@ -549,11 +573,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
         shift_pressed = "shift" in modifiers
         shortcuts = self.shortcuts
-        if keycode[1] == "tab":
-            self.play_mode.switch_ui_mode()
-        elif keycode[1] == "alt":
-            self.nav_drawer.set_state("toggle")
-        elif keycode[1] == "spacebar":
+        if keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
         elif keycode[1] == "k":
             self.board_gui.toggle_coordinates()
@@ -590,6 +610,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
         elif keycode[1] == "v" and ctrl_pressed:
             self.load_sgf_from_clipboard()
+        elif keycode[1] == "b" and shift_pressed:
+            self("undo", "main-branch")
         elif keycode[1] in shortcuts.keys() and not ctrl_pressed:
             shortcut = shortcuts[keycode[1]]
             if isinstance(shortcut, Widget):
@@ -610,7 +632,23 @@ class KaTrainGui(Screen, KaTrainBase):
             filename = f"callgrind.{int(time.time())}.prof"
             stats.save(filename, type="callgrind")
             self.log(f"wrote profiling results to {filename}", OUTPUT_ERROR)
-        return True
+
+    def _on_keyboard_up(self, _keyboard, keycode):
+        if keycode[1] in ["alt", "tab"]:
+            Clock.schedule_once(lambda *_args: self._single_key_action(keycode), 0.05)
+
+    def _single_key_action(self, keycode):
+        if (
+            self.controls.note.focus
+            or self.popup_open
+            or keycode != self.last_key_down
+            or time.time() - self.last_focus_event < 0.2  # this is here to prevent alt-tab from firing alt or tab
+        ):
+            return
+        if keycode[1] == "alt":
+            self.nav_drawer.set_state("toggle")
+        elif keycode[1] == "tab":
+            self.play_mode.switch_ui_mode()
 
 
 class KaTrainApp(MDApp):
@@ -651,7 +689,6 @@ class KaTrainApp(MDApp):
 
         Window.bind(on_request_close=self.on_request_close)
         Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file.decode("utf8")))
-
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
         return self.gui
