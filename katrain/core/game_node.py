@@ -378,8 +378,6 @@ class GameNode(SGFNode):
         result = self.points_lost
         if result is None:
             return None
-        if result <= 0.0:
-            result = 0.0
         node = self
         while node.parent and node.parent.parent:
             node = node.parent.parent
