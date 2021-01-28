@@ -3,6 +3,8 @@ name: build_osx
 on:
   push:
     branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   osx_app:  
