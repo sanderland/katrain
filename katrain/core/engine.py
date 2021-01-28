@@ -87,11 +87,13 @@ class KataGoEngine:
             if exepath and not os.path.isfile(exe):
                 self.katrain.log(i18n._("Kata exe not found").format(exe=exe), OUTPUT_ERROR)
                 return  # don't start
-            elif not exepath and not any(
-                os.path.isfile(os.path.join(path, exe)) for path in os.environ.get("PATH", "").split(os.pathsep)
-            ):
-                self.katrain.log(i18n._("Kata exe not found in path").format(exe=exe), OUTPUT_ERROR)
-                return  # don't start
+            elif not exepath:
+                paths = os.getenv("PATH", ".").split(os.pathsep) + ["/opt/homebrew/bin/"]
+                exe_with_paths = [os.path.join(path, exe) for path in paths if os.path.isfile(os.path.join(path, exe))]
+                if not exe_with_paths:
+                    self.katrain.log(i18n._("Kata exe not found in path").format(exe=exe), OUTPUT_ERROR)
+                    return  # don't start
+                exe = exe_with_paths[0]
             elif not os.path.isfile(model):
                 self.katrain.log(i18n._("Kata model not found").format(model=model), OUTPUT_ERROR)
                 return  # don't start
