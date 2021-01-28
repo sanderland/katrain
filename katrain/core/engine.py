@@ -75,7 +75,7 @@ class KataGoEngine:
                     exe = "katrain/KataGo/katago"
                 else:
                     exe = find_package_resource("katrain/KataGo/katago-osx")  # github actions built
-                    if not os.path.isfile(exe) or "arm" in platform.machine():
+                    if not os.path.isfile(exe) or "arm64" in platform.version().lower():
                         exe = "katago"  # e.g. MacOS after brewing
 
             model = find_package_resource(config["model"])
