@@ -768,7 +768,9 @@ class KaTrainApp(MDApp):
         self.language = self.gui.config("general/lang")
         self.gui.start()
 
-    def on_request_close(self, *_args):
+    def on_request_close(self, *_args, source=None):
+        if source == "keyboard":
+            return True # do not close on esc
         if getattr(self, "gui", None):
             self.gui.play_mode.save_ui_state()
             if self.gui.engine:

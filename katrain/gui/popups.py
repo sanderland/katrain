@@ -502,7 +502,7 @@ class BaseConfigPopup(QuickConfigGui):
                 f.replace("/", os.path.sep).replace(PATHS["PACKAGE"], "katrain")
                 for ftype in ["*.bin.gz", "*.txt.gz"]
                 for f in glob.glob(slashpath + "/" + ftype)
-                if '.tmp.' not in f
+                if ".tmp." not in f
             ]
             if files and path not in self.paths:
                 self.paths.append(path)  # persistent on paths with models found
