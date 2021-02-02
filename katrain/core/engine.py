@@ -63,6 +63,7 @@ class KataGoEngine:
         self.shell = False
         self.write_queue = queue.Queue()
         self.thread_lock = threading.Lock()
+        self.analysis_node = None
         exe = config.get("katago", "").strip()
         if config.get("altcommand", ""):
             self.command = config["altcommand"]
@@ -144,6 +145,13 @@ class KataGoEngine:
                     self.terminate_query(query_id)
                 self.queries = {}
                 self.write_queue = queue.Queue()
+
+    def terminate_current_queries(self):
+        with self.thread_lock:
+            for query_id in self.analysis_node.query_keys:
+                self.terminate_query(query_id)
+                self.queries.pop(query_id, None)
+            self.analysis_node.query_keys.clear()
 
     def restart(self):
         self.queries = {}
@@ -273,7 +281,7 @@ class KataGoEngine:
     def _write_stdin_thread(self):  # flush only in a thread since it returns only when the other program reads
         while self.katago_process is not None:
             try:
-                query, callback, error_callback, next_move = self.write_queue.get(block=True, timeout=0.1)
+                query, callback, error_callback, next_move, current_analysis = self.write_queue.get(block=True, timeout=0.1)
             except queue.Empty:
                 continue
             with self.thread_lock:
@@ -289,8 +297,8 @@ class KataGoEngine:
                 except OSError as e:
                     self.check_alive(os_error=str(e), exception_if_dead=False)
 
-    def send_query(self, query, callback, error_callback, next_move=None):
-        self.write_queue.put((query, callback, error_callback, next_move))
+    def send_query(self, query, callback, error_callback, next_move=None,current_analysis=False):
+        self.write_queue.put((query, callback, error_callback, next_move,current_analysis))
 
     def terminate_query(self, query_id):
         if query_id is not None:

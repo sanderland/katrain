@@ -48,6 +48,7 @@ class GameNode(SGFNode):
         self.shortcuts_to = []
         self.shortcut_from = None
         self.analysis_from_sgf = None
+        self.query_keys = []
         self.clear_analysis()
 
     def add_shortcut(self, to_node):  # collapses the branch between them
@@ -169,6 +170,7 @@ class GameNode(SGFNode):
         analyze_fast=False,
         find_alternatives=False,
         region_of_interest=None,
+        current_analysis=False,
         report_every=REPORT_DT,
     ):
         engine.request_analysis(
@@ -184,6 +186,7 @@ class GameNode(SGFNode):
             find_alternatives=find_alternatives,
             region_of_interest=region_of_interest,
             report_every=report_every,
+            current_analysis=current_analysis
         )
 
     def update_move_analysis(self, move_analysis, move_gtp):
