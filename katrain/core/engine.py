@@ -259,7 +259,8 @@ class KataGoEngine:
                 if "id" not in query:
                     self.query_counter += 1
                     query["id"] = f"QUERY:{str(self.query_counter)}"
-                self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
+                if query.get("action") != "terminate":
+                    self.queries[query["id"]] = (callback, error_callback, time.time(), next_move)
                 self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
                 try:
                     self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
