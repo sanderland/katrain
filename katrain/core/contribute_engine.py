@@ -17,9 +17,9 @@ from katrain.core.utils import find_package_resource
 
 
 class KataGoContributeEngine:
-    """Starts and communicates with the KataGO contribute program"""
+    """Starts and communicates with the KataGo contribute program"""
 
-    DEFAULT_MAX_GAMES = 16
+    DEFAULT_MAX_GAMES = 8
 
     SHOW_RESULT_TIME = 5
     GIVE_UP_AFTER = 60
