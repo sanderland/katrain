@@ -48,7 +48,6 @@ class GameNode(SGFNode):
         self.shortcuts_to = []
         self.shortcut_from = None
         self.analysis_from_sgf = None
-        self.query_keys = []
         self.clear_analysis()
 
     def add_shortcut(self, to_node):  # collapses the branch between them

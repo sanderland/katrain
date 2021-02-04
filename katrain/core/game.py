@@ -382,14 +382,6 @@ class BaseGame:
             f.write(sgf)
         return i18n._("sgf written").format(file_name=filename)
 
-    def reset(self):
-        cn = self.current_node
-        engine = self.engines[cn.next_player]
-
-        engine.terminate_current_queries()
-        cn.clear_analysis()
-        cn.analyze(engine)
-
 
 class Game(BaseGame):
     """Extensions related to analysis etc."""
@@ -445,6 +437,13 @@ class Game(BaseGame):
                 self._calculate_groups()
             return
         super().undo(n_times=n_times, stop_on_mistake=stop_on_mistake)
+
+    def reset(self):
+        cn = self.current_node
+        engine = self.engines[cn.next_player]
+        engine.terminate_current_queries()
+        cn.clear_analysis()
+        cn.analyze(engine)
 
     def redo(self, n_times=1, stop_on_mistake=None):
         if self.insert_mode:
