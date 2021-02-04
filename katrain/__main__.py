@@ -372,6 +372,9 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.game.undo(n_times)
 
+    def _do_reset(self):
+        self.game.reset()
+
     def _do_resign(self):
         self.game.current_node.end_state = f"{self.game.current_node.player}+R"
 
@@ -628,6 +631,8 @@ class KaTrainGui(Screen, KaTrainBase):
         shortcuts = self.shortcuts
         if keycode[1] == "spacebar":
             self.toggle_continuous_analysis()
+        if keycode[1] == "h":
+            self("reset")
         elif keycode[1] == "k":
             self.board_gui.toggle_coordinates()
         elif keycode[1] in ["pause", "break", "f15"] and not ctrl_pressed:
