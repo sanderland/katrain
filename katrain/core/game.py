@@ -441,7 +441,7 @@ class Game(BaseGame):
     def reset(self):
         cn = self.current_node
         engine = self.engines[cn.next_player]
-        engine.terminate_current_queries()
+        engine.terminate_queries(cn)
         cn.clear_analysis()
         cn.analyze(engine)
 
@@ -599,7 +599,7 @@ class Game(BaseGame):
         for move in analyze_moves:
             if cn.analysis["moves"].get(move.gtp(), {"visits": 0})["visits"] < visits:
                 cn.analyze(
-                    engine, priority=priority, visits=visits, refine_move=move, time_limit=False,current_analysis=True
+                    engine, priority=priority, visits=visits, refine_move=move, time_limit=False
                 )  # explicitly requested so take as long as you need
 
     def play_to_end(self):

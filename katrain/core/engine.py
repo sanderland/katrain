@@ -146,11 +146,11 @@ class KataGoEngine:
                 self.queries = {}
                 self.write_queue = queue.Queue()
 
-    def terminate_current_queries(self):
+    def terminate_queries(self, current_node=None):
         with self.thread_lock:
             for query_id in list(self.queries.keys()):
-                callback, error_callback, start_time, next_move, cn = self.queries.pop(query_id, None)
-                if cn is not None and self.analysis_node == cn:
+                callback, error_callback, start_time, next_move, node = self.queries.pop(query_id, None)
+                if current_node is not None and current_node == node:
                     self.terminate_query(query_id)
 
     def restart(self):
@@ -281,7 +281,7 @@ class KataGoEngine:
     def _write_stdin_thread(self):  # flush only in a thread since it returns only when the other program reads
         while self.katago_process is not None:
             try:
-                query, callback, error_callback, next_move, current_analysis = self.write_queue.get(block=True, timeout=0.1)
+                query, callback, error_callback, next_move, current_node = self.write_queue.get(block=True, timeout=0.1)
             except queue.Empty:
                 continue
             with self.thread_lock:
@@ -289,8 +289,7 @@ class KataGoEngine:
                     self.query_counter += 1
                     query["id"] = f"QUERY:{str(self.query_counter)}"
                 if query.get("action") != "terminate":
-                    cn = self.analysis_node if current_analysis else None
-                    self.queries[query["id"]] = (callback, error_callback, time.time(), next_move, cn)
+                    self.queries[query["id"]] = (callback, error_callback, time.time(), next_move, current_node)
                 self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
                 try:
                     self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
@@ -298,8 +297,8 @@ class KataGoEngine:
                 except OSError as e:
                     self.check_alive(os_error=str(e), exception_if_dead=False)
 
-    def send_query(self, query, callback, error_callback, next_move=None, current_analysis=False):
-        self.write_queue.put((query, callback, error_callback, next_move, current_analysis))
+    def send_query(self, query, callback, error_callback, next_move=None, current_node=None):
+        self.write_queue.put((query, callback, error_callback, next_move, current_node))
 
     def terminate_query(self, query_id):
         if query_id is not None:
@@ -320,9 +319,7 @@ class KataGoEngine:
         next_move: Optional[GameNode] = None,
         extra_settings: Optional[Dict] = None,
         report_every: Optional[float] = None,
-        current_analysis: bool = False,
     ):
-        self.analysis_node = analysis_node
         nodes = analysis_node.nodes_from_root
         moves = [m for node in nodes for m in node.moves]
         initial_stones = [m for node in nodes for m in node.placements]
@@ -389,5 +386,5 @@ class KataGoEngine:
             query["reportDuringSearchEvery"] = report_every
         if avoid:
             query["avoidMoves"] = avoid
-        self.send_query(query, callback, error_callback, next_move, current_analysis)
+        self.send_query(query, callback, error_callback, next_move, analysis_node)
         analysis_node.analysis_visits_requested = max(analysis_node.analysis_visits_requested, visits)
