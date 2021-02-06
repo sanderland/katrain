@@ -438,7 +438,7 @@ class Game(BaseGame):
             return
         super().undo(n_times=n_times, stop_on_mistake=stop_on_mistake)
 
-    def reset(self):
+    def reset_current_analysis(self):
         cn = self.current_node
         engine = self.engines[cn.next_player]
         engine.terminate_queries(cn)

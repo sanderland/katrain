@@ -109,6 +109,10 @@ msgstr "Deeper full game analysis"
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
 
+#. Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "Reset analysis"
+
 #. Restrict analysis to a specific region
 msgid "analysis:region"
 msgstr "Set region of interest"

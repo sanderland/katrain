@@ -140,17 +140,22 @@ class KataGoEngine:
         self.base_priority += 1
         if not self.is_idle():
             with self.thread_lock:
-                for query_id in list(self.queries.keys()):
-                    self.terminate_query(query_id)
-                self.queries = {}
                 self.write_queue = queue.Queue()
+                self.terminate_queries(only_for_node=None, lock=False)
+                self.queries = {}
 
-    def terminate_queries(self, current_node=None):
-        with self.thread_lock:
-            for query_id in list(self.queries.keys()):
-                callback, error_callback, start_time, next_move, node = self.queries.pop(query_id, None)
-                if current_node is None or current_node == node:
-                    self.terminate_query(query_id)
+    def terminate_queries(self, only_for_node=None, lock=True):
+        if lock:
+            with self.thread_lock:
+                return self.terminate_queries(only_for_node=only_for_node, lock=False)
+        for query_id, (_, _, _, _, node) in list(self.queries.items()):
+            if only_for_node is None or only_for_node is node:
+                self.terminate_query(query_id)
+
+    def terminate_query(self, query_id):
+        if query_id is not None:
+            self.send_query({"action": "terminate", "terminateId": query_id}, None, None)
+            self.queries.pop(query_id, None)
 
     def restart(self):
         self.queries = {}
@@ -242,7 +247,9 @@ class KataGoEngine:
                     continue
                 query_id = analysis["id"]
                 if query_id not in self.queries:
-                    self.katrain.log(f"Query result {query_id} discarded -- recent new game?", OUTPUT_DEBUG)
+                    self.katrain.log(
+                        f"Query result {query_id} discarded -- recent new game or node reset?", OUTPUT_DEBUG
+                    )
                     continue
                 callback, error_callback, start_time, next_move, _ = self.queries[query_id]
                 if "error" in analysis:
@@ -298,10 +305,6 @@ class KataGoEngine:
 
     def send_query(self, query, callback, error_callback, next_move=None, node=None):
         self.write_queue.put((query, callback, error_callback, next_move, node))
-
-    def terminate_query(self, query_id):
-        if query_id is not None:
-            self.send_query({"action": "terminate", "terminateId": query_id}, None, None)
 
     def request_analysis(
         self,
