@@ -438,6 +438,13 @@ class Game(BaseGame):
             return
         super().undo(n_times=n_times, stop_on_mistake=stop_on_mistake)
 
+    def reset(self):
+        cn = self.current_node
+        engine = self.engines[cn.next_player]
+        engine.terminate_queries(cn)
+        cn.clear_analysis()
+        cn.analyze(engine)
+
     def redo(self, n_times=1, stop_on_mistake=None):
         if self.insert_mode:
             return
@@ -547,6 +554,7 @@ class Game(BaseGame):
 
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
+
             if cn.analysis_exists:
                 policy_grid = (
                     var_to_grid(self.current_node.policy, size=(board_size_x, board_size_y))
@@ -587,6 +595,7 @@ class Game(BaseGame):
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
         else:
             raise ValueError("Invalid analysis mode")
+
         for move in analyze_moves:
             if cn.analysis["moves"].get(move.gtp(), {"visits": 0})["visits"] < visits:
                 cn.analyze(
