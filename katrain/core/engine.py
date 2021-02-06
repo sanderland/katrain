@@ -63,7 +63,6 @@ class KataGoEngine:
         self.shell = False
         self.write_queue = queue.Queue()
         self.thread_lock = threading.Lock()
-        self.analysis_node = None
         exe = config.get("katago", "").strip()
         if config.get("altcommand", ""):
             self.command = config["altcommand"]
