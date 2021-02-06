@@ -149,7 +149,7 @@ class KataGoEngine:
         with self.thread_lock:
             for query_id in list(self.queries.keys()):
                 callback, error_callback, start_time, next_move, node = self.queries.pop(query_id, None)
-                if current_node is not None and current_node == node:
+                if current_node is None or current_node == node:
                     self.terminate_query(query_id)
 
     def restart(self):
@@ -280,7 +280,7 @@ class KataGoEngine:
     def _write_stdin_thread(self):  # flush only in a thread since it returns only when the other program reads
         while self.katago_process is not None:
             try:
-                query, callback, error_callback, next_move, current_node = self.write_queue.get(block=True, timeout=0.1)
+                query, callback, error_callback, next_move, node = self.write_queue.get(block=True, timeout=0.1)
             except queue.Empty:
                 continue
             with self.thread_lock:
@@ -288,7 +288,7 @@ class KataGoEngine:
                     self.query_counter += 1
                     query["id"] = f"QUERY:{str(self.query_counter)}"
                 if query.get("action") != "terminate":
-                    self.queries[query["id"]] = (callback, error_callback, time.time(), next_move, current_node)
+                    self.queries[query["id"]] = (callback, error_callback, time.time(), next_move, node)
                 self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
                 try:
                     self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
@@ -296,8 +296,8 @@ class KataGoEngine:
                 except OSError as e:
                     self.check_alive(os_error=str(e), exception_if_dead=False)
 
-    def send_query(self, query, callback, error_callback, next_move=None, current_node=None):
-        self.write_queue.put((query, callback, error_callback, next_move, current_node))
+    def send_query(self, query, callback, error_callback, next_move=None, node=None):
+        self.write_queue.put((query, callback, error_callback, next_move, node))
 
     def terminate_query(self, query_id):
         if query_id is not None:
