@@ -77,6 +77,7 @@
             true
         ],
         "save_analysis": false,
+        "save_marks": false,
         "low_visits": 25,
         "eval_off_show_last": 3,
         "top_moves_show": "top_move_delta_score",

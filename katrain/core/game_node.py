@@ -106,7 +106,7 @@ class GameNode(SGFNode):
         self.analysis = {"moves": {}, "root": None, "ownership": None, "policy": None, "completed": False}
 
     def sgf_properties(
-        self, save_comments_player=None, save_comments_class=None, eval_thresholds=None, save_analysis=False
+        self, save_comments_player=None, save_comments_class=None, eval_thresholds=None, save_analysis=False, save_marks=False,
     ):
         properties = copy.copy(super().sgf_properties())
         note = self.note.strip()
@@ -126,6 +126,18 @@ class GameNode(SGFNode):
             and self.analysis_exists
             and (note or ((save_comments_player or {}).get(self.player, False) and show_class))
         ):
+            if save_marks:
+                candidate_moves = self.parent.candidate_moves
+                top_x = Move.from_gtp(candidate_moves[0]["move"]).sgf(self.board_size)
+                best_sq = [
+                    Move.from_gtp(d["move"]).sgf(self.board_size)
+                    for d in candidate_moves
+                    if d["pointsLost"] <= 0.5 and d["move"] != "pass" and d["order"] != 0
+                ]
+                if best_sq and "SQ" not in properties:
+                    properties["SQ"] = best_sq
+                if top_x and "MA" not in properties:
+                    properties["MA"] = [top_x]
             comments.append(self.comment(sgf=True, interactive=False) + SGF_INTERNAL_COMMENTS_MARKER)
         if self.is_root:
             comments = [

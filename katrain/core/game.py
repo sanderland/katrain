@@ -366,6 +366,7 @@ class BaseGame:
         save_feedback = trainer_config.get("save_feedback", False)
         eval_thresholds = trainer_config["eval_thresholds"]
         save_analysis = trainer_config.get("save_analysis", False)
+        save_marks = trainer_config.get("save_marks", False)
         self.update_root_properties()
         show_dots_for = {
             bw: trainer_config.get("eval_show_ai", True) or self.katrain.players_info[bw].human for bw in "BW"
@@ -375,6 +376,7 @@ class BaseGame:
             save_comments_class=save_feedback,
             eval_thresholds=eval_thresholds,
             save_analysis=save_analysis,
+            save_marks=save_marks,
         )
         self.sgf_filename = filename
         os.makedirs(os.path.dirname(filename), exist_ok=True)
