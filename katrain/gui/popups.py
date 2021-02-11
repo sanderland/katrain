@@ -808,4 +808,3 @@ class ReAnalyzeGamePopup(BoxLayout):
 class SetupPositionPopup(BoxLayout):
     katrain = ObjectProperty(None)
     popup = ObjectProperty(None)
-

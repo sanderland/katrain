@@ -739,8 +739,9 @@
     advantage: advantage
     move: move
     orientation: 'vertical'
+    SmallDescriptionLabel:
+        text: i18n._('setup position explanation')
     BoxLayout:
-        size_hint: 1, 1.5
         orientation: 'horizontal'
         DescriptionLabel:
             text: i18n._('setup position black score')
@@ -749,7 +750,6 @@
                 id: advantage
                 text: '20'
     BoxLayout:
-        size_hint: 1, 1.5
         orientation: 'horizontal'
         DescriptionLabel:
             text: i18n._('setup position move number')
@@ -758,13 +758,12 @@
                 id: move
                 text: '100'
     AnchorLayout:
-        size_hint: 1, 1
         AutoSizedRoundedRectangleButton:
             padding_x: 15
             size_hint: None,0.5
             text: i18n._("analysis:setup") # re-use string
             on_press:
-                root.katrain("selfplay-setup", self.move.value, self.advantage.value)
+                root.katrain("selfplay-setup", move.input_value, advantage.input_value)
                 root.popup.dismiss()
 
 

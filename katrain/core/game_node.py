@@ -106,7 +106,12 @@ class GameNode(SGFNode):
         self.analysis = {"moves": {}, "root": None, "ownership": None, "policy": None, "completed": False}
 
     def sgf_properties(
-        self, save_comments_player=None, save_comments_class=None, eval_thresholds=None, save_analysis=False, save_marks=False,
+        self,
+        save_comments_player=None,
+        save_comments_class=None,
+        eval_thresholds=None,
+        save_analysis=False,
+        save_marks=False,
     ):
         properties = copy.copy(super().sgf_properties())
         note = self.note.strip()

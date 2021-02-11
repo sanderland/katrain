@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, Union
 
 from kivy.clock import Clock
 
+from katrain.core.utils import weighted_selection_without_replacement
 from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_INFO,
@@ -19,7 +20,8 @@ from katrain.core.constants import (
     STATUS_ANALYSIS,
     STATUS_ERROR,
     STATUS_INFO,
-    STATUS_TEACHING, OUTPUT_EXTRA_DEBUG,
+    STATUS_TEACHING,
+    OUTPUT_EXTRA_DEBUG,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -612,35 +614,40 @@ class Game(BaseGame):
             self.katrain.controls.set_status(i18n._("wait-before-extra-analysis"), STATUS_INFO, cn)
             return
 
-        engine_settings = {'wideRootNoise': 0.03} if target_b_advantage is not None else {}
+        engine_settings = {"wideRootNoise": 0.03} if target_b_advantage is not None else {}
+
         def analyze_and_play(node):
+            nonlocal count, cn, engine_settings
             if until_move != "end" and node.depth >= until_move:
+                if self.current_node == cn:
+                    self.set_current_node(node)
                 return
 
-            nonlocal count, cn, engine_settings
-            cand = node.candidate_moves
+            candidates = node.candidate_moves
             if self.katrain.game is not self:
                 return  # a new game happened
             if until_move != "end" and target_b_advantage is not None:  # setup pos
-                sign = node.player_sign(node.next_player)
                 max_loss, target_bound = 5, 1
-                acceptable_moves = [
-                    move
-                    for move in cand
-                    if move["pointsLost"] < max_loss
-                    and abs(sign * move["scoreLead"] - target_b_advantage) < target_bound * (until_move - node.depth)
+                urgency = 0.5 * (until_move - node.depth)
+                weighted_cands = [
+                    (move, (1 / (1 + abs(move["scoreLead"] - target_b_advantage))) ** urgency)
+                    for i, move in enumerate(candidates)
+                    if move["pointsLost"] < max_loss or i == 0
                 ]
-                acceptable_moves = acceptable_moves or [
-                    min(cand, key=lambda move: abs(sign * move["scoreLead"] - target_b_advantage))
-                ]
-                dict_move = random.choice(acceptable_moves)
+                move_info = weighted_selection_without_replacement(weighted_cands, 1)[0][0]
                 self.katrain.log(
-                    f"Self-play until {until_move} target {target_b_advantage}: {len(acceptable_moves)} acceptable -> move {dict_move['move']} score {dict_move['scoreLead']} point loss {dict_move['pointsLost']}",
-                    OUTPUT_EXTRA_DEBUG,
+                    f"Self-play until {until_move} target {target_b_advantage}: {len(candidates)} candidates -> move {move_info['move']} score {move_info['scoreLead']} point loss {move_info['pointsLost']}",
+                    OUTPUT_DEBUG,
                 )
-                move = Move.from_gtp(dict_move["move"], player=node.next_player)
-            elif cand:  # just selfplay to end
-                move = Move.from_gtp(cand[0]["move"], player=node.next_player)
+                move = Move.from_gtp(move_info["move"], player=node.next_player)
+                self.katrain.controls.set_status(
+                    i18n._("setup game status message").format(
+                        move=node.depth, until_move=until_move, score=move_info["scoreLead"]
+                    ),
+                    STATUS_INFO,
+                )
+            elif candidates:  # just selfplay to end
+                move = Move.from_gtp(candidates[0]["move"], player=node.next_player)
             else:  # 1 visit etc
                 polmoves = node.policy_ranking
                 move = polmoves[0][1] if polmoves else Move(None)

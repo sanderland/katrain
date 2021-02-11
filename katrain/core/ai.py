@@ -35,7 +35,7 @@ from katrain.core.constants import (
     OUTPUT_INFO,
 )
 from katrain.core.game import Game, GameNode, Move
-from katrain.core.utils import var_to_grid
+from katrain.core.utils import var_to_grid, weighted_selection_without_replacement
 
 
 def interp_ix(lst, x):
@@ -89,12 +89,6 @@ def ai_rank_estimation(strategy, settings) -> int:
         return 1 - kyu
     else:
         return AI_STRENGTH[strategy]
-
-
-def weighted_selection_without_replacement(items: List[Tuple], pick_n: int) -> List[Tuple]:
-    """For a list of tuples where the second element is a weight, returns random items with those weights, without replacement."""
-    elt = [(math.log(random.random()) / (item[1] + 1e-18), item) for item in items]  # magic
-    return [e[1] for e in heapq.nlargest(pick_n, elt)]  # NB fine if too small
 
 
 def dirichlet_noise(num, dir_alpha=0.3):
