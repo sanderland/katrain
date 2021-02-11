@@ -627,10 +627,9 @@ class Game(BaseGame):
             if self.katrain.game is not self:
                 return  # a new game happened
             if until_move != "end" and target_b_advantage is not None:  # setup pos
-                max_loss, target_bound = 5, 1
-                urgency = 0.5 * (until_move - node.depth)
+                max_loss = 5
                 weighted_cands = [
-                    (move, (1 / (1 + abs(move["scoreLead"] - target_b_advantage))) ** urgency)
+                    (move, (1 / (1 + abs(move["scoreLead"] - target_b_advantage))))
                     for i, move in enumerate(candidates)
                     if move["pointsLost"] < max_loss or i == 0
                 ]
