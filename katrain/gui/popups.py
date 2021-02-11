@@ -803,3 +803,9 @@ class SaveSGFPopup(BoxLayout):
 class ReAnalyzeGamePopup(BoxLayout):
     katrain = ObjectProperty(None)
     popup = ObjectProperty(None)
+
+
+class SetupPositionPopup(BoxLayout):
+    katrain = ObjectProperty(None)
+    popup = ObjectProperty(None)
+

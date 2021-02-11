@@ -763,6 +763,12 @@ class AnalysisDropDown(DropDown):
         analysis_popup.content.katrain = MDApp.get_running_app().gui
         analysis_popup.open()
 
+    def generate_position_popup(self, *_args):
+        analysis_popup = I18NPopup(title_key="analysis:setup", size=[dp(500), dp(300)], content=ReAnalyzeGamePopup())
+        analysis_popup.content.popup = analysis_popup
+        analysis_popup.content.katrain = MDApp.get_running_app().gui
+        analysis_popup.open()
+
 
 class AnalysisControls(MDBoxLayout):
     dropdown = ObjectProperty(None)

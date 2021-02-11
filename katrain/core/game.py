@@ -1,6 +1,7 @@
 import copy
 import math
 import os
+import random
 import re
 import threading
 from datetime import datetime
@@ -18,7 +19,7 @@ from katrain.core.constants import (
     STATUS_ANALYSIS,
     STATUS_ERROR,
     STATUS_INFO,
-    STATUS_TEACHING,
+    STATUS_TEACHING, OUTPUT_EXTRA_DEBUG,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -604,24 +605,45 @@ class Game(BaseGame):
                     engine, priority=priority, visits=visits, refine_move=move, time_limit=False
                 )  # explicitly requested so take as long as you need
 
-    def play_to_end(self):
+    def selfplay(self, until_move, target_b_advantage=None):
         cn = self.current_node
         count = 0
         if not cn.analysis_exists:
             self.katrain.controls.set_status(i18n._("wait-before-extra-analysis"), STATUS_INFO, cn)
             return
 
-        def analyze_and_play_policy(node):
-            nonlocal count, cn
+        engine_settings = {'wideRootNoise': 0.03} if target_b_advantage is not None else {}
+        def analyze_and_play(node):
+            if until_move != "end" and node.depth >= until_move:
+                return
+
+            nonlocal count, cn, engine_settings
             cand = node.candidate_moves
             if self.katrain.game is not self:
                 return  # a new game happened
-            if cand:
+            if until_move != "end" and target_b_advantage is not None:  # setup pos
+                sign = node.player_sign(node.next_player)
+                max_loss, target_bound = 5, 1
+                acceptable_moves = [
+                    move
+                    for move in cand
+                    if move["pointsLost"] < max_loss
+                    and abs(sign * move["scoreLead"] - target_b_advantage) < target_bound * (until_move - node.depth)
+                ]
+                acceptable_moves = acceptable_moves or [
+                    min(cand, key=lambda move: abs(sign * move["scoreLead"] - target_b_advantage))
+                ]
+                dict_move = random.choice(acceptable_moves)
+                self.katrain.log(
+                    f"Self-play until {until_move} target {target_b_advantage}: {len(acceptable_moves)} acceptable -> move {dict_move['move']} score {dict_move['scoreLead']} point loss {dict_move['pointsLost']}",
+                    OUTPUT_EXTRA_DEBUG,
+                )
+                move = Move.from_gtp(dict_move["move"], player=node.next_player)
+            elif cand:  # just selfplay to end
                 move = Move.from_gtp(cand[0]["move"], player=node.next_player)
-            else:
+            else:  # 1 visit etc
                 polmoves = node.policy_ranking
                 move = polmoves[0][1] if polmoves else Move(None)
-
             if move.is_pass:
                 if self.current_node == cn:
                     self.set_current_node(node)
@@ -635,13 +657,13 @@ class Game(BaseGame):
 
             def set_analysis(result, _partial):
                 new_node.set_analysis(result)
-                analyze_and_play_policy(new_node)
+                analyze_and_play(new_node)
 
             self.engines[node.next_player].request_analysis(
-                new_node, callback=set_analysis, priority=-1000, analyze_fast=True
+                new_node, callback=set_analysis, priority=-1000, analyze_fast=True, extra_settings=engine_settings
             )
 
-        analyze_and_play_policy(cn)
+        analyze_and_play(cn)
 
     def analyze_undo(self, node):
         train_config = self.katrain.config("trainer")

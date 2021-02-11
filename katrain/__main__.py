@@ -404,8 +404,8 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_analyze_extra(self, mode, **kwargs):
         self.game.analyze_extra(mode, **kwargs)
 
-    def _do_play_to_end(self):
-        self.game.play_to_end()
+    def _do_selfplay_setup(self,until_move,advantage=None):
+        self.game.selfplay(until_move,advantage=None)
 
     def _do_select_box(self):
         self.controls.set_status(i18n._("analysis:region:start"), STATUS_INFO)

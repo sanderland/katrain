@@ -761,7 +761,12 @@
         text: i18n._("analysis:playtoend")
         icon: 'Finish.png'
         shortcut: 'l'
-        on_action: root.katrain("play-to-end")
+        on_action: root.katrain("selfplay-setup","end")
+    AnalysisMenuItem:
+        text: i18n._("analysis:setup")
+        icon: 'Finish.png'
+        shortcut: ''
+        on_action: root.generate_position_popup()
     AnalysisMenuItem:
         text: i18n._("analysis:game")
         icon: 'analysis.png'
