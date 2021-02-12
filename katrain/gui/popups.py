@@ -804,7 +804,22 @@ class ReAnalyzeGamePopup(BoxLayout):
     katrain = ObjectProperty(None)
     popup = ObjectProperty(None)
 
+    def on_submit(self):
+        self.button.trigger_action(duration=0)
+
 
 class SetupPositionPopup(BoxLayout):
-    katrain = ObjectProperty(None)
     popup = ObjectProperty(None)
+
+    def __init__(self, katrain):
+        super().__init__()
+        self.katrain = katrain
+        self.trainer_config = katrain.config("trainer")
+        self.move.set_value(self.trainer_config.get("setup_move", 100))
+        self.advantage.set_value(self.trainer_config.get("setup_advantage", 20))
+
+    def on_submit(self):
+        self.trainer_config["setup_move"] = int(self.move.input_value)
+        self.trainer_config["setup_advantage"] = int(self.advantage.input_value)
+        self.katrain("selfplay-setup", self.trainer_config["setup_move"], self.trainer_config["setup_advantage"])
+        self.katrain.save_config(key="trainer")

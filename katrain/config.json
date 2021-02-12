@@ -83,7 +83,9 @@
         "top_moves_show": "top_move_delta_score",
         "top_moves_show_secondary": "top_move_visits",
         "eval_show_ai": true,
-        "lock_ai": false
+        "lock_ai": false,
+        "setup_move":100,
+        "setup_advantage":20
     },
     "ai": {
         "ai:default": {},

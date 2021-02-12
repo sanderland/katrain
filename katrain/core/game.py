@@ -9,9 +9,9 @@ from typing import Dict, List, Optional, Union
 
 from kivy.clock import Clock
 
-from katrain.core.utils import weighted_selection_without_replacement
 from katrain.core.constants import (
     OUTPUT_DEBUG,
+    OUTPUT_EXTRA_DEBUG,
     OUTPUT_INFO,
     PLAYER_AI,
     PLAYER_HUMAN,
@@ -21,13 +21,12 @@ from katrain.core.constants import (
     STATUS_ERROR,
     STATUS_INFO,
     STATUS_TEACHING,
-    OUTPUT_EXTRA_DEBUG,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n, rank_label
 from katrain.core.sgf_parser import SGF, Move
-from katrain.core.utils import var_to_grid
+from katrain.core.utils import var_to_grid, weighted_selection_without_replacement
 
 
 class IllegalMoveException(Exception):
@@ -618,33 +617,42 @@ class Game(BaseGame):
 
         def analyze_and_play(node):
             nonlocal count, cn, engine_settings
-            if until_move != "end" and node.depth >= until_move:
-                if self.current_node == cn:
-                    self.set_current_node(node)
-                return
-
             candidates = node.candidate_moves
             if self.katrain.game is not self:
                 return  # a new game happened
             if until_move != "end" and target_b_advantage is not None:  # setup pos
+                if node.depth >= until_move or candidates[0]["move"] == "pass":
+                    self.set_current_node(node)
+                    return
+                target_score = cn.score + (node.depth - cn.depth + 1) * (target_b_advantage - cn.score) / (
+                    until_move - cn.depth
+                )
+                stddev = min(5, 0.5 + (until_move - node.depth) * 0.15)
                 max_loss = 5
-                weighted_cands = [
-                    (move, (1 / (1 + abs(move["scoreLead"] - target_b_advantage))))
-                    for i, move in enumerate(candidates)
-                    if move["pointsLost"] < max_loss or i == 0
-                ]
-                move_info = weighted_selection_without_replacement(weighted_cands, 1)[0][0]
+                if abs(node.score - target_score) < 3 * stddev:
+                    weighted_cands = [
+                        (move, math.exp(-0.5 * (abs(move["scoreLead"] - target_score) / stddev) ** 2))
+                        for i, move in enumerate(candidates)
+                        if move["pointsLost"] < max_loss or i == 0
+                    ]
+                    move_info = weighted_selection_without_replacement(weighted_cands, 1)[0][0]
+                    for move, wt in weighted_cands:
+                        self.katrain.log(
+                            f"{'* ' if move_info == move else '  '} {move['move']} {move['scoreLead']} {wt}",
+                            OUTPUT_EXTRA_DEBUG,
+                        )
+                else:  # we're a bit lost, far away from target, just push it closer
+                    move_info = min(candidates, key=lambda move: abs(move["scoreLead"] - target_score))
+                    self.katrain.log(
+                        f"* Played {move_info['move']} {move_info['scoreLead']} because score deviation between current score {node.score} and target score {target_score} > {3*stddev}",
+                        OUTPUT_EXTRA_DEBUG,
+                    )
+
                 self.katrain.log(
                     f"Self-play until {until_move} target {target_b_advantage}: {len(candidates)} candidates -> move {move_info['move']} score {move_info['scoreLead']} point loss {move_info['pointsLost']}",
                     OUTPUT_DEBUG,
                 )
                 move = Move.from_gtp(move_info["move"], player=node.next_player)
-                self.katrain.controls.set_status(
-                    i18n._("setup game status message").format(
-                        move=node.depth, until_move=until_move, score=move_info["scoreLead"]
-                    ),
-                    STATUS_INFO,
-                )
             elif candidates:  # just selfplay to end
                 move = Move.from_gtp(candidates[0]["move"], player=node.next_player)
             else:  # 1 visit etc
@@ -656,9 +664,17 @@ class Game(BaseGame):
                 return
             count += 1
             new_node = GameNode(parent=node, move=move)
-            if node != cn:
-                node.remove_shortcut()
-            cn.add_shortcut(new_node)
+            if until_move != "end" and target_b_advantage is not None:
+                self.set_current_node(new_node)
+                self.katrain.controls.set_status(
+                    i18n._("setup game status message").format(move=new_node.depth, until_move=until_move),
+                    STATUS_INFO,
+                )
+            else:
+                if node != cn:
+                    node.remove_shortcut()
+                cn.add_shortcut(new_node)
+
             self.katrain.controls.move_tree.redraw_tree_trigger()
 
             def set_analysis(result, _partial):

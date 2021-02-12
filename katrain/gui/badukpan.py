@@ -765,10 +765,11 @@ class AnalysisDropDown(DropDown):
 
     def generate_position_popup(self, *_args):
         setup_playout_popup = I18NPopup(
-            title_key="analysis:setup", size=[dp(500), dp(400)], content=SetupPositionPopup()
+            title_key="analysis:setup",
+            size=[dp(500), dp(450)],
+            content=SetupPositionPopup(katrain=MDApp.get_running_app().gui),
         )
         setup_playout_popup.content.popup = setup_playout_popup
-        setup_playout_popup.content.katrain = MDApp.get_running_app().gui
         setup_playout_popup.open()
 
 

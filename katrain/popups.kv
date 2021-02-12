@@ -716,6 +716,7 @@
 <ReAnalyzeGamePopup>:
     visits: visits
     orientation: 'vertical'
+    button: button
     BoxLayout:
         size_hint: 1, 1.5
         orientation: 'horizontal'
@@ -728,6 +729,7 @@
     AnchorLayout:
         size_hint: 1, 1
         AutoSizedRoundedRectangleButton:
+            id: button
             padding_x: 15
             size_hint: None,0.5
             text: i18n._("analysis:game") # re-use string
@@ -738,32 +740,34 @@
 <SetupPositionPopup>:
     advantage: advantage
     move: move
+    button: button
     orientation: 'vertical'
     SmallDescriptionLabel:
         text: i18n._('setup position explanation')
-    BoxLayout:
-        orientation: 'horizontal'
-        DescriptionLabel:
-            text: i18n._('setup position black score')
-        AnchorLayout:
-            LabelledFloatInput:
-                id: advantage
-                text: '20'
-    BoxLayout:
-        orientation: 'horizontal'
-        DescriptionLabel:
-            text: i18n._('setup position move number')
-        AnchorLayout:
-            LabelledIntInput:
-                id: move
-                text: '100'
+        size_hint: 1, 1.5
+    DescriptionLabel:
+        text: i18n._('setup position black score')
     AnchorLayout:
+        LabelledSelectionSlider:
+            id: advantage
+            key_option: True
+            values: [(pt,f"{pt}") for pt in range(-100,101)]
+    DescriptionLabel:
+        text: i18n._('setup position move number')
+    AnchorLayout:
+        LabelledSelectionSlider:
+            id: move
+            key_option: True
+            values: [(mv,str(mv)) for mv in range(50,151)]
+    AnchorLayout:
+        size_hint: 1, 1.5
         AutoSizedRoundedRectangleButton:
             padding_x: 15
+            id: button
             size_hint: None,0.5
             text: i18n._("analysis:setup") # re-use string
             on_press:
-                root.katrain("selfplay-setup", move.input_value, advantage.input_value)
+                root.on_submit()
                 root.popup.dismiss()
 
 

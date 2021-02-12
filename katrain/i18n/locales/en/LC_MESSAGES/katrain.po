@@ -914,9 +914,7 @@ msgstr "Generate position"
 
 #. Progress message
 msgid "setup game status message"
-msgstr ""
-"Generating game via AI self-play:  Move {move}/{until_move} done. Score lead"
-" for black is {score:+.1f}."
+msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
 #. Popup for generating position: top explanation
 msgid "setup position explanation"

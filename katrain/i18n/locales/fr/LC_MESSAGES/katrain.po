@@ -917,9 +917,7 @@ msgstr "Generate game until move:"
 
 #. TODO - Progress message
 msgid "setup game status message"
-msgstr ""
-"Generating game via AI self-play:  Move {move}/{until_move} done. Score lead"
-" for black is {score:+.1f}."
+msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
 #. TODO - menu option
 msgid "analysis:setup"

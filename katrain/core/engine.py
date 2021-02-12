@@ -278,6 +278,7 @@ class KataGoEngine:
                             callback(analysis, partial_result)
                     except Exception as e:
                         self.katrain.log(f"Error in engine callback for query {query_id}: {e}", OUTPUT_ERROR)
+                        traceback.print_exc()
                 if getattr(self.katrain, "update_state", None):  # easier mocking etc
                     self.katrain.update_state()
             except Exception as e:
