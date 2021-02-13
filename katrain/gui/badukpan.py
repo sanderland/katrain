@@ -33,7 +33,7 @@ from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid, json_truncate_arrays
 from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
-from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
+from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup, SetupPositionPopup
 from katrain.gui.theme import Theme
 
 
@@ -762,6 +762,15 @@ class AnalysisDropDown(DropDown):
         analysis_popup.content.popup = analysis_popup
         analysis_popup.content.katrain = MDApp.get_running_app().gui
         analysis_popup.open()
+
+    def generate_position_popup(self, *_args):
+        setup_playout_popup = I18NPopup(
+            title_key="analysis:setup",
+            size=[dp(500), dp(450)],
+            content=SetupPositionPopup(katrain=MDApp.get_running_app().gui),
+        )
+        setup_playout_popup.content.popup = setup_playout_popup
+        setup_playout_popup.open()
 
 
 class AnalysisControls(MDBoxLayout):
