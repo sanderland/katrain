@@ -64,7 +64,7 @@ but has since grown to include a wide range of features, including:
 ## <a name="install"></a> Installation
 * See the [releases page](http://github.com/sanderland/katrain/releases) for downloadable executables for Windows and Mac.
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
-* [This page](INSTALL.md) has detailed instructions for Window, Linux and MacOS,
+* [This page](https://github.com/sanderland/katrain/blob/master/INSTALL.md) has detailed instructions for Window, Linux and MacOS,
   as well as troubleshooting and setting up KataGo to use multiple GPUs.
 
 ## <a name="kata"></a>  Configuring KataGo
@@ -162,6 +162,7 @@ Keyboard shortcuts are shown with **[key]**.
     * **[g]**: Select area of interest: set an area and search only for moves in this box.
                Good for solving tsumegos. Note that some results may appear outside the box due to establishing a baseline for the best move,
                and the opponent can tenuki in variations.
+    * **[h]**: Reset analysis. This reverts the analysis to the what the engine returns after a normal query, removing any additional exploration.
     * **[i]**: Start insertion mode. Allows you to insert moves, to improve analysis when both players ignore an important exchange or life and death situation. Press again to stop inserting and copy the rest of the branch.
     * **[l]**: Play out the game until the end and add as a collapsed branch, to visualize the potential effect of mistakes. This is done in the background, and can be started at several nodes at once when comparing the results at different starting positions.      
     * **[spacebar]**: Turn continuous analysis on/off. This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.
@@ -193,6 +194,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[double-click on a move]**: Navigate directly to just before that point in the game.
 * **[Ctrl-V]**: Load SGF from clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
 * **[Ctrl-C]**: Save SGF to clipboard.
+* **[Escape]**: Stop all analysis.
 
 ## <a name="themes"></a> Themes
 
