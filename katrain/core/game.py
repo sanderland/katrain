@@ -106,21 +106,30 @@ class BaseGame:
                 shortcut_id_to_node[shortcut_id].add_shortcut(node)
 
     # -- move tree functions --
-    def _calculate_groups(self):
+    def _init_state(self):
         board_size_x, board_size_y = self.board_size
+        self.board = [
+            [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
+        ]  # type: List[List[int]]  #  board pos -> chain id
+        self.chains = []  # type: List[List[Move]]  #   chain id -> chain
+        self.prisoners = []  # type: List[Move]
+        self.last_capture = []  # type: List[Move]
+
+    def _calculate_groups(self):
         with self._lock:
-            self.board = [
-                [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
-            ]  # type: List[List[int]]  #  board pos -> chain id
-            self.chains = []  # type: List[List[Move]]  #   chain id -> chain
-            self.prisoners = []  # type: List[Move]
-            self.last_capture = []  # type: List[Move]
+            self._init_state()
             try:
                 for node in self.current_node.nodes_from_root:
                     for m in node.move_with_placements:
                         self._validate_move_and_update_chains(
                             m, True
                         )  # ignore ko since we didn't know if it was forced
+                    if node.clear_placements:  # handle AE by playing all moves left from empty board
+                        clear_coords = {c.coords for c in node.clear_placements}
+                        stones = [m for c in self.chains for m in c if m.coords not in clear_coords]
+                        self._init_state()
+                        for m in stones:
+                            self._validate_move_and_update_chains(m, True)
             except IllegalMoveException as e:
                 raise Exception(f"Unexpected illegal move ({str(e)})")
 
@@ -527,6 +536,12 @@ class Game(BaseGame):
     def analyze_extra(self, mode, **kwargs):
         stones = {s.coords for s in self.stones}
         cn = self.current_node
+
+        if mode == "stop":
+            for e in set(self.engines.values()):
+                e.terminate_queries()
+            self.katrain.idle_analysis = False
+            return
 
         engine = self.engines[cn.next_player]
         Clock.schedule_once(self.katrain.analysis_controls.hints.activate, 0)

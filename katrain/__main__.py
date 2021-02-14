@@ -602,6 +602,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "f7": ("ai-popup",),
             "f8": ("config-popup",),
             "f9": ("contribute-popup",),
+            "escape": ("analyze-extra", "stop"),
         }
 
     @property
