@@ -883,7 +883,7 @@ msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
 #. TODO - generate position alongside starting new game
 msgid "setupposition"
-msgstr "Generate position"
+msgstr "Set up Position"
 
 #. TODO - Popup for generating position: top explanation
 msgid "setup position explanation"

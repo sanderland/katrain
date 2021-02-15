@@ -625,16 +625,24 @@ class Game(BaseGame):
         cn = self.current_node
 
         if target_b_advantage is not None:
-            analysis_kwargs = {'visits': max(25, self.katrain.config('engine/fast_visits'))}
+            analysis_kwargs = {"visits": max(25, self.katrain.config("engine/fast_visits"))}
             engine_settings = {"wideRootNoise": 0.03}
         else:
             analysis_kwargs = engine_settings = {}
 
-
-
         def set_analysis(node, result):
             node.set_analysis(result)
             analyze_and_play(node)
+
+        def request_analysis_for_node(node):
+            self.engines[node.player].request_analysis(
+                node,
+                callback=lambda result, _partial: set_analysis(node, result),
+                priority=-1000,
+                analyze_fast=True,
+                extra_settings=engine_settings,
+                **analysis_kwargs,
+            )
 
         def analyze_and_play(node):
             nonlocal cn, engine_settings
@@ -696,22 +704,9 @@ class Game(BaseGame):
                 cn.add_shortcut(new_node)
 
             self.katrain.controls.move_tree.redraw_tree_trigger()
+            request_analysis_for_node(new_node)
 
-            self.engines[node.next_player].request_analysis(
-                new_node,
-                callback=lambda result, _partial: set_analysis(new_node, result),
-                priority=-1000,
-                analyze_fast=True,
-                extra_settings=engine_settings,**analysis_kwargs
-            )
-
-        self.engines[cn.next_player].request_analysis(
-            cn,
-            callback=lambda result, _partial: set_analysis(cn, result),
-            priority=-1000,
-            analyze_fast=True,
-            extra_settings=engine_settings,
-        )
+        request_analysis_for_node(cn)
 
     def analyze_undo(self, node):
         train_config = self.katrain.config("trainer")

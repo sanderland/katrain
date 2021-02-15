@@ -359,7 +359,7 @@ msgstr "Update Timer"
 
 # new game settings from here
 msgid "New Game title"
-msgstr "Setup New Game"
+msgstr "Setup New Game / Edit Game Info and Rules"
 
 #. in new game options
 msgid "player names"
@@ -420,11 +420,11 @@ msgstr "Start New Game"
 
 #. change komi etc in current game
 msgid "editgame"
-msgstr "Change Rules"
+msgstr "Edit Game Info"
 
 #. generate position alongside starting new game
 msgid "setupposition"
-msgstr "Generate position"
+msgstr "Set up Position"
 
 # teacher settings from here
 msgid "teacher settings"
