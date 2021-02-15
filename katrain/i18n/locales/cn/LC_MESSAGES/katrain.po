@@ -653,8 +653,6 @@ msgstr "简明风格"
 msgid "local analysis"
 msgstr "正在寻找局部走法"
 
-msgid "editgame"
-msgstr "更新贴目规则"
 
 msgid "Make Main Branch"
 msgstr "设为实战变化"

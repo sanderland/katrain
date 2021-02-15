@@ -734,9 +734,6 @@ msgstr "Modéré"
 msgid "local analysis"
 msgstr "Recherche de coups locaux."
 
-#. TODO: check
-msgid "editgame"
-msgstr "Mettre à jour"
 
 msgid "Make Main Branch"
 msgstr "Mettre en branche principale"

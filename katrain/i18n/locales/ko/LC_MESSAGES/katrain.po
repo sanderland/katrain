@@ -667,10 +667,6 @@ msgstr "간명한 기풍"
 msgid "local analysis"
 msgstr "국지적인 응수를 찾고 있습니다"
 
-msgid "editgame"
-msgstr ""
-"이 판에 대해\n"
-"덤과 규칙 등 조절"
 
 msgid "Make Main Branch"
 msgstr "주 변화로 만들기"

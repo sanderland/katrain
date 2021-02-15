@@ -692,9 +692,6 @@ msgstr "簡明派"
 msgid "local analysis"
 msgstr "近辺の応手を分析中"
 
-msgid "editgame"
-msgstr "ルールを変更"
-
 #. on move tree editing
 msgid "Make Main Branch"
 msgstr "こちらを主分岐に"

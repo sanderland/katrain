@@ -704,8 +704,6 @@ msgstr "Einfacher Stil"
 msgid "local analysis"
 msgstr "Suche nach lokalen Antworten"
 
-msgid "editgame"
-msgstr "ktualisiere Regeln"
 
 msgid "Make Main Branch"
 msgstr "Zum Hauptzweig machen"

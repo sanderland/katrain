@@ -403,9 +403,6 @@ msgstr "使用 x:y 來設定非正方形棋盤(例如19:9)"
 msgid "newgame"
 msgstr "開始新對局"
 
-#. change komi etc in current game
-msgid "editgame"
-msgstr "更新貼目/規則"
 
 # teacher settings from here
 msgid "teacher settings"

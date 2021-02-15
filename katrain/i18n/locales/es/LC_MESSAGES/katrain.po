@@ -927,6 +927,3 @@ msgstr ""
 "you can use this to play against stronger AIs starting from an advantage in "
 "a variety of middle- or end-game positions."
 
-#. TODO - change komi etc in current game
-msgid "editgame"
-msgstr "Edit Game Info"

@@ -700,8 +700,6 @@ msgstr "Простой стиль"
 msgid "local analysis"
 msgstr "Поиск локальных ответов"
 
-msgid "editgame"
-msgstr "Изменить правила"
 
 msgid "Make Main Branch"
 msgstr "Сделать главной веткой"

@@ -359,7 +359,7 @@ msgstr "Update Timer"
 
 # new game settings from here
 msgid "New Game title"
-msgstr "Setup New Game / Edit Game Info and Rules"
+msgstr "Set up New Game / Edit Game Info and Rules"
 
 #. in new game options
 msgid "player names"
