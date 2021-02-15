@@ -298,7 +298,7 @@ msgid "non square board hint"
 msgstr "정사각형이 아닌 판에서 두려면 x:y(예: 19:9)를 사용하십시오."
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "새 대국 시작"
 
 # teacher settings from here
@@ -667,7 +667,7 @@ msgstr "간명한 기풍"
 msgid "local analysis"
 msgstr "국지적인 응수를 찾고 있습니다"
 
-msgid "change current game"
+msgid "editgame"
 msgstr ""
 "이 판에 대해\n"
 "덤과 규칙 등 조절"
@@ -860,7 +860,7 @@ msgstr "Reset analysis"
 
 #. TODO - Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "Target score for Black:"
 
 #. TODO - Description for how many moves
 msgid "setup position move number"
@@ -870,8 +870,8 @@ msgstr "Generate game until move:"
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
-#. TODO - menu option
-msgid "analysis:setup"
+#. TODO - generate position alongside starting new game
+msgid "setupposition"
 msgstr "Generate position"
 
 #. TODO - Popup for generating position: top explanation

@@ -301,7 +301,7 @@ msgid "non square board hint"
 msgstr "Benutze x:y (z.B. 19:9) für nichtquadratische Grössen"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Neues Spiel starten"
 
 # teacher settings from here
@@ -704,10 +704,8 @@ msgstr "Einfacher Stil"
 msgid "local analysis"
 msgstr "Suche nach lokalen Antworten"
 
-msgid "change current game"
-msgstr ""
-"Aktualisiere Komi/Regeln\n"
-" im aktuellen Spiel"
+msgid "editgame"
+msgstr "ktualisiere Regeln"
 
 msgid "Make Main Branch"
 msgstr "Zum Hauptzweig machen"
@@ -902,7 +900,7 @@ msgstr "Reset analysis"
 
 #. TODO - Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "Target score for Black:"
 
 #. TODO - Description for how many moves
 msgid "setup position move number"
@@ -912,8 +910,8 @@ msgstr "Generate game until move:"
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
-#. TODO - menu option
-msgid "analysis:setup"
+#. TODO - generate position alongside starting new game
+msgid "setupposition"
 msgstr "Generate position"
 
 #. TODO - Popup for generating position: top explanation

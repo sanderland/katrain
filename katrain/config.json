@@ -40,7 +40,9 @@
         "komi": 6.5,
         "handicap": 0,
         "rules": "japanese",
-        "clear_cache": false
+        "clear_cache": false,
+        "setup_move":100,
+        "setup_advantage":20
     },
     "trainer": {
         "theme": "theme:normal",
@@ -84,8 +86,6 @@
         "top_moves_show_secondary": "top_move_visits",
         "eval_show_ai": true,
         "lock_ai": false,
-        "setup_move":100,
-        "setup_advantage":20
     },
     "ai": {
         "ai:default": {},

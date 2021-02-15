@@ -400,14 +400,12 @@ msgid "non square board hint"
 msgstr "使用 x:y 來設定非正方形棋盤(例如19:9)"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "開始新對局"
 
 #. change komi etc in current game
-msgid "change current game"
-msgstr ""
-"在進行中對局\n"
-"更新貼目/規則"
+msgid "editgame"
+msgstr "更新貼目/規則"
 
 # teacher settings from here
 msgid "teacher settings"
@@ -873,7 +871,7 @@ msgstr "Reset analysis"
 
 #. TODO - Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "Target score for Black:"
 
 #. TODO - Description for how many moves
 msgid "setup position move number"
@@ -883,8 +881,8 @@ msgstr "Generate game until move:"
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
-#. TODO - menu option
-msgid "analysis:setup"
+#. TODO - generate position alongside starting new game
+msgid "setupposition"
 msgstr "Generate position"
 
 #. TODO - Popup for generating position: top explanation

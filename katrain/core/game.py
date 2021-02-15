@@ -623,15 +623,21 @@ class Game(BaseGame):
 
     def selfplay(self, until_move, target_b_advantage=None):
         cn = self.current_node
-        count = 0
-        if not cn.analysis_exists:
-            self.katrain.controls.set_status(i18n._("wait-before-extra-analysis"), STATUS_INFO, cn)
-            return
 
-        engine_settings = {"wideRootNoise": 0.03} if target_b_advantage is not None else {}
+        if target_b_advantage is not None:
+            analysis_kwargs = {'visits': max(25, self.katrain.config('engine/fast_visits'))}
+            engine_settings = {"wideRootNoise": 0.03}
+        else:
+            analysis_kwargs = engine_settings = {}
+
+
+
+        def set_analysis(node, result):
+            node.set_analysis(result)
+            analyze_and_play(node)
 
         def analyze_and_play(node):
-            nonlocal count, cn, engine_settings
+            nonlocal cn, engine_settings
             candidates = node.candidate_moves
             if self.katrain.game is not self:
                 return  # a new game happened
@@ -677,7 +683,6 @@ class Game(BaseGame):
                 if self.current_node == cn:
                     self.set_current_node(node)
                 return
-            count += 1
             new_node = GameNode(parent=node, move=move)
             if until_move != "end" and target_b_advantage is not None:
                 self.set_current_node(new_node)
@@ -692,15 +697,21 @@ class Game(BaseGame):
 
             self.katrain.controls.move_tree.redraw_tree_trigger()
 
-            def set_analysis(result, _partial):
-                new_node.set_analysis(result)
-                analyze_and_play(new_node)
-
             self.engines[node.next_player].request_analysis(
-                new_node, callback=set_analysis, priority=-1000, analyze_fast=True, extra_settings=engine_settings
+                new_node,
+                callback=lambda result, _partial: set_analysis(new_node, result),
+                priority=-1000,
+                analyze_fast=True,
+                extra_settings=engine_settings,**analysis_kwargs
             )
 
-        analyze_and_play(cn)
+        self.engines[cn.next_player].request_analysis(
+            cn,
+            callback=lambda result, _partial: set_analysis(cn, result),
+            priority=-1000,
+            analyze_fast=True,
+            extra_settings=engine_settings,
+        )
 
     def analyze_undo(self, node):
         train_config = self.katrain.config("trainer")

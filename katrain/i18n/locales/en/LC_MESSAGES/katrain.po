@@ -415,14 +415,16 @@ msgid "non square board hint"
 msgstr "Use x:y (e.g. 19:9) for non-square size"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Start New Game"
 
 #. change komi etc in current game
-msgid "change current game"
-msgstr ""
-"Update komi/rules\n"
-"in active game"
+msgid "editgame"
+msgstr "Change Rules"
+
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "Generate position"
 
 # teacher settings from here
 msgid "teacher settings"
@@ -908,10 +910,6 @@ msgstr ""
 "Action {action} not allowed in distributed self-play training mode. Restart "
 "KaTrain to exit this mode."
 
-#. menu option
-msgid "analysis:setup"
-msgstr "Generate position"
-
 #. Progress message
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
@@ -925,7 +923,7 @@ msgstr ""
 
 #. Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "Target score for Black:"
 
 #. Description for how many moves
 msgid "setup position move number"

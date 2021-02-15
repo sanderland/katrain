@@ -305,7 +305,7 @@ msgid "non square board hint"
 msgstr "Usa x:y (i.e. 19:9) para tableros no cuadrados"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Empezar Nuevo Juego"
 
 # teacher settings from here
@@ -710,12 +710,6 @@ msgstr "Simple Style"
 msgid "local analysis"
 msgstr "Searching for local responses"
 
-#. TODO - change komi etc in current game
-msgid "change current game"
-msgstr ""
-"Update komi/rules\n"
-"in active game"
-
 #. TODO - on move tree editing
 msgid "Make Main Branch"
 msgstr "Make Main Branch"
@@ -922,8 +916,8 @@ msgstr "Generate game until move:"
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
-#. TODO - menu option
-msgid "analysis:setup"
+#. TODO - generate position alongside starting new game
+msgid "setupposition"
 msgstr "Generate position"
 
 #. TODO - Popup for generating position: top explanation
@@ -932,3 +926,7 @@ msgstr ""
 "This generates a partial game for you to start playing from. For example, "
 "you can use this to play against stronger AIs starting from an advantage in "
 "a variety of middle- or end-game positions."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Change Rules"
