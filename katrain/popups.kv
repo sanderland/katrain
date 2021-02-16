@@ -462,18 +462,21 @@
             DescriptionLabel:
                 font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
                 text: i18n._("show stats if")
+                line_height: 0.75
             AnchorLayout:
                 LabelledIntInput:
                     input_property: "trainer/low_visits"
             DescriptionLabel:
                 font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
                 text: i18n._("show last n dots")
+                line_height: 0.75
             AnchorLayout:
                 LabelledIntInput:
                     input_property: "trainer/eval_on_show_last"
             DescriptionLabel:
                 font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
                 text: i18n._("show ai dots")
+                line_height: 0.75
             AnchorLayout:
                 LabelledCheckBox:
                     input_property: "trainer/eval_show_ai"
@@ -703,7 +706,7 @@
                 LabelledSelectionSlider:
                     input_property: 'game/setup_advantage'
                     key_option: True
-                    values: [(pt,f"{pt}") for pt in range(-100,101)]
+                    values: [(pt,f"{pt}") for pt in range(-150,151)]
             DescriptionLabel:
                 text: i18n._('setup position move number')
             AnchorLayout:
