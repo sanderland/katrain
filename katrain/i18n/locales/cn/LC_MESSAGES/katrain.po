@@ -294,7 +294,7 @@ msgid "non square board hint"
 msgstr "非方形棋盘使用x:y(例如19:9)"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "开始新对局"
 
 # teacher settings from here
@@ -316,15 +316,13 @@ msgstr "显示选点"
 msgid "save dots"
 msgstr "保存为SGF"
 
+#. TODO: this many can be translated, or left out if the number goes
+#. comfortably at the end
 msgid "show last n dots"
-msgstr ""
-"显示最后\n"
-"<this many> 手棋的选点"
+msgstr "显示最后 <this many> 手棋的选点"
 
 msgid "show ai dots"
-msgstr ""
-"AI的\n"
-"显示选点/SGF评价"
+msgstr "AI的显示选点/SGF评价"
 
 #. submit button
 msgid "update teacher"
@@ -653,11 +651,6 @@ msgstr "简明风格"
 msgid "local analysis"
 msgstr "正在寻找局部走法"
 
-msgid "change current game"
-msgstr ""
-"更新贴目\n"
-"规则在当前对局"
-
 msgid "Make Main Branch"
 msgstr "设为实战变化"
 
@@ -844,7 +837,7 @@ msgstr "Reset analysis"
 
 #. TODO - Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "Target score for Black:"
 
 #. TODO - Description for how many moves
 msgid "setup position move number"
@@ -854,8 +847,8 @@ msgstr "Generate game until move:"
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
-#. TODO - menu option
-msgid "analysis:setup"
+#. TODO - generate position alongside starting new game
+msgid "setupposition"
 msgstr "Generate position"
 
 #. TODO - Popup for generating position: top explanation
@@ -864,3 +857,7 @@ msgstr ""
 "This generates a partial game for you to start playing from. For example, "
 "you can use this to play against stronger AIs starting from an advantage in "
 "a variety of middle- or end-game positions."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"

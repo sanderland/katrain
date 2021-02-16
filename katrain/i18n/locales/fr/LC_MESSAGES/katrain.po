@@ -320,7 +320,7 @@ msgid "non square board hint"
 msgstr "Noter x:y (p. ex. 19:9) pour les non-carrés"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Commencer la partie"
 
 # teacher settings from here
@@ -734,11 +734,6 @@ msgstr "Modéré"
 msgid "local analysis"
 msgstr "Recherche de coups locaux."
 
-msgid "change current game"
-msgstr ""
-"Mettre à jour\n"
-"la partie en cours"
-
 msgid "Make Main Branch"
 msgstr "Mettre en branche principale"
 
@@ -909,7 +904,7 @@ msgstr "Reset analysis"
 
 #. TODO - Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "Target score for Black:"
 
 #. TODO - Description for how many moves
 msgid "setup position move number"
@@ -919,9 +914,9 @@ msgstr "Generate game until move:"
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
-#. TODO - menu option
-msgid "analysis:setup"
-msgstr "Generate position"
+#. TODO - generate position alongside starting new game
+msgid "setupposition"
+msgstr "Set up Position"
 
 #. TODO - Popup for generating position: top explanation
 msgid "setup position explanation"
@@ -929,3 +924,7 @@ msgstr ""
 "This generates a partial game for you to start playing from. For example, "
 "you can use this to play against stronger AIs starting from an advantage in "
 "a variety of middle- or end-game positions."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"

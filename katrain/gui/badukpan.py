@@ -33,7 +33,7 @@ from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid, json_truncate_arrays
 from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
-from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup, SetupPositionPopup
+from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
 from katrain.gui.theme import Theme
 
 
@@ -335,14 +335,13 @@ class BadukPanWidget(Widget):
         board_size_x, board_size_y = katrain.game.board_size
         if len(self.gridpos_x) < board_size_x or len(self.gridpos_y) < board_size_y:
             return  # race condition
-        show_n_eval = self.trainer_config["eval_off_show_last"]
+        show_n_eval = self.trainer_config["eval_on_show_last"]
 
         with self.canvas:
             self.canvas.clear()
             # stones
             current_node = katrain.game.current_node
-            full_eval_on = katrain.analysis_controls.eval.active
-            all_dots_off = katrain.analysis_controls.eval.checkbox.slashed
+            all_dots_off = not  katrain.analysis_controls.eval.active
             has_stone = {}
             drawn_stone = {}
             for m in katrain.game.stones:
@@ -366,9 +365,7 @@ class BadukPanWidget(Widget):
                 placements = node.placements
                 for m in node.moves + placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
-                        move_eval_on = (
-                            not all_dots_off and show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
-                        )
+                        move_eval_on = not all_dots_off and show_dots_for.get(m.player) and i < show_n_eval
                         if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost, show_dots_for_class)
                         else:
@@ -762,15 +759,6 @@ class AnalysisDropDown(DropDown):
         analysis_popup.content.popup = analysis_popup
         analysis_popup.content.katrain = MDApp.get_running_app().gui
         analysis_popup.open()
-
-    def generate_position_popup(self, *_args):
-        setup_playout_popup = I18NPopup(
-            title_key="analysis:setup",
-            size=[dp(500), dp(450)],
-            content=SetupPositionPopup(katrain=MDApp.get_running_app().gui),
-        )
-        setup_playout_popup.content.popup = setup_playout_popup
-        setup_playout_popup.open()
 
 
 class AnalysisControls(MDBoxLayout):

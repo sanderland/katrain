@@ -40,7 +40,9 @@
         "komi": 6.5,
         "handicap": 0,
         "rules": "japanese",
-        "clear_cache": false
+        "clear_cache": false,
+        "setup_move":100,
+        "setup_advantage":20
     },
     "trainer": {
         "theme": "theme:normal",
@@ -79,13 +81,11 @@
         "save_analysis": false,
         "save_marks": false,
         "low_visits": 25,
-        "eval_off_show_last": 3,
+        "eval_on_show_last": 3,
         "top_moves_show": "top_move_delta_score",
         "top_moves_show_secondary": "top_move_visits",
         "eval_show_ai": true,
-        "lock_ai": false,
-        "setup_move":100,
-        "setup_advantage":20
+        "lock_ai": false
     },
     "ai": {
         "ai:default": {},
@@ -192,7 +192,7 @@
         "analyze": {
             "analysis_controls": {
                 "show_children": true,
-                "eval": false,
+                "eval": true,
                 "hints": true,
                 "policy": false,
                 "ownership": true

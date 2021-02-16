@@ -252,6 +252,8 @@ class ConfigTimerPopup(QuickConfigGui):
 
 
 class NewGamePopup(QuickConfigGui):
+    mode = StringProperty("newgame")
+
     def __init__(self, katrain):
         super().__init__(katrain)
         for bw, info in katrain.players_info.items():
@@ -285,33 +287,35 @@ class NewGamePopup(QuickConfigGui):
 
     def update_config(self, save_to_file=True, close_popup=True):
         super().update_config(save_to_file=save_to_file, close_popup=close_popup)
-        self.katrain.log(f"New game settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
-        if self.restart.active:
-            self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
-            self.katrain.engine.restart()
         self.update_playerinfo()
-        self.katrain("new-game")
-
-    def update_game(self):
         props = self.collect_properties(self)
-        root = self.katrain.game.root
-        changed = False
-        for k, currentval, newval in [
-            ("RU", self.normalized_rules(), props["game/rules"]),
-            ("KM", root.komi, props["game/komi"]),
-        ]:
-            if currentval != newval:
-                changed = True
-                self.katrain.log(
-                    f"Property {k} changed from {currentval} to {newval}, triggering re-analysis of entire game.",
-                    OUTPUT_INFO,
-                )
-                self.katrain.game.root.set_property(k, newval)
-        self.update_playerinfo()
-        if changed:
-            self.katrain.engine.on_new_game()
-            self.katrain.game.analyze_all_nodes(analyze_fast=True)
-        self.popup.dismiss()
+        self.katrain.log(f"Mode: {self.mode}, settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
+        if self.mode == "newgame":
+            if self.restart.active:
+                self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
+                self.katrain.engine.restart()
+            self.katrain("new-game")
+        elif self.mode == "editgame":
+            root = self.katrain.game.root
+            changed = False
+            for k, currentval, newval in [
+                ("RU", self.normalized_rules(), props["game/rules"]),
+                ("KM", root.komi, props["game/komi"]),
+            ]:
+                if currentval != newval:
+                    changed = True
+                    self.katrain.log(
+                        f"Property {k} changed from {currentval} to {newval}, triggering re-analysis of entire game.",
+                        OUTPUT_INFO,
+                    )
+                    self.katrain.game.root.set_property(k, newval)
+            self.update_playerinfo()
+            if changed:
+                self.katrain.engine.on_new_game()
+                self.katrain.game.analyze_all_nodes(analyze_fast=True)
+        else:  # setup position
+            self.katrain._do_new_game()
+            self.katrain("selfplay-setup", props["game/setup_move"], props["game/setup_advantage"])
 
 
 def wrap_anchor(widget):
@@ -806,20 +810,3 @@ class ReAnalyzeGamePopup(BoxLayout):
 
     def on_submit(self):
         self.button.trigger_action(duration=0)
-
-
-class SetupPositionPopup(BoxLayout):
-    popup = ObjectProperty(None)
-
-    def __init__(self, katrain):
-        super().__init__()
-        self.katrain = katrain
-        self.trainer_config = katrain.config("trainer")
-        self.move.set_value(self.trainer_config.get("setup_move", 100))
-        self.advantage.set_value(self.trainer_config.get("setup_advantage", 20))
-
-    def on_submit(self):
-        self.trainer_config["setup_move"] = int(self.move.input_value)
-        self.trainer_config["setup_advantage"] = int(self.advantage.input_value)
-        self.katrain("selfplay-setup", self.trainer_config["setup_move"], self.trainer_config["setup_advantage"])
-        self.katrain.save_config(key="trainer")
