@@ -19,7 +19,7 @@ jobs:
         rm katrain/KataGo/*.dll
         rm katrain/KataGo/katago.exe
         cd ..
-        git clone https://github.com/lightvector/KataGo.git
+        git clone --branch stable https://github.com/lightvector/KataGo.git
         pushd KataGo/cpp
         cmake . -DUSE_BACKEND=OPENCL
         make

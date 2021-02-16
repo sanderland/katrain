@@ -40,7 +40,7 @@ from katrain.gui.theme import Theme
 class BadukPanWidget(Widget):
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
-        self.stones_sounds = [SoundLoader.load(file) for file in Theme.STONE_SOUNDS]
+        self.stones_sounds = []
         self.trainer_config = {}
         self.ghost_stone = []
         self.gridpos_x = []
@@ -71,6 +71,8 @@ class BadukPanWidget(Widget):
 
     def play_stone_sound(self, *_args):
         if self.katrain.config("timer/sound"):
+            if not self.stones_sounds:
+                self.stones_sounds = [SoundLoader.load(file) for file in Theme.STONE_SOUNDS]
             sound = random.choice(self.stones_sounds)
             if sound:
                 sound.play()
@@ -341,7 +343,7 @@ class BadukPanWidget(Widget):
             self.canvas.clear()
             # stones
             current_node = katrain.game.current_node
-            all_dots_off = not  katrain.analysis_controls.eval.active
+            all_dots_off = not katrain.analysis_controls.eval.active
             has_stone = {}
             drawn_stone = {}
             for m in katrain.game.stones:
