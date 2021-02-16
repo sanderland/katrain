@@ -409,7 +409,6 @@ class Timer(BGBoxLayout):
     state = ListProperty([30, 5, 1])
     timeout = BooleanProperty(False)
 
-
 class AnalysisToggle(MDBoxLayout):
     text = StringProperty("")
     default_active = BooleanProperty(False)
