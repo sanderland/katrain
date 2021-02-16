@@ -446,14 +446,10 @@ msgid "save dots"
 msgstr "Save in SGF"
 
 msgid "show last n dots"
-msgstr ""
-"Show dots for the last\n"
-"<this many> moves"
+msgstr "Show dots for the last <this many> moves"
 
 msgid "show ai dots"
-msgstr ""
-"Show dots/SGF comments\n"
-" for AI players"
+msgstr "Show dots/SGF comments for AI players"
 
 #. analysis option
 msgid "cache analysis to sgf"

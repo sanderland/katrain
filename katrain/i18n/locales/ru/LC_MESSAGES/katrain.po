@@ -347,14 +347,10 @@ msgid "save dots"
 msgstr "Сохранить в SGF"
 
 msgid "show last n dots"
-msgstr ""
-"Показать точки для\n"
-"<этого количества> последних ходов"
+msgstr "Показать точки для <этого количества> последних ходов"
 
 msgid "show ai dots"
-msgstr ""
-"Показать точки и SGF комментарии\n"
-" для ИИ игроков"
+msgstr "Показать точки и SGF комментарии для ИИ игроков"
 
 #. submit button
 msgid "update teacher"
@@ -700,7 +696,6 @@ msgstr "Простой стиль"
 msgid "local analysis"
 msgstr "Поиск локальных ответов"
 
-
 msgid "Make Main Branch"
 msgstr "Сделать главной веткой"
 
@@ -890,3 +885,7 @@ msgstr ""
 #. TODO - Progress message
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"

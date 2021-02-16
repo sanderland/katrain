@@ -691,16 +691,14 @@
         size_hint_x: None
         width: self.texture_size[0] + 4
         on_left_press: checkbox.trigger_action()
-    TriStateMDCheckbox:
+    MDCheckbox:
         id: checkbox
         disabled: root.disabled
-        tri_state: root.tri_state
         size_hint: None,0.5
         pos_hint: {'center_y': 0.5}
         width: self.height
         active: root.default_active
         on_active: if app.gui: app.gui.update_state()
-        on_slashed: if app.gui: app.gui.update_state()
 
 
 <AnalysisMenuItem@MenuItem>:

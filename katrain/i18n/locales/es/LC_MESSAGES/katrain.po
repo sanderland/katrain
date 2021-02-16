@@ -328,14 +328,10 @@ msgid "save dots"
 msgstr "Guardar en SGF"
 
 msgid "show last n dots"
-msgstr ""
-"Mostar puntos de las últimas \n"
-"número de jugadas moves"
+msgstr "Mostar puntos de las últimas número de jugadas moves"
 
 msgid "show ai dots"
-msgstr ""
-"Mostrar puntos/comentarios\n"
-" para motores de IA"
+msgstr "Mostrar puntos/comentarios para motores de IA"
 
 #. submit button
 msgid "update teacher"
@@ -927,3 +923,6 @@ msgstr ""
 "you can use this to play against stronger AIs starting from an advantage in "
 "a variety of middle- or end-game positions."
 
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"

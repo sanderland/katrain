@@ -321,14 +321,10 @@ msgid "save dots"
 msgstr "SGF 파일에 저장"
 
 msgid "show last n dots"
-msgstr ""
-"마지막 몇 수에 대해\n"
-"인공지능 평가를 색으로 표시할지"
+msgstr "마지막 몇 수에 대해 인공지능 평가를 색으로 표시할지"
 
 msgid "show ai dots"
-msgstr ""
-"인공지능 대국자에 대해서도\n"
-"평가를 색으로 표시"
+msgstr "인공지능 대국자에 대해서도 평가를 색으로 표시"
 
 #. submit button
 msgid "update teacher"
@@ -667,7 +663,6 @@ msgstr "간명한 기풍"
 msgid "local analysis"
 msgstr "국지적인 응수를 찾고 있습니다"
 
-
 msgid "Make Main Branch"
 msgstr "주 변화로 만들기"
 
@@ -876,3 +871,7 @@ msgstr ""
 "This generates a partial game for you to start playing from. For example, "
 "you can use this to play against stronger AIs starting from an advantage in "
 "a variety of middle- or end-game positions."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"

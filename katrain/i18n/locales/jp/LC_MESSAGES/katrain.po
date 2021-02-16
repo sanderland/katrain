@@ -348,14 +348,10 @@ msgid "save dots"
 msgstr "SGFに保存"
 
 msgid "show last n dots"
-msgstr ""
-"直近何手の\n"
-"ドットを表示"
+msgstr "直近何手のドットを表示"
 
 msgid "show ai dots"
-msgstr ""
-"AIの手にもドットや\n"
-"SGFコメントをつける"
+msgstr "AIの手にもドットやSGFコメントをつける"
 
 #. submit button
 msgid "update teacher"
@@ -902,3 +898,7 @@ msgstr ""
 "This generates a partial game for you to start playing from. For example, "
 "you can use this to play against stronger AIs starting from an advantage in "
 "a variety of middle- or end-game positions."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"

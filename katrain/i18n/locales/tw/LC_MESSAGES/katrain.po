@@ -403,7 +403,6 @@ msgstr "使用 x:y 來設定非正方形棋盤(例如19:9)"
 msgid "newgame"
 msgstr "開始新對局"
 
-
 # teacher settings from here
 msgid "teacher settings"
 msgstr "指導棋設定"
@@ -423,15 +422,13 @@ msgstr "顯示選點"
 msgid "save dots"
 msgstr "存入SGF"
 
+#. TODO: this many can be translated, or left out if the number goes
+#. comfortably at the end
 msgid "show last n dots"
-msgstr ""
-"顯示最後\n"
-"<this many> 手棋的選點"
+msgstr "顯示最後 <this many> 手棋的選點"
 
 msgid "show ai dots"
-msgstr ""
-"顯示AI的\n"
-"選點/SGF評論"
+msgstr "顯示AI的選點/SGF評論"
 
 #. analysis option
 msgid "cache analysis to sgf"
@@ -888,3 +885,7 @@ msgstr ""
 "This generates a partial game for you to start playing from. For example, "
 "you can use this to play against stronger AIs starting from an advantage in "
 "a variety of middle- or end-game positions."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"
