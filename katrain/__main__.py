@@ -328,11 +328,10 @@ class KaTrainGui(Screen, KaTrainBase):
             analyze_fast=analyze_fast or not move_tree,
             sgf_filename=sgf_filename,
         )
-        if move_tree:
-            for bw, player_info in self.players_info.items():
-                player_info.sgf_rank = move_tree.root.get_property(bw + "R")
-                player_info.calculated_rank = None
-                self.update_player(bw)
+        for bw, player_info in self.players_info.items():
+            player_info.sgf_rank = self.game.root.get_property(bw + "R")
+            player_info.calculated_rank = None
+            self.update_player(bw)
         self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 

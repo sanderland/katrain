@@ -260,6 +260,7 @@ class NewGamePopup(QuickConfigGui):
             self.player_setup.update_player_info(bw, info)
 
         self.rules_spinner.value_refs = [name for abbr, name in katrain.engine.RULESETS_ABBR]
+        self.bind(mode=self.update_playername)
         Clock.schedule_once(self.update_from_current_game, 0.1)
 
     def normalized_rules(self):
@@ -273,13 +274,17 @@ class NewGamePopup(QuickConfigGui):
             name = self.player_name[bw].text
             if name:
                 self.katrain.game.root.set_property("P" + bw, name)
+            else:
+                self.katrain.game.root.clear_property("P" + bw)
             self.katrain.update_player(bw, **player_setup.player_type_dump)
 
-    def update_from_current_game(self, *args):
+    def update_playername(self, *args):
         for bw in "BW":
             name = self.katrain.game.root.get_property("P" + bw, None)
             if name and SGF_INTERNAL_COMMENTS_MARKER not in name:
-                self.player_name[bw].text = name
+                self.player_name[bw].text = name if self.mode == "editgame" else ""
+
+    def update_from_current_game(self, *args):  # set rules and komi
         rules = self.normalized_rules()
         self.km.text = str(self.katrain.game.root.komi)
         if rules is not None:
@@ -287,14 +292,13 @@ class NewGamePopup(QuickConfigGui):
 
     def update_config(self, save_to_file=True, close_popup=True):
         super().update_config(save_to_file=save_to_file, close_popup=close_popup)
-        self.update_playerinfo()
         props = self.collect_properties(self)
         self.katrain.log(f"Mode: {self.mode}, settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
         if self.mode == "newgame":
             if self.restart.active:
                 self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
                 self.katrain.engine.restart()
-            self.katrain("new-game")
+            self.katrain._do_new_game()
         elif self.mode == "editgame":
             root = self.katrain.game.root
             changed = False
@@ -309,13 +313,13 @@ class NewGamePopup(QuickConfigGui):
                         OUTPUT_INFO,
                     )
                     self.katrain.game.root.set_property(k, newval)
-            self.update_playerinfo()
             if changed:
                 self.katrain.engine.on_new_game()
                 self.katrain.game.analyze_all_nodes(analyze_fast=True)
         else:  # setup position
             self.katrain._do_new_game()
             self.katrain("selfplay-setup", props["game/setup_move"], props["game/setup_advantage"])
+        self.update_playerinfo()
 
 
 def wrap_anchor(widget):
