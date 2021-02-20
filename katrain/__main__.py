@@ -20,20 +20,6 @@ from kivy.utils import platform
 ICON = find_package_resource("katrain/img/icon.ico")
 Config.set("kivy", "window_icon", ICON)
 
-# finally, window size
-WINDOW_SCALE_FAC, WINDOW_X, WINDOW_Y = 1, 1300, 1000
-try:
-    from screeninfo import get_monitors
-
-    for m in get_monitors():
-        WINDOW_SCALE_FAC = min(WINDOW_SCALE_FAC, (m.height - 100) / WINDOW_Y, (m.width - 100) / WINDOW_X)
-except Exception as e:
-    if platform != "macosx":
-        print(f"Exception {e} while getting screen resolution.")
-        WINDOW_SCALE_FAC = 0.85
-
-Config.set("graphics", "width", max(400, int(WINDOW_X * WINDOW_SCALE_FAC)))
-Config.set("graphics", "height", max(400, int(WINDOW_Y * WINDOW_SCALE_FAC)))
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
 import re
@@ -748,6 +734,25 @@ class KaTrainApp(MDApp):
         Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file.decode("utf8")))
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
+
+        win_size = self.gui.config("ui_state/size", [])
+        win_left = self.gui.config("ui_state/left", None)
+        win_top = self.gui.config("ui_state/top", None)
+        if not win_size:
+            window_scale_fac = 1
+            try:
+                from screeninfo import get_monitors
+
+                for m in get_monitors():
+                    window_scale_fac = min(window_scale_fac, (m.height - 100) / 1000, (m.width - 100) / 1300)
+            except Exception as e:
+                window_scale_fac = 0.85
+            win_size = [1300 * window_scale_fac, 1000 * window_scale_fac]
+        Window.size = (win_size[0], win_size[1])
+        if win_left is not None and win_top is not None:
+            Window.left = win_left
+            Window.top = win_top
+
         return self.gui
 
     def on_language(self, _instance, language):
@@ -777,6 +782,10 @@ class KaTrainApp(MDApp):
             return True  # do not close on esc
         if getattr(self, "gui", None):
             self.gui.play_mode.save_ui_state()
+            self.gui._config["ui_state"]["size"] = list(Window.size)
+            self.gui._config["ui_state"]["top"] = Window.top
+            self.gui._config["ui_state"]["left"] = Window.left
+            self.gui.save_config("ui_state")
             if self.gui.engine:
                 self.gui.engine.shutdown(finish=None)
 

@@ -155,6 +155,7 @@
         }
     },
     "ui_state": {
+        "size": [],
         "play": {
             "analysis_controls": {
                 "show_children": true,
@@ -223,5 +224,5 @@
                 ]
             }
         }
-    }
+    },
 }
