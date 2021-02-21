@@ -467,12 +467,6 @@ msgstr "Restarting Engine after Settings Change."
 msgid "contribute settings title"
 msgstr "Contribute To KataGo Distributed Training"
 
-#. textbox hint when empty
-msgid "engine:katago:contributehint"
-msgstr ""
-"For contributing to distributed training, please download and select an "
-"official 1.8.0+ binary."
-
 #. title
 msgid "contribute:viewer settings"
 msgstr "Viewer Settings"

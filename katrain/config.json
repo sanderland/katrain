@@ -14,11 +14,12 @@
     "contribute": {
         "katago": "",
         "ownership": false,
-        "maxgames": 16,
+        "maxgames": 8,
         "movespeed": 2,
         "username": "",
         "password": "",
-        "savepath": "./dist_sgf/"
+        "savepath": "./dist_sgf/",
+        "savesgf": false
     },
     "general": {
         "sgf_load": "~/Downloads",

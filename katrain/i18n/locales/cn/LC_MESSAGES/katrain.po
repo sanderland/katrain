@@ -805,12 +805,6 @@ msgstr "Enable Ownership"
 msgid "contribute:login"
 msgstr "Login Information"
 
-#. TODO - textbox hint when empty
-msgid "engine:katago:contributehint"
-msgstr ""
-"For contributing to distributed training, please download and select an "
-"official 1.8.0+ binary."
-
 #. TODO - description
 msgid "contribute:movespeed"
 msgstr "Move speed"

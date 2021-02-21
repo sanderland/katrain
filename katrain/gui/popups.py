@@ -762,9 +762,7 @@ class ContributePopup(BaseConfigPopup):
         self.error.text = ""
         log_settings = {**self.katrain.config("contribute"), "password": "***"}
         self.katrain.log(f"Updating contribution settings {log_settings}", OUTPUT_DEBUG)
-        if not self.katrain.config("contribute/katago"):
-            self.error.text = i18n._("engine:katago:contributehint")
-        elif not self.katrain.config("contribute/username") or not self.katrain.config("contribute/password"):
+        if not self.katrain.config("contribute/username") or not self.katrain.config("contribute/password"):
             self.error.text = "Please enter your username and password for katagotraining.org"
         else:
             self.popup.dismiss()

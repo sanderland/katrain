@@ -24,8 +24,7 @@ class EngineDiedException(Exception):
     pass
 
 
-class KataGoEngine:
-    """Starts and communicates with the KataGO analysis engine"""
+class BaseEngine:  # some common elements between analysis and contribute engine
 
     # TODO: we don't support suicide in game.py, so no  "tt": "tromp-taylor", "nz": "new-zealand"
     RULESETS_ABBR = [
@@ -36,6 +35,10 @@ class KataGoEngine:
         ("stone_scoring", "stone_scoring"),
     ]
     RULESETS = {fromkey: name for abbr, name in RULESETS_ABBR for fromkey in [abbr, name]}
+
+    def __init__(self, katrain, config):
+        self.katrain = katrain
+        self.config = config
 
     @staticmethod
     def get_rules(node):
@@ -49,10 +52,46 @@ class KataGoEngine:
             return ruleset
         return KataGoEngine.RULESETS.get(str(ruleset).lower(), "japanese")
 
+    def advance_showing_game(self):
+        pass  # avoid transitional error
+
+    def status(self):
+        return ""  # avoid transitional error
+
+    def get_engine_path(self, exe):
+        if not exe:
+            if kivy_platform == "win":
+                exe = "katrain/KataGo/katago.exe"
+            elif kivy_platform == "linux":
+                exe = "katrain/KataGo/katago"
+            else:
+                exe = find_package_resource("katrain/KataGo/katago-osx")  # github actions built
+                if not os.path.isfile(exe) or "arm64" in platform.version().lower():
+                    exe = "katago"  # e.g. MacOS after brewing
+        if exe.startswith("katrain"):
+            exe = find_package_resource(exe)
+        exepath, exename = os.path.split(exe)
+
+        if exepath and not os.path.isfile(exe):
+            self.katrain.log(i18n._("Kata exe not found").format(exe=exe), OUTPUT_ERROR)
+            return None
+        elif not exepath:
+            paths = os.getenv("PATH", ".").split(os.pathsep) + ["/opt/homebrew/bin/"]
+            exe_with_paths = [os.path.join(path, exe) for path in paths if os.path.isfile(os.path.join(path, exe))]
+            if not exe_with_paths:
+                self.katrain.log(i18n._("Kata exe not found in path").format(exe=exe), OUTPUT_ERROR)
+                return None
+            exe = exe_with_paths[0]
+        return exe
+
+
+class KataGoEngine(BaseEngine):
+    """Starts and communicates with the KataGO analysis engine"""
+
     def __init__(self, katrain, config):
-        self.katrain = katrain
+        super().__init__(katrain, config)
+
         self.queries = {}  # outstanding query id -> start time and callback
-        self.config = config
         self.query_counter = 0
         self.katago_process = None
         self.base_priority = 0
@@ -68,36 +107,15 @@ class KataGoEngine:
             self.command = config["altcommand"]
             self.shell = True
         else:
-            if not exe:
-                if kivy_platform == "win":
-                    exe = "katrain/KataGo/katago.exe"
-                elif kivy_platform == "linux":
-                    exe = "katrain/KataGo/katago"
-                else:
-                    exe = find_package_resource("katrain/KataGo/katago-osx")  # github actions built
-                    if not os.path.isfile(exe) or "arm64" in platform.version().lower():
-                        exe = "katago"  # e.g. MacOS after brewing
-
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
-            if exe.startswith("katrain"):
-                exe = find_package_resource(exe)
-
-            exepath, exename = os.path.split(exe)
-            if exepath and not os.path.isfile(exe):
-                self.katrain.log(i18n._("Kata exe not found").format(exe=exe), OUTPUT_ERROR)
-                return  # don't start
-            elif not exepath:
-                paths = os.getenv("PATH", ".").split(os.pathsep) + ["/opt/homebrew/bin/"]
-                exe_with_paths = [os.path.join(path, exe) for path in paths if os.path.isfile(os.path.join(path, exe))]
-                if not exe_with_paths:
-                    self.katrain.log(i18n._("Kata exe not found in path").format(exe=exe), OUTPUT_ERROR)
-                    return  # don't start
-                exe = exe_with_paths[0]
-            elif not os.path.isfile(model):
+            exe = self.get_engine_path(config["katago"])
+            if not exe:
+                return
+            if not os.path.isfile(model):
                 self.katrain.log(i18n._("Kata model not found").format(model=model), OUTPUT_ERROR)
                 return  # don't start
-            elif not os.path.isfile(cfg):
+            if not os.path.isfile(cfg):
                 self.katrain.log(i18n._("Kata config not found").format(config=cfg), OUTPUT_ERROR)
                 return  # don't start
             self.command = shlex.split(
@@ -183,12 +201,6 @@ class KataGoEngine:
     def wait_to_finish(self):
         while self.queries and self.katago_process and self.katago_process.poll() is None:
             time.sleep(0.1)
-
-    def advance_showing_game(self):
-        pass  # avoid transitional error
-
-    def status(self):
-        return ""  # avoid transitional error
 
     def shutdown(self, finish=False):
         process = self.katago_process
