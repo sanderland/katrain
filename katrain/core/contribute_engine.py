@@ -22,7 +22,7 @@ class KataGoContributeEngine(BaseEngine):
     DEFAULT_MAX_GAMES = 8
 
     SHOW_RESULT_TIME = 5
-    GIVE_UP_AFTER = 60
+    GIVE_UP_AFTER = 120
 
     def __init__(self, katrain):
         super().__init__(katrain, katrain.config("contribute"))
