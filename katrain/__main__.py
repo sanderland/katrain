@@ -322,7 +322,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.update_state(redraw_board=True)
 
     def _do_katago_contribute(self):
-        if self.contributing and not self.engine.server_error:
+        if self.contributing and not self.engine.server_error and self.engine.katago_process is not None:
             return
         self.contributing = self.animate_contributing = True  # special mode
         if self.play_analyze_mode == MODE_PLAY:  # switch to analysis view

@@ -49,8 +49,10 @@ class I18NPopup(Popup):
     font_name = StringProperty(Theme.DEFAULT_FONT)
 
     def __init__(self, size=None, **kwargs):
-        if size:  # do not exceed window height
-            size[1] = min(MDApp.get_running_app().gui.height, size[1])
+        if size:  # do not exceed window size
+            app = MDApp.get_running_app()
+            size[0] = min(app.gui.width, size[0])
+            size[1] = min(app.gui.height, size[1])
         super().__init__(size=size, **kwargs)
         self.bind(on_dismiss=Clock.schedule_once(lambda _dt: MDApp.get_running_app().gui.update_state(), 1))
 
