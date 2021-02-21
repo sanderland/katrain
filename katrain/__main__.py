@@ -317,7 +317,10 @@ class KaTrainGui(Screen, KaTrainBase):
         for bw, player_info in self.players_info.items():
             player_info.sgf_rank = self.game.root.get_property(bw + "R")
             player_info.calculated_rank = None
-            self.update_player(bw)
+            if sgf_filename is not None:  # load game->no ai player
+                player_info.player_type = PLAYER_HUMAN
+                player_info.player_subtype = PLAYING_NORMAL
+            self.update_player(bw, player_type=player_info.player_type, player_subtype=player_info.player_subtype)
         self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 

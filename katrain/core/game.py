@@ -671,7 +671,7 @@ class Game(BaseGame):
                             f"{'* ' if move_info == move else '  '} {move['move']} {move['scoreLead']} {wt}",
                             OUTPUT_EXTRA_DEBUG,
                         )
-                        ai_thoughts += f"Move option: {move['move']} {move['scoreLead']} weight {wt}"
+                        ai_thoughts += f"Move option: {move['move']} {move['scoreLead']:.2f} weight {wt:.3e}\n"
                 else:  # we're a bit lost, far away from target, just push it closer
                     move_info = min(candidates, key=lambda move: abs(move["scoreLead"] - target_score))
                     self.katrain.log(

@@ -605,11 +605,17 @@ class BadukPanWidget(Widget):
                             keys[TOP_MOVE_DELTA_SCORE] = (
                                 "0.0" if -0.05 < move_dict["pointsLost"] < 0.05 else f"{-move_dict['pointsLost']:+.1f}"
                             )
+                            #                           def fmt_maybe_missing(arg,sign,digits=1):
+                            #                               return str(round(sign*arg,digits)) if arg is not None else "N/A"
+
                             keys[TOP_MOVE_SCORE] = f"{player_sign * move_dict['scoreLead']:.1f}"
                             winrate = move_dict["winrate"] if player_sign == 1 else 1 - move_dict["winrate"]
                             keys[TOP_MOVE_WINRATE] = f"{winrate*100:.1f}"
                             keys[TOP_MOVE_DELTA_WINRATE] = f"{-move_dict['winrateLost']:+.1%}"
                             keys[TOP_MOVE_VISITS] = format_visits(move_dict["visits"])
+                            #                            keys[TOP_MOVE_UTILITY] = fmt_maybe_missing( move_dict.get('utility'),player_sign,2)
+                            #                            keys[TOP_MOVE_UTILITYLCB] = fmt_maybe_missing(move_dict.get('utilityLcb'),player_sign,2)
+                            #                            keys[TOP_MOVE_SCORE_STDDEV] =fmt_maybe_missing(move_dict.get('scoreStdev'),1)
                             Color(*Theme.HINT_TEXT_COLOR)
                             draw_text(
                                 pos=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
