@@ -30,13 +30,7 @@ jobs:
       run: pytest tests
 
     - name: Run I18N conversion
-      run: python i18n.py -todo | tee todo.txt
-
-    - name: Upload I18N todos
-      uses: actions/upload-artifact@v2
-      with:
-        name: todo.txt
-        path: todo.txt
+      run: python i18n.py -todo
 
     - name: Build
       run: |
