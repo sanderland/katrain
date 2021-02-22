@@ -280,7 +280,7 @@ msgstr "한국"
 msgid "aga"
 msgstr "AGA"
 
-#. TODO check
+#. TODO check if this is idiomatic for ancient chinese rules
 msgid "stone_scoring"
 msgstr "고대 중국"
 
@@ -771,10 +771,6 @@ msgstr ""
 #. TODO - menu item
 msgid "menu:distributed"
 msgstr "Distributed Self-play Training"
-
-#. TODO
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
 
 #. TODO
 msgid "contribute:register"

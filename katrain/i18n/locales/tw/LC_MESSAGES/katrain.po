@@ -795,10 +795,6 @@ msgid "contribute settings title"
 msgstr "Contribute To KataGo Distributed Training"
 
 #. TODO
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
-
-#. TODO
 msgid "contribute:password"
 msgstr "Password"
 

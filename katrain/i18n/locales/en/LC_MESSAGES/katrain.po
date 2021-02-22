@@ -518,9 +518,6 @@ msgstr "Password"
 msgid "contribute:register"
 msgstr "Register"
 
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
-
 msgid "contribute:start"
 msgstr "Start Contributing!"
 

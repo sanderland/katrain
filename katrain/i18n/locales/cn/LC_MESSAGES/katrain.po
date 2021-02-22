@@ -762,10 +762,6 @@ msgid "menu:distributed"
 msgstr "Distributed Self-play Training"
 
 #. TODO
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
-
-#. TODO
 msgid "contribute:register"
 msgstr "Register"
 
@@ -791,7 +787,10 @@ msgstr "Password"
 
 #. TODO - hint for max games
 msgid "contribute:maxgames:hint"
-msgstr "Top-tier GPU: 32-64, Middle tier: 8-16, Older or low-load: 4"
+msgstr ""
+"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
+" set it slightly lower for shorter runs, as half-finished games are not "
+"uploaded."
 
 #. TODO - hint for ownership
 msgid "contribute:ownership:hint"

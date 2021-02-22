@@ -826,10 +826,6 @@ msgid "menu:distributed"
 msgstr "Distributed Self-play Training"
 
 #. TODO
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
-
-#. TODO
 msgid "contribute:register"
 msgstr "Register"
 
