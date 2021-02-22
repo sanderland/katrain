@@ -791,10 +791,10 @@ msgstr ""
 "오래 실행하지 않는다면 조금 낮추어도 무방합니다."
 
 msgid "contribute:ownership:hint"
-msgstr "자가대국이 약간 느려지지만, 영토를 표시합니다."
+msgstr "자가대국이 약간 느려지지만, 집 모양을 표시할 수 있습니다."
 
 msgid "contribute:ownership"
-msgstr "영토 표시"
+msgstr "집 모양 활성화"
 
 msgid "contribute:login"
 msgstr "로그인 정보"
