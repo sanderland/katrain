@@ -296,7 +296,7 @@ class NewGamePopup(QuickConfigGui):
         super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         props = self.collect_properties(self)
         self.katrain.log(f"Mode: {self.mode}, settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
-        self.update_playerinfo() # type
+        self.update_playerinfo()  # type
         if self.mode == "newgame":
             if self.restart.active:
                 self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
@@ -322,7 +322,7 @@ class NewGamePopup(QuickConfigGui):
         else:  # setup position
             self.katrain._do_new_game()
             self.katrain("selfplay-setup", props["game/setup_move"], props["game/setup_advantage"])
-        self.update_playerinfo() # name
+        self.update_playerinfo()  # name
 
 
 def wrap_anchor(widget):

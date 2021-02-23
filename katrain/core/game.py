@@ -295,12 +295,18 @@ class BaseGame:
     @property
     def manual_score(self):
         rules = self.rules
-        if not self.current_node.ownership or str(rules).lower() not in ["jp", "japanese"]:
+        if (
+            not self.current_node.ownership
+            or str(rules).lower() not in ["jp", "japanese"]
+            or not self.current_node.parent
+            or not self.current_node.parent.ownership
+        ):
             if not self.current_node.score:
                 return None
             return self.current_node.format_score(round(2 * self.current_node.score) / 2) + "?"
         board_size_x, board_size_y = self.board_size
-        ownership_grid = var_to_grid(self.current_node.ownership, (board_size_x, board_size_y))
+        mean_ownership = [(c + p) / 2 for c, p in zip(self.current_node.ownership, self.current_node.parent.ownership)]
+        ownership_grid = var_to_grid(mean_ownership, (board_size_x, board_size_y))
         stones = {m.coords: m.player for m in self.stones}
         lo_threshold = 0.15
         hi_threshold = 0.85
