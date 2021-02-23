@@ -663,8 +663,9 @@ class Game(BaseGame):
                 target_score = cn.score + (node.depth - cn.depth + 1) * (target_b_advantage - cn.score) / (
                     until_move - cn.depth
                 )
-                stddev = min(5, 0.5 + (until_move - node.depth) * 0.15)
                 max_loss = 5
+                stddev = min(3, 0.5 + (until_move - node.depth) * 0.15)
+                ai_thoughts += f"Selecting moves aiming at score {target_score:.1f} +/- {stddev:.2f} with < {max_loss} points lost\n"
                 if abs(node.score - target_score) < 3 * stddev:
                     weighted_cands = [
                         (move, math.exp(-0.5 * (abs(move["scoreLead"] - target_score) / stddev) ** 2))
