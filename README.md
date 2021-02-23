@@ -209,7 +209,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
   * If still encountering problems, please start KataGo by itself to check for any errors it gives.
   * Note that if you don't have a GPU, or your GPU does not support OpenCL, you should use the 'eigen' binaries which run on CPU only.
 * The font size is too small
-  * On some ultra-high resolution monitors, font scale is not set correctly. Please see [these](http://github.com/sanderland/katrain/issues/250) instructions to adjust them.
+  * On some ultra-high resolution monitors, dialogs and other elements with text can appear too small. Please see [these](https://github.com/sanderland/katrain/issues/359#issuecomment-784096271) instructions to adjust them.
 
 ## <a name="support"></a> Support / Contribute
 
