@@ -775,9 +775,7 @@ msgstr "古代中國規則"
 
 #. in self-play mode
 msgid "gui-locked"
-msgstr ""
-"在分散式自我對弈訓練模式中，{action} 動作是不允許的。"
-"重新啟動KaTrain來離開此模式。"
+msgstr "在分散式自我對弈訓練模式中，{action} 動作是不允許的。重新啟動KaTrain來離開此模式。"
 
 msgid "contribute:username"
 msgstr "帳號"
@@ -809,9 +807,7 @@ msgstr "登入資訊"
 
 #. hint for max games
 msgid "contribute:maxgames:hint"
-msgstr ""
-"最好等於您的最佳化numSearchThreads，中階GPU約為8。"
-"可以稍微設的低一點，來縮短執行時間，因為未完成的對局將不會被上傳。"
+msgstr "最好等於您的最佳化numSearchThreads，中階GPU約為8。可以稍微設的低一點，來縮短執行時間，因為未完成的對局將不會被上傳。"
 
 #. description for input
 msgid "contribute:maxgames"
@@ -862,9 +858,7 @@ msgstr "設定位置"
 
 #. Popup for generating position: top explanation
 msgid "setup position explanation"
-msgstr ""
-"這會產生部分的對局讓你接著下。"
-"例如：你可以使用它從各種不同優勢的中盤或終局階段開始，與更強的AI對弈。"
+msgstr "這會產生部分的對局讓你接著下。例如：你可以使用它從各種不同優勢的中盤或終局階段開始，與更強的AI對弈。"
 
 #. change komi etc in current game
 msgid "editgame"

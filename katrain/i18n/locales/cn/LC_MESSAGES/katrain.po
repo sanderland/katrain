@@ -751,106 +751,101 @@ msgstr "计算深度...以上时显示"
 msgid "cache analysis to sgf"
 msgstr "分析缓存到SGF"
 
-#. TODO - in self-play mode
 msgid "gui-locked"
 msgstr ""
 "Action {action} not allowed in distributed self-play training mode. Restart "
 "KaTrain to exit this mode."
 
-#. TODO - menu item
-msgid "menu:distributed"
-msgstr "Distributed Self-play Training"
+msgid "stone_scoring"
+msgstr "古代中国规则"
 
-#. TODO
-msgid "contribute:register"
-msgstr "Register"
+#. in self-play mode
+msgid "gui-locked"
+msgstr "在分散式自我对弈训练模式中，{action} 动作是不允许的。重新启动KaTrain来离开此模式。"
 
-#. TODO
-msgid "contribute:start"
-msgstr "Start Contributing!"
-
-#. TODO - contribute settings popup
-msgid "contribute settings title"
-msgstr "Contribute To KataGo Distributed Training"
-
-#. TODO
 msgid "contribute:username"
-msgstr "Username"
+msgstr "帐号"
 
-#. TODO - description for input
-msgid "contribute:maxgames"
-msgstr "Simultaneous Games"
-
-#. TODO
-msgid "contribute:password"
-msgstr "Password"
-
-#. TODO - hint for max games
-msgid "contribute:maxgames:hint"
-msgstr ""
-"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
-" set it slightly lower for shorter runs, as half-finished games are not "
-"uploaded."
-
-#. TODO - hint for ownership
+#. hint for ownership
 msgid "contribute:ownership:hint"
-msgstr "Slightly slows down training, but allows ownership visualization."
+msgstr "稍微降低训练速度，但允许所有权可视化。"
 
-#. TODO
-msgid "contribute:ownership"
-msgstr "Enable Ownership"
+#. contribute settings popup
+msgid "contribute settings title"
+msgstr "贡献至KataGo分散式训练"
 
-#. TODO - title
+msgid "contribute:password"
+msgstr "密码"
+
+msgid "contribute:start"
+msgstr "开始贡献！"
+
+msgid "contribute:register"
+msgstr "注册"
+
+#. menu item
+msgid "menu:distributed"
+msgstr "分散式自我对弈训练"
+
+#. title
 msgid "contribute:login"
-msgstr "Login Information"
+msgstr "登入资讯"
 
-#. TODO - description
+#. hint for max games
+msgid "contribute:maxgames:hint"
+msgstr "最好等于您的最佳化numSearchThreads，中阶GPU约为8。可以稍微设的低一点，来缩短执行时间，因为未完成的对局将不会被上传。"
+
+#. description for input
+msgid "contribute:maxgames"
+msgstr "同时对局数"
+
+msgid "contribute:ownership"
+msgstr "启用所有权"
+
+#. description
 msgid "contribute:movespeed"
-msgstr "Move speed"
+msgstr "下棋速度"
 
-#. TODO - hint for move speed
+#. hint for move speed
 msgid "contribute:movespeed:hint"
-msgstr "Move playing delay in seconds/move."
+msgstr "每步延迟(秒/步)"
 
-#. TODO - description
+#. description
 msgid "contribute:savesgf"
-msgstr "Save SGFs"
+msgstr "储存SGF"
 
-#. TODO - hint for save
+#. hint for save
 msgid "contribute:savesgf:hint"
-msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+msgstr "储存显示于 ./dist_sgf，已结束的对局SGF档"
 
-#. TODO - title
+#. title
 msgid "contribute:viewer settings"
-msgstr "Viewer Settings"
+msgstr "观察者设定"
 
-#. TODO - Clear all results and reset to normal query
+#. Clear all results and reset to normal query
 msgid "analysis:reset"
-msgstr "Reset analysis"
+msgstr "重设分析"
 
-#. TODO - Description for black target score
+#. Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black:"
+msgstr "黑棋目标目数："
 
-#. TODO - Description for how many moves
+#. Description for how many moves
 msgid "setup position move number"
-msgstr "Generate game until move:"
+msgstr "产生对局到第几手："
 
-#. TODO - Progress message
+#. Progress message
 msgid "setup game status message"
-msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+msgstr "由AI自我对弈产生对局：{move}/{until_move}手完成。"
 
-#. TODO - generate position alongside starting new game
+#. generate position alongside starting new game
 msgid "setupposition"
-msgstr "Generate position"
+msgstr "设定位置"
 
-#. TODO - Popup for generating position: top explanation
+#. Popup for generating position: top explanation
 msgid "setup position explanation"
-msgstr ""
-"This generates a partial game for you to start playing from. For example, "
-"you can use this to play against stronger AIs starting from an advantage in "
-"a variety of middle- or end-game positions."
+msgstr "这会产生部分的对局让你接著下。例如：你可以使用它从各种不同优势的中盘或终局阶段开始，与更强的AI对弈。"
 
-#. TODO - change komi etc in current game
+#. change komi etc in current game
 msgid "editgame"
-msgstr "Edit Game Info"
+msgstr "编辑对局资讯"
