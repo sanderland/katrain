@@ -797,7 +797,7 @@ msgid "contribute:ownership"
 msgstr "집 모양 활성화"
 
 msgid "contribute:login"
-msgstr "로그인 정보"
+msgstr "katagotraining.org 로그인 정보 "
 
 msgid "contribute:movespeed"
 msgstr "착수 속도"

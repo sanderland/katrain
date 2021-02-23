@@ -831,7 +831,7 @@ msgstr "黒地か白地かを予測"
 
 #. title
 msgid "contribute:login"
-msgstr "ログイン情報"
+msgstr "ログイン情報 (katagotraining.org)"
 
 #. description
 msgid "contribute:movespeed"

@@ -779,7 +779,7 @@ msgstr "分散式自我对弈训练"
 
 #. title
 msgid "contribute:login"
-msgstr "登入资讯"
+msgstr "登入资讯 (katagotraining.org)"
 
 #. hint for max games
 msgid "contribute:maxgames:hint"

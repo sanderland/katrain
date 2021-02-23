@@ -864,7 +864,7 @@ msgstr "Enable Ownership"
 
 #. TODO - title
 msgid "contribute:login"
-msgstr "Login Information"
+msgstr "Login Information for katagotraining.org"
 
 #. TODO - description
 msgid "contribute:movespeed"

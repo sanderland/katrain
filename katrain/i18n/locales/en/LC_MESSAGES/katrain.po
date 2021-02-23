@@ -473,7 +473,7 @@ msgstr "Viewer Settings"
 
 #. title
 msgid "contribute:login"
-msgstr "Login Information"
+msgstr "Login Information for katagotraining.org"
 
 #. description for input
 msgid "contribute:maxgames"
