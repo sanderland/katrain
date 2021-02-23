@@ -668,7 +668,11 @@ class Game(BaseGame):
                 ai_thoughts += f"Selecting moves aiming at score {target_score:.1f} +/- {stddev:.2f} with < {max_loss} points lost\n"
                 if abs(node.score - target_score) < 3 * stddev:
                     weighted_cands = [
-                        (move, math.exp(-0.5 * (abs(move["scoreLead"] - target_score) / stddev) ** 2))
+                        (
+                            move,
+                            math.exp(-0.5 * (abs(move["scoreLead"] - target_score) / stddev) ** 2)
+                            * math.exp(-0.5 * (min(0, move["pointsLost"]) / max_loss) ** 2),
+                        )
                         for i, move in enumerate(candidates)
                         if move["pointsLost"] < max_loss or i == 0
                     ]
@@ -678,7 +682,7 @@ class Game(BaseGame):
                             f"{'* ' if move_info == move else '  '} {move['move']} {move['scoreLead']} {wt}",
                             OUTPUT_EXTRA_DEBUG,
                         )
-                        ai_thoughts += f"Move option: {move['move']} {move['scoreLead']:.2f} weight {wt:.3e}\n"
+                        ai_thoughts += f"Move option: {move['move']} score {move['scoreLead']:.2f} loss {move['pointsLost']:.2f} weight {wt:.3e}\n"
                 else:  # we're a bit lost, far away from target, just push it closer
                     move_info = min(candidates, key=lambda move: abs(move["scoreLead"] - target_score))
                     self.katrain.log(
