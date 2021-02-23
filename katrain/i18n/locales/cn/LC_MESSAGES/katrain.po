@@ -787,7 +787,7 @@ msgstr "登入资讯"
 
 #. hint for max games
 msgid "contribute:maxgames:hint"
-msgstr "最好等于您的最佳化numSearchThreads，中阶GPU约为8。可以稍微设的低一点，来缩短执行时间，因为未完成的对局将不会被上传。"
+msgstr "最好等于你的最佳化numSearchThreads，中阶GPU约为8。可以稍微设的低一点，来缩短执行时间，因为未完成的对局将不会被上传。"
 
 #. description for input
 msgid "contribute:maxgames"
