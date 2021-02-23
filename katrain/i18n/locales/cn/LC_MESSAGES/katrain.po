@@ -643,7 +643,6 @@ msgstr ""
 "所有损失最高'max_points_lost'目和至少'min_visits'计算深度的着法当中，偏向于损失较小，乙方空定型（偏向值settled_weight），对方空定型（偏向值settled_weight"
 " * opponent "
 "fac），避免脱先（5路以上，偏向值tenuki_penalty），避免碰（偏向值attachment_penalty）的手法。偏向值可以设为复数捣乱局面，宽根噪声（通用设置）可以棋力代价更加符合风格。"
-" "
 
 msgid "ai:simple"
 msgstr "简明风格"
