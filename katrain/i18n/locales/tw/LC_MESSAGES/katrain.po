@@ -115,7 +115,7 @@ msgstr "設定欲分析區域"
 
 #. Status message
 msgid "analysis:region:start"
-msgstr "拖移以選取區域。選擇其他點來取消已選取的區域。"
+msgstr "拖移以選取區域。點選其他位置來取消已選取的區域。"
 
 #. Menu option
 msgid "analysis:playtoend"
@@ -175,7 +175,7 @@ msgstr "AI引擎狀態指示燈，從綠色（閒置）變為橘色（處理中�
 
 #. undo button on the right
 msgid "undo-button-text"
-msgstr "復原"
+msgstr "悔棋"
 
 #. tabs and labels on the right panel
 msgid "tab:score"
@@ -422,10 +422,8 @@ msgstr "顯示選點"
 msgid "save dots"
 msgstr "存入SGF"
 
-#. TODO: this many can be translated, or left out if the number goes
-#. comfortably at the end
 msgid "show last n dots"
-msgstr "顯示最後 <this many> 手棋的選點"
+msgstr "顯示最後幾手棋的選點"
 
 msgid "show ai dots"
 msgstr "顯示AI的選點/SGF評論"
@@ -709,7 +707,7 @@ msgstr "刪除模式"
 
 #. on move tree editing
 msgid "Toggle Collapse Branch"
-msgstr "擴展/摺疊"
+msgstr "展開/摺疊"
 
 #. on move tree editing
 msgid "Make Main Branch"
@@ -772,110 +770,102 @@ msgstr "插入完畢，複製 {num_copied} 手棋。"
 msgid "finish inserting before navigating"
 msgstr "此功能在插入模式無法使用，按 i 結束插入。"
 
-#. TODO
 msgid "stone_scoring"
-msgstr "Ancient Chinese"
+msgstr "古代中國規則"
 
-#. TODO - in self-play mode
+#. in self-play mode
 msgid "gui-locked"
 msgstr ""
-"Action {action} not allowed in distributed self-play training mode. Restart "
-"KaTrain to exit this mode."
+"在分散式自我對弈訓練模式中，{action} 動作是不允許的。"
+"重新啟動KaTrain來離開此模式。"
 
-#. TODO
 msgid "contribute:username"
-msgstr "Username"
+msgstr "帳號"
 
-#. TODO - hint for ownership
+#. hint for ownership
 msgid "contribute:ownership:hint"
-msgstr "Slightly slows down training, but allows ownership visualization."
+msgstr "稍微降低訓練速度，但允許所有權可視化。"
 
-#. TODO - contribute settings popup
+#. contribute settings popup
 msgid "contribute settings title"
-msgstr "Contribute To KataGo Distributed Training"
+msgstr "貢獻至KataGo分散式訓練"
 
-#. TODO
 msgid "contribute:password"
-msgstr "Password"
+msgstr "密碼"
 
-#. TODO
 msgid "contribute:start"
-msgstr "Start Contributing!"
+msgstr "開始貢獻！"
 
-#. TODO
 msgid "contribute:register"
-msgstr "Register"
+msgstr "註冊"
 
-#. TODO - menu item
+#. menu item
 msgid "menu:distributed"
-msgstr "Distributed Self-play Training"
+msgstr "分散式自我對弈訓練"
 
-#. TODO - title
+#. title
 msgid "contribute:login"
-msgstr "Login Information"
+msgstr "登入資訊"
 
-#. TODO - hint for max games
+#. hint for max games
 msgid "contribute:maxgames:hint"
 msgstr ""
-"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
-" set it slightly lower for shorter runs, as half-finished games are not "
-"uploaded."
+"最好等於您的最佳化numSearchThreads，中階GPU約為8。"
+"可以稍微設的低一點，來縮短執行時間，因為未完成的對局將不會被上傳。"
 
-#. TODO - description for input
+#. description for input
 msgid "contribute:maxgames"
-msgstr "Simultaneous Games"
+msgstr "同時對局數"
 
-#. TODO
 msgid "contribute:ownership"
-msgstr "Enable Ownership"
+msgstr "啟用所有權"
 
-#. TODO - description
+#. description
 msgid "contribute:movespeed"
-msgstr "Move speed"
+msgstr "下棋速度"
 
-#. TODO - hint for move speed
+#. hint for move speed
 msgid "contribute:movespeed:hint"
-msgstr "Move playing delay in seconds/move."
+msgstr "每步延遲(秒/步)"
 
-#. TODO - description
+#. description
 msgid "contribute:savesgf"
-msgstr "Save SGFs"
+msgstr "儲存SGF"
 
-#. TODO - hint for save
+#. hint for save
 msgid "contribute:savesgf:hint"
-msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+msgstr "儲存顯示於 ./dist_sgf，已結束的對局SGF檔"
 
-#. TODO - title
+#. title
 msgid "contribute:viewer settings"
-msgstr "Viewer Settings"
+msgstr "觀察者設定"
 
-#. TODO - Clear all results and reset to normal query
+#. Clear all results and reset to normal query
 msgid "analysis:reset"
-msgstr "Reset analysis"
+msgstr "重設分析"
 
-#. TODO - Description for black target score
+#. Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black:"
+msgstr "黑棋目標目數："
 
-#. TODO - Description for how many moves
+#. Description for how many moves
 msgid "setup position move number"
-msgstr "Generate game until move:"
+msgstr "產生對局到第幾手："
 
-#. TODO - Progress message
+#. Progress message
 msgid "setup game status message"
-msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+msgstr "由AI自我對弈產生對局：{move}/{until_move}手完成。"
 
-#. TODO - generate position alongside starting new game
+#. generate position alongside starting new game
 msgid "setupposition"
-msgstr "Set up Position"
+msgstr "設定位置"
 
-#. TODO - Popup for generating position: top explanation
+#. Popup for generating position: top explanation
 msgid "setup position explanation"
 msgstr ""
-"This generates a partial game for you to start playing from. For example, "
-"you can use this to play against stronger AIs starting from an advantage in "
-"a variety of middle- or end-game positions."
+"這會產生部分的對局讓你接著下。"
+"例如：你可以使用它從各種不同優勢的中盤或終局階段開始，與更強的AI對弈。"
 
-#. TODO - change komi etc in current game
+#. change komi etc in current game
 msgid "editgame"
-msgstr "Edit Game Info"
+msgstr "編輯對局資訊"
