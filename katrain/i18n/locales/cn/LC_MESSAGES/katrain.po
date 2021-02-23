@@ -751,11 +751,6 @@ msgstr "计算深度...以上时显示"
 msgid "cache analysis to sgf"
 msgstr "分析缓存到SGF"
 
-msgid "gui-locked"
-msgstr ""
-"Action {action} not allowed in distributed self-play training mode. Restart "
-"KaTrain to exit this mode."
-
 msgid "stone_scoring"
 msgstr "古代中国规则"
 
