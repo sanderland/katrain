@@ -11,7 +11,7 @@ msgid "menu:playersetup"
 msgstr "Paramètres des joueurs"
 
 msgid "menu:newgame"
-msgstr "Nouvelle partie"
+msgstr "Lancer/Éditer une partie"
 
 msgid "menu:save"
 msgstr "Enregistrer"
@@ -194,8 +194,8 @@ msgstr "Gain"
 #. SGF and move comment messages
 msgid "SGF start message"
 msgstr ""
-"Les coup préférés de KataGo sont marqué d’un X. En comparaison, ceux perdant"
-" moins de 0.5 points sont marqués d’un carré"
+"Les coup préférés de KataGo sont marqué d'un X. En comparaison, ceux perdant"
+" moins de 0.5 points sont marqués d'un carré"
 
 msgid "Info:score"
 msgstr "Score : {score}"
@@ -235,10 +235,10 @@ msgid "Info:undo predicted PV"
 msgstr "Continuation attendue : {pv}"
 
 msgid "Info:AI thoughts"
-msgstr "Raisonnement de l’IA : {thoughts}"
+msgstr "Raisonnement de he l'IA : {thoughts}" 
 
 msgid "No analysis available"
-msgstr "Pas d’analyse disponible"
+msgstr "Pas d'analyse disponible"
 
 msgid "Analyzing move..."
 msgstr "Analyse en cours..."
@@ -321,7 +321,7 @@ msgstr "Noter x:y (p. ex. 19:9) pour les non-carrés"
 
 #. submit new game
 msgid "newgame"
-msgstr "Commencer la partie"
+msgstr "Nouvelle partie"
 
 # teacher settings from here
 msgid "teacher settings"
@@ -361,7 +361,7 @@ msgid "general settings title"
 msgstr "Paramètres généraux"
 
 msgid "file not found"
-msgstr "Chemin d’accès est introuvable"
+msgstr "Chemin d'accès est introuvable"
 
 msgid "general settings"
 msgstr "Divers"
@@ -815,106 +815,80 @@ msgstr "Noir"
 msgid "white player name hint"
 msgstr "Blanc"
 
-#. TODO - in self-play mode
 msgid "gui-locked"
 msgstr ""
-"Action {action} not allowed in distributed self-play training mode. Restart "
-"KaTrain to exit this mode."
+"L'action (action) est interdite lors de l'entraînement distribué de KataGo. "
+"Vous pouvez quitter ce mode en redémarrant Katrain."
 
-#. TODO - menu item
 msgid "menu:distributed"
-msgstr "Distributed Self-play Training"
+msgstr "Entraîner Katago"
 
-#. TODO
 msgid "contribute:register"
-msgstr "Register"
+msgstr "Créer le compte"
 
-#. TODO
 msgid "contribute:start"
-msgstr "Start Contributing!"
+msgstr "Je participe !"
 
-#. TODO - contribute settings popup
 msgid "contribute settings title"
-msgstr "Contribute To KataGo Distributed Training"
+msgstr "Participer à l'entraînement de KataGo"
 
-#. TODO
 msgid "contribute:username"
-msgstr "Username"
+msgstr "Identifiant"
 
-#. TODO - description for input
 msgid "contribute:maxgames"
-msgstr "Simultaneous Games"
+msgstr "Parties simultanées"
 
-#. TODO
 msgid "contribute:password"
-msgstr "Password"
+msgstr "Mot de passe"
 
-#. TODO - hint for max games
 msgid "contribute:maxgames:hint"
 msgstr ""
-"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
-" set it slightly lower for shorter runs, as half-finished games are not "
-"uploaded."
+"Idéalement égal à numSearchThread (autour de 8 pour un GPU ordinaire), "
+"mais préférer moins lors de courtes sessions, car les parties inachevées sont oubliées."
 
-#. TODO - hint for ownership
 msgid "contribute:ownership:hint"
-msgstr "Slightly slows down training, but allows ownership visualization."
+msgstr "Cette option permet de visualiser les prévisions territoriales, mais ralentit légèrement l'entrainement."
 
-#. TODO
 msgid "contribute:ownership"
-msgstr "Enable Ownership"
+msgstr "Prévisions territoriales"
 
-#. TODO - title
 msgid "contribute:login"
-msgstr "Login Information for katagotraining.org"
+msgstr "Informations de connexion"
 
-#. TODO - description
 msgid "contribute:movespeed"
-msgstr "Move speed"
+msgstr "Cadence des coups"
 
-#. TODO - hint for move speed
 msgid "contribute:movespeed:hint"
-msgstr "Move playing delay in seconds/move."
+msgstr "Délai d'affichage des coups en secondes."
 
-#. TODO - description
 msgid "contribute:savesgf"
-msgstr "Save SGFs"
+msgstr "Sauvegarder les parties"
 
-#. TODO - hint for save
 msgid "contribute:savesgf:hint"
-msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+msgstr "Sauvegarder les fichiers SGF des parties complétées dans le dossier ./dist_sgf"
 
-#. TODO - title
 msgid "contribute:viewer settings"
-msgstr "Viewer Settings"
+msgstr "Visionneuse"
 
-#. TODO - Clear all results and reset to normal query
 msgid "analysis:reset"
-msgstr "Reset analysis"
+msgstr "Recommencer l'analyse"
 
-#. TODO - Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black:"
+msgstr " Différence de points (pour Noir) :"
 
-#. TODO - Description for how many moves
 msgid "setup position move number"
-msgstr "Generate game until move:"
+msgstr "Nombre de coups simulés :"
 
-#. TODO - Progress message
 msgid "setup game status message"
-msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+msgstr "Simulation de partie en cours : Coup {move}/{until_move}."
 
-#. TODO - generate position alongside starting new game
 msgid "setupposition"
-msgstr "Set up Position"
+msgstr "Nouvelle position"
 
-#. TODO - Popup for generating position: top explanation
 msgid "setup position explanation"
 msgstr ""
-"This generates a partial game for you to start playing from. For example, "
-"you can use this to play against stronger AIs starting from an advantage in "
-"a variety of middle- or end-game positions."
+"Vous voulez gagner de l'expérience dans les milieux ou les fins de parties ? Apprendre à grappiller les points, "
+"maintenir votre avantage ou renverser la situation ? Alors jouez des positions fictives composées selon vos besoins." 
 
-#. TODO - change komi etc in current game
 msgid "editgame"
-msgstr "Edit Game Info"
+msgstr "Partie en cours"
