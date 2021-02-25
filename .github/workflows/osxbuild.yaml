@@ -16,7 +16,10 @@ jobs:
       with:
         python-version: 3.8
     - name: Brew OpenSSL
-      run: brew install openssl
+      run: |
+        brew install openssl
+        export OPENSSL_ROOT_DIR=$(brew --prefix openssl)
+        echo $OPENSSL_ROOT_DIR
     - name: Build KataGo
       run: |
         rm katrain/KataGo/katago
@@ -25,7 +28,7 @@ jobs:
         cd ..
         git clone --branch stable https://github.com/lightvector/KataGo.git
         pushd KataGo/cpp
-        cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1 -DOPENSSL_ROOT_DIR=/usr/local/Cellar/openssl/1.1.1j -DOPENSSL_LIBRARIES=/usr/local/Cellar/openssl/1.1.1j/lib
+        cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
         make
         cp katago ../../katrain/katrain/KataGo/katago-osx
     - name: Get Kivy dependencies
