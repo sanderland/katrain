@@ -267,8 +267,8 @@
         font_size: sp(Theme.DESC_FONT_SIZE) * 1.25
     GridLayout:
         cols: 2
-        rows: 4
-        size_hint: 1, 5
+        rows: 5
+        size_hint: 1, 6
         spacing: CP_SPACING
         DescriptionLabel:
             text: i18n._("engine:katago")
@@ -284,7 +284,7 @@
             AutoSizedRoundedRectangleButton:
                 text: i18n._("download katago button")
                 on_press: root.download_katas()
-                size_hint_y: 0.5
+                size_hint_y: 0.66
         AnchorLayout:
             KeyValueSpinner:
                 id: katago_files
@@ -300,6 +300,12 @@
                 sync_height_frac: 1.0
                 -font_size: self.height * 0.5
                 -background_color: [*[c*255/88 for c in Theme.BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+        DescriptionLabel:
+            text: i18n._("engine:config")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "contribute/config"
         DescriptionLabel:
             size_hint: 0.2, 1
             text: i18n._("contribute:maxgames")
@@ -390,6 +396,7 @@
         id: error
         font_size: sp(Theme.DESC_FONT_SIZE)
         color: Theme.ERROR_BORDER_COLOR
+        size_hint: 1, 0.5
     MDBoxLayout:
         orientation: 'horizontal'
         size_hint: 1, 1

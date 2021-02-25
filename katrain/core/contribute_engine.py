@@ -27,7 +27,6 @@ class KataGoContributeEngine(BaseEngine):
     def __init__(self, katrain):
         super().__init__(katrain, katrain.config("contribute"))
         self.katrain = katrain
-        cfg = find_package_resource("katrain/KataGo/contribute.cfg")
         base_dir = os.path.expanduser("~/.katrain/katago_contribute")
         self.katago_process = None
         self.stdout_thread = None
@@ -49,6 +48,8 @@ class KataGoContributeEngine(BaseEngine):
         self.move_speed = self.config.get("movespeed", 2.0)
 
         exe = self.get_engine_path(self.config.get("katago"))
+        cfg = find_package_resource(self.config.get("config"))
+
 
         settings_dict = {
             "username": self.config.get("username"),
