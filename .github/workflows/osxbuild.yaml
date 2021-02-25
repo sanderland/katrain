@@ -23,7 +23,7 @@ jobs:
         cd ..
         git clone --branch stable https://github.com/lightvector/KataGo.git
         pushd KataGo/cpp
-        cmake . -DUSE_BACKEND=OPENCL
+        cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
         make
         cp katago ../../katrain/katrain/KataGo/katago-osx
     - name: Get Kivy dependencies
