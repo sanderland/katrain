@@ -336,7 +336,7 @@ msgid "point loss threshold"
 msgstr "何目より損なら"
 
 msgid "num undos"
-msgstr "待ったの回数"
+msgstr "再考を促す回数"
 
 msgid "dot color"
 msgstr "色"
