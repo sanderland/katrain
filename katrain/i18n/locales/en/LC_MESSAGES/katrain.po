@@ -434,7 +434,9 @@ msgid "point loss threshold"
 msgstr "Point loss greater than"
 
 msgid "num undos"
-msgstr "Number of undos"
+msgstr ""
+"Number of undos\n"
+"(teaching games)"
 
 msgid "dot color"
 msgstr "Colour"
