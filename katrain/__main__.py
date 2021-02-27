@@ -372,6 +372,9 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.game.undo(n_times)
 
+    def _do_reset_analysis(self):
+        self.game.reset_current_analysis()
+
     def _do_resign(self):
         self.game.current_node.end_state = f"{self.game.current_node.player}+R"
 
@@ -401,8 +404,8 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_analyze_extra(self, mode, **kwargs):
         self.game.analyze_extra(mode, **kwargs)
 
-    def _do_play_to_end(self):
-        self.game.play_to_end()
+    def _do_selfplay_setup(self, until_move, target_b_advantage=None):
+        self.game.selfplay(int(until_move) if isinstance(until_move, float) else until_move, target_b_advantage)
 
     def _do_select_box(self):
         self.controls.set_status(i18n._("analysis:region:start"), STATUS_INFO)
@@ -587,9 +590,10 @@ class KaTrainGui(Screen, KaTrainBase):
             "d": ("analyze-extra", "sweep"),
             "f": ("analyze-extra", "alternative"),
             "g": ("select-box",),
+            "h": ("reset-analysis",),
             "i": ("insert-mode",),
             "p": ("play", None),
-            "l": ("play-to-end",),
+            "l": ("selfplay-setup", "end", None),
             "b": ("undo", "branch"),
             "down": ("switch-branch", 1),
             "up": ("switch-branch", -1),
@@ -598,6 +602,7 @@ class KaTrainGui(Screen, KaTrainBase):
             "f7": ("ai-popup",),
             "f8": ("config-popup",),
             "f9": ("contribute-popup",),
+            "escape": ("analyze-extra", "stop"),
         }
 
     @property
@@ -770,7 +775,7 @@ class KaTrainApp(MDApp):
 
     def on_request_close(self, *_args, source=None):
         if source == "keyboard":
-            return True # do not close on esc
+            return True  # do not close on esc
         if getattr(self, "gui", None):
             self.gui.play_mode.save_ui_state()
             if self.gui.engine:

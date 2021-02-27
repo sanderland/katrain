@@ -50,8 +50,9 @@ Many thanks to these additional authors:
 * Lukasz Wierzbowski for the ability to paste urls for sgfs and helping fix alt-gr issues.
 * Carton He for contributions to sgf parsing and handling.
 * "blamarche" for adding the board coordinates toggle.
-* "pdeblanc" for adding the ancient chinese scoring option.
+* "pdeblanc" for adding the ancient chinese scoring option, fixing a bug in query termination
 * "LiamHz" for adding the undo to main branch keyboard shortcut.
+* "xiaoyifang" for adding the reset analysis option.
 
 ## Translators
 

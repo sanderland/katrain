@@ -50,6 +50,9 @@ class Move:
     def __eq__(self, other):
         return self.coords == other.coords and self.player == other.player
 
+    def __hash__(self):
+        return hash((self.coords, self.player))
+
     def gtp(self):
         """Returns GTP coordinates of the move"""
         if self.is_pass:
@@ -94,6 +97,9 @@ class SGFNode:
 
     def _clear_cache(self):
         self.moves_cache = None
+
+    def __repr__(self):
+        return f"SGFNode({dict(self.properties)})"
 
     def sgf_properties(self, **xargs) -> Dict:
         """For hooking into in a subclass and overriding/formatting any additional properties to be output."""
@@ -186,10 +192,11 @@ class SGFNode:
     def depth(self) -> int:
         """Returns the depth of this node, where root is 0, cached for speed"""
         if self._depth is None:
+            moves = self.moves
             if self.is_root:
                 self._depth = 0
-            else:
-                self._depth = self.parent.depth + 1
+            else:  # no increase on placements etc
+                self._depth = self.parent.depth + len(moves)
         return self._depth
 
     @property
@@ -243,6 +250,14 @@ class SGFNode:
             Move.from_sgf(sgf_coords, player=pl, board_size=self.board_size)
             for pl in Move.PLAYERS
             for sgf_coords in self.get_list_property("A" + pl, [])
+        ]
+
+    @property
+    def clear_placements(self) -> List[Move]:
+        """Returns all AE clear square commends in the node."""
+        return [
+            Move.from_sgf(sgf_coords, player=None, board_size=self.board_size)
+            for sgf_coords in self.get_list_property("AE", [])
         ]
 
     @property

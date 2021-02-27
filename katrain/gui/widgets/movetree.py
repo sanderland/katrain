@@ -196,9 +196,10 @@ class MoveTreeCanvas(Widget):
                         pos=[c - self.move_size / 2 - spacing / 2 for c in self.move_xy_pos[node]],
                         size=(self.move_size + spacing, self.move_size + spacing),
                     )
-                collapsed_color = Theme.MOVE_TREE_COLLAPSED if node.shortcut_from else None
-                draw_stone(pos, node.player, collapsed_color)
-                text = str(node.depth)
+                placements = node.placements + node.clear_placements
+                special_node = Theme.MOVE_TREE_COLLAPSED if node.shortcut_from or placements else None
+                draw_stone(pos, node.player, special_node)
+                text = "+" if placements else str(node.depth)
                 Color(*Theme.STONE_COLORS["W" if node.player == "B" and not node.shortcut_from else "B"])
                 draw_text(pos=pos, text=text, font_size=self.move_size * 1.75 / (1 + 1 * len(text)), font_name="Roboto")
 

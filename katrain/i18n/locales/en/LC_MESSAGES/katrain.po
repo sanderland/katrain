@@ -109,6 +109,10 @@ msgstr "Deeper full game analysis"
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
 
+#. Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "Reset analysis"
+
 #. Restrict analysis to a specific region
 msgid "analysis:region"
 msgstr "Set region of interest"
@@ -903,3 +907,26 @@ msgid "gui-locked"
 msgstr ""
 "Action {action} not allowed in distributed self-play training mode. Restart "
 "KaTrain to exit this mode."
+
+#. menu option
+msgid "analysis:setup"
+msgstr "Generate position"
+
+#. Progress message
+msgid "setup game status message"
+msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+
+#. Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr ""
+"This generates a partial game for you to start playing from. For example, "
+"you can use this to play against stronger AIs starting from an advantage in "
+"a variety of middle- or end-game positions."
+
+#. Description for black target score
+msgid "setup position black score"
+msgstr "Target score for Black (Can be negative):"
+
+#. Description for how many moves
+msgid "setup position move number"
+msgstr "Generate game until move:"

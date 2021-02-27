@@ -1,6 +1,7 @@
 import copy
 import math
 import os
+import random
 import re
 import threading
 from datetime import datetime
@@ -10,6 +11,7 @@ from kivy.clock import Clock
 
 from katrain.core.constants import (
     OUTPUT_DEBUG,
+    OUTPUT_EXTRA_DEBUG,
     OUTPUT_INFO,
     PLAYER_AI,
     PLAYER_HUMAN,
@@ -24,7 +26,7 @@ from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n, rank_label
 from katrain.core.sgf_parser import SGF, Move
-from katrain.core.utils import var_to_grid
+from katrain.core.utils import var_to_grid, weighted_selection_without_replacement
 
 
 class IllegalMoveException(Exception):
@@ -104,21 +106,30 @@ class BaseGame:
                 shortcut_id_to_node[shortcut_id].add_shortcut(node)
 
     # -- move tree functions --
-    def _calculate_groups(self):
+    def _init_state(self):
         board_size_x, board_size_y = self.board_size
+        self.board = [
+            [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
+        ]  # type: List[List[int]]  #  board pos -> chain id
+        self.chains = []  # type: List[List[Move]]  #   chain id -> chain
+        self.prisoners = []  # type: List[Move]
+        self.last_capture = []  # type: List[Move]
+
+    def _calculate_groups(self):
         with self._lock:
-            self.board = [
-                [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
-            ]  # type: List[List[int]]  #  board pos -> chain id
-            self.chains = []  # type: List[List[Move]]  #   chain id -> chain
-            self.prisoners = []  # type: List[Move]
-            self.last_capture = []  # type: List[Move]
+            self._init_state()
             try:
                 for node in self.current_node.nodes_from_root:
                     for m in node.move_with_placements:
                         self._validate_move_and_update_chains(
                             m, True
                         )  # ignore ko since we didn't know if it was forced
+                    if node.clear_placements:  # handle AE by playing all moves left from empty board
+                        clear_coords = {c.coords for c in node.clear_placements}
+                        stones = [m for c in self.chains for m in c if m.coords not in clear_coords]
+                        self._init_state()
+                        for m in stones:
+                            self._validate_move_and_update_chains(m, True)
             except IllegalMoveException as e:
                 raise Exception(f"Unexpected illegal move ({str(e)})")
 
@@ -366,6 +377,7 @@ class BaseGame:
         save_feedback = trainer_config.get("save_feedback", False)
         eval_thresholds = trainer_config["eval_thresholds"]
         save_analysis = trainer_config.get("save_analysis", False)
+        save_marks = trainer_config.get("save_marks", False)
         self.update_root_properties()
         show_dots_for = {
             bw: trainer_config.get("eval_show_ai", True) or self.katrain.players_info[bw].human for bw in "BW"
@@ -375,6 +387,7 @@ class BaseGame:
             save_comments_class=save_feedback,
             eval_thresholds=eval_thresholds,
             save_analysis=save_analysis,
+            save_marks=save_marks,
         )
         self.sgf_filename = filename
         os.makedirs(os.path.dirname(filename), exist_ok=True)
@@ -437,6 +450,13 @@ class Game(BaseGame):
                 self._calculate_groups()
             return
         super().undo(n_times=n_times, stop_on_mistake=stop_on_mistake)
+
+    def reset_current_analysis(self):
+        cn = self.current_node
+        engine = self.engines[cn.next_player]
+        engine.terminate_queries(cn)
+        cn.clear_analysis()
+        cn.analyze(engine)
 
     def redo(self, n_times=1, stop_on_mistake=None):
         if self.insert_mode:
@@ -517,6 +537,12 @@ class Game(BaseGame):
         stones = {s.coords for s in self.stones}
         cn = self.current_node
 
+        if mode == "stop":
+            for e in set(self.engines.values()):
+                e.terminate_queries()
+            self.katrain.idle_analysis = False
+            return
+
         engine = self.engines[cn.next_player]
         Clock.schedule_once(self.katrain.analysis_controls.hints.activate, 0)
 
@@ -547,6 +573,7 @@ class Game(BaseGame):
 
         elif mode == "sweep":
             board_size_x, board_size_y = self.board_size
+
             if cn.analysis_exists:
                 policy_grid = (
                     var_to_grid(self.current_node.policy, size=(board_size_x, board_size_y))
@@ -587,50 +614,93 @@ class Game(BaseGame):
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
         else:
             raise ValueError("Invalid analysis mode")
+
         for move in analyze_moves:
             if cn.analysis["moves"].get(move.gtp(), {"visits": 0})["visits"] < visits:
                 cn.analyze(
                     engine, priority=priority, visits=visits, refine_move=move, time_limit=False
                 )  # explicitly requested so take as long as you need
 
-    def play_to_end(self):
+    def selfplay(self, until_move, target_b_advantage=None):
         cn = self.current_node
         count = 0
         if not cn.analysis_exists:
             self.katrain.controls.set_status(i18n._("wait-before-extra-analysis"), STATUS_INFO, cn)
             return
 
-        def analyze_and_play_policy(node):
-            nonlocal count, cn
-            cand = node.candidate_moves
+        engine_settings = {"wideRootNoise": 0.03} if target_b_advantage is not None else {}
+
+        def analyze_and_play(node):
+            nonlocal count, cn, engine_settings
+            candidates = node.candidate_moves
             if self.katrain.game is not self:
                 return  # a new game happened
-            if cand:
-                move = Move.from_gtp(cand[0]["move"], player=node.next_player)
-            else:
+            if until_move != "end" and target_b_advantage is not None:  # setup pos
+                if node.depth >= until_move or candidates[0]["move"] == "pass":
+                    self.set_current_node(node)
+                    return
+                target_score = cn.score + (node.depth - cn.depth + 1) * (target_b_advantage - cn.score) / (
+                    until_move - cn.depth
+                )
+                stddev = min(5, 0.5 + (until_move - node.depth) * 0.15)
+                max_loss = 5
+                if abs(node.score - target_score) < 3 * stddev:
+                    weighted_cands = [
+                        (move, math.exp(-0.5 * (abs(move["scoreLead"] - target_score) / stddev) ** 2))
+                        for i, move in enumerate(candidates)
+                        if move["pointsLost"] < max_loss or i == 0
+                    ]
+                    move_info = weighted_selection_without_replacement(weighted_cands, 1)[0][0]
+                    for move, wt in weighted_cands:
+                        self.katrain.log(
+                            f"{'* ' if move_info == move else '  '} {move['move']} {move['scoreLead']} {wt}",
+                            OUTPUT_EXTRA_DEBUG,
+                        )
+                else:  # we're a bit lost, far away from target, just push it closer
+                    move_info = min(candidates, key=lambda move: abs(move["scoreLead"] - target_score))
+                    self.katrain.log(
+                        f"* Played {move_info['move']} {move_info['scoreLead']} because score deviation between current score {node.score} and target score {target_score} > {3*stddev}",
+                        OUTPUT_EXTRA_DEBUG,
+                    )
+
+                self.katrain.log(
+                    f"Self-play until {until_move} target {target_b_advantage}: {len(candidates)} candidates -> move {move_info['move']} score {move_info['scoreLead']} point loss {move_info['pointsLost']}",
+                    OUTPUT_DEBUG,
+                )
+                move = Move.from_gtp(move_info["move"], player=node.next_player)
+            elif candidates:  # just selfplay to end
+                move = Move.from_gtp(candidates[0]["move"], player=node.next_player)
+            else:  # 1 visit etc
                 polmoves = node.policy_ranking
                 move = polmoves[0][1] if polmoves else Move(None)
-
             if move.is_pass:
                 if self.current_node == cn:
                     self.set_current_node(node)
                 return
             count += 1
             new_node = GameNode(parent=node, move=move)
-            if node != cn:
-                node.remove_shortcut()
-            cn.add_shortcut(new_node)
+            if until_move != "end" and target_b_advantage is not None:
+                self.set_current_node(new_node)
+                self.katrain.controls.set_status(
+                    i18n._("setup game status message").format(move=new_node.depth, until_move=until_move),
+                    STATUS_INFO,
+                )
+            else:
+                if node != cn:
+                    node.remove_shortcut()
+                cn.add_shortcut(new_node)
+
             self.katrain.controls.move_tree.redraw_tree_trigger()
 
             def set_analysis(result, _partial):
                 new_node.set_analysis(result)
-                analyze_and_play_policy(new_node)
+                analyze_and_play(new_node)
 
             self.engines[node.next_player].request_analysis(
-                new_node, callback=set_analysis, priority=-1000, analyze_fast=True
+                new_node, callback=set_analysis, priority=-1000, analyze_fast=True, extra_settings=engine_settings
             )
 
-        analyze_and_play_policy(cn)
+        analyze_and_play(cn)
 
     def analyze_undo(self, node):
         train_config = self.katrain.config("trainer")

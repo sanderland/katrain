@@ -895,3 +895,30 @@ msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
 #. TODO - title
 msgid "contribute:viewer settings"
 msgstr "Viewer Settings"
+
+#. TODO - Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "Reset analysis"
+
+#. TODO - Description for black target score
+msgid "setup position black score"
+msgstr "Target score for Black (Can be negative):"
+
+#. TODO - Description for how many moves
+msgid "setup position move number"
+msgstr "Generate game until move:"
+
+#. TODO - Progress message
+msgid "setup game status message"
+msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+
+#. TODO - menu option
+msgid "analysis:setup"
+msgstr "Generate position"
+
+#. TODO - Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr ""
+"This generates a partial game for you to start playing from. For example, "
+"you can use this to play against stronger AIs starting from an advantage in "
+"a variety of middle- or end-game positions."
