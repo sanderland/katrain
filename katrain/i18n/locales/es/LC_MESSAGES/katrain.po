@@ -305,7 +305,7 @@ msgid "non square board hint"
 msgstr "Usa x:y (i.e. 19:9) para tableros no cuadrados"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Empezar Nuevo Juego"
 
 # teacher settings from here
@@ -328,14 +328,10 @@ msgid "save dots"
 msgstr "Guardar en SGF"
 
 msgid "show last n dots"
-msgstr ""
-"Mostar puntos de las últimas \n"
-"número de jugadas moves"
+msgstr "Mostar puntos de las últimas número de jugadas moves"
 
 msgid "show ai dots"
-msgstr ""
-"Mostrar puntos/comentarios\n"
-" para motores de IA"
+msgstr "Mostrar puntos/comentarios para motores de IA"
 
 #. submit button
 msgid "update teacher"
@@ -710,12 +706,6 @@ msgstr "Simple Style"
 msgid "local analysis"
 msgstr "Searching for local responses"
 
-#. TODO - change komi etc in current game
-msgid "change current game"
-msgstr ""
-"Update komi/rules\n"
-"in active game"
-
 #. TODO - on move tree editing
 msgid "Make Main Branch"
 msgstr "Make Main Branch"
@@ -834,10 +824,6 @@ msgid "menu:distributed"
 msgstr "Distributed Self-play Training"
 
 #. TODO
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
-
-#. TODO
 msgid "contribute:register"
 msgstr "Register"
 
@@ -878,13 +864,7 @@ msgstr "Enable Ownership"
 
 #. TODO - title
 msgid "contribute:login"
-msgstr "Login Information"
-
-#. TODO - textbox hint when empty
-msgid "engine:katago:contributehint"
-msgstr ""
-"For contributing to distributed training, please download and select an "
-"official 1.8.0+ binary."
+msgstr "Login Information for katagotraining.org"
 
 #. TODO - description
 msgid "contribute:movespeed"
@@ -922,9 +902,9 @@ msgstr "Generate game until move:"
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
-#. TODO - menu option
-msgid "analysis:setup"
-msgstr "Generate position"
+#. TODO - generate position alongside starting new game
+msgid "setupposition"
+msgstr "Set up Position"
 
 #. TODO - Popup for generating position: top explanation
 msgid "setup position explanation"
@@ -932,3 +912,7 @@ msgstr ""
 "This generates a partial game for you to start playing from. For example, "
 "you can use this to play against stronger AIs starting from an advantage in "
 "a variety of middle- or end-game positions."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"

@@ -32,7 +32,7 @@ class PlayAnalyzeSelect(MDFloatLayout):
         self.katrain._config["ui_state"] = self.katrain._config.get("ui_state", {})
         self.katrain._config["ui_state"][self.mode] = {
             "analysis_controls": {
-                id: toggle.active if not toggle.checkbox.slashed else None  # troolean ftw
+                id: toggle.active
                 for id, toggle in self.katrain.analysis_controls.ids.items()
                 if isinstance(toggle, AnalysisToggle)
             },
@@ -49,8 +49,6 @@ class PlayAnalyzeSelect(MDFloatLayout):
         for id, active in state.get("analysis_controls", {}).items():
             cb = self.katrain.analysis_controls.ids[id].checkbox
             cb.active = bool(active)
-            if cb.tri_state:
-                cb.slashed = active is None
         for id, (panel_state, button_state) in state.get("panels", {}).items():
             self.katrain.controls.ids[id].set_option_state(button_state)
             self.katrain.controls.ids[id].state = panel_state
@@ -149,7 +147,7 @@ class ControlsPanel(BoxLayout):
         info = ""
         if katrain.contributing:
             info += katrain.engine.status()
-            game_id = getattr(katrain.engine, "showing_game")
+            game_id = getattr(katrain.engine, "showing_game", None)
             game = katrain.engine.active_games.get(game_id)
             if game is not None:
                 info += f"Showing game {game_id}\n"

@@ -49,8 +49,10 @@ class I18NPopup(Popup):
     font_name = StringProperty(Theme.DEFAULT_FONT)
 
     def __init__(self, size=None, **kwargs):
-        if size:  # do not exceed window height
-            size[1] = min(MDApp.get_running_app().gui.height, size[1])
+        if size:  # do not exceed window size
+            app = MDApp.get_running_app()
+            size[0] = min(app.gui.width, size[0])
+            size[1] = min(app.gui.height, size[1])
         super().__init__(size=size, **kwargs)
         self.bind(on_dismiss=Clock.schedule_once(lambda _dt: MDApp.get_running_app().gui.update_state(), 1))
 
@@ -252,12 +254,15 @@ class ConfigTimerPopup(QuickConfigGui):
 
 
 class NewGamePopup(QuickConfigGui):
+    mode = StringProperty("newgame")
+
     def __init__(self, katrain):
         super().__init__(katrain)
         for bw, info in katrain.players_info.items():
             self.player_setup.update_player_info(bw, info)
 
         self.rules_spinner.value_refs = [name for abbr, name in katrain.engine.RULESETS_ABBR]
+        self.bind(mode=self.update_playername)
         Clock.schedule_once(self.update_from_current_game, 0.1)
 
     def normalized_rules(self):
@@ -271,13 +276,17 @@ class NewGamePopup(QuickConfigGui):
             name = self.player_name[bw].text
             if name:
                 self.katrain.game.root.set_property("P" + bw, name)
+            else:
+                self.katrain.game.root.clear_property("P" + bw)
             self.katrain.update_player(bw, **player_setup.player_type_dump)
 
-    def update_from_current_game(self, *args):
+    def update_playername(self, *args):
         for bw in "BW":
             name = self.katrain.game.root.get_property("P" + bw, None)
             if name and SGF_INTERNAL_COMMENTS_MARKER not in name:
-                self.player_name[bw].text = name
+                self.player_name[bw].text = name if self.mode == "editgame" else ""
+
+    def update_from_current_game(self, *args):  # set rules and komi
         rules = self.normalized_rules()
         self.km.text = str(self.katrain.game.root.komi)
         if rules is not None:
@@ -285,33 +294,35 @@ class NewGamePopup(QuickConfigGui):
 
     def update_config(self, save_to_file=True, close_popup=True):
         super().update_config(save_to_file=save_to_file, close_popup=close_popup)
-        self.katrain.log(f"New game settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
-        if self.restart.active:
-            self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
-            self.katrain.engine.restart()
-        self.update_playerinfo()
-        self.katrain("new-game")
-
-    def update_game(self):
         props = self.collect_properties(self)
-        root = self.katrain.game.root
-        changed = False
-        for k, currentval, newval in [
-            ("RU", self.normalized_rules(), props["game/rules"]),
-            ("KM", root.komi, props["game/komi"]),
-        ]:
-            if currentval != newval:
-                changed = True
-                self.katrain.log(
-                    f"Property {k} changed from {currentval} to {newval}, triggering re-analysis of entire game.",
-                    OUTPUT_INFO,
-                )
-                self.katrain.game.root.set_property(k, newval)
-        self.update_playerinfo()
-        if changed:
-            self.katrain.engine.on_new_game()
-            self.katrain.game.analyze_all_nodes(analyze_fast=True)
-        self.popup.dismiss()
+        self.katrain.log(f"Mode: {self.mode}, settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
+        self.update_playerinfo()  # type
+        if self.mode == "newgame":
+            if self.restart.active:
+                self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
+                self.katrain.engine.restart()
+            self.katrain._do_new_game()
+        elif self.mode == "editgame":
+            root = self.katrain.game.root
+            changed = False
+            for k, currentval, newval in [
+                ("RU", self.normalized_rules(), props["game/rules"]),
+                ("KM", root.komi, props["game/komi"]),
+            ]:
+                if currentval != newval:
+                    changed = True
+                    self.katrain.log(
+                        f"Property {k} changed from {currentval} to {newval}, triggering re-analysis of entire game.",
+                        OUTPUT_INFO,
+                    )
+                    self.katrain.game.root.set_property(k, newval)
+            if changed:
+                self.katrain.engine.on_new_game()
+                self.katrain.game.analyze_all_nodes(analyze_fast=True)
+        else:  # setup position
+            self.katrain._do_new_game()
+            self.katrain("selfplay-setup", props["game/setup_move"], props["game/setup_advantage"])
+        self.update_playerinfo()  # name
 
 
 def wrap_anchor(widget):
@@ -754,9 +765,7 @@ class ContributePopup(BaseConfigPopup):
         self.error.text = ""
         log_settings = {**self.katrain.config("contribute"), "password": "***"}
         self.katrain.log(f"Updating contribution settings {log_settings}", OUTPUT_DEBUG)
-        if not self.katrain.config("contribute/katago"):
-            self.error.text = i18n._("engine:katago:contributehint")
-        elif not self.katrain.config("contribute/username") or not self.katrain.config("contribute/password"):
+        if not self.katrain.config("contribute/username") or not self.katrain.config("contribute/password"):
             self.error.text = "Please enter your username and password for katagotraining.org"
         else:
             self.popup.dismiss()
@@ -806,20 +815,3 @@ class ReAnalyzeGamePopup(BoxLayout):
 
     def on_submit(self):
         self.button.trigger_action(duration=0)
-
-
-class SetupPositionPopup(BoxLayout):
-    popup = ObjectProperty(None)
-
-    def __init__(self, katrain):
-        super().__init__()
-        self.katrain = katrain
-        self.trainer_config = katrain.config("trainer")
-        self.move.set_value(self.trainer_config.get("setup_move", 100))
-        self.advantage.set_value(self.trainer_config.get("setup_advantage", 20))
-
-    def on_submit(self):
-        self.trainer_config["setup_move"] = int(self.move.input_value)
-        self.trainer_config["setup_advantage"] = int(self.advantage.input_value)
-        self.katrain("selfplay-setup", self.trainer_config["setup_move"], self.trainer_config["setup_advantage"])
-        self.katrain.save_config(key="trainer")

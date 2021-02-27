@@ -26,7 +26,7 @@ msgid "menu:clocksettings"
 msgstr "Bedenkzeit"
 
 msgid "menu:teachsettings"
-msgstr "Einstellungen Übungsspiel"
+msgstr "Analyse-Einstellungen"
 
 msgid "menu:aisettings"
 msgstr "AI-Einstellungen"
@@ -301,7 +301,7 @@ msgid "non square board hint"
 msgstr "Benutze x:y (z.B. 19:9) für nichtquadratische Grössen"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Neues Spiel starten"
 
 # teacher settings from here
@@ -324,14 +324,10 @@ msgid "save dots"
 msgstr "In SGF speichern"
 
 msgid "show last n dots"
-msgstr ""
-"Dots für die letzten\n"
-"<this many> Züge zeigen"
+msgstr "Dots für die letzten <n> Züge zeigen"
 
 msgid "show ai dots"
-msgstr ""
-"Dots/SGF-Kommentare \n"
-" für AI Spieler zeigen"
+msgstr "Dots/SGF-Kommentare für AI Spieler zeigen"
 
 #. submit button
 msgid "update teacher"
@@ -704,11 +700,6 @@ msgstr "Einfacher Stil"
 msgid "local analysis"
 msgstr "Suche nach lokalen Antworten"
 
-msgid "change current game"
-msgstr ""
-"Aktualisiere Komi/Regeln\n"
-" im aktuellen Spiel"
-
 msgid "Make Main Branch"
 msgstr "Zum Hauptzweig machen"
 
@@ -718,7 +709,7 @@ msgstr "Anzeige für den besten Zug"
 
 #. Dropdown menu option
 msgid "top_move_delta_winrate"
-msgstr "Änderung der Gewinnrate"
+msgstr "Gewinnrate Änderung"
 
 #. Dropdown menu option
 msgid "top_move_visits"
@@ -827,10 +818,6 @@ msgid "menu:distributed"
 msgstr "Distributed Self-play Training"
 
 #. TODO
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
-
-#. TODO
 msgid "contribute:register"
 msgstr "Register"
 
@@ -856,7 +843,10 @@ msgstr "Password"
 
 #. TODO - hint for max games
 msgid "contribute:maxgames:hint"
-msgstr "Top-tier GPU: 32-64, Middle tier: 8-16, Older GPU or low-load: 4"
+msgstr ""
+"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
+" set it slightly lower for shorter runs, as half-finished games are not "
+"uploaded."
 
 #. TODO - hint for ownership
 msgid "contribute:ownership:hint"
@@ -869,12 +859,6 @@ msgstr "Enable Ownership"
 #. TODO - title
 msgid "contribute:login"
 msgstr "Login Information"
-
-#. TODO - textbox hint when empty
-msgid "engine:katago:contributehint"
-msgstr ""
-"For contributing to distributed training, please download and select an "
-"official 1.8.0+ binary."
 
 #. TODO - description
 msgid "contribute:movespeed"
@@ -902,7 +886,7 @@ msgstr "Reset analysis"
 
 #. TODO - Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "Target score for Black:"
 
 #. TODO - Description for how many moves
 msgid "setup position move number"
@@ -912,9 +896,9 @@ msgstr "Generate game until move:"
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
 
-#. TODO - menu option
-msgid "analysis:setup"
-msgstr "Generate position"
+#. TODO - generate position alongside starting new game
+msgid "setupposition"
+msgstr "Set up Position"
 
 #. TODO - Popup for generating position: top explanation
 msgid "setup position explanation"
@@ -922,3 +906,7 @@ msgstr ""
 "This generates a partial game for you to start playing from. For example, "
 "you can use this to play against stronger AIs starting from an advantage in "
 "a variety of middle- or end-game positions."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"

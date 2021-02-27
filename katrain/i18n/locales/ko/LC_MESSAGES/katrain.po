@@ -280,7 +280,6 @@ msgstr "한국"
 msgid "aga"
 msgstr "AGA"
 
-#. TODO check
 msgid "stone_scoring"
 msgstr "고대 중국"
 
@@ -298,7 +297,7 @@ msgid "non square board hint"
 msgstr "정사각형이 아닌 판에서 두려면 x:y(예: 19:9)를 사용하십시오."
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "새 대국 시작"
 
 # teacher settings from here
@@ -321,14 +320,10 @@ msgid "save dots"
 msgstr "SGF 파일에 저장"
 
 msgid "show last n dots"
-msgstr ""
-"마지막 몇 수에 대해\n"
-"인공지능 평가를 색으로 표시할지"
+msgstr "마지막 몇 수에 대해 인공지능 평가를 색으로 표시할지"
 
 msgid "show ai dots"
-msgstr ""
-"인공지능 대국자에 대해서도\n"
-"평가를 색으로 표시"
+msgstr "인공지능 대국자에 대해서도 평가를 색으로 표시"
 
 #. submit button
 msgid "update teacher"
@@ -667,11 +662,6 @@ msgstr "간명한 기풍"
 msgid "local analysis"
 msgstr "국지적인 응수를 찾고 있습니다"
 
-msgid "change current game"
-msgstr ""
-"이 판에 대해\n"
-"덤과 규칙 등 조절"
-
 msgid "Make Main Branch"
 msgstr "주 변화로 만들기"
 
@@ -771,112 +761,78 @@ msgstr "흑 대국자"
 msgid "white player name hint"
 msgstr "백 대국자"
 
-#. TODO - in self-play mode
 msgid "gui-locked"
-msgstr ""
-"Action {action} not allowed in distributed self-play training mode. Restart "
-"KaTrain to exit this mode."
+msgstr "{action} 행동은 분산 자가대국 학습 모드에서 허용되지 않습니다. 이 모드를 벗어나려면 KaTrain을 재시작하십시오."
 
-#. TODO - menu item
 msgid "menu:distributed"
-msgstr "Distributed Self-play Training"
+msgstr "분산 자가대국 학습"
 
-#. TODO
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
-
-#. TODO
 msgid "contribute:register"
-msgstr "Register"
+msgstr "회원 등록"
 
-#. TODO
 msgid "contribute:start"
-msgstr "Start Contributing!"
+msgstr "기여 시작하기!"
 
-#. TODO - contribute settings popup
 msgid "contribute settings title"
-msgstr "Contribute To KataGo Distributed Training"
+msgstr "KataGo 분산 학습에 기여하기"
 
-#. TODO
 msgid "contribute:username"
-msgstr "Username"
+msgstr "사용자 이름"
 
-#. TODO - description for input
 msgid "contribute:maxgames"
-msgstr "Simultaneous Games"
+msgstr "동시 대국 수"
 
-#. TODO
 msgid "contribute:password"
-msgstr "Password"
+msgstr "비밀번호"
 
-#. TODO - hint for max games
 msgid "contribute:maxgames:hint"
 msgstr ""
-"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
-" set it slightly lower for shorter runs, as half-finished games are not "
-"uploaded."
+"최적의 numSearchThreads 값과 같게 두는 것이 좋습니다(중급 GPU는 8 정도). 완료되지 않은 판은 업로드되지 않으므로, "
+"오래 실행하지 않는다면 조금 낮추어도 무방합니다."
 
-#. TODO - hint for ownership
 msgid "contribute:ownership:hint"
-msgstr "Slightly slows down training, but allows ownership visualization."
+msgstr "자가대국이 약간 느려지지만, 집 모양을 표시할 수 있습니다."
 
-#. TODO
 msgid "contribute:ownership"
-msgstr "Enable Ownership"
+msgstr "집 모양 활성화"
 
-#. TODO - title
 msgid "contribute:login"
-msgstr "Login Information"
+msgstr "katagotraining.org 로그인 정보 "
 
-#. TODO - textbox hint when empty
-msgid "engine:katago:contributehint"
-msgstr ""
-"For contributing to distributed training, please download and select an "
-"official 1.8.0+ binary."
-
-#. TODO - description
 msgid "contribute:movespeed"
-msgstr "Move speed"
+msgstr "착수 속도"
 
-#. TODO - hint for move speed
 msgid "contribute:movespeed:hint"
-msgstr "Move playing delay in seconds/move."
+msgstr "착수 시 지연 시간(초)"
 
-#. TODO - description
 msgid "contribute:savesgf"
-msgstr "Save SGFs"
+msgstr "SGF 파일 저장하기"
 
-#. TODO - hint for save
 msgid "contribute:savesgf:hint"
-msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+msgstr "다 보여준 판을 ./dist_sgf에 SGF 파일로 저장합니다."
 
-#. TODO - title
 msgid "contribute:viewer settings"
-msgstr "Viewer Settings"
+msgstr "뷰어 설정"
 
-#. TODO - Clear all results and reset to normal query
 msgid "analysis:reset"
-msgstr "Reset analysis"
+msgstr "분석 결과 지우기"
 
-#. TODO - Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "목표로 하는 집 차이(흑 시점):"
 
-#. TODO - Description for how many moves
 msgid "setup position move number"
-msgstr "Generate game until move:"
+msgstr "생성할 대국 수수:"
 
-#. TODO - Progress message
 msgid "setup game status message"
-msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+msgstr "AI 자가대국으로 대국 생성중: {move}/{until_move}수 완료됨."
 
-#. TODO - menu option
-msgid "analysis:setup"
-msgstr "Generate position"
+msgid "setupposition"
+msgstr "판 깔아두기"
 
-#. TODO - Popup for generating position: top explanation
 msgid "setup position explanation"
 msgstr ""
-"This generates a partial game for you to start playing from. For example, "
-"you can use this to play against stronger AIs starting from an advantage in "
-"a variety of middle- or end-game positions."
+"이어 둘 수 있는 미완료 대국을 생성합니다. 예를 들어, 강한 AI를 상대로 둘 때 중반전이나 끝내기에서 앞서 있는 상태로 대국을 시작할"
+" 수 있습니다."
+
+msgid "editgame"
+msgstr "대국 정보 편집"

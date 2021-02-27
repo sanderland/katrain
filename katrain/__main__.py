@@ -20,20 +20,6 @@ from kivy.utils import platform
 ICON = find_package_resource("katrain/img/icon.ico")
 Config.set("kivy", "window_icon", ICON)
 
-# finally, window size
-WINDOW_SCALE_FAC, WINDOW_X, WINDOW_Y = 1, 1300, 1000
-try:
-    from screeninfo import get_monitors
-
-    for m in get_monitors():
-        WINDOW_SCALE_FAC = min(WINDOW_SCALE_FAC, (m.height - 100) / WINDOW_Y, (m.width - 100) / WINDOW_X)
-except Exception as e:
-    if platform != "macosx":
-        print(f"Exception {e} while getting screen resolution.")
-        WINDOW_SCALE_FAC = 0.85
-
-Config.set("graphics", "width", max(400, int(WINDOW_X * WINDOW_SCALE_FAC)))
-Config.set("graphics", "height", max(400, int(WINDOW_Y * WINDOW_SCALE_FAC)))
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
 import re
@@ -328,16 +314,18 @@ class KaTrainGui(Screen, KaTrainBase):
             analyze_fast=analyze_fast or not move_tree,
             sgf_filename=sgf_filename,
         )
-        if move_tree:
-            for bw, player_info in self.players_info.items():
-                player_info.sgf_rank = move_tree.root.get_property(bw + "R")
-                player_info.calculated_rank = None
-                self.update_player(bw)
+        for bw, player_info in self.players_info.items():
+            player_info.sgf_rank = self.game.root.get_property(bw + "R")
+            player_info.calculated_rank = None
+            if sgf_filename is not None:  # load game->no ai player
+                player_info.player_type = PLAYER_HUMAN
+                player_info.player_subtype = PLAYING_NORMAL
+            self.update_player(bw, player_type=player_info.player_type, player_subtype=player_info.player_subtype)
         self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
 
     def _do_katago_contribute(self):
-        if self.contributing and not self.engine.server_error:
+        if self.contributing and not self.engine.server_error and self.engine.katago_process is not None:
             return
         self.contributing = self.animate_contributing = True  # special mode
         if self.play_analyze_mode == MODE_PLAY:  # switch to analysis view
@@ -415,7 +403,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.new_game_popup:
             self.new_game_popup = I18NPopup(
-                title_key="New Game title", size=[dp(800), dp(800)], content=NewGamePopup(self)
+                title_key="New Game title", size=[dp(800), dp(900)], content=NewGamePopup(self)
             ).__self__
             self.new_game_popup.content.popup = self.new_game_popup
         self.new_game_popup.open()
@@ -619,7 +607,7 @@ class KaTrainGui(Screen, KaTrainBase):
             return  # when making notes, don't allow keyboard shortcuts
         popup = self.popup_open
         if popup:
-            if keycode[1] in ["f5", "f6", "f7", "f8"]:  # switch between popups
+            if keycode[1] in ["f5", "f6", "f7", "f8", "f9"]:  # switch between popups
                 popup.dismiss()
                 return
             elif keycode[1] in ["enter", "numpadenter"]:
@@ -749,6 +737,25 @@ class KaTrainApp(MDApp):
         Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file.decode("utf8")))
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
+
+        win_size = self.gui.config("ui_state/size", [])
+        win_left = self.gui.config("ui_state/left", None)
+        win_top = self.gui.config("ui_state/top", None)
+        if not win_size:
+            window_scale_fac = 1
+            try:
+                from screeninfo import get_monitors
+
+                for m in get_monitors():
+                    window_scale_fac = min(window_scale_fac, (m.height - 100) / 1000, (m.width - 100) / 1300)
+            except Exception as e:
+                window_scale_fac = 0.85
+            win_size = [1300 * window_scale_fac, 1000 * window_scale_fac]
+        Window.size = (win_size[0], win_size[1])
+        if win_left is not None and win_top is not None:
+            Window.left = win_left
+            Window.top = win_top
+
         return self.gui
 
     def on_language(self, _instance, language):
@@ -778,6 +785,10 @@ class KaTrainApp(MDApp):
             return True  # do not close on esc
         if getattr(self, "gui", None):
             self.gui.play_mode.save_ui_state()
+            self.gui._config["ui_state"]["size"] = list(Window.size)
+            self.gui._config["ui_state"]["top"] = Window.top
+            self.gui._config["ui_state"]["left"] = Window.left
+            self.gui.save_config("ui_state")
             if self.gui.engine:
                 self.gui.engine.shutdown(finish=None)
 

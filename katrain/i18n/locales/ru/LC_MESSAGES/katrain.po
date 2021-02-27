@@ -324,7 +324,7 @@ msgid "non square board hint"
 msgstr "Используйте x:y (e.g. 19:9) для прямоугольных размеров"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Начать новую игру"
 
 # teacher settings from here
@@ -347,14 +347,10 @@ msgid "save dots"
 msgstr "Сохранить в SGF"
 
 msgid "show last n dots"
-msgstr ""
-"Показать точки для\n"
-"<этого количества> последних ходов"
+msgstr "Показать точки для <этого количества> последних ходов"
 
 msgid "show ai dots"
-msgstr ""
-"Показать точки и SGF комментарии\n"
-" для ИИ игроков"
+msgstr "Показать точки и SGF комментарии для ИИ игроков"
 
 #. submit button
 msgid "update teacher"
@@ -700,11 +696,6 @@ msgstr "Простой стиль"
 msgid "local analysis"
 msgstr "Поиск локальных ответов"
 
-msgid "change current game"
-msgstr ""
-"Изменить коми/правила\n"
-"в текущей игре"
-
 msgid "Make Main Branch"
 msgstr "Сделать главной веткой"
 
@@ -796,10 +787,6 @@ msgid "menu:distributed"
 msgstr "Distributed Self-play Training"
 
 #. TODO
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
-
-#. TODO
 msgid "contribute:register"
 msgstr "Register"
 
@@ -840,13 +827,7 @@ msgstr "Enable Ownership"
 
 #. TODO - title
 msgid "contribute:login"
-msgstr "Login Information"
-
-#. TODO - textbox hint when empty
-msgid "engine:katago:contributehint"
-msgstr ""
-"For contributing to distributed training, please download and select an "
-"official 1.8.0+ binary."
+msgstr "Login Information for katagotraining.org"
 
 #. TODO - description
 msgid "contribute:movespeed"
@@ -874,15 +855,15 @@ msgstr "Reset analysis"
 
 #. TODO - Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "Target score for Black:"
 
 #. TODO - Description for how many moves
 msgid "setup position move number"
 msgstr "Generate game until move:"
 
-#. TODO - menu option
-msgid "analysis:setup"
-msgstr "Generate position"
+#. TODO - generate position alongside starting new game
+msgid "setupposition"
+msgstr "Set up Position"
 
 #. TODO - Popup for generating position: top explanation
 msgid "setup position explanation"
@@ -894,3 +875,7 @@ msgstr ""
 #. TODO - Progress message
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"

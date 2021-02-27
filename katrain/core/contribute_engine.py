@@ -9,24 +9,24 @@ import traceback
 from collections import defaultdict
 
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_KATAGO_STDERR
-from katrain.core.engine import EngineDiedException
+from katrain.core.engine import EngineDiedException, BaseEngine
 from katrain.core.game import BaseGame
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move
 from katrain.core.utils import find_package_resource
 
 
-class KataGoContributeEngine:
+class KataGoContributeEngine(BaseEngine):
     """Starts and communicates with the KataGo contribute program"""
 
     DEFAULT_MAX_GAMES = 8
 
     SHOW_RESULT_TIME = 5
-    GIVE_UP_AFTER = 60
+    GIVE_UP_AFTER = 120
 
     def __init__(self, katrain):
+        super().__init__(katrain, katrain.config("contribute"))
         self.katrain = katrain
-        cfg = find_package_resource("katrain/KataGo/contribute.cfg")
         base_dir = os.path.expanduser("~/.katrain/katago_contribute")
         self.katago_process = None
         self.stdout_thread = None
@@ -43,17 +43,19 @@ class KataGoContributeEngine:
         self.start_time = 0
         self.server_error = None
 
-        self.save_sgf = katrain.config("contribute/savesgf", False)
-        self.save_path = katrain.config("contribute/savepath", "./dist_sgf/")
-        self.move_speed = katrain.config("contribute/movespeed", 2.0)
+        self.save_sgf = self.config.get("savesgf", False)
+        self.save_path = self.config.get("savepath", "./dist_sgf/")
+        self.move_speed = self.config.get("movespeed", 2.0)
 
-        exe = katrain.config("contribute/katago")
+        exe = self.get_engine_path(self.config.get("katago"))
+        cfg = find_package_resource(self.config.get("config"))
+
 
         settings_dict = {
-            "username": katrain.config("contribute/username"),
-            "password": katrain.config("contribute/password"),
-            "maxSimultaneousGames": katrain.config("contribute/maxgames") or self.DEFAULT_MAX_GAMES,
-            "includeOwnership": katrain.config("contribute/ownership") or False,
+            "username": self.config.get("username"),
+            "password": self.config.get("password"),
+            "maxSimultaneousGames": self.config.get("maxgames") or self.DEFAULT_MAX_GAMES,
+            "includeOwnership": self.config.get("ownership") or False,
         }
         self.max_buffer_games = 2 * settings_dict["maxSimultaneousGames"]
         settings = {f"{k}={v}" for k, v in settings_dict.items()}

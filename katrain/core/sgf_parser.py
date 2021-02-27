@@ -170,6 +170,10 @@ class SGFNode:
         """Get the first value of the property, typically when exactly one is expected."""
         return self.properties.get(property, [default])[0]
 
+    def clear_property(self, property) -> Any:
+        """Removes property if it exists."""
+        return self.properties.pop(property, None)
+
     @property
     def parent(self) -> Optional["SGFNode"]:
         """Returns the parent node"""

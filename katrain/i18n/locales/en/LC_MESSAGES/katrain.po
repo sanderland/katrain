@@ -359,7 +359,7 @@ msgstr "Update Timer"
 
 # new game settings from here
 msgid "New Game title"
-msgstr "Setup New Game"
+msgstr "Set up New Game / Edit Game Info and Rules"
 
 #. in new game options
 msgid "player names"
@@ -415,14 +415,16 @@ msgid "non square board hint"
 msgstr "Use x:y (e.g. 19:9) for non-square size"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Start New Game"
 
 #. change komi etc in current game
-msgid "change current game"
-msgstr ""
-"Update komi/rules\n"
-"in active game"
+msgid "editgame"
+msgstr "Edit Game Info"
+
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "Set up Position"
 
 # teacher settings from here
 msgid "teacher settings"
@@ -432,7 +434,9 @@ msgid "point loss threshold"
 msgstr "Point loss greater than"
 
 msgid "num undos"
-msgstr "Number of undos"
+msgstr ""
+"Number of undos\n"
+"(teaching games)"
 
 msgid "dot color"
 msgstr "Colour"
@@ -444,14 +448,10 @@ msgid "save dots"
 msgstr "Save in SGF"
 
 msgid "show last n dots"
-msgstr ""
-"Show dots for the last\n"
-"<this many> moves"
+msgstr "Show dots for the last <this many> moves"
 
 msgid "show ai dots"
-msgstr ""
-"Show dots/SGF comments\n"
-" for AI players"
+msgstr "Show dots/SGF comments for AI players"
 
 #. analysis option
 msgid "cache analysis to sgf"
@@ -469,19 +469,13 @@ msgstr "Restarting Engine after Settings Change."
 msgid "contribute settings title"
 msgstr "Contribute To KataGo Distributed Training"
 
-#. textbox hint when empty
-msgid "engine:katago:contributehint"
-msgstr ""
-"For contributing to distributed training, please download and select an "
-"official 1.8.0+ binary."
-
 #. title
 msgid "contribute:viewer settings"
 msgstr "Viewer Settings"
 
 #. title
 msgid "contribute:login"
-msgstr "Login Information"
+msgstr "Login Information for katagotraining.org"
 
 #. description for input
 msgid "contribute:maxgames"
@@ -525,9 +519,6 @@ msgstr "Password"
 
 msgid "contribute:register"
 msgstr "Register"
-
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
 
 msgid "contribute:start"
 msgstr "Start Contributing!"
@@ -908,10 +899,6 @@ msgstr ""
 "Action {action} not allowed in distributed self-play training mode. Restart "
 "KaTrain to exit this mode."
 
-#. menu option
-msgid "analysis:setup"
-msgstr "Generate position"
-
 #. Progress message
 msgid "setup game status message"
 msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
@@ -925,7 +912,7 @@ msgstr ""
 
 #. Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "Target score for Black:"
 
 #. Description for how many moves
 msgid "setup position move number"

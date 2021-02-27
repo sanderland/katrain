@@ -325,7 +325,7 @@ msgid "non square board hint"
 msgstr "長方形碁盤は x:y と記入（例 19:9）"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "新規対局を開始"
 
 # teacher settings from here
@@ -336,7 +336,7 @@ msgid "point loss threshold"
 msgstr "何目より損なら"
 
 msgid "num undos"
-msgstr "待ったの回数"
+msgstr "再考を促す回数"
 
 msgid "dot color"
 msgstr "色"
@@ -348,14 +348,10 @@ msgid "save dots"
 msgstr "SGFに保存"
 
 msgid "show last n dots"
-msgstr ""
-"直近何手の\n"
-"ドットを表示"
+msgstr "直近何手のドットを表示"
 
 msgid "show ai dots"
-msgstr ""
-"AIの手にもドットや\n"
-"SGFコメントをつける"
+msgstr "AIの手にもドットやSGFコメントをつける"
 
 #. submit button
 msgid "update teacher"
@@ -692,11 +688,6 @@ msgstr "簡明派"
 msgid "local analysis"
 msgstr "近辺の応手を分析中"
 
-msgid "change current game"
-msgstr ""
-"現対局のコミ・\n"
-"ルールを変更"
-
 #. on move tree editing
 msgid "Make Main Branch"
 msgstr "こちらを主分岐に"
@@ -798,112 +789,95 @@ msgstr "黒番"
 msgid "white player name hint"
 msgstr "白番"
 
-#. TODO - in self-play mode
+#. in self-play mode
 msgid "gui-locked"
-msgstr ""
-"Action {action} not allowed in self-play mode. Restart KaTrain to exit "
-"distributed training mode."
+msgstr "自己対局モードではこの動作 {action} はできません。分散訓練モードを抜けるにはKaTrainを再起動してください。"
 
-#. TODO - menu item
+#. menu item
 msgid "menu:distributed"
-msgstr "Distributed Self-play Training"
+msgstr "自己対局による分散訓練"
 
-#. TODO
-msgid "contribute:warning"
-msgstr "Note that starting contribution mode ..."
-
-#. TODO
 msgid "contribute:register"
-msgstr "Register"
+msgstr "登録"
 
-#. TODO
 msgid "contribute:start"
-msgstr "Start Contributing!"
+msgstr "貢献を開始！"
 
-#. TODO - contribute settings popup
+#. contribute settings popup
 msgid "contribute settings title"
-msgstr "Contribute To KataGo Distributed Training"
+msgstr "KataGoの分散訓練に協力"
 
-#. TODO
 msgid "contribute:username"
-msgstr "Username"
+msgstr "ユーザ名"
 
-#. TODO - description for input
+#. description for input
 msgid "contribute:maxgames"
-msgstr "Max Number of Simultaneous Games"
+msgstr "最大同時対局数"
 
-#. TODO
 msgid "contribute:password"
-msgstr "Password"
+msgstr "パスワード"
 
-#. TODO - hint for max games
+#. hint for max games
 msgid "contribute:maxgames:hint"
 msgstr ""
-"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
-" set it slightly lower for shorter runs, as half-finished games are not "
-"uploaded."
+"あなたの環境での最適なnumSearchThreads（探索スレッド数、中級品のGPUなら8程度）に合わせるのが最良です。短時間だけ稼働する場合にはそれよりやや小さい値にするのもよいでしょう（未完了の対局はアップロードされないので）。"
 
-#. TODO - hint for ownership
+#. hint for ownership
 msgid "contribute:ownership:hint"
-msgstr "Slightly slows down training, but allows ownership visualization."
+msgstr "訓練速度は若干落ちてしまいますが、黒地か白地かを可視化します"
 
-#. TODO
 msgid "contribute:ownership"
-msgstr "Enable Ownership Prediction"
+msgstr "黒地か白地かを予測"
 
-#. TODO - title
+#. title
 msgid "contribute:login"
-msgstr "Login Information"
+msgstr "ログイン情報 (katagotraining.org)"
 
-#. TODO - textbox hint when empty
-msgid "engine:katago:contributehint"
-msgstr ""
-"For contributing to distributed training, please download and select an "
-"official 1.8.0+ binary."
-
-#. TODO - description
+#. description
 msgid "contribute:movespeed"
-msgstr "Move speed"
+msgstr "着手の速さ"
 
-#. TODO - hint for move speed
+#. hint for move speed
 msgid "contribute:movespeed:hint"
-msgstr "Move playing delay in seconds/move."
+msgstr "何秒ごとに一手進めるか"
 
-#. TODO - description
+#. description
 msgid "contribute:savesgf"
-msgstr "Save SGFs"
+msgstr "SGFを保存"
 
-#. TODO - hint for save
+#. hint for save
 msgid "contribute:savesgf:hint"
-msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+msgstr "表示しおわった対局のSGFファイルを./dist_sgfに保存"
 
-#. TODO - title
+#. title
 msgid "contribute:viewer settings"
-msgstr "Viewer Settings"
+msgstr "表示設定"
 
-#. TODO - Clear all results and reset to normal query
+#. Clear all results and reset to normal query
 msgid "analysis:reset"
-msgstr "Reset analysis"
+msgstr "分析をリセット"
 
-#. TODO - Description for black target score
+#. Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black (Can be negative):"
+msgstr "黒の何目リードを目標に："
 
-#. TODO - Description for how many moves
+#. Description for how many moves
 msgid "setup position move number"
-msgstr "Generate game until move:"
+msgstr "何手目まで生成："
 
-#. TODO - Progress message
+#. Progress message
 msgid "setup game status message"
-msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+msgstr "AIの自己対局により局面を生成：{move}手/{until_move}手まで"
 
-#. TODO - menu option
-msgid "analysis:setup"
-msgstr "Generate position"
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "局面を生成"
 
-#. TODO - Popup for generating position: top explanation
+#. Popup for generating position: top explanation
 msgid "setup position explanation"
 msgstr ""
-"This generates a partial game for you to start playing from. For example, "
-"you can use this to play against stronger AIs starting from an advantage in "
-"a variety of middle- or end-game positions."
+"設定に応じた途中局面を自動生成して、そこから打ち継ぎます。たとえば、形勢の良い中盤や終盤の色々な局面から、強いAIを相手に続きを打つといった使い方ができます。"
+
+#. change komi etc in current game
+msgid "editgame"
+msgstr "対局情報を編集"
