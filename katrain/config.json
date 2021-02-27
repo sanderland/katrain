@@ -13,7 +13,7 @@
     },
     "contribute": {
         "katago": "",
-        "config": "katrain/KataGo/contribute.cfg",
+        "config": "katrain/KataGo/contribute_config.cfg",
         "ownership": false,
         "maxgames": 6,
         "movespeed": 2,
