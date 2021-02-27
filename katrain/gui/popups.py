@@ -777,9 +777,6 @@ class LoadSGFPopup(BaseConfigPopup):
     def on_submit(self):
         self.filesel.button_clicked()
 
-    def update_config(self, save_to_file=True, close_popup=False):
-        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
-
 
 class SaveSGFPopup(BoxLayout):
     def __init__(self, suggested_filename, **kwargs):
