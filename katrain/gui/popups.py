@@ -283,7 +283,7 @@ class NewGamePopup(QuickConfigGui):
     def update_playername(self, *args):
         for bw in "BW":
             name = self.katrain.game.root.get_property("P" + bw, None)
-            if name and SGF_INTERNAL_COMMENTS_MARKER not in name:
+            if name:
                 self.player_name[bw].text = name if self.mode == "editgame" else ""
 
     def update_from_current_game(self, *args):  # set rules and komi

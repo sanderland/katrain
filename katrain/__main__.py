@@ -248,7 +248,7 @@ class KaTrainGui(Screen, KaTrainBase):
         super().update_player(bw, **kwargs)
         if self.game:
             sgf_name = self.game.root.get_property("P" + bw)
-            self.players_info[bw].name = None if not sgf_name or SGF_INTERNAL_COMMENTS_MARKER in sgf_name else sgf_name
+            self.players_info[bw].name = sgf_name
         if self.controls:
             self.controls.update_players()
             self.update_state()

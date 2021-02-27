@@ -361,7 +361,7 @@ class BaseGame:
         x_properties = {}
         for bw in "BW":
             if not self.external_game:
-                x_properties["P" + bw] = player_name(self.katrain.players_info[bw]) + SGF_INTERNAL_COMMENTS_MARKER
+                x_properties["P" + bw] = player_name(self.katrain.players_info[bw])
                 player_info = self.katrain.players_info[bw]
                 if player_info.player_type == PLAYER_AI:
                     x_properties[bw + "R"] = rank_label(player_info.calculated_rank)
