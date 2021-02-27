@@ -476,7 +476,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_analyze_sgf_popup(self):
         if not self.fileselect_popup:
-            popup_contents = LoadSGFPopup()
+            popup_contents = LoadSGFPopup(self)
             popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
             self.fileselect_popup = I18NPopup(
                 title_key="load sgf title", size=[dp(1200), dp(800)], content=popup_contents
