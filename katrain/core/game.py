@@ -355,13 +355,13 @@ class BaseGame:
             if player_info.name and player_info.player_type == PLAYER_HUMAN:
                 return player_info.name
             else:
-                return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)})"
+                return f"{i18n._(player_info.player_type)} ({i18n._(player_info.player_subtype)}){SGF_INTERNAL_COMMENTS_MARKER}"
 
         root_properties = self.root.properties
         x_properties = {}
         for bw in "BW":
             if not self.external_game:
-                x_properties["P" + bw] = player_name(self.katrain.players_info[bw]) + SGF_INTERNAL_COMMENTS_MARKER
+                x_properties["P" + bw] = player_name(self.katrain.players_info[bw])
                 player_info = self.katrain.players_info[bw]
                 if player_info.player_type == PLAYER_AI:
                     x_properties[bw + "R"] = rank_label(player_info.calculated_rank)
