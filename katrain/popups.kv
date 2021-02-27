@@ -754,7 +754,6 @@
                 id: fast
                 size_hint: 0.05,1
                 input_property: "general/load_fast_analysis"
-                on_press: root.update_config(True)
             DescriptionLabel:
                 text: i18n._("load sgf rewind")
                 halign: 'right'
@@ -764,7 +763,6 @@
                 active: True
                 size_hint: 0.05,1
                 input_property: "general/load_sgf_rewind"
-                on_press: root.update_config(True)
     I18NFileBrowser:
         id: filesel
         multiselect: False
@@ -772,6 +770,7 @@
         filters: ["*.sgf","*.gib","*.ngf"]
         path: "."
         size_hint: 1,7
+        on_submit: root.update_config(True)
 
 <SaveSGFPopup>:
     filesel: filesel
