@@ -772,9 +772,9 @@ class ContributePopup(BaseConfigPopup):
             self.katrain("katago-contribute")
 
 
-class LoadSGFPopup(BoxLayout):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+class LoadSGFPopup(BaseConfigPopup):
+    def __init__(self, katrain):
+        super().__init__(katrain)
         app = MDApp.get_running_app()
         self.filesel.favorites = [
             (os.path.abspath(app.gui.config("general/sgf_load")), "Last Load Dir"),
