@@ -480,7 +480,8 @@ class KaTrainGui(Screen, KaTrainBase):
                 if path != self.config("general/sgf_load"):
                     self.log(f"Updating sgf load path default to {path}", OUTPUT_DEBUG)
                     self._config["general"]["sgf_load"] = path
-                    self.save_config("general")
+                popup_contents.update_config(False)
+                self.save_config("general")
                 self.load_sgf_file(filename, popup_contents.fast.active, popup_contents.rewind.active)
 
             popup_contents.filesel.on_success = readfile
