@@ -26,7 +26,7 @@ Adding a translation requires making a new `.po` file with entries for that lang
     * Note that anything between `{}` should be left as-is.
     * The information at the top of the file should also not be translated.
 
-You can send me the resulting `.po` file and I will integrate it into the program.
+You can send me the resulting `.po` file, and I will integrate it into the program.
 
 # Contributors 
 
@@ -38,7 +38,7 @@ You can send me the resulting `.po` file and I will integrate it into the progra
 
 Many thanks to these additional authors:
 
-* Matthew Allred ("Kameone") for design of the v1.1 UI, MacOS installation instructions, and working on promotion and YouTube videos.
+* Matthew Allred ("Kameone") for design of the v1.1 UI, macOS installation instructions, and working on promotion and YouTube videos.
 * "bale-go" for development and continued work on the 'calibrated rank' AI and rank estimation algorithm.
 * "Dontbtme" for detailed feedback and early testing of v1.0+.
 * "nowoowoo" for a fix to the parser for SGF files with extra line breaks.
@@ -51,8 +51,8 @@ Many thanks to these additional authors:
 * Carton He for contributions to sgf parsing and handling.
 * "blamarche" for adding the board coordinates toggle.
 * "pdeblanc" for adding the ancient chinese scoring option, fixing a bug in query termination
-* "LiamHz" for adding the undo to main branch keyboard shortcut.
-* "xiaoyifang" for adding the reset analysis option.
+* "LiamHz" for adding the 'back to main branch' keyboard shortcut.
+* "xiaoyifang" for adding the reset analysis option, feature to save options on the loading screen.
 
 ## Translators
 
