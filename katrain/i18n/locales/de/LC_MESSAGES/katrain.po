@@ -283,9 +283,8 @@ msgstr "Koreanisch"
 msgid "aga"
 msgstr "AGA"
 
-#. TODO check
 msgid "stone_scoring"
-msgstr "Alte Chinesisch"
+msgstr "Alte chinesische"
 
 msgid "clear cache"
 msgstr "Cache leeren"
@@ -641,7 +640,7 @@ msgid "engine:altcommand"
 msgstr "Engine-Befehl überschreiben"
 
 msgid "download katago button"
-msgstr "KataGo-Versionen herunterladen"
+msgstr "KataGo-Prog. herunterladen"
 
 msgid "katago binaries available"
 msgstr "{num} KataGo-Programme verfügbar"
@@ -807,106 +806,101 @@ msgstr "Name von Schwarz"
 msgid "white player name hint"
 msgstr "Name von Weiß"
 
-#. TODO - in self-play mode
+#. in self-play mode
 msgid "gui-locked"
 msgstr ""
-"Action {action} not allowed in distributed self-play training mode. Restart "
-"KaTrain to exit this mode."
+"Aktion {action} nicht erlaubt im verteilten Selbstspieltraining Modus. Neu "
+"starten, damit Katrain diesen Modus verlässt."
 
-#. TODO - menu item
+#. menu item
 msgid "menu:distributed"
-msgstr "Distributed Self-play Training"
+msgstr "Verteiltes Selbstspieltraining"
 
-#. TODO
 msgid "contribute:register"
-msgstr "Register"
+msgstr "Registrieren"
 
-#. TODO
 msgid "contribute:start"
-msgstr "Start Contributing!"
+msgstr "Anfangen beizutragen!"
 
-#. TODO - contribute settings popup
+#. contribute settings popup
 msgid "contribute settings title"
-msgstr "Contribute To KataGo Distributed Training"
+msgstr "Zu KataGo's verteiltem Training beitragen"
 
-#. TODO
 msgid "contribute:username"
-msgstr "Username"
+msgstr "Benutzername"
 
-#. TODO - description for input
+#. description for input
 msgid "contribute:maxgames"
-msgstr "Simultaneous Games"
+msgstr "Gleichzeitige Spiele"
 
-#. TODO
 msgid "contribute:password"
-msgstr "Password"
+msgstr "Passwort"
 
-#. TODO - hint for max games
+#. hint for max games
 msgid "contribute:maxgames:hint"
 msgstr ""
-"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
-" set it slightly lower for shorter runs, as half-finished games are not "
-"uploaded."
+"Am besten gleich zu eurem optimalen numSearchThreads, ungefähr 8 für "
+"mittlemäßige GPUs. setzt es leicht kleiner für kürzere Beiträge, da "
+"unbeendete Spiele nicht hochgeladen werden."
 
-#. TODO - hint for ownership
+#. hint for ownership
 msgid "contribute:ownership:hint"
-msgstr "Slightly slows down training, but allows ownership visualization."
+msgstr "Macht Training leicht langsamer, aber erlaubt Eigentum visualisierung"
 
-#. TODO
 msgid "contribute:ownership"
-msgstr "Enable Ownership"
+msgstr "Eigentum aktivieren"
 
-#. TODO - title
+#. title
 msgid "contribute:login"
-msgstr "Login Information"
+msgstr "Anmeldung Information (katagotraining.org)"
 
-#. TODO - description
+#. description
 msgid "contribute:movespeed"
-msgstr "Move speed"
+msgstr "Zuggeschwindigkeit"
 
-#. TODO - hint for move speed
+#. hint for move speed
 msgid "contribute:movespeed:hint"
-msgstr "Move playing delay in seconds/move."
+msgstr "Zuggeschwindigkeit in Sekunden/Zug."
 
-#. TODO - description
+#. description
 msgid "contribute:savesgf"
-msgstr "Save SGFs"
+msgstr "SGFs speichern"
 
-#. TODO - hint for save
+#. hint for save
 msgid "contribute:savesgf:hint"
-msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+msgstr "SGF Dateien von beendete Spiele in ./dist_sgf speichern"
 
-#. TODO - title
+#. title
 msgid "contribute:viewer settings"
-msgstr "Viewer Settings"
+msgstr "Beobachtereinstellungen"
 
-#. TODO - Clear all results and reset to normal query
+#. Clear all results and reset to normal query
 msgid "analysis:reset"
-msgstr "Reset analysis"
+msgstr "Analysis zurücksetzen"
 
-#. TODO - Description for black target score
+#. Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black:"
+msgstr "Zielergebnis für Schwarz:"
 
-#. TODO - Description for how many moves
+#. Description for how many moves
 msgid "setup position move number"
-msgstr "Generate game until move:"
+msgstr "Spiel generieren bis zum Zug:"
 
-#. TODO - Progress message
+#. Progress message
 msgid "setup game status message"
-msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+msgstr "Spiel durch KI generieren: Zug {move}/{until_move} generiert."
 
-#. TODO - generate position alongside starting new game
+#. generate position alongside starting new game
 msgid "setupposition"
-msgstr "Set up Position"
+msgstr "Position aufsetzen"
 
-#. TODO - Popup for generating position: top explanation
+#. Popup for generating position: top explanation
 msgid "setup position explanation"
 msgstr ""
-"This generates a partial game for you to start playing from. For example, "
-"you can use this to play against stronger AIs starting from an advantage in "
-"a variety of middle- or end-game positions."
+"Dies generiert ein Teil eines Spieles, von dem ihr anfangen könnt, zu "
+"spielen. Zum Beispiel könnt ihr es benutzen um im Vorteil gegen stärkere KIs"
+" in verschiedene Mittel- oder Endspielsituationen zu Spielen."
 
-#. TODO - change komi etc in current game
+#. change komi etc in current game
 msgid "editgame"
-msgstr "Edit Game Info"
+msgstr "Spiel editieren"
