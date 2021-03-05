@@ -312,10 +312,8 @@ msgstr "显示选点"
 msgid "save dots"
 msgstr "保存为SGF"
 
-#. TODO: this many can be translated, or left out if the number goes
-#. comfortably at the end
 msgid "show last n dots"
-msgstr "显示最后 <this many> 手棋的选点"
+msgstr "显示最后几手棋的选点"
 
 msgid "show ai dots"
 msgstr "AI的显示选点/SGF评价"

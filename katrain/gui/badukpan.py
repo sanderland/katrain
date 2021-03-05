@@ -18,7 +18,7 @@ from kivymd.uix.floatlayout import MDFloatLayout
 
 from katrain.core.constants import (
     MODE_PLAY,
-    OUTPUT_DEBUG, 
+    OUTPUT_DEBUG,
     OUTPUT_EXTRA_DEBUG,
     STATUS_TEACHING,
     TOP_MOVE_DELTA_SCORE,

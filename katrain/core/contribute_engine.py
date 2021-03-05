@@ -50,12 +50,12 @@ class KataGoContributeEngine(BaseEngine):
         exe = self.get_engine_path(self.config.get("katago"))
         cfg = find_package_resource(self.config.get("config"))
 
-
         settings_dict = {
             "username": self.config.get("username"),
             "password": self.config.get("password"),
             "maxSimultaneousGames": self.config.get("maxgames") or self.DEFAULT_MAX_GAMES,
             "includeOwnership": self.config.get("ownership") or False,
+            "logGamesAsJson": True,
         }
         self.max_buffer_games = 2 * settings_dict["maxSimultaneousGames"]
         settings = {f"{k}={v}" for k, v in settings_dict.items()}

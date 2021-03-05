@@ -148,7 +148,7 @@ class ControlsPanel(BoxLayout):
         if katrain.contributing:
             info += katrain.engine.status()
             game_id = getattr(katrain.engine, "showing_game", None)
-            game = katrain.engine.active_games.get(game_id)
+            game = getattr(katrain.engine, "active_games", {}).get(game_id)
             if game is not None:
                 info += f"Showing game {game_id}\n"
                 for bw in "BW":

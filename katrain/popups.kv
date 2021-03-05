@@ -360,26 +360,26 @@
         GridLayout:
             cols: 3
             rows: 2
-            size_hint: 0.75,1
+            size_hint: 0.85,1
             DescriptionLabel:
-                size_hint: 0.33, 1
+                size_hint: 0.35, 1
                 text: i18n._("contribute:username")
             AnchorLayout:
-                size_hint: 0.67, 1
+                size_hint: 0.65, 1
                 LabelledTextInput:
                     input_property: "contribute/username"
                     write_tab: False
             AnchorLayout:
-                size_hint: 0.33, 1
+                size_hint: 0.35, 1
                 AutoSizedRoundedRectangleButton:
                     text: i18n._("contribute:register")
                     size_hint: 0.8, 0.7
                     on_press: app.webbrowser('contribute:signup')
             DescriptionLabel:
-                size_hint: 0.33, 1
+                size_hint: 0.35, 1
                 text: i18n._("contribute:password")
             AnchorLayout:
-                size_hint: 0.67, 1
+                size_hint: 0.65, 1
                 LabelledTextInput:
                     input_property: "contribute/password"
                     write_tab: False
