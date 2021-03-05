@@ -7,10 +7,24 @@
 [![Github sponsors](http://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=http://github.com/sponsors/sanderland/)](http://github.com/sponsors/sanderland)
 [![Discord](http://img.shields.io/discord/417022162348802048?logo=discord)](http://discord.com/channels/417022162348802048/629446365688365067)
 
+<table style="border-collapse: collapse;"><td>
+KaTrain is a tool for analyzing games and playing go with AI feedback from KataGo:
+
+* Review your games to find the moves that were most costly in terms of points lost.
+* Play against AI and get immediate feedback on mistakes with option to retry.
+* Play against a wide range of weakened versions of AI with various styles.
+* Automatically generate focused SGF reviews which show your biggest mistakes.
+</td>
+<td>
+<img alt="screenshot" src="https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.png" width="500">
+</td>
+</table>
+
+## Manual
+
 <table>
 <td>
 
-* [Introduction](#intro)
 * [Previews and YouTube tutorials](#preview)
 * [Installation](#install)
 * [Manual](#ai)
@@ -23,39 +37,22 @@
 * [FAQ and Troubleshooting](#faq)
 * [Contributing](#support)
 
-</td>
-<td>
-<img alt="screenshot" src="https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.png" width=500>
-</td>
+
 <td>
 
 <a href="http://github.com/sanderland/katrain/blob/master/README.md"><img alt="English" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-uk.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=de&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="German" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-de.png" width=50></a>
-<br/>
 <a href="http://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-fr.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ru.png" width=50></a>
 <br/>
+
 <a href="http://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Simplified Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-cn.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=zh-TW&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Traditional Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-tw.png" width=50></a>
-<br/>
 <a href="http://translate.google.com/translate?sl=en&tl=ko&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Korean" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ko.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=ja&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Japanese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-jp.png" width=50></a>
 
 </td>
 </table>
-
-## <a name="intro"></a> Introduction
-
-KaTrain is a tool for analyzing and playing go with AI feedback from KataGo.
-
-The original idea was to give immediate feedback on the many large mistakes we make in terms of inefficient moves,
-but has since grown to include a wide range of features, including:
-
-* Review your games to find the moves that were most costly in terms of points lost.
-* Play against AI and get immediate feedback on mistakes with option to retry.
-* Play against a wide range of weakened versions of AI with various styles.
-* Play against a stronger player and use the retry option instead of handicap stones.
-* Automatically generate focused SGF reviews which show your biggest mistakes.
 
 ## <a name="preview"></a>  Preview and Youtube Videos
 
