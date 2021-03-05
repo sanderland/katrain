@@ -7,18 +7,12 @@
 [![Github sponsors](http://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=http://github.com/sponsors/sanderland/)](http://github.com/sponsors/sanderland)
 [![Discord](http://img.shields.io/discord/417022162348802048?logo=discord)](http://discord.com/channels/417022162348802048/629446365688365067)
 
-<table style="border-collapse: collapse;"><td>
 KaTrain is a tool for analyzing games and playing go with AI feedback from KataGo:
 
 * Review your games to find the moves that were most costly in terms of points lost.
 * Play against AI and get immediate feedback on mistakes with option to retry.
 * Play against a wide range of weakened versions of AI with various styles.
 * Automatically generate focused SGF reviews which show your biggest mistakes.
-</td>
-<td>
-<img alt="screenshot" src="https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.png" width="500">
-</td>
-</table>
 
 ## Manual
 
@@ -55,6 +49,8 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
 </table>
 
 ## <a name="preview"></a>  Preview and Youtube Videos
+
+<img alt="screenshot" src="https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.png" width="550">
 
 | **Local Joseki Analysis**                  | **Analysis Tutorial**                                                                              | **Teaching Game Tutorial**                                                                                   |
 |:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
