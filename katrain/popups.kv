@@ -370,7 +370,7 @@
                     input_property: "contribute/username"
                     write_tab: False
             AnchorLayout:
-                size_hint: 0.35, 1
+                size_hint: 0.5, 1
                 AutoSizedRoundedRectangleButton:
                     text: i18n._("contribute:register")
                     size_hint: 0.8, 0.7
@@ -387,6 +387,7 @@
                     id: password
             AnchorLayout:
                 anchor_x: 'left'
+                size_hint: 0.5, 1
                 MDIconButton:
                     icon: "eye"
                     pos_hint: {"center_x": 0, "center_y": .5}
@@ -547,7 +548,7 @@
     ripple_color: Theme.LIGHTER_BACKGROUND_COLOR
     text_color: self.inactive_background_color if self.state=='down' else self.active_background_color
     size_hint: 0.33,1
-    _font_size: self.height * 0.5
+    _font_size: self.height * 0.45
     group: 'new_game_mode'
     allow_no_selection: False
 

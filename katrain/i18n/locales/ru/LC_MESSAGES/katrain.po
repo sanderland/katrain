@@ -811,7 +811,7 @@ msgid "contribute:ownership:hint"
 msgstr "Слегка замедляет тренировку, но позволяет визуализацию."
 
 msgid "contribute:ownership"
-msgstr "Включить подпись"
+msgstr "Включить визуализацию"
 
 msgid "contribute:login"
 msgstr "Информация для авторизации на katagotraining.org"
@@ -854,4 +854,4 @@ msgstr ""
 "Генерация позиции с помощью игры AI с самим собой: Ход {move}/{until_move}."
 
 msgid "editgame"
-msgstr "Редактировать настройки игры"
+msgstr "Редактировать игры"
