@@ -7,10 +7,10 @@
 * [Quick install guide for Linux](#LinuxQuick)
     * [Troubleshooting and installation from sources](#LinuxSources)
 
-## <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg" alt="MacOs" height="35"/> Installation for MacOS users
+## <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg" alt="macOs" height="35"/> Installation for macOS users
 
 ### <a name="MacQuick"></a>Quick install guide
-You can find downloadable .app files for MacOSX [here](https://github.com/sanderland/katrain/releases). 
+You can find downloadable .app files for macOS [here](https://github.com/sanderland/katrain/releases). 
 Simply download, unzip the file, mount the .dmg and drag the .app file to your application folder, everything is included.
 
 Users with the last generation M1 macs with different architecture should download this bundle and then `brew install katago` and point KaTrain to their own binary in general settings, as the built-in binary is not compatible.
@@ -67,7 +67,7 @@ If you have a working Python 3.6-3.8 available, you should be able to simply:
 
 ### <a name="LinuxSources"></a>Installation from sources 
 
-This section describes how to install KaTrain from source,
+This section describes how to install KaTrain from sources,
  in case you want to run it in a local directory or have more control over the process. 
 It assumes you have a working Python 3.6+ installation.
 
@@ -133,7 +133,7 @@ As you can see it scores about twice as high as the Intel UHD chip and KataGo ha
   If you can't find it, turn on `debug_level=1` in general settings and look for the command that is used to start KataGo.
 * Search for `numNNServerThreadsPerModel` (~line 75), uncomment the line by deleting the # and set the value to 2. The line should read `numNNServerThreadsPerModel = 2`.
 * Search for `openclDeviceToUseThread` (~line 117), uncomment by deleting the # and set the values to the device ID numbers identified in the terminal.
-  From the example above, we would want to use devices 1 and 2, for the Intel and AMD GPU's, but not device 0 (the CPU). In our case, the lines should read:
+  From the example above, we would want to use devices 1 and 2, for the Intel and AMD GPUs, but not device 0 (the CPU). In our case, the lines should read:
 ```
 openclDeviceToUseThread0 = 1
 openclDeviceToUseThread1 = 2

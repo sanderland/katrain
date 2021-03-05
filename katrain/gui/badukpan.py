@@ -40,7 +40,7 @@ from katrain.gui.theme import Theme
 class BadukPanWidget(Widget):
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
-        self.stones_sounds = [SoundLoader.load(file) for file in Theme.STONE_SOUNDS]
+        self.stones_sounds = []
         self.trainer_config = {}
         self.ghost_stone = []
         self.gridpos_x = []
@@ -71,6 +71,8 @@ class BadukPanWidget(Widget):
 
     def play_stone_sound(self, *_args):
         if self.katrain.config("timer/sound"):
+            if not self.stones_sounds:
+                self.stones_sounds = [SoundLoader.load(file) for file in Theme.STONE_SOUNDS]
             sound = random.choice(self.stones_sounds)
             if sound:
                 sound.play()
@@ -335,15 +337,13 @@ class BadukPanWidget(Widget):
         board_size_x, board_size_y = katrain.game.board_size
         if len(self.gridpos_x) < board_size_x or len(self.gridpos_y) < board_size_y:
             return  # race condition
-        show_n_eval = self.trainer_config["eval_off_show_last"]
+        show_n_eval = self.trainer_config.get("eval_on_show_last", 3)
 
         with self.canvas:
             self.canvas.clear()
             # stones
             current_node = katrain.game.current_node
-            game_ended = katrain.game.end_result
-            full_eval_on = katrain.analysis_controls.eval.active
-            all_dots_off = katrain.analysis_controls.eval.checkbox.slashed
+            all_dots_off = not katrain.analysis_controls.eval.active
             has_stone = {}
             drawn_stone = {}
             for m in katrain.game.stones:
@@ -367,9 +367,7 @@ class BadukPanWidget(Widget):
                 placements = node.placements
                 for m in node.moves + placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
-                        move_eval_on = (
-                            not all_dots_off and show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
-                        )
+                        move_eval_on = not all_dots_off and show_dots_for.get(m.player) and i < show_n_eval
                         if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost, show_dots_for_class)
                         else:
@@ -478,7 +476,14 @@ class BadukPanWidget(Widget):
                             )
                         if move_policy == best_move_policy:
                             Color(*Theme.TOP_MOVE_BORDER_COLOR[:3], Theme.POLICY_ALPHA)
-                            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], self.stone_size - dp(1.2)), width=dp(2))
+                            Line(
+                                circle=(
+                                    self.gridpos_x[x],
+                                    self.gridpos_y[y],
+                                    self.stone_size - dp(1.2),
+                                ),
+                                width=dp(2),
+                            )
 
                 with pass_btn.canvas.after:
                     move_policy = policy[-1]
@@ -489,21 +494,6 @@ class BadukPanWidget(Widget):
                             pass_btn.height / 2,
                             (*colors[pol_order][:3], Theme.GHOST_ALPHA),
                         )
-
-            # pass circle
-            passed = len(nodes) > 1 and current_node.is_pass
-            if passed or game_ended:
-                if game_ended:
-                    text = game_ended
-                    katrain.controls.timer.paused = True
-                else:
-                    text = i18n._("board-pass")
-                Color(*Theme.PASS_CIRCLE_COLOR)
-                center = (self.gridpos_x[int(board_size_x / 2)], self.gridpos_y[int(board_size_y / 2)])
-                size = min(self.width, self.height) * 0.227
-                Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
-                Color(*Theme.PASS_CIRCLE_TEXT_COLOR)
-                draw_text(pos=center, text=text, font_size=size * 0.25, halign="center")
 
         self.redraw_hover_contents_trigger()
 
@@ -615,11 +605,17 @@ class BadukPanWidget(Widget):
                             keys[TOP_MOVE_DELTA_SCORE] = (
                                 "0.0" if -0.05 < move_dict["pointsLost"] < 0.05 else f"{-move_dict['pointsLost']:+.1f}"
                             )
+                            #                           def fmt_maybe_missing(arg,sign,digits=1):
+                            #                               return str(round(sign*arg,digits)) if arg is not None else "N/A"
+
                             keys[TOP_MOVE_SCORE] = f"{player_sign * move_dict['scoreLead']:.1f}"
                             winrate = move_dict["winrate"] if player_sign == 1 else 1 - move_dict["winrate"]
                             keys[TOP_MOVE_WINRATE] = f"{winrate*100:.1f}"
                             keys[TOP_MOVE_DELTA_WINRATE] = f"{-move_dict['winrateLost']:+.1%}"
                             keys[TOP_MOVE_VISITS] = format_visits(move_dict["visits"])
+                            #                            keys[TOP_MOVE_UTILITY] = fmt_maybe_missing( move_dict.get('utility'),player_sign,2)
+                            #                            keys[TOP_MOVE_UTILITYLCB] = fmt_maybe_missing(move_dict.get('utilityLcb'),player_sign,2)
+                            #                            keys[TOP_MOVE_SCORE_STDDEV] =fmt_maybe_missing(move_dict.get('scoreStdev'),1)
                             Color(*Theme.HINT_TEXT_COLOR)
                             draw_text(
                                 pos=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
@@ -693,8 +689,22 @@ class BadukPanWidget(Widget):
                     up_to_move = (time.time() - start_time) / delay
                     self.draw_pv(pv, node, up_to_move)
 
-                if self.katrain.game.region_of_interest:
+                if getattr(self.katrain.game, "region_of_interest", None):
                     self.draw_roi_box(self.katrain.game.region_of_interest, width=dp(1.25))
+
+            # pass circle
+            if current_node.is_pass or game_ended:
+                if game_ended:
+                    text = game_ended
+                    katrain.controls.timer.paused = True
+                else:
+                    text = i18n._("board-pass")
+                Color(*Theme.PASS_CIRCLE_COLOR)
+                center = (self.gridpos_x[int(board_size_x / 2)], self.gridpos_y[int(board_size_y / 2)])
+                size = min(self.width, self.height) * 0.227
+                Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
+                Color(*Theme.PASS_CIRCLE_TEXT_COLOR)
+                draw_text(pos=center, text=text, font_size=size * 0.25, halign="center")
 
     def animate_pv(self, _dt):
         if self.animating_pv:

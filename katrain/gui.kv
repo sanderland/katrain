@@ -691,16 +691,14 @@
         size_hint_x: None
         width: self.texture_size[0] + 4
         on_left_press: checkbox.trigger_action()
-    TriStateMDCheckbox:
+    MDCheckbox:
         id: checkbox
         disabled: root.disabled
-        tri_state: root.tri_state
         size_hint: None,0.5
         pos_hint: {'center_y': 0.5}
         width: self.height
         active: root.default_active
         on_active: if app.gui: app.gui.update_state()
-        on_slashed: if app.gui: app.gui.update_state()
 
 
 <AnalysisMenuItem@MenuItem>:
@@ -748,6 +746,11 @@
         shortcut: 'g'
         on_action: root.katrain("select-box",)
     AnalysisMenuItem:
+        text: i18n._("analysis:reset")
+        icon: 'reset.png'
+        shortcut: 'h'
+        on_action: root.katrain("reset-analysis",)
+    AnalysisMenuItem:
         text: i18n._("analysis:insert")
         icon: 'Insert-Move.png'
         shortcut: 'i'
@@ -756,7 +759,7 @@
         text: i18n._("analysis:playtoend")
         icon: 'Finish.png'
         shortcut: 'l'
-        on_action: root.katrain("play-to-end")
+        on_action: root.katrain("selfplay-setup","end")
     AnalysisMenuItem:
         text: i18n._("analysis:game")
         icon: 'analysis.png'
@@ -979,6 +982,12 @@
             icon: 'General-Settings.png'
             shortcut: 'F8'
             on_action: root.katrain('config-popup')
+        MainMenuItem:
+            text: i18n._('menu:distributed')
+            shortcut: 'F9'
+            icon: 'collaboration.png'
+            on_action: root.katrain('contribute-popup')
+#            on_action: root.katrain('katago-contribute')
     MenuLabel:
         text: i18n._('menu:lang')
     MDBoxLayout:

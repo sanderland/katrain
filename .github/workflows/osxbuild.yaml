@@ -17,13 +17,19 @@ jobs:
         python-version: 3.8
     - name: Build KataGo
       run: |
+        export OPENSSL_ROOT_DIR=$(brew --prefix openssl)
+        export OPENSSL_LIBRARIES="${OPENSSL_ROOT_DIR}/lib"
+        echo $OPENSSL_ROOT_DIR
+        ls $OPENSSL_ROOT_DIR
+        echo $OPENSSL_LIBRARIES
+        ls $OPENSSL_LIBRARIES
         rm katrain/KataGo/katago
         rm katrain/KataGo/*.dll
         rm katrain/KataGo/katago.exe
         cd ..
-        git clone https://github.com/lightvector/KataGo.git
+        git clone --branch stable https://github.com/lightvector/KataGo.git
         pushd KataGo/cpp
-        cmake . -DUSE_BACKEND=OPENCL
+        cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
         make
         cp katago ../../katrain/katrain/KataGo/katago-osx
     - name: Get Kivy dependencies
@@ -46,7 +52,7 @@ jobs:
         pushd KaTrain.app/Contents/Resources/
         ln -s ./venv/bin/KaTrain yourapp
         popd
-        ./fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "1.7.2" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
+        ./fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "1.8.0" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
         ./cleanup-app.sh KaTrain.app -g 1
         ./relocate.sh KaTrain.app
     - name: Create dmg

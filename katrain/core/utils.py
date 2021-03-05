@@ -1,4 +1,7 @@
+import heapq
+import math
 import os
+import random
 import struct
 import sys
 from typing import List, Tuple, TypeVar
@@ -89,3 +92,9 @@ def json_truncate_arrays(data, lim=20):
         return {k: json_truncate_arrays(v) for k, v in data.items()}
     else:
         return data
+
+
+def weighted_selection_without_replacement(items: List[Tuple], pick_n: int) -> List[Tuple]:
+    """For a list of tuples where the second element is a weight, returns random items with those weights, without replacement."""
+    elt = [(math.log(random.random()) / (item[1] + 1e-18), item) for item in items]  # magic
+    return [e[1] for e in heapq.nlargest(pick_n, elt)]  # NB fine if too small

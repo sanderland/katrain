@@ -106,7 +106,12 @@ class GameNode(SGFNode):
         self.analysis = {"moves": {}, "root": None, "ownership": None, "policy": None, "completed": False}
 
     def sgf_properties(
-        self, save_comments_player=None, save_comments_class=None, eval_thresholds=None, save_analysis=False
+        self,
+        save_comments_player=None,
+        save_comments_class=None,
+        eval_thresholds=None,
+        save_analysis=False,
+        save_marks=False,
     ):
         properties = copy.copy(super().sgf_properties())
         note = self.note.strip()
@@ -126,17 +131,18 @@ class GameNode(SGFNode):
             and self.analysis_exists
             and (note or ((save_comments_player or {}).get(self.player, False) and show_class))
         ):
-            candidate_moves = self.parent.candidate_moves
-            top_x = Move.from_gtp(candidate_moves[0]["move"]).sgf(self.board_size)
-            best_sq = [
-                Move.from_gtp(d["move"]).sgf(self.board_size)
-                for d in candidate_moves
-                if d["pointsLost"] <= 0.5 and d["move"] != "pass" and d["order"] != 0
-            ]
-            if best_sq and "SQ" not in properties:
-                properties["SQ"] = best_sq
-            if top_x and "MA" not in properties:
-                properties["MA"] = [top_x]
+            if save_marks:
+                candidate_moves = self.parent.candidate_moves
+                top_x = Move.from_gtp(candidate_moves[0]["move"]).sgf(self.board_size)
+                best_sq = [
+                    Move.from_gtp(d["move"]).sgf(self.board_size)
+                    for d in candidate_moves
+                    if d["pointsLost"] <= 0.5 and d["move"] != "pass" and d["order"] != 0
+                ]
+                if best_sq and "SQ" not in properties:
+                    properties["SQ"] = best_sq
+                if top_x and "MA" not in properties:
+                    properties["MA"] = [top_x]
             comments.append(self.comment(sgf=True, interactive=False) + SGF_INTERNAL_COMMENTS_MARKER)
         if self.is_root:
             comments = [
@@ -286,9 +292,10 @@ class GameNode(SGFNode):
         single_move = self.move
         if single_move and self.parent:
             policy_ranking = self.parent.policy_ranking
-            for ix, (p, m) in enumerate(policy_ranking):
-                if m == single_move:
-                    return ix + 1, p, policy_ranking
+            if policy_ranking:
+                for ix, (p, m) in enumerate(policy_ranking):
+                    if m == single_move:
+                        return ix + 1, p, policy_ranking
         return None, 0.0, []
 
     def make_pv(self, player, pv, interactive):
@@ -301,7 +308,10 @@ class GameNode(SGFNode):
         single_move = self.move
         if not self.parent or not single_move:  # root
             if self.root:
-                return f"{i18n._('komi')}: {self.komi:.1f}\n{i18n._('ruleset')}: {i18n._(self.get_property('RU','Japanese').lower())}\n"
+                rules = self.get_property("RU", "Japanese")
+                if isinstance(rules, str):  # else katago dict
+                    rules = i18n._(rules.lower())
+                return f"{i18n._('komi')}: {self.komi:.1f}\n{i18n._('ruleset')}: {rules}\n"
             return ""
 
         text = i18n._("move").format(number=self.depth) + f": {single_move.player} {single_move.gtp()}\n"
@@ -319,7 +329,13 @@ class GameNode(SGFNode):
                             text += i18n._("Info:point loss").format(points_lost=points_lost) + "\n"
                         top_move = previous_top_move["move"]
                         score = self.format_score(previous_top_move["scoreLead"])
-                        text += i18n._("Info:top move").format(top_move=top_move, score=score) + "\n"
+                        text += (
+                            i18n._("Info:top move").format(
+                                top_move=top_move,
+                                score=score,
+                            )
+                            + "\n"
+                        )
                     else:
                         text += i18n._("Info:best move") + "\n"
                     if previous_top_move.get("pv") and (sgf or details):

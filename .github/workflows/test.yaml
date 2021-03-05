@@ -30,7 +30,7 @@ jobs:
       run: pytest tests
 
     - name: Run I18N conversion
-      run: python i18n.py
+      run: python i18n.py -todo
 
     - name: Build
       run: |

@@ -36,8 +36,9 @@ class SelectionSlider(Widget):
         return self.values[self.index][0]
 
     def set_value(self, set_value):  # set to closest value
-        eq_value = sorted([(abs(v - set_value), i) for i, (v, l) in enumerate(self.values)])
-        self.index = eq_value[0][1]
+        if isinstance(set_value, (float, int)):
+            eq_value = sorted([(abs(v - set_value), i) for i, (v, l) in enumerate(self.values)])
+            self.index = eq_value[0][1]
 
     def set_from_pos(self, pos):
         norm_value = (pos[0] - self.x - self.padding) / (self.width - 2 * self.padding)

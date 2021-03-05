@@ -115,7 +115,7 @@ msgstr "設定欲分析區域"
 
 #. Status message
 msgid "analysis:region:start"
-msgstr "拖移以選取區域。選擇其他點來取消已選取的區域。"
+msgstr "拖移以選取區域。點選其他位置來取消已選取的區域。"
 
 #. Menu option
 msgid "analysis:playtoend"
@@ -175,7 +175,7 @@ msgstr "AI引擎狀態指示燈，從綠色（閒置）變為橘色（處理中�
 
 #. undo button on the right
 msgid "undo-button-text"
-msgstr "復原"
+msgstr "悔棋"
 
 #. tabs and labels on the right panel
 msgid "tab:score"
@@ -400,14 +400,8 @@ msgid "non square board hint"
 msgstr "使用 x:y 來設定非正方形棋盤(例如19:9)"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "開始新對局"
-
-#. change komi etc in current game
-msgid "change current game"
-msgstr ""
-"在進行中對局\n"
-"更新貼目/規則"
 
 # teacher settings from here
 msgid "teacher settings"
@@ -429,14 +423,10 @@ msgid "save dots"
 msgstr "存入SGF"
 
 msgid "show last n dots"
-msgstr ""
-"顯示最後\n"
-"<this many> 手棋的選點"
+msgstr "顯示最後幾手棋的選點"
 
 msgid "show ai dots"
-msgstr ""
-"顯示AI的\n"
-"選點/SGF評論"
+msgstr "顯示AI的選點/SGF評論"
 
 #. analysis option
 msgid "cache analysis to sgf"
@@ -717,7 +707,7 @@ msgstr "刪除模式"
 
 #. on move tree editing
 msgid "Toggle Collapse Branch"
-msgstr "擴展/摺疊"
+msgstr "展開/摺疊"
 
 #. on move tree editing
 msgid "Make Main Branch"
@@ -780,6 +770,96 @@ msgstr "插入完畢，複製 {num_copied} 手棋。"
 msgid "finish inserting before navigating"
 msgstr "此功能在插入模式無法使用，按 i 結束插入。"
 
-#. TODO
 msgid "stone_scoring"
-msgstr "Ancient Chinese"
+msgstr "古代中國規則"
+
+#. in self-play mode
+msgid "gui-locked"
+msgstr "在分散式自我對弈訓練模式中，{action} 動作是不允許的。重新啟動KaTrain來離開此模式。"
+
+msgid "contribute:username"
+msgstr "帳號"
+
+#. hint for ownership
+msgid "contribute:ownership:hint"
+msgstr "稍微降低訓練速度，但允許所有權可視化。"
+
+#. contribute settings popup
+msgid "contribute settings title"
+msgstr "貢獻至KataGo分散式訓練"
+
+msgid "contribute:password"
+msgstr "密碼"
+
+msgid "contribute:start"
+msgstr "開始貢獻！"
+
+msgid "contribute:register"
+msgstr "註冊"
+
+#. menu item
+msgid "menu:distributed"
+msgstr "分散式自我對弈訓練"
+
+#. title
+msgid "contribute:login"
+msgstr "登入資訊 (katagotraining.org)"
+
+#. hint for max games
+msgid "contribute:maxgames:hint"
+msgstr "最好等於您的最佳化numSearchThreads，中階GPU約為8。可以稍微設的低一點，來縮短執行時間，因為未完成的對局將不會被上傳。"
+
+#. description for input
+msgid "contribute:maxgames"
+msgstr "同時對局數"
+
+msgid "contribute:ownership"
+msgstr "啟用所有權"
+
+#. description
+msgid "contribute:movespeed"
+msgstr "下棋速度"
+
+#. hint for move speed
+msgid "contribute:movespeed:hint"
+msgstr "每步延遲(秒/步)"
+
+#. description
+msgid "contribute:savesgf"
+msgstr "儲存SGF"
+
+#. hint for save
+msgid "contribute:savesgf:hint"
+msgstr "儲存顯示於 ./dist_sgf，已結束的對局SGF檔"
+
+#. title
+msgid "contribute:viewer settings"
+msgstr "觀察者設定"
+
+#. Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "重設分析"
+
+#. Description for black target score
+msgid "setup position black score"
+msgstr "黑棋目標目數："
+
+#. Description for how many moves
+msgid "setup position move number"
+msgstr "產生對局到第幾手："
+
+#. Progress message
+msgid "setup game status message"
+msgstr "由AI自我對弈產生對局：{move}/{until_move}手完成。"
+
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "設定位置"
+
+#. Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr "這會產生部分的對局讓你接著下。例如：你可以使用它從各種不同優勢的中盤或終局階段開始，與更強的AI對弈。"
+
+#. change komi etc in current game
+msgid "editgame"
+msgstr "編輯對局資訊"

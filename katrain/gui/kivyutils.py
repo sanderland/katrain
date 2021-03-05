@@ -410,38 +410,6 @@ class Timer(BGBoxLayout):
     timeout = BooleanProperty(False)
 
 
-class TriStateMDCheckbox(MDCheckbox):
-    tri_state = BooleanProperty(False)
-    slashed = BooleanProperty(False)
-    checkbox_icon_slashed = StringProperty("checkbox-blank-off-outline")
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.bind(slashed=self.update_icon)
-
-    def _do_press(self):
-        if not self.tri_state:
-            return super()._do_press()
-        if self.slashed:
-            self.state = "normal"
-            self.slashed = False
-        elif self.state == "down":
-            self.state = "normal"
-            self.slashed = True
-        else:
-            self.state = "down"
-            self.slashed = False
-        self.update_icon()
-
-    def update_icon(self, *args):
-        if self.tri_state and self.slashed:
-            self.icon = self.checkbox_icon_slashed
-        elif self.state == "down":
-            self.icon = self.checkbox_icon_down
-        else:
-            self.icon = self.checkbox_icon_normal
-
-
 class AnalysisToggle(MDBoxLayout):
     text = StringProperty("")
     default_active = BooleanProperty(False)

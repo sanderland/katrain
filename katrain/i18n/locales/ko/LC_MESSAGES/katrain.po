@@ -280,7 +280,6 @@ msgstr "한국"
 msgid "aga"
 msgstr "AGA"
 
-#. TODO check
 msgid "stone_scoring"
 msgstr "고대 중국"
 
@@ -298,7 +297,7 @@ msgid "non square board hint"
 msgstr "정사각형이 아닌 판에서 두려면 x:y(예: 19:9)를 사용하십시오."
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "새 대국 시작"
 
 # teacher settings from here
@@ -321,14 +320,10 @@ msgid "save dots"
 msgstr "SGF 파일에 저장"
 
 msgid "show last n dots"
-msgstr ""
-"마지막 몇 수에 대해\n"
-"인공지능 평가를 색으로 표시할지"
+msgstr "마지막 몇 수에 대해 인공지능 평가를 색으로 표시할지"
 
 msgid "show ai dots"
-msgstr ""
-"인공지능 대국자에 대해서도\n"
-"평가를 색으로 표시"
+msgstr "인공지능 대국자에 대해서도 평가를 색으로 표시"
 
 #. submit button
 msgid "update teacher"
@@ -667,11 +662,6 @@ msgstr "간명한 기풍"
 msgid "local analysis"
 msgstr "국지적인 응수를 찾고 있습니다"
 
-msgid "change current game"
-msgstr ""
-"이 판에 대해\n"
-"덤과 규칙 등 조절"
-
 msgid "Make Main Branch"
 msgstr "주 변화로 만들기"
 
@@ -770,3 +760,79 @@ msgstr "흑 대국자"
 #. hint on player name input
 msgid "white player name hint"
 msgstr "백 대국자"
+
+msgid "gui-locked"
+msgstr "{action} 행동은 분산 자가대국 학습 모드에서 허용되지 않습니다. 이 모드를 벗어나려면 KaTrain을 재시작하십시오."
+
+msgid "menu:distributed"
+msgstr "분산 자가대국 학습"
+
+msgid "contribute:register"
+msgstr "회원 등록"
+
+msgid "contribute:start"
+msgstr "기여 시작하기!"
+
+msgid "contribute settings title"
+msgstr "KataGo 분산 학습에 기여하기"
+
+msgid "contribute:username"
+msgstr "사용자 이름"
+
+msgid "contribute:maxgames"
+msgstr "동시 대국 수"
+
+msgid "contribute:password"
+msgstr "비밀번호"
+
+msgid "contribute:maxgames:hint"
+msgstr ""
+"최적의 numSearchThreads 값과 같게 두는 것이 좋습니다(중급 GPU는 8 정도). 완료되지 않은 판은 업로드되지 않으므로, "
+"오래 실행하지 않는다면 조금 낮추어도 무방합니다."
+
+msgid "contribute:ownership:hint"
+msgstr "자가대국이 약간 느려지지만, 집 모양을 표시할 수 있습니다."
+
+msgid "contribute:ownership"
+msgstr "집 모양 활성화"
+
+msgid "contribute:login"
+msgstr "katagotraining.org 로그인 정보 "
+
+msgid "contribute:movespeed"
+msgstr "착수 속도"
+
+msgid "contribute:movespeed:hint"
+msgstr "착수 시 지연 시간(초)"
+
+msgid "contribute:savesgf"
+msgstr "SGF 파일 저장하기"
+
+msgid "contribute:savesgf:hint"
+msgstr "다 보여준 판을 ./dist_sgf에 SGF 파일로 저장합니다."
+
+msgid "contribute:viewer settings"
+msgstr "뷰어 설정"
+
+msgid "analysis:reset"
+msgstr "분석 결과 지우기"
+
+msgid "setup position black score"
+msgstr "목표로 하는 집 차이(흑 시점):"
+
+msgid "setup position move number"
+msgstr "생성할 대국 수수:"
+
+msgid "setup game status message"
+msgstr "AI 자가대국으로 대국 생성중: {move}/{until_move}수 완료됨."
+
+msgid "setupposition"
+msgstr "판 깔아두기"
+
+msgid "setup position explanation"
+msgstr ""
+"이어 둘 수 있는 미완료 대국을 생성합니다. 예를 들어, 강한 AI를 상대로 둘 때 중반전이나 끝내기에서 앞서 있는 상태로 대국을 시작할"
+" 수 있습니다."
+
+msgid "editgame"
+msgstr "대국 정보 편집"

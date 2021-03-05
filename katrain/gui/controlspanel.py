@@ -6,7 +6,15 @@ from kivy.properties import ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
-from katrain.core.constants import MODE_ANALYZE, MODE_PLAY, PLAYER_HUMAN, STATUS_ANALYSIS, STATUS_ERROR
+from katrain.core.constants import (
+    MODE_ANALYZE,
+    MODE_PLAY,
+    PLAYER_HUMAN,
+    STATUS_ANALYSIS,
+    STATUS_ERROR,
+    AI_DEFAULT,
+    PLAYER_AI,
+)
 from katrain.core.lang import rank_label
 from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
 from katrain.gui.theme import Theme
@@ -24,7 +32,7 @@ class PlayAnalyzeSelect(MDFloatLayout):
         self.katrain._config["ui_state"] = self.katrain._config.get("ui_state", {})
         self.katrain._config["ui_state"][self.mode] = {
             "analysis_controls": {
-                id: toggle.active if not toggle.checkbox.slashed else None  # troolean ftw
+                id: toggle.active
                 for id, toggle in self.katrain.analysis_controls.ids.items()
                 if isinstance(toggle, AnalysisToggle)
             },
@@ -41,8 +49,6 @@ class PlayAnalyzeSelect(MDFloatLayout):
         for id, active in state.get("analysis_controls", {}).items():
             cb = self.katrain.analysis_controls.ids[id].checkbox
             cb.active = bool(active)
-            if cb.tri_state:
-                cb.slashed = active is None
         for id, (panel_state, button_state) in state.get("panels", {}).items():
             self.katrain.controls.ids[id].set_option_state(button_state)
             self.katrain.controls.ids[id].state = panel_state
@@ -119,7 +125,7 @@ class ControlsPanel(BoxLayout):
             game.current_node is not self.status_state[2]
             and not (self.status_state[1] == STATUS_ERROR and self.status_state[2] is None)
         ) or (
-            len(game.engines["B"].queries) == 0 and self.status_state[1] == STATUS_ANALYSIS
+            self.katrain.engine.is_idle() and self.status_state[1] == STATUS_ANALYSIS
         ):  # clear status if node changes, except startup errors on root. also clear analysis message when no queries
             self.status.text = ""
             self.status_state = (None, -1e9, None)
@@ -139,8 +145,25 @@ class ControlsPanel(BoxLayout):
         lock_ai = katrain.config("trainer/lock_ai") and katrain.play_analyze_mode == MODE_PLAY
         details = self.info.detailed and not lock_ai
         info = ""
+        if katrain.contributing:
+            info += katrain.engine.status()
+            game_id = getattr(katrain.engine, "showing_game", None)
+            game = getattr(katrain.engine, "active_games", {}).get(game_id)
+            if game is not None:
+                info += f"Showing game {game_id}\n"
+                for bw in "BW":
+                    self.players[bw].rank = None
+                    network = game.root.get_property(f"P{bw}", AI_DEFAULT)
+                    parts = network.split("-")
+                    if len(parts) == 4:
+                        self.players[bw].player_type = parts[1]
+                        self.players[bw].player_subtype = parts[2]
+                    else:
+                        self.players[bw].player_type = PLAYER_AI
+                        self.players[bw].player_subtype = network
+
         if move or current_node.is_root:
-            info = self.active_comment_node.comment(
+            info += self.active_comment_node.comment(
                 teach=katrain.players_info[self.active_comment_node.player].being_taught, details=details
             )
 
