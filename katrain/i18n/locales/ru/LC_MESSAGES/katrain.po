@@ -306,7 +306,6 @@ msgstr "Корейские"
 msgid "aga"
 msgstr "AGA"
 
-#. TODO check
 msgid "stone_scoring"
 msgstr "Древние китайские"
 
@@ -776,106 +775,83 @@ msgstr "Имя игрока чёрными"
 msgid "white player name hint"
 msgstr "Имя игрока белыми"
 
-#. TODO - in self-play mode
 msgid "gui-locked"
 msgstr ""
-"Action {action} not allowed in distributed self-play training mode. Restart "
-"KaTrain to exit this mode."
+"Действие {action} запрещено в режиме распределённой тренировки. "
+"Перезапустите KaTrain для выхода из этого режима."
 
-#. TODO - menu item
 msgid "menu:distributed"
-msgstr "Distributed Self-play Training"
+msgstr "Распределённая тренировка"
 
-#. TODO
 msgid "contribute:register"
-msgstr "Register"
+msgstr "Регистрация"
 
-#. TODO
 msgid "contribute:start"
-msgstr "Start Contributing!"
+msgstr "Начать помогать тренировке!"
 
-#. TODO - contribute settings popup
 msgid "contribute settings title"
-msgstr "Contribute To KataGo Distributed Training"
+msgstr "Помощь в распределённой тренировке KataGo"
 
-#. TODO
 msgid "contribute:username"
-msgstr "Username"
+msgstr "Имя пользователя"
 
-#. TODO - description for input
 msgid "contribute:maxgames"
-msgstr "Simultaneous Games"
+msgstr "Одновременные игры"
 
-#. TODO
 msgid "contribute:password"
-msgstr "Password"
+msgstr "Пароль"
 
-#. TODO - hint for max games
 msgid "contribute:maxgames:hint"
 msgstr ""
-"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
-" set it slightly lower for shorter runs, as half-finished games are not "
-"uploaded."
+"Оптимальное значение numSearchThreads, около 8 для GPU среднего уровня. Для "
+"коротких сессий обучения лучше установить поменьше, т.к. наполовину "
+"сыгранные игры не представляют интереса."
 
-#. TODO - hint for ownership
 msgid "contribute:ownership:hint"
-msgstr "Slightly slows down training, but allows ownership visualization."
+msgstr "Слегка замедляет тренировку, но позволяет визуализацию."
 
-#. TODO
 msgid "contribute:ownership"
-msgstr "Enable Ownership"
+msgstr "Включить подпись"
 
-#. TODO - title
 msgid "contribute:login"
-msgstr "Login Information for katagotraining.org"
+msgstr "Информация для авторизации на katagotraining.org"
 
-#. TODO - description
 msgid "contribute:movespeed"
-msgstr "Move speed"
+msgstr "Скорость хода"
 
-#. TODO - hint for move speed
 msgid "contribute:movespeed:hint"
-msgstr "Move playing delay in seconds/move."
+msgstr "Длительность хода в секундах/ход."
 
-#. TODO - description
 msgid "contribute:savesgf"
-msgstr "Save SGFs"
+msgstr "Сохранить SGF файлы"
 
-#. TODO - hint for save
 msgid "contribute:savesgf:hint"
-msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+msgstr "Сохраняет SGF файлы законченных игр в ./dist_sgf"
 
-#. TODO - title
 msgid "contribute:viewer settings"
-msgstr "Viewer Settings"
+msgstr "Настройки отображения"
 
-#. TODO - Clear all results and reset to normal query
 msgid "analysis:reset"
-msgstr "Reset analysis"
+msgstr "Перезапустить анализ"
 
-#. TODO - Description for black target score
 msgid "setup position black score"
-msgstr "Target score for Black:"
+msgstr "Целевой счёт для чёрных:"
 
-#. TODO - Description for how many moves
 msgid "setup position move number"
-msgstr "Generate game until move:"
+msgstr "Генерировать игру до хода:"
 
-#. TODO - generate position alongside starting new game
 msgid "setupposition"
-msgstr "Set up Position"
+msgstr "Установить позицию"
 
-#. TODO - Popup for generating position: top explanation
 msgid "setup position explanation"
 msgstr ""
-"This generates a partial game for you to start playing from. For example, "
-"you can use this to play against stronger AIs starting from an advantage in "
-"a variety of middle- or end-game positions."
+"Генерирует частичную игру. Например, вы можете использовать это для игры "
+"против сильного AI начиная с перевесом в середине или ближе к окончанию "
+"игры."
 
-#. TODO - Progress message
 msgid "setup game status message"
-msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+msgstr ""
+"Генерация позиции с помощью игры AI с самим собой: Ход {move}/{until_move}."
 
-#. TODO - change komi etc in current game
 msgid "editgame"
-msgstr "Edit Game Info"
+msgstr "Редактировать настройки игры"
