@@ -2,8 +2,6 @@
 # first, logging level lower and force audio framework
 import os
 
-from katrain.core.contribute_engine import KataGoContributeEngine
-
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 if "KIVY_AUDIO" not in os.environ:
     os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
@@ -70,6 +68,7 @@ from katrain.core.constants import (
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup, ContributePopup
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
+from katrain.core.contribute_engine import KataGoContributeEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
