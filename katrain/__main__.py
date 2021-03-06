@@ -292,7 +292,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if self.game:
             if message.endswith("popup"):  # gui code needs to run in main kivy thread.
                 if self.contributing and "save" not in message and message != "contribute-popup":
-                    self.log(i18n._("gui-locked").format(action=message), OUTPUT_ERROR)
+                    self.controls.set_status(i18n._("gui-locked").format(action=message), STATUS_INFO, check_level=False)
                     return
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")
                 Clock.schedule_once(lambda _dt: fn(*args, **kwargs), -1)
