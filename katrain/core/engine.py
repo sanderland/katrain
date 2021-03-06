@@ -13,7 +13,7 @@ from typing import Callable, Dict, List, Optional
 
 from kivy.utils import platform as kivy_platform
 
-from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR
+from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, DATA_FOLDER
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move
@@ -119,7 +119,7 @@ class KataGoEngine(BaseEngine):
                 self.katrain.log(i18n._("Kata config not found").format(config=cfg), OUTPUT_ERROR)
                 return  # don't start
             self.command = shlex.split(
-                f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]}'
+                f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]} -override-config "homeDataDir={os.path.expanduser(DATA_FOLDER)}"'
             )
         self.start()
 

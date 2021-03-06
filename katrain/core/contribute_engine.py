@@ -8,7 +8,7 @@ import time
 import traceback
 from collections import defaultdict
 
-from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_KATAGO_STDERR
+from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_KATAGO_STDERR, DATA_FOLDER
 from katrain.core.engine import EngineDiedException, BaseEngine
 from katrain.core.game import BaseGame
 from katrain.core.lang import i18n
@@ -56,6 +56,7 @@ class KataGoContributeEngine(BaseEngine):
             "maxSimultaneousGames": self.config.get("maxgames") or self.DEFAULT_MAX_GAMES,
             "includeOwnership": self.config.get("ownership") or False,
             "logGamesAsJson": True,
+            "homeDataDir": os.path.expanduser(DATA_FOLDER)
         }
         self.max_buffer_games = 2 * settings_dict["maxSimultaneousGames"]
         settings = {f"{k}={v}" for k, v in settings_dict.items()}

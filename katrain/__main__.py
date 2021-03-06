@@ -278,7 +278,7 @@ class KaTrainGui(Screen, KaTrainBase):
                         "save_game",
                         "find_mistake",
                     ]:
-                        self.log(i18n._("gui-locked").format(action=msg), OUTPUT_ERROR)
+                        self.controls.set_status(i18n._("gui-locked").format(action=msg), STATUS_INFO, check_level=False)
                         continue
                 fn = getattr(self, f"_do_{msg}")
                 fn(*args, **kwargs)
