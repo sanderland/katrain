@@ -2,8 +2,6 @@
 # first, logging level lower and force audio framework
 import os
 
-from katrain.core.contribute_engine import KataGoContributeEngine
-
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 if "KIVY_AUDIO" not in os.environ:
     os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
@@ -70,6 +68,7 @@ from katrain.core.constants import (
 from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup, ContributePopup
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
+from katrain.core.contribute_engine import KataGoContributeEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
@@ -279,7 +278,7 @@ class KaTrainGui(Screen, KaTrainBase):
                         "save_game",
                         "find_mistake",
                     ]:
-                        self.log(i18n._("gui-locked").format(action=msg), OUTPUT_ERROR)
+                        self.controls.set_status(i18n._("gui-locked").format(action=msg), STATUS_INFO, check_level=False)
                         continue
                 fn = getattr(self, f"_do_{msg}")
                 fn(*args, **kwargs)
@@ -293,7 +292,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if self.game:
             if message.endswith("popup"):  # gui code needs to run in main kivy thread.
                 if self.contributing and "save" not in message and message != "contribute-popup":
-                    self.log(i18n._("gui-locked").format(action=message), OUTPUT_ERROR)
+                    self.controls.set_status(i18n._("gui-locked").format(action=message), STATUS_INFO, check_level=False)
                     return
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")
                 Clock.schedule_once(lambda _dt: fn(*args, **kwargs), -1)
