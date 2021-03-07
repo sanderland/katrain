@@ -78,7 +78,7 @@ def format_visits(n):
         return f"{n/1000:.1f}k"
     if n < 1e6:
         return f"{n/1000:.0f}k"
-    return f"{n/1e6:.0f}k"
+    return f"{n/1e6:.0f}M"
 
 
 def json_truncate_arrays(data, lim=20):
