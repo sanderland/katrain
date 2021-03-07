@@ -2,6 +2,7 @@ import json
 import os
 import random
 import shlex
+import shutil
 import subprocess
 import threading
 import time
@@ -48,6 +49,12 @@ class KataGoContributeEngine(BaseEngine):
         self.move_speed = self.config.get("movespeed", 2.0)
 
         exe = self.get_engine_path(self.config.get("katago"))
+        cacert_path = os.path.join(os.path.split(exe)[0], 'cacert.pem')
+        if not os.path.isfile(cacert_path):
+            try:
+                shutil.copyfile( find_package_resource('katrain/KataGo/cacert.pem'), cacert_path)
+            except Exception as e:
+                self.katrain.log(f"Could not copy cacert file ({e}), please add it manually to your katago.exe directory",OUTPUT_ERROR)
         cfg = find_package_resource(self.config.get("config"))
 
         settings_dict = {
