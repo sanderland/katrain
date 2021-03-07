@@ -785,7 +785,7 @@ class KaTrainApp(MDApp):
             return True  # do not close on esc
         if getattr(self, "gui", None):
             self.gui.play_mode.save_ui_state()
-            self.gui._config["ui_state"]["size"] = list(Window.size)
+            self.gui._config["ui_state"]["size"] = list(Window._size)
             self.gui._config["ui_state"]["top"] = Window.top
             self.gui._config["ui_state"]["left"] = Window.left
             self.gui.save_config("ui_state")

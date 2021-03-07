@@ -53,8 +53,8 @@ class KataGoContributeEngine(BaseEngine):
         if not os.path.isfile(cacert_path):
             try:
                 shutil.copyfile( find_package_resource('katrain/KataGo/cacert.pem'), cacert_path)
-            except:
-                self.katrain.log("Could not copy cacert file, please add it manually to your katago.exe directory",OUTPUT_ERROR)
+            except Exception as e:
+                self.katrain.log(f"Could not copy cacert file ({e}), please add it manually to your katago.exe directory",OUTPUT_ERROR)
         cfg = find_package_resource(self.config.get("config"))
 
         settings_dict = {
