@@ -144,6 +144,7 @@ class KataGoContributeEngine(BaseEngine):
                 self.command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE,
                 startupinfo=startupinfo,
                 shell=self.shell,
             )
