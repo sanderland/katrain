@@ -218,6 +218,9 @@ Keep in mind that partial games are not uploaded,
   * Note that if you don't have a GPU, or your GPU does not support OpenCL, you should use the 'eigen' binaries which run on CPU only.
 * The font size is too small
   * On some ultra-high resolution monitors, dialogs and other elements with text can appear too small. Please see [these](https://github.com/sanderland/katrain/issues/359#issuecomment-784096271) instructions to adjust them.
+* The app crashes with an error about "unable to find any valuable cutbuffer provider"
+  * Install xclip using `sudo apt-get install xclip`
+
 
 ## <a name="support"></a> Support / Contribute
 

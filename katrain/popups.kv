@@ -626,13 +626,13 @@
                 spacing: CP_SPACING
                 QuickInputButton:
                     text: '0.5'
-                    on_left_press: km.text=self.text
+                    target: km
                 QuickInputButton:
                     text: '6.5'
-                    on_left_press: km.text=self.text
+                    target: km
                 QuickInputButton:
                     text: '7.5'
-                    on_left_press: km.text=self.text
+                    target: km
     HideyBoxLayout:
         size_hint_y: 1 if root.mode != 'editgame' else EPSILON
         id: board_setup_section

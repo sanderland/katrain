@@ -27,3 +27,13 @@ Version 1.7 brings basic support for themes.
 
 ![Preview](https://raw.githubusercontent.com/sanderland/katrain/master/themes/koast.png)
 
+### Lizzie-like theme
+
+* Theme created by Eric W, includes modified board, stones
+* Images taken from [Lizzie](https://github.com/featurecat/lizzie/) by featurecat and contributors.
+* Hides hints for low visit/uncertain moves instead of showing small dots. 
+
+[Download](https://github.com/sanderland/katrain/blob/master/themes/eric-lizzie-look.zip)
+
+![Preview](https://raw.githubusercontent.com/sanderland/katrain/master/themes/eric-lizzie.png)
+
