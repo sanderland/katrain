@@ -836,3 +836,11 @@ msgstr ""
 
 msgid "editgame"
 msgstr "대국 정보 편집"
+
+#. TODO
+msgid "new zealand"
+msgstr "New Zealand"
+
+#. TODO
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"

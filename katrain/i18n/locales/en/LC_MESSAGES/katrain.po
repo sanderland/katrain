@@ -398,6 +398,12 @@ msgstr "Korean"
 msgid "aga"
 msgstr "AGA"
 
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+msgid "new zealand"
+msgstr "New Zealand"
+
 msgid "stone_scoring"
 msgstr "Ancient Chinese"
 

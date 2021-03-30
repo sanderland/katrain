@@ -26,12 +26,13 @@ class EngineDiedException(Exception):
 
 class BaseEngine:  # some common elements between analysis and contribute engine
 
-    # TODO: we don't support suicide in game.py, so no  "tt": "tromp-taylor", "nz": "new-zealand"
     RULESETS_ABBR = [
         ("jp", "japanese"),
         ("cn", "chinese"),
         ("ko", "korean"),
         ("aga", "aga"),
+        ("tt", "tromp-taylor"),
+        ("nz", "new zealand"),
         ("stone_scoring", "stone_scoring"),
     ]
     RULESETS = {fromkey: name for abbr, name in RULESETS_ABBR for fromkey in [abbr, name]}
@@ -41,8 +42,7 @@ class BaseEngine:  # some common elements between analysis and contribute engine
         self.config = config
 
     @staticmethod
-    def get_rules(node):
-        ruleset = node.ruleset
+    def get_rules(ruleset):
         if ruleset.strip().startswith("{"):
             try:
                 ruleset = json.loads(ruleset)
@@ -386,7 +386,7 @@ class KataGoEngine(BaseEngine):
         if self.config.get("wide_root_noise", 0.0) > 0.0:  # don't send if 0.0, so older versions don't error
             settings["wideRootNoise"] = self.config["wide_root_noise"]
         query = {
-            "rules": self.get_rules(analysis_node),
+            "rules": self.get_rules(analysis_node.ruleset),
             "priority": self.base_priority + priority,
             "analyzeTurns": [len(moves)],
             "maxVisits": visits,

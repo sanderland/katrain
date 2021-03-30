@@ -904,3 +904,11 @@ msgstr ""
 #. change komi etc in current game
 msgid "editgame"
 msgstr "Spiel editieren"
+
+#. TODO
+msgid "new zealand"
+msgstr "New Zealand"
+
+#. TODO
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"

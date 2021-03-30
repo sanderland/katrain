@@ -168,9 +168,10 @@ class BaseGame:
             self.chains.append([move])
         self.board[move.coords[1]][move.coords[0]] = this_chain
 
+        # check captures
         opp_nb_chains = {c for c in neighbours([move]) if c >= 0 and self.chains[c][0].player != move.player}
         for c in opp_nb_chains:
-            if -1 not in neighbours(self.chains[c]):
+            if -1 not in neighbours(self.chains[c]):  # no liberties
                 self.last_capture += self.chains[c]
                 for om in self.chains[c]:
                     self.board[om.coords[1]][om.coords[0]] = -1
@@ -179,8 +180,20 @@ class BaseGame:
             raise IllegalMoveException("Ko")
         self.prisoners += self.last_capture
 
-        if -1 not in neighbours(self.chains[this_chain]):  # TODO: NZ rules?
-            raise IllegalMoveException("Suicide")
+        if -1 not in neighbours(self.chains[this_chain]):  # suicide: check rules and throw exception if needed
+            rules = KataGoEngine.get_rules(self.rules)
+            if len(self.chains[this_chain]) == 1:  # even in new zealand rules, single stone suicide is not allowed
+                raise IllegalMoveException("Single stone suicide")
+            elif (isinstance(rules, str) and rules in ["tromp-taylor", "new zealand"]) or (
+                isinstance(rules, dict) and rules.get("suicide", False)
+            ):
+                self.last_capture += self.chains[this_chain]
+                for om in self.chains[this_chain]:
+                    self.board[om.coords[1]][om.coords[0]] = -1
+                self.chains[this_chain] = []
+                self.prisoners += self.last_capture
+            else:  # suicide not allowed by rules
+                raise IllegalMoveException("Suicide")
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
     def play(self, move: Move, ignore_ko: bool = False):
@@ -290,7 +303,7 @@ class BaseGame:
 
     @property
     def rules(self):
-        return self.root.ruleset
+        return KataGoEngine.get_rules(self.root.ruleset)
 
     @property
     def manual_score(self):
@@ -436,10 +449,6 @@ class Game(BaseGame):
             if even_if_present or not node.analysis_from_sgf or not node.load_analysis():
                 node.clear_analysis()
                 node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast)
-
-    @property
-    def rules(self):  # maybe not needed
-        return self.engines["B"].get_rules(self.root)
 
     def set_current_node(self, node):
         if self.insert_mode:
