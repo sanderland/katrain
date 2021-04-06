@@ -9,4 +9,4 @@ kivymd==0.104.1
 Pillow==8.1.1
 Pygments==2.7.4
 requests==2.25.0
-urllib3==1.26.3
+urllib3==1.26.4
