@@ -59,8 +59,9 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
 
 
 ## <a name="install"></a> Installation
-* See the [releases page](http://github.com/sanderland/katrain/releases) for downloadable executables for Windows and Mac.
+* See the [releases page](http://github.com/sanderland/katrain/releases) for downloadable executables for Windows and macOS.
 * Alternatively use `pip3 install -U katrain` to install the latest version from PyPI on any 64-bit OS.
+* On macOS, you can also use `brew install katrain` to install the app.
 * [This page](https://github.com/sanderland/katrain/blob/master/INSTALL.md) has detailed instructions for Window, Linux and macOS,
   as well as troubleshooting and setting up KataGo to use multiple GPUs.
 
