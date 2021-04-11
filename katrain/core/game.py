@@ -181,7 +181,7 @@ class BaseGame:
 
         # suicide: check rules and throw exception if needed
         if -1 not in neighbours(self.chains[this_chain]):
-            rules = KataGoEngine.get_rules(self.rules)
+            rules = self.rules
             if len(self.chains[this_chain]) == 1:  # even in new zealand rules, single stone suicide is not allowed
                 raise IllegalMoveException("Single stone suicide")
             elif (isinstance(rules, str) and rules in ["tromp-taylor", "new zealand"]) or (
