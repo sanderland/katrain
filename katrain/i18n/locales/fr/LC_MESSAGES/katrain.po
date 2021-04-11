@@ -898,3 +898,11 @@ msgstr ""
 
 msgid "editgame"
 msgstr "Partie en cours"
+
+#. TODO
+msgid "new zealand"
+msgstr "New Zealand"
+
+#. TODO
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"

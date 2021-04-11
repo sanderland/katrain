@@ -837,3 +837,11 @@ msgstr "这会产生部分的对局让你接著下。例如：你可以使用它
 #. change komi etc in current game
 msgid "editgame"
 msgstr "编辑对局资讯"
+
+#. TODO
+msgid "new zealand"
+msgstr "New Zealand"
+
+#. TODO
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"

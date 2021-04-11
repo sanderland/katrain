@@ -49,12 +49,15 @@ class KataGoContributeEngine(BaseEngine):
         self.move_speed = self.config.get("movespeed", 2.0)
 
         exe = self.get_engine_path(self.config.get("katago"))
-        cacert_path = os.path.join(os.path.split(exe)[0], 'cacert.pem')
+        cacert_path = os.path.join(os.path.split(exe)[0], "cacert.pem")
         if not os.path.isfile(cacert_path):
             try:
-                shutil.copyfile( find_package_resource('katrain/KataGo/cacert.pem'), cacert_path)
+                shutil.copyfile(find_package_resource("katrain/KataGo/cacert.pem"), cacert_path)
             except Exception as e:
-                self.katrain.log(f"Could not copy cacert file ({e}), please add it manually to your katago.exe directory",OUTPUT_ERROR)
+                self.katrain.log(
+                    f"Could not copy cacert file ({e}), please add it manually to your katago.exe directory",
+                    OUTPUT_ERROR,
+                )
         cfg = find_package_resource(self.config.get("config"))
 
         settings_dict = {
@@ -63,7 +66,7 @@ class KataGoContributeEngine(BaseEngine):
             "maxSimultaneousGames": self.config.get("maxgames") or self.DEFAULT_MAX_GAMES,
             "includeOwnership": self.config.get("ownership") or False,
             "logGamesAsJson": True,
-            "homeDataDir": os.path.expanduser(DATA_FOLDER)
+            "homeDataDir": os.path.expanduser(DATA_FOLDER),
         }
         self.max_buffer_games = 2 * settings_dict["maxSimultaneousGames"]
         settings = {f"{k}={v}" for k, v in settings_dict.items()}

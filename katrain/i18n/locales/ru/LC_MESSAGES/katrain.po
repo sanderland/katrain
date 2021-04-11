@@ -855,3 +855,11 @@ msgstr ""
 
 msgid "editgame"
 msgstr "Редактировать игры"
+
+#. TODO
+msgid "new zealand"
+msgstr "New Zealand"
+
+#. TODO
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"

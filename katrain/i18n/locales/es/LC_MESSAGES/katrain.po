@@ -916,3 +916,11 @@ msgstr ""
 #. TODO - change komi etc in current game
 msgid "editgame"
 msgstr "Edit Game Info"
+
+#. TODO
+msgid "new zealand"
+msgstr "New Zealand"
+
+#. TODO
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"

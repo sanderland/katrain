@@ -1,6 +1,7 @@
 import pytest
 
 from katrain.core.base_katrain import KaTrainBase
+from katrain.core.engine import BaseEngine
 from katrain.core.game import Game, IllegalMoveException, Move, KaTrainSGF
 from katrain.core.game_node import GameNode
 
@@ -55,9 +56,8 @@ class TestBoard:
         assert 3 == len(b.stones)
         assert 2 == len(b.prisoners)
         b.play(Move.from_gtp("B1", player="B"))
-        with pytest.raises(IllegalMoveException) as exc:
+        with pytest.raises(IllegalMoveException, match="Single stone suicide"):
             b.play(Move.from_gtp("A1", player="W"))
-        assert "Suicide" in str(exc.value)
         assert 1 == len(self.nonempty_chains(b))
         assert 4 == len(b.stones)
         assert 2 == len(b.prisoners)
@@ -118,3 +118,25 @@ class TestBoard:
         root2 = KaTrainSGF.parse_sgf("(;GM[1]FF[4]SZ[19]HA[2];)")
         game2 = Game(MockKaTrain(force_package_config=True), MockEngine(), move_tree=root2)
         assert 2 == len(game2.root.placements)
+
+    def test_suicide(self):
+        rulesets_to_test = BaseEngine.RULESETS_ABBR + [('{"suicide":true}', ""), ('{"suicide":false}', "")]
+        for shortrule, _ in rulesets_to_test:
+            new_game = GameNode(properties={"SZ": 19, "RU": shortrule})
+            b = Game(MockKaTrain(force_package_config=True), MockEngine(), move_tree=new_game)
+            b.play(Move.from_gtp("A18", player="B"))
+            b.play(Move.from_gtp("B18", player="B"))
+            b.play(Move.from_gtp("C19", player="B"))
+            b.play(Move.from_gtp("A19", player="W"))
+            assert 4 == len(b.stones)
+            assert 0 == len(b.prisoners)
+
+            if shortrule in ["tt", "nz", '{"suicide":true}']:
+                b.play(Move.from_gtp("B19", player="W"))
+                assert 3 == len(b.stones)
+                assert 2 == len(b.prisoners)
+            else:
+                with pytest.raises(IllegalMoveException, match="Suicide"):
+                    b.play(Move.from_gtp("B19", player="W"))
+                assert 4 == len(b.stones)
+                assert 0 == len(b.prisoners)
