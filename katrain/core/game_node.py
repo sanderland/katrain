@@ -12,6 +12,7 @@ from katrain.core.constants import (
     SGF_INTERNAL_COMMENTS_MARKER,
     SGF_SEPARATOR_MARKER,
     VERSION,
+    PRIORITY_DEFAULT,
 )
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
@@ -182,7 +183,7 @@ class GameNode(SGFNode):
     def analyze(
         self,
         engine,
-        priority=0,
+        priority=PRIORITY_DEFAULT,
         visits=None,
         time_limit=True,
         refine_move=None,

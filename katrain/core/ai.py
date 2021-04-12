@@ -33,6 +33,7 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
+    PRIORITY_EXTRA_AI_QUERY,
 )
 from katrain.core.game import Game, GameNode, Move
 from katrain.core.utils import var_to_grid, weighted_selection_without_replacement
@@ -173,7 +174,7 @@ def request_ai_analysis(game: Game, cn: GameNode, extra_settings: Dict) -> Optio
         cn,
         callback=set_analysis,
         error_callback=set_error,
-        priority=1_000,
+        priority=PRIORITY_EXTRA_AI_QUERY,
         ownership=False,
         extra_settings=extra_settings,
     )
