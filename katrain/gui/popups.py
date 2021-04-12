@@ -871,7 +871,7 @@ class PlayerMovesReport(BoxLayout):
             for j, count in enumerate(histogram):
                 v = histogram[i][j]
                 c = [
-                    d * (1 - min(1, v / 20)) + l * min(1, v / 20)
+                    d * (1 - min(1.0, v / 20)) + l * min(1.0, v / 20)
                     for l, d in zip(Theme.LIGHTER_BACKGROUND_COLOR, Theme.BOX_BACKGROUND_COLOR)
                 ]
                 gl.add_widget(BackgroundLabel(text=str(v) if v else "", background_color=c))
