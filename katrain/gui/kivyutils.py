@@ -49,8 +49,13 @@ class BackgroundMixin(Widget):  # -- mixins
 
 
 class BackgroundLabel(BackgroundMixin, Label):
-    halign = StringProperty("center")
+    pass
 
+class TableCellLabel(BackgroundLabel):
+    pass
+
+class TableHeaderLabel(BackgroundLabel):
+    pass
 
 class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on right click
     def __init__(self, **kwargs):
@@ -375,7 +380,7 @@ class PlayerSetupBlock(MDBoxLayout):
 
 
 class PlayerInfo(MDBoxLayout, BackgroundMixin):
-    captures = NumericProperty(0)
+    captures = ObjectProperty(0)
     player = OptionProperty("B", options=["B", "W"])
     player_type = StringProperty("Player")
     komi = NumericProperty(0)

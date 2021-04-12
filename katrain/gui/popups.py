@@ -37,11 +37,12 @@ from katrain.core.constants import (
     SGF_INTERNAL_COMMENTS_MARKER,
     STATUS_INFO,
     PLAYER_HUMAN,
+    ADDITIONAL_MOVE_ORDER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
 from katrain.core.utils import PATHS, find_package_resource, evaluation_class
-from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner, BackgroundLabel
+from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner, BackgroundLabel, TableHeaderLabel, TableCellLabel
 from katrain.gui.theme import Theme
 from katrain.gui.widgets.progress_loader import ProgressLoader
 
@@ -882,6 +883,127 @@ class PlayerMovesReport(BoxLayout):
             Clock.schedule_once(self._refresh, 1)
 
 
+class PlayerMoveOverview(BoxLayout):
+    player = StringProperty()
+    orientation = StringProperty("vertical")
+    stat = StringProperty("points")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.padding = Theme.CP_PADDING
+        self.katrain = MDApp.get_running_app().gui
+
+    def _refresh(self, _dt=0):
+
+        game = self.katrain.game
+        cn = game.current_node
+        nodes = cn.nodes_from_root
+        while cn.children:  # main branch
+            cn = cn.children[0]
+            nodes.append(cn)
+
+        nodes = [n for n in nodes if n.move and n.move.player == self.player]
+        colors = [
+            [cp * 0.75 for cp in col[:3]] + [1] for col in Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
+        ]
+        format = "{:.1f}"
+
+        if self.stat == "points":
+            thresholds = self.katrain.config("trainer/eval_thresholds")
+            label = "Points Lost"
+            maxformat = "{:.1f}"
+            # colors = Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
+            labels = [f"≥ {pt}" if pt > 0 else f"< {thresholds[-2]}" for pt in thresholds]
+
+            def get_stat(node):
+                return node.points_lost
+
+        else:
+            thresholds = [101, 26, 11, 6, 2, 0]
+            label = "AI Rank"
+            maxformat = "{:d}"
+            labels = (
+                [f"> {thresholds[0] - 1}"]
+                + [f"{f}-{t - 1}" for f, t in zip(thresholds[1:-1], thresholds[:-2])]
+                + [f"Top Move"]
+            )
+
+            def get_stat(node):
+                move = node.move
+                if move:
+                    orders = [
+                        movedict["order"]
+                        for movedict in n.candidate_moves
+                        if movedict["move"] == move.gtp() and movedict["order"] < ADDITIONAL_MOVE_ORDER
+                    ]
+                    if orders:
+                        return orders[0]
+                    else:
+                        pol_rank, pol_p, _ = n.move_policy_stats()
+                        if pol_rank:
+                            return pol_rank
+
+                return node.points_lost
+
+        histogram = [0 for _ in thresholds]
+
+        stats = []
+        for n in nodes:
+            if not n.analysis_complete:
+                continue
+            stat = get_stat(n)
+            if stat is None:
+                continue
+            bucket = len(thresholds) - 1 - evaluation_class(stat, thresholds)
+            stats.append(stat)
+            histogram[bucket] += 1
+
+        if len(stats) > 1:
+            mean = sum(stats) / len(stats)
+            stats.sort()
+            median = (stats[int((len(stats) - 1) / 2)] + stats[int((len(stats)) / 2)]) / 2
+            maxim = max(*stats)
+        else:
+            mean = median = maxim = 0
+
+        self.clear_widgets()
+        summary_tbl = GridLayout(cols=2, rows=4, size_hint_y=4)
+        summary_tbl.add_widget(TableHeaderLabel(text=label, background_color=Theme.BOX_BACKGROUND_COLOR))
+        summary_tbl.add_widget(TableHeaderLabel(text="", background_color=Theme.BOX_BACKGROUND_COLOR))
+        summary_tbl.add_widget(TableCellLabel(text="Median", background_color=Theme.LIGHTER_BACKGROUND_COLOR))
+        summary_tbl.add_widget(
+            TableCellLabel(text=format.format(median), background_color=Theme.LIGHTER_BACKGROUND_COLOR)
+        )
+        summary_tbl.add_widget(TableCellLabel(text="Mean", background_color=Theme.LIGHTER_BACKGROUND_COLOR))
+        summary_tbl.add_widget(
+            TableCellLabel(text=format.format(mean), background_color=Theme.LIGHTER_BACKGROUND_COLOR)
+        )
+        summary_tbl.add_widget(TableCellLabel(text="Maximum", background_color=Theme.LIGHTER_BACKGROUND_COLOR))
+        summary_tbl.add_widget(
+            TableCellLabel(text=maxformat.format(maxim), background_color=Theme.LIGHTER_BACKGROUND_COLOR)
+        )
+
+        count_tbl = GridLayout(cols=2, rows=len(thresholds) + 1, size_hint_y=len(thresholds) + 1)
+        count_tbl.add_widget(TableHeaderLabel(text=label, background_color=Theme.BOX_BACKGROUND_COLOR))
+        count_tbl.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BOX_BACKGROUND_COLOR))
+        for i, (col, label, pt) in enumerate(zip(colors[::-1], labels[::-1], thresholds[::-1])):
+            count_tbl.add_widget(TableCellLabel(text=label, background_color=col))
+            perc = histogram[i] / (len(stats) + 1e-9)
+            c = [
+                d * (1 - min(1.0, perc / 0.33)) + l * min(1.0, perc / 0.33)
+                for l, d in zip(Theme.LIGHTER_BACKGROUND_COLOR, Theme.BOX_BACKGROUND_COLOR)
+            ]
+            count_tbl.add_widget(TableCellLabel(text=str(histogram[i]), background_color=c))
+
+        self.add_widget(summary_tbl)
+        self.add_widget(Label(size_hint_y=0.5))
+        self.add_widget(count_tbl)
+
+        # if not done analyzing, check again in 1s
+        if not self.katrain.engine.is_idle():
+            Clock.schedule_once(self._refresh, 1)
+
+
 class GameReportPopup(GridLayout):
     def __init__(self, katrain, **kwargs):
         super().__init__(**kwargs)
@@ -891,6 +1013,7 @@ class GameReportPopup(GridLayout):
     def _build(self, *args):
         for bw, player_info in self.katrain.players_info.items():
             self.players[bw].player_type = player_info.player_type
+            self.players[bw].captures = bw # ;)
             self.players[bw].player_subtype = player_info.player_subtype
             self.players[bw].name = player_info.name
             self.players[bw].rank = (
@@ -899,5 +1022,5 @@ class GameReportPopup(GridLayout):
                 else rank_label(player_info.calculated_rank)
             )
 
-        for player, widget in self.report.items():
+        for widget in self.reports:
             widget._refresh()

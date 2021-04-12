@@ -662,6 +662,9 @@ class KaTrainGui(Screen, KaTrainBase):
             self.load_sgf_from_clipboard()
         elif keycode[1] == "b" and shift_pressed:
             self("undo", "main-branch")
+        elif keycode[1] == "f3":
+            self.analysis_controls.dropdown.open_report_popup()
+
         elif keycode[1] in shortcuts.keys() and not ctrl_pressed:
             shortcut = shortcuts[keycode[1]]
             if isinstance(shortcut, Widget):

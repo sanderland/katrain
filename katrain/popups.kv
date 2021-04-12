@@ -865,31 +865,44 @@
 
 <GameReportPopup>:
     players: {'B': player_b, 'W': player_w}
-    report: {'B': report_b, 'W': report_w}
-    rows: 3
+    reports: [points_b,points_w,rank_b,rank_w]
+    rows: 2
     columns: 3
-    PlayerInfo:
-        player: 'B'
+    AnchorLayout:
         size_hint: 1, None
         height: dp(80)
-        id: player_b
+        PlayerInfo:
+            player: 'B'
+            size_hint: 0.75, 1
+            id: player_b
     Label:
         size_hint: 0.1, None
-    PlayerInfo:
-        player: 'W'
+    AnchorLayout:
         size_hint: 1, None
         height: dp(80)
-        id: player_w
-    PlayerMovesReport:
-        player: 'B'
-        id: report_b
-        size_hint: 1, None
-        height: self.width
+        PlayerInfo:
+            player: 'W'
+            size_hint: 0.75, 1
+            id: player_w
+    BoxLayout:
+        spacing: CP_SPACING
+        padding: CP_PADDING
+        PlayerMoveOverview:
+            player: 'B'
+            id: points_b
+        PlayerMoveOverview:
+            player: 'B'
+            id: rank_b
+            stat: 'airank'
     Label:
         size_hint: 0.1, None
-    PlayerMovesReport:
-        player: 'W'
-        id: report_w
-        size_hint: 1, None
-        height: self.width
-    Label: # last row
+    BoxLayout:
+        spacing: CP_SPACING
+        padding: CP_PADDING
+        PlayerMoveOverview:
+            player: 'W'
+            id: points_w
+        PlayerMoveOverview:
+            player: 'W'
+            id: rank_w
+            stat: 'airank'

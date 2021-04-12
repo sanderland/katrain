@@ -13,6 +13,7 @@ from katrain.core.constants import (
     SGF_SEPARATOR_MARKER,
     VERSION,
     PRIORITY_DEFAULT,
+    ADDITIONAL_MOVE_ORDER,
 )
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
@@ -212,11 +213,13 @@ class GameNode(SGFNode):
         if cur is None:
             self.analysis["moves"][move_gtp] = {
                 "move": move_gtp,
-                "order": 999,
+                "order": ADDITIONAL_MOVE_ORDER,
                 **move_analysis,
             }  # some default values for keys missing in rootInfo
         else:
-            cur["order"] = min(cur["order"], move_analysis.get("order", 999))  # parent arriving after child
+            cur["order"] = min(
+                cur["order"], move_analysis.get("order", ADDITIONAL_MOVE_ORDER)
+            )  # parent arriving after child
             if cur["visits"] < move_analysis["visits"]:
                 cur.update(move_analysis)
 
@@ -239,7 +242,7 @@ class GameNode(SGFNode):
                     del m["order"]
             elif refine_move is None:  # normal update: old moves to end, new order matters. also for region?
                 for move_dict in self.analysis["moves"].values():
-                    move_dict["order"] = 999  # old moves to end
+                    move_dict["order"] = ADDITIONAL_MOVE_ORDER  # old moves to end
             for move_analysis in analysis_json["moveInfos"]:
                 self.update_move_analysis(move_analysis, move_analysis["move"])
             self.analysis["ownership"] = analysis_json.get("ownership")

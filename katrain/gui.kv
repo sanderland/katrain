@@ -25,10 +25,17 @@
 #<Label>:
 #    canvas.before:
 #        Color:
-#            rgba: RED
+#            rgba: [1,0,0,1]
 #        Line:
 #            rectangle:  (*self.pos,*self.size)
 #            width: 1
+
+<TableCellLabel>:
+    font_size: self.height/3
+    padding: [Theme.CP_PADDING,Theme.CP_PADDING]
+
+<TableHeaderLabel@TableCellLabel>:
+    font_size: self.height/2.5
 
 # mixins
 <BackgroundMixin>:
@@ -768,7 +775,7 @@
     AnalysisMenuItem:
         text: i18n._("analysis:report")
         icon: 'analysis.png'
-        shortcut: ''
+        shortcut: 'F3'
         on_action: root.open_report_popup()
     AnalysisMenuItem:
         text: i18n._("analysis:continuous")
