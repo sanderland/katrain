@@ -14,6 +14,7 @@ from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.utils import platform
@@ -35,11 +36,12 @@ from katrain.core.constants import (
     OUTPUT_INFO,
     SGF_INTERNAL_COMMENTS_MARKER,
     STATUS_INFO,
+    PLAYER_HUMAN,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
-from katrain.core.utils import PATHS, find_package_resource
-from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
+from katrain.core.utils import PATHS, find_package_resource, evaluation_class
+from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner, BackgroundLabel
 from katrain.gui.theme import Theme
 from katrain.gui.widgets.progress_loader import ProgressLoader
 
@@ -815,3 +817,87 @@ class ReAnalyzeGamePopup(BoxLayout):
 
     def on_submit(self):
         self.button.trigger_action(duration=0)
+
+
+class PlayerMovesReport(BoxLayout):
+    player = StringProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.padding = Theme.CP_PADDING
+        self.katrain = MDApp.get_running_app().gui
+
+    def _refresh(self, _dt=0):
+
+        game = self.katrain.game
+        cn = game.current_node
+        nodes = cn.nodes_from_root
+        while cn.children:  # main branch
+            cn = cn.children[0]
+            nodes.append(cn)
+
+        nodes = [n for n in nodes if n.move and n.move.player == self.player]
+
+        point_thresholds = self.katrain.config("trainer/eval_thresholds")
+        colors = Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
+
+        policy_thresholds = [101, 26, 11, 6, 2, 0]
+        # TODO: i18n
+        policy_labels = (
+            [f"Policy\n> {policy_thresholds[0]-1}"]
+            + [f"Policy\n{f}-{t-1}" for f, t in zip(policy_thresholds[1:-1], policy_thresholds[:-2])]
+            + [f"Policy\nTop Move"]
+        )
+        point_labels = [f"Point Loss\n> {p}" for p in point_thresholds]
+        point_labels[-1] = f"Point Loss\n< {point_thresholds[-2]}"
+
+        histogram = [[0 for _ in policy_thresholds] for _ in point_thresholds]
+
+        for n in nodes:
+            if not n.analysis_complete:
+                continue
+            pol_rank, pol_p, _ = n.move_policy_stats()
+            point_class = len(point_thresholds) - 1 - evaluation_class(n.points_lost, point_thresholds)
+            policy_class = len(policy_thresholds) - 1 - evaluation_class(pol_rank, policy_thresholds)
+            histogram[point_class][policy_class] += 1
+
+        self.clear_widgets()
+        gl = GridLayout(cols=len(policy_thresholds) + 1, rows=len(point_thresholds) + 1)
+        gl.add_widget(Label())
+        for i, pt in enumerate(policy_labels[::-1]):
+            gl.add_widget(BackgroundLabel(text=pt, background_color=colors[-1 - i]))  # assume same # classes
+        for i in range(len(point_thresholds)):
+            gl.add_widget(BackgroundLabel(text=point_labels[-1 - i], background_color=colors[-1 - i]))
+            for j, count in enumerate(histogram):
+                v = histogram[i][j]
+                c = [
+                    d * (1 - min(1, v / 20)) + l * min(1, v / 20)
+                    for l, d in zip(Theme.LIGHTER_BACKGROUND_COLOR, Theme.BOX_BACKGROUND_COLOR)
+                ]
+                gl.add_widget(BackgroundLabel(text=str(v) if v else "", background_color=c))
+        self.add_widget(gl)
+
+        # if not done analyzing, check again in 1s
+        if not self.katrain.engine.is_idle():
+            Clock.schedule_once(self._refresh, 1)
+
+
+class GameReportPopup(GridLayout):
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
+        Clock.schedule_once(self._build, 0.1)
+
+    def _build(self, *args):
+        for bw, player_info in self.katrain.players_info.items():
+            self.players[bw].player_type = player_info.player_type
+            self.players[bw].player_subtype = player_info.player_subtype
+            self.players[bw].name = player_info.name
+            self.players[bw].rank = (
+                player_info.sgf_rank
+                if player_info.player_type == PLAYER_HUMAN
+                else rank_label(player_info.calculated_rank)
+            )
+
+        for player, widget in self.report.items():
+            widget._refresh()

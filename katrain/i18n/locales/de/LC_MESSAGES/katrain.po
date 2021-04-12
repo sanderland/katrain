@@ -912,3 +912,7 @@ msgstr "New Zealand"
 #. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
+
+#. TODO - View a player performance report
+msgid "analysis:report"
+msgstr "Performance Report"

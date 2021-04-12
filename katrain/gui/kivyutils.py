@@ -48,6 +48,10 @@ class BackgroundMixin(Widget):  # -- mixins
     outline_width = NumericProperty(1)
 
 
+class BackgroundLabel(BackgroundMixin, Label):
+    halign = StringProperty("center")
+
+
 class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on right click
     def __init__(self, **kwargs):
         self.register_event_type("on_left_release")

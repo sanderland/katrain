@@ -98,7 +98,7 @@ class BaseGame:
             if handicap:
                 self.root.place_handicap_stones(handicap)
 
-        if not self.root.get_property("RU"):
+        if not self.root.get_property("RU"):  # if rules missing in sgf, inherit current
             self.root.set_property("RU", katrain.config("game/rules"))
 
         self.set_current_node(self.root)

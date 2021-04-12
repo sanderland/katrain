@@ -105,6 +105,10 @@ msgstr "Fast analysis of all moves"
 msgid "analysis:game"
 msgstr "Deeper full game analysis"
 
+#. View a player performance report
+msgid "analysis:report"
+msgstr "Performance Report"
+
 #. Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
