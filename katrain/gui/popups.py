@@ -876,20 +876,24 @@ class GameReportPopup(BoxLayout):
             # how many bad candidates were considered
             weight = max(cands_policy - good_move_policy, 1e-6)
             if points_lost > 0.5:
-                adj_weight = 0.25 # quite severe
+                adj_weight = 0.25  # quite severe
             else:
-                adj_weight = min(0.25,weight)
+                adj_weight = min(0.25, weight)
 
-            weights[n.player].append((weight,adj_weight))
-            print(n.player,n.move.gtp(),'w',weight,adj_weight,'ptloss',points_lost)
+            weights[n.player].append((weight, adj_weight))
+            print(n.player, n.move.gtp(), "w", weight, adj_weight, "ptloss", points_lost)
 
             if n.parent.analysis_complete:
                 ai_top_move_count[n.player] += int(cands[0]["move"] == n.move.gtp())
 
         sum_stats = {
             bw: (
-                100 * 0.75 ** (sum(s * aw for s, (w,aw) in zip(player_ptloss[bw], weights[bw])) / sum(aw for _,aw in weights[bw])),
-                100 * sum(w for w,aw in weights[bw]) / len(player_ptloss[bw]),
+                100
+                * 0.75
+                ** (
+                    sum(s * aw for s, (w, aw) in zip(player_ptloss[bw], weights[bw])) / sum(aw for _, aw in weights[bw])
+                ),
+                100 * sum(w for w, aw in weights[bw]) / len(player_ptloss[bw]),
                 sum(player_ptloss[bw]) / len(player_ptloss[bw]),
                 ai_top_move_count[bw] / len(player_ptloss[bw]),
             )
@@ -938,7 +942,7 @@ class GameReportPopup(BoxLayout):
 
         for bw, player_info in self.katrain.players_info.items():
             self.player_infos[bw].player_type = player_info.player_type
-            self.player_infos[bw].captures = bw  # ;)
+            self.player_infos[bw].captures = ""  # ;)
             self.player_infos[bw].player_subtype = player_info.player_subtype
             self.player_infos[bw].name = player_info.name
             self.player_infos[bw].rank = (

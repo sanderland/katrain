@@ -507,14 +507,14 @@ class Game(BaseGame):
                 ]
                 try:
                     while True:
-                        if copy_from_node.move not in already_inserted_moves:
-                            for m in copy_from_node.move_with_placements:
+                        for m in copy_from_node.move_with_placements:
+                            if m not in already_inserted_moves:
                                 self._validate_move_and_update_chains(m, True)
-                            # this inserts
-                            copy_to_node = GameNode(
-                                parent=copy_to_node, properties=copy.deepcopy(copy_from_node.properties)
-                            )
-                            num_copied += 1
+                                # this inserts
+                                copy_to_node = GameNode(
+                                    parent=copy_to_node, properties=copy.deepcopy(copy_from_node.properties)
+                                )
+                                num_copied += 1
                         if not copy_from_node.children:
                             break
                         copy_from_node = copy_from_node.ordered_children[0]
