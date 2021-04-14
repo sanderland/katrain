@@ -42,7 +42,16 @@ from katrain.core.constants import (
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
 from katrain.core.utils import PATHS, find_package_resource, evaluation_class
-from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner, BackgroundLabel, TableHeaderLabel, TableCellLabel
+from katrain.gui.kivyutils import (
+    BackgroundMixin,
+    I18NSpinner,
+    BackgroundLabel,
+    TableHeaderLabel,
+    TableCellLabel,
+    PlayerInfo,
+    SizedRectangleButton,
+    AutoSizedRectangleButton,
+)
 from katrain.gui.theme import Theme
 from katrain.gui.widgets.progress_loader import ProgressLoader
 
@@ -820,207 +829,124 @@ class ReAnalyzeGamePopup(BoxLayout):
         self.button.trigger_action(duration=0)
 
 
-class PlayerMovesReport(BoxLayout):
-    player = StringProperty()
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.padding = Theme.CP_PADDING
-        self.katrain = MDApp.get_running_app().gui
-
-    def _refresh(self, _dt=0):
-
-        game = self.katrain.game
-        cn = game.current_node
-        nodes = cn.nodes_from_root
-        while cn.children:  # main branch
-            cn = cn.children[0]
-            nodes.append(cn)
-
-        nodes = [n for n in nodes if n.move and n.move.player == self.player]
-
-        point_thresholds = self.katrain.config("trainer/eval_thresholds")
-        colors = Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
-
-        policy_thresholds = [101, 26, 11, 6, 2, 0]
-        # TODO: i18n
-        policy_labels = (
-            [f"Policy\n> {policy_thresholds[0]-1}"]
-            + [f"Policy\n{f}-{t-1}" for f, t in zip(policy_thresholds[1:-1], policy_thresholds[:-2])]
-            + [f"Policy\nTop Move"]
-        )
-        point_labels = [f"Point Loss\n> {p}" for p in point_thresholds]
-        point_labels[-1] = f"Point Loss\n< {point_thresholds[-2]}"
-
-        histogram = [[0 for _ in policy_thresholds] for _ in point_thresholds]
-
-        for n in nodes:
-            if not n.analysis_complete:
-                continue
-            pol_rank, pol_p, _ = n.move_policy_stats()
-            point_class = len(point_thresholds) - 1 - evaluation_class(n.points_lost, point_thresholds)
-            policy_class = len(policy_thresholds) - 1 - evaluation_class(pol_rank, policy_thresholds)
-            histogram[point_class][policy_class] += 1
-
-        self.clear_widgets()
-        gl = GridLayout(cols=len(policy_thresholds) + 1, rows=len(point_thresholds) + 1)
-        gl.add_widget(Label())
-        for i, pt in enumerate(policy_labels[::-1]):
-            gl.add_widget(BackgroundLabel(text=pt, background_color=colors[-1 - i]))  # assume same # classes
-        for i in range(len(point_thresholds)):
-            gl.add_widget(BackgroundLabel(text=point_labels[-1 - i], background_color=colors[-1 - i]))
-            for j, count in enumerate(histogram):
-                v = histogram[i][j]
-                c = [
-                    d * (1 - min(1.0, v / 20)) + l * min(1.0, v / 20)
-                    for l, d in zip(Theme.LIGHTER_BACKGROUND_COLOR, Theme.BOX_BACKGROUND_COLOR)
-                ]
-                gl.add_widget(BackgroundLabel(text=str(v) if v else "", background_color=c))
-        self.add_widget(gl)
-
-        # if not done analyzing, check again in 1s
-        if not self.katrain.engine.is_idle():
-            Clock.schedule_once(self._refresh, 1)
-
-
-class PlayerMoveOverview(BoxLayout):
-    player = StringProperty()
-    orientation = StringProperty("vertical")
-    stat = StringProperty("points")
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.padding = Theme.CP_PADDING
-        self.katrain = MDApp.get_running_app().gui
-
-    def _refresh(self, _dt=0):
-
-        game = self.katrain.game
-        cn = game.current_node
-        nodes = cn.nodes_from_root
-        while cn.children:  # main branch
-            cn = cn.children[0]
-            nodes.append(cn)
-
-        nodes = [n for n in nodes if n.move and n.move.player == self.player]
-        colors = [
-            [cp * 0.75 for cp in col[:3]] + [1] for col in Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
-        ]
-        format = "{:.1f}"
-
-        if self.stat == "points":
-            thresholds = self.katrain.config("trainer/eval_thresholds")
-            label = "Points Lost"
-            maxformat = "{:.1f}"
-            # colors = Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
-            labels = [f"≥ {pt}" if pt > 0 else f"< {thresholds[-2]}" for pt in thresholds]
-
-            def get_stat(node):
-                return node.points_lost
-
-        else:
-            thresholds = [101, 26, 11, 6, 2, 0]
-            label = "AI Rank"
-            maxformat = "{:d}"
-            labels = (
-                [f"> {thresholds[0] - 1}"]
-                + [f"{f}-{t - 1}" for f, t in zip(thresholds[1:-1], thresholds[:-2])]
-                + [f"Top Move"]
-            )
-
-            def get_stat(node):
-                move = node.move
-                if move:
-                    orders = [
-                        movedict["order"]
-                        for movedict in n.candidate_moves
-                        if movedict["move"] == move.gtp() and movedict["order"] < ADDITIONAL_MOVE_ORDER
-                    ]
-                    if orders:
-                        return orders[0]
-                    else:
-                        pol_rank, pol_p, _ = n.move_policy_stats()
-                        if pol_rank:
-                            return pol_rank
-
-                return node.points_lost
-
-        histogram = [0 for _ in thresholds]
-
-        stats = []
-        for n in nodes:
-            if not n.analysis_complete:
-                continue
-            stat = get_stat(n)
-            if stat is None:
-                continue
-            bucket = len(thresholds) - 1 - evaluation_class(stat, thresholds)
-            stats.append(stat)
-            histogram[bucket] += 1
-
-        if len(stats) > 1:
-            mean = sum(stats) / len(stats)
-            stats.sort()
-            median = (stats[int((len(stats) - 1) / 2)] + stats[int((len(stats)) / 2)]) / 2
-            maxim = max(*stats)
-        else:
-            mean = median = maxim = 0
-
-        self.clear_widgets()
-        summary_tbl = GridLayout(cols=2, rows=4, size_hint_y=4)
-        summary_tbl.add_widget(TableHeaderLabel(text=label, background_color=Theme.BOX_BACKGROUND_COLOR))
-        summary_tbl.add_widget(TableHeaderLabel(text="", background_color=Theme.BOX_BACKGROUND_COLOR))
-        summary_tbl.add_widget(TableCellLabel(text="Median", background_color=Theme.LIGHTER_BACKGROUND_COLOR))
-        summary_tbl.add_widget(
-            TableCellLabel(text=format.format(median), background_color=Theme.LIGHTER_BACKGROUND_COLOR)
-        )
-        summary_tbl.add_widget(TableCellLabel(text="Mean", background_color=Theme.LIGHTER_BACKGROUND_COLOR))
-        summary_tbl.add_widget(
-            TableCellLabel(text=format.format(mean), background_color=Theme.LIGHTER_BACKGROUND_COLOR)
-        )
-        summary_tbl.add_widget(TableCellLabel(text="Maximum", background_color=Theme.LIGHTER_BACKGROUND_COLOR))
-        summary_tbl.add_widget(
-            TableCellLabel(text=maxformat.format(maxim), background_color=Theme.LIGHTER_BACKGROUND_COLOR)
-        )
-
-        count_tbl = GridLayout(cols=2, rows=len(thresholds) + 1, size_hint_y=len(thresholds) + 1)
-        count_tbl.add_widget(TableHeaderLabel(text=label, background_color=Theme.BOX_BACKGROUND_COLOR))
-        count_tbl.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BOX_BACKGROUND_COLOR))
-        for i, (col, label, pt) in enumerate(zip(colors[::-1], labels[::-1], thresholds[::-1])):
-            count_tbl.add_widget(TableCellLabel(text=label, background_color=col))
-            perc = histogram[i] / (len(stats) + 1e-9)
-            c = [
-                d * (1 - min(1.0, perc / 0.33)) + l * min(1.0, perc / 0.33)
-                for l, d in zip(Theme.LIGHTER_BACKGROUND_COLOR, Theme.BOX_BACKGROUND_COLOR)
-            ]
-            count_tbl.add_widget(TableCellLabel(text=str(histogram[i]), background_color=c))
-
-        self.add_widget(summary_tbl)
-        self.add_widget(Label(size_hint_y=0.5))
-        self.add_widget(count_tbl)
-
-        # if not done analyzing, check again in 1s
-        if not self.katrain.engine.is_idle():
-            Clock.schedule_once(self._refresh, 1)
-
-
-class GameReportPopup(GridLayout):
+class GameReportPopup(BoxLayout):
     def __init__(self, katrain, **kwargs):
         super().__init__(**kwargs)
         self.katrain = katrain
-        Clock.schedule_once(self._build, 0.1)
+        self.depth_filter = None
+        Clock.schedule_once(self._refresh, 0)
 
-    def _build(self, *args):
+    def set_depth_filter(self, filter):
+        self.depth_filter = filter
+        Clock.schedule_once(self._refresh, 0)
+
+    def _refresh(self, _dt=0):
+        game = self.katrain.game
+        cn = game.current_node
+        nodes = cn.nodes_from_root
+        while cn.children:  # main branch
+            cn = cn.children[0]
+            nodes.append(cn)
+
+        depth_filter = self.depth_filter or (0, 1e9)
+
+        nodes = [n for n in nodes if n.move and not n.is_root and depth_filter[0] <= n.depth < depth_filter[1]]
+        colors = [
+            [cp * 0.75 for cp in col[:3]] + [1] for col in Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
+        ]
+
+        thresholds = self.katrain.config("trainer/eval_thresholds")
+        labels = [f"≥ {pt}" if pt > 0 else f"< {thresholds[-2]}" for pt in thresholds]
+
+        histogram = [{"B": 0, "W": 0} for _ in thresholds]
+        ai_top_move_count = {"B": 0, "W": 0}
+        player_ptloss = {"B": [], "W": []}
+        weights = {"B": [], "W": []}
+        for n in nodes:
+            if not n.analysis_complete:
+                continue
+            points_lost = max(0, n.points_lost)
+            bucket = len(thresholds) - 1 - evaluation_class(points_lost, thresholds)
+            player_ptloss[n.player].append(points_lost)
+            histogram[bucket][n.player] += 1
+            cands = n.parent.candidate_moves
+            filtered_cands = [d for d in cands if d["order"] < ADDITIONAL_MOVE_ORDER and "prior" in d]
+            cands_policy = sum(d["prior"] for d in filtered_cands)
+            good_move_policy = sum(d["prior"] for d in filtered_cands if d["pointsLost"] < 0.5)
+            # how many bad candidates were considered
+            weight = max(cands_policy - good_move_policy, 1e-6)
+            if points_lost > 0.5:
+                adj_weight = 0.25 # quite severe
+            else:
+                adj_weight = min(0.25,weight)
+
+            weights[n.player].append((weight,adj_weight))
+            print(n.player,n.move.gtp(),'w',weight,adj_weight,'ptloss',points_lost)
+
+            if n.parent.analysis_complete:
+                ai_top_move_count[n.player] += int(cands[0]["move"] == n.move.gtp())
+
+        sum_stats = {
+            bw: (
+                100 * 0.75 ** (sum(s * aw for s, (w,aw) in zip(player_ptloss[bw], weights[bw])) / sum(aw for _,aw in weights[bw])),
+                100 * sum(w for w,aw in weights[bw]) / len(player_ptloss[bw]),
+                sum(player_ptloss[bw]) / len(player_ptloss[bw]),
+                ai_top_move_count[bw] / len(player_ptloss[bw]),
+            )
+            if len(player_ptloss[bw]) > 0
+            else (0, 0, 0, 0, 0)
+            for bw in "BW"
+        }
+
+        table = GridLayout(cols=3, rows=5 + len(thresholds))
+
+        for i, (label, fmt) in enumerate(
+            [
+                ("Accuracy Rating", "{:.1f}"),
+                ("Game Complexity Rating", "{:.1f}"),
+                ("Mean Point Loss", "{:.1f}"),
+                ("AI Top Move Match %", "{:.1%}"),
+            ]
+        ):
+            table.add_widget(
+                TableCellLabel(text=fmt.format(sum_stats["B"][i]), background_color=Theme.LIGHTER_BACKGROUND_COLOR)
+            )
+            table.add_widget(TableCellLabel(text=label, background_color=Theme.LIGHTER_BACKGROUND_COLOR))
+            table.add_widget(
+                TableCellLabel(text=fmt.format(sum_stats["W"][i]), background_color=Theme.LIGHTER_BACKGROUND_COLOR)
+            )
+
+        table.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BOX_BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="Points Lost", background_color=Theme.BOX_BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BOX_BACKGROUND_COLOR))
+
+        for i, (col, label, pt) in enumerate(zip(colors[::-1], labels[::-1], thresholds[::-1])):
+            perc = {bw: histogram[i][bw] / (len(player_ptloss[bw]) + 1e-9) for bw in "BW"}
+            c = {
+                bw: [
+                    d * (1 - min(1.0, perc[bw] / 0.33)) + l * min(1.0, perc[bw] / 0.33)
+                    for l, d in zip(Theme.LIGHTER_BACKGROUND_COLOR, Theme.BOX_BACKGROUND_COLOR)
+                ]
+                for bw in "BW"
+            }
+            table.add_widget(TableCellLabel(text=f"{histogram[i]['B']} ({perc['B']:.1%})", background_color=c["B"]))
+            table.add_widget(TableCellLabel(text=label, background_color=col))
+            table.add_widget(TableCellLabel(text=f"{histogram[i]['W']} ({perc['W']:.1%})", background_color=c["W"]))
+
+        self.stats.clear_widgets()
+        self.stats.add_widget(table)
+
         for bw, player_info in self.katrain.players_info.items():
-            self.players[bw].player_type = player_info.player_type
-            self.players[bw].captures = bw # ;)
-            self.players[bw].player_subtype = player_info.player_subtype
-            self.players[bw].name = player_info.name
-            self.players[bw].rank = (
+            self.player_infos[bw].player_type = player_info.player_type
+            self.player_infos[bw].captures = bw  # ;)
+            self.player_infos[bw].player_subtype = player_info.player_subtype
+            self.player_infos[bw].name = player_info.name
+            self.player_infos[bw].rank = (
                 player_info.sgf_rank
                 if player_info.player_type == PLAYER_HUMAN
                 else rank_label(player_info.calculated_rank)
             )
 
-        for widget in self.reports:
-            widget._refresh()
+        # if not done analyzing, check again in 1s
+        if not self.katrain.engine.is_idle():
+            Clock.schedule_once(self._refresh, 1)

@@ -51,11 +51,14 @@ class BackgroundMixin(Widget):  # -- mixins
 class BackgroundLabel(BackgroundMixin, Label):
     pass
 
+
 class TableCellLabel(BackgroundLabel):
     pass
 
+
 class TableHeaderLabel(BackgroundLabel):
     pass
+
 
 class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on right click
     def __init__(self, **kwargs):

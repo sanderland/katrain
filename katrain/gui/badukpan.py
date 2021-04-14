@@ -771,7 +771,7 @@ class AnalysisDropDown(DropDown):
     def open_report_popup(self, *_args):
         report_popup = I18NPopup(
             title_key="analysis:report",
-            size=[dp(1000), dp(750)],
+            size=[dp(750), dp(750)],
             content=GameReportPopup(katrain=MDApp.get_running_app().gui),
         )
         report_popup.content.popup = report_popup

@@ -21,7 +21,6 @@ from katrain.core.constants import (
     STATUS_INFO,
     STATUS_TEACHING,
     PRIORITY_GAME_ANALYSIS,
-    PRIORITY_GAME_ANALYSIS_MORE,
     PRIORITY_EXTRA_ANALYSIS,
     PRIORITY_SWEEP,
     PRIORITY_ALTERNATIVES,
@@ -454,13 +453,7 @@ class Game(BaseGame):
             # forced, or not present, or something went wrong in loading
             if even_if_present or not node.analysis_from_sgf or not node.load_analysis():
                 node.clear_analysis()
-                node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=True)
-                if not analyze_fast:  # get quick result first, then queue slower analyses
-                    node.analyze(
-                        self.engines[node.next_player],
-                        priority=priority + PRIORITY_GAME_ANALYSIS_MORE,
-                        analyze_fast=False,
-                    )
+                node.analyze(self.engines[node.next_player], priority=priority, analyze_fast=analyze_fast)
 
     def set_current_node(self, node):
         if self.insert_mode:

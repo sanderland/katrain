@@ -18,7 +18,6 @@ STATUS_ERROR = 1000.0
 
 ADDITIONAL_MOVE_ORDER = 999
 
-PRIORITY_GAME_ANALYSIS_MORE = -1000
 PRIORITY_GAME_ANALYSIS = -100
 PRIORITY_SWEEP = -10  # sweep is live, but slow, so deprioritize
 PRIORITY_ALTERNATIVES = 100  # extra analysis, live interaction

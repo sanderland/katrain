@@ -861,48 +861,44 @@
         size_hint: 1,7
 
 
-<PlayerMovesReport>:
-
-<GameReportPopup>:
-    players: {'B': player_b, 'W': player_w}
-    reports: [points_b,points_w,rank_b,rank_w]
-    rows: 2
-    columns: 3
-    AnchorLayout:
-        size_hint: 1, None
-        height: dp(80)
+<GameReportPopup>
+    player_infos: {'B': player_b, 'W': player_w}
+    stats: stats
+    orientation: 'vertical'
+    padding: Theme.CP_PADDING
+    BoxLayout:
+        size_hint_y: 0.8
+        spacing: CP_SPACING
+        padding: CP_PADDING
+        SizedRectangleToggleButton:
+            text: 'Entire Game'
+            size_hint: 1,1
+            group: 'stats_depth'
+            state: 'down'
+            on_press: root.set_depth_filter(None)
+        SizedRectangleToggleButton:
+            text: 'Opening'
+            size_hint: 1,1
+            group: 'stats_depth'
+            on_press: root.set_depth_filter((0,50))
+        SizedRectangleToggleButton:
+            text: 'Midgame'
+            size_hint: 1,1
+            group: 'stats_depth'
+            on_press: root.set_depth_filter((51,151))
+        SizedRectangleToggleButton:
+            text: 'Endgame'
+            group: 'stats_depth'
+            size_hint: 1,1
+            on_press: root.set_depth_filter((151,1e9))
+    BoxLayout:
+        size_hint_y: 1.33
         PlayerInfo:
             player: 'B'
-            size_hint: 0.75, 1
             id: player_b
-    Label:
-        size_hint: 0.1, None
-    AnchorLayout:
-        size_hint: 1, None
-        height: dp(80)
         PlayerInfo:
             player: 'W'
-            size_hint: 0.75, 1
             id: player_w
     BoxLayout:
-        spacing: CP_SPACING
-        padding: CP_PADDING
-        PlayerMoveOverview:
-            player: 'B'
-            id: points_b
-        PlayerMoveOverview:
-            player: 'B'
-            id: rank_b
-            stat: 'airank'
-    Label:
-        size_hint: 0.1, None
-    BoxLayout:
-        spacing: CP_SPACING
-        padding: CP_PADDING
-        PlayerMoveOverview:
-            player: 'W'
-            id: points_w
-        PlayerMoveOverview:
-            player: 'W'
-            id: rank_w
-            stat: 'airank'
+        id: stats
+        size_hint_y: 10
