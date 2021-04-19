@@ -365,7 +365,9 @@ class ConfigTeacherPopup(QuickConfigGui):
         for k in ["dot color", "point loss threshold", "num undos", "show dots", "save dots"]:
             self.options_grid.add_widget(DescriptionLabel(text=i18n._(k), font_name=i18n.font_name, font_size=dp(17)))
 
-        for i, color, threshold, undo, show_dot, savesgf in   list(zip(range(len(thresholds)),Theme.EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs))[::-1]:
+        for i, color, threshold, undo, show_dot, savesgf in list(
+            zip(range(len(thresholds)), Theme.EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs)
+        )[::-1]:
             self.add_option_widgets(
                 [
                     BackgroundMixin(background_color=color, size_hint=[0.9, 0.9]),
@@ -465,20 +467,20 @@ class BaseConfigPopup(QuickConfigGui):
 
     KATAGOS = {
         "win": {
-            "OpenCL v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-opencl-windows-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-eigenavx2-windows-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-eigen-windows-x64.zip",
+            "OpenCL v1.8.2": "https://github.com/lightvector/KataGo/releases/download/v1.8.2/katago-v1.8.2-opencl-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.8.2": "https://github.com/lightvector/KataGo/releases/download/v1.8.2/katago-v1.8.2-eigenavx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.8.2": "https://github.com/lightvector/KataGo/releases/download/v1.8.2/katago-v1.8.2-eigen-windows-x64.zip",
             "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
         },
         "linux": {
-            "OpenCL v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-opencl-linux-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-eigenavx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-eigen-linux-x64.zip",
+            "OpenCL v1.8.2": "https://github.com/lightvector/KataGo/releases/download/v1.8.2/katago-v1.8.2-opencl-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.8.2": "https://github.com/lightvector/KataGo/releases/download/v1.8.2/katago-v1.8.2-eigenavx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.8.2": "https://github.com/lightvector/KataGo/releases/download/v1.8.2/katago-v1.8.2-eigen-linux-x64.zip",
             "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
         },
         "just-descriptions": {
-            "CUDA v1.8.1 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-gpu-cuda10.2-windows-x64.zip",
-            "CUDA v1.8.1 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-gpu-cuda10.2-linux-x64.zip",
+            "CUDA v1.8.2 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.8.2/katago-v1.8.2-gpu-cuda10.2-windows-x64.zip",
+            "CUDA v1.8.2 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.8.2/katago-v1.8.2-gpu-cuda10.2-linux-x64.zip",
         },
     }
 
@@ -872,14 +874,17 @@ class GameReportPopup(BoxLayout):
             cands_policy = sum(d["prior"] for d in filtered_cands)
             good_move_policy = sum(d["prior"] for d in filtered_cands if d["pointsLost"] < 0.5)
             # how many bad candidates were considered
-            weight = max(cands_policy - good_move_policy, 1e-6)
-            if points_lost > 0.5:
-                adj_weight = 0.25  # quite severe
-            else:
-                adj_weight = min(0.25, weight)
+            # weight = max(cands_policy - good_move_policy, 1e-6)
+            #            if points_lost > 0.5:
+            #                adj_weight = 0.25  # quite severe
+            #            else:
+            #               adj_weight = min(0.25, weight)
+
+            weight = min(1.0, sum([max(d["pointsLost"], 0) * d["prior"] for d in filtered_cands])) # complexity capped at 1
+            # adj_weight between 0.05 - 1, dependent on difficulty and points lost
+            adj_weight = max(0.05, min(1.0, max(weight, points_lost / 4)))
 
             weights[n.player].append((weight, adj_weight))
-            print(n.player, n.move.gtp(), "w", weight, adj_weight, "ptloss", points_lost)
 
             if n.parent.analysis_complete:
                 ai_top_move_count[n.player] += int(cands[0]["move"] == n.move.gtp())

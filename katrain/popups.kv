@@ -872,23 +872,27 @@
         padding: CP_PADDING
         SizedRectangleToggleButton:
             text: 'Entire Game'
+            allow_no_selection: False
             size_hint: 1,1
             group: 'stats_depth'
             state: 'down'
             on_press: root.set_depth_filter(None)
         SizedRectangleToggleButton:
             text: 'Opening'
+            allow_no_selection: False
             size_hint: 1,1
             group: 'stats_depth'
             on_press: root.set_depth_filter((0,50))
         SizedRectangleToggleButton:
             text: 'Midgame'
+            allow_no_selection: False
             size_hint: 1,1
             group: 'stats_depth'
             on_press: root.set_depth_filter((51,151))
         SizedRectangleToggleButton:
             text: 'Endgame'
             group: 'stats_depth'
+            allow_no_selection: False
             size_hint: 1,1
             on_press: root.set_depth_filter((151,1e9))
     BoxLayout:
