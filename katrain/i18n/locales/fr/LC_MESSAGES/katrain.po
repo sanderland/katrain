@@ -507,9 +507,7 @@ msgstr ""
 
 msgid "Engine died unexpectedly"
 msgstr ""
-"Le moteur de jeu est tombé en panne, \n"
-"possiblement pour cause de \n"
-"mémoire insuffisante : {error}"
+"Le moteur de jeu est tombé en panne: {error}"
 
 msgid "teaching undo message"
 msgstr ""

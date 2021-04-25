@@ -436,8 +436,7 @@ msgstr ""
 
 msgid "Engine died unexpectedly"
 msgstr ""
-"Engine ist unerwartet abgestürzt, ohne Ausgabe zu senden, wahrscheinlich "
-"wegen zu wenig Speicher: {error}"
+"Engine ist unerwartet abgestürzt: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"

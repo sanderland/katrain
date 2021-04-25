@@ -21,7 +21,9 @@ from katrain.core.utils import find_package_resource, json_truncate_arrays
 
 
 class EngineDiedException(Exception):
-    pass
+    def __init__(self, msg, code):
+        super().__init__(msg)
+        self.code = code
 
 
 class BaseEngine:  # some common elements between analysis and contribute engine
@@ -183,6 +185,7 @@ class KataGoEngine(BaseEngine):
     def check_alive(self, os_error="", exception_if_dead=False):
         ok = self.katago_process and self.katago_process.poll() is None
         if not ok and exception_if_dead:
+            code = None
             if self.katago_process:
                 code = self.katago_process and self.katago_process.poll()
                 if code == 3221225781:
@@ -195,7 +198,7 @@ class KataGoEngine(BaseEngine):
                 self.katago_process = None
             else:
                 died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
-            raise EngineDiedException(died_msg)
+            raise EngineDiedException(died_msg, code=code)
         return ok
 
     def wait_to_finish(self):

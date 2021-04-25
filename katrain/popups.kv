@@ -789,6 +789,9 @@
             text: i18n._("update ai settings")
             on_press: root.update_config(True)
 
+<EngineRecoveryPopup>:
+    Label:
+        text: i18n._("engine died message").format(code=code,error=error)
 
 <ReAnalyzeGamePopup>:
     visits: visits

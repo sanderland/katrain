@@ -442,8 +442,7 @@ msgstr ""
 
 msgid "Engine died unexpectedly"
 msgstr ""
-"El motor murió inesperadamente sin mandar alguna señal, posiblemente debido "
-"a  memoria: {error}"
+"El motor murió inesperadamente sin mandar alguna señal: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"

@@ -653,13 +653,15 @@ msgstr "Starting KataGo with command '{command}' failed with error {error}."
 
 msgid "Engine died unexpectedly"
 msgstr ""
-"Engine died unexpectedly without sending output, possibly due to out of "
-"memory: {error}"
+"Engine died unexpectedly without sending output: {error}"
 
 msgid "Engine missing DLL"
 msgstr ""
 "Failed to start KataGo due to missing DLL. Check the requirements in the "
 "KataGo documentation, or try running the binary by itself for details. "
+
+msgid "engine died message"
+msgstr "Engine died unexpectedly with code {code}: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"

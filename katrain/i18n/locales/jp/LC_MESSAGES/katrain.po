@@ -469,6 +469,7 @@ msgstr "KataGo設定ファイル {config} がありません。一般設定を�
 msgid "Starting Kata failed"
 msgstr "コマンド '{command}' によるKataGoの起動に失敗しました。エラー {error}"
 
+#. TODO remove memory message
 msgid "Engine died unexpectedly"
 msgstr "出力なしで予期せずエンジンが止まりました。メモリ不足かもしれません：{error}"
 

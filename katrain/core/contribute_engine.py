@@ -165,6 +165,7 @@ class KataGoContributeEngine(BaseEngine):
     def check_alive(self, os_error="", exception_if_dead=False):
         ok = self.katago_process and self.katago_process.poll() is None
         if not ok and exception_if_dead:
+            code = None
             if self.katago_process:
                 code = self.katago_process and self.katago_process.poll()
                 if code == 3221225781:
@@ -178,7 +179,7 @@ class KataGoContributeEngine(BaseEngine):
             else:
                 died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
             if not self.server_error:  # dont raise if already know what happened
-                raise EngineDiedException(died_msg)
+                raise EngineDiedException(died_msg, code=code)
         return ok
 
     def shutdown(self, finish=False):

@@ -450,6 +450,12 @@ class ConfigAIPopup(QuickConfigGui):
         Clock.schedule_once(self.katrain.controls.update_players, 0)
 
 
+class EngineRecoveryPopup(QuickConfigGui):
+    def __init__(self, katrain, exception):
+        super().__init__(katrain)
+        self.exception = exception
+
+
 class BaseConfigPopup(QuickConfigGui):
     MODEL_ENDPOINTS = {
         "Latest distributed model": "https://katagotraining.org/api/networks/newest_training/",
@@ -577,7 +583,10 @@ class BaseConfigPopup(QuickConfigGui):
                 self.paths.append(path)  # persistent on paths with models found
             kata_files += files
 
-        kata_files = [(path, find_description(path)) for path in sorted(kata_files, key=lambda f: "bs29" in f)]
+        kata_files = sorted(
+            [(path, find_description(path)) for path in kata_files],
+            key=lambda f: ("bs29" in f[0]) * 0.1 - (f[0] != f[1]),
+        )
         katas_available_msg = i18n._("katago binaries available").format(num=len(kata_files))
         self.katago_files.values = [katas_available_msg, i18n._("default katago option")] + [
             desc for path, desc in kata_files
@@ -880,7 +889,9 @@ class GameReportPopup(BoxLayout):
             #            else:
             #               adj_weight = min(0.25, weight)
 
-            weight = min(1.0, sum([max(d["pointsLost"], 0) * d["prior"] for d in filtered_cands])) # complexity capped at 1
+            weight = min(
+                1.0, sum([max(d["pointsLost"], 0) * d["prior"] for d in filtered_cands])
+            )  # complexity capped at 1
             # adj_weight between 0.05 - 1, dependent on difficulty and points lost
             adj_weight = max(0.05, min(1.0, max(weight, points_lost / 4)))
 

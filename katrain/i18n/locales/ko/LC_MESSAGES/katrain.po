@@ -446,7 +446,7 @@ msgstr ""
 " 값이 올바른 KataGo 실행 파일 경로가 맞는지 확인해 주십시오."
 
 msgid "Engine died unexpectedly"
-msgstr "엔진이 출력을 보내지 않고 예상치 않게 종료되었습니다. 메모리 용량 초과일 가능성이 있습니다: {error}."
+msgstr "엔진이 출력을 보내지 않고 예상치 않게 종료되었습니다: {error}."
 
 #. AI names, help etc
 msgid "strength:kyu"
