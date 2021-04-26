@@ -662,8 +662,8 @@ msgstr ""
 msgid "engine died popup opening message"
 msgstr ""
 "Oops! The KataGo Engine failed to start, or crashed.\n"
-" The error was: {error_message}\n"
-"And the error code was {code}."
+"The error was: {error_message}\n"
+"The error code was: {code}."
 
 #. AI names, help etc
 msgid "strength:kyu"
