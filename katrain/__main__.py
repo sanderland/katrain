@@ -65,9 +65,9 @@ from katrain.core.constants import (
     DATA_FOLDER,
     AI_DEFAULT,
 )
-from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup, ContributePopup
+from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup, ContributePopup, EngineRecoveryPopup
 from katrain.core.base_katrain import KaTrainBase
-from katrain.core.engine import KataGoEngine, EngineDiedException
+from katrain.core.engine import KataGoEngine
 from katrain.core.contribute_engine import KataGoContributeEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
 from katrain.core.sgf_parser import Move, ParseError
@@ -456,9 +456,10 @@ class KaTrainGui(Screen, KaTrainBase):
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
-    def _do_engine_recovery_popup(self, exception):
+    def _do_engine_recovery_popup(self, code, error_message):
         popup = I18NPopup(
-            title_key="engine recovery", size=[dp(750), dp(750)], content=EngineRecoveryPopup(self, exception=exc)
+            title_key="engine recovery", size=[dp(750), dp(750)], content=EngineRecoveryPopup(self,
+                                                                                              error_message=error_message,code=code)
         ).__self__
         popup.content.popup = popup
         popup.open()
@@ -830,8 +831,6 @@ def run_app():
                     f"Exception {inst.__class__.__name__}: {', '.join(repr(a) for a in inst.args)}\n{trace}",
                     OUTPUT_ERROR,
                 )
-                if isinstance(inst, EngineDiedException): # TODO: ?
-                    app.gui("engine_recovery_popup", inst)
             else:
                 print(f"Exception {inst.__class__}: {inst.args}\n{trace}")
             return ExceptionManager.PASS

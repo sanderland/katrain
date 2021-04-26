@@ -5,7 +5,6 @@ import platform
 import queue
 import shlex
 import subprocess
-import sys
 import threading
 import time
 import traceback
@@ -13,17 +12,12 @@ from typing import Callable, Dict, List, Optional
 
 from kivy.utils import platform as kivy_platform
 
-from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, DATA_FOLDER
+from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_EXTRA_DEBUG, OUTPUT_KATAGO_STDERR, DATA_FOLDER, KATAGO_EXCEPTION
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move
 from katrain.core.utils import find_package_resource, json_truncate_arrays
 
-
-class EngineDiedException(Exception):
-    def __init__(self, msg, code):
-        super().__init__(msg)
-        self.code = code
 
 
 class BaseEngine:  # some common elements between analysis and contribute engine
@@ -48,7 +42,7 @@ class BaseEngine:  # some common elements between analysis and contribute engine
         if ruleset.strip().startswith("{"):
             try:
                 ruleset = json.loads(ruleset)
-            except:
+            except json.JSONDecodeError:
                 pass
         if isinstance(ruleset, dict):
             return ruleset
@@ -93,6 +87,7 @@ class KataGoEngine(BaseEngine):
     def __init__(self, katrain, config):
         super().__init__(katrain, config)
 
+        self.allow_recovery = self.config.get('allow_recovery',True) # if false, don't
         self.queries = {}  # outstanding query id -> start time and callback
         self.query_counter = 0
         self.katago_process = None
@@ -104,14 +99,13 @@ class KataGoEngine(BaseEngine):
         self.shell = False
         self.write_queue = queue.Queue()
         self.thread_lock = threading.Lock()
-        exe = config.get("katago", "").strip()
         if config.get("altcommand", ""):
             self.command = config["altcommand"]
             self.shell = True
         else:
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
-            exe = self.get_engine_path(config["katago"])
+            exe = self.get_engine_path(config.get("katago", "").strip())
             if not exe:
                 return
             if not os.path.isfile(model):
@@ -182,23 +176,22 @@ class KataGoEngine(BaseEngine):
         self.shutdown(finish=False)
         self.start()
 
-    def check_alive(self, os_error="", exception_if_dead=False):
+    def check_alive(self, os_error="", exception_if_dead=False, maybe_open_recovery=False):
         ok = self.katago_process and self.katago_process.poll() is None
         if not ok and exception_if_dead:
-            code = None
             if self.katago_process:
                 code = self.katago_process and self.katago_process.poll()
                 if code == 3221225781:
                     died_msg = i18n._("Engine missing DLL")
                 else:
-                    os_error += f"status {code}"
-                    died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
-                if code != 1:  # deliberate exit, already showed message?
-                    self.katrain.log(died_msg, OUTPUT_ERROR)
-                self.katago_process = None
+                    died_msg = i18n._("Engine died unexpectedly").format(error=f"{os_error} status {code}")
+                if code!=1: # deliberate exit
+                    self.katrain.log(died_msg,OUTPUT_ERROR)
+                    if maybe_open_recovery and self.allow_recovery:
+                        self.katrain('engine_recovery_popup', died_msg, code)
+                self.katago_process = None # return from threads
             else:
-                died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
-            raise EngineDiedException(died_msg, code=code)
+                self.katrain.log(i18n._("Engine died unexpectedly").format(error=os_error),OUTPUT_DEBUG)
         return ok
 
     def wait_to_finish(self):
@@ -234,10 +227,10 @@ class KataGoEngine(BaseEngine):
                         self.katrain.log(line.decode(errors="ignore").strip(), OUTPUT_KATAGO_STDERR)
                     except Exception as e:
                         print("ERROR in processing KataGo stderr:", line, "Exception", e)
-                elif self.katago_process:
-                    self.check_alive(exception_if_dead=True)
+                elif not self.check_alive(exception_if_dead=True):
+                    return
             except Exception as e:
-                self.katrain.log(f"Exception in reading stdout {e}", OUTPUT_DEBUG)
+                self.katrain.log(f"Exception in reading stderr: {e}", OUTPUT_DEBUG)
                 return
 
     def _analysis_read_thread(self):
@@ -245,13 +238,16 @@ class KataGoEngine(BaseEngine):
             try:
                 line = self.katago_process.stdout.readline().strip()
                 if self.katago_process and not line:
-                    self.check_alive(exception_if_dead=True)
+                    if not self.check_alive(exception_if_dead=True,maybe_open_recovery=True):
+                        return
             except OSError as e:
-                self.check_alive(os_error=str(e), exception_if_dead=True)
+                self.check_alive(os_error=str(e), exception_if_dead=True,maybe_open_recovery=True)
                 return
 
             if b"Uncaught exception" in line:
-                self.katrain.log(f"KataGo Engine Failed: {line.decode(errors='ignore')}", OUTPUT_ERROR)
+                msg = f"KataGo Engine Failed: {line.decode(errors='ignore')}"
+                self.katrain.log(msg, OUTPUT_ERROR)
+                self.katrain('engine_recovery_popup',msg,code=KATAGO_EXCEPTION)
                 return
             if not line:
                 continue
@@ -317,7 +313,8 @@ class KataGoEngine(BaseEngine):
                     self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
                     self.katago_process.stdin.flush()
                 except OSError as e:
-                    self.check_alive(os_error=str(e), exception_if_dead=False)
+                    self.katrain.log(f"Exception in writing to katago: {e}", OUTPUT_DEBUG)
+                    return # some other thread will take care of this
 
     def send_query(self, query, callback, error_callback, next_move=None, node=None):
         self.write_queue.put((query, callback, error_callback, next_move, node))

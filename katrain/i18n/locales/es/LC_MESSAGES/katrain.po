@@ -441,8 +441,7 @@ msgstr ""
 "'engine' al valor correcto del ejecutable KataGo."
 
 msgid "Engine died unexpectedly"
-msgstr ""
-"El motor murió inesperadamente sin mandar alguna señal: {error}"
+msgstr "El motor murió inesperadamente sin mandar alguna señal: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -927,3 +926,10 @@ msgstr "Tromp-Taylor"
 #. TODO - View a player performance report
 msgid "analysis:report"
 msgstr "Performance Report"
+
+#. TODO
+msgid "engine died popup opening message"
+msgstr ""
+"Oops! The KataGo Engine failed to start, or crashed.\n"
+" The error was: {error_message}\n"
+"And the error code was {code}."

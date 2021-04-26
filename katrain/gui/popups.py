@@ -451,9 +451,12 @@ class ConfigAIPopup(QuickConfigGui):
 
 
 class EngineRecoveryPopup(QuickConfigGui):
-    def __init__(self, katrain, exception):
+    error_message = StringProperty("")
+    code = ObjectProperty(None)
+    def __init__(self, katrain, error_message, code):
         super().__init__(katrain)
-        self.exception = exception
+        self.error_message=error_message
+        self.code = code
 
 
 class BaseConfigPopup(QuickConfigGui):
