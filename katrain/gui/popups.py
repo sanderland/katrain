@@ -23,7 +23,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
-from katrain.core.ai import ai_rank_estimation
+from katrain.core.ai import ai_rank_estimation, game_report
 from katrain.core.constants import (
     AI_CONFIG_DEFAULT,
     AI_DEFAULT,
@@ -855,72 +855,15 @@ class GameReportPopup(BoxLayout):
 
     def _refresh(self, _dt=0):
         game = self.katrain.game
-        cn = game.current_node
-        nodes = cn.nodes_from_root
-        while cn.children:  # main branch
-            cn = cn.children[0]
-            nodes.append(cn)
+        thresholds = self.katrain.config("trainer/eval_thresholds")
 
-        depth_filter = self.depth_filter or (0, 1e9)
+        sum_stats, histogram, player_ptloss = game_report(game, depth_filter=self.depth_filter, thresholds=thresholds)
+        labels = [f"≥ {pt}" if pt > 0 else f"< {thresholds[-2]}" for pt in thresholds]
 
-        nodes = [n for n in nodes if n.move and not n.is_root and depth_filter[0] <= n.depth < depth_filter[1]]
+        table = GridLayout(cols=3, rows=5 + len(thresholds))
         colors = [
             [cp * 0.75 for cp in col[:3]] + [1] for col in Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
         ]
-
-        thresholds = self.katrain.config("trainer/eval_thresholds")
-        labels = [f"≥ {pt}" if pt > 0 else f"< {thresholds[-2]}" for pt in thresholds]
-
-        histogram = [{"B": 0, "W": 0} for _ in thresholds]
-        ai_top_move_count = {"B": 0, "W": 0}
-        player_ptloss = {"B": [], "W": []}
-        weights = {"B": [], "W": []}
-        for n in nodes:
-            if not n.analysis_complete:
-                continue
-            points_lost = max(0, n.points_lost)
-            bucket = len(thresholds) - 1 - evaluation_class(points_lost, thresholds)
-            player_ptloss[n.player].append(points_lost)
-            histogram[bucket][n.player] += 1
-            cands = n.parent.candidate_moves
-            filtered_cands = [d for d in cands if d["order"] < ADDITIONAL_MOVE_ORDER and "prior" in d]
-            cands_policy = sum(d["prior"] for d in filtered_cands)
-            good_move_policy = sum(d["prior"] for d in filtered_cands if d["pointsLost"] < 0.5)
-            # how many bad candidates were considered
-            # weight = max(cands_policy - good_move_policy, 1e-6)
-            #            if points_lost > 0.5:
-            #                adj_weight = 0.25  # quite severe
-            #            else:
-            #               adj_weight = min(0.25, weight)
-
-            weight = min(
-                1.0, sum([max(d["pointsLost"], 0) * d["prior"] for d in filtered_cands])
-            )  # complexity capped at 1
-            # adj_weight between 0.05 - 1, dependent on difficulty and points lost
-            adj_weight = max(0.05, min(1.0, max(weight, points_lost / 4)))
-
-            weights[n.player].append((weight, adj_weight))
-
-            if n.parent.analysis_complete:
-                ai_top_move_count[n.player] += int(cands[0]["move"] == n.move.gtp())
-
-        sum_stats = {
-            bw: (
-                100
-                * 0.75
-                ** (
-                    sum(s * aw for s, (w, aw) in zip(player_ptloss[bw], weights[bw])) / sum(aw for _, aw in weights[bw])
-                ),
-                100 * sum(w for w, aw in weights[bw]) / len(player_ptloss[bw]),
-                sum(player_ptloss[bw]) / len(player_ptloss[bw]),
-                ai_top_move_count[bw] / len(player_ptloss[bw]),
-            )
-            if len(player_ptloss[bw]) > 0
-            else (0, 0, 0, 0, 0)
-            for bw in "BW"
-        }
-
-        table = GridLayout(cols=3, rows=5 + len(thresholds))
 
         for i, (label, fmt) in enumerate(
             [

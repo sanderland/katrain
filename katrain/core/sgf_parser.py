@@ -448,7 +448,7 @@ class SGF:
         try:
             self.ix = self.contents.index("(") + 1
         except ValueError:
-            raise ParseError("Parse error: Expected '('")
+            raise ParseError(f"Parse error: Expected '(' at start, found {self.contents[:50]}")
         self.root = self._NODE_CLASS()
         self._parse_branch(self.root)
 
