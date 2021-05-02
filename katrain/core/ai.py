@@ -106,6 +106,7 @@ def game_report(game, thresholds, depth_filter=None):
 
     histogram = [{"B": 0, "W": 0} for _ in thresholds]
     ai_top_move_count = {"B": 0, "W": 0}
+    ai_approved_move_count = {"B": 0, "W": 0}
     player_ptloss = {"B": [], "W": []}
     weights = {"B": [], "W": []}
     for n in nodes:
@@ -134,6 +135,9 @@ def game_report(game, thresholds, depth_filter=None):
 
         if n.parent.analysis_complete:
             ai_top_move_count[n.player] += int(cands[0]["move"] == n.move.gtp())
+            ai_approved_move_count[n.player] += int(
+                any(cand["move"] == n.move.gtp() for cand in cands if cand["pointsLost"] < 0.5)
+            )
 
     sum_stats = {
         bw: (
@@ -143,6 +147,7 @@ def game_report(game, thresholds, depth_filter=None):
             100 * sum(w for w, aw in weights[bw]) / len(player_ptloss[bw]),
             sum(player_ptloss[bw]) / len(player_ptloss[bw]),
             ai_top_move_count[bw] / len(player_ptloss[bw]),
+            ai_approved_move_count[bw] / len(player_ptloss[bw]),
         )
         if len(player_ptloss[bw]) > 0
         else (0, 0, 0, 0, 0)
