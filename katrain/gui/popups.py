@@ -883,11 +883,11 @@ class GameReportPopup(BoxLayout):
                     bar_color=Theme.LIGHTER_BACKGROUND_COLOR,
                     background_color=Theme.BOX_BACKGROUND_COLOR,
                 )
-                for (bw, side) in zip("BW", ['left','right'])
+                for (bw, side) in zip("BW", ["left", "right"])
             }
             table.add_widget(statcell["B"])
             table.add_widget(TableCellLabel(text=label, background_color=Theme.LIGHTER_BACKGROUND_COLOR))
-           # table.add_widget(Label())
+            # table.add_widget(Label())
             table.add_widget(statcell["W"])
 
         table.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BOX_BACKGROUND_COLOR))

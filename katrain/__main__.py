@@ -466,7 +466,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_engine_recovery_popup(self, error_message, code):
         popup = I18NPopup(
             title_key="engine recovery",
-            size=[dp(750), dp(750)],
+            size=[dp(600), dp(700)],
             content=EngineRecoveryPopup(self, error_message=error_message, code=code),
         ).__self__
         popup.content.popup = popup
@@ -795,6 +795,7 @@ class KaTrainApp(MDApp):
             "homepage": HOMEPAGE + "#manual",
             "support": HOMEPAGE + "#support",
             "contribute:signup": "http://katagotraining.org/accounts/signup/",
+            "engine:help": HOMEPAGE + "/blob/master/ENGINE.md",
         }
         if site_key in websites:
             webbrowser.open(websites[site_key])

@@ -5,6 +5,7 @@ CONFIG_MIN_VERSION = "1.8.0"  # keep config files from this version
 ANALYSIS_FORMAT_VERSION = "1.0"
 DATA_FOLDER = "~/.katrain"
 
+
 OUTPUT_ERROR = -1
 OUTPUT_KATAGO_STDERR = -0.5
 OUTPUT_INFO = 0

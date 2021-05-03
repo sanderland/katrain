@@ -59,19 +59,21 @@ class TableCellLabel(Label):
     outline_color = Theme.LINE_COLOR
     outline_width = NumericProperty(1.5)
 
+
 class TableStatLabel(TableCellLabel):
     side = StringProperty("right")
     value = NumericProperty(0)
     scale = NumericProperty(100)
     bar_color = ListProperty([0, 0, 0, 1])
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if 'outlines' not in kwargs:
-            self.outlines = ['left'] if self.side=='right' else ['right']
+        if "outlines" not in kwargs:
+            self.outlines = ["left"] if self.side == "right" else ["right"]
+
 
 class TableHeaderLabel(TableCellLabel):
-    outlines = ['bottom','top']
+    outlines = ["bottom", "top"]
 
 
 class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on right click

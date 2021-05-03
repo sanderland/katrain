@@ -659,11 +659,33 @@ msgstr ""
 "Failed to start KataGo due to missing DLL. Check the requirements in the "
 "KataGo documentation, or try running the binary by itself for details. "
 
+#. popup title
+msgid "engine recovery"
+msgstr "Help with KataGo setup"
+
 msgid "engine died popup opening message"
 msgstr ""
-"Oops! The KataGo Engine failed to start, or crashed.\n"
-"The error was: {error_message}\n"
-"The error code was: {code}."
+"The KataGo Engine failed to start, or crashed.\n"
+"\n"
+"The error was: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"The error code was: [color=#CC2222]{code}[/color]."
+
+#. Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr ""
+"First, try downloading KataGo versions and try if changing to a different "
+"executable helps in {link} ."
+
+#. Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr ""
+"If you are still having difficulties, {link} for an up-to-date "
+"troubleshooting page."
+
+#. as in "click here" to go to this page,
+msgid "link_here"
+msgstr "click here"
 
 #. AI names, help etc
 msgid "strength:kyu"
