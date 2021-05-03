@@ -123,7 +123,7 @@ def game_report(game, thresholds, depth_filter=None):
         weight = min(
             1.0,
             sum([max(d["pointsLost"], 0) * d["prior"] for d in filtered_cands])
-            / sum(d["prior"] for d in filtered_cands),
+            / (sum(d["prior"] for d in filtered_cands) or 1e-6),
         )  # complexity capped at 1
         # adj_weight between 0.05 - 1, dependent on difficulty and points lost
         adj_weight = max(0.05, min(1.0, max(weight, points_lost / 4)))
@@ -136,7 +136,8 @@ def game_report(game, thresholds, depth_filter=None):
             )
 
     wt_loss = {
-        bw: sum(s * aw for s, (w, aw) in zip(player_ptloss[bw], weights[bw])) / sum(aw for _, aw in weights[bw])
+        bw: sum(s * aw for s, (w, aw) in zip(player_ptloss[bw], weights[bw]))
+        / (sum(aw for _, aw in weights[bw]) or 1e-6)
         for bw in "BW"
     }
     sum_stats = {

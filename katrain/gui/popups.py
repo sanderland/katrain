@@ -48,6 +48,7 @@ from katrain.gui.kivyutils import (
     BackgroundLabel,
     TableHeaderLabel,
     TableCellLabel,
+    TableStatLabel,
     PlayerInfo,
     SizedRectangleButton,
     AutoSizedRectangleButton,
@@ -865,21 +866,29 @@ class GameReportPopup(BoxLayout):
             [cp * 0.75 for cp in col[:3]] + [1] for col in Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
         ]
 
-        for i, (label, fmt) in enumerate(
+        for i, (label, fmt, stat, scale) in enumerate(
             [
-                ("Accuracy Rating", "{:.1f}"),
-                ("Game Complexity Rating", "{:.1f}"),
-                ("Mean Point Loss", "{:.1f}"),
-                ("AI Top Move Match %", "{:.1%}"),
+                ("Accuracy Rating", "{:.1f}", "accuracy", 100),
+                ("Mean Point Loss", "{:.1f}", "mean_ptloss", 5),
+                ("AI Best Move Match %", "{:.1%}", "ai_top_move", 1),
+                ("AI Top 5 Match %", "{:.1%}", "ai_top5_move", 1),
             ]
         ):
-            table.add_widget(
-                TableCellLabel(text=fmt.format(sum_stats["B"][i]), background_color=Theme.LIGHTER_BACKGROUND_COLOR)
-            )
+            statcell = {
+                bw: TableStatLabel(
+                    text=fmt.format(sum_stats[bw][stat]) if stat in sum_stats[bw] else "",
+                    side=side,
+                    value=sum_stats[bw].get(stat, 0),
+                    scale=scale,
+                    bar_color=Theme.LIGHTER_BACKGROUND_COLOR,
+                    background_color=Theme.BOX_BACKGROUND_COLOR,
+                )
+                for (bw, side) in zip("BW", ['left','right'])
+            }
+            table.add_widget(statcell["B"])
             table.add_widget(TableCellLabel(text=label, background_color=Theme.LIGHTER_BACKGROUND_COLOR))
-            table.add_widget(
-                TableCellLabel(text=fmt.format(sum_stats["W"][i]), background_color=Theme.LIGHTER_BACKGROUND_COLOR)
-            )
+           # table.add_widget(Label())
+            table.add_widget(statcell["W"])
 
         table.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BOX_BACKGROUND_COLOR))
         table.add_widget(TableHeaderLabel(text="Points Lost", background_color=Theme.BOX_BACKGROUND_COLOR))

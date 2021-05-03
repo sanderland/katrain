@@ -109,7 +109,7 @@ class Theme:
     PV_TEXT_COLORS = {"W": BLACK, "B": WHITE}  # numbers in PV
 
     # board
-    LINE_COLOR = [0, 0, 0]
+    LINE_COLOR = [0, 0, 0, 1]
     STARPOINT_SIZE = 0.1
     BOARD_COLOR = [0.85, 0.68, 0.40, 1]
     STONE_SIZE = 0.505  # texture edge is transparent

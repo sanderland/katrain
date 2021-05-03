@@ -900,6 +900,13 @@
             size_hint: 1,1
             on_press: root.set_depth_filter((151,1e9))
     BoxLayout:
+        canvas.after:
+            Color:
+                rgba: Theme.LINE_COLOR
+            Line:
+                points:  (self.x+1,self.y+1,self.x+self.size[0]-1,self.y+1)
+                width: 1.5
+                cap: 'square'
         size_hint_y: 1.33
         PlayerInfo:
             player: 'B'

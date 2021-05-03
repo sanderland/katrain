@@ -350,17 +350,6 @@ class GameNode(SGFNode):
                     if previous_top_move.get("pv") and (sgf or details):
                         pv = self.make_pv(single_move.player, previous_top_move["pv"], interactive)
                         text += i18n._("Info:PV").format(pv=pv) + "\n"
-                # testing
-                cands = self.parent.candidate_moves
-                filtered_cands = [d for d in cands if d["order"] < ADDITIONAL_MOVE_ORDER and "prior" in d]
-                cands_policy = sum(d["prior"] for d in filtered_cands)
-                good_move_policy = sum(d["prior"] for d in filtered_cands if d["pointsLost"] < 0.5)
-                # how many bad candidates were considered
-                weight = max(cands_policy - good_move_policy, 1e-6)
-                weight2 = sum([max(d["pointsLost"], 0) * d["prior"] for d in filtered_cands])
-                text += f"Last Move Difficulty A: {weight}\n"
-                text += f"Last Move Difficulty B: {weight2}\n"
-
                 if sgf or details or teach:
                     currmove_pol_rank, currmove_pol_prob, policy_ranking = self.move_policy_stats()
                     if currmove_pol_rank is not None:

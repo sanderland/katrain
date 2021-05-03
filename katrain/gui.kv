@@ -30,12 +30,7 @@
 #            rectangle:  (*self.pos,*self.size)
 #            width: 1
 
-<TableCellLabel>:
-    font_size: self.height/3
-    padding: [Theme.CP_PADDING,Theme.CP_PADDING]
 
-<TableHeaderLabel>:
-    font_size: self.height/2.5
 
 # mixins
 <BackgroundMixin>:
@@ -52,6 +47,47 @@
             rounded_rectangle: (self.x + root.outline_width, self.y + root.outline_width, self.width - 2 * root.outline_width, self.height - 2*root.outline_width, root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
             width: root.outline_width or 1
 
+# table cells, stats panel mainly
+
+<TableCellLabel>:
+    font_size: self.height/3
+    padding: [Theme.CP_PADDING,Theme.CP_PADDING]
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    canvas:
+        Color:  # todo: pixel fiddling
+            rgba: root.outline_color
+        Line: # left
+            points: (root.x + root.outline_width/2,root.y,root.x + root.outline_width/2,root.y+root.size[1])
+            width: root.outline_width if 'left' in root.outlines else 1e-6
+            cap: 'square'
+        Line: # right
+            points: (root.x + root.size[0] - root.outline_width/2,root.y,root.x + root.size[0] - root.outline_width/2,root.y+root.size[1])
+            width: root.outline_width if 'right' in root.outlines else 1e-6
+            cap: 'square'
+        Line: # top
+            points: (root.x + root.outline_width/2,root.y+root.size[1]-1-root.outline_width/2,root.x + root.size[0]-1-root.outline_width/2,root.y+root.size[1]-1-root.outline_width/2)
+            width: root.outline_width if 'top' in root.outlines else 1e-6
+            cap: 'square'
+        Line: # bottom
+            points:  (root.x + root.outline_width/2,root.y+root.outline_width/2,root.x + root.size[0]-1-root.outline_width/2,root.y+root.outline_width/2)
+            width: root.outline_width * int('bottom' in root.outlines) + 1e-6
+            cap: 'square'
+
+<TableHeaderLabel>:
+    font_size: self.height/2.5
+
+<TableStatLabel>:
+    canvas.before:
+        Color:
+            rgba: root.bar_color
+        Rectangle:
+            pos: root.x if root.side=='right' else root.x+root.size[0]*(1 - min(1,root.value/root.scale)), root.y
+            size: root.size[0] * min(1,root.value/root.scale), root.size[1]
 
 
 # new widgets
