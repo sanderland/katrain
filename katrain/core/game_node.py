@@ -222,6 +222,8 @@ class GameNode(SGFNode):
             )  # parent arriving after child
             if cur["visits"] < move_analysis["visits"]:
                 cur.update(move_analysis)
+            else:  # prior etc only
+                cur.update({k: v for k, v in move_analysis.items() if k not in cur})
 
     def set_analysis(
         self,
@@ -431,10 +433,13 @@ class GameNode(SGFNode):
         root_score = self.analysis["root"]["scoreLead"]
         root_winrate = self.analysis["root"]["winrate"]
         move_dicts = list(self.analysis["moves"].values())  # prevent incoming analysis from causing crash
+        top_move = [d for d in move_dicts if d["order"] == 0]
+        top_score_lead = top_move[0]["scoreLead"] if top_move else root_score
         return sorted(
             [
                 {
                     "pointsLost": self.player_sign(self.next_player) * (root_score - d["scoreLead"]),
+                    "relativePointsLost": self.player_sign(self.next_player) * (top_score_lead - d["scoreLead"]),
                     "winrateLost": self.player_sign(self.next_player) * (root_winrate - d["winrate"]),
                     **d,
                 }

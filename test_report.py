@@ -15,11 +15,11 @@ pd.set_option("display.max_rows", 5000)
 
 settings = {
     "fast_visits": 25,
-    "visits": 500,
+    "max_visits": 500,
     "threads": 64,
     "model": "C:\\Users\\sande\\.katrain\\kata1-b40c256-s7907049728-d1917596640.bin.gz",
 }
-settings["model"] = "C:\\Users\\sande\\.katrain\\g170e-b20c256x2-s5303129600-d1228401921.bin.gz"
+# settings["model"] = "C:\\Users\\sande\\.katrain\\g170e-b20c256x2-s5303129600-d1228401921.bin.gz"
 
 
 def dan(rank):
@@ -33,18 +33,29 @@ def dan(rank):
         return 1 - int(rank[:-1])
 
 
+def polyfit(x, y, degree=1):
+    coeffs = np.polyfit(x, y, degree)
+    correlation = np.corrcoef(x, y)[0, 1]
+    results = {"coef": coeffs.tolist(), "r": correlation, "rsq": correlation ** 2}
+    return results
+
+
 katrain = KaTrainBase(force_package_config=True, debug_level=0)
+combined_settings = {**katrain.config("engine"), **settings}
 engine = KataGoEngine(katrain, {**katrain.config("engine"), **settings})
 thresholds = katrain.config("trainer/eval_thresholds")
 
 games = []
-
+n = 0
 for sgf in os.listdir("sgftest/"):
     if sgf.lower().endswith("sgf"):
         print(sgf)
         with open(os.path.join("sgftest", sgf)) as f:
             move_tree = KaTrainSGF.parse_sgf(f.read())
         games.append(Game(katrain, engine, move_tree=move_tree, analyze_fast=False))
+    n += 1
+    if n >= 30000:  # small test=3
+        break
 
 while not engine.is_idle():
     print(f"waiting for engine to finish...{engine.queries_remaining()} queries left")
@@ -60,11 +71,7 @@ for game in games:
             f"name": game.root.get_property(f"P{bw}", "??"),
             "rank": game.root.get_property(f"{bw}R", "9p"),
             "opp_rank": game.root.get_property(f"{oppbw}R", "9p"),
-            "accuracy": sum_stats[bw][0],
-            "complexity": sum_stats[bw][1],
-            "mean point loss": sum_stats[bw][2],
-            "ai top match rate": sum_stats[bw][3],
-            "ai approved match rate": sum_stats[bw][4],
+            **sum_stats[bw],
         }
         reports.append(info)
 
@@ -74,22 +81,27 @@ print(df)
 
 df["numrank"] = [dan(rank) for rank in df["rank"]]
 
-plt.subplots(2, 2)
-plt.subplot(2, 2, 1)
-plt.plot(df.numrank, df.accuracy, "kx")
-plt.xlabel("dan")
-plt.ylabel("accuracy")
-plt.subplot(2, 2, 2)
-plt.plot(df.numrank, df.complexity, "rx")
-plt.xlabel("dan")
-plt.ylabel("complexity")
-plt.subplot(2, 2, 3)
-plt.plot(df.numrank, df["mean point loss"], "gx")
-plt.xlabel("dan")
-plt.ylabel("mean point loss")
-plt.subplot(2, 2, 4)
-plt.plot(df.numrank, df["ai top match rate"], "gx", df.numrank, df["ai approved match rate"], "bx")
-plt.xlabel("dan")
-plt.ylabel("ai match rate")
 
+def subplot(sp, ynames):
+    global df
+    plt.subplot(2, 2, sp)
+    legend = []
+    xfull = np.array(range(df["numrank"].min(), df["numrank"].max() + 1))
+    cols = "bgr"
+    for i, yname in enumerate(ynames):
+        plt.plot(df["numrank"], df[yname], cols[i] + "x")
+    for i, yname in enumerate(ynames):
+        fit = polyfit(df["numrank"], df[yname])
+        a, b = fit["coef"]
+        plt.plot(xfull, xfull * a + b, cols[i] + ":")
+        legend.append(f"{yname}: r^2 = {fit['rsq']:.3f}")
+    plt.xlabel("dan rank")
+    plt.legend(legend)
+
+
+plt.subplots(2, 2)
+subplot(1, ["accuracy"])
+subplot(2, ["complexity"])
+subplot(3, ["ai_top_move", "ai_top5_move"])
+subplot(4, ["mean_ptloss", "weighted_ptloss"])
 plt.show()
