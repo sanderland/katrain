@@ -9,18 +9,43 @@
 
 ## <a name="General"></a> General
 
+### Getting more information about the error
+DebugKaTrain.exe
+
+### GPU vs CPU
+
+The standard executables assume you have a compatible graphics card (GPU). 
+If you don't, KataGo will fail to start, and KaTrain will  
+
+On Windows and Linux, you should be able to resolve this by:
+
+* Going to general and engine settings (F8)
+* Click 'download katago versions' and wait for downloads to finish.
+* Select a CPU based KataGo version (named 'Eigen' after the library it uses).
+
+Keep in mind that a CPU based engine can be significantly slower, and you may want to set your max visits to a lower number to compensate for this.
 
 
 
 ## <a name="Mac"></a><img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg" alt="macOs" height="35"/> For macOS users
+
+### M1
+`brew install katago`
+
+### 
+
 
 ##  <a name="Windows"></a><img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" alt="Windows" height="35"/> For Windows users
 
 
 ## <a name="Linux"></a><img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Linux_Logo_in_Linux_Libertine_Font.svg" alt="Linux" height="35"/> For Linux users
 
-The most common KataGo issue relates to libzip,
+The most common KataGo issue relates to different libzip versions in the provided executables.
+Although the provided executables should work on the latest versions of Ubuntu, various other versions and distros differ in their libzip version. 
 
+* First, try `sudo apt-get install libzip-dev` to 
+* Next, try installing all packages mentioned [here](INSTALL.md#LinuxTrouble).
+* A final alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.
 
 ## <a name="GPU"></a> Configuring the GPU(s) KataGo uses
 

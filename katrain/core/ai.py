@@ -120,10 +120,13 @@ def game_report(game, thresholds, depth_filter=None):
         cands_policy = sum(d["prior"] for d in filtered_cands)
         good_move_policy = sum(d["prior"] for d in filtered_cands if d["pointsLost"] < 0.5)
 
-        weight = min(1.0, sum([max(d["pointsLost"], 0) * d["prior"] for d in filtered_cands]))  # complexity capped at 1
-        #adj_weight between 0.05 - 1, dependent on difficulty and points lost
+        weight = min(
+            1.0,
+            sum([max(d["pointsLost"], 0) * d["prior"] for d in filtered_cands])
+            / sum(d["prior"] for d in filtered_cands),
+        )  # complexity capped at 1
+        # adj_weight between 0.05 - 1, dependent on difficulty and points lost
         adj_weight = max(0.05, min(1.0, max(weight, points_lost / 4)))
-        adj_weight = max(0.025, min(1.0, max(weight, points_lost / 5)))
         weights[n.player].append((weight, adj_weight))
         if n.parent.analysis_complete:
             ai_top_move_count[n.player] += int(cands[0]["move"] == n.move.gtp())

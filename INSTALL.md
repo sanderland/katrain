@@ -99,7 +99,7 @@ It assumes you have a working Python 3.6+ installation.
 A binary for KataGo is included, but if you have compiled your own, press F8 to open general settings and change the 
  KataGo executable path to the relevant KataGo v1.4+ binary.
 
-### Troubleshooting and advanced installation from sources
+### <a name="LinuxTrouble"></a>Troubleshooting and advanced installation from sources
 
 You can try to manually install dependencies to resolve some issues relating to missing dependencies,
  e.g. the binary 'wheel' is not provided, KataGo is not starting, or sounds are not working.
