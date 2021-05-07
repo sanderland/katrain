@@ -856,6 +856,10 @@ msgstr "All available binaries already downloaded"
 msgid "reanalyze max visits"
 msgstr "Number of visits per move"
 
+#. label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Limit analysis to mistakes only"
+
 #. on move tree editing
 msgid "Delete Node"
 msgstr "Delete Node"

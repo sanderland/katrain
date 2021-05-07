@@ -936,3 +936,7 @@ msgstr "click here"
 #. TODO - popup title
 msgid "engine recovery"
 msgstr "Help with KataGo setup"
+
+#. TODO - label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Limit analysis to mistakes only"

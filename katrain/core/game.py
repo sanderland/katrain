@@ -585,13 +585,17 @@ class Game(BaseGame):
             return
         if mode == "game":
             nodes = self.root.nodes_in_tree
+            only_mistakes = kwargs.get('mistakes_only',False)
+            threshold = self.katrain.config("trainer/eval_thresholds")[-4]
             if "visits" in kwargs:
                 visits = kwargs["visits"]
             else:
                 min_visits = min(node.analysis_visits_requested for node in nodes)
                 visits = min_visits + engine.config["max_visits"]
             for node in nodes:
-                node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
+                max_point_loss = max(c.points_lost or 0 for c in [node] + node.children)
+                if not only_mistakes or max_point_loss > threshold:
+                    node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
             self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)
             return
 

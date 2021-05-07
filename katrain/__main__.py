@@ -627,7 +627,7 @@ class KaTrainGui(Screen, KaTrainBase):
             return  # when making notes, don't allow keyboard shortcuts
         popup = self.popup_open
         if popup:
-            if keycode[1] in [Theme.KEY_REPORT_POPUP, Theme.KEY_TIMER_POPUP, "f6", "f7", "f8", "f9"]:  # switch between popups
+            if keycode[1] in [Theme.KEY_DEEPERANALYSIS_POPUP,Theme.KEY_REPORT_POPUP, Theme.KEY_TIMER_POPUP, "f6", "f7", "f8", "f9"]:  # switch between popups
                 popup.dismiss()
                 return
             elif keycode[1] in ["enter", "numpadenter"]:
@@ -678,6 +678,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self.load_sgf_from_clipboard()
         elif keycode[1] == "b" and shift_pressed:
             self("undo", "main-branch")
+        elif keycode[1] == Theme.KEY_DEEPERANALYSIS_POPUP:
+            self.analysis_controls.dropdown.open_game_analysis_popup()
         elif keycode[1] == Theme.KEY_REPORT_POPUP:
             self.analysis_controls.dropdown.open_report_popup()
 

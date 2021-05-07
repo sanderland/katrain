@@ -149,5 +149,6 @@ class Theme:
     MOVE_TREE_STONE_OUTLINE_COLORS = {"W": BLACK, "B": WHITE}
 
     # keyboard shortcuts
+    KEY_DEEPERANALYSIS_POPUP = "f2"
     KEY_REPORT_POPUP = "f3"
     KEY_TIMER_POPUP = "f5"
