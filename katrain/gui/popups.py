@@ -861,10 +861,15 @@ class GameReportPopup(BoxLayout):
         sum_stats, histogram, player_ptloss = game_report(game, depth_filter=self.depth_filter, thresholds=thresholds)
         labels = [f"≥ {pt}" if pt > 0 else f"< {thresholds[-2]}" for pt in thresholds]
 
-        table = GridLayout(cols=3, rows=5 + len(thresholds))
+        table = GridLayout(cols=3, rows=6 + len(thresholds))
         colors = [
             [cp * 0.75 for cp in col[:3]] + [1] for col in Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
         ]
+
+        table.add_widget(TableHeaderLabel(text="", background_color=Theme.BOX_BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="Key Statistics", background_color=Theme.BOX_BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="", background_color=Theme.BOX_BACKGROUND_COLOR))
+
 
         for i, (label, fmt, stat, scale) in enumerate(
             [
@@ -895,17 +900,20 @@ class GameReportPopup(BoxLayout):
         table.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BOX_BACKGROUND_COLOR))
 
         for i, (col, label, pt) in enumerate(zip(colors[::-1], labels[::-1], thresholds[::-1])):
-            perc = {bw: histogram[i][bw] / (len(player_ptloss[bw]) + 1e-9) for bw in "BW"}
-            c = {
-                bw: [
-                    d * (1 - min(1.0, perc[bw] / 0.33)) + l * min(1.0, perc[bw] / 0.33)
-                    for l, d in zip(Theme.LIGHTER_BACKGROUND_COLOR, Theme.BOX_BACKGROUND_COLOR)
-                ]
-                for bw in "BW"
+            statcell = {
+                bw: TableStatLabel(
+                    text=str(histogram[i][bw]),
+                    side=side,
+                    value=histogram[i][bw] / (len(player_ptloss[bw]) + 1e-9),
+                    scale=1,
+                    bar_color=Theme.LIGHTER_BACKGROUND_COLOR,
+                    background_color=Theme.BOX_BACKGROUND_COLOR,
+                )
+                for (bw, side) in zip("BW", ["left", "right"])
             }
-            table.add_widget(TableCellLabel(text=f"{histogram[i]['B']} ({perc['B']:.1%})", background_color=c["B"]))
+            table.add_widget(statcell["B"])
             table.add_widget(TableCellLabel(text=label, background_color=col))
-            table.add_widget(TableCellLabel(text=f"{histogram[i]['W']} ({perc['W']:.1%})", background_color=c["W"]))
+            table.add_widget(statcell["W"])
 
         self.stats.clear_widgets()
         self.stats.add_widget(table)

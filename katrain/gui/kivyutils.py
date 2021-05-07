@@ -57,7 +57,7 @@ class TableCellLabel(Label):
     line_width = NumericProperty(0)
     outlines = ListProperty([])
     outline_color = Theme.LINE_COLOR
-    outline_width = NumericProperty(1.5)
+    outline_width = NumericProperty(1.1)
 
 
 class TableStatLabel(TableCellLabel):
@@ -407,6 +407,7 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     name = StringProperty("", allownone=True)
     rank = StringProperty("", allownone=True)
     active = BooleanProperty(True)
+    alignment = StringProperty('right')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

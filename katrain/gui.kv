@@ -62,19 +62,19 @@
         Color:  # todo: pixel fiddling
             rgba: root.outline_color
         Line: # left
-            points: (root.x + root.outline_width/2,root.y,root.x + root.outline_width/2,root.y+root.size[1])
+            points: (root.x + root.outline_width,root.y,root.x + root.outline_width,root.y+root.size[1])
             width: root.outline_width if 'left' in root.outlines else 1e-6
             cap: 'square'
         Line: # right
-            points: (root.x + root.size[0] - root.outline_width/2,root.y,root.x + root.size[0] - root.outline_width/2,root.y+root.size[1])
+            points: (root.x + root.size[0] - root.outline_width,root.y,root.x + root.size[0] - root.outline_width,root.y+root.size[1])
             width: root.outline_width if 'right' in root.outlines else 1e-6
             cap: 'square'
         Line: # top
-            points: (root.x + root.outline_width/2,root.y+root.size[1]-1-root.outline_width/2,root.x + root.size[0]-1-root.outline_width/2,root.y+root.size[1]-1-root.outline_width/2)
+            points: (root.x, root.y+root.size[1]-root.outline_width, root.x + root.size[0], root.y+root.size[1]-root.outline_width)
             width: root.outline_width if 'top' in root.outlines else 1e-6
             cap: 'square'
         Line: # bottom
-            points:  (root.x + root.outline_width/2,root.y+root.outline_width/2,root.x + root.size[0]-1-root.outline_width/2,root.y+root.outline_width/2)
+            points:  (root.x, root.y+root.outline_width, root.x + root.size[0], root.y+root.outline_width)
             width: root.outline_width * int('bottom' in root.outlines) + 1e-6
             cap: 'square'
 
@@ -316,7 +316,8 @@
     padding: [2*CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING]
     subtype_label: subtype_label
     CircleWithText:
-        size_hint: 0.32, 1
+        size_hint_x: 0.32 if root.alignment=='right' else EPSILON
+        opacity: 1 if root.alignment=='right' else 0
         player: root.player
         text: str(root.captures)
     BoxLayout:
@@ -342,6 +343,11 @@
             valign: 'middle'
             shorten: root.player_type==PLAYER_HUMAN # overflow/cut rank off AI names
             max_lines: 1
+    CircleWithText:
+        size_hint_x: EPSILON if root.alignment=='right' else 0.32
+        opacity: 0 if root.alignment=='right' else 1
+        player: root.player
+        text: str(root.captures)
 
 <PauseButton>:
     height: self.width
