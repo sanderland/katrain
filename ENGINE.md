@@ -1,5 +1,10 @@
 # KataGo troubleshooting
 
+This page lists common ways in which the provided KataGo fails to work out of the box, and how to resolve these issues.
+If you find your problem is not in here, you can ask on the [Leela Zero & Friends Discord](http://discord.gg/AjTPFpN) (use the #gui channel),
+ providing detailed information about your error.  
+
+
 * [General](#General)
     * [GPU vs CPU](#CPU)
     * [Multiple GPU settings](#GPU)

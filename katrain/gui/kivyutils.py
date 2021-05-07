@@ -407,7 +407,7 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     name = StringProperty("", allownone=True)
     rank = StringProperty("", allownone=True)
     active = BooleanProperty(True)
-    alignment = StringProperty('right')
+    alignment = StringProperty("right")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

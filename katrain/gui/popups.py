@@ -870,7 +870,6 @@ class GameReportPopup(BoxLayout):
         table.add_widget(TableHeaderLabel(text="Key Statistics", background_color=Theme.BOX_BACKGROUND_COLOR))
         table.add_widget(TableHeaderLabel(text="", background_color=Theme.BOX_BACKGROUND_COLOR))
 
-
         for i, (label, fmt, stat, scale) in enumerate(
             [
                 ("Accuracy Rating", "{:.1f}", "accuracy", 100),

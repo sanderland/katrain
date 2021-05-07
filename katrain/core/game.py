@@ -585,7 +585,7 @@ class Game(BaseGame):
             return
         if mode == "game":
             nodes = self.root.nodes_in_tree
-            only_mistakes = kwargs.get('mistakes_only',False)
+            only_mistakes = kwargs.get("mistakes_only", False)
             threshold = self.katrain.config("trainer/eval_thresholds")[-4]
             if "visits" in kwargs:
                 visits = kwargs["visits"]
