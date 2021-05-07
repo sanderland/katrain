@@ -64,7 +64,7 @@ class TestBoard:
 
     def test_snapback(self, new_game):
         b = Game(MockKaTrain(force_package_config=True), MockEngine(), move_tree=new_game)
-        for move in ["C1", "D1", "E1", "C2", "D3", "E4", "F2", "F3", "F4"]:
+        for move in ["C1", "D1", "E1", "C2", "D3", "E4", "F2", Theme.KEY_REPORT_POPUP, "F4"]:
             b.play(Move.from_gtp(move, player="B"))
         for move in ["D2", "E2", "C3", "D4", "C4"]:
             b.play(Move.from_gtp(move, player="W"))
