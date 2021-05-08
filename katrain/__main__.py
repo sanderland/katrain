@@ -476,6 +476,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if self.contributing:
             return
         try:
+            file = os.path.abspath(file)
             move_tree = KaTrainSGF.parse_file(file)
         except (ParseError, FileNotFoundError) as e:
             self.log(i18n._("Failed to load SGF").format(error=e), OUTPUT_ERROR)
