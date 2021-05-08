@@ -904,7 +904,7 @@ class GameReportPopup(BoxLayout):
                     text=str(histogram[i][bw]),
                     side=side,
                     value=histogram[i][bw] / (len(player_ptloss[bw]) + 1e-9),
-                    scale=histogram[i]['B']+histogram[i]['W']+1e-6, # relative to both at that scale
+                    scale=histogram[i]["B"] + histogram[i]["W"] + 1e-6,  # relative to both at that scale
                     bar_color=Theme.LIGHTER_BACKGROUND_COLOR,
                     background_color=Theme.BOX_BACKGROUND_COLOR,
                 )

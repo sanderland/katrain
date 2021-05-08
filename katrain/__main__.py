@@ -587,30 +587,34 @@ class KaTrainGui(Screen, KaTrainBase):
     @property
     def shortcuts(self):
         return {
-            Theme.KEY_ANALYSIS_CONTROLS_SHOW_CHILDREN: self.analysis_controls.show_children,
-            Theme.KEY_ANALYSIS_CONTROLS_EVAL: self.analysis_controls.eval,
-            Theme.KEY_ANALYSIS_CONTROLS_HINTS: self.analysis_controls.hints,
-            Theme.KEY_ANALYSIS_CONTROLS_OWNERSHIP: self.analysis_controls.ownership,
-            Theme.KEY_ANALYSIS_CONTROLS_POLICY: self.analysis_controls.policy,
-            Theme.KEY_AI_MOVE: ("ai-move",),
-            Theme.KEY_ANALYZE_EXTRA_EXTRA: ("analyze-extra", "extra"),
-            Theme.KEY_ANALYZE_EXTRA_EQUALIZE: ("analyze-extra", "equalize"),
-            Theme.KEY_ANALYZE_EXTRA_SWEEP: ("analyze-extra", "sweep"),
-            Theme.KEY_ANALYZE_EXTRA_ALTERNATIVE: ("analyze-extra", "alternative"),
-            Theme.KEY_SELECT_BOX: ("select-box",),
-            Theme.KEY_RESET_ANALYSIS: ("reset-analysis",),
-            Theme.KEY_INSERT_MODE: ("insert-mode",),
-            Theme.KEY_PLAY: ("play", None),
-            Theme.KEY_SELFPLAY_SETUP_END: ("selfplay-setup", "end", None),
-            Theme.KEY_UNDO_BRANCH: ("undo", "branch"),
-            Theme.KEY_SWITCH_BRANCH_DOWN: ("switch-branch", 1),
-            Theme.KEY_SWITCH_BRANCH_UP: ("switch-branch", -1),
-            Theme.KEY_TIMER_POPUP: ("timer-popup",),
-            Theme.KEY_TEACHER_POPUP: ("teacher-popup",),
-            Theme.KEY_AI_POPUP: ("ai-popup",),
-            Theme.KEY_CONFIG_POPUP: ("config-popup",),
-            Theme.KEY_CONTRIBUTE_POPUP: ("contribute-popup",),
-            Theme.KEY_ANALYZE_EXTRA_STOP: ("analyze-extra", "stop"),
+            k: v
+            for ks, v in [
+                (Theme.KEY_ANALYSIS_CONTROLS_SHOW_CHILDREN, self.analysis_controls.show_children),
+                (Theme.KEY_ANALYSIS_CONTROLS_EVAL, self.analysis_controls.eval),
+                (Theme.KEY_ANALYSIS_CONTROLS_HINTS, self.analysis_controls.hints),
+                (Theme.KEY_ANALYSIS_CONTROLS_OWNERSHIP, self.analysis_controls.ownership),
+                (Theme.KEY_ANALYSIS_CONTROLS_POLICY, self.analysis_controls.policy),
+                (Theme.KEY_AI_MOVE, ("ai-move",)),
+                (Theme.KEY_ANALYZE_EXTRA_EXTRA, ("analyze-extra", "extra")),
+                (Theme.KEY_ANALYZE_EXTRA_EQUALIZE, ("analyze-extra", "equalize")),
+                (Theme.KEY_ANALYZE_EXTRA_SWEEP, ("analyze-extra", "sweep")),
+                (Theme.KEY_ANALYZE_EXTRA_ALTERNATIVE, ("analyze-extra", "alternative")),
+                (Theme.KEY_SELECT_BOX, ("select-box",)),
+                (Theme.KEY_RESET_ANALYSIS, ("reset-analysis",)),
+                (Theme.KEY_INSERT_MODE, ("insert-mode",)),
+                (Theme.KEY_PLAY, ("play", None)),
+                (Theme.KEY_SELFPLAY_SETUP_END, ("selfplay-setup", "end", None)),
+                (Theme.KEY_UNDO_BRANCH, ("undo", "branch")),
+                (Theme.KEY_SWITCH_BRANCH_DOWN, ("switch-branch", 1)),
+                (Theme.KEY_SWITCH_BRANCH_UP, ("switch-branch", -1)),
+                (Theme.KEY_TIMER_POPUP, ("timer-popup",)),
+                (Theme.KEY_TEACHER_POPUP, ("teacher-popup",)),
+                (Theme.KEY_AI_POPUP, ("ai-popup",)),
+                (Theme.KEY_CONFIG_POPUP, ("config-popup",)),
+                (Theme.KEY_CONTRIBUTE_POPUP, ("contribute-popup",)),
+                (Theme.KEY_ANALYZE_EXTRA_STOP, ("analyze-extra", "stop")),
+            ]
+            for k in (ks if isinstance(ks, list) else [ks])
         }
 
     @property
@@ -623,6 +627,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         self.last_key_down = keycode
         ctrl_pressed = "ctrl" in modifiers
+        shift_pressed = "shift" in modifiers
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
         popup = self.popup_open
@@ -638,15 +643,13 @@ class KaTrainGui(Screen, KaTrainBase):
             ]:  # switch between popups
                 popup.dismiss()
                 return
-            elif keycode[1] in [Theme.KEY_AI_MOVE, Theme.KEY_AI_MOVE_NUMPAD]:
+            elif keycode[1] in Theme.KEY_SUBMIT_POPUP:
                 fn = getattr(popup.content, "on_submit", None)
                 if fn:
                     fn()
                 return
             else:
                 return
-        shift_pressed = "shift" in modifiers
-        shortcuts = self.shortcuts
         if keycode[1] == Theme.KEY_TOGGLE_CONTINUOUS_ANALYSIS:
             self.toggle_continuous_analysis()
         elif keycode[1] == Theme.KEY_TOGGLE_COORDINATES:
@@ -655,13 +658,13 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in Theme.KEY_ZEN:
             self.zen = (self.zen + 1) % 3
-        elif keycode[1] in Theme.KEY_UNDO:
+        elif keycode[1] in Theme.KEY_NAV_PREV:
             self("undo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
-        elif keycode[1] in Theme.KEY_REDO:
+        elif keycode[1] in Theme.KEY_NAV_NEXT:
             self("redo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
-        elif keycode[1] == Theme.KEY_MASS_UNDO:
+        elif keycode[1] == Theme.KEY_NAV_GAME_START:
             self("undo", 9999)
-        elif keycode[1] == Theme.KEY_MASS_REDO:
+        elif keycode[1] == Theme.KEY_NAV_GAME_END:
             self("redo", 9999)
         elif keycode[1] == Theme.KEY_MOVE_TREE_MAKE_SELECTED_NODE_MAIN_BRANCH:
             self.controls.move_tree.make_selected_node_main_branch()
@@ -690,13 +693,6 @@ class KaTrainGui(Screen, KaTrainBase):
             self.analysis_controls.dropdown.open_game_analysis_popup()
         elif keycode[1] == Theme.KEY_REPORT_POPUP:
             self.analysis_controls.dropdown.open_report_popup()
-
-        elif keycode[1] in shortcuts.keys() and not ctrl_pressed:
-            shortcut = shortcuts[keycode[1]]
-            if isinstance(shortcut, Widget):
-                shortcut.trigger_action(duration=0)
-            else:
-                self(*shortcut)
         elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
             import yappi
 
@@ -711,6 +707,13 @@ class KaTrainGui(Screen, KaTrainBase):
             filename = f"callgrind.{int(time.time())}.prof"
             stats.save(filename, type="callgrind")
             self.log(f"wrote profiling results to {filename}", OUTPUT_ERROR)
+        elif not ctrl_pressed:
+            shortcut = self.shortcuts.get(keycode[1])
+            if shortcut is not None:
+                if isinstance(shortcut, Widget):
+                    shortcut.trigger_action(duration=0)
+                else:
+                    self(*shortcut)
 
     def _on_keyboard_up(self, _keyboard, keycode):
         if keycode[1] in ["alt", "tab"]:

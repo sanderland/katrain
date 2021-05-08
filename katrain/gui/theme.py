@@ -150,6 +150,7 @@ class Theme:
 
     # keyboard shortcuts
     KEY_AI_MOVE = ["enter", "numpadenter"]
+    KEY_SUBMIT_POPUP = ["enter", "numpadenter"]
     KEY_AI_POPUP = "f7"
     KEY_ANALYZE_EXTRA_ALTERNATIVE = "f"
     KEY_ANALYZE_EXTRA_EXTRA = "a"
@@ -168,8 +169,10 @@ class Theme:
     KEY_DEEPERANALYSIS_POPUP = "f2"
     KEY_FIND_MISTAKE = "n"
     KEY_INSERT_MODE = "i"
-    KEY_MASS_UNDO = "home"
-    KEY_MASS_REDO = "end"
+    KEY_NAV_NEXT = ["right", "x"]
+    KEY_NAV_PREV = ["left", "z"]
+    KEY_NAV_GAME_START = "home"
+    KEY_NAV_GAME_END = "end"
     KEY_MOVE_TREE_DELETE_SELECTED_NODE = "delete"
     KEY_MOVE_TREE_MAKE_SELECTED_NODE_MAIN_BRANCH = "pageup"
     KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE = "c"
@@ -177,11 +180,10 @@ class Theme:
     KEY_PASTE = "v"
     KEY_PAUSE_TIMER = ["pause", "break", "f15"]
     KEY_PLAY = "p"
-    KEY_REDO = ["right", "x"]
     KEY_REPORT_POPUP = "f3"
     KEY_RESET_ANALYSIS = "h"
     KEY_SAVE_GAME = "s"
-    KEY_SAVE_GAME_POPUP = "s"
+    KEY_SAVE_GAME_POPUP = "d"
     KEY_SELECT_BOX = "g"
     KEY_SELFPLAY_SETUP_END = "l"
     KEY_SWITCH_BRANCH_DOWN = "down"
@@ -190,6 +192,5 @@ class Theme:
     KEY_TOGGLE_COORDINATES = "k"
     KEY_TEACHER_POPUP = "f6"
     KEY_TIMER_POPUP = "f5"
-    KEY_UNDO = ["left", "z"]
     KEY_UNDO_BRANCH = "b"
     KEY_ZEN = ["`", "~", "f12"]
