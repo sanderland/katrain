@@ -592,7 +592,6 @@ class KaTrainGui(Screen, KaTrainBase):
             Theme.KEY_ANALYSIS_CONTROLS_OWNERSHIP: self.analysis_controls.ownership,
             Theme.KEY_ANALYSIS_CONTROLS_POLICY: self.analysis_controls.policy,
             Theme.KEY_AI_MOVE: ("ai-move",),
-            Theme.KEY_AI_MOVE_NUMPAD: ("ai-move",),
             Theme.KEY_ANALYZE_EXTRA_EXTRA: ("analyze-extra", "extra"),
             Theme.KEY_ANALYZE_EXTRA_EQUALIZE: ("analyze-extra", "equalize"),
             Theme.KEY_ANALYZE_EXTRA_SWEEP: ("analyze-extra", "sweep"),
@@ -647,42 +646,42 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
         shift_pressed = "shift" in modifiers
         shortcuts = self.shortcuts
-        if keycode[1] == "spacebar":
+        if keycode[1] == Theme.KEY_TOGGLE_CONTINUOUS_ANALYSIS:
             self.toggle_continuous_analysis()
-        elif keycode[1] == "k":
+        elif keycode[1] == Theme.KEY_TOGGLE_COORDINATES:
             self.board_gui.toggle_coordinates()
-        elif keycode[1] in ["pause", "break", "f15"] and not ctrl_pressed:
+        elif keycode[1] in Theme.KEY_PAUSE_TIMER and not ctrl_pressed:
             self.controls.timer.paused = not self.controls.timer.paused
-        elif keycode[1] in ["`", "~", "f12"]:
+        elif keycode[1] in Theme.KEY_ZEN:
             self.zen = (self.zen + 1) % 3
-        elif keycode[1] in ["left", "z"]:
+        elif keycode[1] in Theme.KEY_UNDO:
             self("undo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
-        elif keycode[1] in ["right", "x"]:
+        elif keycode[1] in Theme.KEY_REDO:
             self("redo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
-        elif keycode[1] == "home":
+        elif keycode[1] == Theme.KEY_MASS_UNDO:
             self("undo", 9999)
-        elif keycode[1] == "end":
+        elif keycode[1] == Theme.KEY_MASS_REDO:
             self("redo", 9999)
-        elif keycode[1] == "pageup":
+        elif keycode[1] == Theme.KEY_MOVE_TREE_MAKE_SELECTED_NODE_MAIN_BRANCH:
             self.controls.move_tree.make_selected_node_main_branch()
-        elif keycode[1] == "n" and not ctrl_pressed:
+        elif keycode[1] == Theme.KEY_FIND_MISTAKE and not ctrl_pressed:
             self("find-mistake", "undo" if shift_pressed else "redo")
-        elif keycode[1] == "delete" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_MOVE_TREE_DELETE_SELECTED_NODE and ctrl_pressed:
             self.controls.move_tree.delete_selected_node()
-        elif keycode[1] == "c" and not ctrl_pressed:
+        elif keycode[1] == Theme.KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE and not ctrl_pressed:
             self.controls.move_tree.toggle_selected_node_collapse()
-        elif keycode[1] == "n" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_NEW_GAME_POPUP and ctrl_pressed:
             self("new-game-popup")
-        elif keycode[1] == Theme.KEY_SELFPLAY_SETUP_END and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_ANALYZE_SGF_POPUP and ctrl_pressed:
             self("analyze-sgf-popup")
-        elif keycode[1] == Theme.KEY_ANALYZE_EXTRA_EQUALIZE and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_SAVE_GAME and ctrl_pressed:
             self("save-game")
-        elif keycode[1] == Theme.KEY_ANALYZE_EXTRA_SWEEP and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_SAVE_GAME_POPUP and ctrl_pressed:
             self("save-game-as-popup")
-        elif keycode[1] == "c" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_COPY and ctrl_pressed:
             Clipboard.copy(self.game.root.sgf())
             self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
-        elif keycode[1] == "v" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_PASTE and ctrl_pressed:
             self.load_sgf_from_clipboard()
         elif keycode[1] == Theme.KEY_UNDO_BRANCH and shift_pressed:
             self("undo", "main-branch")
