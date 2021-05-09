@@ -901,19 +901,19 @@
             allow_no_selection: False
             size_hint: 1,1
             group: 'stats_depth'
-            on_press: root.set_depth_filter((0,50))
+            on_press: root.set_depth_filter((0,0.14))
         SizedRectangleToggleButton:
             text: i18n._('Midgame')
             allow_no_selection: False
             size_hint: 1,1
             group: 'stats_depth'
-            on_press: root.set_depth_filter((51,151))
+            on_press: root.set_depth_filter((0.14,0.4))
         SizedRectangleToggleButton:
             text: i18n._('Endgame')
             group: 'stats_depth'
             allow_no_selection: False
             size_hint: 1,1
-            on_press: root.set_depth_filter((151,1e9))
+            on_press: root.set_depth_filter((0.4,10))
     BoxLayout:
         size_hint_y: 1.33
         PlayerInfo:
