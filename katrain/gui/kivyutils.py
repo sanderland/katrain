@@ -73,7 +73,7 @@ class TableStatLabel(TableCellLabel):
 
 
 class TableHeaderLabel(TableCellLabel):
-    outlines = ["bottom", "top"]
+    outlines = ["bottom"]
 
 
 class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on right click

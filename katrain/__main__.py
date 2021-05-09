@@ -602,17 +602,17 @@ class KaTrainGui(Screen, KaTrainBase):
                 (Theme.KEY_SELECT_BOX, ("select-box",)),
                 (Theme.KEY_RESET_ANALYSIS, ("reset-analysis",)),
                 (Theme.KEY_INSERT_MODE, ("insert-mode",)),
-                (Theme.KEY_PLAY, ("play", None)),
-                (Theme.KEY_SELFPLAY_SETUP_END, ("selfplay-setup", "end", None)),
-                (Theme.KEY_UNDO_BRANCH, ("undo", "branch")),
-                (Theme.KEY_SWITCH_BRANCH_DOWN, ("switch-branch", 1)),
-                (Theme.KEY_SWITCH_BRANCH_UP, ("switch-branch", -1)),
+                (Theme.KEY_PASS, ("play", None)),
+                (Theme.KEY_SELFPLAY_TO_END, ("selfplay-setup", "end", None)),
+                (Theme.KEY_NAV_PREV_BRANCH, ("undo", "branch")),
+                (Theme.KEY_NAV_BRANCH_DOWN, ("switch-branch", 1)),
+                (Theme.KEY_NAV_BRANCH_UP, ("switch-branch", -1)),
                 (Theme.KEY_TIMER_POPUP, ("timer-popup",)),
                 (Theme.KEY_TEACHER_POPUP, ("teacher-popup",)),
                 (Theme.KEY_AI_POPUP, ("ai-popup",)),
                 (Theme.KEY_CONFIG_POPUP, ("config-popup",)),
                 (Theme.KEY_CONTRIBUTE_POPUP, ("contribute-popup",)),
-                (Theme.KEY_ANALYZE_EXTRA_STOP, ("analyze-extra", "stop")),
+                (Theme.KEY_STOP_ANALYSIS, ("analyze-extra", "stop")),
             ]
             for k in (ks if isinstance(ks, list) else [ks])
         }
@@ -668,26 +668,26 @@ class KaTrainGui(Screen, KaTrainBase):
             self("redo", 9999)
         elif keycode[1] == Theme.KEY_MOVE_TREE_MAKE_SELECTED_NODE_MAIN_BRANCH:
             self.controls.move_tree.make_selected_node_main_branch()
-        elif keycode[1] == Theme.KEY_FIND_MISTAKE and not ctrl_pressed:
+        elif keycode[1] == Theme.KEY_NAV_MISTAKE and not ctrl_pressed:
             self("find-mistake", "undo" if shift_pressed else "redo")
         elif keycode[1] == Theme.KEY_MOVE_TREE_DELETE_SELECTED_NODE and ctrl_pressed:
             self.controls.move_tree.delete_selected_node()
         elif keycode[1] == Theme.KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE and not ctrl_pressed:
             self.controls.move_tree.toggle_selected_node_collapse()
-        elif keycode[1] == Theme.KEY_NEW_GAME_POPUP and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_NEW_GAME and ctrl_pressed:
             self("new-game-popup")
-        elif keycode[1] == Theme.KEY_ANALYZE_SGF_POPUP and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_LOAD_GAME and ctrl_pressed:
             self("analyze-sgf-popup")
         elif keycode[1] == Theme.KEY_SAVE_GAME and ctrl_pressed:
             self("save-game")
-        elif keycode[1] == Theme.KEY_SAVE_GAME_POPUP and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_SAVE_GAME_AS and ctrl_pressed:
             self("save-game-as-popup")
         elif keycode[1] == Theme.KEY_COPY and ctrl_pressed:
             Clipboard.copy(self.game.root.sgf())
             self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
         elif keycode[1] == Theme.KEY_PASTE and ctrl_pressed:
             self.load_sgf_from_clipboard()
-        elif keycode[1] == Theme.KEY_UNDO_BRANCH and shift_pressed:
+        elif keycode[1] == Theme.KEY_NAV_PREV_BRANCH and shift_pressed:
             self("undo", "main-branch")
         elif keycode[1] == Theme.KEY_DEEPERANALYSIS_POPUP:
             self.analysis_controls.dropdown.open_game_analysis_popup()

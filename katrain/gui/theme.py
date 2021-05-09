@@ -150,47 +150,54 @@ class Theme:
 
     # keyboard shortcuts
     KEY_AI_MOVE = ["enter", "numpadenter"]
-    KEY_SUBMIT_POPUP = ["enter", "numpadenter"]
+    KEY_PASS = "p"
+
+    KEY_DEEPERANALYSIS_POPUP = "f2"
+    KEY_REPORT_POPUP = "f3"
+    KEY_TIMER_POPUP = "f5"
+    KEY_TEACHER_POPUP = "f6"
     KEY_AI_POPUP = "f7"
-    KEY_ANALYZE_EXTRA_ALTERNATIVE = "f"
+    KEY_CONFIG_POPUP = "f8"
+    KEY_CONTRIBUTE_POPUP = "f9"
+
+    KEY_NEW_GAME = "n"
+    KEY_SAVE_GAME = "s"
+    KEY_SAVE_GAME_AS = "d"
+    KEY_LOAD_GAME = "l"
+    KEY_SUBMIT_POPUP = ["enter", "numpadenter"]
+
+    KEY_ANALYSIS_CONTROLS_SHOW_CHILDREN = "q"
+    KEY_ANALYSIS_CONTROLS_EVAL = "w"
+    KEY_ANALYSIS_CONTROLS_HINTS = "e"
+    KEY_ANALYSIS_CONTROLS_POLICY = "r"
+    KEY_ANALYSIS_CONTROLS_OWNERSHIP = "t"
+
     KEY_ANALYZE_EXTRA_EXTRA = "a"
     KEY_ANALYZE_EXTRA_EQUALIZE = "s"
     KEY_ANALYZE_EXTRA_SWEEP = "d"
-    KEY_ANALYZE_EXTRA_STOP = "escape"
-    KEY_ANALYZE_SGF_POPUP = "l"
-    KEY_ANALYSIS_CONTROLS_EVAL = "w"
-    KEY_ANALYSIS_CONTROLS_HINTS = "e"
-    KEY_ANALYSIS_CONTROLS_OWNERSHIP = "t"
-    KEY_ANALYSIS_CONTROLS_POLICY = "r"
-    KEY_ANALYSIS_CONTROLS_SHOW_CHILDREN = "q"
-    KEY_CONFIG_POPUP = "f8"
-    KEY_CONTRIBUTE_POPUP = "f9"
-    KEY_COPY = "c"
-    KEY_DEEPERANALYSIS_POPUP = "f2"
-    KEY_FIND_MISTAKE = "n"
+    KEY_ANALYZE_EXTRA_ALTERNATIVE = "f"
+    KEY_SELECT_BOX = "g"
+    KEY_RESET_ANALYSIS = "h"
     KEY_INSERT_MODE = "i"
+    KEY_SELFPLAY_TO_END = "l"
+    KEY_STOP_ANALYSIS = "escape"
+    KEY_TOGGLE_CONTINUOUS_ANALYSIS = "spacebar"
+
+    KEY_COPY = "c"
+    KEY_PASTE = "v"
+
+    KEY_NAV_BRANCH_DOWN = "down"
+    KEY_NAV_BRANCH_UP = "up"
     KEY_NAV_NEXT = ["right", "x"]
     KEY_NAV_PREV = ["left", "z"]
     KEY_NAV_GAME_START = "home"
     KEY_NAV_GAME_END = "end"
+    KEY_NAV_PREV_BRANCH = "b"
+    KEY_NAV_MISTAKE = "n"
     KEY_MOVE_TREE_DELETE_SELECTED_NODE = "delete"
     KEY_MOVE_TREE_MAKE_SELECTED_NODE_MAIN_BRANCH = "pageup"
     KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE = "c"
-    KEY_NEW_GAME_POPUP = "n"
-    KEY_PASTE = "v"
+
     KEY_PAUSE_TIMER = ["pause", "break", "f15"]
-    KEY_PLAY = "p"
-    KEY_REPORT_POPUP = "f3"
-    KEY_RESET_ANALYSIS = "h"
-    KEY_SAVE_GAME = "s"
-    KEY_SAVE_GAME_POPUP = "d"
-    KEY_SELECT_BOX = "g"
-    KEY_SELFPLAY_SETUP_END = "l"
-    KEY_SWITCH_BRANCH_DOWN = "down"
-    KEY_SWITCH_BRANCH_UP = "up"
-    KEY_TOGGLE_CONTINUOUS_ANALYSIS = "spacebar"
     KEY_TOGGLE_COORDINATES = "k"
-    KEY_TEACHER_POPUP = "f6"
-    KEY_TIMER_POPUP = "f5"
-    KEY_UNDO_BRANCH = "b"
     KEY_ZEN = ["`", "~", "f12"]

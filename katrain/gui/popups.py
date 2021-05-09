@@ -866,9 +866,9 @@ class GameReportPopup(BoxLayout):
             [cp * 0.75 for cp in col[:3]] + [1] for col in Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
         ]
 
-        table.add_widget(TableHeaderLabel(text="", background_color=Theme.BOX_BACKGROUND_COLOR))
-        table.add_widget(TableHeaderLabel(text="Key Statistics", background_color=Theme.BOX_BACKGROUND_COLOR))
-        table.add_widget(TableHeaderLabel(text="", background_color=Theme.BOX_BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="", background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="Key Statistics", background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="", background_color=Theme.BACKGROUND_COLOR))
 
         for i, (label, fmt, stat, scale) in enumerate(
             [
@@ -890,20 +890,20 @@ class GameReportPopup(BoxLayout):
                 for (bw, side) in zip("BW", ["left", "right"])
             }
             table.add_widget(statcell["B"])
-            table.add_widget(TableCellLabel(text=label, background_color=Theme.LIGHTER_BACKGROUND_COLOR))
+            table.add_widget(TableCellLabel(text=label, background_color=Theme.BOX_BACKGROUND_COLOR))
             # table.add_widget(Label())
             table.add_widget(statcell["W"])
 
-        table.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BOX_BACKGROUND_COLOR))
-        table.add_widget(TableHeaderLabel(text="Points Lost", background_color=Theme.BOX_BACKGROUND_COLOR))
-        table.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BOX_BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="Points Lost", background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="# Moves", background_color=Theme.BACKGROUND_COLOR))
 
         for i, (col, label, pt) in enumerate(zip(colors[::-1], labels[::-1], thresholds[::-1])):
             statcell = {
                 bw: TableStatLabel(
                     text=str(histogram[i][bw]),
                     side=side,
-                    value=histogram[i][bw] / (len(player_ptloss[bw]) + 1e-9),
+                    value=histogram[i][bw],
                     scale=histogram[i]["B"] + histogram[i]["W"] + 1e-6,  # relative to both at that scale
                     bar_color=Theme.LIGHTER_BACKGROUND_COLOR,
                     background_color=Theme.BOX_BACKGROUND_COLOR,
