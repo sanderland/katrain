@@ -897,19 +897,19 @@
             state: 'down'
             on_press: root.set_depth_filter(None)
         SizedRectangleToggleButton:
-            text: 'Opening'
+            text: i18n._('Opening')
             allow_no_selection: False
             size_hint: 1,1
             group: 'stats_depth'
             on_press: root.set_depth_filter((0,50))
         SizedRectangleToggleButton:
-            text: 'Midgame'
+            text: i18n._('Midgame')
             allow_no_selection: False
             size_hint: 1,1
             group: 'stats_depth'
             on_press: root.set_depth_filter((51,151))
         SizedRectangleToggleButton:
-            text: 'Endgame'
+            text: i18n._('Endgame')
             group: 'stats_depth'
             allow_no_selection: False
             size_hint: 1,1

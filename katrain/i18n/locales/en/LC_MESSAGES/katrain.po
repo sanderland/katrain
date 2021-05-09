@@ -109,6 +109,42 @@ msgstr "Deeper full game analysis"
 msgid "analysis:report"
 msgstr "Performance Report"
 
+#. opening of the game filter in performance report
+msgid "Opening"
+msgstr "Opening"
+
+#. middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Midgame"
+
+#. end of the game filter in performance report
+msgid "Endgame"
+msgstr "Endgame"
+
+#. header in performance report
+msgid "header:keystats"
+msgstr "Key Statistics"
+
+#. statistic in performance report
+msgid "stat:accuracy"
+msgstr "Accuracy Rating"
+
+#. statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Mean Point Loss"
+
+#. statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AI Best Move Match %"
+
+#. statistic in performance report
+msgid "stat:aitop5"
+msgstr "AI Top 5 Match %"
+
+#. header in performance report
+msgid "header:num moves"
+msgstr "# Moves"
+
 #. Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"

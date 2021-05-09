@@ -947,3 +947,39 @@ msgstr "Help with KataGo setup"
 #. TODO - label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
 msgstr "Limit analysis to mistakes only"
+
+#. TODO - statistic in performance report
+msgid "stat:accuracy"
+msgstr "Accuracy Rating"
+
+#. TODO - header in performance report
+msgid "header:keystats"
+msgstr "Key Statistics"
+
+#. TODO - header in performance report
+msgid "header:num moves"
+msgstr "# Moves"
+
+#. TODO - opening of the game filter in performance report
+msgid "Opening"
+msgstr "Opening"
+
+#. TODO - end of the game filter in performance report
+msgid "Endgame"
+msgstr "Endgame"
+
+#. TODO - middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Midgame"
+
+#. TODO - statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Mean Point Loss"
+
+#. TODO - statistic in performance report
+msgid "stat:aitop5"
+msgstr "AI Top 5 Match %"
+
+#. TODO - statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AI Best Move Match %"
