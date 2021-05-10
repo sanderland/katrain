@@ -1,6 +1,9 @@
 """isort:skip_file"""
 # first, logging level lower and force audio framework
 import os
+import random
+
+from kivy.core.audio import SoundLoader
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 if "KIVY_AUDIO" not in os.environ:
@@ -115,6 +118,8 @@ class KaTrainGui(Screen, KaTrainBase):
         self.last_key_down = None
         self.last_focus_event = 0
 
+        self.mistake_sounds = None
+
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
@@ -228,6 +233,9 @@ class KaTrainGui(Screen, KaTrainBase):
         if not self.contributing:
             last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
             if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
+                points_lost = cn.points_lost
+                if cn.player and cn.analysis_complete and points_lost is not None and points_lost > self.config("trainer/eval_thresholds")[-4]:
+                    self.play_mistake_sound(cn)
                 teaching_undo = cn.player and last_player.being_taught and cn.parent
                 if (
                     teaching_undo
@@ -465,8 +473,8 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_engine_recovery_popup(self, error_message, code):
         current_open = self.popup_open
-        if current_open and isinstance(current_open.content,EngineRecoveryPopup):
-            self.log(f"Not opening engine recovery popup with {error_message} as one is already open",OUTPUT_DEBUG)
+        if current_open and isinstance(current_open.content, EngineRecoveryPopup):
+            self.log(f"Not opening engine recovery popup with {error_message} as one is already open", OUTPUT_DEBUG)
             return
         popup = I18NPopup(
             title_key="engine recovery",
@@ -475,6 +483,15 @@ class KaTrainGui(Screen, KaTrainBase):
         ).__self__
         popup.content.popup = popup
         popup.open()
+
+    def play_mistake_sound(self,node):
+        if self.config("timer/sound") and node.played_sound is None:
+            node.played_sound=True
+            if self.mistake_sounds is None:
+                self.mistake_sounds = [SoundLoader.load(file) for file in Theme.MISTAKE_SOUNDS]
+            sound = random.choice(self.mistake_sounds)
+            if sound:
+                sound.play()
 
     def load_sgf_file(self, file, fast=False, rewind=True):
         if self.contributing:
@@ -791,7 +808,7 @@ class KaTrainApp(MDApp):
             except Exception as e:
                 window_scale_fac = 0.85
             win_size = [1300 * window_scale_fac, 1000 * window_scale_fac]
-        self.gui.log(f"Setting window size to {win_size} and position to {[win_left, win_top]}",OUTPUT_DEBUG)
+        self.gui.log(f"Setting window size to {win_size} and position to {[win_left, win_top]}", OUTPUT_DEBUG)
         Window.size = (win_size[0], win_size[1])
         if win_left is not None and win_top is not None:
             Window.left = win_left

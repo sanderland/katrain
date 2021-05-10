@@ -100,7 +100,7 @@ def game_report(game, thresholds, depth_filter=None):
         cn = cn.children[0]
         nodes.append(cn)
 
-    x,y = game.board_size
+    x, y = game.board_size
     depth_filter = [math.ceil(board_frac * x * y) for board_frac in depth_filter or (0, 1e9)]
     nodes = [n for n in nodes if n.move and not n.is_root and depth_filter[0] <= n.depth < depth_filter[1]]
     histogram = [{"B": 0, "W": 0} for _ in thresholds]

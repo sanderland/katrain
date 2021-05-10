@@ -1,16 +1,19 @@
 # Themes
-Version 1.7 brings basic support for themes.
+
+Version 1.7 brings basic support for themes, and 1.9 extends it to include keyboard shortcuts and support for multiple theme files.
 
 ## Creating and editing themes
 
 * Look at the `Theme` class in `katrain/gui/theme.py`.
-* Make a `theme.json` file in your `<home dir>/.katrain` directory and specify any variables from the above class you want to override, e.g. 
+* Make a `theme<yourthemename>.json` file in your `<home dir>/.katrain` directory and specify any variables from the above class you want to override, e.g. 
  ```json
  {
-  "BACKGROUND_COLOR": [1,0,0,1]
+  "BACKGROUND_COLOR": [1,0,0,1],
+  "KEY_STOP_ANALYSIS": "f1"
 }
   ```
 * All resources (including icons which can not be renamed for now) will be looked up in `<home dir>/.katrain` first, so files with identical names there can be used to override sounds and images.
+* If variables are specified in multiple theme files, the *latest* alphabetically takes precedence. That is, each later theme file overwrites the settings from any previous one.
 
 ## Installation
 
