@@ -9,10 +9,10 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
  ```json
  {
   "BACKGROUND_COLOR": [1,0,0,1],
-  "KEY_STOP_ANALYSIS": "f1"
+  "KEY_STOP_ANALYSIS": "f10"
 }
   ```
-* All resources (including icons which can not be renamed for now) will be looked up in `<home dir>/.katrain` first, so files with identical names there can be used to override sounds and images.
+* All resources (including icons, which can not be renamed for now) will be looked up in `<home dir>/.katrain` first, so files with identical names there can be used to override sounds and images.
 * If variables are specified in multiple theme files, the *latest* alphabetically takes precedence. That is, each later theme file overwrites the settings from any previous one.
 
 ## Installation

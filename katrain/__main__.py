@@ -1,13 +1,10 @@
 """isort:skip_file"""
-# first, logging level lower and force audio framework
+# first, logging level lower
 import os
-import random
-
-from kivy.core.audio import SoundLoader
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
-if "KIVY_AUDIO" not in os.environ:
-    os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
+# if "KIVY_AUDIO" not in os.environ: # trying default again
+#    os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
 
 import kivy
 
@@ -33,6 +30,8 @@ from queue import Queue
 import urllib3
 import webbrowser
 import time
+import random
+import glob
 
 from kivy.base import ExceptionHandler, ExceptionManager
 from kivy.app import App
@@ -46,6 +45,7 @@ from kivy.uix.widget import Widget
 from kivy.resources import resource_find
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
+from kivy.core.audio import SoundLoader
 from kivy.metrics import dp
 from katrain.core.ai import generate_ai_move
 
@@ -234,7 +234,12 @@ class KaTrainGui(Screen, KaTrainBase):
             last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
             if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
                 points_lost = cn.points_lost
-                if cn.player and cn.analysis_complete and points_lost is not None and points_lost > self.config("trainer/eval_thresholds")[-4]:
+                if (
+                    cn.player
+                    and cn.analysis_complete
+                    and points_lost is not None
+                    and points_lost > self.config("trainer/eval_thresholds")[-4]
+                ):
                     self.play_mistake_sound(cn)
                 teaching_undo = cn.player and last_player.being_taught and cn.parent
                 if (
@@ -484,9 +489,9 @@ class KaTrainGui(Screen, KaTrainBase):
         popup.content.popup = popup
         popup.open()
 
-    def play_mistake_sound(self,node):
+    def play_mistake_sound(self, node):
         if self.config("timer/sound") and node.played_sound is None:
-            node.played_sound=True
+            node.played_sound = True
             if self.mistake_sounds is None:
                 self.mistake_sounds = [SoundLoader.load(file) for file in Theme.MISTAKE_SOUNDS]
             sound = random.choice(self.mistake_sounds)
@@ -776,8 +781,8 @@ class KaTrainApp(MDApp):
         resource_add_path(PATHS["PACKAGE"] + "/img")
         resource_add_path(os.path.abspath(os.path.expanduser(DATA_FOLDER)))  # prefer resources in .katrain
 
-        theme_file = resource_find("theme.json")
-        if theme_file:
+        theme_files = glob.glob(os.path.join(os.path.expanduser(DATA_FOLDER), "theme*.json"))
+        for theme_file in sorted(theme_files):
             try:
                 with open(theme_file) as f:
                     theme_overrides = json.load(f)
