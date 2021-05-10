@@ -787,6 +787,7 @@ class KaTrainApp(MDApp):
             except Exception as e:
                 window_scale_fac = 0.85
             win_size = [1300 * window_scale_fac, 1000 * window_scale_fac]
+        self.gui.log(f"Setting window size to {win_size} and position to {[win_left, win_top]}",OUTPUT_DEBUG)
         Window.size = (win_size[0], win_size[1])
         if win_left is not None and win_top is not None:
             Window.left = win_left
