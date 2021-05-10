@@ -29,6 +29,12 @@ On Windows and Linux, you should be able to resolve this by:
 Keep in mind that a CPU based engine can be significantly slower, and you may want to set your maximum number of
 visits to a lower number to compensate for this.
 
+###  <a name="Models"></a> KataGo model versions
+
+KataGo models have changed over time, and selecting an older executable with a newer model can lead to errors.
+Of the provided binaries, this is typically the case for the 1.6.1 'bigger boards' binary, which should
+ only be used with the standard 15/20/30/40 block models, and not the newer distributed training models.
+
 
 ## <a name="Mac"></a><img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg" alt="macOs" height="35"/> For macOS users
 

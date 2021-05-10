@@ -464,6 +464,10 @@ class KaTrainGui(Screen, KaTrainBase):
         self.ai_settings_popup.open()
 
     def _do_engine_recovery_popup(self, error_message, code):
+        current_open = self.popup_open
+        if current_open and isinstance(current_open.content,EngineRecoveryPopup):
+            self.log(f"Not opening engine recovery popup with {error_message} as one is already open",OUTPUT_DEBUG)
+            return
         popup = I18NPopup(
             title_key="engine recovery",
             size=[dp(600), dp(700)],

@@ -229,6 +229,11 @@ class KataGoEngine(BaseEngine):
             try:
                 line = self.katago_process.stderr.readline()
                 if line:
+                    if b"Uncaught exception" in line or b"what()" in line:  # linux=what
+                        msg = f"KataGo Engine Failed: {line.decode(errors='ignore')[9:].strip()}"
+                        self.katrain.log(msg, OUTPUT_ERROR)
+                        self.katrain("engine_recovery_popup", msg, KATAGO_EXCEPTION)
+                        return
                     try:
                         self.katrain.log(line.decode(errors="ignore").strip(), OUTPUT_KATAGO_STDERR)
                     except Exception as e:
