@@ -983,3 +983,7 @@ msgstr "AI Top 5 Match %"
 #. TODO - statistic in performance report
 msgid "stat:aitopmove"
 msgstr "AI Best Move Match %"
+
+#. TODO - game filter in performance report
+msgid "Entire Game"
+msgstr "Entire Game"
