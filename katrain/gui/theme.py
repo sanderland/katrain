@@ -68,7 +68,7 @@ class Theme:
     STONE_SOUNDS = [f"stone{i}.wav" for i in [1, 2, 3, 4, 5]]
     COUNTDOWN_SOUND = "countdownbeep.wav"
     MINIMUM_TIME_PASSED_SOUND = "boing.wav"
-    MISTAKE_SOUNDS = ["boing.wav"]
+    MISTAKE_SOUNDS = []
 
     # eval dots
     EVAL_COLORS = {

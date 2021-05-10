@@ -9,7 +9,8 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
  ```json
  {
   "BACKGROUND_COLOR": [1,0,0,1],
-  "KEY_STOP_ANALYSIS": "f10"
+  "KEY_STOP_ANALYSIS": "f10",
+  "MISTAKE_SOUNDS": ["jeff.wav","what.wav"]
 }
   ```
 * All resources (including icons, which can not be renamed for now) will be looked up in `<home dir>/.katrain` first, so files with identical names there can be used to override sounds and images.
