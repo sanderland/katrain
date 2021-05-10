@@ -19,7 +19,7 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
 ## Installation
 
 * To install a theme, simply unzip the theme.zip to your .katrain folder. 
-  * On windows you can find it in C:\Users\you\.katrain and on linux in ~/.katrain.
+  * On windows you can find it in C:\Users\you\\.katrain and on linux in ~/.katrain.
   * When in doubt, the general settings dialog will also show the location.
 * To uninstall a theme, remove theme.json and all relevant images from that folder.
 
