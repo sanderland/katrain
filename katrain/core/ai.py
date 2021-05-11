@@ -110,9 +110,9 @@ def game_report(game, thresholds, depth_filter=None):
     weights = {"B": [], "W": []}
 
     for n in nodes:
-        if not n.analysis_complete:
+        points_lost = n.points_lost
+        if n.points_lost is None:
             continue
-        points_lost = max(0, n.points_lost)
         bucket = len(thresholds) - 1 - evaluation_class(points_lost, thresholds)
         player_ptloss[n.player].append(points_lost)
         histogram[bucket][n.player] += 1

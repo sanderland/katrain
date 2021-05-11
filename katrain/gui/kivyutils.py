@@ -67,6 +67,7 @@ class TableStatLabel(TableCellLabel):
     bar_color = ListProperty([0, 0, 0, 1])
 
     def __init__(self, **kwargs):
+        kwargs['font_name'] = kwargs.get('font_name',i18n.font_name)
         super().__init__(**kwargs)
         if "outlines" not in kwargs:
             self.outlines = ["left"] if self.side == "right" else ["right"]
