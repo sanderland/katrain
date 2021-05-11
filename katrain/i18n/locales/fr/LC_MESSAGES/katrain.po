@@ -80,8 +80,8 @@ msgstr ""
 
 msgid "analysis:policy"
 msgstr ""
-"Coups\n"
-"intuitifs"
+"Carte des\n"
+"intuitions"
 
 msgid "analysis:territory"
 msgstr ""
@@ -896,87 +896,68 @@ msgstr ""
 msgid "editgame"
 msgstr "Partie en cours"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "Néo-zélandaises"
 
-#. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
 
-#. TODO - View a player performance report
 msgid "analysis:report"
-msgstr "Performance Report"
+msgstr "Rapport de partie"
 
-#. TODO
 msgid "engine died popup opening message"
 msgstr ""
-"The KataGo Engine failed to start, or crashed.\n"
+"Le moteur de jeu KataGo ne fonctionne pas/plus.\n"
 "\n"
-"The error was: [color=#CC2222]{error_message}[/color]\n"
+"Rapport d'erreur : [color=#CC2222]{error_message}[/color]\n"
 "\n"
-"The error code was: [color=#CC2222]{code}[/color]."
+"Code d'erreur : [color=#CC2222]{code}[/color]"
 
-#. TODO - Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
 msgstr ""
-"If you are still having difficulties, {link} for an up-to-date "
-"troubleshooting page."
+"Si le problème persiste, vous pouvez consulter une page d'aide tenue à jour "
+"en cliquant sur {link}."
 
-#. TODO - Link in tags should not be touched.
 msgid "change engine suggestion"
 msgstr ""
-"First, try downloading KataGo versions and try if changing to a different "
-"executable helps in {link} ."
+"L'exécutable et le modèle KataGo utilisés doivent être compatibles. Vous "
+"pouvez en télécharger et/ou en sélectionner d'autres dans les {link}. "
 
-#. TODO - as in "click here" to go to this page,
 msgid "link_here"
-msgstr "click here"
+msgstr "ce lien"
 
-#. TODO - popup title
 msgid "engine recovery"
-msgstr "Help with KataGo setup"
+msgstr "Aide au dépannage de KataGo"
 
-#. TODO - label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "Limit analysis to mistakes only"
+msgstr "Restreindre l'analyse aux seules erreurs"
 
-#. TODO - statistic in performance report
 msgid "stat:accuracy"
-msgstr "Accuracy Rating"
+msgstr "Acuité du jeu"
 
-#. TODO - header in performance report
 msgid "header:keystats"
-msgstr "Key Statistics"
+msgstr "Statistiques des coups"
 
-#. TODO - header in performance report
 msgid "header:num moves"
-msgstr "# Moves"
+msgstr "Nombre de coups"
 
-#. TODO - opening of the game filter in performance report
 msgid "Opening"
-msgstr "Opening"
+msgstr "Début de Partie"
 
-#. TODO - end of the game filter in performance report
 msgid "Endgame"
-msgstr "Endgame"
+msgstr "Fin de Partie"
 
-#. TODO - middle of the game filter in performance report
 msgid "Midgame"
-msgstr "Midgame"
+msgstr "Milieu de Partie"
 
-#. TODO - statistic in performance report
 msgid "stat:meanpointloss"
-msgstr "Mean Point Loss"
+msgstr "Perte moyenne"
 
-#. TODO - statistic in performance report
 msgid "stat:aitop5"
-msgstr "AI Top 5 Match %"
+msgstr "L'un des 5 coups prioritaires"
 
-#. TODO - statistic in performance report
 msgid "stat:aitopmove"
-msgstr "AI Best Move Match %"
+msgstr "Ce que jouerait KataGo"
 
-#. TODO - game filter in performance report
 msgid "Entire Game"
-msgstr "Entire Game"
+msgstr "Partie entière"
