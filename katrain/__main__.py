@@ -118,7 +118,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.last_key_down = None
         self.last_focus_event = 0
 
-        self.mistake_sounds = None
 
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
@@ -490,13 +489,9 @@ class KaTrainGui(Screen, KaTrainBase):
         popup.open()
 
     def play_mistake_sound(self, node):
-        if self.config("timer/sound") and node.played_sound is None:
+        if self.config("timer/sound") and node.played_sound is None and Theme.MISTAKE_SOUNDS:
             node.played_sound = True
-            if self.mistake_sounds is None:
-                self.mistake_sounds = [SoundLoader.load(file) for file in Theme.MISTAKE_SOUNDS]
-            sound = random.choice(self.mistake_sounds)
-            if sound:
-                sound.play()
+            SoundLoader.load(random.choice(Theme.MISTAKE_SOUNDS)).play()
 
     def load_sgf_file(self, file, fast=False, rewind=True):
         if self.contributing:
