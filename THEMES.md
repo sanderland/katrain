@@ -41,3 +41,11 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
 
 ![Preview](https://raw.githubusercontent.com/sanderland/katrain/master/themes/eric-lizzie.png)
 
+
+### Jeff sounds
+
+* This theme makes Jeff comment `Ahhh?` and `What?!` when you make mistakes.
+* Sounds provided by Mikgo.
+
+[Download](https://github.com/sanderland/katrain/blob/master/themes/jeff-sounds.zip)
+
