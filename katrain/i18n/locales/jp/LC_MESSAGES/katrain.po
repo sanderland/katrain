@@ -336,7 +336,9 @@ msgid "point loss threshold"
 msgstr "何目より損なら"
 
 msgid "num undos"
-msgstr "再考を促す回数"
+msgstr ""
+"再考を促す回数\n"
+"（指導対局時）"
 
 msgid "dot color"
 msgstr "色"
@@ -450,7 +452,7 @@ msgstr ""
 "クリップボードの内容：{contents}..."
 
 msgid "Failed to load SGF"
-msgstr "SGFのロードに失敗しました: {error}"
+msgstr "SGFのロードに失敗しました：{error}"
 
 msgid "Kata exe not found"
 msgstr "KataGoの実行ファイル {exe} がありません。一般設定を確認してください。"
@@ -469,9 +471,8 @@ msgstr "KataGo設定ファイル {config} がありません。一般設定を�
 msgid "Starting Kata failed"
 msgstr "コマンド '{command}' によるKataGoの起動に失敗しました。エラー {error}"
 
-#. TODO remove memory message
 msgid "Engine died unexpectedly"
-msgstr "出力なしで予期せずエンジンが止まりました。メモリ不足かもしれません：{error}"
+msgstr "出力なしで予期せずエンジンが止まりました：{error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -883,85 +884,78 @@ msgstr ""
 msgid "editgame"
 msgstr "対局情報を編集"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "ニュージーランド"
 
-#. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
 
-#. TODO - View a player performance report
+#. View a player performance report
 msgid "analysis:report"
-msgstr "Performance Report"
+msgstr "評価レポート"
 
-#. TODO
 msgid "engine died popup opening message"
 msgstr ""
-"Oops! The KataGo Engine failed to start, or crashed.\n"
-" The error was: {error_message}\n"
-"And the error code was {code}."
+"おおっと！KataGoエンジンが起動に失敗したか、クラッシュしました。\n"
+" エラー内容：{error_message}\n"
+"エラーコード {code}"
 
-#. TODO - Link in tags should not be touched (uses link_here msgid)
+#. Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
-msgstr ""
-"If you are still having difficulties, {link} for an up-to-date "
-"troubleshooting page."
+msgstr "それでもだめなら、{link}して最新のトラブルシューティングページへ。"
 
-#. TODO - Link in tags should not be touched.
+#. Link in tags should not be touched.
 msgid "change engine suggestion"
-msgstr ""
-"First, try downloading KataGo versions and try if changing to a different "
-"executable helps in {link} ."
+msgstr "まずは、{link}から別バージョンのKataGoをダウンロードしてうまくいくか試してください。"
 
-#. TODO - as in "click here" to go to this page,
+#. as in "click here" to go to this page,
 msgid "link_here"
-msgstr "click here"
+msgstr "ここをクリック"
 
-#. TODO - popup title
+#. popup title
 msgid "engine recovery"
-msgstr "Help with KataGo setup"
+msgstr "KataGoセットアップのヘルプ"
 
-#. TODO - label in little popup for analyzing entire game
+#. label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "Limit analysis to mistakes only"
+msgstr "分析を悪手だけに限定"
 
-#. TODO - statistic in performance report
+#. statistic in performance report
 msgid "stat:accuracy"
-msgstr "Accuracy Rating"
+msgstr "正確度の評点"
 
-#. TODO - header in performance report
+#. header in performance report
 msgid "header:keystats"
-msgstr "Key Statistics"
+msgstr "基本統計"
 
-#. TODO - header in performance report
+#. header in performance report
 msgid "header:num moves"
-msgstr "# Moves"
+msgstr "手数"
 
-#. TODO - opening of the game filter in performance report
+#. opening of the game filter in performance report
 msgid "Opening"
-msgstr "Opening"
+msgstr "序盤"
 
-#. TODO - end of the game filter in performance report
+#. end of the game filter in performance report
 msgid "Endgame"
-msgstr "Endgame"
+msgstr "終盤"
 
-#. TODO - middle of the game filter in performance report
+#. middle of the game filter in performance report
 msgid "Midgame"
-msgstr "Midgame"
+msgstr "中盤"
 
-#. TODO - statistic in performance report
+#. statistic in performance report
 msgid "stat:meanpointloss"
-msgstr "Mean Point Loss"
+msgstr "平均損失目数"
 
-#. TODO - statistic in performance report
+#. statistic in performance report
 msgid "stat:aitop5"
-msgstr "AI Top 5 Match %"
+msgstr "AIの上位5候補手との一致率"
 
-#. TODO - statistic in performance report
+#. statistic in performance report
 msgid "stat:aitopmove"
-msgstr "AI Best Move Match %"
+msgstr "AIの最善手との一致率"
 
-#. TODO - game filter in performance report
+#. game filter in performance report
 msgid "Entire Game"
-msgstr "Entire Game"
+msgstr "全局"
