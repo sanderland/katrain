@@ -113,14 +113,13 @@ def game_report(game, thresholds, depth_filter=None):
         points_lost = n.points_lost
         if n.points_lost is None:
             continue
+        else:
+            points_lost = max(0,points_lost)
         bucket = len(thresholds) - 1 - evaluation_class(points_lost, thresholds)
         player_ptloss[n.player].append(points_lost)
         histogram[bucket][n.player] += 1
         cands = n.parent.candidate_moves
         filtered_cands = [d for d in cands if d["order"] < ADDITIONAL_MOVE_ORDER and "prior" in d]
-        cands_policy = sum(d["prior"] for d in filtered_cands)
-        good_move_policy = sum(d["prior"] for d in filtered_cands if d["pointsLost"] < 0.5)
-
         weight = min(
             1.0,
             sum([max(d["pointsLost"], 0) * d["prior"] for d in filtered_cands])

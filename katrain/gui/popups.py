@@ -905,7 +905,7 @@ class GameReportPopup(BoxLayout):
                     side=side,
                     value=histogram[i][bw],
                     scale=len(player_ptloss[bw]) + 1e-6,
-                    bar_color=Theme.LIGHTER_BACKGROUND_COLOR,
+                    bar_color=col,
                     background_color=Theme.BOX_BACKGROUND_COLOR,
                 )
                 for (bw, side) in zip("BW", ["left", "right"])
