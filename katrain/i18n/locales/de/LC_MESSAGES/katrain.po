@@ -903,87 +903,84 @@ msgstr ""
 msgid "editgame"
 msgstr "Spiel editieren"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "Neuseeländisch"
 
-#. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
 
-#. TODO - View a player performance report
+#.  - View a player performance report
 msgid "analysis:report"
-msgstr "Performance Report"
+msgstr "Leistungsbericht"
 
-#. TODO
 msgid "engine died popup opening message"
 msgstr ""
-"The KataGo Engine failed to start, or crashed.\n"
+"Das KataGo Engine konnte nicht starten, oder ist abgestürzt.\n"
 "\n"
-"The error was: [color=#CC2222]{error_message}[/color]\n"
+"Der Fehler war: [color=#CC2222]{error_message}[/color]\n"
 "\n"
-"The error code was: [color=#CC2222]{code}[/color]."
+"Der Fehlercode war: [color=#CC2222]{code}[/color]."
 
-#. TODO - Link in tags should not be touched (uses link_here msgid)
+#.  - Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
 msgstr ""
-"If you are still having difficulties, {link} for an up-to-date "
-"troubleshooting page."
+"Wenn sie immer noch Schwierigkeiten haben, {link} für eine Hilfe-Seite auf "
+"dem neuesten Stand."
 
-#. TODO - Link in tags should not be touched.
+#.  - Link in tags should not be touched.
 msgid "change engine suggestion"
 msgstr ""
-"First, try downloading KataGo versions and try if changing to a different "
-"executable helps in {link} ."
+"Versuchen sie erstmal KataGo Versionen runterzuladen und ob eine andere "
+"ausführbare Datei in {link} hilft. "
 
-#. TODO - as in "click here" to go to this page,
+#.  - as in "click here" to go to this page,
 msgid "link_here"
-msgstr "click here"
+msgstr "klicken sie hier"
 
-#. TODO - popup title
+#.  - popup title
 msgid "engine recovery"
-msgstr "Help with KataGo setup"
+msgstr "Hilfe für KataGo Konfiguration"
 
-#. TODO - label in little popup for analyzing entire game
+#.  - label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "Limit analysis to mistakes only"
+msgstr "Analysis auf Fehler begrenzen"
 
-#. TODO - statistic in performance report
+#.  - statistic in performance report
 msgid "stat:accuracy"
-msgstr "Accuracy Rating"
+msgstr "Genauigkeitsbewertung"
 
-#. TODO - header in performance report
+#.  - header in performance report
 msgid "header:keystats"
-msgstr "Key Statistics"
+msgstr "Schlüsselstatistiken"
 
-#. TODO - header in performance report
+#.  - header in performance report
 msgid "header:num moves"
-msgstr "# Moves"
+msgstr "# Züge"
 
-#. TODO - opening of the game filter in performance report
+#.  - opening of the game filter in performance report
 msgid "Opening"
-msgstr "Opening"
+msgstr "Eröffnung"
 
-#. TODO - end of the game filter in performance report
+#.  - end of the game filter in performance report
 msgid "Endgame"
-msgstr "Endgame"
+msgstr "Endspiel"
 
-#. TODO - middle of the game filter in performance report
+#.  - middle of the game filter in performance report
 msgid "Midgame"
-msgstr "Midgame"
+msgstr "Mittelspiel"
 
-#. TODO - statistic in performance report
+#.  - statistic in performance report
 msgid "stat:meanpointloss"
-msgstr "Mean Point Loss"
+msgstr "Durchschnittlicher Punkteverlust"
 
-#. TODO - statistic in performance report
+#.  - statistic in performance report
 msgid "stat:aitop5"
-msgstr "AI Top 5 Match %"
+msgstr "KI Top 5 Übereinstimmung %"
 
-#. TODO - statistic in performance report
+#.  - statistic in performance report
 msgid "stat:aitopmove"
-msgstr "AI Best Move Match %"
+msgstr "Bester KI Zug Übereinstimmung %"
 
-#. TODO - game filter in performance report
+#.  - game filter in performance report
 msgid "Entire Game"
-msgstr "Entire Game"
+msgstr "Gesamtes Spiel"
