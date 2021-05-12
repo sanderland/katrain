@@ -885,7 +885,7 @@ class GameReportPopup(BoxLayout):
                     side=side,
                     value=sum_stats[bw].get(stat, 0),
                     scale=scale,
-                    bar_color=Theme.LIGHTER_BACKGROUND_COLOR,
+                    bar_color=Theme.BARGRAPH_COLOR,
                     background_color=Theme.BOX_BACKGROUND_COLOR,
                 )
                 for (bw, side) in zip("BW", ["left", "right"])

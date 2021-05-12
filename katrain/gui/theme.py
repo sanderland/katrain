@@ -47,6 +47,7 @@ class Theme:
     PLAY_ANALYZE_TAB_COLOR = YELLOW
     INPUT_FONT_COLOR = WHITE
     MISTAKE_BUTTON_COLOR = [0.79, 0.06, 0.06, 1]
+    BARGRAPH_COLOR = [33 / 255, 33 / 255, 90 / 255, 1]
 
     # gui spacing
     RIGHT_PANEL_ASPECT_RATIO = 0.4  # W/H
