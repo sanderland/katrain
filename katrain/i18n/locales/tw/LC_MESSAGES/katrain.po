@@ -912,7 +912,7 @@ msgstr "關鍵數據"
 
 #. header in performance report
 msgid "header:num moves"
-msgstr "# 步"
+msgstr "步數"
 
 #. opening of the game filter in performance report
 msgid "Opening"
