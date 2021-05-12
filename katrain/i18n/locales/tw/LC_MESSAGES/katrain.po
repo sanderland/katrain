@@ -864,87 +864,80 @@ msgstr "這會產生部分的對局讓你接著下。例如：你可以使用它
 msgid "editgame"
 msgstr "編輯對局資訊"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "紐西蘭"
 
-#. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
 
-#. TODO - View a player performance report
+#. View a player performance report
 msgid "analysis:report"
-msgstr "Performance Report"
+msgstr "表現報告"
 
-#. TODO
 msgid "engine died popup opening message"
 msgstr ""
-"The KataGo Engine failed to start, or crashed.\n"
+"KataGo引擎啟動失敗或崩潰。\n"
 "\n"
-"The error was: {error_message}\n"
+"錯誤：{error_message}\n"
 "\n"
-"The error code was: {code}."
+"錯誤碼：{code}."
 
-#. TODO - Link in tags should not be touched (uses link_here msgid)
+#. Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
-msgstr ""
-"If you are still having difficulties, {link} for an up-to-date "
-"troubleshooting page."
+msgstr "如果你還有任何困難，請參考疑難排解頁面 {link}"
 
-#. TODO - Link in tags should not be touched.
+#. Link in tags should not be touched.
 msgid "change engine suggestion"
-msgstr ""
-"First, try downloading KataGo versions and try if changing to a different "
-"executable helps in {link} ."
+msgstr "首先，在 {link} 中，嘗試下載且更換為不同版本的KataGo執行檔是否能解決問題。"
 
-#. TODO - as in "click here" to go to this page,
+#. as in "click here" to go to this page,
 msgid "link_here"
-msgstr "click here"
+msgstr "點擊此處"
 
-#. TODO - popup title
+#. popup title
 msgid "engine recovery"
-msgstr "Help with KataGo setup"
+msgstr "KataGo設定指南"
 
-#. TODO - label in little popup for analyzing entire game
+#. label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "Limit analysis to mistakes only"
+msgstr "限制僅分析錯誤"
 
-#. TODO - statistic in performance report
+#. statistic in performance report
 msgid "stat:accuracy"
-msgstr "Accuracy Rating"
+msgstr "準確度評分"
 
-#. TODO - header in performance report
+#. header in performance report
 msgid "header:keystats"
-msgstr "Key Statistics"
+msgstr "關鍵數據"
 
-#. TODO - header in performance report
+#. header in performance report
 msgid "header:num moves"
-msgstr "# Moves"
+msgstr "# 步"
 
-#. TODO - opening of the game filter in performance report
+#. opening of the game filter in performance report
 msgid "Opening"
-msgstr "Opening"
+msgstr "開局"
 
-#. TODO - end of the game filter in performance report
+#. end of the game filter in performance report
 msgid "Endgame"
-msgstr "Endgame"
+msgstr "終盤"
 
-#. TODO - middle of the game filter in performance report
+#. middle of the game filter in performance report
 msgid "Midgame"
-msgstr "Midgame"
+msgstr "中盤"
 
-#. TODO - statistic in performance report
+#. statistic in performance report
 msgid "stat:meanpointloss"
-msgstr "Mean Point Loss"
+msgstr "平均損失目數"
 
-#. TODO - statistic in performance report
+#. statistic in performance report
 msgid "stat:aitop5"
-msgstr "AI Top 5 Match %"
+msgstr "AI前5佳選點重合度 %"
 
-#. TODO - statistic in performance report
+#. statistic in performance report
 msgid "stat:aitopmove"
-msgstr "AI Best Move Match %"
+msgstr "AI最佳選點重合度 %"
 
-#. TODO - game filter in performance report
+#. game filter in performance report
 msgid "Entire Game"
-msgstr "Entire Game"
+msgstr "全局"
