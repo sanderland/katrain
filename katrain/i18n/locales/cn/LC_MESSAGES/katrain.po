@@ -839,7 +839,7 @@ msgid "editgame"
 msgstr "编辑对局资讯"
 
 msgid "new zealand"
-msgstr "纽西兰"
+msgstr "新西兰"
 
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
@@ -874,7 +874,7 @@ msgstr "KataGo设定指南"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "限制仅分析错误"
+msgstr "仅分析错误操作"
 
 #. statistic in performance report
 msgid "stat:accuracy"
@@ -886,7 +886,7 @@ msgstr "关键数据"
 
 #. header in performance report
 msgid "header:num moves"
-msgstr "# 步"
+msgstr "步数"
 
 #. opening of the game filter in performance report
 msgid "Opening"

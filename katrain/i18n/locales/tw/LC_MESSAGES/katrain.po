@@ -900,7 +900,7 @@ msgstr "KataGo設定指南"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "限制僅分析錯誤"
+msgstr "僅分析错误操作"
 
 #. statistic in performance report
 msgid "stat:accuracy"
@@ -912,7 +912,7 @@ msgstr "關鍵數據"
 
 #. header in performance report
 msgid "header:num moves"
-msgstr "# 步"
+msgstr "步數"
 
 #. opening of the game filter in performance report
 msgid "Opening"
