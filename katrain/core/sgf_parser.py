@@ -465,7 +465,7 @@ class SGF:
                 self._parse_branch(self._NODE_CLASS(parent=current_move))
             elif matched_item == ";":
                 # ignore ;) for old SGF
-                useless = self.ix < len(self.contents) and self.contents[self.ix] == ")"
+                useless = self.ix < len(self.contents) and self.contents[self.ix :].strip() == ")"
                 # ignore ; that generate empty nodes
                 if not (current_move.empty or useless):
                     current_move = self._NODE_CLASS(parent=current_move)

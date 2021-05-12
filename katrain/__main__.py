@@ -118,7 +118,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.last_key_down = None
         self.last_focus_event = 0
 
-
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:

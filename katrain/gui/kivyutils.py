@@ -58,9 +58,11 @@ class TableCellLabel(Label):
     outlines = ListProperty([])
     outline_color = Theme.LINE_COLOR
     outline_width = NumericProperty(1.1)
+
     def __init__(self, **kwargs):
-        kwargs['font_name'] = kwargs.get('font_name',i18n.font_name)
+        kwargs["font_name"] = kwargs.get("font_name", i18n.font_name)
         super().__init__(**kwargs)
+
 
 class TableStatLabel(TableCellLabel):
     side = StringProperty("right")
