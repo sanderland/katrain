@@ -65,7 +65,7 @@ Many thanks to the following contributors for translations.
 * Russian: Dmitry Ivankov and Alexander Kiselev
 * Simplified Chinese: Qing Mu with contributions from "Medwin" and Viktor Lin
 * Japanese: "kaorahi"
-* Traditional Chinese: "Tony-Liou"
+* Traditional Chinese: "Tony-Liou" with contributions from Ching-yu Lin
 
 ## Additional thanks to
 
