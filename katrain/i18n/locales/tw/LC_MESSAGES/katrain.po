@@ -900,7 +900,7 @@ msgstr "KataGo設定指南"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "僅分析错误操作"
+msgstr "僅分析錯誤操作"
 
 #. statistic in performance report
 msgid "stat:accuracy"
