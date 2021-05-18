@@ -233,7 +233,7 @@ class KaTrainGui(Screen, KaTrainBase):
             if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
                 points_lost = cn.points_lost
                 if (
-                    cn.player
+                    last_player.human
                     and cn.analysis_complete
                     and points_lost is not None
                     and points_lost > self.config("trainer/eval_thresholds")[-4]
