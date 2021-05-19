@@ -854,6 +854,12 @@ class GameReportPopup(BoxLayout):
         self.depth_filter = filter
         Clock.schedule_once(self._refresh, 0)
 
+    def opponent(self,player):
+        if player == "B":
+            return "W"
+        if player == "W":
+            return "B"
+
     def _refresh(self, _dt=0):
         game = self.katrain.game
         thresholds = self.katrain.config("trainer/eval_thresholds")
@@ -870,12 +876,12 @@ class GameReportPopup(BoxLayout):
         table.add_widget(TableHeaderLabel(text=i18n._("header:keystats"), background_color=Theme.BACKGROUND_COLOR))
         table.add_widget(TableHeaderLabel(text="", background_color=Theme.BACKGROUND_COLOR))
 
-        for i, (label, fmt, stat, scale) in enumerate(
+        for i, (label, fmt, stat, scale, more_is_better) in enumerate(
             [
-                ("accuracy", "{:.1f}", "accuracy", 100),
-                ("meanpointloss", "{:.1f}", "mean_ptloss", 5),
-                ("aitopmove", "{:.1%}", "ai_top_move", 1),
-                ("aitop5", "{:.1%}", "ai_top5_move", 1),
+                ("accuracy", "{:.1f}", "accuracy", 100, True),
+                ("meanpointloss", "{:.1f}", "mean_ptloss", 5, False),
+                ("aitopmove", "{:.1%}", "ai_top_move", 1, True),
+                ("aitop5", "{:.1%}", "ai_top5_move", 1, True),
             ]
         ):
 
@@ -885,7 +891,7 @@ class GameReportPopup(BoxLayout):
                     side=side,
                     value=sum_stats[bw].get(stat, 0),
                     scale=scale,
-                    bar_color=Theme.BARGRAPH_COLOR,
+                    bar_color=Theme.BARGRAPH_COLOR if (sum_stats[bw].get(stat, 0) > sum_stats[self.opponent(bw)].get(stat, 0)) ^ more_is_better else Theme.WINRATE_COLOR,
                     background_color=Theme.BOX_BACKGROUND_COLOR,
                 )
                 for (bw, side) in zip("BW", ["left", "right"])
