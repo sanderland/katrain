@@ -41,6 +41,7 @@ from katrain.core.constants import (
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
+from katrain.core.sgf_parser import Move
 from katrain.core.utils import PATHS, find_package_resource, evaluation_class
 from katrain.gui.kivyutils import (
     BackgroundMixin,
@@ -854,12 +855,6 @@ class GameReportPopup(BoxLayout):
         self.depth_filter = filter
         Clock.schedule_once(self._refresh, 0)
 
-    def opponent(self,player):
-        if player == "B":
-            return "W"
-        if player == "W":
-            return "B"
-
     def _refresh(self, _dt=0):
         game = self.katrain.game
         thresholds = self.katrain.config("trainer/eval_thresholds")
@@ -891,7 +886,9 @@ class GameReportPopup(BoxLayout):
                     side=side,
                     value=sum_stats[bw].get(stat, 0),
                     scale=scale,
-                    bar_color=Theme.BARGRAPH_COLOR if (sum_stats[bw].get(stat, 0) > sum_stats[self.opponent(bw)].get(stat, 0)) ^ more_is_better else Theme.WINRATE_COLOR,
+                    bar_color=Theme.STAT_BETTER_COLOR
+                    if (sum_stats[bw].get(stat, 0) < sum_stats[Move.opponent_player(bw)].get(stat, 0)) ^ more_is_better
+                    else Theme.STAT_WORSE_COLOR,
                     background_color=Theme.BOX_BACKGROUND_COLOR,
                 )
                 for (bw, side) in zip("BW", ["left", "right"])
