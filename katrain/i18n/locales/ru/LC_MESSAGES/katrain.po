@@ -913,10 +913,14 @@ msgid "stat:meanpointloss"
 msgstr "Главные потери очков"
 
 msgid "stat:aitop5"
-msgstr "% совпадения с топ-5 ходами ИИ"
+msgstr ""
+"% совпадения с\n"
+"топ-5 ходами ИИ"
 
 msgid "stat:aitopmove"
-msgstr "% совпадения с идеальными ходами ИИ"
+msgstr ""
+"% совпадения с\n"
+"идеальными ходами ИИ"
 
 msgid "Entire Game"
 msgstr "Полная игра"
