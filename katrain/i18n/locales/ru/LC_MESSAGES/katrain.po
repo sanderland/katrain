@@ -856,87 +856,67 @@ msgstr ""
 msgid "editgame"
 msgstr "Редактировать игры"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "Новозеландские"
 
-#. TODO
 msgid "tromp-taylor"
-msgstr "Tromp-Taylor"
+msgstr "Тромп-Тейлор"
 
-#. TODO - View a player performance report
 msgid "analysis:report"
-msgstr "Performance Report"
+msgstr "Отчёт о производительности"
 
-#. TODO
 msgid "engine died popup opening message"
 msgstr ""
-"The KataGo Engine failed to start, or crashed.\n"
+"Движок KataGo не смог запуститься или сломался\n"
 "\n"
-"The error was: [color=#CC2222]{error_message}[/color]\n"
+"Ошибка: [color=#CC2222]{error_message}[/color]\n"
 "\n"
-"The error code was: [color=#CC2222]{code}[/color]."
+"Код ошибки: [color=#CC2222]{code}[/color]."
 
-#. TODO - Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
 msgstr ""
-"If you are still having difficulties, {link} for an up-to-date "
-"troubleshooting page."
+"Если у вас до сих пор проблемы, вот ссылка {link} на страницу устранения "
+"неполадок."
 
-#. TODO - Link in tags should not be touched.
 msgid "change engine suggestion"
 msgstr ""
-"First, try downloading KataGo versions and try if changing to a different "
-"executable helps in {link} ."
+"Во-первых, попробуйте скачать и выбрать другую версию движка KataGo {link}"
 
-#. TODO - as in "click here" to go to this page,
 msgid "link_here"
-msgstr "click here"
+msgstr "Нажмите здесь"
 
-#. TODO - popup title
 msgid "engine recovery"
-msgstr "Help with KataGo setup"
+msgstr "Помощь в настройке KataGo"
 
-#. TODO - label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "Limit analysis to mistakes only"
+msgstr "Анализировать только ошибки"
 
-#. TODO - statistic in performance report
 msgid "stat:accuracy"
-msgstr "Accuracy Rating"
+msgstr "Рейтинг точности"
 
-#. TODO - header in performance report
 msgid "header:keystats"
-msgstr "Key Statistics"
+msgstr "Ключевые статистики"
 
-#. TODO - header in performance report
 msgid "header:num moves"
-msgstr "# Moves"
+msgstr "Количество ходов"
 
-#. TODO - opening of the game filter in performance report
 msgid "Opening"
-msgstr "Opening"
+msgstr "Начало игры"
 
-#. TODO - end of the game filter in performance report
 msgid "Endgame"
-msgstr "Endgame"
+msgstr "Окончание игры"
 
-#. TODO - middle of the game filter in performance report
 msgid "Midgame"
-msgstr "Midgame"
+msgstr "Середина игры"
 
-#. TODO - statistic in performance report
 msgid "stat:meanpointloss"
-msgstr "Mean Point Loss"
+msgstr "Главные потери очков"
 
-#. TODO - statistic in performance report
 msgid "stat:aitop5"
-msgstr "AI Top 5 Match %"
+msgstr "% совпадения с топ-5 ходами ИИ"
 
-#. TODO - statistic in performance report
 msgid "stat:aitopmove"
-msgstr "AI Best Move Match %"
+msgstr "% совпадения с идеальными ходами ИИ"
 
-#. TODO - game filter in performance report
 msgid "Entire Game"
-msgstr "Entire Game"
+msgstr "Полная игра"
