@@ -9,7 +9,7 @@ last_sound = None, None
 try:
     SoundLoader._classes = sorted(
         [c for c in SoundLoader._classes if "gst" not in c.__name__.lower()],
-        key=lambda cls: "ffpy" not in cls.__name__.__name__,
+        key=lambda cls: "ffpy" not in cls.__name__.lower(),
     )
 except Exception as e:
     print("Exception sorting sound loaders: ", e)
