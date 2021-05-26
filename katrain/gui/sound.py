@@ -1,10 +1,17 @@
 from kivy.clock import Clock
 from kivymd.app import MDApp
-
 from kivy.core.audio import SoundLoader
 
 cached_sounds = {}
 last_sound = None, None
+
+# prefer ffpyplayer, then others, never gst
+try:
+    SoundLoader._classes = sorted(
+        [c for c in SoundLoader._classes if "gst" not in c.__name__.lower()], key=lambda cls: "FFPy" not in cls.__name__
+    )
+except Exception as e:
+    print("Exception sorting sound loaders: ", e)
 
 
 def play_sound(file, volume=1, cache=True):
