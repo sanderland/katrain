@@ -8,7 +8,8 @@ last_sound = None, None
 # prefer ffpyplayer, then others, never gst
 try:
     SoundLoader._classes = sorted(
-        [c for c in SoundLoader._classes if "gst" not in c.__name__.lower()], key=lambda cls: "FFPy" not in cls.__name__
+        [c for c in SoundLoader._classes if "gst" not in c.__name__.lower()],
+        key=lambda cls: "ffpy" not in cls.__name__.__name__,
     )
 except Exception as e:
     print("Exception sorting sound loaders: ", e)
