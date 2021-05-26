@@ -45,7 +45,6 @@ from kivy.uix.widget import Widget
 from kivy.resources import resource_find
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
-from kivy.core.audio import SoundLoader
 from kivy.metrics import dp
 from katrain.core.ai import generate_ai_move
 
@@ -76,6 +75,7 @@ from katrain.gui.popups import (
     ContributePopup,
     EngineRecoveryPopup,
 )
+from katrain.gui.sound import play_sound
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
 from katrain.core.contribute_engine import KataGoContributeEngine
@@ -490,7 +490,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def play_mistake_sound(self, node):
         if self.config("timer/sound") and node.played_sound is None and Theme.MISTAKE_SOUNDS:
             node.played_sound = True
-            SoundLoader.load(random.choice(Theme.MISTAKE_SOUNDS)).play()
+            play_sound(random.choice(Theme.MISTAKE_SOUNDS))
 
     def load_sgf_file(self, file, fast=False, rewind=True):
         if self.contributing:

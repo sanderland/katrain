@@ -15,6 +15,7 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
+from katrain.gui.sound import play_sound
 
 from katrain.core.constants import (
     MODE_PLAY,
@@ -70,12 +71,7 @@ class BadukPanWidget(Widget):
         return self.draw_coords_enabled
 
     def play_stone_sound(self, *_args):
-        if self.katrain.config("timer/sound"):
-            if not self.stones_sounds:
-                self.stones_sounds = [SoundLoader.load(file) for file in Theme.STONE_SOUNDS]
-            sound = random.choice(self.stones_sounds)
-            if sound:
-                sound.play()
+        play_sound(random.choice(Theme.STONE_SOUNDS))
 
     # stone placement functions
     def _find_closest(self, pos, gridpos):
