@@ -4,7 +4,7 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
 
 ## Creating and editing themes
 
-* Look at the `Theme` class in `katrain/gui/theme.py`.
+* Look at the `Theme` class in [`katrain/gui/theme.py`](https://github.com/sanderland/katrain/blob/master/katrain/gui/theme.py).
 * Make a `theme<yourthemename>.json` file in your `<home dir>/.katrain` directory and specify any variables from the above class you want to override, e.g. 
  ```json
  {
@@ -19,7 +19,7 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
 ## Installation
 
 * To install a theme, simply unzip the theme.zip to your .katrain folder. 
-  * On windows you can find it in C:\Users\you\\.katrain and on linux in ~/.katrain.
+  * On Windows you can find it in C:\Users\you\\.katrain and on linux in ~/.katrain.
   * When in doubt, the general settings dialog will also show the location.
 * To uninstall a theme, remove theme.json and all relevant images from that folder.
 
@@ -45,7 +45,7 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
 ### Jeff sounds
 
 * This theme makes Jeff comment `Ahhh?` and `What?!` when you make mistakes.
-* Sounds provided by Mikgo.
+* Sounds provided by Mikkgo.
 
 [Download](https://github.com/sanderland/katrain/blob/master/themes/jeff-sounds.zip)
 
