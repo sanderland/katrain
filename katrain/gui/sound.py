@@ -14,8 +14,6 @@ try:
 except Exception as e:
     print("Exception sorting sound loaders: ", e)  # private vars, so could break with versions etc
 
-print(SoundLoader._classes)
-
 
 def play_sound(file, volume=1, cache=True):
     def _play(sound):
