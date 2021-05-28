@@ -6,16 +6,15 @@ from kivy.utils import platform
 cached_sounds = {}
 last_sound = None, None
 
-# prefer ffpyplayer, then others, never gst
+# prefer ffpyplayer on linux, then others, avoid gst and avoid ffpyplayer on windows
+ranking = [("ffpy", 98 if platform == "win" else -2), ("sdl", -1), ("gst", 99), ("", 0)]
+
 try:
-    SoundLoader._classes = sorted(
-        [c for c in SoundLoader._classes if "gst" not in c.__name__.lower()],
-        key=lambda cls: "ffpy" not in cls.__name__.lower(),
-    )
-    if platform == "win":
-        SoundLoader._classes = [c for c in SoundLoader._classes if "ffpy" not in c.__name__.lower()]
+    SoundLoader._classes.sort(key=lambda cls: [v for k, v in ranking if k in cls.__name__.lower()][0])
 except Exception as e:
-    print("Exception sorting sound loaders: ", e)
+    print("Exception sorting sound loaders: ", e)  # private vars, so could break with versions etc
+
+print(SoundLoader._classes)
 
 
 def play_sound(file, volume=1, cache=True):
