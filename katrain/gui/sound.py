@@ -6,7 +6,7 @@ from kivy.utils import platform
 cached_sounds = {}
 last_sound = None, None
 
-# prefer ffpyplayer on linux, then others, avoid gst and avoid ffpyplayer on windows
+# prefer ffpyplayer on linux, then others, avoid gst and avoid or ffpyplayer on windows
 ranking = [("ffpy", 98 if platform == "win" else -2), ("sdl", -1), ("gst", 99), ("", 0)]
 
 try:
