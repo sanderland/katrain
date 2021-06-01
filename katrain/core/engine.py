@@ -75,17 +75,19 @@ class BaseEngine:  # some common elements between analysis and contribute engine
         exepath, exename = os.path.split(exe)
 
         if exepath and not os.path.isfile(exe):
-            self.katrain.log(i18n._("Kata exe not found").format(exe=exe), OUTPUT_ERROR)
+            self.on_error(i18n._("Kata exe not found").format(exe=exe), "KATAGO-EXE")
             return None
         elif not exepath:
             paths = os.getenv("PATH", ".").split(os.pathsep) + ["/opt/homebrew/bin/"]
             exe_with_paths = [os.path.join(path, exe) for path in paths if os.path.isfile(os.path.join(path, exe))]
             if not exe_with_paths:
-                self.katrain.log(i18n._("Kata exe not found in path").format(exe=exe), OUTPUT_ERROR)
+                self.on_error(i18n._("Kata exe not found in path").format(exe=exe), "KATAGO-EXE")
                 return None
             exe = exe_with_paths[0]
         return exe
 
+    def on_error(self,message,code,allow_popup):
+        print("ERROR",message,code)
 
 class KataGoEngine(BaseEngine):
     """Starts and communicates with the KataGO analysis engine"""
@@ -93,7 +95,7 @@ class KataGoEngine(BaseEngine):
     def __init__(self, katrain, config):
         super().__init__(katrain, config)
 
-        self.allow_recovery = self.config.get("allow_recovery", True)  # if false, don't
+        self.allow_recovery = self.config.get("allow_recovery", True)  # if false, don't give popups
         self.queries = {}  # outstanding query id -> start time and callback
         self.query_counter = 0
         self.katago_process = None
@@ -115,18 +117,22 @@ class KataGoEngine(BaseEngine):
             if not exe:
                 return
             if not os.path.isfile(model):
-                self.katrain.log(i18n._("Kata model not found").format(model=model), OUTPUT_ERROR)
+                self.on_error(i18n._("Kata model not found").format(model=model), code="KATAGO-FILES")
                 return  # don't start
             if not os.path.isfile(cfg):
-                self.katrain.log(i18n._("Kata config not found").format(config=cfg), OUTPUT_ERROR)
+                self.on_error(i18n._("Kata config not found").format(config=cfg), code="KATAGO-FILES")
                 return  # don't start
             self.command = shlex.split(
                 f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]} -override-config "homeDataDir={os.path.expanduser(DATA_FOLDER)}"'
             )
         self.start()
 
-    def start(self):
+    def on_error(self, message, code=None, allow_popup=True):
+        self.katrain.log(message, OUTPUT_ERROR)
+        if self.allow_recovery and allow_popup:
+            self.katrain("engine_recovery_popup", message, code)
 
+    def start(self):
         with self.thread_lock:
             self.write_queue = queue.Queue()
             try:
@@ -144,10 +150,7 @@ class KataGoEngine(BaseEngine):
                     shell=self.shell,
                 )
             except (FileNotFoundError, PermissionError, OSError) as e:
-                self.katrain.log(
-                    i18n._("Starting Kata failed").format(command=self.command, error=e),
-                    OUTPUT_ERROR,
-                )
+                self.on_error(i18n._("Starting Kata failed").format(command=self.command, error=e), code="c")
                 return  # don't start
             self.analysis_thread = threading.Thread(target=self._analysis_read_thread, daemon=True)
             self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True)
@@ -192,9 +195,7 @@ class KataGoEngine(BaseEngine):
                 else:
                     died_msg = i18n._("Engine died unexpectedly").format(error=f"{os_error} status {code}")
                 if code != 1:  # deliberate exit
-                    self.katrain.log(died_msg, OUTPUT_ERROR)
-                    if maybe_open_recovery and self.allow_recovery:
-                        self.katrain("engine_recovery_popup", died_msg, code)
+                    self.on_error(died_msg, code, allow_popup=maybe_open_recovery)
                 self.katago_process = None  # return from threads
             else:
                 self.katrain.log(i18n._("Engine died unexpectedly").format(error=os_error), OUTPUT_DEBUG)
@@ -231,8 +232,7 @@ class KataGoEngine(BaseEngine):
                 if line:
                     if b"Uncaught exception" in line or b"what()" in line:  # linux=what
                         msg = f"KataGo Engine Failed: {line.decode(errors='ignore')[9:].strip()}"
-                        self.katrain.log(msg, OUTPUT_ERROR)
-                        self.katrain("engine_recovery_popup", msg, KATAGO_EXCEPTION)
+                        self.on_error(msg, KATAGO_EXCEPTION)
                         return
                     try:
                         self.katrain.log(line.decode(errors="ignore").strip(), OUTPUT_KATAGO_STDERR)
@@ -257,8 +257,7 @@ class KataGoEngine(BaseEngine):
 
             if b"Uncaught exception" in line:
                 msg = f"KataGo Engine Failed: {line.decode(errors='ignore')}"
-                self.katrain.log(msg, OUTPUT_ERROR)
-                self.katrain("engine_recovery_popup", msg, KATAGO_EXCEPTION)
+                self.on_error(msg, KATAGO_EXCEPTION)
                 return
             if not line:
                 continue

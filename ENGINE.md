@@ -38,7 +38,11 @@ Of the provided binaries, this is typically the case for the 1.6.1 'bigger board
 
 ## <a name="Mac"></a><img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg" alt="macOs" height="35"/> For macOS users
 
-### New macs with M1 architecture
+### Running from source
+
+Make sure you `brew install katago` or set the engine path to your own KataGo binary, as there is no executable included.
+
+### New Macs with M1 architecture
 
 Make sure you `brew install katago` as the provided executable does not work on rosetta.
 

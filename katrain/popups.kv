@@ -794,11 +794,10 @@
         padding: CP_PADDING, CP_PADDING*3
         text: i18n._("engine died popup opening message").format(code=root.code,error_message=root.error_message) + "\n\n" +  i18n._("change engine suggestion").format(link="[color=#CCCC11][u][ref=engine_settings]"+i18n._('menu:settings')+"[/ref][/u][/color]") + "\n\n" +  i18n._("go to engine help page").format(link="[color=#CCCC11][u][ref=engine_help]"+i18n._('link_here')+"[/ref][/u][/color]")
         text_size: self.size
-        font_size: Theme.DESC_FONT_SIZE
+        font_size: sp(Theme.DESC_FONT_SIZE)
         markup: True
         valign: 'top'
         on_ref_press:  app.webbrowser('engine:help') if args[1]=='engine_help' else  app.gui('config-popup')
-        font_size: Theme.DESC_FONT_SIZE
 
 
 <ReAnalyzeGamePopup>:
