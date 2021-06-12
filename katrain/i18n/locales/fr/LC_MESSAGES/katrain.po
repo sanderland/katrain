@@ -90,7 +90,7 @@ msgstr ""
 
 #. analysis menu items
 msgid "analysis:extra"
-msgstr "Analyser davantage"
+msgstr "Approfondir l'analyse"
 
 msgid "analysis:equalize"
 msgstr "Égaliser l'analyse des coups"
@@ -99,7 +99,7 @@ msgid "analysis:sweep"
 msgstr "Analyser tous les possibles"
 
 msgid "analysis:game"
-msgstr "Analyser davantage la partie"
+msgstr "Approfondir l'analyse de partie"
 
 msgid "analysis:continuous"
 msgstr "Lancer/Arrêter l'analyse continue"
@@ -518,13 +518,13 @@ msgid "sweep analysis"
 msgstr "Analyse de tous les possibles ({visits} visites/coup)."
 
 msgid "extra analysis"
-msgstr "Analyse supplémentaire de {visits} visites."
+msgstr "Analyse approfondie ({visits} visites)."
 
 msgid "equalizing analysis"
 msgstr "Égalisation de l'analyse ({visits} visites/coup considéré)."
 
 msgid "game re-analysis"
-msgstr "Analyse supplémentaire de la partie ({visits} visites/coup)."
+msgstr "Analyse de partie approfondie ({visits} visites/coup)."
 
 #. AI names, help etc
 msgid "strength:kyu"
