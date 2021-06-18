@@ -759,7 +759,7 @@ class BadukPanWidget(Widget):
 
     def get_animate_pv_index(self):
         if self.animating_pv_index is None:
-            if self.animating_pv is not None:
+            if self.animating_pv:
                 pv, node, start_time, _ = self.animating_pv
                 delay = self.katrain.config("general/anim_pv_time", 0.5)
                 return (time.time() - start_time) / delay
