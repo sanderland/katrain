@@ -606,9 +606,9 @@ class KaTrainGui(Screen, KaTrainBase):
                         self("undo")
                 else:
                     if touch.button == "scrollup":
-                        self.board_gui.increase_animate_pv_index(1)
+                        self.board_gui.adjust_animate_pv_index(1)
                     elif touch.button == "scrolldown":
-                        self.board_gui.increase_animate_pv_index(-1)
+                        self.board_gui.adjust_animate_pv_index(-1)
         return super().on_touch_up(touch)
 
     @property
