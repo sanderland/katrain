@@ -599,10 +599,16 @@ class KaTrainGui(Screen, KaTrainBase):
             or self.controls.move_tree.collide_point(*touch.pos)
         ):
             if touch.is_mouse_scrolling:
-                if touch.button == "scrollup":
-                    self("redo")
-                elif touch.button == "scrolldown":
-                    self("undo")
+                if self.board_gui.animating_pv is None:
+                    if touch.button == "scrollup":
+                        self("redo")
+                    elif touch.button == "scrolldown":
+                        self("undo")
+                else:
+                    if touch.button == "scrollup":
+                        self.board_gui.adjust_animate_pv_index(1)
+                    elif touch.button == "scrolldown":
+                        self.board_gui.adjust_animate_pv_index(-1)
         return super().on_touch_up(touch)
 
     @property
