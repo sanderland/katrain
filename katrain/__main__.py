@@ -455,6 +455,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 title_key="general settings title", size=[dp(1200), dp(950)], content=ConfigPopup(self)
             ).__self__
             self.config_popup.content.popup = self.config_popup
+            self.config_popup.title += ": " + self.config_file
         self.config_popup.open()
 
     def _do_contribute_popup(self):
@@ -801,9 +802,11 @@ class KaTrainApp(MDApp):
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
 
-        win_size = self.gui.config("ui_state/size", [])
-        win_left = self.gui.config("ui_state/left", None)
-        win_top = self.gui.config("ui_state/top", None)
+        win_left=win_top=win_size=None
+        if self.gui.config("ui_state/restoresize",True):
+            win_size = self.gui.config("ui_state/size", [])
+            win_left = self.gui.config("ui_state/left", None)
+            win_top = self.gui.config("ui_state/top", None)
         if not win_size:
             window_scale_fac = 1
             try:
