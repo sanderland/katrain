@@ -17,8 +17,9 @@ The easiest way to install is probably [brew](https://brew.sh/). Simply run `bre
 
 You can also find downloadable .app files for macOS [here](https://github.com/sanderland/katrain/releases). 
 Simply download, unzip the file, mount the .dmg and drag the .app file to your application folder, everything is included.
+The first time launching the application you may need to [control-click in finder to give permission for the 'unidentified' app to launch](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac). This is simply a result of Apple charging $99/year to developers to be 'identified'.
 
-Users with the last generation M1 macs with different architecture should then `brew install katago` in addition to this. KaTrain will automatically detect this katago binary.
+Users with the last generation M1 macs with different architecture should then `brew install katago` in addition to this. KaTrain will automatically detect this KataGo binary.
 
 ### <a name="MacCommand"></a>Command line install guide
 
