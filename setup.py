@@ -42,7 +42,7 @@ setup(
         "wheel",
         "setuptools",
         "kivy[full]>=2.0.0",
-        "kivymd>=0.104.1",
+        "kivymd==0.104.1", # 0.104.2 was breaking MRO
         "ffpyplayer",
         "importlib_resources ;python_version<'3.7'",
         "urllib3",
