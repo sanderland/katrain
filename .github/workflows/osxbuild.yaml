@@ -46,6 +46,7 @@ jobs:
         source activate
         popd
         python -m pip install .
+        python -m pip install --upgrade certifi
     - name: Finalize KaTrain bundle
       run: |
         cd ../kivy-sdk-packager/osx
