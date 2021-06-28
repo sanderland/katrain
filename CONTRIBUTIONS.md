@@ -52,7 +52,7 @@ Many thanks to these additional authors:
 * "blamarche" for adding the board coordinates toggle.
 * "pdeblanc" for adding the ancient chinese scoring option, fixing a bug in query termination
 * "LiamHz" for adding the 'back to main branch' keyboard shortcut.
-* "xiaoyifang" for adding the reset analysis option, feature to save options on the loading screen.
+* "xiaoyifang" for adding the reset analysis option, feature to save options on the loading screen, and scrolling through variations.
 * "electricRGB" for help with adding configurable keyboard shortcuts.
 
 ## Translators

@@ -477,7 +477,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_engine_recovery_popup(self, error_message, code):
         current_open = self.popup_open
-        self.log(f"engine rec {current_open}",OUTPUT_ERROR)
+        self.log(f"engine rec {current_open}", OUTPUT_ERROR)
         if current_open and isinstance(current_open.content, EngineRecoveryPopup):
             self.log(f"Not opening engine recovery popup with {error_message} as one is already open", OUTPUT_DEBUG)
             return
@@ -802,8 +802,8 @@ class KaTrainApp(MDApp):
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
 
-        win_left=win_top=win_size=None
-        if self.gui.config("ui_state/restoresize",True):
+        win_left = win_top = win_size = None
+        if self.gui.config("ui_state/restoresize", True):
             win_size = self.gui.config("ui_state/size", [])
             win_left = self.gui.config("ui_state/left", None)
             win_top = self.gui.config("ui_state/top", None)

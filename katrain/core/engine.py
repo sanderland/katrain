@@ -86,8 +86,9 @@ class BaseEngine:  # some common elements between analysis and contribute engine
             exe = exe_with_paths[0]
         return exe
 
-    def on_error(self,message,code,allow_popup):
-        print("ERROR",message,code)
+    def on_error(self, message, code, allow_popup):
+        print("ERROR", message, code)
+
 
 class KataGoEngine(BaseEngine):
     """Starts and communicates with the KataGO analysis engine"""
