@@ -1,10 +1,10 @@
 """isort:skip_file"""
-# first, logging level lower and force audio framework
+# first, logging level lower
 import os
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
-if "KIVY_AUDIO" not in os.environ:
-    os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
+# if "KIVY_AUDIO" not in os.environ: # trying default again
+#    os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
 
 import kivy
 
@@ -30,6 +30,8 @@ from queue import Queue
 import urllib3
 import webbrowser
 import time
+import random
+import glob
 
 from kivy.base import ExceptionHandler, ExceptionManager
 from kivy.app import App
@@ -65,7 +67,15 @@ from katrain.core.constants import (
     DATA_FOLDER,
     AI_DEFAULT,
 )
-from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup, ContributePopup
+from katrain.gui.popups import (
+    ConfigTeacherPopup,
+    ConfigTimerPopup,
+    I18NPopup,
+    SaveSGFPopup,
+    ContributePopup,
+    EngineRecoveryPopup,
+)
+from katrain.gui.sound import play_sound
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
 from katrain.core.contribute_engine import KataGoContributeEngine
@@ -221,6 +231,14 @@ class KaTrainGui(Screen, KaTrainBase):
         if not self.contributing:
             last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
             if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
+                points_lost = cn.points_lost
+                if (
+                    last_player.human
+                    and cn.analysis_complete
+                    and points_lost is not None
+                    and points_lost > self.config("trainer/eval_thresholds")[-4]
+                ):
+                    self.play_mistake_sound(cn)
                 teaching_undo = cn.player and last_player.being_taught and cn.parent
                 if (
                     teaching_undo
@@ -437,6 +455,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 title_key="general settings title", size=[dp(1200), dp(950)], content=ConfigPopup(self)
             ).__self__
             self.config_popup.content.popup = self.config_popup
+            self.config_popup.title += ": " + self.config_file
         self.config_popup.open()
 
     def _do_contribute_popup(self):
@@ -456,10 +475,30 @@ class KaTrainGui(Screen, KaTrainBase):
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
+    def _do_engine_recovery_popup(self, error_message, code):
+        current_open = self.popup_open
+        self.log(f"engine rec {current_open}", OUTPUT_ERROR)
+        if current_open and isinstance(current_open.content, EngineRecoveryPopup):
+            self.log(f"Not opening engine recovery popup with {error_message} as one is already open", OUTPUT_DEBUG)
+            return
+        popup = I18NPopup(
+            title_key="engine recovery",
+            size=[dp(600), dp(700)],
+            content=EngineRecoveryPopup(self, error_message=error_message, code=code),
+        ).__self__
+        popup.content.popup = popup
+        popup.open()
+
+    def play_mistake_sound(self, node):
+        if self.config("timer/sound") and node.played_sound is None and Theme.MISTAKE_SOUNDS:
+            node.played_sound = True
+            play_sound(random.choice(Theme.MISTAKE_SOUNDS))
+
     def load_sgf_file(self, file, fast=False, rewind=True):
         if self.contributing:
             return
         try:
+            file = os.path.abspath(file)
             move_tree = KaTrainSGF.parse_file(file)
         except (ParseError, FileNotFoundError) as e:
             self.log(i18n._("Failed to load SGF").format(error=e), OUTPUT_ERROR)
@@ -561,40 +600,49 @@ class KaTrainGui(Screen, KaTrainBase):
             or self.controls.move_tree.collide_point(*touch.pos)
         ):
             if touch.is_mouse_scrolling:
-                if touch.button == "scrollup":
-                    self("redo")
-                elif touch.button == "scrolldown":
-                    self("undo")
+                if self.board_gui.animating_pv is None:
+                    if touch.button == "scrollup":
+                        self("redo")
+                    elif touch.button == "scrolldown":
+                        self("undo")
+                else:
+                    if touch.button == "scrollup":
+                        self.board_gui.adjust_animate_pv_index(1)
+                    elif touch.button == "scrolldown":
+                        self.board_gui.adjust_animate_pv_index(-1)
         return super().on_touch_up(touch)
 
     @property
     def shortcuts(self):
         return {
-            "q": self.analysis_controls.show_children,
-            "w": self.analysis_controls.eval,
-            "e": self.analysis_controls.hints,
-            "t": self.analysis_controls.ownership,
-            "r": self.analysis_controls.policy,
-            "enter": ("ai-move",),
-            "numpadenter": ("ai-move",),
-            "a": ("analyze-extra", "extra"),
-            "s": ("analyze-extra", "equalize"),
-            "d": ("analyze-extra", "sweep"),
-            "f": ("analyze-extra", "alternative"),
-            "g": ("select-box",),
-            "h": ("reset-analysis",),
-            "i": ("insert-mode",),
-            "p": ("play", None),
-            "l": ("selfplay-setup", "end", None),
-            "b": ("undo", "branch"),
-            "down": ("switch-branch", 1),
-            "up": ("switch-branch", -1),
-            "f5": ("timer-popup",),
-            "f6": ("teacher-popup",),
-            "f7": ("ai-popup",),
-            "f8": ("config-popup",),
-            "f9": ("contribute-popup",),
-            "escape": ("analyze-extra", "stop"),
+            k: v
+            for ks, v in [
+                (Theme.KEY_ANALYSIS_CONTROLS_SHOW_CHILDREN, self.analysis_controls.show_children),
+                (Theme.KEY_ANALYSIS_CONTROLS_EVAL, self.analysis_controls.eval),
+                (Theme.KEY_ANALYSIS_CONTROLS_HINTS, self.analysis_controls.hints),
+                (Theme.KEY_ANALYSIS_CONTROLS_OWNERSHIP, self.analysis_controls.ownership),
+                (Theme.KEY_ANALYSIS_CONTROLS_POLICY, self.analysis_controls.policy),
+                (Theme.KEY_AI_MOVE, ("ai-move",)),
+                (Theme.KEY_ANALYZE_EXTRA_EXTRA, ("analyze-extra", "extra")),
+                (Theme.KEY_ANALYZE_EXTRA_EQUALIZE, ("analyze-extra", "equalize")),
+                (Theme.KEY_ANALYZE_EXTRA_SWEEP, ("analyze-extra", "sweep")),
+                (Theme.KEY_ANALYZE_EXTRA_ALTERNATIVE, ("analyze-extra", "alternative")),
+                (Theme.KEY_SELECT_BOX, ("select-box",)),
+                (Theme.KEY_RESET_ANALYSIS, ("reset-analysis",)),
+                (Theme.KEY_INSERT_MODE, ("insert-mode",)),
+                (Theme.KEY_PASS, ("play", None)),
+                (Theme.KEY_SELFPLAY_TO_END, ("selfplay-setup", "end", None)),
+                (Theme.KEY_NAV_PREV_BRANCH, ("undo", "branch")),
+                (Theme.KEY_NAV_BRANCH_DOWN, ("switch-branch", 1)),
+                (Theme.KEY_NAV_BRANCH_UP, ("switch-branch", -1)),
+                (Theme.KEY_TIMER_POPUP, ("timer-popup",)),
+                (Theme.KEY_TEACHER_POPUP, ("teacher-popup",)),
+                (Theme.KEY_AI_POPUP, ("ai-popup",)),
+                (Theme.KEY_CONFIG_POPUP, ("config-popup",)),
+                (Theme.KEY_CONTRIBUTE_POPUP, ("contribute-popup",)),
+                (Theme.KEY_STOP_ANALYSIS, ("analyze-extra", "stop")),
+            ]
+            for k in (ks if isinstance(ks, list) else [ks])
         }
 
     @property
@@ -607,67 +655,72 @@ class KaTrainGui(Screen, KaTrainBase):
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         self.last_key_down = keycode
         ctrl_pressed = "ctrl" in modifiers
+        shift_pressed = "shift" in modifiers
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
         popup = self.popup_open
         if popup:
-            if keycode[1] in ["f5", "f6", "f7", "f8", "f9"]:  # switch between popups
+            if keycode[1] in [
+                Theme.KEY_DEEPERANALYSIS_POPUP,
+                Theme.KEY_REPORT_POPUP,
+                Theme.KEY_TIMER_POPUP,
+                Theme.KEY_TEACHER_POPUP,
+                Theme.KEY_AI_POPUP,
+                Theme.KEY_CONFIG_POPUP,
+                Theme.KEY_CONTRIBUTE_POPUP,
+            ]:  # switch between popups
                 popup.dismiss()
                 return
-            elif keycode[1] in ["enter", "numpadenter"]:
+            elif keycode[1] in Theme.KEY_SUBMIT_POPUP:
                 fn = getattr(popup.content, "on_submit", None)
                 if fn:
                     fn()
                 return
             else:
                 return
-        shift_pressed = "shift" in modifiers
-        shortcuts = self.shortcuts
-        if keycode[1] == "spacebar":
+        if keycode[1] == Theme.KEY_TOGGLE_CONTINUOUS_ANALYSIS:
             self.toggle_continuous_analysis()
-        elif keycode[1] == "k":
+        elif keycode[1] == Theme.KEY_TOGGLE_COORDINATES:
             self.board_gui.toggle_coordinates()
-        elif keycode[1] in ["pause", "break", "f15"] and not ctrl_pressed:
+        elif keycode[1] in Theme.KEY_PAUSE_TIMER and not ctrl_pressed:
             self.controls.timer.paused = not self.controls.timer.paused
-        elif keycode[1] in ["`", "~", "f12"]:
+        elif keycode[1] in Theme.KEY_ZEN:
             self.zen = (self.zen + 1) % 3
-        elif keycode[1] in ["left", "z"]:
+        elif keycode[1] in Theme.KEY_NAV_PREV:
             self("undo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
-        elif keycode[1] in ["right", "x"]:
+        elif keycode[1] in Theme.KEY_NAV_NEXT:
             self("redo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
-        elif keycode[1] == "home":
+        elif keycode[1] == Theme.KEY_NAV_GAME_START:
             self("undo", 9999)
-        elif keycode[1] == "end":
+        elif keycode[1] == Theme.KEY_NAV_GAME_END:
             self("redo", 9999)
-        elif keycode[1] == "pageup":
+        elif keycode[1] == Theme.KEY_MOVE_TREE_MAKE_SELECTED_NODE_MAIN_BRANCH:
             self.controls.move_tree.make_selected_node_main_branch()
-        elif keycode[1] == "n" and not ctrl_pressed:
+        elif keycode[1] == Theme.KEY_NAV_MISTAKE and not ctrl_pressed:
             self("find-mistake", "undo" if shift_pressed else "redo")
-        elif keycode[1] == "delete" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_MOVE_TREE_DELETE_SELECTED_NODE and ctrl_pressed:
             self.controls.move_tree.delete_selected_node()
-        elif keycode[1] == "c" and not ctrl_pressed:
+        elif keycode[1] == Theme.KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE and not ctrl_pressed:
             self.controls.move_tree.toggle_selected_node_collapse()
-        elif keycode[1] == "n" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_NEW_GAME and ctrl_pressed:
             self("new-game-popup")
-        elif keycode[1] == "l" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_LOAD_GAME and ctrl_pressed:
             self("analyze-sgf-popup")
-        elif keycode[1] == "s" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_SAVE_GAME and ctrl_pressed:
             self("save-game")
-        elif keycode[1] == "d" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_SAVE_GAME_AS and ctrl_pressed:
             self("save-game-as-popup")
-        elif keycode[1] == "c" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_COPY and ctrl_pressed:
             Clipboard.copy(self.game.root.sgf())
             self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
-        elif keycode[1] == "v" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_PASTE and ctrl_pressed:
             self.load_sgf_from_clipboard()
-        elif keycode[1] == "b" and shift_pressed:
+        elif keycode[1] == Theme.KEY_NAV_PREV_BRANCH and shift_pressed:
             self("undo", "main-branch")
-        elif keycode[1] in shortcuts.keys() and not ctrl_pressed:
-            shortcut = shortcuts[keycode[1]]
-            if isinstance(shortcut, Widget):
-                shortcut.trigger_action(duration=0)
-            else:
-                self(*shortcut)
+        elif keycode[1] == Theme.KEY_DEEPERANALYSIS_POPUP:
+            self.analysis_controls.dropdown.open_game_analysis_popup()
+        elif keycode[1] == Theme.KEY_REPORT_POPUP:
+            self.analysis_controls.dropdown.open_report_popup()
         elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
             import yappi
 
@@ -682,6 +735,13 @@ class KaTrainGui(Screen, KaTrainBase):
             filename = f"callgrind.{int(time.time())}.prof"
             stats.save(filename, type="callgrind")
             self.log(f"wrote profiling results to {filename}", OUTPUT_ERROR)
+        elif not ctrl_pressed:
+            shortcut = self.shortcuts.get(keycode[1])
+            if shortcut is not None:
+                if isinstance(shortcut, Widget):
+                    shortcut.trigger_action(duration=0)
+                else:
+                    self(*shortcut)
 
     def _on_keyboard_up(self, _keyboard, keycode):
         if keycode[1] in ["alt", "tab"]:
@@ -723,8 +783,8 @@ class KaTrainApp(MDApp):
         resource_add_path(PATHS["PACKAGE"] + "/img")
         resource_add_path(os.path.abspath(os.path.expanduser(DATA_FOLDER)))  # prefer resources in .katrain
 
-        theme_file = resource_find("theme.json")
-        if theme_file:
+        theme_files = glob.glob(os.path.join(os.path.expanduser(DATA_FOLDER), "theme*.json"))
+        for theme_file in sorted(theme_files):
             try:
                 with open(theme_file) as f:
                     theme_overrides = json.load(f)
@@ -742,9 +802,11 @@ class KaTrainApp(MDApp):
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
 
-        win_size = self.gui.config("ui_state/size", [])
-        win_left = self.gui.config("ui_state/left", None)
-        win_top = self.gui.config("ui_state/top", None)
+        win_left = win_top = win_size = None
+        if self.gui.config("ui_state/restoresize", True):
+            win_size = self.gui.config("ui_state/size", [])
+            win_left = self.gui.config("ui_state/left", None)
+            win_top = self.gui.config("ui_state/top", None)
         if not win_size:
             window_scale_fac = 1
             try:
@@ -755,6 +817,7 @@ class KaTrainApp(MDApp):
             except Exception as e:
                 window_scale_fac = 0.85
             win_size = [1300 * window_scale_fac, 1000 * window_scale_fac]
+        self.gui.log(f"Setting window size to {win_size} and position to {[win_left, win_top]}", OUTPUT_DEBUG)
         Window.size = (win_size[0], win_size[1])
         if win_left is not None and win_top is not None:
             Window.left = win_left
@@ -776,6 +839,7 @@ class KaTrainApp(MDApp):
             "homepage": HOMEPAGE + "#manual",
             "support": HOMEPAGE + "#support",
             "contribute:signup": "http://katagotraining.org/accounts/signup/",
+            "engine:help": HOMEPAGE + "/blob/master/ENGINE.md",
         }
         if site_key in websites:
             webbrowser.open(websites[site_key])
@@ -814,6 +878,7 @@ def run_app():
             ex_type, ex, tb = sys.exc_info()
             trace = "".join(traceback.format_tb(tb))
             app = MDApp.get_running_app()
+
             if app and app.gui:
                 app.gui.log(
                     f"Exception {inst.__class__.__name__}: {', '.join(repr(a) for a in inst.args)}\n{trace}",

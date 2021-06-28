@@ -6,6 +6,8 @@
     * [Troubleshooting and installation from sources](#WindowsSources)
 * [Quick install guide for Linux](#LinuxQuick)
     * [Troubleshooting and installation from sources](#LinuxSources)
+* [Configuring Multiple GPUS](#GPU)
+* [Troubleshooting KataGo](#KataGo)
 
 ## <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg" alt="macOs" height="35"/> Installation for macOS users
 
@@ -15,8 +17,9 @@ The easiest way to install is probably [brew](https://brew.sh/). Simply run `bre
 
 You can also find downloadable .app files for macOS [here](https://github.com/sanderland/katrain/releases). 
 Simply download, unzip the file, mount the .dmg and drag the .app file to your application folder, everything is included.
+The first time launching the application you may need to [control-click in finder to give permission for the 'unidentified' app to launch](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac). This is simply a result of Apple charging $99/year to developers to be 'identified'.
 
-Users with the last generation M1 macs with different architecture should then `brew install katago` in addition to this. KaTrain will automatically detect this katago binary.
+Users with the last generation M1 macs with different architecture should then `brew install katago` in addition to this. KaTrain will automatically detect this KataGo binary.
 
 ### <a name="MacCommand"></a>Command line install guide
 
@@ -99,7 +102,7 @@ It assumes you have a working Python 3.6+ installation.
 A binary for KataGo is included, but if you have compiled your own, press F8 to open general settings and change the 
  KataGo executable path to the relevant KataGo v1.4+ binary.
 
-### Troubleshooting and advanced installation from sources
+### <a name="LinuxTrouble"></a>Troubleshooting and advanced installation from sources
 
 You can try to manually install dependencies to resolve some issues relating to missing dependencies,
  e.g. the binary 'wheel' is not provided, KataGo is not starting, or sounds are not working.
@@ -128,7 +131,9 @@ You can now start KaTrain by running `python3 -m katrain`
 
 In case KataGo does not start, an alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.
 
-## Configuring the GPU(s) KataGo uses
+
+
+## <a name="GPU"></a> Configuring the GPU(s) KataGo uses
 
 In most cases KataGo detects your configuration correctly, automatically searching for OpenCL devices and select the highest scoring device. 
 However, if you have multiple GPUs or want to force a specific device you will need to edit the 'analysis_config.cfg' file in the KataGo folder.
@@ -148,8 +153,8 @@ As you can see it scores about twice as high as the Intel UHD chip and KataGo ha
 
 * Open the 'analysis_config.cfg' file in the `katrain/KataGo` folder in your python packages, or local sources.
   If you can't find it, turn on `debug_level=1` in general settings and look for the command that is used to start KataGo.
-* Search for `numNNServerThreadsPerModel` (~line 75), uncomment the line by deleting the # and set the value to 2. The line should read `numNNServerThreadsPerModel = 2`.
-* Search for `openclDeviceToUseThread` (~line 117), uncomment by deleting the # and set the values to the device ID numbers identified in the terminal.
+* Search for `numNNServerThreadsPerModel` (~line 108), uncomment the line by deleting the # and set the value to 2. The line should read `numNNServerThreadsPerModel = 2`.
+* Search for `openclDeviceToUseThread` (~line 164), uncomment by deleting the # and set the values to the device ID numbers identified in the terminal.
   From the example above, we would want to use devices 1 and 2, for the Intel and AMD GPUs, but not device 0 (the CPU). In our case, the lines should read:
 ```
 openclDeviceToUseThread0 = 1
@@ -165,3 +170,8 @@ openclDeviceToUseThread1 = 2
     Using OpenCL Device 1: Intel(R) UHD Graphics 630 (Intel Inc.) OpenCL 1.2
     Using OpenCL Device 2: AMD Radeon Pro 5500M Compute Engine (AMD) OpenCL 1.2
 ```
+
+
+## <a name="KataGo"></a> Troubleshooting and advanced KataGo settings
+
+See [here](ENGINE.md) for an overview of how to resolve various issues with KataGo.

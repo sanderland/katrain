@@ -446,7 +446,7 @@ msgstr ""
 " 값이 올바른 KataGo 실행 파일 경로가 맞는지 확인해 주십시오."
 
 msgid "Engine died unexpectedly"
-msgstr "엔진이 출력을 보내지 않고 예상치 않게 종료되었습니다. 메모리 용량 초과일 가능성이 있습니다: {error}."
+msgstr "엔진이 출력을 보내지 않고 예상치 않게 종료되었습니다: {error}."
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -837,10 +837,64 @@ msgstr ""
 msgid "editgame"
 msgstr "대국 정보 편집"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "뉴질랜드"
 
-#. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
+
+msgid "analysis:report"
+msgstr "기력 보고서"
+
+msgid "engine died popup opening message"
+msgstr ""
+"KataGo 엔진을 시작할 수 없거나, 갑자기 멈추었습니다.\n"
+"\n"
+"오류: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"오류 코드:: [color=#CC2222]{code}[/color]."
+
+msgid "go to engine help page"
+msgstr "아직 문제를 겪고 있으시다면, {link}에서 최신 문제 해결법을 찾아보십시오."
+
+msgid "change engine suggestion"
+msgstr "우선, KataGo 버전들을 내려받아 보시고, {link}에서 다른 실행 파일로 바꾸면 괜찮아지는지 확인해 보십시오."
+
+msgid "link_here"
+msgstr "여기"
+
+msgid "engine recovery"
+msgstr "KataGo 설정 도움말"
+
+msgid "reanalyze mistakes only"
+msgstr "실수만 분석하기"
+
+msgid "stat:accuracy"
+msgstr "정확도 지표"
+
+msgid "header:keystats"
+msgstr "주요 통계"
+
+msgid "header:num moves"
+msgstr "착수 수"
+
+msgid "Opening"
+msgstr "포석"
+
+msgid "Endgame"
+msgstr "끝내기"
+
+msgid "Midgame"
+msgstr "중반"
+
+msgid "stat:meanpointloss"
+msgstr "평균 집 손해"
+
+msgid "stat:aitop5"
+msgstr "인공지능 최선 5수 일치율(%)"
+
+msgid "stat:aitopmove"
+msgstr "인공지능 최선수 일치율(%)"
+
+msgid "Entire Game"
+msgstr "모두"

@@ -52,7 +52,7 @@ jobs:
         pushd KaTrain.app/Contents/Resources/
         ln -s ./venv/bin/KaTrain yourapp
         popd
-        ./fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "1.8.0" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
+        ./fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "1.9.0" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
         ./cleanup-app.sh KaTrain.app -g 1
         ./relocate.sh KaTrain.app
     - name: Create dmg
@@ -67,12 +67,4 @@ jobs:
       with:
         name: KaTrainOSX
         path: osx_app
-    - name: Upload to GitHub Release
-      uses: softprops/action-gh-release@78c309ef59fdb9557cd6574f2e0be552936ed728
-      if: startsWith(github.ref, 'refs/tags/')
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        files: KaTrainOSX/*
-        draft: true
-        fail_on_unmatched_files: true
+

@@ -105,6 +105,50 @@ msgstr "Fast analysis of all moves"
 msgid "analysis:game"
 msgstr "Deeper full game analysis"
 
+#. View a player performance report
+msgid "analysis:report"
+msgstr "Performance Report"
+
+#. game filter in performance report
+msgid "Entire Game"
+msgstr "Entire Game"
+
+#. opening of the game filter in performance report
+msgid "Opening"
+msgstr "Opening"
+
+#. middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Midgame"
+
+#. end of the game filter in performance report
+msgid "Endgame"
+msgstr "Endgame"
+
+#. header in performance report
+msgid "header:keystats"
+msgstr "Key Statistics"
+
+#. statistic in performance report
+msgid "stat:accuracy"
+msgstr "Accuracy Rating"
+
+#. statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Mean Point Loss"
+
+#. statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AI Best Move Match %"
+
+#. statistic in performance report
+msgid "stat:aitop5"
+msgstr "AI Top 5 Match %"
+
+#. header in performance report
+msgid "header:num moves"
+msgstr "# Moves"
+
 #. Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
@@ -648,14 +692,40 @@ msgid "Starting Kata failed"
 msgstr "Starting KataGo with command '{command}' failed with error {error}."
 
 msgid "Engine died unexpectedly"
-msgstr ""
-"Engine died unexpectedly without sending output, possibly due to out of "
-"memory: {error}"
+msgstr "Engine died unexpectedly without sending output: {error}"
 
 msgid "Engine missing DLL"
 msgstr ""
 "Failed to start KataGo due to missing DLL. Check the requirements in the "
 "KataGo documentation, or try running the binary by itself for details. "
+
+#. popup title
+msgid "engine recovery"
+msgstr "Help with KataGo setup"
+
+msgid "engine died popup opening message"
+msgstr ""
+"The KataGo Engine failed to start, or crashed.\n"
+"\n"
+"The error was: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"The error code was: [color=#CC2222]{code}[/color]."
+
+#. Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr ""
+"First, try downloading KataGo versions and try if changing to a different "
+"executable helps in {link} ."
+
+#. Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr ""
+"If you are still having difficulties, {link} for an up-to-date "
+"troubleshooting page."
+
+#. as in "click here" to go to this page,
+msgid "link_here"
+msgstr "click here"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -825,6 +895,10 @@ msgstr "All available binaries already downloaded"
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
 msgstr "Number of visits per move"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Limit analysis to mistakes only"
 
 #. on move tree editing
 msgid "Delete Node"

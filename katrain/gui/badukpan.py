@@ -4,7 +4,6 @@ import time
 from typing import List, Optional
 
 from kivy.clock import Clock
-from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
@@ -15,6 +14,7 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
+from katrain.gui.sound import play_sound
 
 from katrain.core.constants import (
     MODE_PLAY,
@@ -33,7 +33,7 @@ from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid, json_truncate_arrays
 from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
-from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
+from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup, GameReportPopup
 from katrain.gui.theme import Theme
 
 
@@ -53,6 +53,7 @@ class BadukPanWidget(Widget):
 
         self.active_pv_moves = []
         self.animating_pv = None
+        self.animating_pv_index = None
         self.last_mouse_pos = (0, 0)
         Window.bind(mouse_pos=self.on_mouse_pos)
         self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents, 0.05)
@@ -70,12 +71,7 @@ class BadukPanWidget(Widget):
         return self.draw_coords_enabled
 
     def play_stone_sound(self, *_args):
-        if self.katrain.config("timer/sound"):
-            if not self.stones_sounds:
-                self.stones_sounds = [SoundLoader.load(file) for file in Theme.STONE_SOUNDS]
-            sound = random.choice(self.stones_sounds)
-            if sound:
-                sound.play()
+        play_sound(random.choice(Theme.STONE_SOUNDS))
 
     # stone placement functions
     def _find_closest(self, pos, gridpos):
@@ -107,7 +103,8 @@ class BadukPanWidget(Widget):
         self.redraw_hover_contents_trigger()
 
     def on_touch_down(self, touch):
-        self.set_animating_pv(None, None)  # any click kills PV from label/move
+        if touch.button not in ["scrollup", "scrolldown"]:
+            self.set_animating_pv(None, None)  # any click kills PV from label/move
         if "button" in touch.profile and touch.button != "left":
             return
         if self.selecting_region_of_interest:
@@ -685,8 +682,7 @@ class BadukPanWidget(Widget):
                 animating_pv = self.animating_pv
                 if animating_pv:
                     pv, node, start_time, _ = animating_pv
-                    delay = self.katrain.config("general/anim_pv_time", 0.5)
-                    up_to_move = (time.time() - start_time) / delay
+                    up_to_move = self.get_animate_pv_index()
                     self.draw_pv(pv, node, up_to_move)
 
                 if getattr(self.katrain.game, "region_of_interest", None):
@@ -749,6 +745,7 @@ class BadukPanWidget(Widget):
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):
+        self.animating_pv_index = None
         if pv is None:
             self.animating_pv = None
         elif node is not None and (
@@ -757,16 +754,39 @@ class BadukPanWidget(Widget):
             self.animating_pv = (pv, node, time.time(), self.last_mouse_pos)
         self.redraw_hover_contents_trigger()
 
+    def adjust_animate_pv_index(self, delta=1):
+        self.animating_pv_index = max(0, self.get_animate_pv_index() + delta)
+
+    def get_animate_pv_index(self):
+        if self.animating_pv_index is None:
+            if self.animating_pv:
+                pv, node, start_time, _ = self.animating_pv
+                delay = self.katrain.config("general/anim_pv_time", 0.5)
+                return (time.time() - start_time) / delay
+            else:
+                return 0
+
+        return self.animating_pv_index
+
     def show_pv_from_comments(self, pv_str):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
 
 class AnalysisDropDown(DropDown):
     def open_game_analysis_popup(self, *_args):
-        analysis_popup = I18NPopup(title_key="analysis:game", size=[dp(500), dp(300)], content=ReAnalyzeGamePopup())
+        analysis_popup = I18NPopup(title_key="analysis:game", size=[dp(500), dp(350)], content=ReAnalyzeGamePopup())
         analysis_popup.content.popup = analysis_popup
         analysis_popup.content.katrain = MDApp.get_running_app().gui
         analysis_popup.open()
+
+    def open_report_popup(self, *_args):
+        report_popup = I18NPopup(
+            title_key="analysis:report",
+            size=[dp(750), dp(750)],
+            content=GameReportPopup(katrain=MDApp.get_running_app().gui),
+        )
+        report_popup.content.popup = report_popup
+        report_popup.open()
 
 
 class AnalysisControls(MDBoxLayout):

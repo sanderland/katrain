@@ -448,7 +448,7 @@ class SGF:
         try:
             self.ix = self.contents.index("(") + 1
         except ValueError:
-            raise ParseError("Parse error: Expected '('")
+            raise ParseError(f"Parse error: Expected '(' at start, found {self.contents[:50]}")
         self.root = self._NODE_CLASS()
         self._parse_branch(self.root)
 
@@ -465,7 +465,7 @@ class SGF:
                 self._parse_branch(self._NODE_CLASS(parent=current_move))
             elif matched_item == ";":
                 # ignore ;) for old SGF
-                useless = self.ix < len(self.contents) and self.contents[self.ix] == ")"
+                useless = self.ix < len(self.contents) and self.contents[self.ix :].strip() == ")"
                 # ignore ; that generate empty nodes
                 if not (current_move.empty or useless):
                     current_move = self._NODE_CLASS(parent=current_move)

@@ -1,9 +1,10 @@
 PROGRAM_NAME = "KaTrain"
-VERSION = "1.8.4"
+VERSION = "1.9.0"
 HOMEPAGE = "https://github.com/sanderland/katrain"
-CONFIG_MIN_VERSION = "1.8.0"  # keep config files from this version
+CONFIG_MIN_VERSION = "1.9.0"  # keep config files from this version
 ANALYSIS_FORMAT_VERSION = "1.0"
 DATA_FOLDER = "~/.katrain"
+
 
 OUTPUT_ERROR = -1
 OUTPUT_KATAGO_STDERR = -0.5
@@ -11,10 +12,22 @@ OUTPUT_INFO = 0
 OUTPUT_DEBUG = 1
 OUTPUT_EXTRA_DEBUG = 2
 
+KATAGO_EXCEPTION = "KATAGO-INTERNAL-ERROR"
+
 STATUS_ANALYSIS = 1.0  # same priority for analysis/info
 STATUS_INFO = 1.1
 STATUS_TEACHING = 2.0
 STATUS_ERROR = 1000.0
+
+ADDITIONAL_MOVE_ORDER = 999
+
+PRIORITY_GAME_ANALYSIS = -100
+PRIORITY_SWEEP = -10  # sweep is live, but slow, so deprioritize
+PRIORITY_ALTERNATIVES = 100  # extra analysis, live interaction
+PRIORITY_EQUALIZE = 100
+PRIORITY_EXTRA_ANALYSIS = 100
+PRIORITY_DEFAULT = 1000  # new move, high pri
+PRIORITY_EXTRA_AI_QUERY = 10_000
 
 PLAYER_HUMAN, PLAYER_AI = "player:human", "player:ai"
 PLAYER_TYPES = [PLAYER_HUMAN, PLAYER_AI]

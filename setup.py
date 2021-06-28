@@ -43,6 +43,7 @@ setup(
         "setuptools",
         "kivy[full]>=2.0.0",
         "kivymd>=0.104.1",
+        "ffpyplayer",
         "importlib_resources ;python_version<'3.7'",
         "urllib3",
         "pygame;platform_system=='Darwin'",  # some mac versions need this for kivy

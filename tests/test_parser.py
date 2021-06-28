@@ -104,6 +104,17 @@ def test_old_server_style():
     SGF.parse_sgf(input_sgf)
 
 
+def test_old_server_style_again():
+    input_sgf = """(;
+SZ[19]TM[600]KM[0.500000]LT[]
+
+;B[fp]BL[500];
+
+)"""
+    tree = SGF.parse_sgf(input_sgf)
+    assert 2 == len(tree.nodes_in_tree)
+
+
 def test_ogs():
     file = os.path.join(os.path.dirname(__file__), "data/ogs.sgf")
     SGF.parse_file(file)

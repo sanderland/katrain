@@ -33,9 +33,11 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
+    PRIORITY_EXTRA_AI_QUERY,
+    ADDITIONAL_MOVE_ORDER,
 )
 from katrain.core.game import Game, GameNode, Move
-from katrain.core.utils import var_to_grid, weighted_selection_without_replacement
+from katrain.core.utils import var_to_grid, weighted_selection_without_replacement, evaluation_class
 
 
 def interp_ix(lst, x):
@@ -89,6 +91,69 @@ def ai_rank_estimation(strategy, settings) -> int:
         return 1 - kyu
     else:
         return AI_STRENGTH[strategy]
+
+
+def game_report(game, thresholds, depth_filter=None):
+    cn = game.current_node
+    nodes = cn.nodes_from_root
+    while cn.children:  # main branch
+        cn = cn.children[0]
+        nodes.append(cn)
+
+    x, y = game.board_size
+    depth_filter = [math.ceil(board_frac * x * y) for board_frac in depth_filter or (0, 1e9)]
+    nodes = [n for n in nodes if n.move and not n.is_root and depth_filter[0] <= n.depth < depth_filter[1]]
+    histogram = [{"B": 0, "W": 0} for _ in thresholds]
+    ai_top_move_count = {"B": 0, "W": 0}
+    ai_approved_move_count = {"B": 0, "W": 0}
+    player_ptloss = {"B": [], "W": []}
+    weights = {"B": [], "W": []}
+
+    for n in nodes:
+        points_lost = n.points_lost
+        if n.points_lost is None:
+            continue
+        else:
+            points_lost = max(0, points_lost)
+        bucket = len(thresholds) - 1 - evaluation_class(points_lost, thresholds)
+        player_ptloss[n.player].append(points_lost)
+        histogram[bucket][n.player] += 1
+        cands = n.parent.candidate_moves
+        filtered_cands = [d for d in cands if d["order"] < ADDITIONAL_MOVE_ORDER and "prior" in d]
+        weight = min(
+            1.0,
+            sum([max(d["pointsLost"], 0) * d["prior"] for d in filtered_cands])
+            / (sum(d["prior"] for d in filtered_cands) or 1e-6),
+        )  # complexity capped at 1
+        # adj_weight between 0.05 - 1, dependent on difficulty and points lost
+        adj_weight = max(0.05, min(1.0, max(weight, points_lost / 4)))
+        weights[n.player].append((weight, adj_weight))
+        if n.parent.analysis_complete:
+            ai_top_move_count[n.player] += int(cands[0]["move"] == n.move.gtp())
+            ai_approved_move_count[n.player] += int(
+                n.move.gtp()
+                in [d["move"] for d in filtered_cands if d["order"] == 0 or (d["pointsLost"] < 0.5 and d["order"] < 5)]
+            )
+
+    wt_loss = {
+        bw: sum(s * aw for s, (w, aw) in zip(player_ptloss[bw], weights[bw]))
+        / (sum(aw for _, aw in weights[bw]) or 1e-6)
+        for bw in "BW"
+    }
+    sum_stats = {
+        bw: {
+            "accuracy": 100 * 0.75 ** wt_loss[bw],
+            "complexity": sum(w for w, aw in weights[bw]) / len(player_ptloss[bw]),
+            "mean_ptloss": sum(player_ptloss[bw]) / len(player_ptloss[bw]),
+            "weighted_ptloss": wt_loss[bw],
+            "ai_top_move": ai_top_move_count[bw] / len(player_ptloss[bw]),
+            "ai_top5_move": ai_approved_move_count[bw] / len(player_ptloss[bw]),
+        }
+        if len(player_ptloss[bw]) > 0
+        else {}
+        for bw in "BW"
+    }
+    return sum_stats, histogram, player_ptloss
 
 
 def dirichlet_noise(num, dir_alpha=0.3):
@@ -173,7 +238,7 @@ def request_ai_analysis(game: Game, cn: GameNode, extra_settings: Dict) -> Optio
         cn,
         callback=set_analysis,
         error_callback=set_error,
-        priority=1_000,
+        priority=PRIORITY_EXTRA_AI_QUERY,
         ownership=False,
         extra_settings=extra_settings,
     )

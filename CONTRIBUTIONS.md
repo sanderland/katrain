@@ -52,7 +52,8 @@ Many thanks to these additional authors:
 * "blamarche" for adding the board coordinates toggle.
 * "pdeblanc" for adding the ancient chinese scoring option, fixing a bug in query termination
 * "LiamHz" for adding the 'back to main branch' keyboard shortcut.
-* "xiaoyifang" for adding the reset analysis option, feature to save options on the loading screen.
+* "xiaoyifang" for adding the reset analysis option, feature to save options on the loading screen, and scrolling through variations.
+* "electricRGB" for help with adding configurable keyboard shortcuts.
 
 ## Translators
 
@@ -65,7 +66,7 @@ Many thanks to the following contributors for translations.
 * Russian: Dmitry Ivankov and Alexander Kiselev
 * Simplified Chinese: Qing Mu with contributions from "Medwin" and Viktor Lin
 * Japanese: "kaorahi"
-* Traditional Chinese: "Tony-Liou"
+* Traditional Chinese: "Tony-Liou" with contributions from Ching-yu Lin
 
 ## Additional thanks to
 

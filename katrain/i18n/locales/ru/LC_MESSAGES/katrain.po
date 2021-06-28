@@ -856,10 +856,71 @@ msgstr ""
 msgid "editgame"
 msgstr "Редактировать игры"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "Новозеландские"
 
-#. TODO
 msgid "tromp-taylor"
-msgstr "Tromp-Taylor"
+msgstr "Тромп-Тейлор"
+
+msgid "analysis:report"
+msgstr "Отчёт о производительности"
+
+msgid "engine died popup opening message"
+msgstr ""
+"Движок KataGo не смог запуститься или сломался\n"
+"\n"
+"Ошибка: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Код ошибки: [color=#CC2222]{code}[/color]."
+
+msgid "go to engine help page"
+msgstr ""
+"Если у вас до сих пор проблемы, вот ссылка {link} на страницу устранения "
+"неполадок."
+
+msgid "change engine suggestion"
+msgstr ""
+"Во-первых, попробуйте скачать и выбрать другую версию движка KataGo {link}"
+
+msgid "link_here"
+msgstr "Нажмите здесь"
+
+msgid "engine recovery"
+msgstr "Помощь в настройке KataGo"
+
+msgid "reanalyze mistakes only"
+msgstr "Анализировать только ошибки"
+
+msgid "stat:accuracy"
+msgstr "Рейтинг точности"
+
+msgid "header:keystats"
+msgstr "Ключевые статистики"
+
+msgid "header:num moves"
+msgstr "Количество ходов"
+
+msgid "Opening"
+msgstr "Начало игры"
+
+msgid "Endgame"
+msgstr "Окончание игры"
+
+msgid "Midgame"
+msgstr "Середина игры"
+
+msgid "stat:meanpointloss"
+msgstr "Главные потери очков"
+
+msgid "stat:aitop5"
+msgstr ""
+"% совпадения с\n"
+"топ-5 ходами ИИ"
+
+msgid "stat:aitopmove"
+msgstr ""
+"% совпадения с\n"
+"идеальными ходами ИИ"
+
+msgid "Entire Game"
+msgstr "Полная игра"

@@ -12,6 +12,8 @@ from katrain.core.constants import (
     SGF_INTERNAL_COMMENTS_MARKER,
     SGF_SEPARATOR_MARKER,
     VERSION,
+    PRIORITY_DEFAULT,
+    ADDITIONAL_MOVE_ORDER,
 )
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
@@ -39,6 +41,7 @@ class GameNode(SGFNode):
     def __init__(self, parent=None, properties=None, move=None):
         super().__init__(parent=parent, properties=properties, move=move)
         self.auto_undo = None  # None = not analyzed. False: not undone (good move). True: undone (bad move)
+        self.played_sound = None
         self.ai_thoughts = ""
         self.note = ""
         self.move_number = 0
@@ -182,7 +185,7 @@ class GameNode(SGFNode):
     def analyze(
         self,
         engine,
-        priority=0,
+        priority=PRIORITY_DEFAULT,
         visits=None,
         time_limit=True,
         refine_move=None,
@@ -211,13 +214,17 @@ class GameNode(SGFNode):
         if cur is None:
             self.analysis["moves"][move_gtp] = {
                 "move": move_gtp,
-                "order": 999,
+                "order": ADDITIONAL_MOVE_ORDER,
                 **move_analysis,
             }  # some default values for keys missing in rootInfo
         else:
-            cur["order"] = min(cur["order"], move_analysis.get("order", 999))  # parent arriving after child
+            cur["order"] = min(
+                cur["order"], move_analysis.get("order", ADDITIONAL_MOVE_ORDER)
+            )  # parent arriving after child
             if cur["visits"] < move_analysis["visits"]:
                 cur.update(move_analysis)
+            else:  # prior etc only
+                cur.update({k: v for k, v in move_analysis.items() if k not in cur})
 
     def set_analysis(
         self,
@@ -238,7 +245,7 @@ class GameNode(SGFNode):
                     del m["order"]
             elif refine_move is None:  # normal update: old moves to end, new order matters. also for region?
                 for move_dict in self.analysis["moves"].values():
-                    move_dict["order"] = 999  # old moves to end
+                    move_dict["order"] = ADDITIONAL_MOVE_ORDER  # old moves to end
             for move_analysis in analysis_json["moveInfos"]:
                 self.update_move_analysis(move_analysis, move_analysis["move"])
             self.analysis["ownership"] = analysis_json.get("ownership")
@@ -344,7 +351,6 @@ class GameNode(SGFNode):
                     if previous_top_move.get("pv") and (sgf or details):
                         pv = self.make_pv(single_move.player, previous_top_move["pv"], interactive)
                         text += i18n._("Info:PV").format(pv=pv) + "\n"
-
                 if sgf or details or teach:
                     currmove_pol_rank, currmove_pol_prob, policy_ranking = self.move_policy_stats()
                     if currmove_pol_rank is not None:
@@ -417,10 +423,13 @@ class GameNode(SGFNode):
         root_score = self.analysis["root"]["scoreLead"]
         root_winrate = self.analysis["root"]["winrate"]
         move_dicts = list(self.analysis["moves"].values())  # prevent incoming analysis from causing crash
+        top_move = [d for d in move_dicts if d["order"] == 0]
+        top_score_lead = top_move[0]["scoreLead"] if top_move else root_score
         return sorted(
             [
                 {
                     "pointsLost": self.player_sign(self.next_player) * (root_score - d["scoreLead"]),
+                    "relativePointsLost": self.player_sign(self.next_player) * (top_score_lead - d["scoreLead"]),
                     "winrateLost": self.player_sign(self.next_player) * (root_winrate - d["winrate"]),
                     **d,
                 }

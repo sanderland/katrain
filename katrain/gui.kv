@@ -25,10 +25,12 @@
 #<Label>:
 #    canvas.before:
 #        Color:
-#            rgba: RED
+#            rgba: [1,0,0,1]
 #        Line:
 #            rectangle:  (*self.pos,*self.size)
 #            width: 1
+
+
 
 # mixins
 <BackgroundMixin>:
@@ -45,6 +47,49 @@
             rounded_rectangle: (self.x + root.outline_width, self.y + root.outline_width, self.width - 2 * root.outline_width, self.height - 2*root.outline_width, root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
             width: root.outline_width or 1
 
+# table cells, stats panel mainly
+
+<TableCellLabel>:
+    font_size: self.height/3
+    padding: [Theme.CP_PADDING,Theme.CP_PADDING]
+    line_height: 0.8
+    halign: 'center'
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    canvas:
+        Color:
+            rgba: root.outline_color
+        Line: # left
+            points: (root.x + root.outline_width,root.y,root.x + root.outline_width,root.y+root.size[1])
+            width: root.outline_width if 'left' in root.outlines else 1e-6
+            cap: 'square'
+        Line: # right
+            points: (root.x + root.size[0] - root.outline_width,root.y,root.x + root.size[0] - root.outline_width,root.y+root.size[1])
+            width: root.outline_width if 'right' in root.outlines else 1e-6
+            cap: 'square'
+        Line: # top
+            points: (root.x, root.y+root.size[1]-root.outline_width, root.x + root.size[0], root.y+root.size[1]-root.outline_width)
+            width: root.outline_width if 'top' in root.outlines else 1e-6
+            cap: 'square'
+        Line: # bottom
+            points:  (root.x, root.y+root.outline_width, root.x + root.size[0], root.y+root.outline_width)
+            width: root.outline_width * int('bottom' in root.outlines) + 1e-6
+            cap: 'square'
+
+<TableHeaderLabel>:
+    font_size: self.height/2.5
+
+<TableStatLabel>:
+    canvas.before:
+        Color:
+            rgba: root.bar_color
+        Rectangle:
+            pos: root.x if root.side=='right' else root.x+root.size[0]*(1 - min(1,root.value/root.scale)), root.y
+            size: root.size[0] * min(1,root.value/root.scale), root.size[1]
 
 
 # new widgets
@@ -273,7 +318,8 @@
     padding: [2*CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING]
     subtype_label: subtype_label
     CircleWithText:
-        size_hint: 0.32, 1
+        size_hint_x: 0.32 if root.alignment=='right' else EPSILON
+        opacity: 1 if root.alignment=='right' else 0
         player: root.player
         text: str(root.captures)
     BoxLayout:
@@ -299,6 +345,11 @@
             valign: 'middle'
             shorten: root.player_type==PLAYER_HUMAN # overflow/cut rank off AI names
             max_lines: 1
+    CircleWithText:
+        size_hint_x: EPSILON if root.alignment=='right' else 0.32
+        opacity: 0 if root.alignment=='right' else 1
+        player: root.player
+        text: str(root.captures)
 
 <PauseButton>:
     height: self.width
@@ -765,6 +816,11 @@
         icon: 'analysis.png'
         shortcut: ''
         on_action: root.open_game_analysis_popup()
+    AnalysisMenuItem:
+        text: i18n._("analysis:report")
+        icon: 'analysis.png'
+        shortcut: 'F3'
+        on_action: root.open_report_popup()
     AnalysisMenuItem:
         text: i18n._("analysis:continuous")
         icon: 'play.png'

@@ -14,6 +14,7 @@ from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.utils import platform
@@ -22,7 +23,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
-from katrain.core.ai import ai_rank_estimation
+from katrain.core.ai import ai_rank_estimation, game_report
 from katrain.core.constants import (
     AI_CONFIG_DEFAULT,
     AI_DEFAULT,
@@ -35,11 +36,24 @@ from katrain.core.constants import (
     OUTPUT_INFO,
     SGF_INTERNAL_COMMENTS_MARKER,
     STATUS_INFO,
+    PLAYER_HUMAN,
+    ADDITIONAL_MOVE_ORDER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
-from katrain.core.utils import PATHS, find_package_resource
-from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
+from katrain.core.sgf_parser import Move
+from katrain.core.utils import PATHS, find_package_resource, evaluation_class
+from katrain.gui.kivyutils import (
+    BackgroundMixin,
+    I18NSpinner,
+    BackgroundLabel,
+    TableHeaderLabel,
+    TableCellLabel,
+    TableStatLabel,
+    PlayerInfo,
+    SizedRectangleButton,
+    AutoSizedRectangleButton,
+)
 from katrain.gui.theme import Theme
 from katrain.gui.widgets.progress_loader import ProgressLoader
 
@@ -353,9 +367,9 @@ class ConfigTeacherPopup(QuickConfigGui):
         for k in ["dot color", "point loss threshold", "num undos", "show dots", "save dots"]:
             self.options_grid.add_widget(DescriptionLabel(text=i18n._(k), font_name=i18n.font_name, font_size=dp(17)))
 
-        for i, (color, threshold, undo, show_dot, savesgf) in enumerate(
-            zip(Theme.EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs)
-        ):
+        for i, color, threshold, undo, show_dot, savesgf in list(
+            zip(range(len(thresholds)), Theme.EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs)
+        )[::-1]:
             self.add_option_widgets(
                 [
                     BackgroundMixin(background_color=color, size_hint=[0.9, 0.9]),
@@ -438,6 +452,16 @@ class ConfigAIPopup(QuickConfigGui):
         Clock.schedule_once(self.katrain.controls.update_players, 0)
 
 
+class EngineRecoveryPopup(QuickConfigGui):
+    error_message = StringProperty("")
+    code = ObjectProperty(None)
+
+    def __init__(self, katrain, error_message, code):
+        super().__init__(katrain)
+        self.error_message = str(error_message)
+        self.code = code
+
+
 class BaseConfigPopup(QuickConfigGui):
     MODEL_ENDPOINTS = {
         "Latest distributed model": "https://katagotraining.org/api/networks/newest_training/",
@@ -455,20 +479,20 @@ class BaseConfigPopup(QuickConfigGui):
 
     KATAGOS = {
         "win": {
-            "OpenCL v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-opencl-windows-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-eigenavx2-windows-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-eigen-windows-x64.zip",
-            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
+            "OpenCL v1.9.0": "https://github.com/lightvector/KataGo/releases/download/v1.9.0/katago-v1.9.0-opencl-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.9.0": "https://github.com/lightvector/KataGo/releases/download/v1.9.0/katago-v1.9.0-eigenavx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.9.0": "https://github.com/lightvector/KataGo/releases/download/v1.9.0/katago-v1.9.0-eigen-windows-x64.zip",
+            "OpenCL v1.9 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.9.0/katago-v1.9.0-opencl-windows-x64+bs29.zip",
         },
         "linux": {
-            "OpenCL v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-opencl-linux-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-eigenavx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.8.1": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-eigen-linux-x64.zip",
-            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
+            "OpenCL v1.9.0": "https://github.com/lightvector/KataGo/releases/download/v1.9.0/katago-v1.9.0-opencl-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.9.0": "https://github.com/lightvector/KataGo/releases/download/v1.9.0/katago-v1.9.0-eigenavx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.9.0": "https://github.com/lightvector/KataGo/releases/download/v1.9.0/katago-v1.9.0-eigen-linux-x64.zip",
+            "OpenCL v1.9 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.9.0/katago-v1.9.0-opencl-linux-x64+bs29.zip",
         },
         "just-descriptions": {
-            "CUDA v1.8.1 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-gpu-cuda10.2-windows-x64.zip",
-            "CUDA v1.8.1 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.8.1/katago-v1.8.1-gpu-cuda10.2-linux-x64.zip",
+            "CUDA v1.9.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.9.0/katago-v1.9.0-cuda11.2-windows-x64.zip",
+            "CUDA v1.9.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.9.0/katago-v1.9.0-cuda11.1-linux-x64.zip",
         },
     }
 
@@ -565,7 +589,10 @@ class BaseConfigPopup(QuickConfigGui):
                 self.paths.append(path)  # persistent on paths with models found
             kata_files += files
 
-        kata_files = [(path, find_description(path)) for path in sorted(kata_files, key=lambda f: "bs29" in f)]
+        kata_files = sorted(
+            [(path, find_description(path)) for path in kata_files],
+            key=lambda f: ("bs29" in f[0]) * 0.1 - (f[0] != f[1]),
+        )
         katas_available_msg = i18n._("katago binaries available").format(num=len(kata_files))
         self.katago_files.values = [katas_available_msg, i18n._("default katago option")] + [
             desc for path, desc in kata_files
@@ -815,3 +842,95 @@ class ReAnalyzeGamePopup(BoxLayout):
 
     def on_submit(self):
         self.button.trigger_action(duration=0)
+
+
+class GameReportPopup(BoxLayout):
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
+        self.depth_filter = None
+        Clock.schedule_once(self._refresh, 0)
+
+    def set_depth_filter(self, filter):
+        self.depth_filter = filter
+        Clock.schedule_once(self._refresh, 0)
+
+    def _refresh(self, _dt=0):
+        game = self.katrain.game
+        thresholds = self.katrain.config("trainer/eval_thresholds")
+
+        sum_stats, histogram, player_ptloss = game_report(game, depth_filter=self.depth_filter, thresholds=thresholds)
+        labels = [f"≥ {pt}" if pt > 0 else f"< {thresholds[-2]}" for pt in thresholds]
+
+        table = GridLayout(cols=3, rows=6 + len(thresholds))
+        colors = [
+            [cp * 0.75 for cp in col[:3]] + [1] for col in Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
+        ]
+
+        table.add_widget(TableHeaderLabel(text="", background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text=i18n._("header:keystats"), background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="", background_color=Theme.BACKGROUND_COLOR))
+
+        for i, (label, fmt, stat, scale, more_is_better) in enumerate(
+            [
+                ("accuracy", "{:.1f}", "accuracy", 100, True),
+                ("meanpointloss", "{:.1f}", "mean_ptloss", 5, False),
+                ("aitopmove", "{:.1%}", "ai_top_move", 1, True),
+                ("aitop5", "{:.1%}", "ai_top5_move", 1, True),
+            ]
+        ):
+
+            statcell = {
+                bw: TableStatLabel(
+                    text=fmt.format(sum_stats[bw][stat]) if stat in sum_stats[bw] else "",
+                    side=side,
+                    value=sum_stats[bw].get(stat, 0),
+                    scale=scale,
+                    bar_color=Theme.STAT_BETTER_COLOR
+                    if (sum_stats[bw].get(stat, 0) < sum_stats[Move.opponent_player(bw)].get(stat, 0)) ^ more_is_better
+                    else Theme.STAT_WORSE_COLOR,
+                    background_color=Theme.BOX_BACKGROUND_COLOR,
+                )
+                for (bw, side) in zip("BW", ["left", "right"])
+            }
+            table.add_widget(statcell["B"])
+            table.add_widget(TableCellLabel(text=i18n._(f"stat:{label}"), background_color=Theme.BOX_BACKGROUND_COLOR))
+            table.add_widget(statcell["W"])
+
+        table.add_widget(TableHeaderLabel(text=i18n._("header:num moves"), background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text=i18n._("stats:pointslost"), background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text=i18n._("header:num moves"), background_color=Theme.BACKGROUND_COLOR))
+
+        for i, (col, label, pt) in enumerate(zip(colors[::-1], labels[::-1], thresholds[::-1])):
+            statcell = {
+                bw: TableStatLabel(
+                    text=str(histogram[i][bw]),
+                    side=side,
+                    value=histogram[i][bw],
+                    scale=len(player_ptloss[bw]) + 1e-6,
+                    bar_color=col,
+                    background_color=Theme.BOX_BACKGROUND_COLOR,
+                )
+                for (bw, side) in zip("BW", ["left", "right"])
+            }
+            table.add_widget(statcell["B"])
+            table.add_widget(TableCellLabel(text=label, background_color=col))
+            table.add_widget(statcell["W"])
+
+        self.stats.clear_widgets()
+        self.stats.add_widget(table)
+
+        for bw, player_info in self.katrain.players_info.items():
+            self.player_infos[bw].player_type = player_info.player_type
+            self.player_infos[bw].captures = ""  # ;)
+            self.player_infos[bw].player_subtype = player_info.player_subtype
+            self.player_infos[bw].name = player_info.name
+            self.player_infos[bw].rank = (
+                player_info.sgf_rank
+                if player_info.player_type == PLAYER_HUMAN
+                else rank_label(player_info.calculated_rank)
+            )
+
+        # if not done analyzing, check again in 1s
+        if not self.katrain.engine.is_idle():
+            Clock.schedule_once(self._refresh, 1)

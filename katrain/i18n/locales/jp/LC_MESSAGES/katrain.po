@@ -336,7 +336,9 @@ msgid "point loss threshold"
 msgstr "何目より損なら"
 
 msgid "num undos"
-msgstr "再考を促す回数"
+msgstr ""
+"再考を促す回数\n"
+"（指導対局時）"
 
 msgid "dot color"
 msgstr "色"
@@ -450,7 +452,7 @@ msgstr ""
 "クリップボードの内容：{contents}..."
 
 msgid "Failed to load SGF"
-msgstr "SGFのロードに失敗しました: {error}"
+msgstr "SGFのロードに失敗しました：{error}"
 
 msgid "Kata exe not found"
 msgstr "KataGoの実行ファイル {exe} がありません。一般設定を確認してください。"
@@ -470,7 +472,7 @@ msgid "Starting Kata failed"
 msgstr "コマンド '{command}' によるKataGoの起動に失敗しました。エラー {error}"
 
 msgid "Engine died unexpectedly"
-msgstr "出力なしで予期せずエンジンが止まりました。メモリ不足かもしれません：{error}"
+msgstr "出力なしで予期せずエンジンが止まりました：{error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -882,10 +884,78 @@ msgstr ""
 msgid "editgame"
 msgstr "対局情報を編集"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "ニュージーランド"
 
-#. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
+
+#. View a player performance report
+msgid "analysis:report"
+msgstr "評価レポート"
+
+msgid "engine died popup opening message"
+msgstr ""
+"おおっと！KataGoエンジンが起動に失敗したか、クラッシュしました。\n"
+" エラー内容：{error_message}\n"
+"エラーコード {code}"
+
+#. Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr "それでもだめなら、{link}して最新のトラブルシューティングページへ。"
+
+#. Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr "まずは、{link}から別バージョンのKataGoをダウンロードしてうまくいくか試してください。"
+
+#. as in "click here" to go to this page,
+msgid "link_here"
+msgstr "ここをクリック"
+
+#. popup title
+msgid "engine recovery"
+msgstr "KataGoセットアップのヘルプ"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "分析を悪手だけに限定"
+
+#. statistic in performance report
+msgid "stat:accuracy"
+msgstr "正確度の評点"
+
+#. header in performance report
+msgid "header:keystats"
+msgstr "基本統計"
+
+#. header in performance report
+msgid "header:num moves"
+msgstr "手数"
+
+#. opening of the game filter in performance report
+msgid "Opening"
+msgstr "序盤"
+
+#. end of the game filter in performance report
+msgid "Endgame"
+msgstr "終盤"
+
+#. middle of the game filter in performance report
+msgid "Midgame"
+msgstr "中盤"
+
+#. statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "平均損失目数"
+
+#. statistic in performance report
+msgid "stat:aitop5"
+msgstr "AIの上位5候補手との一致率"
+
+#. statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AIの最善手との一致率"
+
+#. game filter in performance report
+msgid "Entire Game"
+msgstr "全局"

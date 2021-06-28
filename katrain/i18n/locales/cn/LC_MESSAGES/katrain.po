@@ -838,10 +838,80 @@ msgstr "这会产生部分的对局让你接著下。例如：你可以使用它
 msgid "editgame"
 msgstr "编辑对局资讯"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "新西兰"
 
-#. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
+
+#. View a player performance report
+msgid "analysis:report"
+msgstr "表现报告"
+
+msgid "engine died popup opening message"
+msgstr ""
+"KataGo引擎启动失败或崩溃。\n"
+"\n"
+"错误：{error_message}\n"
+"\n"
+"错误码：{code}."
+
+#. Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr "如果你还有任何困难，请参考疑难排解页面 {link}"
+
+#. Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr "首先，在 {link} 中，尝试下载且更换为不同版本的KataGo执行档是否能解决问题。"
+
+#. as in "click here" to go to this page,
+msgid "link_here"
+msgstr "点击此处"
+
+#. popup title
+msgid "engine recovery"
+msgstr "KataGo设定指南"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "仅分析错误操作"
+
+#. statistic in performance report
+msgid "stat:accuracy"
+msgstr "准确度评分"
+
+#. header in performance report
+msgid "header:keystats"
+msgstr "关键数据"
+
+#. header in performance report
+msgid "header:num moves"
+msgstr "步数"
+
+#. opening of the game filter in performance report
+msgid "Opening"
+msgstr "开局"
+
+#. end of the game filter in performance report
+msgid "Endgame"
+msgstr "终盘"
+
+#. middle of the game filter in performance report
+msgid "Midgame"
+msgstr "中盘"
+
+#. statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "平均损失目数"
+
+#. statistic in performance report
+msgid "stat:aitop5"
+msgstr "AI前5佳选点重合度 %"
+
+#. statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AI最佳选点重合度 %"
+
+#. game filter in performance report
+msgid "Entire Game"
+msgstr "全局"

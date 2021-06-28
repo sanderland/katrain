@@ -435,9 +435,7 @@ msgstr ""
 "Einstellungen auf die richtige KataGo-Datei zeigt."
 
 msgid "Engine died unexpectedly"
-msgstr ""
-"Engine ist unerwartet abgestürzt, ohne Ausgabe zu senden, wahrscheinlich "
-"wegen zu wenig Speicher: {error}"
+msgstr "Engine ist unerwartet abgestürzt: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -905,10 +903,84 @@ msgstr ""
 msgid "editgame"
 msgstr "Spiel editieren"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "Neuseeländisch"
 
-#. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
+
+#.  - View a player performance report
+msgid "analysis:report"
+msgstr "Leistungsbericht"
+
+msgid "engine died popup opening message"
+msgstr ""
+"Das KataGo Engine konnte nicht starten, oder ist abgestürzt.\n"
+"\n"
+"Der Fehler war: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Der Fehlercode war: [color=#CC2222]{code}[/color]."
+
+#.  - Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr ""
+"Wenn sie immer noch Schwierigkeiten haben, {link} für eine Hilfe-Seite auf "
+"dem neuesten Stand."
+
+#.  - Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr ""
+"Versuchen sie erstmal KataGo Versionen runterzuladen und ob eine andere "
+"ausführbare Datei in {link} hilft. "
+
+#.  - as in "click here" to go to this page,
+msgid "link_here"
+msgstr "klicken sie hier"
+
+#.  - popup title
+msgid "engine recovery"
+msgstr "Hilfe für KataGo Konfiguration"
+
+#.  - label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Analysis auf Fehler begrenzen"
+
+#.  - statistic in performance report
+msgid "stat:accuracy"
+msgstr "Genauigkeitsbewertung"
+
+#.  - header in performance report
+msgid "header:keystats"
+msgstr "Schlüsselstatistiken"
+
+#.  - header in performance report
+msgid "header:num moves"
+msgstr "# Züge"
+
+#.  - opening of the game filter in performance report
+msgid "Opening"
+msgstr "Eröffnung"
+
+#.  - end of the game filter in performance report
+msgid "Endgame"
+msgstr "Endspiel"
+
+#.  - middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Mittelspiel"
+
+#.  - statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Durchschnittlicher Punkteverlust"
+
+#.  - statistic in performance report
+msgid "stat:aitop5"
+msgstr "KI Top 5 Übereinstimmung %"
+
+#.  - statistic in performance report
+msgid "stat:aitopmove"
+msgstr "Bester KI Zug Übereinstimmung %"
+
+#.  - game filter in performance report
+msgid "Entire Game"
+msgstr "Gesamtes Spiel"

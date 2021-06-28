@@ -1,7 +1,6 @@
 import time
 
 from kivy.clock import Clock
-from kivy.core.audio import SoundLoader
 from kivy.properties import ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
@@ -18,6 +17,7 @@ from katrain.core.constants import (
 from katrain.core.lang import rank_label
 from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
 from katrain.gui.theme import Theme
+from katrain.gui.sound import play_sound, stop_sound
 
 
 class PlayAnalyzeSelect(MDFloatLayout):
@@ -80,10 +80,6 @@ class ControlsPanel(BoxLayout):
         self.status_state = (None, -1e9, None)
         self.active_comment_node = None
         self.last_timer_update = (None, 0, False)
-        self.beep = SoundLoader.load(Theme.COUNTDOWN_SOUND)
-        self.boing = SoundLoader.load(Theme.MINIMUM_TIME_PASSED_SOUND)
-        if self.boing:
-            self.boing.volume = 0.1
         self.beep_start = 5.2
         self.timer_interval = 0.07
 
@@ -228,13 +224,12 @@ class ControlsPanel(BoxLayout):
                 if (
                     min_use
                     and not new_beeping
-                    and self.boing
                     and boing_at_remaining - self.timer_interval
                     < time_remaining
                     < boing_at_remaining + self.timer_interval
                     and player.periods_used < byo_num
                 ):
-                    self.boing.play()
+                    play_sound(Theme.MINIMUM_TIME_PASSED_SOUND, volume=0.1)
 
             else:
                 new_beeping = False
@@ -247,10 +242,9 @@ class ControlsPanel(BoxLayout):
 
             if sounds_on:
                 if beeping and not new_beeping and not used_period:
-                    self.beep.stop()
-                elif not beeping and new_beeping and self.beep:
-                    self.beep.volume = 0.5 if periods_rem > 1 else 1
-                    self.beep.play()
+                    stop_sound(Theme.COUNTDOWN_SOUND)
+                elif not beeping and new_beeping:
+                    play_sound(Theme.COUNTDOWN_SOUND, volume=0.5 if periods_rem > 1 else 1)
 
             self.last_timer_update = (current_node, now, new_beeping)
 

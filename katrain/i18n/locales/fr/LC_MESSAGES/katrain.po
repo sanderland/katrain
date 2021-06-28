@@ -80,8 +80,8 @@ msgstr ""
 
 msgid "analysis:policy"
 msgstr ""
-"Coups\n"
-"intuitifs"
+"Carte des\n"
+"intuitions"
 
 msgid "analysis:territory"
 msgstr ""
@@ -90,7 +90,7 @@ msgstr ""
 
 #. analysis menu items
 msgid "analysis:extra"
-msgstr "Analyser davantage"
+msgstr "Approfondir l'analyse"
 
 msgid "analysis:equalize"
 msgstr "Égaliser l'analyse des coups"
@@ -99,7 +99,7 @@ msgid "analysis:sweep"
 msgstr "Analyser tous les possibles"
 
 msgid "analysis:game"
-msgstr "Analyser davantage la partie"
+msgstr "Approfondir l'analyse de partie"
 
 msgid "analysis:continuous"
 msgstr "Lancer/Arrêter l'analyse continue"
@@ -302,7 +302,6 @@ msgstr "Coréennes"
 msgid "aga"
 msgstr "AGA"
 
-#. TODO check
 msgid "stone_scoring"
 msgstr "Chinoises anciennes"
 
@@ -506,10 +505,7 @@ msgstr ""
 "généraux"
 
 msgid "Engine died unexpectedly"
-msgstr ""
-"Le moteur de jeu est tombé en panne, \n"
-"possiblement pour cause de \n"
-"mémoire insuffisante : {error}"
+msgstr "Le moteur de jeu est tombé en panne: {error}"
 
 msgid "teaching undo message"
 msgstr ""
@@ -522,13 +518,13 @@ msgid "sweep analysis"
 msgstr "Analyse de tous les possibles ({visits} visites/coup)."
 
 msgid "extra analysis"
-msgstr "Analyse supplémentaire de {visits} visites."
+msgstr "Analyse approfondie ({visits} visites)."
 
 msgid "equalizing analysis"
 msgstr "Égalisation de l'analyse ({visits} visites/coup considéré)."
 
 msgid "game re-analysis"
-msgstr "Analyse supplémentaire de la partie ({visits} visites/coup)."
+msgstr "Analyse de partie approfondie ({visits} visites/coup)."
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -899,10 +895,68 @@ msgstr ""
 msgid "editgame"
 msgstr "Partie en cours"
 
-#. TODO
 msgid "new zealand"
-msgstr "New Zealand"
+msgstr "Néo-zélandaises"
 
-#. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
+
+msgid "analysis:report"
+msgstr "Rapport de partie"
+
+msgid "engine died popup opening message"
+msgstr ""
+"Le moteur de jeu KataGo ne fonctionne pas/plus.\n"
+"\n"
+"Rapport d'erreur : [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Code d'erreur : [color=#CC2222]{code}[/color]"
+
+msgid "go to engine help page"
+msgstr ""
+"Si le problème persiste, vous pouvez consulter une page d'aide tenue à jour "
+"en cliquant sur {link}."
+
+msgid "change engine suggestion"
+msgstr ""
+"L'exécutable et le modèle KataGo utilisés doivent être compatibles. Vous "
+"pouvez en télécharger et/ou en sélectionner d'autres dans les {link}. "
+
+msgid "link_here"
+msgstr "ce lien"
+
+msgid "engine recovery"
+msgstr "Aide au dépannage de KataGo"
+
+msgid "reanalyze mistakes only"
+msgstr "Restreindre l'analyse aux seules erreurs"
+
+msgid "stat:accuracy"
+msgstr "Acuité du jeu"
+
+msgid "header:keystats"
+msgstr "Statistiques des coups"
+
+msgid "header:num moves"
+msgstr "Nombre de coups"
+
+msgid "Opening"
+msgstr "Début de Partie"
+
+msgid "Endgame"
+msgstr "Fin de Partie"
+
+msgid "Midgame"
+msgstr "Milieu de Partie"
+
+msgid "stat:meanpointloss"
+msgstr "Perte moyenne"
+
+msgid "stat:aitop5"
+msgstr "L'un des 5 coups prioritaires"
+
+msgid "stat:aitopmove"
+msgstr "Ce que jouerait KataGo"
+
+msgid "Entire Game"
+msgstr "Partie entière"

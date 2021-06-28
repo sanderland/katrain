@@ -8,7 +8,7 @@
         "max_visits": 500,
         "fast_visits": 25,
         "max_time": 8.0,
-        "wide_root_noise": 0.0,
+        "wide_root_noise": 0.04,
         "_enable_ownership": true
     },
     "contribute": {
@@ -28,7 +28,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.8.0",
+        "version": "1.9.0",
         "load_fast_analysis": false,
         "load_sgf_rewind": true
     },
@@ -159,6 +159,7 @@
         }
     },
     "ui_state": {
+        "restoresize": true,
         "size": [],
         "play": {
             "analysis_controls": {

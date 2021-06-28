@@ -10,7 +10,7 @@ import traceback
 from collections import defaultdict
 
 from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_KATAGO_STDERR, DATA_FOLDER
-from katrain.core.engine import EngineDiedException, BaseEngine
+from katrain.core.engine import BaseEngine
 from katrain.core.game import BaseGame
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move
@@ -162,9 +162,9 @@ class KataGoContributeEngine(BaseEngine):
         self.stdout_thread.start()
         self.stderr_thread.start()
 
-    def check_alive(self, os_error="", exception_if_dead=False):
+    def check_alive(self, os_error="", maybe_open_help=False):
         ok = self.katago_process and self.katago_process.poll() is None
-        if not ok and exception_if_dead:
+        if not ok:
             if self.katago_process:
                 code = self.katago_process and self.katago_process.poll()
                 if code == 3221225781:
@@ -175,10 +175,6 @@ class KataGoContributeEngine(BaseEngine):
                 if code != 1 and not self.server_error:  # deliberate exit, already showed message?
                     self.katrain.log(died_msg, OUTPUT_ERROR)
                 self.katago_process = None
-            else:
-                died_msg = i18n._("Engine died unexpectedly").format(error=os_error)
-            if not self.server_error:  # dont raise if already know what happened
-                raise EngineDiedException(died_msg)
         return ok
 
     def shutdown(self, finish=False):
@@ -210,8 +206,8 @@ class KataGoContributeEngine(BaseEngine):
                             self.katrain.log(message, OUTPUT_KATAGO_STDERR)
                     except Exception as e:
                         print("ERROR in processing KataGo stderr:", line, "Exception", e)
-                elif self.katago_process:
-                    self.check_alive(exception_if_dead=True)
+                elif self.katago_process and not self.check_alive():
+                    return
             except Exception as e:
                 self.katrain.log(f"Exception in reading stdout {e}", OUTPUT_DEBUG)
                 return
@@ -273,8 +269,8 @@ class KataGoContributeEngine(BaseEngine):
                         self.uploaded_games_count += 1
                     else:
                         self.katrain.log(line, OUTPUT_KATAGO_STDERR)
-                elif self.katago_process:
-                    self.check_alive(exception_if_dead=False)  # stderr will do this
+                elif self.katago_process and not self.check_alive():  # stderr will do this
+                    return
             except Exception as e:
                 self.katrain.log(f"Exception in reading stdout {e}", OUTPUT_DEBUG)
                 return

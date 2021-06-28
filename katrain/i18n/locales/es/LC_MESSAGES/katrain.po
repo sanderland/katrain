@@ -441,9 +441,7 @@ msgstr ""
 "'engine' al valor correcto del ejecutable KataGo."
 
 msgid "Engine died unexpectedly"
-msgstr ""
-"El motor murió inesperadamente sin mandar alguna señal, posiblemente debido "
-"a  memoria: {error}"
+msgstr "El motor murió inesperadamente sin mandar alguna señal: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -924,3 +922,80 @@ msgstr "New Zealand"
 #. TODO
 msgid "tromp-taylor"
 msgstr "Tromp-Taylor"
+
+#. TODO - View a player performance report
+msgid "analysis:report"
+msgstr "Performance Report"
+
+#. TODO
+msgid "engine died popup opening message"
+msgstr ""
+"The KataGo Engine failed to start, or crashed.\n"
+"\n"
+"The error was: [color=#661111]{error_message}[/color]\n"
+"\n"
+"The error code was: [color=#661111]{code}[/color]."
+
+#. TODO - Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr ""
+"First, try downloading KataGo versions and try if changing to a different "
+"executable helps in {link} ."
+
+#. TODO - as in "click here" to go to this page,
+msgid "link_here"
+msgstr "click here"
+
+#. TODO - Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr ""
+"If you are still having difficulties, {link} for an up-to-date "
+"troubleshooting page."
+
+#. TODO - popup title
+msgid "engine recovery"
+msgstr "Help with KataGo setup"
+
+#. TODO - label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Limit analysis to mistakes only"
+
+#. TODO - statistic in performance report
+msgid "stat:accuracy"
+msgstr "Accuracy Rating"
+
+#. TODO - header in performance report
+msgid "header:keystats"
+msgstr "Key Statistics"
+
+#. TODO - header in performance report
+msgid "header:num moves"
+msgstr "# Moves"
+
+#. TODO - opening of the game filter in performance report
+msgid "Opening"
+msgstr "Opening"
+
+#. TODO - end of the game filter in performance report
+msgid "Endgame"
+msgstr "Endgame"
+
+#. TODO - middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Midgame"
+
+#. TODO - statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Mean Point Loss"
+
+#. TODO - statistic in performance report
+msgid "stat:aitop5"
+msgstr "AI Top 5 Match %"
+
+#. TODO - statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AI Best Move Match %"
+
+#. TODO - game filter in performance report
+msgid "Entire Game"
+msgstr "Entire Game"

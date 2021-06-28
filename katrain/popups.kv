@@ -79,7 +79,6 @@
     font_size: sp(Theme.DESC_FONT_SIZE) * 0.66
 
 <ConfigPopup>:
-    configfile: configfile
     model_path: model_path
     katago_path: katago_path
     model_files: model_files
@@ -201,11 +200,11 @@
                     input_property: "general/debug_level"
                     helper_text: i18n._("general:debug_level:hint")
                     helper_text_mode: "on_focus"
-            SmallDescriptionLabel:
-                text: i18n._('config file path')
-            SmallDescriptionLabel:
-                id: configfile
-                text: app.gui.config_file
+            DescriptionLabel:
+                text: 'Restore window size on startup'
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "ui_state/restoresize"
         BackgroundMixin:
             background_color: LIGHT_GREY
             size_hint: None, 1
@@ -255,7 +254,13 @@
                 height: sp(40)
                 text: i18n._("update settings")
                 on_press: root.update_config(True)
-
+#       BoxLayout:
+#            orientation: 'vertical'
+#            SmallDescriptionLabel:
+#                text: i18n._('config file path')
+#            SmallDescriptionLabel:
+#                id: configfile
+#                text:
 
 <ContributePopup>:
     katago_path: katago_path
@@ -789,6 +794,16 @@
             text: i18n._("update ai settings")
             on_press: root.update_config(True)
 
+<EngineRecoveryPopup>:
+    Label:
+        padding: CP_PADDING, CP_PADDING*3
+        text: i18n._("engine died popup opening message").format(code=root.code,error_message=root.error_message) + "\n\n" +  i18n._("change engine suggestion").format(link="[color=#CCCC11][u][ref=engine_settings]"+i18n._('menu:settings')+"[/ref][/u][/color]") + "\n\n" +  i18n._("go to engine help page").format(link="[color=#CCCC11][u][ref=engine_help]"+i18n._('link_here')+"[/ref][/u][/color]")
+        text_size: self.size
+        font_size: sp(Theme.DESC_FONT_SIZE)
+        markup: True
+        valign: 'top'
+        on_ref_press:  app.webbrowser('engine:help') if args[1]=='engine_help' else  app.gui('config-popup')
+
 
 <ReAnalyzeGamePopup>:
     visits: visits
@@ -803,15 +818,23 @@
             LabelledIntInput:
                 id: visits
                 text: '2500'
+    BoxLayout:
+        size_hint: 1, 1.5
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('reanalyze mistakes only')
+        AnchorLayout:
+            LabelledCheckBox:
+                id: mistakes
     AnchorLayout:
         size_hint: 1, 1
         AutoSizedRoundedRectangleButton:
             id: button
             padding_x: 15
-            size_hint: None,0.5
+            size_hint: None,0.66
             text: i18n._("analysis:game") # re-use string
             on_press:
-                root.katrain("analyze-extra", "game", visits=visits.input_value)
+                root.katrain("analyze-extra", "game", visits=visits.input_value, mistakes_only=mistakes.input_value)
                 root.popup.dismiss()
 
 <LoadSGFPopup>:
@@ -859,3 +882,51 @@
         filters: ["*.sgf","*.gib","*.ngf"]
         path: "."
         size_hint: 1,7
+
+
+<GameReportPopup>
+    player_infos: {'B': player_b, 'W': player_w}
+    stats: stats
+    orientation: 'vertical'
+    padding: Theme.CP_PADDING
+    BoxLayout:
+        size_hint_y: 0.8
+        spacing: CP_SPACING
+        padding: CP_PADDING
+        SizedRectangleToggleButton:
+            text: i18n._('Entire Game')
+            allow_no_selection: False
+            size_hint: 1,1
+            group: 'stats_depth'
+            state: 'down'
+            on_press: root.set_depth_filter(None)
+        SizedRectangleToggleButton:
+            text: i18n._('Opening')
+            allow_no_selection: False
+            size_hint: 1,1
+            group: 'stats_depth'
+            on_press: root.set_depth_filter((0,0.14))
+        SizedRectangleToggleButton:
+            text: i18n._('Midgame')
+            allow_no_selection: False
+            size_hint: 1,1
+            group: 'stats_depth'
+            on_press: root.set_depth_filter((0.14,0.4))
+        SizedRectangleToggleButton:
+            text: i18n._('Endgame')
+            group: 'stats_depth'
+            allow_no_selection: False
+            size_hint: 1,1
+            on_press: root.set_depth_filter((0.4,10))
+    BoxLayout:
+        size_hint_y: 1.33
+        PlayerInfo:
+            player: 'B'
+            id: player_b
+        PlayerInfo:
+            player: 'W'
+            id: player_w
+            alignment: 'left'
+    BoxLayout:
+        id: stats
+        size_hint_y: 10

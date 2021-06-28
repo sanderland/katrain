@@ -1,7 +1,6 @@
 import copy
 import math
 import os
-import random
 import re
 import threading
 from datetime import datetime
@@ -21,6 +20,12 @@ from katrain.core.constants import (
     STATUS_ERROR,
     STATUS_INFO,
     STATUS_TEACHING,
+    PRIORITY_GAME_ANALYSIS,
+    PRIORITY_EXTRA_ANALYSIS,
+    PRIORITY_SWEEP,
+    PRIORITY_ALTERNATIVES,
+    PRIORITY_EQUALIZE,
+    PRIORITY_DEFAULT,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -92,7 +97,7 @@ class BaseGame:
             if handicap:
                 self.root.place_handicap_stones(handicap)
 
-        if not self.root.get_property("RU"):
+        if not self.root.get_property("RU"):  # if rules missing in sgf, inherit current
             self.root.set_property("RU", katrain.config("game/rules"))
 
         self.set_current_node(self.root)
@@ -439,11 +444,11 @@ class Game(BaseGame):
         self.region_of_interest = None
 
         threading.Thread(
-            target=lambda: self.analyze_all_nodes(-1_000_000, analyze_fast=analyze_fast, even_if_present=False),
+            target=lambda: self.analyze_all_nodes(analyze_fast=analyze_fast, even_if_present=False),
             daemon=True,
         ).start()  # return faster, but bypass Kivy Clock
 
-    def analyze_all_nodes(self, priority=0, analyze_fast=False, even_if_present=True):
+    def analyze_all_nodes(self, priority=PRIORITY_GAME_ANALYSIS, analyze_fast=False, even_if_present=True):
         for node in self.root.nodes_in_tree:
             # forced, or not present, or something went wrong in loading
             if even_if_present or not node.analysis_from_sgf or not node.load_analysis():
@@ -502,14 +507,14 @@ class Game(BaseGame):
                 ]
                 try:
                     while True:
-                        if copy_from_node.move not in already_inserted_moves:
-                            for m in copy_from_node.move_with_placements:
+                        for m in copy_from_node.move_with_placements:
+                            if m not in already_inserted_moves:
                                 self._validate_move_and_update_chains(m, True)
-                            # this inserts
-                            copy_to_node = GameNode(
-                                parent=copy_to_node, properties=copy.deepcopy(copy_from_node.properties)
-                            )
-                            num_copied += 1
+                                # this inserts
+                                copy_to_node = GameNode(
+                                    parent=copy_to_node, properties=copy.deepcopy(copy_from_node.properties)
+                                )
+                                num_copied += 1
                         if not copy_from_node.children:
                             break
                         copy_from_node = copy_from_node.ordered_children[0]
@@ -571,18 +576,26 @@ class Game(BaseGame):
                 self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
             self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
             cn.analyze(
-                engine, visits=visits, priority=-1_000, region_of_interest=self.region_of_interest, time_limit=False
+                engine,
+                visits=visits,
+                priority=PRIORITY_EXTRA_ANALYSIS,
+                region_of_interest=self.region_of_interest,
+                time_limit=False,
             )
             return
         if mode == "game":
             nodes = self.root.nodes_in_tree
+            only_mistakes = kwargs.get("mistakes_only", False)
+            threshold = self.katrain.config("trainer/eval_thresholds")[-4]
             if "visits" in kwargs:
                 visits = kwargs["visits"]
             else:
                 min_visits = min(node.analysis_visits_requested for node in nodes)
                 visits = min_visits + engine.config["max_visits"]
             for node in nodes:
-                node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
+                max_point_loss = max(c.points_lost or 0 for c in [node] + node.children)
+                if not only_mistakes or max_point_loss > threshold:
+                    node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
             self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)
             return
 
@@ -613,19 +626,19 @@ class Game(BaseGame):
                 ]
             visits = engine.config["fast_visits"]
             self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits), STATUS_ANALYSIS)
-            priority = -1_000_000_000
+            priority = PRIORITY_SWEEP
         elif mode in ["equalize", "alternative", "local"]:
             if not cn.analysis_complete and mode != "local":
                 self.katrain.controls.set_status(i18n._("wait-before-extra-analysis"), STATUS_INFO, self.current_node)
                 return
             if mode == "alternative":  # also do a quick update on current candidates so it doesn't look too weird
                 self.katrain.controls.set_status(i18n._("alternative analysis"), STATUS_ANALYSIS)
-                cn.analyze(engine, priority=-500, time_limit=False, find_alternatives="alternative")
+                cn.analyze(engine, priority=PRIORITY_ALTERNATIVES, time_limit=False, find_alternatives="alternative")
                 visits = engine.config["fast_visits"]
             else:  # equalize
                 visits = max(d["visits"] for d in cn.analysis["moves"].values())
                 self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits), STATUS_ANALYSIS)
-            priority = -1_000
+            priority = PRIORITY_EQUALIZE
             analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
         else:
             raise ValueError("Invalid analysis mode")
@@ -653,7 +666,7 @@ class Game(BaseGame):
             self.engines[node.player].request_analysis(
                 node,
                 callback=lambda result, _partial: set_analysis(node, result),
-                priority=-1000,
+                priority=PRIORITY_DEFAULT,
                 analyze_fast=True,
                 extra_settings=engine_settings,
                 **analysis_kwargs,
