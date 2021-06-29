@@ -477,7 +477,6 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_engine_recovery_popup(self, error_message, code):
         current_open = self.popup_open
-        self.log(f"engine rec {current_open}", OUTPUT_ERROR)
         if current_open and isinstance(current_open.content, EngineRecoveryPopup):
             self.log(f"Not opening engine recovery popup with {error_message} as one is already open", OUTPUT_DEBUG)
             return
