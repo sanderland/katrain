@@ -18,8 +18,6 @@ def play_sound(file, volume=1, cache=True):
         if sound:
             sound.play()
             sound.seek(0)
-        else:
-            print(f"SOUND {file} not found")
 
     app = MDApp.get_running_app()
     if app and app.gui and app.gui.config("timer/sound"):
