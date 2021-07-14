@@ -47,6 +47,7 @@ from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
 from katrain.core.ai import generate_ai_move
+from kivy.utils import platform as kivy_platform
 
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
 from katrain.core.constants import (
@@ -653,7 +654,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         self.last_key_down = keycode
-        ctrl_pressed = "ctrl" in modifiers
+        ctrl_pressed = "ctrl" in modifiers or ("meta" in modifiers and kivy_platform =="macosx")
         shift_pressed = "shift" in modifiers
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
