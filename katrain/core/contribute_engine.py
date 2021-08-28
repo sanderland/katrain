@@ -244,7 +244,7 @@ class KataGoContributeEngine(BaseEngine):
                                     game_properties["PB"] = analysis["blackPlayer"]
                                     game_properties["PW"] = analysis["whitePlayer"]
                                     current_game = BaseGame(
-                                        self.katrain, game_properties=game_properties, maybe_place_handicap=False
+                                        self.katrain, game_properties=game_properties, bypass_config=True
                                     )
                                     self.active_games[game_id] = current_game
                                 last_node = current_game.sync_branch(
