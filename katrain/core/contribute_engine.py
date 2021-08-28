@@ -243,7 +243,9 @@ class KataGoContributeEngine(BaseEngine):
                                     game_properties["RU"] = json.dumps(analysis["rules"])
                                     game_properties["PB"] = analysis["blackPlayer"]
                                     game_properties["PW"] = analysis["whitePlayer"]
-                                    current_game = BaseGame(self.katrain, game_properties=game_properties)
+                                    current_game = BaseGame(
+                                        self.katrain, game_properties=game_properties, maybe_place_handicap=False
+                                    )
                                     self.active_games[game_id] = current_game
                                 last_node = current_game.sync_branch(
                                     [Move.from_gtp(coord, pl) for pl, coord in analysis["moves"]]
