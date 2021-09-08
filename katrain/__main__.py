@@ -594,22 +594,21 @@ class KaTrainGui(Screen, KaTrainBase):
         self.log("Imported game from clipboard.", OUTPUT_INFO)
 
     def on_touch_up(self, touch):
-        if (
-            self.board_gui.collide_point(*touch.pos)
-            or self.board_controls.collide_point(*touch.pos)
-            or self.controls.move_tree.collide_point(*touch.pos)
-        ):
-            if touch.is_mouse_scrolling:
-                if self.board_gui.animating_pv is None:
-                    if touch.button == "scrollup":
-                        self("redo")
-                    elif touch.button == "scrolldown":
-                        self("undo")
-                else:
-                    if touch.button == "scrollup":
-                        self.board_gui.adjust_animate_pv_index(1)
-                    elif touch.button == "scrolldown":
-                        self.board_gui.adjust_animate_pv_index(-1)
+        if touch.is_mouse_scrolling:
+            touching_board = self.board_gui.collide_point(*touch.pos) or self.board_controls.collide_point(*touch.pos)
+            touching_control_nonscroll = self.controls.collide_point(
+                *touch.pos
+            ) and not self.controls.notes_panel.collide_point(*touch.pos)
+            if self.board_gui.animating_pv is not None and touching_board:
+                if touch.button == "scrollup":
+                    self.board_gui.adjust_animate_pv_index(1)
+                elif touch.button == "scrolldown":
+                    self.board_gui.adjust_animate_pv_index(-1)
+            elif touching_board or touching_control_nonscroll:  # scroll through moves
+                if touch.button == "scrollup":
+                    self("redo")
+                elif touch.button == "scrolldown":
+                    self("undo")
         return super().on_touch_up(touch)
 
     @property
