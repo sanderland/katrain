@@ -53,6 +53,7 @@ class BaseGame:
         move_tree: GameNode = None,
         game_properties: Optional[Dict] = None,
         sgf_filename=None,
+        bypass_config=False,  # TODO: refactor?
     ):
         self.katrain = katrain
         self._lock = threading.Lock()
@@ -83,18 +84,24 @@ class BaseGame:
             ):  # not really according to sgf, and not sure if still needed, last clause for fox
                 self.root.place_handicap_stones(handicap)
         else:
-            board_size = katrain.config("game/size")
-            rules = katrain.config("game/rules")
-            self.komi = katrain.config("game/komi")
+            default_properties = {**Game.DEFAULT_PROPERTIES, "DT": self.game_id}
+            if not bypass_config:
+                default_properties.update(
+                    {
+                        "SZ": katrain.config("game/size"),
+                        "KM": katrain.config("game/komi"),
+                        "RU": katrain.config("game/rules"),
+                    }
+                )
             self.root = GameNode(
                 properties={
-                    **Game.DEFAULT_PROPERTIES,
-                    **{"SZ": board_size, "KM": self.komi, "DT": self.game_id, "RU": rules},
+                    **default_properties,
                     **(game_properties or {}),
                 }
             )
+            self.komi = self.root.komi
             handicap = katrain.config("game/handicap")
-            if handicap:
+            if not bypass_config and handicap:
                 self.root.place_handicap_stones(handicap)
 
         if not self.root.get_property("RU"):  # if rules missing in sgf, inherit current
