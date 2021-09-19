@@ -6,7 +6,7 @@ from kivy.utils import platform
 cached_sounds = {}
 
 # prefer ffpyplayer on linux, then others, avoid gst and avoid or ffpyplayer on windows
-ranking = [("ffpy", 98 if platform in ["win",'macosx'] else -2), ("sdl", -1), ("gst", 99), ("", 0)]
+ranking = [("ffpy", 98 if platform in ["win", "macosx"] else -2), ("sdl", -1), ("gst", 99), ("", 0)]
 try:
     SoundLoader._classes.sort(key=lambda cls: [v for k, v in ranking if k in cls.__name__.lower()][0])
 except Exception as e:

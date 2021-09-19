@@ -654,7 +654,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         self.last_key_down = keycode
-        ctrl_pressed = "ctrl" in modifiers or ("meta" in modifiers and kivy_platform =="macosx")
+        ctrl_pressed = "ctrl" in modifiers or ("meta" in modifiers and kivy_platform == "macosx")
         shift_pressed = "shift" in modifiers
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts

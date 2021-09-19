@@ -67,7 +67,7 @@ The most common KataGo issue relates to different libzip versions in the provide
 Although the provided executables should work on the latest versions of Ubuntu with libzip installed, 
  various other versions and distros differ in their libzip version. 
 
-* First, try `sudo apt-get install libzip-dev` to get this library on recent systems.
+* First, try `****sudo apt-get install libzip-dev****` to get this library on recent systems.
 * Next, try installing all packages mentioned [here](INSTALL.md#LinuxTrouble).
 * A final alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.
 
