@@ -103,8 +103,8 @@ class BadukPanWidget(Widget):
         self.redraw_hover_contents_trigger()
 
     def on_touch_down(self, touch):
-        if touch.button not in ["scrollup", "scrolldown"]:
-            self.set_animating_pv(None, None)  # any click kills PV from label/move
+        if ("button" not in touch.profile) or (touch.button not in ["scrollup", "scrolldown"]):
+            self.set_animating_pv(None, None)  # any click/touch kills PV from label/move
         if "button" in touch.profile and touch.button != "left":
             return
         if self.selecting_region_of_interest:
