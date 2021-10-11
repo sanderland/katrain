@@ -17,12 +17,12 @@ jobs:
         python-version: 3.8
     - name: Build KataGo
       run: |
-        export OPENSSL_ROOT_DIR=$(brew --prefix openssl)
+        export OPENSSL_ROOT_DIR=/usr/local/opt/openssl@1.1  #$(brew --prefix openssl)
         export OPENSSL_LIBRARIES="${OPENSSL_ROOT_DIR}/lib"
         echo $OPENSSL_ROOT_DIR
-        ls $OPENSSL_ROOT_DIR || true
+        ls $OPENSSL_ROOT_DIR
         echo $OPENSSL_LIBRARIES
-        ls $OPENSSL_LIBRARIES || true
+        ls $OPENSSL_LIBRARIES
         rm katrain/KataGo/katago
         rm katrain/KataGo/*.dll
         rm katrain/KataGo/katago.exe
