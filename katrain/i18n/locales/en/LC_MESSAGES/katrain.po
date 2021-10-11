@@ -772,6 +772,9 @@ msgstr ""
 msgid "ai:jigo"
 msgstr "KataJigo"
 
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"
+
 msgid "aihelp:jigo"
 msgstr ""
 "Will try to win by a set amount of points (default 0.5), without further "

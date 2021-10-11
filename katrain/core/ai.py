@@ -10,6 +10,7 @@ from katrain.core.constants import (
     AI_INFLUENCE,
     AI_INFLUENCE_ELO_GRID,
     AI_JIGO,
+    AI_ANTIMIRROR,
     AI_LOCAL,
     AI_LOCAL_ELO_GRID,
     AI_PICK,
@@ -264,6 +265,11 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
         if not handicap_analysis:
             game.katrain.log("Error getting handicap-based move", OUTPUT_ERROR)
             ai_mode = AI_DEFAULT
+    elif ai_mode == AI_ANTIMIRROR:
+        antimirror_analysis = request_ai_analysis(game, cn, {"antiMirror": True})
+        if not antimirror_analysis:
+            game.katrain.log("Error getting antimirror move", OUTPUT_ERROR)
+            ai_mode = AI_DEFAULT
 
     while not cn.analysis_complete:
         time.sleep(0.01)
@@ -388,6 +394,8 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
         candidate_ai_moves = cn.candidate_moves
         if ai_mode == AI_HANDICAP:
             candidate_ai_moves = handicap_analysis["moveInfos"]
+        elif ai_mode == AI_ANTIMIRROR:
+            candidate_ai_moves = antimirror_analysis["moveInfos"]
 
         top_cand = Move.from_gtp(candidate_ai_moves[0]["move"], player=cn.next_player)
         if top_cand.is_pass and ai_mode not in [
@@ -492,12 +500,14 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
                 else:
                     raise (Exception("No moves found - are you using an older KataGo with no per-move ownership info?"))
             else:
-                if ai_mode not in [AI_DEFAULT, AI_HANDICAP]:
+                if ai_mode not in [AI_DEFAULT, AI_HANDICAP, AI_ANTIMIRROR]:
                     game.katrain.log(f"Unknown AI mode {ai_mode} or policy missing, using default.", OUTPUT_INFO)
                     ai_thoughts += f"Strategy {ai_mode} not found or unexpected fallback."
                 aimove = top_cand
                 if ai_mode == AI_HANDICAP:
                     ai_thoughts += f"Handicap strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move. PDA based score {cn.format_score(handicap_analysis['rootInfo']['scoreLead'])} and win rate {cn.format_winrate(handicap_analysis['rootInfo']['winrate'])}"
+                if ai_mode == AI_ANTIMIRROR:
+                    ai_thoughts += f"AntiMirror strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move. antiMirror based score {cn.format_score(antimirror_analysis['rootInfo']['scoreLead'])} and win rate {cn.format_winrate(antimirror_analysis['rootInfo']['winrate'])}"
                 else:
                     ai_thoughts += f"Default strategy found {len(candidate_ai_moves)} moves returned from the engine and chose {aimove.gtp()} as top move"
     game.katrain.log(f"AI thoughts: {ai_thoughts}", OUTPUT_DEBUG)

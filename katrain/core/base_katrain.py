@@ -54,6 +54,13 @@ class Player:
         return f"{self.player_type} ({self.player_subtype})"
 
 
+def parse_version(s):
+    parts = [int(p) for p in s.split(".")]
+    while len(parts) < 3:
+        parts.append(0)
+    return parts
+
+
 class KaTrainBase:
     USER_CONFIG_FILE = os.path.expanduser(os.path.join(DATA_FOLDER, "config.json"))
     PACKAGE_CONFIG_FILE = "katrain/config.json"
@@ -101,10 +108,10 @@ class KaTrainBase:
                         self.log(f"Copied package config to local file {config_file}", OUTPUT_INFO)
                     else:  # user file exists
                         try:
-                            version = JsonStore(user_config_file).get("general")["version"]
+                            version = parse_version(JsonStore(user_config_file).get("general")["version"])
                         except Exception:  # noqa E722 broken file etc
                             version = "0.0.0"
-                        if version < CONFIG_MIN_VERSION:
+                        if version < parse_version(CONFIG_MIN_VERSION):
                             backup = user_config_file + f".{version}.backup"
                             shutil.copyfile(user_config_file, backup)
                             shutil.copyfile(package_config_file, user_config_file)

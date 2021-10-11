@@ -999,3 +999,7 @@ msgstr "AI Best Move Match %"
 #. TODO - game filter in performance report
 msgid "Entire Game"
 msgstr "Entire Game"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"

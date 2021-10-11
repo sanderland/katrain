@@ -28,7 +28,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.9.0",
+        "version": "1.10.0",
         "load_fast_analysis": false,
         "load_sgf_rewind": true
     },
@@ -93,6 +93,7 @@
     },
     "ai": {
         "ai:default": {},
+        "ai:antimirror": {},
         "ai:handicap": {
             "automatic": true,
             "pda": 0

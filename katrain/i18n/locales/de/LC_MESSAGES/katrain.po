@@ -984,3 +984,7 @@ msgstr "Bester KI Zug Übereinstimmung %"
 #.  - game filter in performance report
 msgid "Entire Game"
 msgstr "Gesamtes Spiel"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"
