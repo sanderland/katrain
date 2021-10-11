@@ -20,9 +20,9 @@ jobs:
         export OPENSSL_ROOT_DIR=$(brew --prefix openssl)
         export OPENSSL_LIBRARIES="${OPENSSL_ROOT_DIR}/lib"
         echo $OPENSSL_ROOT_DIR
-        ls $OPENSSL_ROOT_DIR
+        ls $OPENSSL_ROOT_DIR || true
         echo $OPENSSL_LIBRARIES
-        ls $OPENSSL_LIBRARIES
+        ls $OPENSSL_LIBRARIES || true
         rm katrain/KataGo/katago
         rm katrain/KataGo/*.dll
         rm katrain/KataGo/katago.exe
