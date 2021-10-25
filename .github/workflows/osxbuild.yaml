@@ -53,7 +53,8 @@ jobs:
         pushd KaTrain.app/Contents/Resources/
         ln -s ./venv/bin/KaTrain yourapp
         popd
-        ./fix-bundle-metadata.sh KaTrain.app -n KaTrain -v $KATRAIN_VERSION -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
+        echo "Setting version to ${KATRAIN_VERSION}"
+        ./fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "${KATRAIN_VERSION}" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
         ./cleanup-app.sh KaTrain.app -g 1
         ./relocate.sh KaTrain.app
     - name: Create dmg
