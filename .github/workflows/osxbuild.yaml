@@ -17,7 +17,6 @@ jobs:
         python-version: 3.8
     - name: Build KataGo
       run: |
-        export KATRAIN_VERSION=`python -c 'from katrain.core.constants import VERSION;print(VERSION)' `
         export OPENSSL_ROOT_DIR=$(brew --prefix openssl@1.1)
         export OPENSSL_LIBRARIES="${OPENSSL_ROOT_DIR}/lib"
         echo $OPENSSL_ROOT_DIR
@@ -49,11 +48,12 @@ jobs:
         python -m pip install .
     - name: Finalize KaTrain bundle
       run: |
+        export KATRAIN_VERSION=`python -c 'from katrain.core.constants import VERSION;print(VERSION)' `
+        echo "Setting version to ${KATRAIN_VERSION}"
         cd ../kivy-sdk-packager/osx
         pushd KaTrain.app/Contents/Resources/
         ln -s ./venv/bin/KaTrain yourapp
         popd
-        echo "Setting version to ${KATRAIN_VERSION}"
         ./fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "${KATRAIN_VERSION}" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
         ./cleanup-app.sh KaTrain.app -g 1
         ./relocate.sh KaTrain.app
