@@ -112,14 +112,12 @@ class BadukPanWidget(Widget):
                     self.check_next_move_ghost(touch)
             elif touch.button == "middle" and animating_pv:
                 pv, node, _, _ = animating_pv
-                upto = self.animating_pv_index or 0
                 for i, gtpmove in enumerate(pv):
-                    if i <= upto:
-                        node = node.play(Move.from_gtp(gtpmove, node.next_player))
-                        node.analyze(self.katrain.engine, analyze_fast=True)
+                    node = node.play(Move.from_gtp(gtpmove, node.next_player))
+                    node.analyze(self.katrain.engine, analyze_fast=True)
                 self.katrain.controls.move_tree.redraw_tree_trigger()
 
-        if ("button" not in touch.profile) or (touch.button not in ["scrollup", "scrolldown"]):
+        if ("button" not in touch.profile) or (touch.button not in ["scrollup", "scrolldown","middle"]):
             self.set_animating_pv(None, None)  # any click/touch kills PV from label/move
 
     def on_touch_move(self, touch):
