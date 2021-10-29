@@ -351,8 +351,8 @@ class KataGoEngine(BaseEngine):
                         query["reportDuringSearchEvery"] = PONDERING_REPORT_DT
                         self.ponder_query = query
                     else:
-                        print("AVOID=",query.get('avoidMoves'))
-                        print("PQ AVOID=", pq.get('avoidMoves'), pq.get('avoidMoves')==query.get('avoidMoves'))
+                        print("AVOID=", query.get("avoidMoves"))
+                        print("PQ AVOID=", pq.get("avoidMoves"), pq.get("avoidMoves") == query.get("avoidMoves"))
                         self.katrain.log("Found no differences in ponder check, skipping", OUTPUT_DEBUG)
                         continue
 
