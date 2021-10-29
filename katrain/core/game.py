@@ -565,22 +565,27 @@ class Game(BaseGame):
         cn = self.current_node
 
         if mode == "stop":
+            self.katrain.pondering = False
             for e in set(self.engines.values()):
+                e.stop_pondering()
                 e.terminate_queries()
-            self.katrain.idle_analysis = False
             return
 
         engine = self.engines[cn.next_player]
         Clock.schedule_once(self.katrain.analysis_controls.hints.activate, 0)
 
+        if mode == "ponder":
+            cn.analyze(
+                engine,
+                ponder=True,
+                priority=PRIORITY_EXTRA_ANALYSIS,
+                region_of_interest=self.region_of_interest,
+                time_limit=False,
+            )
+            return
+
         if mode == "extra":
-            if kwargs.get("continuous", False):
-                visits = min(
-                    1_000_000_000, max(engine.config["max_visits"], math.ceil(cn.analysis_visits_requested * 1.25))
-                )
-            else:
-                visits = cn.analysis_visits_requested + engine.config["max_visits"]
-                self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
+            visits = cn.analysis_visits_requested + engine.config["max_visits"]
             self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
             cn.analyze(
                 engine,
@@ -590,6 +595,7 @@ class Game(BaseGame):
                 time_limit=False,
             )
             return
+
         if mode == "game":
             nodes = self.root.nodes_in_tree
             only_mistakes = kwargs.get("mistakes_only", False)

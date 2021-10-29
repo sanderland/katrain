@@ -112,7 +112,7 @@ class KaTrainBase:
                             version = parse_version(version_str)
                         except Exception:  # noqa E722 broken file etc
                             version_str = "0.0.0"
-                            version = [0,0,0]
+                            version = [0, 0, 0]
                         if version < parse_version(CONFIG_MIN_VERSION):
                             backup = f"{user_config_file}.{version_str}.backup"
                             shutil.copyfile(user_config_file, backup)

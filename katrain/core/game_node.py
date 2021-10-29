@@ -187,6 +187,7 @@ class GameNode(SGFNode):
         engine,
         priority=PRIORITY_DEFAULT,
         visits=None,
+        ponder=False,
         time_limit=True,
         refine_move=None,
         analyze_fast=False,
@@ -201,6 +202,7 @@ class GameNode(SGFNode):
             ),
             priority=priority,
             visits=visits,
+            ponder=ponder,
             analyze_fast=analyze_fast,
             time_limit=time_limit,
             next_move=refine_move,
@@ -277,6 +279,10 @@ class GameNode(SGFNode):
     @property
     def analysis_complete(self):
         return self.analysis["completed"] and self.analysis["root"] is not None
+
+    @property
+    def root_visits(self):
+        return ((self.analysis or {}).get("root") or {}).get("visits", 0)
 
     @property
     def score(self) -> Optional[float]:
