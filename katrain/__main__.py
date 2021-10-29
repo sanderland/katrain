@@ -112,7 +112,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.timer_settings_popup = None
         self.contribute_popup = None
 
-        self.idle_analysis = False
+        self.pondering = False
         self.animate_contributing = False
         self.message_queue = Queue()
 
@@ -142,7 +142,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def handle_animations(self, *_args):
         if self.contributing and self.animate_contributing:
             self.engine.advance_showing_game()
-        if (self.contributing and self.animate_contributing) or self.idle_analysis:
+        if (self.contributing and self.animate_contributing) or self.pondering:
             self.board_controls.engine_status_pondering += 5
         else:
             self.board_controls.engine_status_pondering = -1
@@ -155,9 +155,9 @@ class KaTrainGui(Screen, KaTrainBase):
         if self.contributing:
             self.animate_contributing = not self.animate_contributing
         else:
-            if self.idle_analysis:
+            if self.pondering:
                 self.controls.set_status("", STATUS_INFO)
-            self.idle_analysis = not self.idle_analysis
+            self.pondering = not self.pondering
             self.update_state()
 
     def start(self):
@@ -258,8 +258,11 @@ class KaTrainGui(Screen, KaTrainBase):
                 ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                     self._do_ai_move(cn)
                     Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
-            if self.engine.is_idle() and self.idle_analysis:
-                self("analyze-extra", "extra", continuous=True)
+            if self.engine:
+                if self.pondering:
+                    self.game.analyze_extra("ponder")
+                else:
+                    self.engine.stop_pondering()
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
 
     def update_player(self, bw, **kwargs):
@@ -323,7 +326,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 self.message_queue.put([self.game.game_id, message, args, kwargs])
 
     def _do_new_game(self, move_tree=None, analyze_fast=False, sgf_filename=None):
-        self.idle_analysis = False
+        self.pondering = False
         mode = self.play_analyze_mode
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
@@ -352,7 +355,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.contributing = self.animate_contributing = True  # special mode
         if self.play_analyze_mode == MODE_PLAY:  # switch to analysis view
             self.play_mode.switch_ui_mode()
-        self.idle_analysis = False
+        self.pondering = False
         self.board_gui.animating_pv = None
         for bw, player_info in self.players_info.items():
             self.update_player(bw, player_type=PLAYER_AI, player_subtype=AI_DEFAULT)

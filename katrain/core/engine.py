@@ -19,6 +19,7 @@ from katrain.core.constants import (
     OUTPUT_KATAGO_STDERR,
     DATA_FOLDER,
     KATAGO_EXCEPTION,
+    PONDERING_REPORT_DT,
 )
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
@@ -93,11 +94,14 @@ class BaseEngine:  # some common elements between analysis and contribute engine
 class KataGoEngine(BaseEngine):
     """Starts and communicates with the KataGO analysis engine"""
 
+    PONDER_KEY = "_kt_continuous"
+
     def __init__(self, katrain, config):
         super().__init__(katrain, config)
 
         self.allow_recovery = self.config.get("allow_recovery", True)  # if false, don't give popups
         self.queries = {}  # outstanding query id -> start time and callback
+        self.ponder_query = None
         self.query_counter = 0
         self.katago_process = None
         self.base_priority = 0
@@ -166,6 +170,7 @@ class KataGoEngine(BaseEngine):
             with self.thread_lock:
                 self.write_queue = queue.Queue()
                 self.terminate_queries(only_for_node=None, lock=False)
+                self.ponder_query = None
                 self.queries = {}
 
     def terminate_queries(self, only_for_node=None, lock=True):
@@ -176,10 +181,19 @@ class KataGoEngine(BaseEngine):
             if only_for_node is None or only_for_node is node:
                 self.terminate_query(query_id)
 
-    def terminate_query(self, query_id):
+    def stop_pondering(self):
+        pq = self.ponder_query
+        if pq:
+            self.terminate_query(pq["id"], ignore_further_results=False)
+        self.ponder_query = None
+
+    def terminate_query(self, query_id, ignore_further_results=True):
+        self.katrain.log(f"Terminating query {query_id}", OUTPUT_DEBUG)
+
         if query_id is not None:
             self.send_query({"action": "terminate", "terminateId": query_id}, None, None)
-            self.queries.pop(query_id, None)
+            if ignore_further_results:
+                self.queries.pop(query_id, None)
 
     def restart(self):
         self.queries = {}
@@ -269,9 +283,10 @@ class KataGoEngine(BaseEngine):
                     continue
                 query_id = analysis["id"]
                 if query_id not in self.queries:
-                    self.katrain.log(
-                        f"Query result {query_id} discarded -- recent new game or node reset?", OUTPUT_DEBUG
-                    )
+                    if analysis.get("action") != "terminate":
+                        self.katrain.log(
+                            f"Query result {query_id} discarded -- recent new game or node reset?", OUTPUT_DEBUG
+                        )
                     continue
                 callback, error_callback, start_time, next_move, _ = self.queries[query_id]
                 if "error" in analysis:
@@ -314,12 +329,38 @@ class KataGoEngine(BaseEngine):
             except queue.Empty:
                 continue
             with self.thread_lock:
+                self.katrain.log(f"GOT QUERY: {query}", OUTPUT_DEBUG)
                 if "id" not in query:
                     self.query_counter += 1
                     query["id"] = f"QUERY:{str(self.query_counter)}"
-                if query.get("action") != "terminate":
+
+                ponder = query.pop(self.PONDER_KEY, False)
+                if ponder:  # handle pondering in here to be in lock and such
+                    pq = self.ponder_query or {}
+                    # basically we handle pondering by just asking for these queries a lot and ignoring duplicates
+                    # when a different ponder query comes in, e.g. due to selecting a roi or different node, switch
+                    differences = {
+                        k: (pq.get(k), query.get(k))
+                        for k in (query.keys() | pq.keys()) - {"id", "maxVisits", "reportDuringSearchEvery"}
+                        if pq.get(k) != query.get(k)
+                    }
+                    if differences:
+                        self.katrain.log(f"Found differences in ponder check: {differences}", OUTPUT_DEBUG)
+                        self.stop_pondering()
+                        query["maxVisits"] = 1_000_000
+                        query["reportDuringSearchEvery"] = PONDERING_REPORT_DT
+                        self.ponder_query = query
+                    else:
+                        print("AVOID=",query.get('avoidMoves'))
+                        print("PQ AVOID=", pq.get('avoidMoves'), pq.get('avoidMoves')==query.get('avoidMoves'))
+                        self.katrain.log("Found no differences in ponder check, skipping", OUTPUT_DEBUG)
+                        continue
+
+                terminate = query.get("action") == "terminate"
+                if not terminate:
                     self.queries[query["id"]] = (callback, error_callback, time.time(), next_move, node)
-                self.katrain.log(f"Sending query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
+                tag = "ponder " if ponder else ("terminate " if terminate else "")
+                self.katrain.log(f"Sending {tag}query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
                 try:
                     self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
                     self.katago_process.stdin.flush()
@@ -341,6 +382,7 @@ class KataGoEngine(BaseEngine):
         find_alternatives: bool = False,
         region_of_interest: Optional[List] = None,
         priority: int = 0,
+        ponder=False,  # infinite visits, cancellable
         ownership: Optional[bool] = None,
         next_move: Optional[GameNode] = None,
         extra_settings: Optional[Dict] = None,
@@ -358,6 +400,7 @@ class KataGoEngine(BaseEngine):
             moves.append(next_move)
         if ownership is None:
             ownership = self.config["_enable_ownership"] and not next_move
+
         if visits is None:
             visits = self.config["max_visits"]
             if analyze_fast and self.config.get("fast_visits"):
@@ -411,6 +454,7 @@ class KataGoEngine(BaseEngine):
             "initialPlayer": analysis_node.initial_player,
             "moves": [[m.player, m.gtp()] for m in moves],
             "overrideSettings": {**settings, **(extra_settings or {})},
+            self.PONDER_KEY: ponder,
         }
         if report_every is not None:
             query["reportDuringSearchEvery"] = report_every
