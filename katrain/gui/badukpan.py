@@ -103,14 +103,24 @@ class BadukPanWidget(Widget):
         self.redraw_hover_contents_trigger()
 
     def on_touch_down(self, touch):
+        animating_pv = self.animating_pv
+        if "button" in touch.profile:
+            if touch.button == "left":
+                if self.selecting_region_of_interest:
+                    self.update_box_selection(touch, second_point=False)
+                else:
+                    self.check_next_move_ghost(touch)
+            elif touch.button == "middle" and animating_pv:
+                pv, node, _, _ = animating_pv
+                upto = self.animating_pv_index or 0
+                for i, gtpmove in enumerate(pv):
+                    if i <= upto:
+                        node = node.play(Move.from_gtp(gtpmove, node.next_player))
+                        node.analyze(self.katrain.engine, analyze_fast=True)
+                self.katrain.controls.move_tree.redraw_tree_trigger()
+
         if ("button" not in touch.profile) or (touch.button not in ["scrollup", "scrolldown"]):
             self.set_animating_pv(None, None)  # any click/touch kills PV from label/move
-        if "button" in touch.profile and touch.button != "left":
-            return
-        if self.selecting_region_of_interest:
-            self.update_box_selection(touch, second_point=False)
-        else:
-            self.check_next_move_ghost(touch)
 
     def on_touch_move(self, touch):
         if "button" in touch.profile and touch.button != "left":

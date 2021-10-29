@@ -399,10 +399,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         getattr(self.game, fn)(9999, stop_on_mistake=self.config("trainer/eval_thresholds")[-4])
 
-    def _do_cycle_children(self, *args):
-        self.board_gui.animating_pv = None
-        self.game.cycle_children(*args)
-
     def _do_switch_branch(self, *args):
         self.board_gui.animating_pv = None
         self.controls.move_tree.switch_branch(*args)
