@@ -103,14 +103,24 @@ class BadukPanWidget(Widget):
         self.redraw_hover_contents_trigger()
 
     def on_touch_down(self, touch):
-        if touch.button not in ["scrollup", "scrolldown"]:
-            self.set_animating_pv(None, None)  # any click kills PV from label/move
-        if "button" in touch.profile and touch.button != "left":
-            return
-        if self.selecting_region_of_interest:
-            self.update_box_selection(touch, second_point=False)
-        else:
-            self.check_next_move_ghost(touch)
+        animating_pv = self.animating_pv
+        if "button" in touch.profile:
+            if touch.button == "left":
+                if self.selecting_region_of_interest:
+                    self.update_box_selection(touch, second_point=False)
+                else:
+                    self.check_next_move_ghost(touch)
+            elif touch.button == "middle" and animating_pv:
+                pv, node, _, _ = animating_pv
+                upto = self.animating_pv_index or 1e9
+                for i, gtpmove in enumerate(pv):
+                    if i <= upto:  # up to move when scrolling, or all
+                        node = node.play(Move.from_gtp(gtpmove, node.next_player))
+                        node.analyze(self.katrain.engine, analyze_fast=True)
+                self.katrain.controls.move_tree.redraw_tree_trigger()
+
+        if ("button" not in touch.profile) or (touch.button not in ["scrollup", "scrolldown", "middle"]):
+            self.set_animating_pv(None, None)  # any click/touch kills PV from label/move
 
     def on_touch_move(self, touch):
         if "button" in touch.profile and touch.button != "left":
@@ -762,7 +772,7 @@ class BadukPanWidget(Widget):
             if self.animating_pv:
                 pv, node, start_time, _ = self.animating_pv
                 delay = self.katrain.config("general/anim_pv_time", 0.5)
-                return (time.time() - start_time) / delay
+                return (time.time() - start_time) / max(delay, 0.1)
             else:
                 return 0
 

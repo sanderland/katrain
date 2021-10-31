@@ -47,6 +47,7 @@ from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
 from katrain.core.ai import generate_ai_move
+from kivy.utils import platform as kivy_platform
 
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
 from katrain.core.constants import (
@@ -111,7 +112,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.timer_settings_popup = None
         self.contribute_popup = None
 
-        self.idle_analysis = False
+        self.pondering = False
         self.animate_contributing = False
         self.message_queue = Queue()
 
@@ -141,7 +142,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def handle_animations(self, *_args):
         if self.contributing and self.animate_contributing:
             self.engine.advance_showing_game()
-        if (self.contributing and self.animate_contributing) or self.idle_analysis:
+        if (self.contributing and self.animate_contributing) or self.pondering:
             self.board_controls.engine_status_pondering += 5
         else:
             self.board_controls.engine_status_pondering = -1
@@ -154,9 +155,9 @@ class KaTrainGui(Screen, KaTrainBase):
         if self.contributing:
             self.animate_contributing = not self.animate_contributing
         else:
-            if self.idle_analysis:
+            if self.pondering:
                 self.controls.set_status("", STATUS_INFO)
-            self.idle_analysis = not self.idle_analysis
+            self.pondering = not self.pondering
             self.update_state()
 
     def start(self):
@@ -257,8 +258,11 @@ class KaTrainGui(Screen, KaTrainBase):
                 ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                     self._do_ai_move(cn)
                     Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
-            if self.engine.is_idle() and self.idle_analysis:
-                self("analyze-extra", "extra", continuous=True)
+            if self.engine:
+                if self.pondering:
+                    self.game.analyze_extra("ponder")
+                else:
+                    self.engine.stop_pondering()
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
 
     def update_player(self, bw, **kwargs):
@@ -322,7 +326,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 self.message_queue.put([self.game.game_id, message, args, kwargs])
 
     def _do_new_game(self, move_tree=None, analyze_fast=False, sgf_filename=None):
-        self.idle_analysis = False
+        self.pondering = False
         mode = self.play_analyze_mode
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
@@ -351,7 +355,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.contributing = self.animate_contributing = True  # special mode
         if self.play_analyze_mode == MODE_PLAY:  # switch to analysis view
             self.play_mode.switch_ui_mode()
-        self.idle_analysis = False
+        self.pondering = False
         self.board_gui.animating_pv = None
         for bw, player_info in self.players_info.items():
             self.update_player(bw, player_type=PLAYER_AI, player_subtype=AI_DEFAULT)
@@ -394,10 +398,6 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_find_mistake(self, fn="redo"):
         self.board_gui.animating_pv = None
         getattr(self.game, fn)(9999, stop_on_mistake=self.config("trainer/eval_thresholds")[-4])
-
-    def _do_cycle_children(self, *args):
-        self.board_gui.animating_pv = None
-        self.game.cycle_children(*args)
 
     def _do_switch_branch(self, *args):
         self.board_gui.animating_pv = None
@@ -593,22 +593,21 @@ class KaTrainGui(Screen, KaTrainBase):
         self.log("Imported game from clipboard.", OUTPUT_INFO)
 
     def on_touch_up(self, touch):
-        if (
-            self.board_gui.collide_point(*touch.pos)
-            or self.board_controls.collide_point(*touch.pos)
-            or self.controls.move_tree.collide_point(*touch.pos)
-        ):
-            if touch.is_mouse_scrolling:
-                if self.board_gui.animating_pv is None:
-                    if touch.button == "scrollup":
-                        self("redo")
-                    elif touch.button == "scrolldown":
-                        self("undo")
-                else:
-                    if touch.button == "scrollup":
-                        self.board_gui.adjust_animate_pv_index(1)
-                    elif touch.button == "scrolldown":
-                        self.board_gui.adjust_animate_pv_index(-1)
+        if touch.is_mouse_scrolling:
+            touching_board = self.board_gui.collide_point(*touch.pos) or self.board_controls.collide_point(*touch.pos)
+            touching_control_nonscroll = self.controls.collide_point(
+                *touch.pos
+            ) and not self.controls.notes_panel.collide_point(*touch.pos)
+            if self.board_gui.animating_pv is not None and touching_board:
+                if touch.button == "scrollup":
+                    self.board_gui.adjust_animate_pv_index(1)
+                elif touch.button == "scrolldown":
+                    self.board_gui.adjust_animate_pv_index(-1)
+            elif touching_board or touching_control_nonscroll:  # scroll through moves
+                if touch.button == "scrollup":
+                    self("redo")
+                elif touch.button == "scrolldown":
+                    self("undo")
         return super().on_touch_up(touch)
 
     @property
@@ -653,7 +652,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         self.last_key_down = keycode
-        ctrl_pressed = "ctrl" in modifiers
+        ctrl_pressed = "ctrl" in modifiers or ("meta" in modifiers and kivy_platform == "macosx")
         shift_pressed = "shift" in modifiers
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts

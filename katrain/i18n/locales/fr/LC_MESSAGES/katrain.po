@@ -960,3 +960,7 @@ msgstr "Ce que jouerait KataGo"
 
 msgid "Entire Game"
 msgstr "Partie entière"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "AntiMirrorGo"

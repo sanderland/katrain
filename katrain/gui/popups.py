@@ -479,20 +479,22 @@ class BaseConfigPopup(QuickConfigGui):
 
     KATAGOS = {
         "win": {
-            "OpenCL v1.9.1": "https://github.com/lightvector/KataGo/releases/download/v1.9.1/katago-v1.9.1-opencl-windows-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.9.1": "https://github.com/lightvector/KataGo/releases/download/v1.9.1/katago-v1.9.1-eigenavx2-windows-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.9.1": "https://github.com/lightvector/KataGo/releases/download/v1.9.1/katago-v1.9.1-eigen-windows-x64.zip",
-            "OpenCL v1.9 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.9.1/katago-v1.9.1-opencl-windows-x64+bs29.zip",
+            "OpenCL v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-opencl-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-eigenavx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-eigen-windows-x64.zip",
+            "OpenCL v1.10.0 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-opencl-windows-x64+bs29.zip",
         },
         "linux": {
-            "OpenCL v1.9.1": "https://github.com/lightvector/KataGo/releases/download/v1.9.1/katago-v1.9.1-opencl-linux-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.9.1": "https://github.com/lightvector/KataGo/releases/download/v1.9.1/katago-v1.9.1-eigenavx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.9.1": "https://github.com/lightvector/KataGo/releases/download/v1.9.1/katago-v1.9.1-eigen-linux-x64.zip",
-            "OpenCL v1.9 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.9.1/katago-v1.9.1-opencl-linux-x64+bs29.zip",
+            "OpenCL v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-opencl-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-eigenavx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-eigen-linux-x64.zip",
+            "OpenCL v1.10.0 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-opencl-linux-x64+bs29.zip",
         },
         "just-descriptions": {
-            "CUDA v1.9.1 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.9.1/katago-v1.9.1-cuda11.2-windows-x64.zip",
-            "CUDA v1.9.1 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.9.1/katago-v1.9.1-cuda11.1-linux-x64.zip",
+            "CUDA v1.10.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-cuda11.2-windows-x64.zip",
+            "CUDA v1.10.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-cuda11.1-linux-x64.zip",
+            "Cuda/TensorRT v1.10.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-trt8.2-cuda11.2-windows-x64.zip",
+            "Cuda/TensorRT v1.10.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-trt8.2-cuda11.1-linux-x64.zip",
         },
     }
 

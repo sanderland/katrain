@@ -959,3 +959,7 @@ msgstr "AIの最善手との一致率"
 #. game filter in performance report
 msgid "Entire Game"
 msgstr "全局"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"

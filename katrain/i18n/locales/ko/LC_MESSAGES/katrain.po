@@ -898,3 +898,7 @@ msgstr "인공지능 최선수 일치율(%)"
 
 msgid "Entire Game"
 msgstr "모두"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"

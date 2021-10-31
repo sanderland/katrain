@@ -45,7 +45,7 @@ class Move:
         self.coords = coords
 
     def __repr__(self):
-        return f"Move({self.player}{self.gtp()})"
+        return f"Move({self.player or ''}{self.gtp()})"
 
     def __eq__(self, other):
         return self.coords == other.coords and self.player == other.player
@@ -247,22 +247,38 @@ class SGFNode:
             ]
         return self.moves_cache
 
+    def _expanded_placements(self, player):
+        sgf_pl = player if player is not None else "E"  # AE
+        placements = self.get_list_property("A" + sgf_pl, [])
+        if not placements:
+            return []
+        to_be_expanded = [p for p in placements if ":" in p]
+        board_size = self.board_size
+        if to_be_expanded:
+            coords = {
+                Move.from_sgf(sgf_coord, player=player, board_size=board_size)
+                for sgf_coord in placements
+                if ":" not in sgf_coord
+            }
+            for p in to_be_expanded:
+                from_coord, to_coord = [Move.from_sgf(c, board_size=board_size) for c in p.split(":")[:2]]
+                for x in range(from_coord.coords[0], to_coord.coords[0] + 1):
+                    for y in range(to_coord.coords[1], from_coord.coords[1] + 1):  # sgf upside dn
+                        if 0 <= x < board_size[0] and 0 <= y < board_size[1]:
+                            coords.add(Move((x, y), player=player))
+            return list(coords)
+        else:
+            return [Move.from_sgf(sgf_coord, player=player, board_size=board_size) for sgf_coord in placements]
+
     @property
     def placements(self) -> List[Move]:
         """Returns all placements (AB/AW) in the node."""
-        return [
-            Move.from_sgf(sgf_coords, player=pl, board_size=self.board_size)
-            for pl in Move.PLAYERS
-            for sgf_coords in self.get_list_property("A" + pl, [])
-        ]
+        return [coord for pl in Move.PLAYERS for coord in self._expanded_placements(pl)]
 
     @property
     def clear_placements(self) -> List[Move]:
         """Returns all AE clear square commends in the node."""
-        return [
-            Move.from_sgf(sgf_coords, player=None, board_size=self.board_size)
-            for sgf_coords in self.get_list_property("AE", [])
-        ]
+        return self._expanded_placements(None)
 
     @property
     def move_with_placements(self) -> List[Move]:

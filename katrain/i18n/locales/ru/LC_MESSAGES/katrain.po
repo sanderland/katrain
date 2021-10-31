@@ -924,3 +924,7 @@ msgstr ""
 
 msgid "Entire Game"
 msgstr "Полная игра"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"
