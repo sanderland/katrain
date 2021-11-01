@@ -113,12 +113,13 @@ class KaTrainBase:
                         except Exception:  # noqa E722 broken file etc
                             version_str = "0.0.0"
                             version = [0, 0, 0]
-                        if version < parse_version(CONFIG_MIN_VERSION):
+                        min_version = parse_version(CONFIG_MIN_VERSION)
+                        if version < min_version:
                             backup = f"{user_config_file}.{version_str}.backup"
                             shutil.copyfile(user_config_file, backup)
                             shutil.copyfile(package_config_file, user_config_file)
                             self.log(
-                                f"Copied package config file to {user_config_file} as user file is outdated or broken ({version}<{CONFIG_MIN_VERSION}). Old version stored as {backup}",
+                                f"Copied package config file to {user_config_file} as user file is outdated or broken ({version}<{min_version}). Old version stored as {backup}",
                                 OUTPUT_INFO,
                             )
                         config_file = user_config_file

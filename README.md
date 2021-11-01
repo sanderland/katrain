@@ -123,6 +123,7 @@ This estimate should be reasonably accurate as long as you have not changed the 
        * **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
        * **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
     * **KataJigo** is KataGo attempting to win by 0.5 points, typically by responding to your mistakes with an immediate mistake of it's own.
+    * **KataAntiMirror** is KataGo assuming you are playing mirror go and attempting to break out of it with profit as long as you are.
     
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
  while the policy net based AIs are affected by the choice of model file, but work identically with 1 visit.
@@ -186,8 +187,10 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[Shift-b]** Go back the main branch.
 * **[n]** As in clicking the forward red arrow, go to one move before the next mistake (orange or worse) by a human player.
 * **[Shift-n]** As in clicking the backward red arrow, go to one move before the previous mistake.
-* **[scroll up]**: Undo move. Only works when hovering the cursor over the board.
-* **[scroll down]**: Redo move. Only works when hovering the cursor over the board.
+* **[scroll mouse]**:
+  * When hovering the cursor over the right panel: Redo/Undo move.
+  * When hovering over a candidate move: Scroll through principal variation.
+* **[middle/scroll wheel click]**: Add principal variation to the move tree. When scrolling, only moves up to the point you are viewing are added.
 * **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
 * **[double-click on a move]**: Navigate directly to just before that point in the game.
 * **[Ctrl-V]**: Load SGF from the clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
@@ -207,7 +210,7 @@ Keep in mind that partial games are not uploaded,
 
 ## <a name="themes"></a> Themes
 
-* See [these instructions](THEMES.md) for how to modify the look of any graphics or colours, and creating or install themes.
+See [these instructions](THEMES.md) for how to modify the look of any graphics or colours, and creating or install themes.
    
 ## <a name="faq"></a> FAQ
 

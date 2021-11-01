@@ -329,7 +329,6 @@ class KataGoEngine(BaseEngine):
             except queue.Empty:
                 continue
             with self.thread_lock:
-                self.katrain.log(f"GOT QUERY: {query}", OUTPUT_DEBUG)
                 if "id" not in query:
                     self.query_counter += 1
                     query["id"] = f"QUERY:{str(self.query_counter)}"
