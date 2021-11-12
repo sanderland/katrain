@@ -14,7 +14,7 @@ class ParseError(Exception):
 
 class Move:
     GTP_COORD = list("ABCDEFGHJKLMNOPQRSTUVWXYZ") + [
-        xa + c for xa in "AB" for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"
+        xa + c for xa in "ABCDEFGH" for c in "ABCDEFGHJKLMNOPQRSTUVWXYZ"
     ]  # board size 52+ support
     PLAYERS = "BW"
     SGF_COORD = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ".lower()) + list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")  # sgf goes to 52

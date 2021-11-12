@@ -271,7 +271,7 @@ class BadukPanWidget(Widget):
             y_grid_spaces = board_size_y - 1 + sum(grid_spaces_margin_y)
             # grid size is rounded to an integer to avoid rounding errors that
             # produce tiny gaps between shaded grid squares
-            self.grid_size = round(min(self.width / x_grid_spaces, self.height / y_grid_spaces))
+            self.grid_size = math.floor(min(self.width / x_grid_spaces, self.height / y_grid_spaces) + 0.1)
             board_width_with_margins = x_grid_spaces * self.grid_size
             board_height_with_margins = y_grid_spaces * self.grid_size
             extra_px_margin_x = (self.width - board_width_with_margins) / 2
@@ -384,7 +384,7 @@ class BadukPanWidget(Widget):
                     for y in range(board_size_y - 1, -1, -1):
                         for x in range(board_size_x):
                             ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
-                            Color(*Theme.STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]) * 0.8)
+                            Color(*Theme.STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]) * Theme.OWNERSHIP_MAX_ALPHA)
                             Rectangle(
                                 pos=(self.gridpos_x[x] - self.grid_size / 2, self.gridpos_y[y] - self.grid_size / 2),
                                 size=(self.grid_size, self.grid_size),

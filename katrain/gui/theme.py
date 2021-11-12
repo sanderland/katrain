@@ -119,6 +119,7 @@ class Theme:
 
     GHOST_ALPHA = 0.6
     POLICY_ALPHA = 0.5
+    OWNERSHIP_MAX_ALPHA = 0.7  # max ownership brightness
 
     HINTS_LO_ALPHA = 0.6
     HINTS_ALPHA = 0.8
