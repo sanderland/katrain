@@ -580,8 +580,8 @@ msgstr "段級位相応"
 
 msgid "aihelp:p:rank"
 msgstr ""
-"すべての合法手の中からランダムに何個かの候補手を選んで, その中での再有力手を打ちます. "
-"強い設定にするほどより多くの候補手の中から再有力手を選ぶようになります. なお, 3段は-2 kyuに対応します（0級／段はないので数字がずれる）. "
+"すべての合法手の中からランダムに何個かの候補手を選んで, その中での最有力手を打ちます. "
+"強い設定にするほどより多くの候補手の中から最有力手を選ぶようになります. なお, 3段は-2 kyuに対応します（0級／段はないので数字がずれる）. "
 
 #. in AI settings
 msgid "estimated strength"
@@ -960,6 +960,5 @@ msgstr "AIの最善手との一致率"
 msgid "Entire Game"
 msgstr "全局"
 
-#. TODO
 msgid "ai:antimirror"
-msgstr "KataAntiMirror"
+msgstr "Kataマネ碁破り"
