@@ -84,6 +84,16 @@ class MoveTreeCanvas(Widget):
             self.set_game_node(parent)
         self.is_open = False
 
+    def prune_branch(self):
+        selected_node = self.menu_selected_node
+        if selected_node and selected_node.parent:
+            node = selected_node
+            while node.parent is not None:
+                node.parent.children = [node]
+                node = node.parent
+            self.set_game_node(selected_node)
+        self.is_open = False
+
     def make_selected_node_main_branch(self):
         selected_node = self.menu_selected_node or self.scroll_view_widget.current_node
         if selected_node and selected_node.parent:
@@ -229,6 +239,10 @@ class MoveTree(ScrollView, BackgroundMixin):
         self.move_tree_canvas.delete_selected_node()
         self.redraw_tree_trigger()
 
+    def prune_branch(self):
+        self.move_tree_canvas.prune_branch()
+        self.redraw_tree_trigger()
+
     def make_selected_node_main_branch(self):
         self.move_tree_canvas.make_selected_node_main_branch()
         self.redraw_tree_trigger()
@@ -306,5 +320,12 @@ Builder.load_string(
         -background_color: Theme.LIGHTER_BACKGROUND_COLOR
         -height: dp(45)
         -width_margin: 1.6
+    MoveTreeDropdownItem:
+        text: i18n._("Prune Branch")
+        icon: 'Prune.png'
+        on_action: root.katrain.controls.move_tree.prune_branch()
+        -background_color: Theme.LIGHTER_BACKGROUND_COLOR
+        -height: dp(45)
+        -width_margin: 1.6        
 """
 )

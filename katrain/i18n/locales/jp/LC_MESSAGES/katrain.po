@@ -962,3 +962,8 @@ msgstr "全局"
 
 msgid "ai:antimirror"
 msgstr "Kataマネ碁破り"
+
+#. TODO - on move tree editing, deletes all other branches splitting off from
+#. the path UP TO this node
+msgid "Prune Branch"
+msgstr "Prune Branch"

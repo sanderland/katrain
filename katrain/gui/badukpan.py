@@ -384,7 +384,9 @@ class BadukPanWidget(Widget):
                     for y in range(board_size_y - 1, -1, -1):
                         for x in range(board_size_x):
                             ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
-                            Color(*Theme.STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]) * Theme.OWNERSHIP_MAX_ALPHA)
+                            Color(
+                                *Theme.STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]) * Theme.OWNERSHIP_MAX_ALPHA
+                            )
                             Rectangle(
                                 pos=(self.gridpos_x[x] - self.grid_size / 2, self.gridpos_y[y] - self.grid_size / 2),
                                 size=(self.grid_size, self.grid_size),

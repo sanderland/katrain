@@ -964,3 +964,8 @@ msgstr "Partie entière"
 #. TODO
 msgid "ai:antimirror"
 msgstr "AntiMirrorGo"
+
+#. TODO - on move tree editing, deletes all other branches splitting off from
+#. the path UP TO this node
+msgid "Prune Branch"
+msgstr "Prune Branch"
