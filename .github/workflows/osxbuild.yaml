@@ -46,6 +46,10 @@ jobs:
         source activate
         popd
         python -m pip install .
+        pushd ..
+        git clone git://github.com/kivy/kivy.git
+        cd kivy
+        python -m pip install ".[full]"
     - name: Finalize KaTrain bundle
       run: |
         export KATRAIN_VERSION=`python -c 'from katrain.core.constants import VERSION;print(VERSION)' `
