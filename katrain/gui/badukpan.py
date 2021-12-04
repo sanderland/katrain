@@ -629,9 +629,7 @@ class BadukPanWidget(Widget):
                             keys[TOP_MOVE_WINRATE] = f"{winrate*100:.1f}"
                             keys[TOP_MOVE_DELTA_WINRATE] = f"{-move_dict['winrateLost']:+.1%}"
                             keys[TOP_MOVE_VISITS] = format_visits(move_dict["visits"])
-                            #                            keys[TOP_MOVE_UTILITY] = fmt_maybe_missing( move_dict.get('utility'),player_sign,2)
-                            #                            keys[TOP_MOVE_UTILITYLCB] = fmt_maybe_missing(move_dict.get('utilityLcb'),player_sign,2)
-                            #                            keys[TOP_MOVE_SCORE_STDDEV] =fmt_maybe_missing(move_dict.get('scoreStdev'),1)
+
                             Color(*Theme.HINT_TEXT_COLOR)
                             draw_text(
                                 pos=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
