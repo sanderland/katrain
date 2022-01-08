@@ -653,13 +653,10 @@ class KaTrainGui(Screen, KaTrainBase):
     def tsumego_frame(self, ko_p):
         from katrain.core.tsumego_frame import tsumego_frame_from_katrain_game
         black_to_play_p = self.next_player_info.player == "B"
-        fill, analysis_region = tsumego_frame_from_katrain_game(self.game, self.game.komi, black_to_play_p, ko_p)
+        sgf, analysis_region = tsumego_frame_from_katrain_game(self.game, self.game.komi, black_to_play_p, ko_p)
+        Clipboard.copy(sgf)
+        self.controls.set_status("Tsumego frame is copied to clipboard.", STATUS_INFO)
         # todo: set region of interest by analysis_region (if it is truthy)
-        for coords, player in fill:
-            try:
-                self.game.play(Move(coords, player=player))
-            except IllegalMoveException as e:
-                self.controls.set_status(f"Illegal Move in Tsumego Frame: {str(e)}", STATUS_ERROR)
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         self.last_key_down = keycode

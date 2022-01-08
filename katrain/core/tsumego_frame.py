@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import itertools
+from katrain.core.sgf_parser import Move
 
 margin = 2
 near_to_edge = 2
@@ -12,14 +13,23 @@ WHITE = "W"
 ######################################
 # for katrain
 
+# note: coords = (j, i) in katrain
+
 def tsumego_frame_from_katrain_game(game, komi, black_to_play_p, ko_p):
     # cf. __repr__ in src/katrain/core/game.py
     bw_board = [[game.chains[c][0].player if c >= 0 else "-" for c in line] for line in game.board]
-    fill, analysis_region = tsumego_frame(bw_board, komi, black_to_play_p, ko_p)
-    # coords = (j, i) in katrain
-    katrain_fill = [((j, i), BLACK if black else WHITE) for i, j, black in fill]
+    isize, jsize = ij_sizes(bw_board)
+    blacks, whites, analysis_region = tsumego_frame(bw_board, komi, black_to_play_p, ko_p)
+    sgf_blacks = katrain_sgf_from_ijs(blacks, isize, jsize)
+    sgf_whites = katrain_sgf_from_ijs(whites, isize, jsize)
+    sgf_size = f"{isize}" if isize == jsize else f"{jsize}:{isize}"
+    sgf_player = "B" if black_to_play_p else "W"
+    sgf = f"(;SZ[{sgf_size}]RU[chinese]KM[{komi}]PL[{sgf_player}]AB{sgf_blacks}AW{sgf_whites})"
     katrain_region = analysis_region and (analysis_region[1], analysis_region[0])
-    return (katrain_fill, katrain_region)
+    return (sgf, katrain_region)
+
+def katrain_sgf_from_ijs(ijs, isize, jsize):
+    return ''.join([f"[{Move((j, i)).sgf((jsize, isize))}]" for i, j in ijs])
 
 ######################################
 # main
@@ -27,9 +37,11 @@ def tsumego_frame_from_katrain_game(game, komi, black_to_play_p, ko_p):
 def tsumego_frame(bw_board, komi, black_to_play_p, ko_p):
     stones = stones_from_bw_board(bw_board)
     filled_stones = tsumego_frame_stones(stones, komi, black_to_play_p, ko_p)
-    fill = pick_all(filled_stones, "tsumego_frame")
     region_pos = pick_all(filled_stones, "tsumego_frame_region_mark")
-    return (fill, get_analysis_region(region_pos))
+    bw = pick_all(filled_stones, "stone")
+    blacks = [(i, j) for i, j, black in bw if black]
+    whites = [(i, j) for i, j, black in bw if not black]
+    return (blacks, whites, get_analysis_region(region_pos))
 
 def pick_all(stones, key):
     return flatten([[[i, j, s.get("black")] for j, s in enumerate(row) if s.get(key)] for i, row in enumerate(stones)])
@@ -200,7 +212,7 @@ def put_stone(stones, sizes, i, j, black, empty, tsumego_frame_region_mark = Fal
     isize, jsize = sizes
     if (i < 0 or isize <= i or j < 0 or jsize <= j):
         return
-    stones[i][j] = {} if empty else {"tsumego_frame": True, "black": black, "tsumego_frame_region_mark": tsumego_frame_region_mark}
+    stones[i][j] = {} if empty else {"stone": True, "tsumego_frame": True, "black": black, "tsumego_frame_region_mark": tsumego_frame_region_mark}
 
 def inside_p(i, j, region):
     i0, i1, j0, j1 = region
