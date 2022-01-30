@@ -482,7 +482,7 @@ msgid "strength:dan"
 msgstr "段"
 
 msgid "ai:default"
-msgstr "KataGo"
+msgstr "手加減なし"
 
 msgid "aihelp:default"
 msgstr ""
@@ -963,7 +963,7 @@ msgstr "全局"
 msgid "ai:antimirror"
 msgstr "Kataマネ碁破り"
 
-#. TODO - on move tree editing, deletes all other branches splitting off from
+#. on move tree editing, deletes all other branches splitting off from
 #. the path UP TO this node
 msgid "Prune Branch"
-msgstr "Prune Branch"
+msgstr "この枝だけ残して他を削除"
