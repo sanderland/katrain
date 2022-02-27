@@ -1,10 +1,10 @@
 """isort:skip_file"""
-# first, logging level lower and force audio framework
+# first, logging level lower
 import os
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
-if "KIVY_AUDIO" not in os.environ:
-    os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
+# if "KIVY_AUDIO" not in os.environ: # trying default again
+#    os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
 
 import kivy
 
@@ -18,20 +18,6 @@ from kivy.utils import platform
 ICON = find_package_resource("katrain/img/icon.ico")
 Config.set("kivy", "window_icon", ICON)
 
-# finally, window size
-WINDOW_SCALE_FAC, WINDOW_X, WINDOW_Y = 1, 1300, 1000
-try:
-    from screeninfo import get_monitors
-
-    for m in get_monitors():
-        WINDOW_SCALE_FAC = min(WINDOW_SCALE_FAC, (m.height - 100) / WINDOW_Y, (m.width - 100) / WINDOW_X)
-except Exception as e:
-    if platform != "macosx":
-        print(f"Exception {e} while getting screen resolution.")
-        WINDOW_SCALE_FAC = 0.85
-
-Config.set("graphics", "width", max(400, int(WINDOW_X * WINDOW_SCALE_FAC)))
-Config.set("graphics", "height", max(400, int(WINDOW_Y * WINDOW_SCALE_FAC)))
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
 import re
@@ -44,6 +30,8 @@ from queue import Queue
 import urllib3
 import webbrowser
 import time
+import random
+import glob
 
 from kivy.base import ExceptionHandler, ExceptionManager
 from kivy.app import App
@@ -59,6 +47,7 @@ from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
 from katrain.core.ai import generate_ai_move
+from kivy.utils import platform as kivy_platform
 
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
 from katrain.core.constants import (
@@ -77,11 +66,21 @@ from katrain.core.constants import (
     SGF_INTERNAL_COMMENTS_MARKER,
     MODE_PLAY,
     DATA_FOLDER,
+    AI_DEFAULT,
 )
-from katrain.gui.popups import ConfigTeacherPopup, ConfigTimerPopup, I18NPopup, SaveSGFPopup
+from katrain.gui.popups import (
+    ConfigTeacherPopup,
+    ConfigTimerPopup,
+    I18NPopup,
+    SaveSGFPopup,
+    ContributePopup,
+    EngineRecoveryPopup,
+)
+from katrain.gui.sound import play_sound
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
-from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
+from katrain.core.contribute_engine import KataGoContributeEngine
+from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
 from katrain.gui.theme import Theme
@@ -103,6 +102,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.engine = None
+        self.contributing = False
 
         self.new_game_popup = None
         self.fileselect_popup = None
@@ -110,8 +110,10 @@ class KaTrainGui(Screen, KaTrainBase):
         self.ai_settings_popup = None
         self.teacher_settings_popup = None
         self.timer_settings_popup = None
+        self.contribute_popup = None
 
-        self.idle_analysis = False
+        self.pondering = False
+        self.animate_contributing = False
         self.message_queue = Queue()
 
         self.last_key_down = None
@@ -120,14 +122,16 @@ class KaTrainGui(Screen, KaTrainBase):
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
-            if "starting" in message.lower():
+            if self.contributing:
+                self.controls.set_status(message, STATUS_INFO)
+            elif "starting" in message.lower():
                 self.controls.set_status("KataGo engine starting...", STATUS_INFO)
-            if message.startswith("Tuning"):
+            elif message.startswith("Tuning"):
                 self.controls.set_status(
                     "KataGo is tuning settings for first startup, please wait." + message, STATUS_INFO
                 )
                 return
-            if "ready" in message.lower():
+            elif "ready" in message.lower():
                 self.controls.set_status("KataGo engine ready.", STATUS_INFO)
         if (
             level == OUTPUT_ERROR
@@ -135,21 +139,26 @@ class KaTrainGui(Screen, KaTrainBase):
         ) and getattr(self, "controls", None):
             self.controls.set_status(f"ERROR: {message}", STATUS_ERROR)
 
-    def animate_pondering(self, *_args):
-        if not self.idle_analysis:
-            self.board_controls.engine_status_pondering = -1
-        else:
+    def handle_animations(self, *_args):
+        if self.contributing and self.animate_contributing:
+            self.engine.advance_showing_game()
+        if (self.contributing and self.animate_contributing) or self.pondering:
             self.board_controls.engine_status_pondering += 5
+        else:
+            self.board_controls.engine_status_pondering = -1
 
     @property
     def play_analyze_mode(self):
         return self.play_mode.mode
 
     def toggle_continuous_analysis(self):
-        if self.idle_analysis:
-            self.controls.set_status("", STATUS_INFO)
-        self.idle_analysis = not self.idle_analysis
-        self.update_state()
+        if self.contributing:
+            self.animate_contributing = not self.animate_contributing
+        else:
+            if self.pondering:
+                self.controls.set_status("", STATUS_INFO)
+            self.pondering = not self.pondering
+            self.update_state()
 
     def start(self):
         if self.engine:
@@ -167,7 +176,7 @@ class KaTrainGui(Screen, KaTrainBase):
         else:
             self._do_new_game()
 
-        Clock.schedule_interval(self.animate_pondering, 0.1)
+        Clock.schedule_interval(self.handle_animations, 0.1)
         Window.request_keyboard(None, self, "").bind(on_key_down=self._on_keyboard_down, on_key_up=self._on_keyboard_up)
 
         def set_focus_event(*args):
@@ -220,28 +229,40 @@ class KaTrainGui(Screen, KaTrainBase):
         if not self.game or not self.game.current_node:
             return
         cn = self.game.current_node
-        last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
-        if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
-            teaching_undo = cn.player and last_player.being_taught and cn.parent
-            if (
-                teaching_undo
-                and cn.analysis_complete
-                and cn.parent.analysis_complete
-                and not cn.children
-                and not self.game.end_result
-            ):
-                self.game.analyze_undo(cn)  # not via message loop
-            if (
-                cn.analysis_complete
-                and next_player.ai
-                and not cn.children
-                and not self.game.end_result
-                and not (teaching_undo and cn.auto_undo is None)
-            ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
-                self._do_ai_move(cn)
-                Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
-        if self.engine.is_idle() and self.idle_analysis:
-            self("analyze-extra", "extra", continuous=True)
+        if not self.contributing:
+            last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
+            if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
+                points_lost = cn.points_lost
+                if (
+                    last_player.human
+                    and cn.analysis_complete
+                    and points_lost is not None
+                    and points_lost > self.config("trainer/eval_thresholds")[-4]
+                ):
+                    self.play_mistake_sound(cn)
+                teaching_undo = cn.player and last_player.being_taught and cn.parent
+                if (
+                    teaching_undo
+                    and cn.analysis_complete
+                    and cn.parent.analysis_complete
+                    and not cn.children
+                    and not self.game.end_result
+                ):
+                    self.game.analyze_undo(cn)  # not via message loop
+                if (
+                    cn.analysis_complete
+                    and next_player.ai
+                    and not cn.children
+                    and not self.game.end_result
+                    and not (teaching_undo and cn.auto_undo is None)
+                ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
+                    self._do_ai_move(cn)
+                    Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
+            if self.engine:
+                if self.pondering:
+                    self.game.analyze_extra("ponder")
+                else:
+                    self.engine.stop_pondering()
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
 
     def update_player(self, bw, **kwargs):
@@ -269,7 +290,21 @@ class KaTrainGui(Screen, KaTrainBase):
                         f"Message skipped as it is outdated (current game is {self.game.game_id}", OUTPUT_EXTRA_DEBUG
                     )
                     continue
-                fn = getattr(self, f"_do_{msg.replace('-','_')}")
+                msg = msg.replace("-", "_")
+                if self.contributing:
+                    if msg not in [
+                        "katago_contribute",
+                        "redo",
+                        "undo",
+                        "update_state",
+                        "save_game",
+                        "find_mistake",
+                    ]:
+                        self.controls.set_status(
+                            i18n._("gui-locked").format(action=msg), STATUS_INFO, check_level=False
+                        )
+                        continue
+                fn = getattr(self, f"_do_{msg}")
                 fn(*args, **kwargs)
                 if msg != "update_state":
                     self._do_update_state()
@@ -280,13 +315,18 @@ class KaTrainGui(Screen, KaTrainBase):
     def __call__(self, message, *args, **kwargs):
         if self.game:
             if message.endswith("popup"):  # gui code needs to run in main kivy thread.
+                if self.contributing and "save" not in message and message != "contribute-popup":
+                    self.controls.set_status(
+                        i18n._("gui-locked").format(action=message), STATUS_INFO, check_level=False
+                    )
+                    return
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")
                 Clock.schedule_once(lambda _dt: fn(*args, **kwargs), -1)
             else:  # game related actions
                 self.message_queue.put([self.game.game_id, message, args, kwargs])
 
     def _do_new_game(self, move_tree=None, analyze_fast=False, sgf_filename=None):
-        self.idle_analysis = False
+        self.pondering = False
         mode = self.play_analyze_mode
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
@@ -299,15 +339,29 @@ class KaTrainGui(Screen, KaTrainBase):
             analyze_fast=analyze_fast or not move_tree,
             sgf_filename=sgf_filename,
         )
-        if move_tree:
-            for bw, player_info in self.players_info.items():
+        for bw, player_info in self.players_info.items():
+            player_info.sgf_rank = self.game.root.get_property(bw + "R")
+            player_info.calculated_rank = None
+            if sgf_filename is not None:  # load game->no ai player
                 player_info.player_type = PLAYER_HUMAN
                 player_info.player_subtype = PLAYING_NORMAL
-                player_info.sgf_rank = move_tree.root.get_property(bw + "R")
-                player_info.calculated_rank = None
-                self.update_player(bw)
+            self.update_player(bw, player_type=player_info.player_type, player_subtype=player_info.player_subtype)
         self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
+
+    def _do_katago_contribute(self):
+        if self.contributing and not self.engine.server_error and self.engine.katago_process is not None:
+            return
+        self.contributing = self.animate_contributing = True  # special mode
+        if self.play_analyze_mode == MODE_PLAY:  # switch to analysis view
+            self.play_mode.switch_ui_mode()
+        self.pondering = False
+        self.board_gui.animating_pv = None
+        for bw, player_info in self.players_info.items():
+            self.update_player(bw, player_type=PLAYER_AI, player_subtype=AI_DEFAULT)
+        self.engine.shutdown(finish=False)
+        self.engine = KataGoContributeEngine(self)
+        self.game = BaseGame(self)
 
     def _do_insert_mode(self, mode="toggle"):
         self.game.set_insert_mode(mode)
@@ -331,6 +385,9 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.game.undo(n_times)
 
+    def _do_reset_analysis(self):
+        self.game.reset_current_analysis()
+
     def _do_resign(self):
         self.game.current_node.end_state = f"{self.game.current_node.player}+R"
 
@@ -341,10 +398,6 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_find_mistake(self, fn="redo"):
         self.board_gui.animating_pv = None
         getattr(self.game, fn)(9999, stop_on_mistake=self.config("trainer/eval_thresholds")[-4])
-
-    def _do_cycle_children(self, *args):
-        self.board_gui.animating_pv = None
-        self.game.cycle_children(*args)
 
     def _do_switch_branch(self, *args):
         self.board_gui.animating_pv = None
@@ -360,8 +413,8 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_analyze_extra(self, mode, **kwargs):
         self.game.analyze_extra(mode, **kwargs)
 
-    def _do_play_to_end(self):
-        self.game.play_to_end()
+    def _do_selfplay_setup(self, until_move, target_b_advantage=None):
+        self.game.selfplay(int(until_move) if isinstance(until_move, float) else until_move, target_b_advantage)
 
     def _do_select_box(self):
         self.controls.set_status(i18n._("analysis:region:start"), STATUS_INFO)
@@ -371,7 +424,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.new_game_popup:
             self.new_game_popup = I18NPopup(
-                title_key="New Game title", size=[dp(800), dp(800)], content=NewGamePopup(self)
+                title_key="New Game title", size=[dp(800), dp(900)], content=NewGamePopup(self)
             ).__self__
             self.new_game_popup.content.popup = self.new_game_popup
         self.new_game_popup.open()
@@ -402,7 +455,16 @@ class KaTrainGui(Screen, KaTrainBase):
                 title_key="general settings title", size=[dp(1200), dp(950)], content=ConfigPopup(self)
             ).__self__
             self.config_popup.content.popup = self.config_popup
+            self.config_popup.title += ": " + self.config_file
         self.config_popup.open()
+
+    def _do_contribute_popup(self):
+        if not self.contribute_popup:
+            self.contribute_popup = I18NPopup(
+                title_key="contribute settings title", size=[dp(1100), dp(800)], content=ContributePopup(self)
+            ).__self__
+            self.contribute_popup.content.popup = self.contribute_popup
+        self.contribute_popup.open()
 
     def _do_ai_popup(self):
         self.controls.timer.paused = True
@@ -413,8 +475,29 @@ class KaTrainGui(Screen, KaTrainBase):
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
+    def _do_engine_recovery_popup(self, error_message, code):
+        current_open = self.popup_open
+        if current_open and isinstance(current_open.content, EngineRecoveryPopup):
+            self.log(f"Not opening engine recovery popup with {error_message} as one is already open", OUTPUT_DEBUG)
+            return
+        popup = I18NPopup(
+            title_key="engine recovery",
+            size=[dp(600), dp(700)],
+            content=EngineRecoveryPopup(self, error_message=error_message, code=code),
+        ).__self__
+        popup.content.popup = popup
+        popup.open()
+
+    def play_mistake_sound(self, node):
+        if self.config("timer/sound") and node.played_sound is None and Theme.MISTAKE_SOUNDS:
+            node.played_sound = True
+            play_sound(random.choice(Theme.MISTAKE_SOUNDS))
+
     def load_sgf_file(self, file, fast=False, rewind=True):
+        if self.contributing:
+            return
         try:
+            file = os.path.abspath(file)
             move_tree = KaTrainSGF.parse_file(file)
         except (ParseError, FileNotFoundError) as e:
             self.log(i18n._("Failed to load SGF").format(error=e), OUTPUT_ERROR)
@@ -425,7 +508,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_analyze_sgf_popup(self):
         if not self.fileselect_popup:
-            popup_contents = LoadSGFPopup()
+            popup_contents = LoadSGFPopup(self)
             popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
             self.fileselect_popup = I18NPopup(
                 title_key="load sgf title", size=[dp(1200), dp(800)], content=popup_contents
@@ -438,7 +521,8 @@ class KaTrainGui(Screen, KaTrainBase):
                 if path != self.config("general/sgf_load"):
                     self.log(f"Updating sgf load path default to {path}", OUTPUT_DEBUG)
                     self._config["general"]["sgf_load"] = path
-                    self.save_config("general")
+                popup_contents.update_config(False)
+                self.save_config("general")
                 self.load_sgf_file(filename, popup_contents.fast.active, popup_contents.rewind.active)
 
             popup_contents.filesel.on_success = readfile
@@ -509,12 +593,17 @@ class KaTrainGui(Screen, KaTrainBase):
         self.log("Imported game from clipboard.", OUTPUT_INFO)
 
     def on_touch_up(self, touch):
-        if (
-            self.board_gui.collide_point(*touch.pos)
-            or self.board_controls.collide_point(*touch.pos)
-            or self.controls.move_tree.collide_point(*touch.pos)
-        ):
-            if touch.is_mouse_scrolling:
+        if touch.is_mouse_scrolling:
+            touching_board = self.board_gui.collide_point(*touch.pos) or self.board_controls.collide_point(*touch.pos)
+            touching_control_nonscroll = self.controls.collide_point(
+                *touch.pos
+            ) and not self.controls.notes_panel.collide_point(*touch.pos)
+            if self.board_gui.animating_pv is not None and touching_board:
+                if touch.button == "scrollup":
+                    self.board_gui.adjust_animate_pv_index(1)
+                elif touch.button == "scrolldown":
+                    self.board_gui.adjust_animate_pv_index(-1)
+            elif touching_board or touching_control_nonscroll:  # scroll through moves
                 if touch.button == "scrollup":
                     self("redo")
                 elif touch.button == "scrolldown":
@@ -524,107 +613,119 @@ class KaTrainGui(Screen, KaTrainBase):
     @property
     def shortcuts(self):
         return {
-            "q": self.analysis_controls.show_children,
-            "w": self.analysis_controls.eval,
-            "e": self.analysis_controls.hints,
-            "t": self.analysis_controls.ownership,
-            "r": self.analysis_controls.policy,
-            "enter": ("ai-move",),
-            "numpadenter": ("ai-move",),
-            "a": ("analyze-extra", "extra"),
-            "s": ("analyze-extra", "equalize"),
-            "d": ("analyze-extra", "sweep"),
-            "f": ("analyze-extra", "alternative"),
-            "g": ("select-box",),
-            "i": ("insert-mode",),
-            "p": ("play", None),
-            "l": ("play-to-end",),
-            "b": ("undo", "branch"),
-            "down": ("switch-branch", 1),
-            "up": ("switch-branch", -1),
-            "f5": ("timer-popup",),
-            "f6": ("teacher-popup",),
-            "f7": ("ai-popup",),
-            "f8": ("config-popup",),
+            k: v
+            for ks, v in [
+                (Theme.KEY_ANALYSIS_CONTROLS_SHOW_CHILDREN, self.analysis_controls.show_children),
+                (Theme.KEY_ANALYSIS_CONTROLS_EVAL, self.analysis_controls.eval),
+                (Theme.KEY_ANALYSIS_CONTROLS_HINTS, self.analysis_controls.hints),
+                (Theme.KEY_ANALYSIS_CONTROLS_OWNERSHIP, self.analysis_controls.ownership),
+                (Theme.KEY_ANALYSIS_CONTROLS_POLICY, self.analysis_controls.policy),
+                (Theme.KEY_AI_MOVE, ("ai-move",)),
+                (Theme.KEY_ANALYZE_EXTRA_EXTRA, ("analyze-extra", "extra")),
+                (Theme.KEY_ANALYZE_EXTRA_EQUALIZE, ("analyze-extra", "equalize")),
+                (Theme.KEY_ANALYZE_EXTRA_SWEEP, ("analyze-extra", "sweep")),
+                (Theme.KEY_ANALYZE_EXTRA_ALTERNATIVE, ("analyze-extra", "alternative")),
+                (Theme.KEY_SELECT_BOX, ("select-box",)),
+                (Theme.KEY_RESET_ANALYSIS, ("reset-analysis",)),
+                (Theme.KEY_INSERT_MODE, ("insert-mode",)),
+                (Theme.KEY_PASS, ("play", None)),
+                (Theme.KEY_SELFPLAY_TO_END, ("selfplay-setup", "end", None)),
+                (Theme.KEY_NAV_PREV_BRANCH, ("undo", "branch")),
+                (Theme.KEY_NAV_BRANCH_DOWN, ("switch-branch", 1)),
+                (Theme.KEY_NAV_BRANCH_UP, ("switch-branch", -1)),
+                (Theme.KEY_TIMER_POPUP, ("timer-popup",)),
+                (Theme.KEY_TEACHER_POPUP, ("teacher-popup",)),
+                (Theme.KEY_AI_POPUP, ("ai-popup",)),
+                (Theme.KEY_CONFIG_POPUP, ("config-popup",)),
+                (Theme.KEY_CONTRIBUTE_POPUP, ("contribute-popup",)),
+                (Theme.KEY_STOP_ANALYSIS, ("analyze-extra", "stop")),
+            ]
+            for k in (ks if isinstance(ks, list) else [ks])
         }
 
     @property
     def popup_open(self) -> Popup:
         app = App.get_running_app()
-        first_child = app.root_window.children[0]
-        return first_child if isinstance(first_child, Popup) else None
+        if app:
+            first_child = app.root_window.children[0]
+            return first_child if isinstance(first_child, Popup) else None
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):
         self.last_key_down = keycode
-        ctrl_pressed = "ctrl" in modifiers
+        ctrl_pressed = "ctrl" in modifiers or ("meta" in modifiers and kivy_platform == "macosx")
+        shift_pressed = "shift" in modifiers
         if self.controls.note.focus:
             return  # when making notes, don't allow keyboard shortcuts
         popup = self.popup_open
         if popup:
-            if keycode[1] in ["f5", "f6", "f7", "f8"]:  # switch between popups
+            if keycode[1] in [
+                Theme.KEY_DEEPERANALYSIS_POPUP,
+                Theme.KEY_REPORT_POPUP,
+                Theme.KEY_TIMER_POPUP,
+                Theme.KEY_TEACHER_POPUP,
+                Theme.KEY_AI_POPUP,
+                Theme.KEY_CONFIG_POPUP,
+                Theme.KEY_CONTRIBUTE_POPUP,
+            ]:  # switch between popups
                 popup.dismiss()
                 return
-            elif keycode[1] in ["enter", "numpadenter"]:
+            elif keycode[1] in Theme.KEY_SUBMIT_POPUP:
                 fn = getattr(popup.content, "on_submit", None)
                 if fn:
                     fn()
                 return
             else:
                 return
-        shift_pressed = "shift" in modifiers
-        shortcuts = self.shortcuts
-        if keycode[1] == "spacebar":
+        if keycode[1] == Theme.KEY_TOGGLE_CONTINUOUS_ANALYSIS:
             self.toggle_continuous_analysis()
-        elif keycode[1] == "k":
+        elif keycode[1] == Theme.KEY_TOGGLE_COORDINATES:
             self.board_gui.toggle_coordinates()
-        elif keycode[1] in ["pause", "break", "f15"] and not ctrl_pressed:
+        elif keycode[1] in Theme.KEY_PAUSE_TIMER and not ctrl_pressed:
             self.controls.timer.paused = not self.controls.timer.paused
-        elif keycode[1] in ["`", "~", "f12"]:
+        elif keycode[1] in Theme.KEY_ZEN:
             self.zen = (self.zen + 1) % 3
-        elif keycode[1] in ["left", "z"]:
+        elif keycode[1] in Theme.KEY_NAV_PREV:
             self("undo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
-        elif keycode[1] in ["right", "x"]:
+        elif keycode[1] in Theme.KEY_NAV_NEXT:
             self("redo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
-        elif keycode[1] == "home":
+        elif keycode[1] == Theme.KEY_NAV_GAME_START:
             self("undo", 9999)
-        elif keycode[1] == "end":
+        elif keycode[1] == Theme.KEY_NAV_GAME_END:
             self("redo", 9999)
-        elif keycode[1] == "pageup":
+        elif keycode[1] == Theme.KEY_MOVE_TREE_MAKE_SELECTED_NODE_MAIN_BRANCH:
             self.controls.move_tree.make_selected_node_main_branch()
-        elif keycode[1] == "n" and not ctrl_pressed:
+        elif keycode[1] == Theme.KEY_NAV_MISTAKE and not ctrl_pressed:
             self("find-mistake", "undo" if shift_pressed else "redo")
-        elif keycode[1] == "delete" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_MOVE_TREE_DELETE_SELECTED_NODE and ctrl_pressed:
             self.controls.move_tree.delete_selected_node()
-        elif keycode[1] == "c" and not ctrl_pressed:
+        elif keycode[1] == Theme.KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE and not ctrl_pressed:
             self.controls.move_tree.toggle_selected_node_collapse()
-        elif keycode[1] == "n" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_NEW_GAME and ctrl_pressed:
             self("new-game-popup")
-        elif keycode[1] == "l" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_LOAD_GAME and ctrl_pressed:
             self("analyze-sgf-popup")
-        elif keycode[1] == "s" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_SAVE_GAME and ctrl_pressed:
             self("save-game")
-        elif keycode[1] == "d" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_SAVE_GAME_AS and ctrl_pressed:
             self("save-game-as-popup")
-        elif keycode[1] == "c" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_COPY and ctrl_pressed:
             Clipboard.copy(self.game.root.sgf())
             self.controls.set_status(i18n._("Copied SGF to clipboard."), STATUS_INFO)
-        elif keycode[1] == "v" and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_PASTE and ctrl_pressed:
             self.load_sgf_from_clipboard()
-        elif keycode[1] == "b" and shift_pressed:
+        elif keycode[1] == Theme.KEY_NAV_PREV_BRANCH and shift_pressed:
             self("undo", "main-branch")
-        elif keycode[1] in shortcuts.keys() and not ctrl_pressed:
-            shortcut = shortcuts[keycode[1]]
-            if isinstance(shortcut, Widget):
-                shortcut.trigger_action(duration=0)
-            else:
-                self(*shortcut)
-        elif keycode[1] == "f9" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
+        elif keycode[1] == Theme.KEY_DEEPERANALYSIS_POPUP:
+            self.analysis_controls.dropdown.open_game_analysis_popup()
+        elif keycode[1] == Theme.KEY_REPORT_POPUP:
+            self.analysis_controls.dropdown.open_report_popup()
+        elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
             import yappi
 
             yappi.set_clock_type("cpu")
             yappi.start()
             self.log("starting profiler", OUTPUT_ERROR)
-        elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
+        elif keycode[1] == "f11" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
             import time
             import yappi
 
@@ -632,6 +733,13 @@ class KaTrainGui(Screen, KaTrainBase):
             filename = f"callgrind.{int(time.time())}.prof"
             stats.save(filename, type="callgrind")
             self.log(f"wrote profiling results to {filename}", OUTPUT_ERROR)
+        elif not ctrl_pressed:
+            shortcut = self.shortcuts.get(keycode[1])
+            if shortcut is not None:
+                if isinstance(shortcut, Widget):
+                    shortcut.trigger_action(duration=0)
+                else:
+                    self(*shortcut)
 
     def _on_keyboard_up(self, _keyboard, keycode):
         if keycode[1] in ["alt", "tab"]:
@@ -673,8 +781,8 @@ class KaTrainApp(MDApp):
         resource_add_path(PATHS["PACKAGE"] + "/img")
         resource_add_path(os.path.abspath(os.path.expanduser(DATA_FOLDER)))  # prefer resources in .katrain
 
-        theme_file = resource_find("theme.json")
-        if theme_file:
+        theme_files = glob.glob(os.path.join(os.path.expanduser(DATA_FOLDER), "theme*.json"))
+        for theme_file in sorted(theme_files):
             try:
                 with open(theme_file) as f:
                     theme_overrides = json.load(f)
@@ -691,6 +799,28 @@ class KaTrainApp(MDApp):
         Window.bind(on_dropfile=lambda win, file: self.gui.load_sgf_file(file.decode("utf8")))
         self.gui = KaTrainGui()
         Builder.load_file(popup_kv_file)
+
+        win_left = win_top = win_size = None
+        if self.gui.config("ui_state/restoresize", True):
+            win_size = self.gui.config("ui_state/size", [])
+            win_left = self.gui.config("ui_state/left", None)
+            win_top = self.gui.config("ui_state/top", None)
+        if not win_size:
+            window_scale_fac = 1
+            try:
+                from screeninfo import get_monitors
+
+                for m in get_monitors():
+                    window_scale_fac = min(window_scale_fac, (m.height - 100) / 1000, (m.width - 100) / 1300)
+            except Exception as e:
+                window_scale_fac = 0.85
+            win_size = [1300 * window_scale_fac, 1000 * window_scale_fac]
+        self.gui.log(f"Setting window size to {win_size} and position to {[win_left, win_top]}", OUTPUT_DEBUG)
+        Window.size = (win_size[0], win_size[1])
+        if win_left is not None and win_top is not None:
+            Window.left = win_left
+            Window.top = win_top
+
         return self.gui
 
     def on_language(self, _instance, language):
@@ -703,7 +833,12 @@ class KaTrainApp(MDApp):
             self.gui.controls.set_status("", STATUS_INFO)
 
     def webbrowser(self, site_key):
-        websites = {"homepage": HOMEPAGE + "#manual", "support": HOMEPAGE + "#support"}
+        websites = {
+            "homepage": HOMEPAGE + "#manual",
+            "support": HOMEPAGE + "#support",
+            "contribute:signup": "http://katagotraining.org/accounts/signup/",
+            "engine:help": HOMEPAGE + "/blob/master/ENGINE.md",
+        }
         if site_key in websites:
             webbrowser.open(websites[site_key])
 
@@ -711,11 +846,17 @@ class KaTrainApp(MDApp):
         self.language = self.gui.config("general/lang")
         self.gui.start()
 
-    def on_request_close(self, *_args):
+    def on_request_close(self, *_args, source=None):
+        if source == "keyboard":
+            return True  # do not close on esc
         if getattr(self, "gui", None):
             self.gui.play_mode.save_ui_state()
+            self.gui._config["ui_state"]["size"] = list(Window._size)
+            self.gui._config["ui_state"]["top"] = Window.top
+            self.gui._config["ui_state"]["left"] = Window.left
+            self.gui.save_config("ui_state")
             if self.gui.engine:
-                self.gui.engine.shutdown()
+                self.gui.engine.shutdown(finish=None)
 
     def signal_handler(self, _signal, _frame):
         if self.gui.debug_level >= OUTPUT_DEBUG:
@@ -735,6 +876,7 @@ def run_app():
             ex_type, ex, tb = sys.exc_info()
             trace = "".join(traceback.format_tb(tb))
             app = MDApp.get_running_app()
+
             if app and app.gui:
                 app.gui.log(
                     f"Exception {inst.__class__.__name__}: {', '.join(repr(a) for a in inst.args)}\n{trace}",

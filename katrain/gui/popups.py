@@ -14,6 +14,7 @@ from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.utils import platform
@@ -22,7 +23,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
-from katrain.core.ai import ai_rank_estimation
+from katrain.core.ai import ai_rank_estimation, game_report
 from katrain.core.constants import (
     AI_CONFIG_DEFAULT,
     AI_DEFAULT,
@@ -35,11 +36,24 @@ from katrain.core.constants import (
     OUTPUT_INFO,
     SGF_INTERNAL_COMMENTS_MARKER,
     STATUS_INFO,
+    PLAYER_HUMAN,
+    ADDITIONAL_MOVE_ORDER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
-from katrain.core.utils import PATHS, find_package_resource
-from katrain.gui.kivyutils import BackgroundMixin, I18NSpinner
+from katrain.core.sgf_parser import Move
+from katrain.core.utils import PATHS, find_package_resource, evaluation_class
+from katrain.gui.kivyutils import (
+    BackgroundMixin,
+    I18NSpinner,
+    BackgroundLabel,
+    TableHeaderLabel,
+    TableCellLabel,
+    TableStatLabel,
+    PlayerInfo,
+    SizedRectangleButton,
+    AutoSizedRectangleButton,
+)
 from katrain.gui.theme import Theme
 from katrain.gui.widgets.progress_loader import ProgressLoader
 
@@ -49,8 +63,10 @@ class I18NPopup(Popup):
     font_name = StringProperty(Theme.DEFAULT_FONT)
 
     def __init__(self, size=None, **kwargs):
-        if size:  # do not exceed window height
-            size[1] = min(MDApp.get_running_app().gui.height, size[1])
+        if size:  # do not exceed window size
+            app = MDApp.get_running_app()
+            size[0] = min(app.gui.width, size[0])
+            size[1] = min(app.gui.height, size[1])
         super().__init__(size=size, **kwargs)
         self.bind(on_dismiss=Clock.schedule_once(lambda _dt: MDApp.get_running_app().gui.update_state(), 1))
 
@@ -225,7 +241,7 @@ class QuickConfigGui(MDBoxLayout):
         for c in widget.children:
             self._set_properties_subtree(c)
 
-    def update_config(self, save_to_file=True):
+    def update_config(self, save_to_file=True, close_popup=True):
         updated = set()
         for multikey, value in self.collect_properties(self).items():
             old_value, conf, key = self.get_setting(multikey)
@@ -235,14 +251,14 @@ class QuickConfigGui(MDBoxLayout):
                 updated.add(multikey)
         if save_to_file:
             self.katrain.save_config()
-        if self.popup:
+        if self.popup and close_popup:
             self.popup.dismiss()
         return updated
 
 
 class ConfigTimerPopup(QuickConfigGui):
-    def update_config(self, save_to_file=True):
-        super().update_config(save_to_file=save_to_file)
+    def update_config(self, save_to_file=True, close_popup=True):
+        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         for p in self.katrain.players_info.values():
             p.periods_used = 0
         self.katrain.controls.timer.paused = True
@@ -252,12 +268,15 @@ class ConfigTimerPopup(QuickConfigGui):
 
 
 class NewGamePopup(QuickConfigGui):
+    mode = StringProperty("newgame")
+
     def __init__(self, katrain):
         super().__init__(katrain)
         for bw, info in katrain.players_info.items():
             self.player_setup.update_player_info(bw, info)
 
         self.rules_spinner.value_refs = [name for abbr, name in katrain.engine.RULESETS_ABBR]
+        self.bind(mode=self.update_playername)
         Clock.schedule_once(self.update_from_current_game, 0.1)
 
     def normalized_rules(self):
@@ -271,47 +290,53 @@ class NewGamePopup(QuickConfigGui):
             name = self.player_name[bw].text
             if name:
                 self.katrain.game.root.set_property("P" + bw, name)
+            else:
+                self.katrain.game.root.clear_property("P" + bw)
             self.katrain.update_player(bw, **player_setup.player_type_dump)
 
-    def update_from_current_game(self, *args):
+    def update_playername(self, *args):
         for bw in "BW":
             name = self.katrain.game.root.get_property("P" + bw, None)
             if name and SGF_INTERNAL_COMMENTS_MARKER not in name:
-                self.player_name[bw].text = name
+                self.player_name[bw].text = name if self.mode == "editgame" else ""
+
+    def update_from_current_game(self, *args):  # set rules and komi
         rules = self.normalized_rules()
         self.km.text = str(self.katrain.game.root.komi)
         if rules is not None:
             self.rules_spinner.select_key(rules.strip())
 
-    def update_config(self, save_to_file=True):
-        super().update_config(save_to_file=save_to_file)
-        self.katrain.log(f"New game settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
-        if self.restart.active:
-            self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
-            self.katrain.engine.restart()
-        self.update_playerinfo()
-        self.katrain("new-game")
-
-    def update_game(self):
+    def update_config(self, save_to_file=True, close_popup=True):
+        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         props = self.collect_properties(self)
-        root = self.katrain.game.root
-        changed = False
-        for k, currentval, newval in [
-            ("RU", self.normalized_rules(), props["game/rules"]),
-            ("KM", root.komi, props["game/komi"]),
-        ]:
-            if currentval != newval:
-                changed = True
-                self.katrain.log(
-                    f"Property {k} changed from {currentval} to {newval}, triggering re-analysis of entire game.",
-                    OUTPUT_INFO,
-                )
-                self.katrain.game.root.set_property(k, newval)
-        self.update_playerinfo()
-        if changed:
-            self.katrain.engine.on_new_game()
-            self.katrain.game.analyze_all_nodes(analyze_fast=True)
-        self.popup.dismiss()
+        self.katrain.log(f"Mode: {self.mode}, settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
+        self.update_playerinfo()  # type
+        if self.mode == "newgame":
+            if self.restart.active:
+                self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
+                self.katrain.engine.restart()
+            self.katrain._do_new_game()
+        elif self.mode == "editgame":
+            root = self.katrain.game.root
+            changed = False
+            for k, currentval, newval in [
+                ("RU", self.normalized_rules(), props["game/rules"]),
+                ("KM", root.komi, props["game/komi"]),
+            ]:
+                if currentval != newval:
+                    changed = True
+                    self.katrain.log(
+                        f"Property {k} changed from {currentval} to {newval}, triggering re-analysis of entire game.",
+                        OUTPUT_INFO,
+                    )
+                    self.katrain.game.root.set_property(k, newval)
+            if changed:
+                self.katrain.engine.on_new_game()
+                self.katrain.game.analyze_all_nodes(analyze_fast=True)
+        else:  # setup position
+            self.katrain._do_new_game()
+            self.katrain("selfplay-setup", props["game/setup_move"], props["game/setup_advantage"])
+        self.update_playerinfo()  # name
 
 
 def wrap_anchor(widget):
@@ -342,9 +367,9 @@ class ConfigTeacherPopup(QuickConfigGui):
         for k in ["dot color", "point loss threshold", "num undos", "show dots", "save dots"]:
             self.options_grid.add_widget(DescriptionLabel(text=i18n._(k), font_name=i18n.font_name, font_size=dp(17)))
 
-        for i, (color, threshold, undo, show_dot, savesgf) in enumerate(
-            zip(Theme.EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs)
-        ):
+        for i, color, threshold, undo, show_dot, savesgf in list(
+            zip(range(len(thresholds)), Theme.EVAL_COLORS[theme], thresholds, undos, show_dots, savesgfs)
+        )[::-1]:
             self.add_option_widgets(
                 [
                     BackgroundMixin(background_color=color, size_hint=[0.9, 0.9]),
@@ -356,8 +381,8 @@ class ConfigTeacherPopup(QuickConfigGui):
             )
         super().build_and_set_properties()
 
-    def update_config(self, save_to_file=True):
-        super().update_config(save_to_file=save_to_file)
+    def update_config(self, save_to_file=True, close_popup=True):
+        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         self.build_and_set_properties()
 
 
@@ -404,7 +429,7 @@ class ConfigAIPopup(QuickConfigGui):
                     widget.bind(active=self.estimate_rank_from_options)
                 else:
                     if isinstance(values[0], Tuple):  # with descriptions, possibly language-specific
-                        fixed_values = [(v, re.sub(r"\[(.*?)\]", lambda m: i18n._(m[1]), l)) for v, l in values]
+                        fixed_values = [(v, re.sub(r"\[(.*?)]", lambda m: i18n._(m[1]), l)) for v, l in values]
                     else:  # just numbers
                         fixed_values = [(v, str(v)) for v in values]
                     widget = LabelledSelectionSlider(
@@ -421,13 +446,23 @@ class ConfigAIPopup(QuickConfigGui):
             self.options_grid.add_widget(Label(size_hint_x=None))
         Clock.schedule_once(self.estimate_rank_from_options)
 
-    def update_config(self, save_to_file=True):
-        super().update_config(save_to_file=save_to_file)
+    def update_config(self, save_to_file=True, close_popup=True):
+        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         self.katrain.update_calculated_ranks()
         Clock.schedule_once(self.katrain.controls.update_players, 0)
 
 
-class ConfigPopup(QuickConfigGui):
+class EngineRecoveryPopup(QuickConfigGui):
+    error_message = StringProperty("")
+    code = ObjectProperty(None)
+
+    def __init__(self, katrain, error_message, code):
+        super().__init__(katrain)
+        self.error_message = str(error_message)
+        self.code = code
+
+
+class BaseConfigPopup(QuickConfigGui):
     MODEL_ENDPOINTS = {
         "Latest distributed model": "https://katagotraining.org/api/networks/newest_training/",
         "Strongest distributed model": "https://katagotraining.org/api/networks/get_strongest/",
@@ -444,20 +479,22 @@ class ConfigPopup(QuickConfigGui):
 
     KATAGOS = {
         "win": {
-            "OpenCL v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-opencl-windows-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-eigenavx2-windows-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-eigen-windows-x64.zip",
-            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-windows-x64.zip",
+            "OpenCL v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-opencl-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-eigenavx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-eigen-windows-x64.zip",
+            "OpenCL v1.10.0 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-opencl-windows-x64+bs29.zip",
         },
         "linux": {
-            "OpenCL v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-opencl-linux-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-eigenavx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.8.0": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-eigen-linux-x64.zip",
-            "OpenCL v1.6.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.6.1%2Bbs29/katago-v1.6.1+bs29-gpu-opencl-linux-x64.zip",
+            "OpenCL v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-opencl-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-eigenavx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.10.0": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-eigen-linux-x64.zip",
+            "OpenCL v1.10.0 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-opencl-linux-x64+bs29.zip",
         },
         "just-descriptions": {
-            "CUDA v1.8.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-cuda10.2-windows-x64.zip",
-            "CUDA v1.8.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.8.0/katago-v1.8.0-gpu-cuda10.2-linux-x64.zip",
+            "CUDA v1.10.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-cuda11.2-windows-x64.zip",
+            "CUDA v1.10.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-cuda11.1-linux-x64.zip",
+            "Cuda/TensorRT v1.10.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-trt8.2-cuda11.2-windows-x64.zip",
+            "Cuda/TensorRT v1.10.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.10.0/katago-v1.10.0-trt8.2-cuda11.1-linux-x64.zip",
         },
     }
 
@@ -465,13 +502,7 @@ class ConfigPopup(QuickConfigGui):
         super().__init__(katrain)
         self.paths = [self.katrain.config("engine/model"), "katrain/models", DATA_FOLDER]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
-        Clock.schedule_once(self.check_katas)
         self.last_clicked_download_models = 0
-        MDApp.get_running_app().bind(language=self.check_models)
-        MDApp.get_running_app().bind(language=self.check_katas)
-
-    def build_and_set_properties(self, *_args):
-        super().build_and_set_properties()
 
     def check_models(self, *args):
         all_models = [self.MODELS, self.MODEL_DESC, self.katrain.config("dist_models", {})]
@@ -492,7 +523,8 @@ class ConfigPopup(QuickConfigGui):
 
         done = set()
         model_files = []
-        for path in self.paths + [self.model_path.text]:
+        distributed_training_models = os.path.expanduser(os.path.join(DATA_FOLDER, "katago_contribute/kata1/models"))
+        for path in self.paths + [self.model_path.text, distributed_training_models]:
             path = path.rstrip("/\\")
             if path.startswith("katrain"):
                 path = path.replace("katrain", PATHS["PACKAGE"].rstrip("/\\"), 1)
@@ -507,6 +539,7 @@ class ConfigPopup(QuickConfigGui):
                 f.replace("/", os.path.sep).replace(PATHS["PACKAGE"], "katrain")
                 for ftype in ["*.bin.gz", "*.txt.gz"]
                 for f in glob.glob(slashpath + "/" + ftype)
+                if ".tmp." not in f
             ]
             if files and path not in self.paths:
                 self.paths.append(path)  # persistent on paths with models found
@@ -558,7 +591,10 @@ class ConfigPopup(QuickConfigGui):
                 self.paths.append(path)  # persistent on paths with models found
             kata_files += files
 
-        kata_files = [(path, find_description(path)) for path in sorted(kata_files, key=lambda f: "bs29" in f)]
+        kata_files = sorted(
+            [(path, find_description(path)) for path in kata_files],
+            key=lambda f: ("bs29" in f[0]) * 0.1 - (f[0] != f[1]),
+        )
         katas_available_msg = i18n._("katago binaries available").format(num=len(kata_files))
         self.katago_files.values = [katas_available_msg, i18n._("default katago option")] + [
             desc for path, desc in kata_files
@@ -599,7 +635,6 @@ class ConfigPopup(QuickConfigGui):
                 dist_models[name] = json.loads(response.data.decode("utf-8"))["model_file"]
             except Exception as e:
                 self.katrain.log(f"Failed to retrieve info for model: {e}", OUTPUT_INFO)
-
         self.katrain._config["dist_models"] = dist_models
         self.katrain.save_config(key="dist_models")
 
@@ -608,7 +643,7 @@ class ConfigPopup(QuickConfigGui):
             if not any(os.path.split(f)[1] == filename for f in self.model_files.values):
                 savepath = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 savepath_tmp = savepath + ".part"
-                self.katrain.log(f"Downloading {name} model from {url} to {savepath_tmp}", OUTPUT_INFO)
+                self.katrain.log(f"Downloading {name} from {url} to {savepath_tmp}", OUTPUT_INFO)
                 Clock.schedule_once(
                     lambda _dt, _savepath=savepath, _savepath_tmp=savepath_tmp, _url=url, _name=name: ProgressLoader(
                         self.download_progress_box,
@@ -685,7 +720,8 @@ class ConfigPopup(QuickConfigGui):
                 savepath_tmp = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 exe_path_name = os.path.expanduser(os.path.join(DATA_FOLDER, exe_name))
                 self.katrain.log(f"Downloading binary {name} from {url} to {savepath_tmp}", OUTPUT_INFO)
-                progress = ProgressLoader(
+                ProgressLoader(
+                    root_instance=self.katago_download_progress_box,
                     download_url=url,
                     path_to_file=savepath_tmp,
                     downloading_text=f"Downloading {name}: " + "{}",
@@ -700,7 +736,6 @@ class ConfigPopup(QuickConfigGui):
                         f"Download of {mname} failed or cancelled ({error})", OUTPUT_ERROR
                     ),
                 )
-                progress.start(self.katago_download_progress_box)
                 downloading = True
         if not downloading:
             if not self.KATAGOS.get(platform):
@@ -712,8 +747,16 @@ class ConfigPopup(QuickConfigGui):
                     Label(text=i18n._("All binaries downloaded"), font_name=i18n.font_name, text_size=(None, dp(50)))
                 )
 
-    def update_config(self, save_to_file=True):
-        updated = super().update_config(save_to_file=save_to_file)
+
+class ConfigPopup(BaseConfigPopup):
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        Clock.schedule_once(self.check_katas)
+        MDApp.get_running_app().bind(language=self.check_models)
+        MDApp.get_running_app().bind(language=self.check_katas)
+
+    def update_config(self, save_to_file=True, close_popup=True):
+        updated = super().update_config(save_to_file=save_to_file, close_popup=close_popup)
         self.katrain.debug_level = self.katrain.config("general/debug_level", OUTPUT_INFO)
 
         ignore = {"max_visits", "fast_visits", "max_time", "enable_ownership", "wide_root_noise"}
@@ -740,9 +783,27 @@ class ConfigPopup(QuickConfigGui):
             Clock.schedule_once(restart_engine, 0)
 
 
-class LoadSGFPopup(BoxLayout):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+class ContributePopup(BaseConfigPopup):
+    def __init__(self, katrain):
+        super().__init__(katrain)
+        MDApp.get_running_app().bind(language=self.check_katas)
+        Clock.schedule_once(self.check_katas)
+
+    def start_contributing(self):
+        self.update_config(True, close_popup=False)
+        self.error.text = ""
+        log_settings = {**self.katrain.config("contribute"), "password": "***"}
+        self.katrain.log(f"Updating contribution settings {log_settings}", OUTPUT_DEBUG)
+        if not self.katrain.config("contribute/username") or not self.katrain.config("contribute/password"):
+            self.error.text = "Please enter your username and password for katagotraining.org"
+        else:
+            self.popup.dismiss()
+            self.katrain("katago-contribute")
+
+
+class LoadSGFPopup(BaseConfigPopup):
+    def __init__(self, katrain):
+        super().__init__(katrain)
         app = MDApp.get_running_app()
         self.filesel.favorites = [
             (os.path.abspath(app.gui.config("general/sgf_load")), "Last Load Dir"),
@@ -780,3 +841,98 @@ class SaveSGFPopup(BoxLayout):
 class ReAnalyzeGamePopup(BoxLayout):
     katrain = ObjectProperty(None)
     popup = ObjectProperty(None)
+
+    def on_submit(self):
+        self.button.trigger_action(duration=0)
+
+
+class GameReportPopup(BoxLayout):
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
+        self.depth_filter = None
+        Clock.schedule_once(self._refresh, 0)
+
+    def set_depth_filter(self, filter):
+        self.depth_filter = filter
+        Clock.schedule_once(self._refresh, 0)
+
+    def _refresh(self, _dt=0):
+        game = self.katrain.game
+        thresholds = self.katrain.config("trainer/eval_thresholds")
+
+        sum_stats, histogram, player_ptloss = game_report(game, depth_filter=self.depth_filter, thresholds=thresholds)
+        labels = [f"≥ {pt}" if pt > 0 else f"< {thresholds[-2]}" for pt in thresholds]
+
+        table = GridLayout(cols=3, rows=6 + len(thresholds))
+        colors = [
+            [cp * 0.75 for cp in col[:3]] + [1] for col in Theme.EVAL_COLORS[self.katrain.config("trainer/theme")]
+        ]
+
+        table.add_widget(TableHeaderLabel(text="", background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text=i18n._("header:keystats"), background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text="", background_color=Theme.BACKGROUND_COLOR))
+
+        for i, (label, fmt, stat, scale, more_is_better) in enumerate(
+            [
+                ("accuracy", "{:.1f}", "accuracy", 100, True),
+                ("meanpointloss", "{:.1f}", "mean_ptloss", 5, False),
+                ("aitopmove", "{:.1%}", "ai_top_move", 1, True),
+                ("aitop5", "{:.1%}", "ai_top5_move", 1, True),
+            ]
+        ):
+
+            statcell = {
+                bw: TableStatLabel(
+                    text=fmt.format(sum_stats[bw][stat]) if stat in sum_stats[bw] else "",
+                    side=side,
+                    value=sum_stats[bw].get(stat, 0),
+                    scale=scale,
+                    bar_color=Theme.STAT_BETTER_COLOR
+                    if (sum_stats[bw].get(stat, 0) < sum_stats[Move.opponent_player(bw)].get(stat, 0)) ^ more_is_better
+                    else Theme.STAT_WORSE_COLOR,
+                    background_color=Theme.BOX_BACKGROUND_COLOR,
+                )
+                for (bw, side) in zip("BW", ["left", "right"])
+            }
+            table.add_widget(statcell["B"])
+            table.add_widget(TableCellLabel(text=i18n._(f"stat:{label}"), background_color=Theme.BOX_BACKGROUND_COLOR))
+            table.add_widget(statcell["W"])
+
+        table.add_widget(TableHeaderLabel(text=i18n._("header:num moves"), background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text=i18n._("stats:pointslost"), background_color=Theme.BACKGROUND_COLOR))
+        table.add_widget(TableHeaderLabel(text=i18n._("header:num moves"), background_color=Theme.BACKGROUND_COLOR))
+
+        for i, (col, label, pt) in enumerate(zip(colors[::-1], labels[::-1], thresholds[::-1])):
+            statcell = {
+                bw: TableStatLabel(
+                    text=str(histogram[i][bw]),
+                    side=side,
+                    value=histogram[i][bw],
+                    scale=len(player_ptloss[bw]) + 1e-6,
+                    bar_color=col,
+                    background_color=Theme.BOX_BACKGROUND_COLOR,
+                )
+                for (bw, side) in zip("BW", ["left", "right"])
+            }
+            table.add_widget(statcell["B"])
+            table.add_widget(TableCellLabel(text=label, background_color=col))
+            table.add_widget(statcell["W"])
+
+        self.stats.clear_widgets()
+        self.stats.add_widget(table)
+
+        for bw, player_info in self.katrain.players_info.items():
+            self.player_infos[bw].player_type = player_info.player_type
+            self.player_infos[bw].captures = ""  # ;)
+            self.player_infos[bw].player_subtype = player_info.player_subtype
+            self.player_infos[bw].name = player_info.name
+            self.player_infos[bw].rank = (
+                player_info.sgf_rank
+                if player_info.player_type == PLAYER_HUMAN
+                else rank_label(player_info.calculated_rank)
+            )
+
+        # if not done analyzing, check again in 1s
+        if not self.katrain.engine.is_idle():
+            Clock.schedule_once(self._refresh, 1)

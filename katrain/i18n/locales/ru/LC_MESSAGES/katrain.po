@@ -306,7 +306,6 @@ msgstr "Корейские"
 msgid "aga"
 msgstr "AGA"
 
-#. TODO check
 msgid "stone_scoring"
 msgstr "Древние китайские"
 
@@ -324,7 +323,7 @@ msgid "non square board hint"
 msgstr "Используйте x:y (e.g. 19:9) для прямоугольных размеров"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Начать новую игру"
 
 # teacher settings from here
@@ -347,14 +346,10 @@ msgid "save dots"
 msgstr "Сохранить в SGF"
 
 msgid "show last n dots"
-msgstr ""
-"Показать точки для\n"
-"<этого количества> последних ходов"
+msgstr "Показать точки для <этого количества> последних ходов"
 
 msgid "show ai dots"
-msgstr ""
-"Показать точки и SGF комментарии\n"
-" для ИИ игроков"
+msgstr "Показать точки и SGF комментарии для ИИ игроков"
 
 #. submit button
 msgid "update teacher"
@@ -700,11 +695,6 @@ msgstr "Простой стиль"
 msgid "local analysis"
 msgstr "Поиск локальных ответов"
 
-msgid "change current game"
-msgstr ""
-"Изменить коми/правила\n"
-"в текущей игре"
-
 msgid "Make Main Branch"
 msgstr "Сделать главной веткой"
 
@@ -784,3 +774,157 @@ msgstr "Имя игрока чёрными"
 
 msgid "white player name hint"
 msgstr "Имя игрока белыми"
+
+msgid "gui-locked"
+msgstr ""
+"Действие {action} запрещено в режиме распределённой тренировки. "
+"Перезапустите KaTrain для выхода из этого режима."
+
+msgid "menu:distributed"
+msgstr "Распределённая тренировка"
+
+msgid "contribute:register"
+msgstr "Регистрация"
+
+msgid "contribute:start"
+msgstr "Начать помогать тренировке!"
+
+msgid "contribute settings title"
+msgstr "Помощь в распределённой тренировке KataGo"
+
+msgid "contribute:username"
+msgstr "Имя пользователя"
+
+msgid "contribute:maxgames"
+msgstr "Одновременные игры"
+
+msgid "contribute:password"
+msgstr "Пароль"
+
+msgid "contribute:maxgames:hint"
+msgstr ""
+"Оптимальное значение numSearchThreads, около 8 для GPU среднего уровня. Для "
+"коротких сессий обучения лучше установить поменьше, т.к. наполовину "
+"сыгранные игры не представляют интереса."
+
+msgid "contribute:ownership:hint"
+msgstr "Слегка замедляет тренировку, но позволяет визуализацию."
+
+msgid "contribute:ownership"
+msgstr "Включить визуализацию"
+
+msgid "contribute:login"
+msgstr "Информация для авторизации на katagotraining.org"
+
+msgid "contribute:movespeed"
+msgstr "Скорость хода"
+
+msgid "contribute:movespeed:hint"
+msgstr "Длительность хода в секундах/ход."
+
+msgid "contribute:savesgf"
+msgstr "Сохранить SGF файлы"
+
+msgid "contribute:savesgf:hint"
+msgstr "Сохраняет SGF файлы законченных игр в ./dist_sgf"
+
+msgid "contribute:viewer settings"
+msgstr "Настройки отображения"
+
+msgid "analysis:reset"
+msgstr "Перезапустить анализ"
+
+msgid "setup position black score"
+msgstr "Целевой счёт для чёрных:"
+
+msgid "setup position move number"
+msgstr "Генерировать игру до хода:"
+
+msgid "setupposition"
+msgstr "Установить позицию"
+
+msgid "setup position explanation"
+msgstr ""
+"Генерирует частичную игру. Например, вы можете использовать это для игры "
+"против сильного AI начиная с перевесом в середине или ближе к окончанию "
+"игры."
+
+msgid "setup game status message"
+msgstr ""
+"Генерация позиции с помощью игры AI с самим собой: Ход {move}/{until_move}."
+
+msgid "editgame"
+msgstr "Редактировать игры"
+
+msgid "new zealand"
+msgstr "Новозеландские"
+
+msgid "tromp-taylor"
+msgstr "Тромп-Тейлор"
+
+msgid "analysis:report"
+msgstr "Отчёт о производительности"
+
+msgid "engine died popup opening message"
+msgstr ""
+"Движок KataGo не смог запуститься или сломался\n"
+"\n"
+"Ошибка: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Код ошибки: [color=#CC2222]{code}[/color]."
+
+msgid "go to engine help page"
+msgstr ""
+"Если у вас до сих пор проблемы, вот ссылка {link} на страницу устранения "
+"неполадок."
+
+msgid "change engine suggestion"
+msgstr ""
+"Во-первых, попробуйте скачать и выбрать другую версию движка KataGo {link}"
+
+msgid "link_here"
+msgstr "Нажмите здесь"
+
+msgid "engine recovery"
+msgstr "Помощь в настройке KataGo"
+
+msgid "reanalyze mistakes only"
+msgstr "Анализировать только ошибки"
+
+msgid "stat:accuracy"
+msgstr "Рейтинг точности"
+
+msgid "header:keystats"
+msgstr "Ключевые статистики"
+
+msgid "header:num moves"
+msgstr "Количество ходов"
+
+msgid "Opening"
+msgstr "Начало игры"
+
+msgid "Endgame"
+msgstr "Окончание игры"
+
+msgid "Midgame"
+msgstr "Середина игры"
+
+msgid "stat:meanpointloss"
+msgstr "Главные потери очков"
+
+msgid "stat:aitop5"
+msgstr ""
+"% совпадения с\n"
+"топ-5 ходами ИИ"
+
+msgid "stat:aitopmove"
+msgstr ""
+"% совпадения с\n"
+"идеальными ходами ИИ"
+
+msgid "Entire Game"
+msgstr "Полная игра"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"

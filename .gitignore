@@ -1,4 +1,5 @@
 dist_sgf
+sgftest
 
 # additions
 KataGoData
@@ -19,6 +20,7 @@ logs
 callgrind.*
 cpp/out
 .vs
+dist_sgf
 
 # debug
 outdated_log.txt

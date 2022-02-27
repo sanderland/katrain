@@ -48,6 +48,38 @@ class BackgroundMixin(Widget):  # -- mixins
     outline_width = NumericProperty(1)
 
 
+class BackgroundLabel(BackgroundMixin, Label):
+    pass
+
+
+class TableCellLabel(Label):
+    background_color = ListProperty([0, 0, 0, 0])
+    line_width = NumericProperty(0)
+    outlines = ListProperty([])
+    outline_color = Theme.LINE_COLOR
+    outline_width = NumericProperty(1.1)
+
+    def __init__(self, **kwargs):
+        kwargs["font_name"] = kwargs.get("font_name", i18n.font_name)
+        super().__init__(**kwargs)
+
+
+class TableStatLabel(TableCellLabel):
+    side = StringProperty("right")
+    value = NumericProperty(0)
+    scale = NumericProperty(100)
+    bar_color = ListProperty([0, 0, 0, 1])
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if "outlines" not in kwargs:
+            self.outlines = ["left"] if self.side == "right" else ["right"]
+
+
+class TableHeaderLabel(TableCellLabel):
+    outlines = ["bottom"]
+
+
 class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on right click
     def __init__(self, **kwargs):
         self.register_event_type("on_left_release")
@@ -371,7 +403,7 @@ class PlayerSetupBlock(MDBoxLayout):
 
 
 class PlayerInfo(MDBoxLayout, BackgroundMixin):
-    captures = NumericProperty(0)
+    captures = ObjectProperty(0)
     player = OptionProperty("B", options=["B", "W"])
     player_type = StringProperty("Player")
     komi = NumericProperty(0)
@@ -379,6 +411,7 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
     name = StringProperty("", allownone=True)
     rank = StringProperty("", allownone=True)
     active = BooleanProperty(True)
+    alignment = StringProperty("right")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -408,38 +441,6 @@ class TimerOrMoveTree(MDBoxLayout):
 class Timer(BGBoxLayout):
     state = ListProperty([30, 5, 1])
     timeout = BooleanProperty(False)
-
-
-class TriStateMDCheckbox(MDCheckbox):
-    tri_state = BooleanProperty(False)
-    slashed = BooleanProperty(False)
-    checkbox_icon_slashed = StringProperty("checkbox-blank-off-outline")
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.bind(slashed=self.update_icon)
-
-    def _do_press(self):
-        if not self.tri_state:
-            return super()._do_press()
-        if self.slashed:
-            self.state = "normal"
-            self.slashed = False
-        elif self.state == "down":
-            self.state = "normal"
-            self.slashed = True
-        else:
-            self.state = "down"
-            self.slashed = False
-        self.update_icon()
-
-    def update_icon(self, *args):
-        if self.tri_state and self.slashed:
-            self.icon = self.checkbox_icon_slashed
-        elif self.state == "down":
-            self.icon = self.checkbox_icon_down
-        else:
-            self.icon = self.checkbox_icon_normal
 
 
 class AnalysisToggle(MDBoxLayout):

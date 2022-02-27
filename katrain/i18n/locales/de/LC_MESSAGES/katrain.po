@@ -26,7 +26,7 @@ msgid "menu:clocksettings"
 msgstr "Bedenkzeit"
 
 msgid "menu:teachsettings"
-msgstr "Einstellungen Übungsspiel"
+msgstr "Analyse-Einstellungen"
 
 msgid "menu:aisettings"
 msgstr "AI-Einstellungen"
@@ -283,9 +283,8 @@ msgstr "Koreanisch"
 msgid "aga"
 msgstr "AGA"
 
-#. TODO check
 msgid "stone_scoring"
-msgstr "Alte Chinesisch"
+msgstr "Alte chinesische"
 
 msgid "clear cache"
 msgstr "Cache leeren"
@@ -301,7 +300,7 @@ msgid "non square board hint"
 msgstr "Benutze x:y (z.B. 19:9) für nichtquadratische Grössen"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Neues Spiel starten"
 
 # teacher settings from here
@@ -324,14 +323,10 @@ msgid "save dots"
 msgstr "In SGF speichern"
 
 msgid "show last n dots"
-msgstr ""
-"Dots für die letzten\n"
-"<this many> Züge zeigen"
+msgstr "Dots für die letzten <n> Züge zeigen"
 
 msgid "show ai dots"
-msgstr ""
-"Dots/SGF-Kommentare \n"
-" für AI Spieler zeigen"
+msgstr "Dots/SGF-Kommentare für AI Spieler zeigen"
 
 #. submit button
 msgid "update teacher"
@@ -440,9 +435,7 @@ msgstr ""
 "Einstellungen auf die richtige KataGo-Datei zeigt."
 
 msgid "Engine died unexpectedly"
-msgstr ""
-"Engine ist unerwartet abgestürzt, ohne Ausgabe zu senden, wahrscheinlich "
-"wegen zu wenig Speicher: {error}"
+msgstr "Engine ist unerwartet abgestürzt: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -645,7 +638,7 @@ msgid "engine:altcommand"
 msgstr "Engine-Befehl überschreiben"
 
 msgid "download katago button"
-msgstr "KataGo-Versionen herunterladen"
+msgstr "KataGo-Prog. herunterladen"
 
 msgid "katago binaries available"
 msgstr "{num} KataGo-Programme verfügbar"
@@ -704,11 +697,6 @@ msgstr "Einfacher Stil"
 msgid "local analysis"
 msgstr "Suche nach lokalen Antworten"
 
-msgid "change current game"
-msgstr ""
-"Aktualisiere Komi/Regeln\n"
-" im aktuellen Spiel"
-
 msgid "Make Main Branch"
 msgstr "Zum Hauptzweig machen"
 
@@ -718,7 +706,7 @@ msgstr "Anzeige für den besten Zug"
 
 #. Dropdown menu option
 msgid "top_move_delta_winrate"
-msgstr "Änderung der Gewinnrate"
+msgstr "Gewinnrate Änderung"
 
 #. Dropdown menu option
 msgid "top_move_visits"
@@ -815,3 +803,188 @@ msgstr "Name von Schwarz"
 #. Hint on player name input
 msgid "white player name hint"
 msgstr "Name von Weiß"
+
+#. in self-play mode
+msgid "gui-locked"
+msgstr ""
+"Aktion {action} nicht erlaubt im verteilten Selbstspieltraining Modus. Neu "
+"starten, damit Katrain diesen Modus verlässt."
+
+#. menu item
+msgid "menu:distributed"
+msgstr "Verteiltes Selbstspieltraining"
+
+msgid "contribute:register"
+msgstr "Registrieren"
+
+msgid "contribute:start"
+msgstr "Anfangen beizutragen!"
+
+#. contribute settings popup
+msgid "contribute settings title"
+msgstr "Zu KataGo's verteiltem Training beitragen"
+
+msgid "contribute:username"
+msgstr "Benutzername"
+
+#. description for input
+msgid "contribute:maxgames"
+msgstr "Gleichzeitige Spiele"
+
+msgid "contribute:password"
+msgstr "Passwort"
+
+#. hint for max games
+msgid "contribute:maxgames:hint"
+msgstr ""
+"Am besten gleich zu eurem optimalen numSearchThreads, ungefähr 8 für "
+"mittlemäßige GPUs. setzt es leicht kleiner für kürzere Beiträge, da "
+"unbeendete Spiele nicht hochgeladen werden."
+
+#. hint for ownership
+msgid "contribute:ownership:hint"
+msgstr "Macht Training leicht langsamer, aber erlaubt Eigentum visualisierung"
+
+msgid "contribute:ownership"
+msgstr "Eigentum aktivieren"
+
+#. title
+msgid "contribute:login"
+msgstr "Anmeldung Information (katagotraining.org)"
+
+#. description
+msgid "contribute:movespeed"
+msgstr "Zuggeschwindigkeit"
+
+#. hint for move speed
+msgid "contribute:movespeed:hint"
+msgstr "Zuggeschwindigkeit in Sekunden/Zug."
+
+#. description
+msgid "contribute:savesgf"
+msgstr "SGFs speichern"
+
+#. hint for save
+msgid "contribute:savesgf:hint"
+msgstr "SGF Dateien von beendete Spiele in ./dist_sgf speichern"
+
+#. title
+msgid "contribute:viewer settings"
+msgstr "Beobachtereinstellungen"
+
+#. Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "Analysis zurücksetzen"
+
+#. Description for black target score
+msgid "setup position black score"
+msgstr "Zielergebnis für Schwarz:"
+
+#. Description for how many moves
+msgid "setup position move number"
+msgstr "Spiel generieren bis zum Zug:"
+
+#. Progress message
+msgid "setup game status message"
+msgstr "Spiel durch KI generieren: Zug {move}/{until_move} generiert."
+
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "Position aufsetzen"
+
+#. Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr ""
+"Dies generiert ein Teil eines Spieles, von dem ihr anfangen könnt, zu "
+"spielen. Zum Beispiel könnt ihr es benutzen um im Vorteil gegen stärkere KIs"
+" in verschiedene Mittel- oder Endspielsituationen zu Spielen."
+
+#. change komi etc in current game
+msgid "editgame"
+msgstr "Spiel editieren"
+
+msgid "new zealand"
+msgstr "Neuseeländisch"
+
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+#.  - View a player performance report
+msgid "analysis:report"
+msgstr "Leistungsbericht"
+
+msgid "engine died popup opening message"
+msgstr ""
+"Das KataGo Engine konnte nicht starten, oder ist abgestürzt.\n"
+"\n"
+"Der Fehler war: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Der Fehlercode war: [color=#CC2222]{code}[/color]."
+
+#.  - Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr ""
+"Wenn sie immer noch Schwierigkeiten haben, {link} für eine Hilfe-Seite auf "
+"dem neuesten Stand."
+
+#.  - Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr ""
+"Versuchen sie erstmal KataGo Versionen runterzuladen und ob eine andere "
+"ausführbare Datei in {link} hilft. "
+
+#.  - as in "click here" to go to this page,
+msgid "link_here"
+msgstr "klicken sie hier"
+
+#.  - popup title
+msgid "engine recovery"
+msgstr "Hilfe für KataGo Konfiguration"
+
+#.  - label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Analysis auf Fehler begrenzen"
+
+#.  - statistic in performance report
+msgid "stat:accuracy"
+msgstr "Genauigkeitsbewertung"
+
+#.  - header in performance report
+msgid "header:keystats"
+msgstr "Schlüsselstatistiken"
+
+#.  - header in performance report
+msgid "header:num moves"
+msgstr "# Züge"
+
+#.  - opening of the game filter in performance report
+msgid "Opening"
+msgstr "Eröffnung"
+
+#.  - end of the game filter in performance report
+msgid "Endgame"
+msgstr "Endspiel"
+
+#.  - middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Mittelspiel"
+
+#.  - statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Durchschnittlicher Punkteverlust"
+
+#.  - statistic in performance report
+msgid "stat:aitop5"
+msgstr "KI Top 5 Übereinstimmung %"
+
+#.  - statistic in performance report
+msgid "stat:aitopmove"
+msgstr "Bester KI Zug Übereinstimmung %"
+
+#.  - game filter in performance report
+msgid "Entire Game"
+msgstr "Gesamtes Spiel"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"

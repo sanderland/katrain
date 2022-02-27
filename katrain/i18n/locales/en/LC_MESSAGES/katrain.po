@@ -105,9 +105,57 @@ msgstr "Fast analysis of all moves"
 msgid "analysis:game"
 msgstr "Deeper full game analysis"
 
+#. View a player performance report
+msgid "analysis:report"
+msgstr "Performance Report"
+
+#. game filter in performance report
+msgid "Entire Game"
+msgstr "Entire Game"
+
+#. opening of the game filter in performance report
+msgid "Opening"
+msgstr "Opening"
+
+#. middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Midgame"
+
+#. end of the game filter in performance report
+msgid "Endgame"
+msgstr "Endgame"
+
+#. header in performance report
+msgid "header:keystats"
+msgstr "Key Statistics"
+
+#. statistic in performance report
+msgid "stat:accuracy"
+msgstr "Accuracy Rating"
+
+#. statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Mean Point Loss"
+
+#. statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AI Best Move Match %"
+
+#. statistic in performance report
+msgid "stat:aitop5"
+msgstr "AI Top 5 Match %"
+
+#. header in performance report
+msgid "header:num moves"
+msgstr "# Moves"
+
 #. Analyze again but exclude all currently considered moves
 msgid "analysis:alternatives"
 msgstr "Find alternative moves"
+
+#. Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "Reset analysis"
 
 #. Restrict analysis to a specific region
 msgid "analysis:region"
@@ -355,7 +403,7 @@ msgstr "Update Timer"
 
 # new game settings from here
 msgid "New Game title"
-msgstr "Setup New Game"
+msgstr "Set up New Game / Edit Game Info and Rules"
 
 #. in new game options
 msgid "player names"
@@ -394,6 +442,12 @@ msgstr "Korean"
 msgid "aga"
 msgstr "AGA"
 
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+msgid "new zealand"
+msgstr "New Zealand"
+
 msgid "stone_scoring"
 msgstr "Ancient Chinese"
 
@@ -411,14 +465,16 @@ msgid "non square board hint"
 msgstr "Use x:y (e.g. 19:9) for non-square size"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "Start New Game"
 
 #. change komi etc in current game
-msgid "change current game"
-msgstr ""
-"Update komi/rules\n"
-"in active game"
+msgid "editgame"
+msgstr "Edit Game Info"
+
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "Set up Position"
 
 # teacher settings from here
 msgid "teacher settings"
@@ -428,7 +484,9 @@ msgid "point loss threshold"
 msgstr "Point loss greater than"
 
 msgid "num undos"
-msgstr "Number of undos"
+msgstr ""
+"Number of undos\n"
+"(teaching games)"
 
 msgid "dot color"
 msgstr "Colour"
@@ -440,14 +498,10 @@ msgid "save dots"
 msgstr "Save in SGF"
 
 msgid "show last n dots"
-msgstr ""
-"Show dots for the last\n"
-"<this many> moves"
+msgstr "Show dots for the last <this many> moves"
 
 msgid "show ai dots"
-msgstr ""
-"Show dots/SGF comments\n"
-" for AI players"
+msgstr "Show dots/SGF comments for AI players"
 
 #. analysis option
 msgid "cache analysis to sgf"
@@ -460,6 +514,64 @@ msgstr "Update Feedback Settings"
 # main config settings
 msgid "restarting engine"
 msgstr "Restarting Engine after Settings Change."
+
+#. contribute settings popup
+msgid "contribute settings title"
+msgstr "Contribute To KataGo Distributed Training"
+
+#. title
+msgid "contribute:viewer settings"
+msgstr "Viewer Settings"
+
+#. title
+msgid "contribute:login"
+msgstr "Login Information for katagotraining.org"
+
+#. description for input
+msgid "contribute:maxgames"
+msgstr "Simultaneous Games"
+
+#. hint for max games
+msgid "contribute:maxgames:hint"
+msgstr ""
+"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
+" set it slightly lower for shorter runs, as half-finished games are not "
+"uploaded."
+
+msgid "contribute:ownership"
+msgstr "Enable Ownership"
+
+#. hint for ownership
+msgid "contribute:ownership:hint"
+msgstr "Slightly slows down training, but allows ownership visualization."
+
+#. description
+msgid "contribute:movespeed"
+msgstr "Move speed"
+
+#. hint for move speed
+msgid "contribute:movespeed:hint"
+msgstr "Move playing delay in seconds/move."
+
+#. description
+msgid "contribute:savesgf"
+msgstr "Save SGFs"
+
+#. hint for save
+msgid "contribute:savesgf:hint"
+msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+
+msgid "contribute:username"
+msgstr "Username"
+
+msgid "contribute:password"
+msgstr "Password"
+
+msgid "contribute:register"
+msgstr "Register"
+
+msgid "contribute:start"
+msgstr "Start Contributing!"
 
 # title
 msgid "general settings title"
@@ -580,14 +692,40 @@ msgid "Starting Kata failed"
 msgstr "Starting KataGo with command '{command}' failed with error {error}."
 
 msgid "Engine died unexpectedly"
-msgstr ""
-"Engine died unexpectedly without sending output, possibly due to out of "
-"memory: {error}"
+msgstr "Engine died unexpectedly without sending output: {error}"
 
 msgid "Engine missing DLL"
 msgstr ""
 "Failed to start KataGo due to missing DLL. Check the requirements in the "
 "KataGo documentation, or try running the binary by itself for details. "
+
+#. popup title
+msgid "engine recovery"
+msgstr "Help with KataGo setup"
+
+msgid "engine died popup opening message"
+msgstr ""
+"The KataGo Engine failed to start, or crashed.\n"
+"\n"
+"The error was: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"The error code was: [color=#CC2222]{code}[/color]."
+
+#. Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr ""
+"First, try downloading KataGo versions and try if changing to a different "
+"executable helps in {link} ."
+
+#. Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr ""
+"If you are still having difficulties, {link} for an up-to-date "
+"troubleshooting page."
+
+#. as in "click here" to go to this page,
+msgid "link_here"
+msgstr "click here"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -633,6 +771,9 @@ msgstr ""
 
 msgid "ai:jigo"
 msgstr "KataJigo"
+
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"
 
 msgid "aihelp:jigo"
 msgstr ""
@@ -758,6 +899,10 @@ msgstr "All available binaries already downloaded"
 msgid "reanalyze max visits"
 msgstr "Number of visits per move"
 
+#. label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Limit analysis to mistakes only"
+
 #. on move tree editing
 msgid "Delete Node"
 msgstr "Delete Node"
@@ -826,3 +971,32 @@ msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
 msgid "finish inserting before navigating"
 msgstr ""
 "Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "
+
+#. menu item
+msgid "menu:distributed"
+msgstr "Distributed Self-play Training"
+
+#. in self-play mode
+msgid "gui-locked"
+msgstr ""
+"Action {action} not allowed in distributed self-play training mode. Restart "
+"KaTrain to exit this mode."
+
+#. Progress message
+msgid "setup game status message"
+msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+
+#. Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr ""
+"This generates a partial game for you to start playing from. For example, "
+"you can use this to play against stronger AIs starting from an advantage in "
+"a variety of middle- or end-game positions."
+
+#. Description for black target score
+msgid "setup position black score"
+msgstr "Target score for Black:"
+
+#. Description for how many moves
+msgid "setup position move number"
+msgstr "Generate game until move:"

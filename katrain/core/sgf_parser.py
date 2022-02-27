@@ -45,10 +45,13 @@ class Move:
         self.coords = coords
 
     def __repr__(self):
-        return f"Move({self.player}{self.gtp()})"
+        return f"Move({self.player or ''}{self.gtp()})"
 
     def __eq__(self, other):
         return self.coords == other.coords and self.player == other.player
+
+    def __hash__(self):
+        return hash((self.coords, self.player))
 
     def gtp(self):
         """Returns GTP coordinates of the move"""
@@ -94,6 +97,9 @@ class SGFNode:
 
     def _clear_cache(self):
         self.moves_cache = None
+
+    def __repr__(self):
+        return f"SGFNode({dict(self.properties)})"
 
     def sgf_properties(self, **xargs) -> Dict:
         """For hooking into in a subclass and overriding/formatting any additional properties to be output."""
@@ -164,6 +170,10 @@ class SGFNode:
         """Get the first value of the property, typically when exactly one is expected."""
         return self.properties.get(property, [default])[0]
 
+    def clear_property(self, property) -> Any:
+        """Removes property if it exists."""
+        return self.properties.pop(property, None)
+
     @property
     def parent(self) -> Optional["SGFNode"]:
         """Returns the parent node"""
@@ -186,10 +196,11 @@ class SGFNode:
     def depth(self) -> int:
         """Returns the depth of this node, where root is 0, cached for speed"""
         if self._depth is None:
+            moves = self.moves
             if self.is_root:
                 self._depth = 0
-            else:
-                self._depth = self.parent.depth + 1
+            else:  # no increase on placements etc
+                self._depth = self.parent.depth + len(moves)
         return self._depth
 
     @property
@@ -236,14 +247,38 @@ class SGFNode:
             ]
         return self.moves_cache
 
+    def _expanded_placements(self, player):
+        sgf_pl = player if player is not None else "E"  # AE
+        placements = self.get_list_property("A" + sgf_pl, [])
+        if not placements:
+            return []
+        to_be_expanded = [p for p in placements if ":" in p]
+        board_size = self.board_size
+        if to_be_expanded:
+            coords = {
+                Move.from_sgf(sgf_coord, player=player, board_size=board_size)
+                for sgf_coord in placements
+                if ":" not in sgf_coord
+            }
+            for p in to_be_expanded:
+                from_coord, to_coord = [Move.from_sgf(c, board_size=board_size) for c in p.split(":")[:2]]
+                for x in range(from_coord.coords[0], to_coord.coords[0] + 1):
+                    for y in range(to_coord.coords[1], from_coord.coords[1] + 1):  # sgf upside dn
+                        if 0 <= x < board_size[0] and 0 <= y < board_size[1]:
+                            coords.add(Move((x, y), player=player))
+            return list(coords)
+        else:
+            return [Move.from_sgf(sgf_coord, player=player, board_size=board_size) for sgf_coord in placements]
+
     @property
     def placements(self) -> List[Move]:
         """Returns all placements (AB/AW) in the node."""
-        return [
-            Move.from_sgf(sgf_coords, player=pl, board_size=self.board_size)
-            for pl in Move.PLAYERS
-            for sgf_coords in self.get_list_property("A" + pl, [])
-        ]
+        return [coord for pl in Move.PLAYERS for coord in self._expanded_placements(pl)]
+
+    @property
+    def clear_placements(self) -> List[Move]:
+        """Returns all AE clear square commends in the node."""
+        return self._expanded_placements(None)
 
     @property
     def move_with_placements(self) -> List[Move]:
@@ -429,7 +464,7 @@ class SGF:
         try:
             self.ix = self.contents.index("(") + 1
         except ValueError:
-            raise ParseError("Parse error: Expected '('")
+            raise ParseError(f"Parse error: Expected '(' at start, found {self.contents[:50]}")
         self.root = self._NODE_CLASS()
         self._parse_branch(self.root)
 
@@ -446,7 +481,7 @@ class SGF:
                 self._parse_branch(self._NODE_CLASS(parent=current_move))
             elif matched_item == ";":
                 # ignore ;) for old SGF
-                useless = self.ix < len(self.contents) and self.contents[self.ix] == ")"
+                useless = self.ix < len(self.contents) and self.contents[self.ix :].strip() == ")"
                 # ignore ; that generate empty nodes
                 if not (current_move.empty or useless):
                     current_move = self._NODE_CLASS(parent=current_move)

@@ -54,6 +54,13 @@ class Player:
         return f"{self.player_type} ({self.player_subtype})"
 
 
+def parse_version(s):
+    parts = [int(p) for p in s.split(".")]
+    while len(parts) < 3:
+        parts.append(0)
+    return parts
+
+
 class KaTrainBase:
     USER_CONFIG_FILE = os.path.expanduser(os.path.join(DATA_FOLDER, "config.json"))
     PACKAGE_CONFIG_FILE = "katrain/config.json"
@@ -101,15 +108,18 @@ class KaTrainBase:
                         self.log(f"Copied package config to local file {config_file}", OUTPUT_INFO)
                     else:  # user file exists
                         try:
-                            version = JsonStore(user_config_file).get("general")["version"]
+                            version_str = JsonStore(user_config_file).get("general")["version"]
+                            version = parse_version(version_str)
                         except Exception:  # noqa E722 broken file etc
-                            version = "0.0.0"
-                        if version < CONFIG_MIN_VERSION:
-                            backup = user_config_file + f".{version}.backup"
+                            version_str = "0.0.0"
+                            version = [0, 0, 0]
+                        min_version = parse_version(CONFIG_MIN_VERSION)
+                        if version < min_version:
+                            backup = f"{user_config_file}.{version_str}.backup"
                             shutil.copyfile(user_config_file, backup)
                             shutil.copyfile(package_config_file, user_config_file)
                             self.log(
-                                f"Copied package config file to {user_config_file} as user file is outdated or broken ({version}<{CONFIG_MIN_VERSION}). Old version stored as {backup}",
+                                f"Copied package config file to {user_config_file} as user file is outdated or broken ({version}<{min_version}). Old version stored as {backup}",
                                 OUTPUT_INFO,
                             )
                         config_file = user_config_file
@@ -154,6 +164,8 @@ class KaTrainBase:
             if player_info.player_type == PLAYER_AI:
                 settings = self.config(f"ai/{player_info.strategy}")
                 player_info.calculated_rank = ai_rank_estimation(player_info.player_subtype, settings)
+            else:
+                player_info.calculated_rank = None
 
     def reset_players(self):
         self.update_player("B")

@@ -104,6 +104,17 @@ def test_old_server_style():
     SGF.parse_sgf(input_sgf)
 
 
+def test_old_server_style_again():
+    input_sgf = """(;
+SZ[19]TM[600]KM[0.500000]LT[]
+
+;B[fp]BL[500];
+
+)"""
+    tree = SGF.parse_sgf(input_sgf)
+    assert 2 == len(tree.nodes_in_tree)
+
+
 def test_ogs():
     file = os.path.join(os.path.dirname(__file__), "data/ogs.sgf")
     SGF.parse_file(file)
@@ -176,3 +187,11 @@ def test_next_player():
     input_sgf = "(;GM[1]FF[4]AB[aa];W[dd])"  # branch exists
     assert "W" == SGF.parse_sgf(input_sgf).next_player
     assert "W" == SGF.parse_sgf(input_sgf).initial_player
+
+
+def test_placements():
+    input_sgf = "(;GM[1]FF[4]SZ[19]DT[2020-04-12]AB[dd][aa:ee]AW[ff:zz]AE[aa][bb][cc:dd])"
+    root = SGF.parse_sgf(input_sgf)
+    print(root.properties)
+    assert 6 == len(root.clear_placements)
+    assert 25 + 14 * 14 == len(root.placements)

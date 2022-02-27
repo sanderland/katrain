@@ -325,7 +325,7 @@ msgid "non square board hint"
 msgstr "長方形碁盤は x:y と記入（例 19:9）"
 
 #. submit new game
-msgid "new game"
+msgid "newgame"
 msgstr "新規対局を開始"
 
 # teacher settings from here
@@ -336,7 +336,9 @@ msgid "point loss threshold"
 msgstr "何目より損なら"
 
 msgid "num undos"
-msgstr "待ったの回数"
+msgstr ""
+"再考を促す回数\n"
+"（指導対局時）"
 
 msgid "dot color"
 msgstr "色"
@@ -348,14 +350,10 @@ msgid "save dots"
 msgstr "SGFに保存"
 
 msgid "show last n dots"
-msgstr ""
-"直近何手の\n"
-"ドットを表示"
+msgstr "直近何手のドットを表示"
 
 msgid "show ai dots"
-msgstr ""
-"AIの手にもドットや\n"
-"SGFコメントをつける"
+msgstr "AIの手にもドットやSGFコメントをつける"
 
 #. submit button
 msgid "update teacher"
@@ -454,7 +452,7 @@ msgstr ""
 "クリップボードの内容：{contents}..."
 
 msgid "Failed to load SGF"
-msgstr "SGFのロードに失敗しました: {error}"
+msgstr "SGFのロードに失敗しました：{error}"
 
 msgid "Kata exe not found"
 msgstr "KataGoの実行ファイル {exe} がありません。一般設定を確認してください。"
@@ -474,7 +472,7 @@ msgid "Starting Kata failed"
 msgstr "コマンド '{command}' によるKataGoの起動に失敗しました。エラー {error}"
 
 msgid "Engine died unexpectedly"
-msgstr "出力なしで予期せずエンジンが止まりました。メモリ不足かもしれません：{error}"
+msgstr "出力なしで予期せずエンジンが止まりました：{error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -692,11 +690,6 @@ msgstr "簡明派"
 msgid "local analysis"
 msgstr "近辺の応手を分析中"
 
-msgid "change current game"
-msgstr ""
-"現対局のコミ・\n"
-"ルールを変更"
-
 #. on move tree editing
 msgid "Make Main Branch"
 msgstr "こちらを主分岐に"
@@ -797,3 +790,176 @@ msgstr "黒番"
 #. hint on player name input
 msgid "white player name hint"
 msgstr "白番"
+
+#. in self-play mode
+msgid "gui-locked"
+msgstr "自己対局モードではこの動作 {action} はできません。分散訓練モードを抜けるにはKaTrainを再起動してください。"
+
+#. menu item
+msgid "menu:distributed"
+msgstr "自己対局による分散訓練"
+
+msgid "contribute:register"
+msgstr "登録"
+
+msgid "contribute:start"
+msgstr "貢献を開始！"
+
+#. contribute settings popup
+msgid "contribute settings title"
+msgstr "KataGoの分散訓練に協力"
+
+msgid "contribute:username"
+msgstr "ユーザ名"
+
+#. description for input
+msgid "contribute:maxgames"
+msgstr "最大同時対局数"
+
+msgid "contribute:password"
+msgstr "パスワード"
+
+#. hint for max games
+msgid "contribute:maxgames:hint"
+msgstr ""
+"あなたの環境での最適なnumSearchThreads（探索スレッド数、中級品のGPUなら8程度）に合わせるのが最良です。短時間だけ稼働する場合にはそれよりやや小さい値にするのもよいでしょう（未完了の対局はアップロードされないので）。"
+
+#. hint for ownership
+msgid "contribute:ownership:hint"
+msgstr "訓練速度は若干落ちてしまいますが、黒地か白地かを可視化します"
+
+msgid "contribute:ownership"
+msgstr "黒地か白地かを予測"
+
+#. title
+msgid "contribute:login"
+msgstr "ログイン情報 (katagotraining.org)"
+
+#. description
+msgid "contribute:movespeed"
+msgstr "着手の速さ"
+
+#. hint for move speed
+msgid "contribute:movespeed:hint"
+msgstr "何秒ごとに一手進めるか"
+
+#. description
+msgid "contribute:savesgf"
+msgstr "SGFを保存"
+
+#. hint for save
+msgid "contribute:savesgf:hint"
+msgstr "表示しおわった対局のSGFファイルを./dist_sgfに保存"
+
+#. title
+msgid "contribute:viewer settings"
+msgstr "表示設定"
+
+#. Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "分析をリセット"
+
+#. Description for black target score
+msgid "setup position black score"
+msgstr "黒の何目リードを目標に："
+
+#. Description for how many moves
+msgid "setup position move number"
+msgstr "何手目まで生成："
+
+#. Progress message
+msgid "setup game status message"
+msgstr "AIの自己対局により局面を生成：{move}手/{until_move}手まで"
+
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "局面を生成"
+
+#. Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr ""
+"設定に応じた途中局面を自動生成して、そこから打ち継ぎます。たとえば、形勢の良い中盤や終盤の色々な局面から、強いAIを相手に続きを打つといった使い方ができます。"
+
+#. change komi etc in current game
+msgid "editgame"
+msgstr "対局情報を編集"
+
+msgid "new zealand"
+msgstr "ニュージーランド"
+
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+#. View a player performance report
+msgid "analysis:report"
+msgstr "評価レポート"
+
+msgid "engine died popup opening message"
+msgstr ""
+"おおっと！KataGoエンジンが起動に失敗したか、クラッシュしました。\n"
+" エラー内容：{error_message}\n"
+"エラーコード {code}"
+
+#. Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr "それでもだめなら、{link}して最新のトラブルシューティングページへ。"
+
+#. Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr "まずは、{link}から別バージョンのKataGoをダウンロードしてうまくいくか試してください。"
+
+#. as in "click here" to go to this page,
+msgid "link_here"
+msgstr "ここをクリック"
+
+#. popup title
+msgid "engine recovery"
+msgstr "KataGoセットアップのヘルプ"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "分析を悪手だけに限定"
+
+#. statistic in performance report
+msgid "stat:accuracy"
+msgstr "正確度の評点"
+
+#. header in performance report
+msgid "header:keystats"
+msgstr "基本統計"
+
+#. header in performance report
+msgid "header:num moves"
+msgstr "手数"
+
+#. opening of the game filter in performance report
+msgid "Opening"
+msgstr "序盤"
+
+#. end of the game filter in performance report
+msgid "Endgame"
+msgstr "終盤"
+
+#. middle of the game filter in performance report
+msgid "Midgame"
+msgstr "中盤"
+
+#. statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "平均損失目数"
+
+#. statistic in performance report
+msgid "stat:aitop5"
+msgstr "AIの上位5候補手との一致率"
+
+#. statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AIの最善手との一致率"
+
+#. game filter in performance report
+msgid "Entire Game"
+msgstr "全局"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"

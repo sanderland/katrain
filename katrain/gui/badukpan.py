@@ -4,7 +4,6 @@ import time
 from typing import List, Optional
 
 from kivy.clock import Clock
-from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
@@ -15,6 +14,7 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
+from katrain.gui.sound import play_sound
 
 from katrain.core.constants import (
     MODE_PLAY,
@@ -33,14 +33,14 @@ from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid, json_truncate_arrays
 from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
-from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup
+from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup, GameReportPopup
 from katrain.gui.theme import Theme
 
 
 class BadukPanWidget(Widget):
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
-        self.stones_sounds = [SoundLoader.load(file) for file in Theme.STONE_SOUNDS]
+        self.stones_sounds = []
         self.trainer_config = {}
         self.ghost_stone = []
         self.gridpos_x = []
@@ -53,6 +53,7 @@ class BadukPanWidget(Widget):
 
         self.active_pv_moves = []
         self.animating_pv = None
+        self.animating_pv_index = None
         self.last_mouse_pos = (0, 0)
         Window.bind(mouse_pos=self.on_mouse_pos)
         self.redraw_board_contents_trigger = Clock.create_trigger(self.draw_board_contents, 0.05)
@@ -70,10 +71,7 @@ class BadukPanWidget(Widget):
         return self.draw_coords_enabled
 
     def play_stone_sound(self, *_args):
-        if self.katrain.config("timer/sound"):
-            sound = random.choice(self.stones_sounds)
-            if sound:
-                sound.play()
+        play_sound(random.choice(Theme.STONE_SOUNDS))
 
     # stone placement functions
     def _find_closest(self, pos, gridpos):
@@ -105,13 +103,24 @@ class BadukPanWidget(Widget):
         self.redraw_hover_contents_trigger()
 
     def on_touch_down(self, touch):
-        self.set_animating_pv(None, None)  # any click kills PV from label/move
-        if "button" in touch.profile and touch.button != "left":
-            return
-        if self.selecting_region_of_interest:
-            self.update_box_selection(touch, second_point=False)
-        else:
-            self.check_next_move_ghost(touch)
+        animating_pv = self.animating_pv
+        if "button" in touch.profile:
+            if touch.button == "left":
+                if self.selecting_region_of_interest:
+                    self.update_box_selection(touch, second_point=False)
+                else:
+                    self.check_next_move_ghost(touch)
+            elif touch.button == "middle" and animating_pv:
+                pv, node, _, _ = animating_pv
+                upto = self.animating_pv_index or 1e9
+                for i, gtpmove in enumerate(pv):
+                    if i <= upto:  # up to move when scrolling, or all
+                        node = node.play(Move.from_gtp(gtpmove, node.next_player))
+                        node.analyze(self.katrain.engine, analyze_fast=True)
+                self.katrain.controls.move_tree.redraw_tree_trigger()
+
+        if ("button" not in touch.profile) or (touch.button not in ["scrollup", "scrolldown", "middle"]):
+            self.set_animating_pv(None, None)  # any click/touch kills PV from label/move
 
     def on_touch_move(self, touch):
         if "button" in touch.profile and touch.button != "left":
@@ -335,15 +344,13 @@ class BadukPanWidget(Widget):
         board_size_x, board_size_y = katrain.game.board_size
         if len(self.gridpos_x) < board_size_x or len(self.gridpos_y) < board_size_y:
             return  # race condition
-        show_n_eval = self.trainer_config["eval_off_show_last"]
+        show_n_eval = self.trainer_config.get("eval_on_show_last", 3)
 
         with self.canvas:
             self.canvas.clear()
             # stones
             current_node = katrain.game.current_node
-            game_ended = katrain.game.end_result
-            full_eval_on = katrain.analysis_controls.eval.active
-            all_dots_off = katrain.analysis_controls.eval.checkbox.slashed
+            all_dots_off = not katrain.analysis_controls.eval.active
             has_stone = {}
             drawn_stone = {}
             for m in katrain.game.stones:
@@ -367,9 +374,7 @@ class BadukPanWidget(Widget):
                 placements = node.placements
                 for m in node.moves + placements:
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
-                        move_eval_on = (
-                            not all_dots_off and show_dots_for.get(m.player) and (i < show_n_eval or full_eval_on)
-                        )
+                        move_eval_on = not all_dots_off and show_dots_for.get(m.player) and i < show_n_eval
                         if move_eval_on and points_lost is not None:
                             evalcol = self.eval_color(points_lost, show_dots_for_class)
                         else:
@@ -478,7 +483,14 @@ class BadukPanWidget(Widget):
                             )
                         if move_policy == best_move_policy:
                             Color(*Theme.TOP_MOVE_BORDER_COLOR[:3], Theme.POLICY_ALPHA)
-                            Line(circle=(self.gridpos_x[x], self.gridpos_y[y], self.stone_size - dp(1.2)), width=dp(2))
+                            Line(
+                                circle=(
+                                    self.gridpos_x[x],
+                                    self.gridpos_y[y],
+                                    self.stone_size - dp(1.2),
+                                ),
+                                width=dp(2),
+                            )
 
                 with pass_btn.canvas.after:
                     move_policy = policy[-1]
@@ -489,21 +501,6 @@ class BadukPanWidget(Widget):
                             pass_btn.height / 2,
                             (*colors[pol_order][:3], Theme.GHOST_ALPHA),
                         )
-
-            # pass circle
-            passed = len(nodes) > 1 and current_node.is_pass
-            if passed or game_ended:
-                if game_ended:
-                    text = game_ended
-                    katrain.controls.timer.paused = True
-                else:
-                    text = i18n._("board-pass")
-                Color(*Theme.PASS_CIRCLE_COLOR)
-                center = (self.gridpos_x[int(board_size_x / 2)], self.gridpos_y[int(board_size_y / 2)])
-                size = min(self.width, self.height) * 0.227
-                Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
-                Color(*Theme.PASS_CIRCLE_TEXT_COLOR)
-                draw_text(pos=center, text=text, font_size=size * 0.25, halign="center")
 
         self.redraw_hover_contents_trigger()
 
@@ -615,11 +612,17 @@ class BadukPanWidget(Widget):
                             keys[TOP_MOVE_DELTA_SCORE] = (
                                 "0.0" if -0.05 < move_dict["pointsLost"] < 0.05 else f"{-move_dict['pointsLost']:+.1f}"
                             )
+                            #                           def fmt_maybe_missing(arg,sign,digits=1):
+                            #                               return str(round(sign*arg,digits)) if arg is not None else "N/A"
+
                             keys[TOP_MOVE_SCORE] = f"{player_sign * move_dict['scoreLead']:.1f}"
                             winrate = move_dict["winrate"] if player_sign == 1 else 1 - move_dict["winrate"]
                             keys[TOP_MOVE_WINRATE] = f"{winrate*100:.1f}"
                             keys[TOP_MOVE_DELTA_WINRATE] = f"{-move_dict['winrateLost']:+.1%}"
                             keys[TOP_MOVE_VISITS] = format_visits(move_dict["visits"])
+                            #                            keys[TOP_MOVE_UTILITY] = fmt_maybe_missing( move_dict.get('utility'),player_sign,2)
+                            #                            keys[TOP_MOVE_UTILITYLCB] = fmt_maybe_missing(move_dict.get('utilityLcb'),player_sign,2)
+                            #                            keys[TOP_MOVE_SCORE_STDDEV] =fmt_maybe_missing(move_dict.get('scoreStdev'),1)
                             Color(*Theme.HINT_TEXT_COLOR)
                             draw_text(
                                 pos=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
@@ -689,12 +692,25 @@ class BadukPanWidget(Widget):
                 animating_pv = self.animating_pv
                 if animating_pv:
                     pv, node, start_time, _ = animating_pv
-                    delay = self.katrain.config("general/anim_pv_time", 0.5)
-                    up_to_move = (time.time() - start_time) / delay
+                    up_to_move = self.get_animate_pv_index()
                     self.draw_pv(pv, node, up_to_move)
 
-                if self.katrain.game.region_of_interest:
+                if getattr(self.katrain.game, "region_of_interest", None):
                     self.draw_roi_box(self.katrain.game.region_of_interest, width=dp(1.25))
+
+            # pass circle
+            if current_node.is_pass or game_ended:
+                if game_ended:
+                    text = game_ended
+                    katrain.controls.timer.paused = True
+                else:
+                    text = i18n._("board-pass")
+                Color(*Theme.PASS_CIRCLE_COLOR)
+                center = (self.gridpos_x[int(board_size_x / 2)], self.gridpos_y[int(board_size_y / 2)])
+                size = min(self.width, self.height) * 0.227
+                Ellipse(pos=(center[0] - size / 2, center[1] - size / 2), size=(size, size))
+                Color(*Theme.PASS_CIRCLE_TEXT_COLOR)
+                draw_text(pos=center, text=text, font_size=size * 0.25, halign="center")
 
     def animate_pv(self, _dt):
         if self.animating_pv:
@@ -739,6 +755,7 @@ class BadukPanWidget(Widget):
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):
+        self.animating_pv_index = None
         if pv is None:
             self.animating_pv = None
         elif node is not None and (
@@ -747,16 +764,39 @@ class BadukPanWidget(Widget):
             self.animating_pv = (pv, node, time.time(), self.last_mouse_pos)
         self.redraw_hover_contents_trigger()
 
+    def adjust_animate_pv_index(self, delta=1):
+        self.animating_pv_index = max(0, self.get_animate_pv_index() + delta)
+
+    def get_animate_pv_index(self):
+        if self.animating_pv_index is None:
+            if self.animating_pv:
+                pv, node, start_time, _ = self.animating_pv
+                delay = self.katrain.config("general/anim_pv_time", 0.5)
+                return (time.time() - start_time) / max(delay, 0.1)
+            else:
+                return 0
+
+        return self.animating_pv_index
+
     def show_pv_from_comments(self, pv_str):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
 
 
 class AnalysisDropDown(DropDown):
     def open_game_analysis_popup(self, *_args):
-        analysis_popup = I18NPopup(title_key="analysis:game", size=[dp(500), dp(300)], content=ReAnalyzeGamePopup())
+        analysis_popup = I18NPopup(title_key="analysis:game", size=[dp(500), dp(350)], content=ReAnalyzeGamePopup())
         analysis_popup.content.popup = analysis_popup
         analysis_popup.content.katrain = MDApp.get_running_app().gui
         analysis_popup.open()
+
+    def open_report_popup(self, *_args):
+        report_popup = I18NPopup(
+            title_key="analysis:report",
+            size=[dp(750), dp(750)],
+            content=GameReportPopup(katrain=MDApp.get_running_app().gui),
+        )
+        report_popup.content.popup = report_popup
+        report_popup.open()
 
 
 class AnalysisControls(MDBoxLayout):

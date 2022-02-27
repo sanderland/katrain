@@ -26,7 +26,7 @@ Adding a translation requires making a new `.po` file with entries for that lang
     * Note that anything between `{}` should be left as-is.
     * The information at the top of the file should also not be translated.
 
-You can send me the resulting `.po` file and I will integrate it into the program.
+You can send me the resulting `.po` file, and I will integrate it into the program.
 
 # Contributors 
 
@@ -38,7 +38,7 @@ You can send me the resulting `.po` file and I will integrate it into the progra
 
 Many thanks to these additional authors:
 
-* Matthew Allred ("Kameone") for design of the v1.1 UI, MacOS installation instructions, and working on promotion and YouTube videos.
+* Matthew Allred ("Kameone") for design of the v1.1 UI, macOS installation instructions, and working on promotion and YouTube videos.
 * "bale-go" for development and continued work on the 'calibrated rank' AI and rank estimation algorithm.
 * "Dontbtme" for detailed feedback and early testing of v1.0+.
 * "nowoowoo" for a fix to the parser for SGF files with extra line breaks.
@@ -50,8 +50,10 @@ Many thanks to these additional authors:
 * Lukasz Wierzbowski for the ability to paste urls for sgfs and helping fix alt-gr issues.
 * Carton He for contributions to sgf parsing and handling.
 * "blamarche" for adding the board coordinates toggle.
-* "pdeblanc" for adding the ancient chinese scoring option.
-* "LiamHz" for adding the undo to main branch keyboard shortcut.
+* "pdeblanc" for adding the ancient chinese scoring option, fixing a bug in query termination
+* "LiamHz" for adding the 'back to main branch' keyboard shortcut.
+* "xiaoyifang" for adding the reset analysis option, feature to save options on the loading screen, and scrolling through variations.
+* "electricRGB" for help with adding configurable keyboard shortcuts.
 
 ## Translators
 
@@ -59,12 +61,12 @@ Many thanks to the following contributors for translations.
 
 * French: "Dontbtme" with contributions from "wonderingabout"
 * Korean: "isty2e"
-* German: "nimets123", "trohde", and "Harleqin"
+* German: "nimets123", "trohde", "Harleqin" and "Sovereign"
 * Spanish: Sergio Villegas ("serpiente") with contributions from the Spanish OGS community
 * Russian: Dmitry Ivankov and Alexander Kiselev
 * Simplified Chinese: Qing Mu with contributions from "Medwin" and Viktor Lin
 * Japanese: "kaorahi"
-* Traditional Chinese: "Tony-Liou"
+* Traditional Chinese: "Tony-Liou" with contributions from Ching-yu Lin
 
 ## Additional thanks to
 

@@ -11,7 +11,7 @@ msgid "menu:playersetup"
 msgstr "Paramètres des joueurs"
 
 msgid "menu:newgame"
-msgstr "Nouvelle partie"
+msgstr "Lancer/Éditer une partie"
 
 msgid "menu:save"
 msgstr "Enregistrer"
@@ -80,8 +80,8 @@ msgstr ""
 
 msgid "analysis:policy"
 msgstr ""
-"Coups\n"
-"intuitifs"
+"Carte des\n"
+"intuitions"
 
 msgid "analysis:territory"
 msgstr ""
@@ -90,7 +90,7 @@ msgstr ""
 
 #. analysis menu items
 msgid "analysis:extra"
-msgstr "Analyser davantage"
+msgstr "Approfondir l'analyse"
 
 msgid "analysis:equalize"
 msgstr "Égaliser l'analyse des coups"
@@ -99,7 +99,7 @@ msgid "analysis:sweep"
 msgstr "Analyser tous les possibles"
 
 msgid "analysis:game"
-msgstr "Analyser davantage la partie"
+msgstr "Approfondir l'analyse de partie"
 
 msgid "analysis:continuous"
 msgstr "Lancer/Arrêter l'analyse continue"
@@ -194,8 +194,8 @@ msgstr "Gain"
 #. SGF and move comment messages
 msgid "SGF start message"
 msgstr ""
-"Les coup préférés de KataGo sont marqué d’un X. En comparaison, ceux perdant"
-" moins de 0.5 points sont marqués d’un carré"
+"Les coup préférés de KataGo sont marqué d'un X. En comparaison, ceux perdant"
+" moins de 0.5 points sont marqués d'un carré"
 
 msgid "Info:score"
 msgstr "Score : {score}"
@@ -235,10 +235,10 @@ msgid "Info:undo predicted PV"
 msgstr "Continuation attendue : {pv}"
 
 msgid "Info:AI thoughts"
-msgstr "Raisonnement de l’IA : {thoughts}"
+msgstr "Raisonnement de he l'IA : {thoughts}"
 
 msgid "No analysis available"
-msgstr "Pas d’analyse disponible"
+msgstr "Pas d'analyse disponible"
 
 msgid "Analyzing move..."
 msgstr "Analyse en cours..."
@@ -302,7 +302,6 @@ msgstr "Coréennes"
 msgid "aga"
 msgstr "AGA"
 
-#. TODO check
 msgid "stone_scoring"
 msgstr "Chinoises anciennes"
 
@@ -320,8 +319,8 @@ msgid "non square board hint"
 msgstr "Noter x:y (p. ex. 19:9) pour les non-carrés"
 
 #. submit new game
-msgid "new game"
-msgstr "Commencer la partie"
+msgid "newgame"
+msgstr "Nouvelle partie"
 
 # teacher settings from here
 msgid "teacher settings"
@@ -361,7 +360,7 @@ msgid "general settings title"
 msgstr "Paramètres généraux"
 
 msgid "file not found"
-msgstr "Chemin d’accès est introuvable"
+msgstr "Chemin d'accès est introuvable"
 
 msgid "general settings"
 msgstr "Divers"
@@ -506,10 +505,7 @@ msgstr ""
 "généraux"
 
 msgid "Engine died unexpectedly"
-msgstr ""
-"Le moteur de jeu est tombé en panne, \n"
-"possiblement pour cause de \n"
-"mémoire insuffisante : {error}"
+msgstr "Le moteur de jeu est tombé en panne: {error}"
 
 msgid "teaching undo message"
 msgstr ""
@@ -522,13 +518,13 @@ msgid "sweep analysis"
 msgstr "Analyse de tous les possibles ({visits} visites/coup)."
 
 msgid "extra analysis"
-msgstr "Analyse supplémentaire de {visits} visites."
+msgstr "Analyse approfondie ({visits} visites)."
 
 msgid "equalizing analysis"
 msgstr "Égalisation de l'analyse ({visits} visites/coup considéré)."
 
 msgid "game re-analysis"
-msgstr "Analyse supplémentaire de la partie ({visits} visites/coup)."
+msgstr "Analyse de partie approfondie ({visits} visites/coup)."
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -734,11 +730,6 @@ msgstr "Modéré"
 msgid "local analysis"
 msgstr "Recherche de coups locaux."
 
-msgid "change current game"
-msgstr ""
-"Mettre à jour\n"
-"la partie en cours"
-
 msgid "Make Main Branch"
 msgstr "Mettre en branche principale"
 
@@ -819,3 +810,157 @@ msgstr "Noir"
 
 msgid "white player name hint"
 msgstr "Blanc"
+
+msgid "gui-locked"
+msgstr ""
+"L'action {action} est interdite lors de l'entraînement distribué de KataGo. "
+"Vous pouvez quitter ce mode en redémarrant KaTrain."
+
+msgid "menu:distributed"
+msgstr "Entraîner Katago"
+
+msgid "contribute:register"
+msgstr "Créer le compte"
+
+msgid "contribute:start"
+msgstr "Je participe !"
+
+msgid "contribute settings title"
+msgstr "Participer à l'entraînement de KataGo"
+
+msgid "contribute:username"
+msgstr "Identifiant"
+
+msgid "contribute:maxgames"
+msgstr "Parties simultanées"
+
+msgid "contribute:password"
+msgstr "Mot de passe"
+
+msgid "contribute:maxgames:hint"
+msgstr ""
+"Idéalement égal à numSearchThread (autour de 8 pour un GPU ordinaire), mais "
+"préférer moins lors de courtes sessions, car les parties inachevées sont "
+"oubliées."
+
+msgid "contribute:ownership:hint"
+msgstr ""
+"Cette option permet de visualiser les prévisions territoriales, mais "
+"ralentit légèrement l'entrainement."
+
+msgid "contribute:ownership"
+msgstr "Prévisions territoriales"
+
+msgid "contribute:login"
+msgstr "Informations de connexion"
+
+msgid "contribute:movespeed"
+msgstr "Cadence des coups"
+
+msgid "contribute:movespeed:hint"
+msgstr "Délai d'affichage des coups en secondes."
+
+msgid "contribute:savesgf"
+msgstr "Sauvegarder les parties"
+
+msgid "contribute:savesgf:hint"
+msgstr ""
+"Sauvegarder les fichiers SGF des parties complétées dans le dossier "
+"./dist_sgf"
+
+msgid "contribute:viewer settings"
+msgstr "Visionneuse"
+
+msgid "analysis:reset"
+msgstr "Recommencer l'analyse"
+
+msgid "setup position black score"
+msgstr " Différence de points (pour Noir) :"
+
+msgid "setup position move number"
+msgstr "Nombre de coups simulés :"
+
+msgid "setup game status message"
+msgstr "Simulation de partie en cours : Coup {move}/{until_move}."
+
+msgid "setupposition"
+msgstr "Nouvelle position"
+
+msgid "setup position explanation"
+msgstr ""
+"Vous voulez gagner de l'expérience dans les milieux ou les fins de parties ?"
+" Apprendre à grappiller les points, maintenir votre avantage ou renverser la"
+" situation ? Alors jouez des positions fictives composées selon vos besoins."
+
+msgid "editgame"
+msgstr "Partie en cours"
+
+msgid "new zealand"
+msgstr "Néo-zélandaises"
+
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+msgid "analysis:report"
+msgstr "Rapport de partie"
+
+msgid "engine died popup opening message"
+msgstr ""
+"Le moteur de jeu KataGo ne fonctionne pas/plus.\n"
+"\n"
+"Rapport d'erreur : [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Code d'erreur : [color=#CC2222]{code}[/color]"
+
+msgid "go to engine help page"
+msgstr ""
+"Si le problème persiste, vous pouvez consulter une page d'aide tenue à jour "
+"en cliquant sur {link}."
+
+msgid "change engine suggestion"
+msgstr ""
+"L'exécutable et le modèle KataGo utilisés doivent être compatibles. Vous "
+"pouvez en télécharger et/ou en sélectionner d'autres dans les {link}. "
+
+msgid "link_here"
+msgstr "ce lien"
+
+msgid "engine recovery"
+msgstr "Aide au dépannage de KataGo"
+
+msgid "reanalyze mistakes only"
+msgstr "Restreindre l'analyse aux seules erreurs"
+
+msgid "stat:accuracy"
+msgstr "Acuité du jeu"
+
+msgid "header:keystats"
+msgstr "Statistiques des coups"
+
+msgid "header:num moves"
+msgstr "Nombre de coups"
+
+msgid "Opening"
+msgstr "Début de Partie"
+
+msgid "Endgame"
+msgstr "Fin de Partie"
+
+msgid "Midgame"
+msgstr "Milieu de Partie"
+
+msgid "stat:meanpointloss"
+msgstr "Perte moyenne"
+
+msgid "stat:aitop5"
+msgstr "L'un des 5 coups prioritaires"
+
+msgid "stat:aitopmove"
+msgstr "Ce que jouerait KataGo"
+
+msgid "Entire Game"
+msgstr "Partie entière"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "AntiMirrorGo"
