@@ -964,6 +964,11 @@ msgid "ai:antimirror"
 msgstr "Kataマネ碁破り"
 
 #. TODO - on move tree editing, deletes all other branches splitting off from
-#. the path UP TO this node
+#. the
+#. path UP TO this node
 msgid "Prune Branch"
 msgstr "Prune Branch"
+
+#. TODO
+msgid "aihelp:antimirror"
+msgstr "Anti Mirror-go Mode of KataGo."
