@@ -766,7 +766,7 @@ msgstr ""
 " * opponent_fac), avoid tenuki (more than 5 spaces, importance "
 "tenuki_penalty), and avoid attachments (importance attachment_penalty). "
 "Weights can be negative to make it complicate the game instead, and wide "
-"root noise (in general settings) can be used to increase play according to "
+"root noise (in general settings) can be used to play more according to "
 "the style at the cost of strength. "
 
 msgid "ai:jigo"
