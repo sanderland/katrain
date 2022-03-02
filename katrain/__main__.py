@@ -652,10 +652,11 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def tsumego_frame(self, ko_p):
         from katrain.core.tsumego_frame import tsumego_frame_from_katrain_game
+
         black_to_play_p = self.next_player_info.player == "B"
-        sgf, analysis_region = tsumego_frame_from_katrain_game(self.game, self.game.komi, black_to_play_p, ko_p)
-        Clipboard.copy(sgf)
-        self.controls.set_status("Tsumego frame is copied to clipboard.", STATUS_INFO)
+        node, analysis_region = tsumego_frame_from_katrain_game(self.game, self.game.komi, black_to_play_p, ko_p)
+        self.game.set_current_node(node)
+        self.update_state(redraw_board=True)
         # todo: set region of interest by analysis_region (if it is truthy)
 
     def _on_keyboard_down(self, _keyboard, keycode, _text, modifiers):

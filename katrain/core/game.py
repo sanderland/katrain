@@ -115,8 +115,6 @@ class BaseGame:
             if shortcut_id and shortcut_id in shortcut_id_to_node:
                 shortcut_id_to_node[shortcut_id].add_shortcut(node)
 
-
-
     # -- move tree functions --
     def _init_state(self):
         board_size_x, board_size_y = self.board_size
