@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 
 import itertools
 from katrain.core.sgf_parser import Move
@@ -20,16 +19,19 @@ def tsumego_frame_from_katrain_game(game, komi, black_to_play_p, ko_p):
     bw_board = [[game.chains[c][0].player if c >= 0 else "-" for c in line] for line in game.board]
     isize, jsize = ij_sizes(bw_board)
     blacks, whites, analysis_region = tsumego_frame(bw_board, komi, black_to_play_p, ko_p)
-    sgf_blacks = katrain_sgf_from_ijs(blacks, isize, jsize)
-    sgf_whites = katrain_sgf_from_ijs(whites, isize, jsize)
+    sgf_blacks = katrain_sgf_from_ijs(blacks, isize, jsize,'B')
+    sgf_whites = katrain_sgf_from_ijs(whites, isize, jsize,'W')
     sgf_size = f"{isize}" if isize == jsize else f"{jsize}:{isize}"
     sgf_player = "B" if black_to_play_p else "W"
-    sgf = f"(;SZ[{sgf_size}]RU[chinese]KM[{komi}]PL[{sgf_player}]AB{sgf_blacks}AW{sgf_whites})"
+    sgf = f"(;SZ[{sgf_size}]RU[chinese]KM[{komi}]PL[{sgf_player}]{sgf_blacks}{sgf_whites})"
     katrain_region = analysis_region and (analysis_region[1], analysis_region[0])
     return (sgf, katrain_region)
 
-def katrain_sgf_from_ijs(ijs, isize, jsize):
-    return ''.join([f"[{Move((j, i)).sgf((jsize, isize))}]" for i, j in ijs])
+def katrain_sgf_from_ijs(ijs, isize, jsize,player):
+    moves = [str(Move((j, i)).sgf((jsize, isize))) for i, j in ijs]
+    if not moves:
+        return ''
+    return f"A{player}[{']['.join(moves)}]"
 
 ######################################
 # main
