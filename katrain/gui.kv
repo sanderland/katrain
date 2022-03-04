@@ -899,7 +899,7 @@
 
 <LangButton@TransparentIconButton>
     size_hint: 1,1
-    icon_size: self.height * 0.7, self.height  * 0.7
+    icon_size: self.height * 0.6, self.height  * 0.6
 
 
 <MenuLabel@BackgroundMixin+Label>:
@@ -1078,6 +1078,9 @@
         LangButton:
             icon: 'flags/flag-jp.png'
             on_press: app.language = 'jp'
+        LangButton:
+            icon: 'flags/flag-tr.png'
+            on_press: app.language = 'tr'
     BoxLayout:
         size_hint: 1,None
         height: root.item_height

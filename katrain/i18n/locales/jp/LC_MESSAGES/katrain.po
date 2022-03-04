@@ -967,3 +967,7 @@ msgstr "Kataマネ碁破り"
 #. the path UP TO this node
 msgid "Prune Branch"
 msgstr "この枝だけ残して他を削除"
+
+#. TODO
+msgid "aihelp:antimirror"
+msgstr "Anti Mirror-go Mode of KataGo."
