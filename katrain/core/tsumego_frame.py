@@ -1,24 +1,21 @@
-import itertools
 from katrain.core.game_node import GameNode
 from katrain.core.sgf_parser import Move
 
 # tsumego frame ported from lizgoban by kaorahi
+# note: coords = (j, i) in katrain
 
-margin = 4
 near_to_edge = 2
 offence_to_win = 5
 
 BLACK = "B"
 WHITE = "W"
 
-# note: coords = (j, i) in katrain
 
-
-def tsumego_frame_from_katrain_game(game, komi, black_to_play_p, ko_p):
+def tsumego_frame_from_katrain_game(game, komi, black_to_play_p, ko_p, margin):
     current_node = game.current_node
     bw_board = [[game.chains[c][0].player if c >= 0 else "-" for c in line] for line in game.board]
     isize, jsize = ij_sizes(bw_board)
-    blacks, whites, analysis_region = tsumego_frame(bw_board, komi, black_to_play_p, ko_p)
+    blacks, whites, analysis_region = tsumego_frame(bw_board, komi, black_to_play_p, ko_p, margin)
     sgf_blacks = katrain_sgf_from_ijs(blacks, isize, jsize, "B")
     sgf_whites = katrain_sgf_from_ijs(whites, isize, jsize, "W")
 
@@ -32,9 +29,9 @@ def katrain_sgf_from_ijs(ijs, isize, jsize, player):
     return [Move((j, i)).sgf((jsize, isize)) for i, j in ijs]
 
 
-def tsumego_frame(bw_board, komi, black_to_play_p, ko_p):
+def tsumego_frame(bw_board, komi, black_to_play_p, ko_p, margin):
     stones = stones_from_bw_board(bw_board)
-    filled_stones = tsumego_frame_stones(stones, komi, black_to_play_p, ko_p)
+    filled_stones = tsumego_frame_stones(stones, komi, black_to_play_p, ko_p, margin)
     region_pos = pick_all(filled_stones, "tsumego_frame_region_mark")
     bw = pick_all(filled_stones, "tsumego_frame")
     blacks = [(i, j) for i, j, black in bw if black]
@@ -55,7 +52,7 @@ def get_analysis_region(region_pos):
     return ri[0] < ri[1] and rj[0] < rj[1] and (ri, rj)
 
 
-def tsumego_frame_stones(stones, komi, black_to_play_p, ko_p):
+def tsumego_frame_stones(stones, komi, black_to_play_p, ko_p, margin):
     sizes = ij_sizes(stones)
     isize, jsize = sizes
     ijs = [
@@ -83,7 +80,7 @@ def tsumego_frame_stones(stones, komi, black_to_play_p, ko_p):
     )
     if True in flip_spec:
         flipped = flip_stones(stones, flip_spec)
-        filled = tsumego_frame_stones(flipped, komi, black_to_play_p, ko_p)
+        filled = tsumego_frame_stones(flipped, komi, black_to_play_p, ko_p, margin)
         return flip_stones(filled, flip_spec)
     # put outside stones
     i0 = imin - margin

@@ -846,6 +846,14 @@ class ReAnalyzeGamePopup(BoxLayout):
         self.button.trigger_action(duration=0)
 
 
+class TsumegoFramePopup(BoxLayout):
+    katrain = ObjectProperty(None)
+    popup = ObjectProperty(None)
+
+    def on_submit(self):
+        self.button.trigger_action(duration=0)
+
+
 class GameReportPopup(BoxLayout):
     def __init__(self, katrain, **kwargs):
         super().__init__(**kwargs)
