@@ -837,6 +837,39 @@
                 root.katrain("analyze-extra", "game", visits=visits.input_value, mistakes_only=mistakes.input_value)
                 root.popup.dismiss()
 
+<TsumegoFramePopup>:
+    ko: ko
+    margin: margin
+    orientation: 'vertical'
+    button: button
+    BoxLayout:
+        size_hint: 1, 1.5
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('tsumego:walldistance')
+        AnchorLayout:
+            LabelledIntInput:
+                id: margin
+                text: '5'
+    BoxLayout:
+        size_hint: 1, 1.5
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('tsumego:ko')
+        AnchorLayout:
+            LabelledCheckBox:
+                id: ko
+    AnchorLayout:
+        size_hint: 1, 1
+        AutoSizedRoundedRectangleButton:
+            id: button
+            padding_x: 15
+            size_hint: None,0.66
+            text: i18n._("analysis:tsumegoframe") # re-use string
+            on_press:
+                root.katrain("tsumego-frame", ko=ko.input_value, margin=margin.input_value)
+                root.popup.dismiss()
+
 <LoadSGFPopup>:
     fast: fast
     rewind: rewind

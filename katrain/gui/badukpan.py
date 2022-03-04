@@ -33,7 +33,7 @@ from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid, json_truncate_arrays
 from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
-from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup, GameReportPopup
+from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup, GameReportPopup, TsumegoFramePopup
 from katrain.gui.theme import Theme
 
 
@@ -804,6 +804,14 @@ class AnalysisDropDown(DropDown):
         )
         report_popup.content.popup = report_popup
         report_popup.open()
+
+    def open_tsumego_frame_popup(self, *_args):
+        analysis_popup = I18NPopup(
+            title_key="analysis:tsumegoframe", size=[dp(500), dp(350)], content=TsumegoFramePopup()
+        )
+        analysis_popup.content.popup = analysis_popup
+        analysis_popup.content.katrain = MDApp.get_running_app().gui
+        analysis_popup.open()
 
 
 class AnalysisControls(MDBoxLayout):

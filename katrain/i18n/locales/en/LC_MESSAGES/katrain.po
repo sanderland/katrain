@@ -105,6 +105,10 @@ msgstr "Fast analysis of all moves"
 msgid "analysis:game"
 msgstr "Deeper full game analysis"
 
+#. Menu option for tsumego frame around position
+msgid "analysis:tsumegoframe"
+msgstr "Tsumego Frame"
+
 #. View a player performance report
 msgid "analysis:report"
 msgstr "Performance Report"
@@ -1008,3 +1012,11 @@ msgstr "Target score for Black:"
 #. Description for how many moves
 msgid "setup position move number"
 msgstr "Generate game until move:"
+
+#. distance of wall to existing stones
+msgid "tsumego:walldistance"
+msgstr "Distance of wall"
+
+#. tsumego: ko is good enough?
+msgid "tsumego:ko"
+msgstr "Ko allowed?"

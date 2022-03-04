@@ -186,6 +186,7 @@ class Theme:
     KEY_SELFPLAY_TO_END = "l"
     KEY_STOP_ANALYSIS = "escape"
     KEY_TOGGLE_CONTINUOUS_ANALYSIS = "spacebar"
+    KEY_TSUMEGO_FRAME = "u"
 
     KEY_COPY = "c"
     KEY_PASTE = "v"
