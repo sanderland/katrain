@@ -45,7 +45,7 @@ Many thanks to these additional authors:
 * "nimets123" for the timer sound effects and board/stone graphics.
 * Jordan Seaward for the stone sound effects.
 * "fohristiwhirl" for the Gibo and NGF formats parsing code.
-* "kaorahi" for bug fixes and SGF parser improvements.
+* "kaorahi" for bug fixes, SGF parser improvements, and tsumego frame code.
 * "ajkenny84" for the red-green colourblind theme.
 * Lukasz Wierzbowski for the ability to paste urls for sgfs and helping fix alt-gr issues.
 * Carton He for contributions to sgf parsing and handling.

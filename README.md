@@ -38,6 +38,7 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
 <a href="http://translate.google.com/translate?sl=en&tl=de&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="German" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-de.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-fr.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ru.png" width=50></a>
+<a href="http://translate.google.com/translate?sl=en&tl=tr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Turkish" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-tr.png" width=50></a>
 <br/>
 
 <a href="http://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Simplified Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-cn.png" width=50></a>
@@ -161,6 +162,7 @@ Keyboard shortcuts are shown with **[key]**.
     * **[g]**: Select area of interest: set an area and search only for moves in this box.
                Good for solving tsumegos. Note that some results may appear outside the box due to establishing a baseline for the best move,
                and the opponent can tenuki in variations.
+    * **[u]**: Set up a ``Tsumego Frame'' for solving life and death problems.
     * **[h]**: Reset analysis. This reverts the analysis to what the engine returns after a normal query, removing any additional exploration.
     * **[i]**: Start insertion mode. Allows you to insert moves, to improve analysis when both players ignore an important exchange or life and death situation. Press again to stop inserting and copy the rest of the branch.
     * **[l]**: Play out the game until the end and add as a collapsed branch, to visualize the potential effect of mistakes. This is done in the background, and can be started at several nodes at once when comparing the results at different starting positions.      
@@ -229,13 +231,11 @@ See [these instructions](THEMES.md) for how to modify the look of any graphics o
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](http://img.shields.io/github/issues/sanderland/katrain)](http://github.com/sanderland/katrain/issues)
-[![Contributors](http://img.shields.io/static/v1?label=contributors&message=26&color=dcb424)](CONTRIBUTIONS.md)
-[![Github sponsors](http://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=http://github.com/sponsors/sanderland/)](http://github.com/sponsors/sanderland)
+[![Contributors](http://img.shields.io/static/v1?label=contributors&message=<3&color=dcb424)](CONTRIBUTIONS.md)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](http://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
 * You can contact me on the [Leela Zero & Friends Discord](http://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation.
-* You can also donate to the project through [Github Sponsors](http://github.com/sponsors/sanderland).
 
 
 

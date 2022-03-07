@@ -205,7 +205,7 @@ msgstr "Aday hamlelerin analizini {visits} ziyarete eşitliyor"
 
 #. status message
 msgid "game re-analysis"
-msgstr "Tüm oyunu {visits} ziyaret olacak şekilde yeniden analiz ediyor"
+msgstr "Tüm oyunu {visits} ziyaret kadar yeniden analiz ediyor"
 
 #. right panel buttons and below board
 msgid "pass-button-text"
@@ -218,15 +218,15 @@ msgstr "Terk Et"
 #. Shown when a move is undone in teaching mode.
 msgid "teaching undo message"
 msgstr ""
-"{points_lost:.1f} puan kaybettirdiğinden {move}. hamleyi geri al. Lütfen "
+"{points_lost:.1f} puan kaybettirdiğinden {move}. hamleyi geri alın. Lütfen "
 "tekrar deneyin. İpucu için karşı analizi görmek amacıyla fare imlecini hamle"
-" üzerine getirin veya puan kaybının beklendiği tahta bölgelerini görmek "
+" üzerine getirin veya puan kaybının beklendiği tahtabölgelerini görmek "
 "amacıyla tahmini bölgeyi (t) kontrol edin."
 
 msgid "ai-ponder"
 msgstr ""
 "Bu işaret basitçe yeşil (boşta) renkten turuncu (sorguları işliyor) renge "
-"değişerekMotor durumunu gösterir. Motor kilitlenirse ya da başlatılmazsa "
+"değişerek Motor durumunu gösterir. Motor kilitlenirse ya da başlatılmazsa "
 "kırmızı renkte yanar."
 
 #. undo button on the right
@@ -373,7 +373,7 @@ msgid "load sgf fast analysis"
 msgstr "Hızlı analizi kullan"
 
 msgid "load sgf rewind"
-msgstr "İlk hamleye kadar geri al"
+msgstr "İlk hamleye git"
 
 # timer settings from here
 msgid "timer settings"
@@ -394,7 +394,7 @@ msgstr "Ana süre (dak.)"
 
 #. ignore moves if timer is on and less than this is used
 msgid "minimal time use"
-msgstr "Byo-yomi için kullanılabilecek en kısa süre (sn)"
+msgstr "Byo-yomi için geçerli en kısa süre (sn)"
 
 msgid "move too fast"
 msgstr "Hamle yapmadan önce en az {num} saniye düşün."
@@ -405,11 +405,11 @@ msgstr "Saati Güncelle"
 
 # new game settings from here
 msgid "New Game title"
-msgstr "Yeni Oyun Ayarla / Oyun Bilgilerini ve Kuralları Düzenle"
+msgstr "Yeni Oyun Ayarla / Oyun Bilgisi ve Kuralları Düzenle"
 
 #. in new game options
 msgid "player names"
-msgstr "Oyuncu İsimleri"
+msgstr "Oyuncu Adları"
 
 #. hint on player name input
 msgid "black player name hint"
@@ -460,7 +460,7 @@ msgstr "Önbelleği temizle"
 msgid "avoids replaying"
 msgstr ""
 "Benzer oyunların\n"
-"oynamasını engeller"
+"oynamasını önler"
 
 #. hints on new game
 msgid "non square board hint"
@@ -472,7 +472,7 @@ msgstr "Yeni Oyun Başlat"
 
 #. change komi etc in current game
 msgid "editgame"
-msgstr "Oyun Bilgilerini Düzenle"
+msgstr "Oyun Bilgisi Düzenle"
 
 #. generate position alongside starting new game
 msgid "setupposition"
@@ -483,7 +483,7 @@ msgid "teacher settings"
 msgstr "Eğitim/Analiz Ayarlarını Düzenle"
 
 msgid "point loss threshold"
-msgstr "Puan kaybı şundan fazla"
+msgstr "Puan kaybı eşiği"
 
 msgid "num undos"
 msgstr ""
@@ -503,7 +503,7 @@ msgid "show last n dots"
 msgstr "Son <this many> hamle için renkli ölçek"
 
 msgid "show ai dots"
-msgstr "AI oyuncuları için renkli ölçeği/SGF açıklamaları göster"
+msgstr "AI oyuncusu için renkli ölçeği/SGF açıklaması göster"
 
 #. analysis option
 msgid "cache analysis to sgf"
@@ -511,7 +511,7 @@ msgstr "SGF’de önbellek analizi"
 
 #. submit button
 msgid "update teacher"
-msgstr "Geri Bildirim Ayarlarını Güncelle"
+msgstr "Geri Bildrm Ayarlrnı Güncelle"
 
 # main config settings
 msgid "restarting engine"
@@ -527,7 +527,7 @@ msgstr "Görüntüleyici Ayarları"
 
 #. title
 msgid "contribute:login"
-msgstr "Katagotraining.org için oturum açma bilgileri"
+msgstr "Katagotraining.org için oturum açma bilgisi"
 
 #. description for input
 msgid "contribute:maxgames"
@@ -541,7 +541,7 @@ msgstr ""
 " bu değeri biraz daha düşük ayarlayabilirsiniz."
 
 msgid "contribute:ownership"
-msgstr "Bölge Sahipliğini Etkinleştir"
+msgstr "Bölge Sahipliği Etkinleştir"
 
 #. hint for ownership
 msgid "contribute:ownership:hint"
@@ -655,7 +655,7 @@ msgid "ai settings"
 msgstr "Gelişmiş AI Ayarları"
 
 msgid "Select AI"
-msgstr "Yapılandırılacak AI stratejisini seç"
+msgstr "Yapılandırılacak AI stratejisi seç"
 
 msgid "update ai settings"
 msgstr "AI Ayarlarını Güncelle"
@@ -785,7 +785,7 @@ msgstr ""
 " için kullanılabilir."
 
 msgid "ai:antimirror"
-msgstr "KataSimetriKarşıtı"
+msgstr "KataAntiSimetri"
 
 msgid "aihelp:antimirror"
 msgstr "KataGo'nun Simetri Karşıtı Go Modu"
@@ -804,15 +804,15 @@ msgstr "Puan Kaybı"
 msgid "aihelp:scoreloss"
 msgstr ""
 "Daha düşük olasılığa sahip daha yüksek puan kaybına neden olacak hamleler "
-"oynar.Daha yüksek ziyaret ayarlarıyla çok çeşitli/daha düşük seviyede hamle "
-"yapacaktır."
+"oynar. Daha yüksek ziyaret ayarlarıyla çok çeşitli/daha düşük seviyede hamle"
+" yapacaktır."
 
 msgid "ai:policy"
 msgstr "İlke"
 
 msgid "aihelp:policy"
 msgstr ""
-"Herhangi derin analiz olmadan ilke ağına göre en iyi hamleyi oynar. Seviye "
+"Herhangi derin analiz olmadan ilke ağına göre en iyi hamleyi oynar. Seviye, "
 "daha çok motor ayarlarındaki `model` değeriyle belirlenir. `opening_moves` "
 "ayarı açılışta kaç tane hamlenin rastgele yapılacağına etki eder."
 
@@ -823,12 +823,12 @@ msgid "aihelp:p:weighted"
 msgstr ""
 "Daha zayıf hamlelerin oynanma olasılığına etki eden `weaken_fac` değerine "
 "bağlı olarak ilke olasılığına göre hamle yapar. Çok düşük değer durumunda "
-"`İlke` AI’sı gibi oynar.`pick_override` rastlantısallık olmadan en iyi "
+"`İlke` AI’sı gibi oynar. `pick_override` rastlantısallık olmadan en iyi "
 "hamlenin ne zaman seçileceğini belirler ve `lower_bound` izin verilen alt "
 "sınır ilkesi değerini belirler."
 
 msgid "ai:p:pick"
-msgstr "Körleştirilmiş İlke"
+msgstr "Zayıf İlke"
 
 msgid "aihelp:p:pick"
 msgstr ""
@@ -879,7 +879,7 @@ msgstr ""
 "durdurur."
 
 msgid "ai:p:rank"
-msgstr "Kalibre Edilmiş Seviye"
+msgstr "Ayarlı Seviye"
 
 msgid "aihelp:p:rank"
 msgstr ""
@@ -1000,7 +1000,7 @@ msgstr ""
 
 #. menu item
 msgid "menu:distributed"
-msgstr "Dağıtılmış Kendi Kendine Oyun Eğitimi"
+msgstr "Dağıtılmış Öz Oyun Eğitimi"
 
 #. in self-play mode
 msgid "gui-locked"
@@ -1011,15 +1011,15 @@ msgstr ""
 #. Progress message
 msgid "setup game status message"
 msgstr ""
-"AI kendi kendine oyun özelliğiyle oyun üretiyor:  {move}/{until_move} hamle "
-"yapıldı."
+"AI öz oyun özelliğiyle oyun üretiyor:  {move}/{until_move} hamle yapıldı."
 
 #. Popup for generating position: top explanation
 msgid "setup position explanation"
 msgstr ""
 "Devam edebileceğiniz yarım kalmış bir oyun üretir. Örneğin, çeşitli oyun "
 "ortası veya oyun sonu pozisyonlarından başlayıp daha yüksek seviye yapay "
-"zekaya karşı avantajlı oyunlar oynamak için bu özelliği kullanabilirsiniz."
+"zekaya karşı avantajlı olduğunuz oyunlar oynamak için bu özelliği "
+"kullanabilirsiniz."
 
 #. Description for black target score
 msgid "setup position black score"
@@ -1029,20 +1029,19 @@ msgstr "Siyah için hedef puan:"
 msgid "setup position move number"
 msgstr "Şu hamleye kadar oyun üret:"
 
-#. TODO - on move tree editing, deletes all other branches splitting off from
-#. the
+#. on move tree editing, deletes all other branches splitting off from the
 #. path UP TO this node
 msgid "Prune Branch"
-msgstr "Prune Branch"
+msgstr "Varyasyonu Buda"
 
-#. TODO - distance of wall to existing stones
+#. distance of wall to existing stones
 msgid "tsumego:walldistance"
-msgstr "Distance of wall"
+msgstr "Duvar mesafesi"
 
-#. TODO - tsumego: ko is good enough?
+#. tsumego: ko is good enough?
 msgid "tsumego:ko"
-msgstr "Ko allowed?"
+msgstr "Ko'ya izin veriliyor mu?"
 
-#. TODO - Menu option for tsumego frame around position
+#. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
-msgstr "Tsumego Frame"
+msgstr "Tsumego Çerçevesi"

@@ -163,6 +163,7 @@ class Theme:
     KEY_AI_POPUP = "f7"
     KEY_CONFIG_POPUP = "f8"
     KEY_CONTRIBUTE_POPUP = "f9"
+    KEY_TSUMEGO_FRAME = "f10"
 
     KEY_NEW_GAME = "n"
     KEY_SAVE_GAME = "s"
@@ -186,7 +187,6 @@ class Theme:
     KEY_SELFPLAY_TO_END = "l"
     KEY_STOP_ANALYSIS = "escape"
     KEY_TOGGLE_CONTINUOUS_ANALYSIS = "spacebar"
-    KEY_TSUMEGO_FRAME = "u"
 
     KEY_COPY = "c"
     KEY_PASTE = "v"
