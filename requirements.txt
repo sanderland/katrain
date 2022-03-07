@@ -3,7 +3,7 @@ chardet==3.0.4
 docutils==0.16
 ffpyplayer==4.3.2
 idna==2.10
-Kivy==2.0.0
+Kivy==2.1.0
 Kivy-Garden==0.1.4
 kivymd==0.104.1
 Pillow==8.3.2

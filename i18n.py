@@ -24,6 +24,8 @@ pofile = {}
 todos = defaultdict(list)
 
 for lang in locales:
+    if lang=='es':
+        continue
     pofile[lang] = os.path.join(localedir, lang, "LC_MESSAGES", "katrain.po")
     po[lang] = polib.pofile(pofile[lang])
     for entry in po[lang].translated_entries():
