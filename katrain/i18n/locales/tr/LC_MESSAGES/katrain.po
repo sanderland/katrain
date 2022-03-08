@@ -500,7 +500,7 @@ msgid "save dots"
 msgstr "SGF’ye Kaydet"
 
 msgid "show last n dots"
-msgstr "Son <this many> hamle için renkli ölçek"
+msgstr "Son <...> hamle için renkli ölçek"
 
 msgid "show ai dots"
 msgstr "AI oyuncusu için renkli ölçeği/SGF açıklaması göster"

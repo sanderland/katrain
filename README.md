@@ -162,13 +162,16 @@ Keyboard shortcuts are shown with **[key]**.
     * **[g]**: Select area of interest: set an area and search only for moves in this box.
                Good for solving tsumegos. Note that some results may appear outside the box due to establishing a baseline for the best move,
                and the opponent can tenuki in variations.
-    * **[u]**: Set up a ``Tsumego Frame'' for solving life and death problems.
     * **[h]**: Reset analysis. This reverts the analysis to what the engine returns after a normal query, removing any additional exploration.
     * **[i]**: Start insertion mode. Allows you to insert moves, to improve analysis when both players ignore an important exchange or life and death situation. Press again to stop inserting and copy the rest of the branch.
     * **[l]**: Play out the game until the end and add as a collapsed branch, to visualize the potential effect of mistakes. This is done in the background, and can be started at several nodes at once when comparing the results at different starting positions.      
     * **[spacebar]**: Turn continuous analysis on/off. This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.
     * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
-
+    * **[F2]**: Deeper full game analysis. Analyze the entire game to a higher number of visits.
+    * **[F3]**: Performance report. Show an overview of performance statistics for both players.  
+    * **[F10]**: Tsumego Frame. After placing a life and death problem in a corner/side, use this to fill up the rest of the board to improve AI's ability in solving life and death problems.
+    
+  
 ## <a name="keyboard"></a> Keyboard and mouse shortcuts
 
 In addition to shortcuts mentioned above and those shown in the main menu:
