@@ -495,7 +495,7 @@ msgstr ""
 
 msgid "Kata exe not found"
 msgstr ""
-"L'exécutable `{exe}` est introuvable. \n"
+"L'exécutable '{exe}' est introuvable. \n"
 "Veuillez vérifier son chemin d'accès dans les paramètres généraux."
 
 msgid "Starting Kata failed"

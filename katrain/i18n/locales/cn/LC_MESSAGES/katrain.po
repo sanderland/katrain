@@ -429,7 +429,7 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"全功能的KataGo AI. 棋力由 `max visits` 和 `模型` 决定.在一般设置里 `引擎` 部分和引擎设置文件. 这里没有选项."
+"全功能的KataGo AI. 棋力由 'max visits' 和 '模型' 决定.在一般设置里 '引擎' 部分和引擎设置文件. 这里没有选项."
 
 msgid "ai:jigo"
 msgstr "Kata控目"
@@ -447,14 +447,14 @@ msgid "ai:policy"
 msgstr "直觉"
 
 msgid "aihelp:policy"
-msgstr "按最佳直觉行棋, 没有计算. 棋力 主要由引擎设置里的 `模型` 决定. 布局落点设置 影响布局中随机落点的数量."
+msgstr "按最佳直觉行棋, 没有计算. 棋力 主要由引擎设置里的 '模型' 决定. 布局落点设置 影响布局中随机落点的数量."
 
 msgid "ai:p:weighted"
 msgstr "直觉权重"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"按直觉概率行棋, `weaken_fac` 决定了 较弱选点的多少.  决定了在没有随机性的最佳选点, `lower_bound` 决定了允许的 "
+"按直觉概率行棋, 'weaken_fac' 决定了 较弱选点的多少.  决定了在没有随机性的最佳选点, 'lower_bound' 决定了允许的 "
 "直觉值的下限."
 
 msgid "ai:p:pick"
@@ -462,31 +462,31 @@ msgstr "盲选直觉"
 
 msgid "aihelp:p:pick"
 msgstr ""
-"随机选择 `pick_n + pick_frac * <number of legal moves>` 并采用最佳的 一手. "
-"当`pick_frac=1` 就是直觉AI. 如果直觉值大于 `pick_override`则采用最佳的一手以避免明显错误."
+"随机选择 'pick_n + pick_frac * <number of legal moves>' 并采用最佳的 一手. "
+"当'pick_frac=1' 就是直觉AI. 如果直觉值大于 'pick_override'则采用最佳的一手以避免明显错误."
 
 msgid "ai:p:local"
 msgstr "局部模式"
 
 msgid "aihelp:p:local"
 msgstr ""
-"使加权 `pick_n + pick_frac * <number of legal moves>` 接近 最后一手且选出最优. 如果直觉值大于 "
-"`pick_override`则采用最佳的一手以避免明显错误."
+"使加权 'pick_n + pick_frac * <number of legal moves>' 接近 最后一手且选出最优. 如果直觉值大于 "
+"'pick_override'则采用最佳的一手以避免明显错误."
 
 msgid "ai:p:tenuki"
 msgstr "脱先模式"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
-"使加权`pick_n + pick_frac * <number of legal moves>` 偏离 最后一手且选出最优. 如果直觉值 "
-"大于`pick_override` 则采用最佳的一手以避免明显错误. 更高的 `stddev` 使其 偏离更多."
+"使加权'pick_n + pick_frac * <number of legal moves>' 偏离 最后一手且选出最优. 如果直觉值 "
+"大于'pick_override' 则采用最佳的一手以避免明显错误. 更高的 'stddev' 使其 偏离更多."
 
 msgid "ai:p:influence"
 msgstr "取势模式"
 
 msgid "aihelp:p:influence"
 msgstr ""
-"在高于 `threshold` 的点中选出最优. 加大 `line_weight` 以增加对靠近边缘的点的惩罚. 在  'endgame' "
+"在高于 'threshold' 的点中选出最优. 加大 'line_weight' 以增加对靠近边缘的点的惩罚. 在  'endgame' "
 "部分结束后停止."
 
 msgid "ai:p:territory"
@@ -494,7 +494,7 @@ msgstr "取地模式"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"在低于 `threshold` 的点中选出最优. 加大 `line_weight` 以增加对靠近中心的点的惩罚. 在  'endgame' "
+"在低于 'threshold' 的点中选出最优. 加大 'line_weight' 以增加对靠近中心的点的惩罚. 在  'endgame' "
 "部分结束后停止."
 
 msgid "katago settings"

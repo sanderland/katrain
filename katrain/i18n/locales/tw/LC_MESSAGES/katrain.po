@@ -542,7 +542,7 @@ msgstr "KataGo執行檔 {exe} 不存在，請檢查一般設定。"
 
 msgid "Kata exe not found in path"
 msgstr ""
-"在 PATH 中找不到KataGo執行檔 `{exe}`，請檢查環境變數或在一般設定中使用完整路徑代替。若是在 MacOS "
+"在 PATH 中找不到KataGo執行檔 '{exe}'，請檢查環境變數或在一般設定中使用完整路徑代替。若是在 MacOS "
 "上，請先閱讀使用手冊中的如何使用brew安裝KataGo。"
 
 msgid "Kata model not found"
@@ -572,7 +572,7 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"最強的KataGo AI。其棋力由在一般設定中 `引擎` 區塊中的 `最大走訪數` 和 `模型` 以及引擎組態文件決定。此處沒有可供調整的選項。"
+"最強的KataGo AI。其棋力由在一般設定中 '引擎' 區塊中的 '最大走訪數' 和 '模型' 以及引擎組態文件決定。此處沒有可供調整的選項。"
 
 #. ai which handles handicap games better
 msgid "ai:handicap"
@@ -580,8 +580,8 @@ msgstr "Kata讓子棋"
 
 msgid "aihelp:handicap"
 msgstr ""
-"KataGo 對讓子棋做了最佳化的對局版本。以黑棋的觀點來看，KataGo 中的 `pda` 設定對應到的是 "
-"`playoutDoublingAdvantage`。當被設定為 `自動` 時，KaTrain 將會找自動找到適合的值。"
+"KataGo 對讓子棋做了最佳化的對局版本。以黑棋的觀點來看，KataGo 中的 'pda' 設定對應到的是 "
+"'playoutDoublingAdvantage'。當被設定為 '自動' 時，KaTrain 將會找自動找到適合的值。"
 
 msgid "ai:simple"
 msgstr "單純模式"
@@ -609,46 +609,46 @@ msgid "ai:policy"
 msgstr "直覺"
 
 msgid "aihelp:policy"
-msgstr "按最佳直覺行棋，沒有任何計算。棋力主要由引擎設定中的 `模型` 決定。布局落點設定影響布局中隨機落點的數量。"
+msgstr "按最佳直覺行棋，沒有任何計算。棋力主要由引擎設定中的 '模型' 決定。布局落點設定影響布局中隨機落點的數量。"
 
 msgid "ai:p:weighted"
 msgstr "直覺權重"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"按直覺機率行棋， `weaken_fac` 影響較弱選點的多寡。當機率極低時，它的下棋風格變得很像直覺AI。 `pick_override` "
-"決定在選擇最佳選點時的無隨機性；而 `lower_bound` 決定了允許的直覺值的下限。"
+"按直覺機率行棋， 'weaken_fac' 影響較弱選點的多寡。當機率極低時，它的下棋風格變得很像直覺AI。 'pick_override' "
+"決定在選擇最佳選點時的無隨機性；而 'lower_bound' 決定了允許的直覺值的下限。"
 
 msgid "ai:p:pick"
 msgstr "盲選直覺"
 
 msgid "aihelp:p:pick"
 msgstr ""
-"隨機選擇 `pick_n + pick_frac * <number of legal moves>` 並採用最佳的一手。 當 "
-"`pick_frac=1` 時，下棋風格像是直覺AI。 如果直覺值高於 `pick_override`，則採用最佳的一手以避免明顯錯誤。"
+"隨機選擇 'pick_n + pick_frac * <number of legal moves>' 並採用最佳的一手。 當 "
+"'pick_frac=1' 時，下棋風格像是直覺AI。 如果直覺值高於 'pick_override'，則採用最佳的一手以避免明顯錯誤。"
 
 msgid "ai:p:local"
 msgstr "局部模式"
 
 msgid "aihelp:p:local"
 msgstr ""
-"使加權 `pick_n + pick_frac * <number of legal moves>` 接近最後一手並選出最好的一手。如果直覺值大於 "
-"`pick_override`則採用最佳的一手以避免明顯錯誤。"
+"使加權 'pick_n + pick_frac * <number of legal moves>' 接近最後一手並選出最好的一手。如果直覺值大於 "
+"'pick_override'則採用最佳的一手以避免明顯錯誤。"
 
 msgid "ai:p:tenuki"
 msgstr "脫先模式"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
-"使加權 `pick_n + pick_frac * <number of legal moves>` 遠離最後一手並選出最好的一手。如果直覺值大於 "
-"`pick_override` 則採用最佳的一手以避免明顯錯誤。更高的 `stddev` 使其偏離更多。"
+"使加權 'pick_n + pick_frac * <number of legal moves>' 遠離最後一手並選出最好的一手。如果直覺值大於 "
+"'pick_override' 則採用最佳的一手以避免明顯錯誤。更高的 'stddev' 使其偏離更多。"
 
 msgid "ai:p:influence"
 msgstr "取勢模式"
 
 msgid "aihelp:p:influence"
 msgstr ""
-"在偏移值高於 `threshold` 線的點中選出最好的一手。增加 `line_weight` 以加重對靠近邊緣選點的懲罰。在 '終局' "
+"在偏移值高於 'threshold' 線的點中選出最好的一手。增加 'line_weight' 以加重對靠近邊緣選點的懲罰。在 '終局' "
 "部分結束後停止。"
 
 msgid "ai:p:territory"
@@ -656,7 +656,7 @@ msgstr "取地模式"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"在偏移值低於 `threshold` 線的點中選出最好的一手。增加 `line_weight` 以加重對靠近中央選點的懲罰。在 '終局' "
+"在偏移值低於 'threshold' 線的點中選出最好的一手。增加 'line_weight' 以加重對靠近中央選點的懲罰。在 '終局' "
 "部分結束後停止。"
 
 msgid "ai:p:rank"
