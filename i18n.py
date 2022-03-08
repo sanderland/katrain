@@ -16,7 +16,7 @@ strings_to_keys = defaultdict(dict)
 lang_to_strings = defaultdict(set)
 
 DEFAULT_LANG = "en"
-
+INACTIVE_LANGS = ['es']
 errors = False
 
 po = {}
@@ -24,7 +24,7 @@ pofile = {}
 todos = defaultdict(list)
 
 for lang in locales:
-    if lang=='es':
+    if lang in INACTIVE_LANGS:
         continue
     pofile[lang] = os.path.join(localedir, lang, "LC_MESSAGES", "katrain.po")
     po[lang] = polib.pofile(pofile[lang])
@@ -46,6 +46,8 @@ for lang in locales:
 
 
 for lang in locales:
+    if lang in INACTIVE_LANGS:
+        continue
     if lang != DEFAULT_LANG:
         for msgid in lang_to_strings[lang]:
             if (
