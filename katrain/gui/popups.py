@@ -810,7 +810,7 @@ class LoadSGFPopup(BaseConfigPopup):
             (os.path.abspath(app.gui.config("general/sgf_save")), "Last Save Dir"),
         ]
         self.filesel.path = os.path.abspath(os.path.expanduser(app.gui.config("general/sgf_load")))
-        self.filesel.select_string = i18n._("Load File")
+        self.filesel.select_string = "Load File"
 
     def on_submit(self):
         self.filesel.button_clicked()
@@ -832,7 +832,7 @@ class SaveSGFPopup(BoxLayout):
 
         self.filesel.ids.list_view.bind(path=set_suggested)
         self.filesel.path = os.path.abspath(save_path)
-        self.filesel.select_string = i18n._("Save File")
+        self.filesel.select_string = "Save File"
 
     def on_submit(self):
         self.filesel.button_clicked()

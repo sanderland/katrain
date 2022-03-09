@@ -232,7 +232,7 @@ Builder.load_string(
             padding_x: 15
             height: '40dp'
             size_hint_x: None
-            text: root.select_string
+            text: i18n._(root.select_string)
             on_release: root.button_clicked()
 """
 )

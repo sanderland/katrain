@@ -639,7 +639,7 @@ msgid "engine:time:hint"
 msgstr "Saniye cinsinden süre"
 
 msgid "general:anim_pv_time"
-msgstr "Varyasyon animasyonda hamleler arasındaki süre"
+msgstr "Varyasyon animasyonunda hamleler arasındaki süre"
 
 msgid "general:debug_level"
 msgstr "Konsoldaki hata ayıklama düzeyi"
@@ -965,7 +965,7 @@ msgstr "Skor"
 
 #. Dropdown menu option
 msgid "top_move_delta_winrate"
-msgstr "Kaz. oran. değişim"
+msgstr "Kaz. oranı değişimi"
 
 #. Dropdown menu option
 msgid "top_move_winrate"
