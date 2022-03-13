@@ -722,6 +722,10 @@ msgstr "Изменение счёта"
 msgid "show stats if"
 msgstr "Числа только если посещений больше чем"
 
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
 msgid "cache analysis to sgf"
 msgstr "Кэшировать анализ в SGF"
 

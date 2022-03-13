@@ -732,6 +732,10 @@ msgstr "Punktänderung"
 msgid "show stats if"
 msgstr "Zeige Bewertung wenn mehr als ... Visits"
 
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
 #. analysis option
 msgid "cache analysis to sgf"
 msgstr "Cache-Analyse in SGF"

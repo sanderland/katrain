@@ -428,6 +428,10 @@ msgstr "顯示最後幾手棋的選點"
 msgid "show ai dots"
 msgstr "顯示AI的選點/SGF評論"
 
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
 #. analysis option
 msgid "cache analysis to sgf"
 msgstr "儲存分析到SGF中"

@@ -697,6 +697,10 @@ msgstr "집 변동"
 msgid "show stats if"
 msgstr "... visit 이상일 때만 정보 보이기"
 
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
 #. analysis option
 msgid "cache analysis to sgf"
 msgstr "분석 결과 SGF 파일에 캐싱"

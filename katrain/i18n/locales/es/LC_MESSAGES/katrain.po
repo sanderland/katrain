@@ -740,6 +740,10 @@ msgstr "Change in score"
 msgid "show stats if"
 msgstr "Show stats if more than ... visits"
 
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
 #. TODO - analysis option
 msgid "cache analysis to sgf"
 msgstr "Cache analysis in SGF"

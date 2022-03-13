@@ -726,6 +726,10 @@ msgstr "損失目数"
 msgid "show stats if"
 msgstr "表示候補の最低探索数"
 
+#. point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "損失目数の高精度表示（絶対値１以下の場合）"
+
 #. analysis option
 msgid "cache analysis to sgf"
 msgstr "分析結果をSGFに保存"
