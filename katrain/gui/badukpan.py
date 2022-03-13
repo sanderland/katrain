@@ -595,6 +595,14 @@ class BadukPanWidget(Widget):
                             size=(2 * evalsize, 2 * evalsize),
                             texture=cached_texture(Theme.TOP_MOVE_TEXTURE),
                         )
+                        def format_number(x: float) -> str:
+                            if abs(x) < 0.005:
+                                return "0.0"
+                            if 0 < x <= 0.995:
+                                return "+" + f"{x:.2f}"[1:]
+                            elif -0.995 <= x < 0:
+                                return "-" + f"{x:.2f}"[2:]
+                            return f"{x:+.1f}"
                         if text_on and top_moves_show:  # TODO: faster if not sized?
                             keys = {"size": self.grid_size / 3, "smallsize": self.grid_size / 3.33}
                             player_sign = current_node.player_sign(next_player)
@@ -610,7 +618,7 @@ class BadukPanWidget(Widget):
                                 )
 
                             keys[TOP_MOVE_DELTA_SCORE] = (
-                                "0.0" if -0.05 < move_dict["pointsLost"] < 0.05 else f"{-move_dict['pointsLost']:+.1f}"
+                                format_number(-move_dict["pointsLost"])
                             )
                             #                           def fmt_maybe_missing(arg,sign,digits=1):
                             #                               return str(round(sign*arg,digits)) if arg is not None else "N/A"
