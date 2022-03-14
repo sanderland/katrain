@@ -942,28 +942,25 @@ msgstr "AI最佳選點重合度 %"
 msgid "Entire Game"
 msgstr "全局"
 
-#. TODO
 msgid "ai:antimirror"
-msgstr "KataAntiMirror"
+msgstr "Kata反鏡射"
 
-#. TODO - on move tree editing, deletes all other branches splitting off from
-#. the
-#. path UP TO this node
+#. on move tree editing, deletes all other branches splitting off from
+#. the path UP TO this node
 msgid "Prune Branch"
-msgstr "Prune Branch"
+msgstr "修剪分支"
 
-#. TODO
 msgid "aihelp:antimirror"
-msgstr "Anti Mirror-go Mode of KataGo."
+msgstr "KataGo的反鏡射模式。"
 
-#. TODO - distance of wall to existing stones
+#. distance of wall to existing stones
 msgid "tsumego:walldistance"
-msgstr "Distance of wall"
+msgstr "邊界距離"
 
-#. TODO - tsumego: ko is good enough?
+#. tsumego: ko is good enough?
 msgid "tsumego:ko"
-msgstr "Ko allowed?"
+msgstr "允許打劫？"
 
-#. TODO - Menu option for tsumego frame around position
+#. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
-msgstr "Tsumego Frame"
+msgstr "詰碁框"
