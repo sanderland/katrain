@@ -1045,3 +1045,7 @@ msgstr "Ko'ya izin veriliyor mu?"
 #. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
 msgstr "Tsumego Çerçevesi"
+
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
