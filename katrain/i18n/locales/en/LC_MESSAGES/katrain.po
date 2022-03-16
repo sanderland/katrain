@@ -507,6 +507,10 @@ msgstr "Show dots for the last <this many> moves"
 msgid "show ai dots"
 msgstr "Show dots/SGF comments for AI players"
 
+#. point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
 #. analysis option
 msgid "cache analysis to sgf"
 msgstr "Cache analysis in SGF"

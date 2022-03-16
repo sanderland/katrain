@@ -82,6 +82,7 @@
             true,
             true
         ],
+        "extra_precision": false,
         "save_analysis": false,
         "save_marks": false,
         "low_visits": 25,

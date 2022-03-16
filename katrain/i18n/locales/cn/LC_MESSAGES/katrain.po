@@ -318,6 +318,10 @@ msgstr "显示最后几手棋的选点"
 msgid "show ai dots"
 msgstr "AI的显示选点/SGF评价"
 
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
 #. submit button
 msgid "update teacher"
 msgstr "更新指导棋设置"

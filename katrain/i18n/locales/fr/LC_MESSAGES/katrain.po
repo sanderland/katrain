@@ -757,6 +757,10 @@ msgstr "Variation du score"
 msgid "show stats if"
 msgstr "Nombre de visites minimum requis pour afficher les données :"
 
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
 msgid "cache analysis to sgf"
 msgstr "Sauvegarder un cache SGF de l'analyse"
 

@@ -495,6 +495,12 @@
                     input_property: "trainer/eval_show_ai"
             DescriptionLabel:
                 font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
+                text: i18n._("show two digits for point loss near zero")
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/extra_precision"
+            DescriptionLabel:
+                font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
                 text: i18n._("cache analysis to sgf")
             AnchorLayout:
                 LabelledCheckBox:
