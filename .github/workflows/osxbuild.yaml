@@ -47,7 +47,7 @@ jobs:
         popd
         python -m pip install .
         pushd ..
-        git clone git://github.com/kivy/kivy.git
+        git clone https://github.com/kivy/kivy.git
         cd kivy
         python -m pip install ".[full]"
     - name: Finalize KaTrain bundle
