@@ -628,9 +628,7 @@ class BadukPanWidget(Widget):
                                     + "}[/size]"
                                 )
 
-                            keys[TOP_MOVE_DELTA_SCORE] = (
-                                self.format_loss(-move_dict["pointsLost"])
-                            )
+                            keys[TOP_MOVE_DELTA_SCORE] = self.format_loss(-move_dict["pointsLost"])
                             #                           def fmt_maybe_missing(arg,sign,digits=1):
                             #                               return str(round(sign*arg,digits)) if arg is not None else "N/A"
 

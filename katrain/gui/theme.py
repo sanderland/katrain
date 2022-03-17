@@ -186,6 +186,7 @@ class Theme:
     KEY_INSERT_MODE = "i"
     KEY_SELFPLAY_TO_END = "l"
     KEY_STOP_ANALYSIS = "escape"
+    KEY_STOP_CONTRIBUTING = "escape"
     KEY_TOGGLE_CONTINUOUS_ANALYSIS = "spacebar"
 
     KEY_COPY = "c"

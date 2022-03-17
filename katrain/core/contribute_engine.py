@@ -3,6 +3,7 @@ import os
 import random
 import shlex
 import shutil
+import signal
 import subprocess
 import threading
 import time
@@ -136,6 +137,7 @@ class KataGoContributeEngine(BaseEngine):
     def queries_remaining(self):
         return 1
 
+
     def start(self):
         try:
             self.katrain.log(f"Starting Distributed KataGo with {self.command}", OUTPUT_INFO)
@@ -186,6 +188,13 @@ class KataGoContributeEngine(BaseEngine):
             for t in [self.stderr_thread, self.stdout_thread]:
                 if t:
                     t.join()
+
+    def graceful_shutdown(self):
+        """respond to esc"""
+        if self.katago_process:
+            self.katrain.log(f"Sending SIGINT to KataGo", OUTPUT_INFO)
+            pid = self.katago_process.pid
+            os.kill(pid, signal.SIGINT)
 
     def _read_stderr_thread(self):
         while self.katago_process is not None:

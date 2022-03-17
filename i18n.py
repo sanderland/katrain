@@ -16,7 +16,7 @@ strings_to_keys = defaultdict(dict)
 lang_to_strings = defaultdict(set)
 
 DEFAULT_LANG = "en"
-INACTIVE_LANGS = ['es']
+INACTIVE_LANGS = ["es"]
 errors = False
 
 po = {}

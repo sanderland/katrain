@@ -490,6 +490,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_tsumego_frame(self, ko, margin):
         from katrain.core.tsumego_frame import tsumego_frame_from_katrain_game
+
         if not self.game.stones:
             return
 
@@ -501,7 +502,12 @@ class KaTrainGui(Screen, KaTrainBase):
         if self.play_mode.mode == MODE_PLAY:
             self.play_mode.switch_ui_mode()  # go to analysis mode
         if analysis_region:
-            flattened_region = [analysis_region[0][1],analysis_region[0][0],analysis_region[1][1],analysis_region[1][0]]
+            flattened_region = [
+                analysis_region[0][1],
+                analysis_region[0][0],
+                analysis_region[1][1],
+                analysis_region[1][0],
+            ]
             self.game.set_region_of_interest(flattened_region)
         node.analyze(self.game.engines[node.next_player])
         self.update_state(redraw_board=True)
@@ -755,6 +761,9 @@ class KaTrainGui(Screen, KaTrainBase):
             filename = f"callgrind.{int(time.time())}.prof"
             stats.save(filename, type="callgrind")
             self.log(f"wrote profiling results to {filename}", OUTPUT_ERROR)
+        elif self.contributing and keycode[1] == Theme.KEY_STOP_CONTRIBUTING:
+            self.engine.graceful_shutdown()
+            return
         elif not ctrl_pressed:
             shortcut = self.shortcuts.get(keycode[1])
             if shortcut is not None:

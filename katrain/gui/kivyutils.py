@@ -399,7 +399,12 @@ class PlayerSetupBlock(MDBoxLayout):
         self.players[bw].update_widget(**params)
 
     def update_player_info(self, bw, player_info):  # update sub widget based on gui state change
-        self.players[bw].update_widget(player_type=player_info.player_type, player_subtype=player_info.player_subtype)
+        Clock.schedule_once(
+            lambda _dt: self.players[bw].update_widget(
+                player_type=player_info.player_type, player_subtype=player_info.player_subtype
+            ),
+            -1,
+        )
 
 
 class PlayerInfo(MDBoxLayout, BackgroundMixin):
