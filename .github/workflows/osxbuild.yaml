@@ -1,6 +1,9 @@
 name: build_osx
 
-on: ['push', 'pull_request']
+on:
+  push:
+    branches: [ master ]
+  pull_request:
 
 jobs:
   osx_app:
