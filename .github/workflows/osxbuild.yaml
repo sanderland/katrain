@@ -4,11 +4,10 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
 
 jobs:
   osx_app:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -49,34 +48,28 @@ jobs:
         cd ..
         git clone https://github.com/kivy/kivy-sdk-packager.git
         cd kivy-sdk-packager/osx
-        curl -O -L https://kivy.org/downloads/ci/osx/app/Kivy.dmg
-        hdiutil attach Kivy.dmg -mountroot .
-        cp -R Kivy/Kivy.app KaTrain.app
+        ./create-osx-bundle.sh -n "KaTrain" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
     - name: Install KaTrain pip dependencies
       run: |
-        pushd ../kivy-sdk-packager/osx/KaTrain.app/Contents/Resources/venv/bin
+        pushd ../kivy-sdk-packager/osx/build/KaTrain.app/Contents/Resources/venv/bin
         source activate
         popd
         python -m pip install .
-        pushd ..
-        git clone https://github.com/kivy/kivy.git
-        cd kivy
-        python -m pip install ".[full]"
     - name: Finalize KaTrain bundle
       run: |
         export KATRAIN_VERSION=`python -c 'from katrain.core.constants import VERSION;print(VERSION)' `
         echo "Setting version to ${KATRAIN_VERSION}"
-        cd ../kivy-sdk-packager/osx
+        cd ../kivy-sdk-packager/osx/build
         pushd KaTrain.app/Contents/Resources/
         ln -s ./venv/bin/KaTrain yourapp
         popd
-        ./fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "${KATRAIN_VERSION}" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
-        ./cleanup-app.sh KaTrain.app -g 1
-        ./relocate.sh KaTrain.app
+        ../fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "${KATRAIN_VERSION}" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
+        ../cleanup-app.sh KaTrain.app
+        ../relocate.sh KaTrain.app
     - name: Create dmg
       run: |
         pushd ../kivy-sdk-packager/osx
-        ./create-osx-dmg.sh KaTrain.app KaTrain
+        ./create-osx-dmg.sh build/KaTrain.app KaTrain
         popd
         mkdir osx_app
         cp ../kivy-sdk-packager/osx/KaTrain.dmg osx_app/
@@ -85,4 +78,3 @@ jobs:
       with:
         name: KaTrainOSX
         path: osx_app
-
