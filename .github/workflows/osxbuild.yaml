@@ -43,7 +43,7 @@ jobs:
     - name: Get Kivy dependencies
       run: |
         cd ..
-        git clone -b fix/macos-fixes https://github.com/misl6/kivy-sdk-packager
+        git clone https://github.com/kivy/kivy-sdk-packager.git
         cd kivy-sdk-packager/osx
         ./create-osx-bundle.sh -n "KaTrain" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
     - name: Install KaTrain pip dependencies
