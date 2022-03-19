@@ -41,17 +41,16 @@ setup(
     install_requires=[
         "wheel",
         "setuptools",
-        "kivy[full]>=2.0.0",
+        "kivy[full]>=2.1.0",
         "kivymd==0.104.1",  # 0.104.2 was breaking MRO
         "ffpyplayer",
-        "importlib_resources ;python_version<'3.7'",
         "urllib3",
         "pygame;platform_system=='Darwin'",  # some mac versions need this for kivy
         "screeninfo;platform_system!='Darwin'",  # for screen resolution, has problems on macos
         "chardet",  # for automatic encoding detection
     ],
     dependency_links=["https://kivy.org/downloads/simple/"],
-    python_requires=">=3.6, <4",
+    python_requires=">=3.7, <3.10",
     entry_points={"console_scripts": ["katrain=katrain.__main__:run_app"]},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
