@@ -112,12 +112,13 @@ This estimate should be reasonably accurate as long as you have not changed the 
      game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found
       [here](http://github.com/sanderland/katrain/issues/44) and [here](http://github.com/sanderland/katrain/issues/74).
     * **Simple Style** Prefers moves that solidify both player's territory, leading to relatively simpler moves.
+* Legacy options which were developed earlier include: 
     * **ScoreLoss** is KataGo analyzing as usual, but
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
     * **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
     * **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
     * **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn. Calibrated rank is based on the same idea, and recommended over this option.
-*  Options that are more on the 'fun and experimental' side include: 
+* Options that are more on the 'fun and experimental' side include: 
     * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist:
        * **Local Style** will consider mostly moves close to the last move.
        * **Tenuki Style** will consider mostly moves away from the last move.
@@ -129,7 +130,7 @@ This estimate should be reasonably accurate as long as you have not changed the 
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
  while the policy net based AIs are affected by the choice of model file, but work identically with 1 visit.
 
-Further technical details and discussion on these AIs can be found on [this](http://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
+Further technical details and discussion on some of these AIs can be found on [this](http://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
 
 ## <a name="analysis"></a> Analysis
 
@@ -207,11 +208,17 @@ Starting in December 2020, KataGo started [distributed training](https://katagot
 This allows people to all help generate self-play games to increase KataGo's strength and train bigger models. 
 
 KaTrain 1.8.0+ makes it easy to contribute to distributed training: simply select the option from the main menu, register an account, and click run.
-
-During this mode you can do little more than watch games. Toggling continuous analysis (spacebar) will allow you to switch between manually navigating the current game, and automatically advancing it.
+During this mode you can do little more than watch games.
 
 Keep in mind that partial games are not uploaded,
  so it is best to plan to keep it running for at least an hour, if not several, for the most effective contribution.  
+
+A few keyboard shortcuts have special functions in this mode:
+
+* **[Spacebar]** Switch between manually navigating the current game, and automatically advancing it.
+* **[Escape]**: This sends the `quit` command to KataGo, which starts a slow shutdown, finishing partial games but not starting new ones. Only works on v1.11+.
+* **[Pause]**: Pauses/resumes contributions via the `pause` and `resume` commands introduced in KataGo v1.11. 
+
 
 ## <a name="themes"></a> Themes
 
