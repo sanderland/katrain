@@ -702,6 +702,15 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
             else:
                 return
+
+        if self.contributing:
+            if keycode[1] == Theme.KEY_STOP_CONTRIBUTING:
+                self.engine.graceful_shutdown()
+                return
+            elif keycode[1] in Theme.KEY_PAUSE_CONTRIBUTE:
+                self.engine.pause()
+                return
+
         if keycode[1] == Theme.KEY_TOGGLE_CONTINUOUS_ANALYSIS:
             self.toggle_continuous_analysis()
         elif keycode[1] == Theme.KEY_TOGGLE_COORDINATES:
@@ -761,9 +770,6 @@ class KaTrainGui(Screen, KaTrainBase):
             filename = f"callgrind.{int(time.time())}.prof"
             stats.save(filename, type="callgrind")
             self.log(f"wrote profiling results to {filename}", OUTPUT_ERROR)
-        elif self.contributing and keycode[1] == Theme.KEY_STOP_CONTRIBUTING:
-            self.engine.graceful_shutdown()
-            return
         elif not ctrl_pressed:
             shortcut = self.shortcuts.get(keycode[1])
             if shortcut is not None:

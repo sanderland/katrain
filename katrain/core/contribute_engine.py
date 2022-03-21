@@ -44,7 +44,7 @@ class KataGoContributeEngine(BaseEngine):
         self.visits_count = 0
         self.start_time = 0
         self.server_error = None
-
+        self.paused = False
         self.save_sgf = self.config.get("savesgf", False)
         self.save_path = self.config.get("savepath", "./dist_sgf/")
         self.move_speed = self.config.get("movespeed", 2.0)
@@ -159,6 +159,7 @@ class KataGoContributeEngine(BaseEngine):
                 OUTPUT_ERROR,
             )
             return  # don't start
+        self.paused = False
         self.stdout_thread = threading.Thread(target=self._read_stdout_thread, daemon=True)
         self.stderr_thread = threading.Thread(target=self._read_stderr_thread, daemon=True)
         self.stdout_thread.start()
@@ -182,6 +183,8 @@ class KataGoContributeEngine(BaseEngine):
     def shutdown(self, finish=False):
         process = self.katago_process
         if process:
+            self.katago_process.stdin.write(b"forcequit\n")
+            self.katago_process.stdin.flush()
             self.katago_process = None
             process.terminate()
         if finish is not None:
@@ -192,9 +195,22 @@ class KataGoContributeEngine(BaseEngine):
     def graceful_shutdown(self):
         """respond to esc"""
         if self.katago_process:
-            self.katrain.log(f"Sending SIGINT to KataGo", OUTPUT_INFO)
-            pid = self.katago_process.pid
-            os.kill(pid, signal.SIGINT)
+            self.katago_process.stdin.write(b"quit\n")
+            self.katago_process.stdin.flush()
+            self.katrain.log("Finishing games in progress and stopping contribution", OUTPUT_KATAGO_STDERR)
+
+    def pause(self):
+        """respond to pause"""
+        if self.katago_process:
+            if not self.paused:
+                self.katago_process.stdin.write(b"pause\n")
+                self.katago_process.stdin.flush()
+                self.katrain.log("Pausing contribution", OUTPUT_KATAGO_STDERR)
+            else:
+                self.katago_process.stdin.write(b"resume\n")
+                self.katago_process.stdin.flush()
+                self.katrain.log("Resuming contribution", OUTPUT_KATAGO_STDERR)
+            self.paused = not self.paused
 
     def _read_stderr_thread(self):
         while self.katago_process is not None:
