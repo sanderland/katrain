@@ -697,7 +697,6 @@ msgstr "집 변동"
 msgid "show stats if"
 msgstr "... visit 이상일 때만 정보 보이기"
 
-#. TODO - point loss precision options
 msgid "show two digits for point loss near zero"
 msgstr "Show two digits for point loss near zero"
 
@@ -903,28 +902,20 @@ msgstr "인공지능 최선수 일치율(%)"
 msgid "Entire Game"
 msgstr "모두"
 
-#. TODO
-msgid "ai:antimirror"
-msgstr "KataAntiMirror"
-
-#. TODO - on move tree editing, deletes all other branches splitting off from
-#. the
-#. path UP TO this node
 msgid "Prune Branch"
-msgstr "Prune Branch"
+msgstr "변화 잘라내기"
 
-#. TODO
+msgid "ai:antimirror"
+msgstr "흉내바둑 타파"
+
 msgid "aihelp:antimirror"
-msgstr "Anti Mirror-go Mode of KataGo."
+msgstr "흉내바둑을 타파하는 KataGo 모드입니다."
 
-#. TODO - distance of wall to existing stones
 msgid "tsumego:walldistance"
-msgstr "Distance of wall"
+msgstr "벽까지의 거리"
 
-#. TODO - tsumego: ko is good enough?
 msgid "tsumego:ko"
-msgstr "Ko allowed?"
+msgstr "패로 충분?"
 
-#. TODO - Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
-msgstr "Tsumego Frame"
+msgstr "묘수풀이 틀"
