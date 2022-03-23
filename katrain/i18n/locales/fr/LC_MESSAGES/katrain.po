@@ -965,28 +965,22 @@ msgstr "Ce que jouerait KataGo"
 msgid "Entire Game"
 msgstr "Partie entière"
 
-#. TODO
 msgid "ai:antimirror"
-msgstr "AntiMirrorGo"
+msgstr "Anti-symétrique"
 
-#. TODO - on move tree editing, deletes all other branches splitting off from
-#. the
-#. path UP TO this node
 msgid "Prune Branch"
-msgstr "Prune Branch"
+msgstr "Élaguer les autres branches"
 
-#. TODO
 msgid "aihelp:antimirror"
-msgstr "Anti Mirror-go Mode of KataGo."
+msgstr ""
+"Mode dans lequel Katago cherche à déjouer la stratégie de Go symétrique \n"
+"(en d'autres termes, quand l'adversaire imite systématiquement ses coups)."
 
-#. TODO - distance of wall to existing stones
 msgid "tsumego:walldistance"
-msgstr "Distance of wall"
+msgstr "Distance du mur :"
 
-#. TODO - tsumego: ko is good enough?
 msgid "tsumego:ko"
-msgstr "Ko allowed?"
+msgstr "Permettre les kos"
 
-#. TODO - Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
-msgstr "Tsumego Frame"
+msgstr "Composer un problème"
