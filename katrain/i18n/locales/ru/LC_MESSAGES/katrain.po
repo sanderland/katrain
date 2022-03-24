@@ -457,7 +457,7 @@ msgstr ""
 
 msgid "Kata exe not found in path"
 msgstr ""
-"Исполняемый файл KataGo `{exe}` не найден в PATH, проверьте переменные "
+"Исполняемый файл KataGo '{exe}' не найден в PATH, проверьте переменные "
 "окружения или используйте полный путь в основных настройках. Для MacOS "
 "посмотрите сначала инструкцию по установке katago с использованием brew"
 
@@ -489,7 +489,7 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"Полная сила ИИ KataGo. Сила зависит от настроек `max visits` и `model` в "
+"Полная сила ИИ KataGo. Сила зависит от настроек 'max visits' и 'model' в "
 "общих настройках и файле конфигурации."
 
 msgid "ai:jigo"
@@ -514,7 +514,7 @@ msgstr "Политика сети"
 msgid "aihelp:policy"
 msgstr ""
 "Играет лучший ход согласно политике сети, без просчёта вариантов. Сила в "
-"основном зависит от `model` в настройках движка. Настройка `opening_moves` "
+"основном зависит от 'model' в настройках движка. Настройка 'opening_moves' "
 "влияет на то, сколько начальных ходов будут более случайными."
 
 msgid "ai:p:weighted"
@@ -522,10 +522,10 @@ msgstr "Слабая политика"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"Делает ходы согласно вероятности политики сети, при этом `weaken_fac` влияет"
+"Делает ходы согласно вероятности политики сети, при этом 'weaken_fac' влияет"
 " на то, как часто более слабые ходы будут сыграны. Малые значения играют "
-"аналогично `Политика сети` ИИ. `pick_override` определяет когда лучший ход "
-"будет выбран без случайности, и `lower_bound` определяет нижнюю границу "
+"аналогично 'Политика сети' ИИ. 'pick_override' определяет когда лучший ход "
+"будет выбран без случайности, и 'lower_bound' определяет нижнюю границу "
 "допустимого значения."
 
 msgid "ai:p:pick"
@@ -533,9 +533,9 @@ msgstr "Слепая политика"
 
 msgid "aihelp:p:pick"
 msgstr ""
-"Выбирает `pick_n + pick_frac * <количество допустимых ходов>` случайных "
-"ходов и играет лучший из них. При `pick_frac=1` играет как `Политика сети` "
-"ИИ. Играет лучший ход, если значение политики сети выше `pick_override` для "
+"Выбирает 'pick_n + pick_frac * <количество допустимых ходов>' случайных "
+"ходов и играет лучший из них. При 'pick_frac=1' играет как 'Политика сети' "
+"ИИ. Играет лучший ход, если значение политики сети выше 'pick_override' для "
 "избежания очевидных ошибок."
 
 msgid "ai:p:local"
@@ -543,27 +543,27 @@ msgstr "Локальный стиль"
 
 msgid "aihelp:p:local"
 msgstr ""
-"Выбирает `pick_n + pick_frac * <количество допустимых ходов>` ходов в "
+"Выбирает 'pick_n + pick_frac * <количество допустимых ходов>' ходов в "
 "окрестностях последнего хода и играет лучший из них. Играет лучший ход, если"
-" значение политики сети выше `pick_override` для избежания очевидных ошибок."
+" значение политики сети выше 'pick_override' для избежания очевидных ошибок."
 
 msgid "ai:p:tenuki"
 msgstr "Стиль тэнуки"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
-"Выбирает `pick_n + pick_frac * <количество допустимых ходов>` ходов вдалеке "
+"Выбирает 'pick_n + pick_frac * <количество допустимых ходов>' ходов вдалеке "
 "от последнего хода и играет лучший из них. Играет лучший ход, если значение "
-"политики сети выше `pick_override` для избежания очевидных ошибок. Более "
-"высокое значение `stddev` заставляет ИИ играть более далеко."
+"политики сети выше 'pick_override' для избежания очевидных ошибок. Более "
+"высокое значение 'stddev' заставляет ИИ играть более далеко."
 
 msgid "ai:p:influence"
 msgstr "Влияние"
 
 msgid "aihelp:p:influence"
 msgstr ""
-"Выбирает ходы с оценкой выше `threshold` и играет лучший из них. "
-"Увеличивайте `line_weight` для штрафования ходов, близких к краю доски. "
+"Выбирает ходы с оценкой выше 'threshold' и играет лучший из них. "
+"Увеличивайте 'line_weight' для штрафования ходов, близких к краю доски. "
 "Прекращает такую стратегию после того, как 'endgame' часть доски была "
 "заполнена."
 
@@ -572,8 +572,8 @@ msgstr "Территория"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"Выбирает ходы с оценкой выше `threshold` и играет лучший из них. "
-"Увеличивайте `line_weight` для штрафования ходов, близких к центру доски. "
+"Выбирает ходы с оценкой выше 'threshold' и играет лучший из них. "
+"Увеличивайте 'line_weight' для штрафования ходов, близких к центру доски. "
 "Прекращает такую стратегию после того, как 'endgame' часть доски была "
 "заполнена."
 
@@ -612,9 +612,9 @@ msgstr "KataHandicap"
 
 msgid "aihelp:handicap"
 msgstr ""
-"KataGo оптимизированный под игры с большой форой. Настройка `pda` "
-"соответствует `playoutDoublingAdvantage` в KataGo, с точки зрения чёрных. "
-"При установке `automatic`, KaTrain выберет значение автоматически."
+"KataGo оптимизированный под игры с большой форой. Настройка 'pda' "
+"соответствует 'playoutDoublingAdvantage' в KataGo, с точки зрения чёрных. "
+"При установке 'automatic', KaTrain выберет значение автоматически."
 
 msgid "estimated strength"
 msgstr "Оценка силы"
@@ -721,6 +721,10 @@ msgstr "Изменение счёта"
 
 msgid "show stats if"
 msgstr "Числа только если посещений больше чем"
+
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
 
 msgid "cache analysis to sgf"
 msgstr "Кэшировать анализ в SGF"
@@ -928,3 +932,25 @@ msgstr "Полная игра"
 #. TODO
 msgid "ai:antimirror"
 msgstr "KataAntiMirror"
+
+#. TODO - on move tree editing, deletes all other branches splitting off from
+#. the
+#. path UP TO this node
+msgid "Prune Branch"
+msgstr "Prune Branch"
+
+#. TODO
+msgid "aihelp:antimirror"
+msgstr "Anti Mirror-go Mode of KataGo."
+
+#. TODO - distance of wall to existing stones
+msgid "tsumego:walldistance"
+msgstr "Distance of wall"
+
+#. TODO - tsumego: ko is good enough?
+msgid "tsumego:ko"
+msgstr "Ko allowed?"
+
+#. TODO - Menu option for tsumego frame around position
+msgid "analysis:tsumegoframe"
+msgstr "Tsumego Frame"

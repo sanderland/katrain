@@ -105,6 +105,10 @@ msgstr "Fast analysis of all moves"
 msgid "analysis:game"
 msgstr "Deeper full game analysis"
 
+#. Menu option for tsumego frame around position
+msgid "analysis:tsumegoframe"
+msgstr "Tsumego Frame"
+
 #. View a player performance report
 msgid "analysis:report"
 msgstr "Performance Report"
@@ -503,6 +507,10 @@ msgstr "Show dots for the last <this many> moves"
 msgid "show ai dots"
 msgstr "Show dots/SGF comments for AI players"
 
+#. point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
 #. analysis option
 msgid "cache analysis to sgf"
 msgstr "Cache analysis in SGF"
@@ -677,7 +685,7 @@ msgstr "KataGo binary {exe} does not exist, please check general settings."
 
 msgid "Kata exe not found in path"
 msgstr ""
-"KataGo binary `{exe}` not found in your PATH, check your environment "
+"KataGo binary '{exe}' not found in your PATH, check your environment "
 "variables or use the full path in general settings instead. If on MacOS, see"
 " the manual on how to use brew to install katago first"
 
@@ -739,8 +747,8 @@ msgstr "KataGo"
 
 msgid "aihelp:default"
 msgstr ""
-"Full strength KataGo AI. Strength is  affected by `max visits` and `model` "
-"in the general settings `engine` section and engine configuration file. No "
+"Full strength KataGo AI. Strength is  affected by 'max visits' and 'model' "
+"in the general settings 'engine' section and engine configuration file. No "
 "options are available here."
 
 #. ai which handles handicap games better
@@ -749,9 +757,9 @@ msgstr "KataHandicap"
 
 msgid "aihelp:handicap"
 msgstr ""
-"KataGo optimized for playing higher handicap games.The `pda` setting "
-"corresponds to `playoutDoublingAdvantage` in KataGo, from black's "
-"perspective. When `automatic` is set, KaTrain will find a suitable value "
+"KataGo optimized for playing higher handicap games.The 'pda' setting "
+"corresponds to 'playoutDoublingAdvantage' in KataGo, from black's "
+"perspective. When 'automatic' is set, KaTrain will find a suitable value "
 "automatically."
 
 msgid "ai:simple"
@@ -766,14 +774,17 @@ msgstr ""
 " * opponent_fac), avoid tenuki (more than 5 spaces, importance "
 "tenuki_penalty), and avoid attachments (importance attachment_penalty). "
 "Weights can be negative to make it complicate the game instead, and wide "
-"root noise (in general settings) can be used to increase play according to "
-"the style at the cost of strength. "
+"root noise (in general settings) can be used to play more according to the "
+"style at the cost of strength. "
 
 msgid "ai:jigo"
 msgstr "KataJigo"
 
 msgid "ai:antimirror"
 msgstr "KataAntiMirror"
+
+msgid "aihelp:antimirror"
+msgstr "Anti Mirror-go Mode of KataGo."
 
 msgid "aihelp:jigo"
 msgstr ""
@@ -794,7 +805,7 @@ msgstr "Policy"
 msgid "aihelp:policy"
 msgstr ""
 "Plays the top move from the policy network, without any reading. Strength is"
-" mainly affected by `model` in engine settings. The `opening_moves` setting "
+" mainly affected by 'model' in engine settings. The 'opening_moves' setting "
 "affects how many moves in the opening are more random."
 
 msgid "ai:p:weighted"
@@ -802,10 +813,10 @@ msgstr "Policy Weighted"
 
 msgid "aihelp:p:weighted"
 msgstr ""
-"Plays moves according to policy probability, with `weaken_fac` influencing "
+"Plays moves according to policy probability, with 'weaken_fac' influencing "
 "how much more likely weaker moves are played. With a very low value it plays"
-" like the `Policy` AI. `pick_override` determines when top move is chosen "
-"without randomness, and `lower_bound` determines the lower bound policy "
+" like the 'Policy' AI. 'pick_override' determines when top move is chosen "
+"without randomness, and 'lower_bound' determines the lower bound policy "
 "value that is allowed."
 
 msgid "ai:p:pick"
@@ -813,27 +824,27 @@ msgstr "Blinded Policy"
 
 msgid "aihelp:p:pick"
 msgstr ""
-"Picks `pick_n + pick_frac * <number of legal moves>` at random and plays the"
-" best one. For `pick_frac=1` plays like the `Policy` AI. Plays top move if "
-"policy value is above `pick_override` to avoid obvious mistakes."
+"Picks 'pick_n + pick_frac * <number of legal moves>' at random and plays the"
+" best one. For 'pick_frac=1' plays like the 'Policy' AI. Plays top move if "
+"policy value is above 'pick_override' to avoid obvious mistakes."
 
 msgid "ai:p:local"
 msgstr "Local Style"
 
 msgid "aihelp:p:local"
 msgstr ""
-"Picks `pick_n + pick_frac * <number of legal moves>` weighted towards the "
+"Picks 'pick_n + pick_frac * <number of legal moves>' weighted towards the "
 "last move and plays the best one. Plays top move if policy value is above "
-"`pick_override` to avoid obvious mistakes."
+"'pick_override' to avoid obvious mistakes."
 
 msgid "ai:p:tenuki"
 msgstr "Tenuki Style"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
-"Picks `pick_n + pick_frac * <number of legal moves>` weighted away from the "
+"Picks 'pick_n + pick_frac * <number of legal moves>' weighted away from the "
 "last move and plays the best one. Plays top move if policy value is above "
-"`pick_override` to avoid obvious mistakes. A higher `stddev` makes it play "
+"'pick_override' to avoid obvious mistakes. A higher 'stddev' makes it play "
 "further away."
 
 msgid "ai:p:influence"
@@ -841,8 +852,8 @@ msgstr "Influential Style"
 
 msgid "aihelp:p:influence"
 msgstr ""
-"Picks moves biased above the `threshold` line and plays the best one. "
-"Increase `line_weight` to penalize moves near the edge more. Stops strategy "
+"Picks moves biased above the 'threshold' line and plays the best one. "
+"Increase 'line_weight' to penalize moves near the edge more. Stops strategy "
 "after the 'endgame' fraction of the board is filled."
 
 msgid "ai:p:territory"
@@ -850,8 +861,8 @@ msgstr "Territorial Style"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"Picks moves biased below the `threshold` line and plays the best one. "
-"Increase `line_weight` to penalize moves near the center more. Stops "
+"Picks moves biased below the 'threshold' line and plays the best one. "
+"Increase 'line_weight' to penalize moves near the center more. Stops "
 "strategy after the 'endgame' fraction of the board is filled."
 
 msgid "ai:p:rank"
@@ -914,6 +925,11 @@ msgstr "Expand/Collapse"
 #. on move tree editing
 msgid "Make Main Branch"
 msgstr "Make Main Branch"
+
+#. on move tree editing, deletes all other branches splitting off from the
+#. path UP TO this node
+msgid "Prune Branch"
+msgstr "Prune Branch"
 
 #. theme label
 msgid "theme"
@@ -1000,3 +1016,11 @@ msgstr "Target score for Black:"
 #. Description for how many moves
 msgid "setup position move number"
 msgstr "Generate game until move:"
+
+#. distance of wall to existing stones
+msgid "tsumego:walldistance"
+msgstr "Distance of wall"
+
+#. tsumego: ko is good enough?
+msgid "tsumego:ko"
+msgstr "Ko allowed?"

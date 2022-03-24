@@ -38,6 +38,7 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
 <a href="http://translate.google.com/translate?sl=en&tl=de&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="German" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-de.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-fr.png" width=50></a>
 <a href="http://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ru.png" width=50></a>
+<a href="http://translate.google.com/translate?sl=en&tl=tr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Turkish" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-tr.png" width=50></a>
 <br/>
 
 <a href="http://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Simplified Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-cn.png" width=50></a>
@@ -111,12 +112,13 @@ This estimate should be reasonably accurate as long as you have not changed the 
      game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found
       [here](http://github.com/sanderland/katrain/issues/44) and [here](http://github.com/sanderland/katrain/issues/74).
     * **Simple Style** Prefers moves that solidify both player's territory, leading to relatively simpler moves.
+* Legacy options which were developed earlier include: 
     * **ScoreLoss** is KataGo analyzing as usual, but
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
     * **Policy** uses the top move from the policy network (it's 'shape sense' without reading).
     * **Policy Weighted** picks a random move weighted by the policy, leading to a varied style with mostly small mistakes, and occasional blunders due to a lack of reading.
     * **Blinded Policy** picks a number of moves at random and play the best move among them, being effectively 'blind' to part of the board each turn. Calibrated rank is based on the same idea, and recommended over this option.
-*  Options that are more on the 'fun and experimental' side include: 
+* Options that are more on the 'fun and experimental' side include: 
     * Variants of **Blinded Policy**, which use the same basic strategy, but with a twist:
        * **Local Style** will consider mostly moves close to the last move.
        * **Tenuki Style** will consider mostly moves away from the last move.
@@ -128,7 +130,7 @@ This estimate should be reasonably accurate as long as you have not changed the 
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
  while the policy net based AIs are affected by the choice of model file, but work identically with 1 visit.
 
-Further technical details and discussion on these AIs can be found on [this](http://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
+Further technical details and discussion on some of these AIs can be found on [this](http://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
 
 ## <a name="analysis"></a> Analysis
 
@@ -166,7 +168,11 @@ Keyboard shortcuts are shown with **[key]**.
     * **[l]**: Play out the game until the end and add as a collapsed branch, to visualize the potential effect of mistakes. This is done in the background, and can be started at several nodes at once when comparing the results at different starting positions.      
     * **[spacebar]**: Turn continuous analysis on/off. This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.
     * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
-
+    * **[F2]**: Deeper full game analysis. Analyze the entire game to a higher number of visits.
+    * **[F3]**: Performance report. Show an overview of performance statistics for both players.  
+    * **[F10]**: Tsumego Frame. After placing a life and death problem in a corner/side, use this to fill up the rest of the board to improve AI's ability in solving life and death problems.
+    
+  
 ## <a name="keyboard"></a> Keyboard and mouse shortcuts
 
 In addition to shortcuts mentioned above and those shown in the main menu:
@@ -202,11 +208,17 @@ Starting in December 2020, KataGo started [distributed training](https://katagot
 This allows people to all help generate self-play games to increase KataGo's strength and train bigger models. 
 
 KaTrain 1.8.0+ makes it easy to contribute to distributed training: simply select the option from the main menu, register an account, and click run.
-
-During this mode you can do little more than watch games. Toggling continuous analysis (spacebar) will allow you to switch between manually navigating the current game, and automatically advancing it.
+During this mode you can do little more than watch games.
 
 Keep in mind that partial games are not uploaded,
  so it is best to plan to keep it running for at least an hour, if not several, for the most effective contribution.  
+
+A few keyboard shortcuts have special functions in this mode:
+
+* **[Spacebar]** Switch between manually navigating the current game, and automatically advancing it.
+* **[Escape]**: This sends the `quit` command to KataGo, which starts a slow shutdown, finishing partial games but not starting new ones. Only works on v1.11+.
+* **[Pause]**: Pauses/resumes contributions via the `pause` and `resume` commands introduced in KataGo v1.11. 
+
 
 ## <a name="themes"></a> Themes
 
@@ -229,13 +241,11 @@ See [these instructions](THEMES.md) for how to modify the look of any graphics o
 ## <a name="support"></a> Support / Contribute
 
 [![GitHub issues](http://img.shields.io/github/issues/sanderland/katrain)](http://github.com/sanderland/katrain/issues)
-[![Contributors](http://img.shields.io/static/v1?label=contributors&message=26&color=dcb424)](CONTRIBUTIONS.md)
-[![Github sponsors](http://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=http://github.com/sponsors/sanderland/)](http://github.com/sponsors/sanderland)
+[![Contributors](http://img.shields.io/static/v1?label=contributors&message=<3&color=dcb424)](CONTRIBUTIONS.md)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](http://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
 * You can contact me on the [Leela Zero & Friends Discord](http://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation.
-* You can also donate to the project through [Github Sponsors](http://github.com/sponsors/sanderland).
 
 
 

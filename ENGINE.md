@@ -62,14 +62,11 @@ Run DebugKaTrain.exe, which is released in the .zip file distributable in releas
 
 ### libzip compatibility
 
-The most common KataGo issue relates to different libzip versions in the provided executables,
- leading to an "Error 127".
-Although the provided executables should work on the latest versions of Ubuntu with libzip installed, 
- various other versions and distros differ in their libzip version. 
+The most common KataGo issue relates to incompatible library versions, leading to an "Error 127".
 
-* First, try `****sudo apt-get install libzip-dev****` to get this library on recent systems.
-* Next, try installing all packages mentioned [here](INSTALL.md#LinuxTrouble).
-* A final alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.
+* A good alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.
+* Installing dependencies mentioned [here](INSTALL.md#LinuxTrouble) may also resolve certain issues with KataGo or the gui.
+
 
 ### Getting more information about errors
 

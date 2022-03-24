@@ -65,7 +65,6 @@ class BaseGame:
         if move_tree:
             self.root = move_tree
             self.external_game = PROGRAM_NAME not in self.root.get_property("AP", "")
-            self.komi = self.root.komi
             handicap = int(self.root.handicap)
             num_starting_moves_black = 0
             node = self.root
@@ -99,7 +98,6 @@ class BaseGame:
                     **(game_properties or {}),
                 }
             )
-            self.komi = self.root.komi
             handicap = katrain.config("game/handicap")
             if not bypass_config and handicap:
                 self.root.place_handicap_stones(handicap)
@@ -290,6 +288,10 @@ class BaseGame:
                 return
         if stop_on_mistake is None:
             self.set_current_node(cn)
+
+    @property
+    def komi(self):
+        return self.root.komi
 
     @property
     def board_size(self):

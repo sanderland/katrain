@@ -45,15 +45,16 @@ Many thanks to these additional authors:
 * "nimets123" for the timer sound effects and board/stone graphics.
 * Jordan Seaward for the stone sound effects.
 * "fohristiwhirl" for the Gibo and NGF formats parsing code.
-* "kaorahi" for bug fixes and SGF parser improvements.
+* "kaorahi" for bug fixes, SGF parser improvements, and tsumego frame code.
 * "ajkenny84" for the red-green colourblind theme.
 * Lukasz Wierzbowski for the ability to paste urls for sgfs and helping fix alt-gr issues.
 * Carton He for contributions to sgf parsing and handling.
 * "blamarche" for adding the board coordinates toggle.
-* "pdeblanc" for adding the ancient chinese scoring option, fixing a bug in query termination
+* "pdeblanc" for adding the ancient chinese scoring option, fixing a bug in query termination, and high precision score display.
 * "LiamHz" for adding the 'back to main branch' keyboard shortcut.
 * "xiaoyifang" for adding the reset analysis option, feature to save options on the loading screen, and scrolling through variations.
 * "electricRGB" for help with adding configurable keyboard shortcuts.
+* "milescrawford" for work on restyling the territory estimate.
 
 ## Translators
 

@@ -28,7 +28,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.10.0",
+        "version": "1.11.0",
         "load_fast_analysis": false,
         "load_sgf_rewind": true
     },
@@ -82,6 +82,7 @@
             true,
             true
         ],
+        "extra_precision": false,
         "save_analysis": false,
         "save_marks": false,
         "low_visits": 25,

@@ -488,6 +488,30 @@ class KaTrainGui(Screen, KaTrainBase):
         popup.content.popup = popup
         popup.open()
 
+    def _do_tsumego_frame(self, ko, margin):
+        from katrain.core.tsumego_frame import tsumego_frame_from_katrain_game
+
+        if not self.game.stones:
+            return
+
+        black_to_play_p = self.next_player_info.player == "B"
+        node, analysis_region = tsumego_frame_from_katrain_game(
+            self.game, self.game.komi, black_to_play_p, ko_p=ko, margin=margin
+        )
+        self.game.set_current_node(node)
+        if self.play_mode.mode == MODE_PLAY:
+            self.play_mode.switch_ui_mode()  # go to analysis mode
+        if analysis_region:
+            flattened_region = [
+                analysis_region[0][1],
+                analysis_region[0][0],
+                analysis_region[1][1],
+                analysis_region[1][0],
+            ]
+            self.game.set_region_of_interest(flattened_region)
+        node.analyze(self.game.engines[node.next_player])
+        self.update_state(redraw_board=True)
+
     def play_mistake_sound(self, node):
         if self.config("timer/sound") and node.played_sound is None and Theme.MISTAKE_SOUNDS:
             node.played_sound = True
@@ -665,9 +689,11 @@ class KaTrainGui(Screen, KaTrainBase):
                 Theme.KEY_TEACHER_POPUP,
                 Theme.KEY_AI_POPUP,
                 Theme.KEY_CONFIG_POPUP,
+                Theme.KEY_TSUMEGO_FRAME,
                 Theme.KEY_CONTRIBUTE_POPUP,
             ]:  # switch between popups
                 popup.dismiss()
+
                 return
             elif keycode[1] in Theme.KEY_SUBMIT_POPUP:
                 fn = getattr(popup.content, "on_submit", None)
@@ -676,6 +702,15 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
             else:
                 return
+
+        if self.contributing:
+            if keycode[1] == Theme.KEY_STOP_CONTRIBUTING:
+                self.engine.graceful_shutdown()
+                return
+            elif keycode[1] in Theme.KEY_PAUSE_CONTRIBUTE:
+                self.engine.pause()
+                return
+
         if keycode[1] == Theme.KEY_TOGGLE_CONTINUOUS_ANALYSIS:
             self.toggle_continuous_analysis()
         elif keycode[1] == Theme.KEY_TOGGLE_COORDINATES:
@@ -717,6 +752,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self("undo", "main-branch")
         elif keycode[1] == Theme.KEY_DEEPERANALYSIS_POPUP:
             self.analysis_controls.dropdown.open_game_analysis_popup()
+        elif keycode[1] == Theme.KEY_TSUMEGO_FRAME:
+            self.analysis_controls.dropdown.open_tsumego_frame_popup()
         elif keycode[1] == Theme.KEY_REPORT_POPUP:
             self.analysis_controls.dropdown.open_report_popup()
         elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:

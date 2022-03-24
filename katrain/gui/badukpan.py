@@ -33,7 +33,7 @@ from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid, json_truncate_arrays
 from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
-from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup, GameReportPopup
+from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup, GameReportPopup, TsumegoFramePopup
 from katrain.gui.theme import Theme
 
 
@@ -269,7 +269,9 @@ class BadukPanWidget(Widget):
                 grid_spaces_margin_y = [0.75, 0.75]  # bottom, top
             x_grid_spaces = board_size_x - 1 + sum(grid_spaces_margin_x)
             y_grid_spaces = board_size_y - 1 + sum(grid_spaces_margin_y)
-            self.grid_size = min(self.width / x_grid_spaces, self.height / y_grid_spaces)
+            # grid size is rounded to an integer to avoid rounding errors that
+            # produce tiny gaps between shaded grid squares
+            self.grid_size = math.floor(min(self.width / x_grid_spaces, self.height / y_grid_spaces) + 0.1)
             board_width_with_margins = x_grid_spaces * self.grid_size
             board_height_with_margins = y_grid_spaces * self.grid_size
             extra_px_margin_x = (self.width - board_width_with_margins) / 2
@@ -348,8 +350,49 @@ class BadukPanWidget(Widget):
 
         with self.canvas:
             self.canvas.clear()
-            # stones
             current_node = katrain.game.current_node
+
+            # ownership - allow one move out of date for smooth animation,
+            # drawn first so the board is shaded underneath all other elements.
+            ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
+            if katrain.analysis_controls.ownership.active and ownership:
+                if (
+                    current_node.children
+                    and katrain.controls.status_state[1] == STATUS_TEACHING
+                    and current_node.children[-1].auto_undo
+                    and current_node.children[-1].ownership
+                ):  # loss
+                    loss_grid = var_to_grid(
+                        [a - b for a, b in zip(current_node.children[-1].ownership, ownership)],
+                        (board_size_x, board_size_y),
+                    )
+
+                    for y in range(board_size_y - 1, -1, -1):
+                        for x in range(board_size_x):
+                            loss = max(0, (-1 if current_node.children[-1].move.player == "B" else 1) * loss_grid[y][x])
+                            if loss > 0:
+                                Color(*Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3], loss)
+                                Rectangle(
+                                    pos=(
+                                        self.gridpos_x[x] - self.grid_size / 2,
+                                        self.gridpos_y[y] - self.grid_size / 2,
+                                    ),
+                                    size=(self.grid_size, self.grid_size),
+                                )
+                else:
+                    ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
+                    for y in range(board_size_y - 1, -1, -1):
+                        for x in range(board_size_x):
+                            ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
+                            Color(
+                                *Theme.STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]) * Theme.OWNERSHIP_MAX_ALPHA
+                            )
+                            Rectangle(
+                                pos=(self.gridpos_x[x] - self.grid_size / 2, self.gridpos_y[y] - self.grid_size / 2),
+                                size=(self.grid_size, self.grid_size),
+                            )
+
+            # stones
             all_dots_off = not katrain.analysis_controls.eval.active
             has_stone = {}
             drawn_stone = {}
@@ -398,40 +441,6 @@ class BadukPanWidget(Widget):
                     self.draw_stone(1, y, "B", innercol=Theme.STONE_COLORS["W"], evalcol=evalcol)
                     self.draw_stone(2, y, "W", evalcol=evalcol, evalscale=y / (board_size_y - 1))
                     self.draw_stone(3, y, "W", innercol=Theme.STONE_COLORS["B"], evalcol=evalcol)
-
-            # ownership - allow one move out of date for smooth animation
-            ownership = current_node.ownership or (current_node.parent and current_node.parent.ownership)
-            if katrain.analysis_controls.ownership.active and ownership:
-                rsz = self.grid_size * 0.2
-                if (
-                    current_node.children
-                    and katrain.controls.status_state[1] == STATUS_TEACHING
-                    and current_node.children[-1].auto_undo
-                    and current_node.children[-1].ownership
-                ):  # loss
-                    loss_grid = var_to_grid(
-                        [a - b for a, b in zip(current_node.children[-1].ownership, ownership)],
-                        (board_size_x, board_size_y),
-                    )
-
-                    for y in range(board_size_y - 1, -1, -1):
-                        for x in range(board_size_x):
-                            loss = max(0, (-1 if current_node.children[-1].move.player == "B" else 1) * loss_grid[y][x])
-                            if loss > 0:
-                                Color(*Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3], loss)
-                                Rectangle(
-                                    pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz)
-                                )
-                else:
-                    ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
-                    for y in range(board_size_y - 1, -1, -1):
-                        for x in range(board_size_x):
-                            ix_owner = "B" if ownership_grid[y][x] > 0 else "W"
-                            if ix_owner != (has_stone.get((x, y), -1)):
-                                Color(*Theme.STONE_COLORS[ix_owner][:3], abs(ownership_grid[y][x]))
-                                Rectangle(
-                                    pos=(self.gridpos_x[x] - rsz / 2, self.gridpos_y[y] - rsz / 2), size=(rsz, rsz)
-                                )
 
             policy = current_node.policy
             if (
@@ -516,6 +525,16 @@ class BadukPanWidget(Widget):
             ),
             width=width,
         )
+
+    def format_loss(self, x: float) -> str:
+        if self.trainer_config.get("extra_precision"):
+            if abs(x) < 0.005:
+                return "0.0"
+            if 0 < x <= 0.995:
+                return "+" + f"{x:.2f}"[1:]
+            elif -0.995 <= x < 0:
+                return "-" + f"{x:.2f}"[2:]
+        return f"{x:+.1f}"
 
     def draw_hover_contents(self, *_args):
         ghost_alpha = Theme.GHOST_ALPHA
@@ -609,9 +628,7 @@ class BadukPanWidget(Widget):
                                     + "}[/size]"
                                 )
 
-                            keys[TOP_MOVE_DELTA_SCORE] = (
-                                "0.0" if -0.05 < move_dict["pointsLost"] < 0.05 else f"{-move_dict['pointsLost']:+.1f}"
-                            )
+                            keys[TOP_MOVE_DELTA_SCORE] = self.format_loss(-move_dict["pointsLost"])
                             #                           def fmt_maybe_missing(arg,sign,digits=1):
                             #                               return str(round(sign*arg,digits)) if arg is not None else "N/A"
 
@@ -620,9 +637,7 @@ class BadukPanWidget(Widget):
                             keys[TOP_MOVE_WINRATE] = f"{winrate*100:.1f}"
                             keys[TOP_MOVE_DELTA_WINRATE] = f"{-move_dict['winrateLost']:+.1%}"
                             keys[TOP_MOVE_VISITS] = format_visits(move_dict["visits"])
-                            #                            keys[TOP_MOVE_UTILITY] = fmt_maybe_missing( move_dict.get('utility'),player_sign,2)
-                            #                            keys[TOP_MOVE_UTILITYLCB] = fmt_maybe_missing(move_dict.get('utilityLcb'),player_sign,2)
-                            #                            keys[TOP_MOVE_SCORE_STDDEV] =fmt_maybe_missing(move_dict.get('scoreStdev'),1)
+
                             Color(*Theme.HINT_TEXT_COLOR)
                             draw_text(
                                 pos=(self.gridpos_x[move.coords[0]], self.gridpos_y[move.coords[1]]),
@@ -797,6 +812,14 @@ class AnalysisDropDown(DropDown):
         )
         report_popup.content.popup = report_popup
         report_popup.open()
+
+    def open_tsumego_frame_popup(self, *_args):
+        analysis_popup = I18NPopup(
+            title_key="analysis:tsumegoframe", size=[dp(500), dp(350)], content=TsumegoFramePopup()
+        )
+        analysis_popup.content.popup = analysis_popup
+        analysis_popup.content.katrain = MDApp.get_running_app().gui
+        analysis_popup.open()
 
 
 class AnalysisControls(MDBoxLayout):

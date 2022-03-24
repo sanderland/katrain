@@ -119,6 +119,7 @@ class Theme:
 
     GHOST_ALPHA = 0.6
     POLICY_ALPHA = 0.5
+    OWNERSHIP_MAX_ALPHA = 0.7  # max ownership brightness
 
     HINTS_LO_ALPHA = 0.6
     HINTS_ALPHA = 0.8
@@ -162,6 +163,7 @@ class Theme:
     KEY_AI_POPUP = "f7"
     KEY_CONFIG_POPUP = "f8"
     KEY_CONTRIBUTE_POPUP = "f9"
+    KEY_TSUMEGO_FRAME = "f10"
 
     KEY_NEW_GAME = "n"
     KEY_SAVE_GAME = "s"
@@ -204,3 +206,6 @@ class Theme:
     KEY_PAUSE_TIMER = ["pause", "break", "f15"]
     KEY_TOGGLE_COORDINATES = "k"
     KEY_ZEN = ["`", "~", "f12"]
+
+    KEY_PAUSE_CONTRIBUTE = KEY_PAUSE_TIMER
+    KEY_STOP_CONTRIBUTING = KEY_STOP_ANALYSIS
