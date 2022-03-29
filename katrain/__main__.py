@@ -1,10 +1,9 @@
 """isort:skip_file"""
 # first, logging level lower
 import os
+import sys
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
-# if "KIVY_AUDIO" not in os.environ: # trying default again
-#    os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
 
 import kivy
 
@@ -17,13 +16,19 @@ from kivy.utils import platform
 
 ICON = find_package_resource("katrain/img/icon.ico")
 Config.set("kivy", "window_icon", ICON)
-
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
+
+# next, certificates on package builds https://github.com/sanderland/katrain/issues/414
+if getattr(sys, "frozen", False):
+    import ssl
+
+    if ssl.get_default_verify_paths().cafile is None and hasattr(sys, "_MEIPASS"):
+        os.environ["SSL_CERT_FILE"] = os.path.join(sys._MEIPASS, "certifi", "cacert.pem")
+
 
 import re
 import signal
 import json
-import sys
 import threading
 import traceback
 from queue import Queue
