@@ -198,6 +198,8 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
+        if self.controls.players["W"].captures < prisoners["W"] or self.controls.players["B"].captures < prisoners["B"]:
+            play_sound(Theme.CAPTURING_SOUND)
         self.controls.players["W"].captures = prisoners["W"]
         self.controls.players["B"].captures = prisoners["B"]
 
