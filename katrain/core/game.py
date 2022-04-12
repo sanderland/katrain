@@ -72,11 +72,14 @@ class BaseGame:
             node = self.root
             if node:
                 self.main_tree.append(node)
+            still_black_starting_moves = True
             while node.children:
                 node = node.children[0]
                 self.main_tree.append(node)
-                if node.player == "B":
+                if node.player == "B" and still_black_starting_moves:
                     num_starting_moves_black += 1
+                else:
+                    still_black_starting_moves = False
 
             if (
                 handicap >= 2
