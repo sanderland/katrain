@@ -14,7 +14,6 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from katrain.gui.sound import play_sound
 
 from katrain.core.constants import (
     MODE_PLAY,
@@ -40,7 +39,6 @@ from katrain.gui.theme import Theme
 class BadukPanWidget(Widget):
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
-        self.stones_sounds = []
         self.trainer_config = {}
         self.ghost_stone = []
         self.gridpos_x = []
@@ -69,9 +67,6 @@ class BadukPanWidget(Widget):
 
     def get_enable_coordinates(self):
         return self.draw_coords_enabled
-
-    def play_stone_sound(self, *_args):
-        play_sound(random.choice(Theme.STONE_SOUNDS))
 
     # stone placement functions
     def _find_closest(self, pos, gridpos):
@@ -182,7 +177,6 @@ class BadukPanWidget(Widget):
                 )
             else:
                 katrain("play", self.ghost_stone)
-                self.play_stone_sound()
         elif not self.ghost_stone:
             xd, xp = self._find_closest(touch.x, self.gridpos_x)
             yd, yp = self._find_closest(touch.y, self.gridpos_y)
