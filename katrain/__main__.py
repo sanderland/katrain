@@ -124,6 +124,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.last_key_down = None
         self.last_focus_event = 0
 
+
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
@@ -203,8 +204,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
-        if self.controls.players["W"].captures < prisoners["W"] or self.controls.players["B"].captures < prisoners["B"]:
-            play_sound(Theme.CAPTURING_SOUND)
+
         self.controls.players["W"].captures = prisoners["W"]
         self.controls.players["B"].captures = prisoners["B"]
 
@@ -413,7 +413,19 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_play(self, coords):
         self.board_gui.animating_pv = None
         try:
+            old_prisoner_count = self.game.prisoner_count["W"] + self.game.prisoner_count["B"]
             self.game.play(Move(coords, player=self.next_player_info.player))
+            if (
+                old_prisoner_count < self.game.prisoner_count["W"] + self.game.prisoner_count["B"]
+                and not self.game.current_node.children
+                and self.game.current_node.played_capturing_sound is None
+                and self.game.current_node not in self.game.main_tree
+            ):
+                self.game.current_node.played_capturing_sound = True
+                play_sound(Theme.CAPTURING_SOUND)
+            elif not self.game.current_node.is_pass:
+                play_sound(random.choice(Theme.STONE_SOUNDS))
+
         except IllegalMoveException as e:
             self.controls.set_status(f"Illegal Move: {str(e)}", STATUS_ERROR)
 
@@ -520,8 +532,8 @@ class KaTrainGui(Screen, KaTrainBase):
         self.update_state(redraw_board=True)
 
     def play_mistake_sound(self, node):
-        if self.config("timer/sound") and node.played_sound is None and Theme.MISTAKE_SOUNDS:
-            node.played_sound = True
+        if self.config("timer/sound") and node.played_mistake_sound is None and Theme.MISTAKE_SOUNDS:
+            node.played_mistake_sound = True
             play_sound(random.choice(Theme.MISTAKE_SOUNDS))
 
     def load_sgf_file(self, file, fast=False, rewind=True):
