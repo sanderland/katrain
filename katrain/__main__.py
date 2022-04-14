@@ -124,7 +124,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.last_key_down = None
         self.last_focus_event = 0
 
-
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
@@ -415,13 +414,7 @@ class KaTrainGui(Screen, KaTrainBase):
         try:
             old_prisoner_count = self.game.prisoner_count["W"] + self.game.prisoner_count["B"]
             self.game.play(Move(coords, player=self.next_player_info.player))
-            if (
-                old_prisoner_count < self.game.prisoner_count["W"] + self.game.prisoner_count["B"]
-                and not self.game.current_node.children
-                and self.game.current_node.played_capturing_sound is None
-                and self.game.current_node not in self.game.main_tree
-            ):
-                self.game.current_node.played_capturing_sound = True
+            if old_prisoner_count < self.game.prisoner_count["W"] + self.game.prisoner_count["B"]:
                 play_sound(Theme.CAPTURING_SOUND)
             elif not self.game.current_node.is_pass:
                 play_sound(random.choice(Theme.STONE_SOUNDS))
