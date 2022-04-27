@@ -36,7 +36,7 @@ def dan(rank):
 def polyfit(x, y, degree=1):
     coeffs = np.polyfit(x, y, degree)
     correlation = np.corrcoef(x, y)[0, 1]
-    results = {"coef": coeffs.tolist(), "r": correlation, "rsq": correlation ** 2}
+    results = {"coef": coeffs.tolist(), "r": correlation, "rsq": correlation**2}
     return results
 
 

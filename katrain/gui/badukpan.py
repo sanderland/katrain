@@ -1,5 +1,4 @@
 import math
-import random
 import time
 from typing import List, Optional
 
@@ -14,7 +13,6 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
-from katrain.gui.sound import play_sound
 
 from katrain.core.constants import (
     MODE_PLAY,
@@ -40,7 +38,6 @@ from katrain.gui.theme import Theme
 class BadukPanWidget(Widget):
     def __init__(self, **kwargs):
         super(BadukPanWidget, self).__init__(**kwargs)
-        self.stones_sounds = []
         self.trainer_config = {}
         self.ghost_stone = []
         self.gridpos_x = []
@@ -69,9 +66,6 @@ class BadukPanWidget(Widget):
 
     def get_enable_coordinates(self):
         return self.draw_coords_enabled
-
-    def play_stone_sound(self, *_args):
-        play_sound(random.choice(Theme.STONE_SOUNDS))
 
     # stone placement functions
     def _find_closest(self, pos, gridpos):
@@ -151,7 +145,7 @@ class BadukPanWidget(Widget):
                     self.set_animating_pv(None, None)  # any click kills PV from label/move
             if inside and self.animating_pv is not None:
                 d_sq = (pos[0] - self.animating_pv[3][0]) ** 2 + (pos[1] - self.animating_pv[3][1])
-                if d_sq > 2 * self.stone_size ** 2:  # move too far from where it was activated
+                if d_sq > 2 * self.stone_size**2:  # move too far from where it was activated
                     self.set_animating_pv(None, None)  # any click kills PV from label/move
             self.last_mouse_pos = pos
 
@@ -182,7 +176,6 @@ class BadukPanWidget(Widget):
                 )
             else:
                 katrain("play", self.ghost_stone)
-                self.play_stone_sound()
         elif not self.ghost_stone:
             xd, xp = self._find_closest(touch.x, self.gridpos_x)
             yd, yp = self._find_closest(touch.y, self.gridpos_y)

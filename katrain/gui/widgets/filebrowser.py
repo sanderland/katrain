@@ -275,7 +275,7 @@ class LinkTree(TreeView):
         sig_new = []
         for path, name in get_drives():
             if platform == "win":
-                text = u"{}({})".format((name + " ") if name else "", path)
+                text = "{}({})".format((name + " ") if name else "", path)
             else:
                 text = name
             nodes_new.append((text, path))
@@ -351,7 +351,7 @@ class I18NFileBrowser(BoxLayout):
     .. versionchanged:: 1.1
     """
 
-    path = StringProperty(u"/")
+    path = StringProperty("/")
     """
     :class:`~kivy.properties.StringProperty`, defaults to the current working
     directory as a unicode string. It specifies the path on the filesystem that
