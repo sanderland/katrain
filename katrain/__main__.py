@@ -263,7 +263,7 @@ class KaTrainGui(Screen, KaTrainBase):
                     and not (teaching_undo and cn.auto_undo is None)
                 ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                     self._do_ai_move(cn)
-                    Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
+                    Clock.schedule_once(self._play_stone_sound, 0.25)
             if self.engine:
                 if self.pondering:
                     self.game.analyze_extra("ponder")
@@ -409,6 +409,9 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.controls.move_tree.switch_branch(*args)
 
+    def _play_stone_sound(self,_dt=None):
+        play_sound(random.choice(Theme.STONE_SOUNDS))
+
     def _do_play(self, coords):
         self.board_gui.animating_pv = None
         try:
@@ -417,7 +420,7 @@ class KaTrainGui(Screen, KaTrainBase):
             if old_prisoner_count < self.game.prisoner_count["W"] + self.game.prisoner_count["B"]:
                 play_sound(Theme.CAPTURING_SOUND)
             elif not self.game.current_node.is_pass:
-                play_sound(random.choice(Theme.STONE_SOUNDS))
+                self._play_stone_sound()
 
         except IllegalMoveException as e:
             self.controls.set_status(f"Illegal Move: {str(e)}", STATUS_ERROR)
