@@ -337,6 +337,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
+        self.board_gui.rotation_degree = 0
         self.engine.on_new_game()  # clear queries
         self.game = Game(
             self,
@@ -400,6 +401,8 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_redo(self, n_times=1):
         self.board_gui.animating_pv = None
         self.game.redo(n_times)
+    def _do_rotate(self):
+        self.board_gui.rotate_gridpos()
 
     def _do_find_mistake(self, fn="redo"):
         self.board_gui.animating_pv = None
