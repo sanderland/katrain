@@ -55,7 +55,7 @@ Many thanks to these additional authors:
 * "xiaoyifang" for adding the reset analysis option, feature to save options on the loading screen, and scrolling through variations.
 * "electricRGB" for help with adding configurable keyboard shortcuts.
 * "milescrawford" for work on restyling the territory estimate.
-* "Funkenschlag1" for capturing stones sound and implementation.
+* "Funkenschlag1" for capturing stones sound and implementation, and board rotation.
 
 ## Translators
 
