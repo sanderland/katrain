@@ -373,6 +373,8 @@ class SGFNode:
 
     def place_handicap_stones(self, n_handicaps, tygem=False):
         board_size_x, board_size_y = self.board_size
+        if min(board_size_x, board_size_y) < 3:
+            return # No
         near_x = 3 if board_size_x >= 13 else min(2, board_size_x - 1)
         near_y = 3 if board_size_y >= 13 else min(2, board_size_y - 1)
         far_x = board_size_x - 1 - near_x

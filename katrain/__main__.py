@@ -1,10 +1,9 @@
 """isort:skip_file"""
 # first, logging level lower
 import os
+import sys
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
-# if "KIVY_AUDIO" not in os.environ: # trying default again
-#    os.environ["KIVY_AUDIO"] = "sdl2"  # some backends hard crash / this seems to be most stable
 
 import kivy
 
@@ -17,13 +16,19 @@ from kivy.utils import platform
 
 ICON = find_package_resource("katrain/img/icon.ico")
 Config.set("kivy", "window_icon", ICON)
-
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
+
+# next, certificates on package builds https://github.com/sanderland/katrain/issues/414
+if getattr(sys, "frozen", False):
+    import ssl
+
+    if ssl.get_default_verify_paths().cafile is None and hasattr(sys, "_MEIPASS"):
+        os.environ["SSL_CERT_FILE"] = os.path.join(sys._MEIPASS, "certifi", "cacert.pem")
+
 
 import re
 import signal
 import json
-import sys
 import threading
 import traceback
 from queue import Queue
@@ -198,6 +203,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_controls.mid_circles_container.clear_widgets()
         self.board_controls.mid_circles_container.add_widget(bot)
         self.board_controls.mid_circles_container.add_widget(top)
+
         self.controls.players["W"].captures = prisoners["W"]
         self.controls.players["B"].captures = prisoners["B"]
 
@@ -257,7 +263,7 @@ class KaTrainGui(Screen, KaTrainBase):
                     and not (teaching_undo and cn.auto_undo is None)
                 ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
                     self._do_ai_move(cn)
-                    Clock.schedule_once(self.board_gui.play_stone_sound, 0.25)
+                    Clock.schedule_once(self._play_stone_sound, 0.25)
             if self.engine:
                 if self.pondering:
                     self.game.analyze_extra("ponder")
@@ -331,6 +337,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
+        self.board_gui.rotation_degree = 0
         self.engine.on_new_game()  # clear queries
         self.game = Game(
             self,
@@ -394,6 +401,8 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_redo(self, n_times=1):
         self.board_gui.animating_pv = None
         self.game.redo(n_times)
+    def _do_rotate(self):
+        self.board_gui.rotate_gridpos()
 
     def _do_find_mistake(self, fn="redo"):
         self.board_gui.animating_pv = None
@@ -403,10 +412,19 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.controls.move_tree.switch_branch(*args)
 
+    def _play_stone_sound(self,_dt=None):
+        play_sound(random.choice(Theme.STONE_SOUNDS))
+
     def _do_play(self, coords):
         self.board_gui.animating_pv = None
         try:
+            old_prisoner_count = self.game.prisoner_count["W"] + self.game.prisoner_count["B"]
             self.game.play(Move(coords, player=self.next_player_info.player))
+            if old_prisoner_count < self.game.prisoner_count["W"] + self.game.prisoner_count["B"]:
+                play_sound(Theme.CAPTURING_SOUND)
+            elif not self.game.current_node.is_pass:
+                self._play_stone_sound()
+
         except IllegalMoveException as e:
             self.controls.set_status(f"Illegal Move: {str(e)}", STATUS_ERROR)
 
@@ -443,7 +461,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.timer.paused = True
         if not self.teacher_settings_popup:
             self.teacher_settings_popup = I18NPopup(
-                title_key="teacher settings", size=[dp(800), dp(800)], content=ConfigTeacherPopup(self)
+                title_key="teacher settings", size=[dp(800), dp(825)], content=ConfigTeacherPopup(self)
             ).__self__
             self.teacher_settings_popup.content.popup = self.teacher_settings_popup
         self.teacher_settings_popup.open()
@@ -513,8 +531,8 @@ class KaTrainGui(Screen, KaTrainBase):
         self.update_state(redraw_board=True)
 
     def play_mistake_sound(self, node):
-        if self.config("timer/sound") and node.played_sound is None and Theme.MISTAKE_SOUNDS:
-            node.played_sound = True
+        if self.config("timer/sound") and node.played_mistake_sound is None and Theme.MISTAKE_SOUNDS:
+            node.played_mistake_sound = True
             play_sound(random.choice(Theme.MISTAKE_SOUNDS))
 
     def load_sgf_file(self, file, fast=False, rewind=True):

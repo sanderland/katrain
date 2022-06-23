@@ -137,7 +137,6 @@ class KataGoContributeEngine(BaseEngine):
     def queries_remaining(self):
         return 1
 
-
     def start(self):
         try:
             self.katrain.log(f"Starting Distributed KataGo with {self.command}", OUTPUT_INFO)

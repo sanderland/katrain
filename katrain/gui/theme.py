@@ -68,6 +68,7 @@ class Theme:
     GRAPH_TEXTURE = "graph_bg.png"
     # sounds
     STONE_SOUNDS = [f"stone{i}.wav" for i in [1, 2, 3, 4, 5]]
+    CAPTURING_SOUND = "capturing.wav"
     COUNTDOWN_SOUND = "countdownbeep.wav"
     MINIMUM_TIME_PASSED_SOUND = "boing.wav"
     MISTAKE_SOUNDS = []

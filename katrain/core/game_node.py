@@ -41,7 +41,7 @@ class GameNode(SGFNode):
     def __init__(self, parent=None, properties=None, move=None):
         super().__init__(parent=parent, properties=properties, move=move)
         self.auto_undo = None  # None = not analyzed. False: not undone (good move). True: undone (bad move)
-        self.played_sound = None
+        self.played_mistake_sound = None
         self.ai_thoughts = ""
         self.note = ""
         self.move_number = 0
