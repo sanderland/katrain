@@ -23,9 +23,9 @@ a = Analysis(
         ("..\\katrain\\fonts", "katrain\\fonts"),
         ("..\\katrain\\i18n", "katrain\\i18n"),
     ],
-    hiddenimports=["win32file", "win32timezone"],  #  FileChooser in kivy loads this conditionally
+    hiddenimports=["win32file", "win32timezone", "six"],  #  FileChooser in kivy loads win32file conditionally, mkl needs six
     hookspath=[kivymd_hooks_path],
-    excludes=["scipy", "pandas", "numpy", "matplotlib", "docutils", "mkl"],
+    excludes=["matplotlib", "docutils", "scipy", "pandas"],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=None,
@@ -96,5 +96,5 @@ for console, name in console_names.items():
     powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
     powershell.stdin.flush()
 
-while True:
-    print(powershell.stdout.readline())
+#while True:
+#    print(powershell.stdout.readline())
