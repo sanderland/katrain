@@ -575,7 +575,6 @@ class Game(BaseGame):
             return
 
         engine = self.engines[cn.next_player]
-        Clock.schedule_once(self.katrain.analysis_controls.hints.activate, 0)
 
         if mode == "ponder":
             cn.analyze(
