@@ -167,6 +167,7 @@ Keyboard shortcuts are shown with **[key]**.
     * **[i]**: Start insertion mode. Allows you to insert moves, to improve analysis when both players ignore an important exchange or life and death situation. Press again to stop inserting and copy the rest of the branch.
     * **[l]**: Play out the game until the end and add as a collapsed branch, to visualize the potential effect of mistakes. This is done in the background, and can be started at several nodes at once when comparing the results at different starting positions.      
     * **[spacebar]**: Turn continuous analysis on/off. This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.
+      * **[shift+spacebar]**: As above, but does not turn 'top moves' hints on when it is off.
     * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
     * **[F2]**: Deeper full game analysis. Analyze the entire game to a higher number of visits.
     * **[F3]**: Performance report. Show an overview of performance statistics for both players.  
@@ -245,7 +246,7 @@ See [these instructions](THEMES.md) for how to modify the look of any graphics o
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](http://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
-* You can contact me on the [Leela Zero & Friends Discord](http://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation.
+* You can join the [Computer Go Community Discord (formerly Leela Zero & Friends)](http://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation. Please do not use github issues to ask for technical help, this is only for bugs, suggestions and discussing contributions.
 
 
 
