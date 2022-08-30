@@ -344,15 +344,11 @@ class KataGoEngine(BaseEngine):
                         if pq.get(k) != query.get(k)
                     }
                     if differences:
-                        # TODO:remove
-                        self.katrain.log(f"Found differences in ponder check: {differences}", OUTPUT_EXTRA_DEBUG)
                         self.stop_pondering()
-                        query["maxVisits"] = 1_000_000
+                        query["maxVisits"] = 10_000_000
                         query["reportDuringSearchEvery"] = PONDERING_REPORT_DT
                         self.ponder_query = query
                     else:
-                        # TODO:remove
-                        self.katrain.log("Found no differences in ponder check, skipping", OUTPUT_EXTRA_DEBUG)
                         continue
 
                 terminate = query.get("action") == "terminate"
