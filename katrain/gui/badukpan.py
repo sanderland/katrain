@@ -744,6 +744,13 @@ class BadukPanWidget(Widget):
             for x in range(board_size_x + 2):
                 x_coord = x - 1
                 y_coord = y - 1
+
+                if self.rotation_degree == 90:
+                    x_coord, y_coord = board_size_y-y_coord-1, x_coord
+                elif self.rotation_degree == 180:
+                    x_coord, y_coord = board_size_x - x_coord - 1, board_size_y - y_coord -1
+                elif self.rotation_degree == 270:
+                    x_coord, y_coord = y_coord, board_size_x - x_coord - 1
                 if x_coord < 0 or x_coord > board_size_x - 1 or y_coord < 0 or y_coord > board_size_y - 1:
                     # We're in the extra rows/columns outside the board
                     alpha = 0
@@ -759,15 +766,21 @@ class BadukPanWidget(Widget):
                             alpha * Theme.OWNERSHIP_MAX_ALPHA
                 else:
                     pixel = *loss_color, min(1.0,alpha)
-                pixel = tuple(map(lambda x: int(x*255), pixel))
+                pixel = tuple(map(lambda p: int(p*255), pixel))
                 idx = 4 * y * (board_size_x + 2) + x * 4
                 bytes[idx:idx+4] = pixel
 
         texture.blit_buffer(bytes, colorfmt='rgba', bufferfmt='ubyte')
         Color(1, 1, 1, 1)
+        lx = board_size_x-1
+        ly = board_size_y-1
+        left = min((self.gridpos[0, 0, 1], self.gridpos[0, lx, 1],
+                    self.gridpos[ly, 0, 1], self.gridpos[ly, lx, 1]))
+        bottom = min((self.gridpos[0, 0, 0], self.gridpos[0, lx, 0],
+                    self.gridpos[ly, 0, 0], self.gridpos[ly, lx, 0]))
         Rectangle(
-            pos=(self.gridpos[0, 0, 0] - self.grid_size * 3 / 2,
-                 self.gridpos[0, 0, 1] - self.grid_size * 3 / 2),
+            pos=(bottom - self.grid_size * 3 / 2,
+                 left - self.grid_size * 3 / 2),
             size=(self.grid_size * (board_size_x + 2),
                   self.grid_size * (board_size_y + 2)),
             texture=texture)
