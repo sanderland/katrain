@@ -145,8 +145,8 @@ Keyboard shortcuts are shown with **[key]**.
 * The checkboxes at the top of the screen:
     * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when 
                wanting to guess the next move.
-    * **[w]**: Show all dots: Cycles through showing all evaluation dots, showing the last few, and showing none.
-       * You can configure whether they are shown for AIs under 'Teaching/Analysis Settings'.
+    * **[w]**: Show all dots: Toggles showing coloured evaluation 'dots' on the last few moves or not.
+       * You can configure the thresholds, along with how many of the last moves they are shown for under 'Teaching/Analysis Settings'.
     * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. 
            Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). 
            Hover over any of them to see the principal variation.
