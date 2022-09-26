@@ -4,7 +4,6 @@
 [![License:MIT](http://img.shields.io/pypi/l/katrain)](http://en.wikipedia.org/wiki/MIT_License)
 [![GitHub Downloads](http://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)](http://github.com/sanderland/katrain/releases)
 [![PyPI Downloads](http://pepy.tech/badge/katrain)](http://pepy.tech/project/katrain)
-[![Github sponsors](http://img.shields.io/static/v1?label=sponsor&message=%E2%9D%A4&logo=GitHub&color=dcb424&link=http://github.com/sponsors/sanderland/)](http://github.com/sponsors/sanderland)
 [![Discord](http://img.shields.io/discord/417022162348802048?logo=discord)](http://discord.com/channels/417022162348802048/629446365688365067)
 
 KaTrain is a tool for analyzing games and playing go with AI feedback from KataGo:
@@ -167,6 +166,7 @@ Keyboard shortcuts are shown with **[key]**.
     * **[i]**: Start insertion mode. Allows you to insert moves, to improve analysis when both players ignore an important exchange or life and death situation. Press again to stop inserting and copy the rest of the branch.
     * **[l]**: Play out the game until the end and add as a collapsed branch, to visualize the potential effect of mistakes. This is done in the background, and can be started at several nodes at once when comparing the results at different starting positions.      
     * **[spacebar]**: Turn continuous analysis on/off. This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.
+      * **[shift+spacebar]**: As above, but does not turn 'top moves' hints on when it is off.
     * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
     * **[F2]**: Deeper full game analysis. Analyze the entire game to a higher number of visits.
     * **[F3]**: Performance report. Show an overview of performance statistics for both players.  
@@ -245,7 +245,7 @@ See [these instructions](THEMES.md) for how to modify the look of any graphics o
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](http://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
-* You can contact me on the [Leela Zero & Friends Discord](http://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation.
+* You can join the [Computer Go Community Discord (formerly Leela Zero & Friends)](http://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation. Please do not use github issues to ask for technical help, this is only for bugs, suggestions and discussing contributions.
 
 
 

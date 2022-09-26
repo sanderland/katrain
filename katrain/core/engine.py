@@ -344,15 +344,11 @@ class KataGoEngine(BaseEngine):
                         if pq.get(k) != query.get(k)
                     }
                     if differences:
-                        # TODO:remove
-                        self.katrain.log(f"Found differences in ponder check: {differences}", OUTPUT_EXTRA_DEBUG)
                         self.stop_pondering()
-                        query["maxVisits"] = 1_000_000
+                        query["maxVisits"] = 10_000_000
                         query["reportDuringSearchEvery"] = PONDERING_REPORT_DT
                         self.ponder_query = query
                     else:
-                        # TODO:remove
-                        self.katrain.log("Found no differences in ponder check, skipping", OUTPUT_EXTRA_DEBUG)
                         continue
 
                 terminate = query.get("action") == "terminate"
@@ -434,10 +430,10 @@ class KataGoEngine(BaseEngine):
             avoid = []
 
         settings = copy.copy(self.override_settings)
+        settings["wideRootNoise"] = self.config["wide_root_noise"]
         if time_limit:
             settings["maxTime"] = self.config["max_time"]
-        if self.config.get("wide_root_noise", 0.0) > 0.0:  # don't send if 0.0, so older versions don't error
-            settings["wideRootNoise"] = self.config["wide_root_noise"]
+
         query = {
             "rules": self.get_rules(analysis_node.ruleset),
             "priority": self.base_priority + priority,

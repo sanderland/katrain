@@ -156,12 +156,14 @@ class KaTrainGui(Screen, KaTrainBase):
     def play_analyze_mode(self):
         return self.play_mode.mode
 
-    def toggle_continuous_analysis(self):
+    def toggle_continuous_analysis(self, quiet=False):
         if self.contributing:
             self.animate_contributing = not self.animate_contributing
         else:
             if self.pondering:
                 self.controls.set_status("", STATUS_INFO)
+            elif not quiet:  # See #549
+                Clock.schedule_once(self.analysis_controls.hints.activate, 0)
             self.pondering = not self.pondering
             self.update_state()
 
@@ -337,7 +339,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
-        self.board_gui.rotation_degree = 0
+        self.board_gui.reset_rotation()
         self.engine.on_new_game()  # clear queries
         self.game = Game(
             self,
@@ -401,6 +403,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_redo(self, n_times=1):
         self.board_gui.animating_pv = None
         self.game.redo(n_times)
+
     def _do_rotate(self):
         self.board_gui.rotate_gridpos()
 
@@ -412,7 +415,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.controls.move_tree.switch_branch(*args)
 
-    def _play_stone_sound(self,_dt=None):
+    def _play_stone_sound(self, _dt=None):
         play_sound(random.choice(Theme.STONE_SOUNDS))
 
     def _do_play(self, coords):
@@ -730,7 +733,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 return
 
         if keycode[1] == Theme.KEY_TOGGLE_CONTINUOUS_ANALYSIS:
-            self.toggle_continuous_analysis()
+            self.toggle_continuous_analysis(quiet=shift_pressed)
         elif keycode[1] == Theme.KEY_TOGGLE_COORDINATES:
             self.board_gui.toggle_coordinates()
         elif keycode[1] in Theme.KEY_PAUSE_TIMER and not ctrl_pressed:
