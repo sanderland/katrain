@@ -3,7 +3,14 @@
 import os
 import sys
 
-os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
+os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "debug")
+
+from kivy.utils import platform as kivy_platform
+if kivy_platform == "win":
+    from ctypes import windll, c_int64
+
+    if hasattr(windll.user32, "SetProcessDpiAwarenessContext"):
+        windll.user32.SetProcessDpiAwarenessContext(c_int64(-4))
 
 import kivy
 
@@ -12,7 +19,6 @@ kivy.require("2.0.0")
 # next, icon
 from katrain.core.utils import find_package_resource, PATHS
 from kivy.config import Config
-from kivy.utils import platform
 
 ICON = find_package_resource("katrain/img/icon.ico")
 Config.set("kivy", "window_icon", ICON)
@@ -52,7 +58,6 @@ from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
 from katrain.core.ai import generate_ai_move
-from kivy.utils import platform as kivy_platform
 
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
 from katrain.core.constants import (
