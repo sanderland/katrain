@@ -306,9 +306,9 @@ class BadukPanWidget(Widget):
                     self.initialize_gridpos()
 
             if (self.rotation_degree == 90 or self.rotation_degree == 270) and board_size_x != board_size_y:
-                board_size_y, board_size_x = katrain.game.board_size
+                # Note that we use the board_size_y, board_size_x order for this rotation.
                 x_grid_spaces, y_grid_spaces = self.calculate_grid_spaces(
-                    board_size_x, board_size_y, grid_spaces_margin_x, grid_spaces_margin_y
+                    board_size_y, board_size_x, grid_spaces_margin_x, grid_spaces_margin_y
                 )
                 self.grid_size = self.calculate_grid_size(w, h, x_grid_spaces, y_grid_spaces)
                 self.stone_size = self.calculate_stone_size(self.grid_size)
@@ -539,7 +539,7 @@ class BadukPanWidget(Widget):
             return
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
-        if self.gridpos.shape[0] < board_size_x or self.gridpos.shape[1] < board_size_y:
+        if self.gridpos.shape[0] < board_size_y or self.gridpos.shape[1] < board_size_x:
             return  # race condition
         show_n_eval = self.trainer_config.get("eval_on_show_last", 3)
 
