@@ -792,7 +792,7 @@ class BadukPanWidget(Widget):
             pos=(bottom,left),
             size=(self.grid_size * (board_size_x + 2),
                   self.grid_size * (board_size_y + 2)),
-        texture=texture)
+            texture=texture)
 
         PopMatrix()
 
