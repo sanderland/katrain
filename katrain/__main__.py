@@ -3,7 +3,7 @@
 import os
 import sys
 
-os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "debug")
+os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
 
 from kivy.utils import platform as kivy_platform
 if kivy_platform == "win":
