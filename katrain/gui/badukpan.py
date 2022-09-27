@@ -6,7 +6,7 @@ import numpy as np
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics.texture import Texture
-from kivy.graphics.context_instructions import Color
+from kivy.graphics.context_instructions import Color, Rotate, Translate, PushMatrix, PopMatrix
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty
@@ -745,12 +745,6 @@ class BadukPanWidget(Widget):
                 x_coord = x - 1
                 y_coord = y - 1
 
-                if self.rotation_degree == 90:
-                    x_coord, y_coord = board_size_y-y_coord-1, x_coord
-                elif self.rotation_degree == 180:
-                    x_coord, y_coord = board_size_x - x_coord - 1, board_size_y - y_coord -1
-                elif self.rotation_degree == 270:
-                    x_coord, y_coord = y_coord, board_size_x - x_coord - 1
                 if x_coord < 0 or x_coord > board_size_x - 1 or y_coord < 0 or y_coord > board_size_y - 1:
                     # We're in the extra rows/columns outside the board
                     alpha = 0
@@ -774,16 +768,33 @@ class BadukPanWidget(Widget):
         Color(1, 1, 1, 1)
         lx = board_size_x-1
         ly = board_size_y-1
-        left = min((self.gridpos[0, 0, 1], self.gridpos[0, lx, 1],
-                    self.gridpos[ly, 0, 1], self.gridpos[ly, lx, 1]))
-        bottom = min((self.gridpos[0, 0, 0], self.gridpos[0, lx, 0],
-                    self.gridpos[ly, 0, 0], self.gridpos[ly, lx, 0]))
+        left = min((self.gridpos[0, 0, 1], self.gridpos[ly, lx, 1]))
+        bottom = min((self.gridpos[0, 0, 0], self.gridpos[ly, lx, 0]))
+
+        # Our texture is 3 squares larger than the grid of lines: we added 2 rows/columns
+        # for the edge blending, and the additional 1 is because the grid of
+        # intersections is 1 smaller than the board state. We will shift the texture by 3/2 square
+        # to align it.
+        left = left - self.grid_size*3/2
+        bottom = bottom - self.grid_size*3/2
+
+        PushMatrix()
+
+        Rotate(origin = (bottom, left),
+               axis=(0,0,1),
+               angle = -self.rotation_degree)
+        if self.rotation_degree in (90,180):
+            Translate(-self.grid_size*(board_size_x+2), 0, 0)
+        if self.rotation_degree in (180,270):
+            Translate(0, -self.grid_size * (board_size_y + 2), 0)
+
         Rectangle(
-            pos=(bottom - self.grid_size * 3 / 2,
-                 left - self.grid_size * 3 / 2),
+            pos=(bottom,left),
             size=(self.grid_size * (board_size_x + 2),
                   self.grid_size * (board_size_y + 2)),
             texture=texture)
+
+        PopMatrix()
 
     def draw_roi_box(self, region_of_interest, width: float = 2):
         xmin, xmax, ymin, ymax = region_of_interest
