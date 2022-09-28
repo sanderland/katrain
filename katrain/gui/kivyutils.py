@@ -23,9 +23,8 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button.button import BaseFabButton, BaseButton
+from kivymd.uix.button import BaseButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
-from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import (
@@ -107,7 +106,7 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
 
 
 # -- resizeable buttons / avoid baserectangular for sizing
-class SizedButton(LeftButtonBehavior, RectangularRippleBehavior, BaseFabButton, BackgroundMixin):
+class SizedButton(BaseButton, RectangularRippleBehavior, BackgroundMixin):
     text = StringProperty("")
     text_color = ListProperty(Theme.BUTTON_TEXT_COLOR)
     text_size = ListProperty([100, 100])

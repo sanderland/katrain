@@ -97,7 +97,6 @@ class LabelledPathInput(LabelledTextInput):
 
     def on_text(self, widget, text):
         self.check_error()
-        return super().on_text(widget, text)
 
     @property
     def input_value(self):

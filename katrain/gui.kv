@@ -743,7 +743,7 @@
         halign: 'center'
         font_size: root.height / 3
         font_name: root.font_name
-        color: "red"
+        color: (checkbox.disabled_color if root.disabled else (checkbox.selected_color if checkbox.active else checkbox.unselected_color)) or [1,1,1]
         size_hint_x: None
         width: self.texture_size[0] + 4
         on_left_press: checkbox.trigger_action()
@@ -1143,7 +1143,7 @@
     nav_drawer: nav_drawer
     nav_drawer_contents: nav_drawer_contents
     MDNavigationLayout:
-        ScreenManager:
+        MDScreenManager:
             Screen:
                 name: 'gui'
                 BGBoxLayout:

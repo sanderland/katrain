@@ -1,6 +1,8 @@
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty
 from kivy.uix.widget import Widget
+from kivymd.uix.behaviors import CommonElevationBehavior
+from kivymd.uix.card import MDCard
 
 
 class SelectionSlider(Widget):
@@ -77,6 +79,9 @@ class SelectionSlider(Widget):
     def on_change(self, value):
         pass
 
+class HintCard(MDCard,CommonElevationBehavior):
+    pass
+
 
 KV = """
 #:import i18n katrain.core.lang.i18n
@@ -113,7 +118,7 @@ KV = """
         elevation:
             4 if root.active else 2
 
-    MDCard:
+    HintCard:
         id: hint_box
         size_hint: None, None
         md_bg_color: [1, 1, 1, 1] if root.active else [0, 0, 0, 0]
