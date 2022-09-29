@@ -1,7 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 from kivy_deps import sdl2, glew
 from kivymd import hooks_path as kivymd_hooks_path
+import importlib.util
 import subprocess
+import sys
 
 block_cipher = None
 
@@ -48,6 +50,13 @@ console_names = {True:"DebugKaTrain",False:"KaTrain"}
 
 powershell = subprocess.Popen(["powershell"],  stdout=subprocess.PIPE, stdin=subprocess.PIPE)
 
+# load and run script to buid VSVersionInfo object
+versionSpec = importlib.util.spec_from_file_location('file_version', SPECPATH + '/file_version.py')
+versionModule = importlib.util.module_from_spec(versionSpec)
+sys.modules['file_version'] = versionModule
+versionSpec.loader.exec_module(versionModule)
+
+
 for console, name in console_names.items():
 
 
@@ -64,6 +73,7 @@ for console, name in console_names.items():
         upx=True,
         console=console,
         icon="..\\katrain\img\\icon.ico",
+        version=versionModule.versionInfo,
     )
 
     coll = COLLECT(
@@ -91,6 +101,7 @@ for console, name in console_names.items():
         name=name,
         console=console,
         icon="..\\katrain\img\\icon.ico",
+        version=versionModule.versionInfo,
     )
     powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
     powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
