@@ -251,7 +251,7 @@ class BadukPanWidget(Widget):
 
             mark_size = 0.42 * abs(ownership if ownership else loss) * self.stone_size * 2.0
             Color(*mark_color)
-            Ellipse(
+            Rectangle(
                 pos=(
                     self.gridpos[y, x, 0] - mark_size / 2,
                     self.gridpos[y, x, 1] - mark_size / 2,
@@ -260,10 +260,10 @@ class BadukPanWidget(Widget):
             )
             Color(*outline_color)
             Line(
-                circle=(
-                    self.gridpos[y, x, 0],
-                    self.gridpos[y, x, 1],
-                    mark_size / 2
+                rectangle=(
+                    self.gridpos[y, x, 0]-mark_size / 2,
+                    self.gridpos[y, x, 1]-mark_size / 2,
+                    mark_size, mark_size
                 ),
                 width=1.0
             )
@@ -768,8 +768,8 @@ class BadukPanWidget(Widget):
         Color(1, 1, 1, 1)
         lx = board_size_x-1
         ly = board_size_y-1
-        left = min((self.gridpos[0, 0, 1], self.gridpos[ly, lx, 1]))
-        bottom = min((self.gridpos[0, 0, 0], self.gridpos[ly, lx, 0]))
+        left = min(self.gridpos[0, 0, 1], self.gridpos[ly, lx, 1])
+        bottom = min(self.gridpos[0, 0, 0], self.gridpos[ly, lx, 0])
 
         # Our texture is 3 squares larger than the grid of lines: we added 2 rows/columns
         # for the edge blending, and the additional 1 is because the grid of
