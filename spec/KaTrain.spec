@@ -63,7 +63,7 @@ for console, name in console_names.items():
         strip=False,
         upx=True,
         console=console,
-        icon="C:\\icon.ico",
+        icon="..\\katrain\img\\icon.ico",
     )
 
     coll = COLLECT(
@@ -90,7 +90,7 @@ for console, name in console_names.items():
         upx=True,
         name=name,
         console=console,
-        icon="C:\\icon.ico",
+        icon="..\\katrain\img\\icon.ico",
     )
     powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
     powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
