@@ -2,6 +2,7 @@
 from kivy_deps import sdl2, glew
 from kivymd import hooks_path as kivymd_hooks_path
 import subprocess
+import sys
 
 block_cipher = None
 
@@ -48,6 +49,11 @@ console_names = {True:"DebugKaTrain",False:"KaTrain"}
 
 powershell = subprocess.Popen(["powershell"],  stdout=subprocess.PIPE, stdin=subprocess.PIPE)
 
+# load and run script to buid VSVersionInfo object
+sys.path.append(SPECPATH)
+import file_version as versionModule
+
+
 for console, name in console_names.items():
 
 
@@ -63,7 +69,8 @@ for console, name in console_names.items():
         strip=False,
         upx=True,
         console=console,
-        icon="C:\\icon.ico",
+        icon="..\\katrain\img\\icon.ico",
+        version=versionModule.versionInfo,
     )
 
     coll = COLLECT(
@@ -90,7 +97,8 @@ for console, name in console_names.items():
         upx=True,
         name=name,
         console=console,
-        icon="C:\\icon.ico",
+        icon="..\\katrain\img\\icon.ico",
+        version=versionModule.versionInfo,
     )
     powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
     powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}/{name}.exe -Certificate (Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert)\n".encode('ascii'))
