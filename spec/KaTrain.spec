@@ -1,7 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 from kivy_deps import sdl2, glew
 from kivymd import hooks_path as kivymd_hooks_path
-import importlib.util
 import subprocess
 import sys
 
@@ -51,10 +50,8 @@ console_names = {True:"DebugKaTrain",False:"KaTrain"}
 powershell = subprocess.Popen(["powershell"],  stdout=subprocess.PIPE, stdin=subprocess.PIPE)
 
 # load and run script to buid VSVersionInfo object
-versionSpec = importlib.util.spec_from_file_location('file_version', SPECPATH + '/file_version.py')
-versionModule = importlib.util.module_from_spec(versionSpec)
-sys.modules['file_version'] = versionModule
-versionSpec.loader.exec_module(versionModule)
+sys.path.append(SPECPATH)
+import file_version as versionModule
 
 
 for console, name in console_names.items():

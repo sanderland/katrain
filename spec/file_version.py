@@ -1,9 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.win32 import versioninfo as ver
-import importlib
 import os
-import pathlib
-import sys
 
 # only create VSVersionInfo object on Windows
 versionInfo = None
@@ -11,14 +8,10 @@ versionInfo = None
 if os.name == 'nt':
 
     # load constants.py to get version number and program name
-    constantsPath = pathlib.Path(__file__).parent.parent.joinpath('katrain/core/constants.py').resolve()
-    constSpec = importlib.util.spec_from_file_location('constants', constantsPath)
-    constModule = importlib.util.module_from_spec(constSpec)
-    sys.modules['constants'] = constModule
-    constSpec.loader.exec_module(constModule)
+    import katrain.core.constants as constants
 
     # build VSVersionInfo compatible version numbers
-    verParts = constModule.VERSION.split('.')
+    verParts = constants.VERSION.split('.')
     numParts = len(verParts)
     verList = list()
     verString = ''
@@ -49,11 +42,11 @@ if os.name == 'nt':
             ver.StringFileInfo([
                 ver.StringTable(
                     '040904B0',
-                    [ver.StringStruct('FileDescription', constModule.PROGRAM_NAME),
+                    [ver.StringStruct('FileDescription', constants.PROGRAM_NAME),
                     ver.StringStruct('FileVersion', verString),
-                    ver.StringStruct('LegalCopyright', constModule.HOMEPAGE),
-                    ver.StringStruct('OriginalFilename', constModule.PROGRAM_NAME + '.exe'),
-                    ver.StringStruct('ProductName', constModule.PROGRAM_NAME),
+                    ver.StringStruct('LegalCopyright', constants.HOMEPAGE),
+                    ver.StringStruct('OriginalFilename', constants.PROGRAM_NAME + '.exe'),
+                    ver.StringStruct('ProductName', constants.PROGRAM_NAME),
                     ver.StringStruct('ProductVersion', verString)]
                 )
             ]),
