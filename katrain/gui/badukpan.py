@@ -240,7 +240,10 @@ class BadukPanWidget(Widget):
             size=(2 * stone_size, 2 * stone_size),
             texture=cached_texture(Theme.STONE_TEXTURE[player]),
         )
-        if ownership is not None or loss is not None:
+        # Draw ownership marks on stones; the mark is a square with an outline.
+        if (ownership is not None or loss is not None) and \
+              (Theme.STONE_MARKS == "all" or
+                 (Theme.STONE_MARKS == "weak" and player != owner)):
             if ownership is not None:
                 mark_color = *Theme.STONE_COLORS[owner][:3], 1.0
                 other_color = *Theme.STONE_COLORS[other][:3], 1.0
@@ -643,7 +646,8 @@ class BadukPanWidget(Widget):
                             innercol=inner,
                             evalcol=evalcol,
                             evalscale=evalscale,
-                            ownership=ownership_grid[m.coords[1]][m.coords[0]] if ownership_grid and not loss_grid else None,
+                            ownership=ownership_grid[m.coords[1]][m.coords[0]]
+                                if ownership_grid and not loss_grid else None,
                             loss = loss_grid[m.coords[1]][m.coords[0]] if loss_grid else None
                         )
                 realized_points_lost = node.parent_realized_points_lost
@@ -750,6 +754,8 @@ class BadukPanWidget(Widget):
                     alpha = 0
                 else:
                     alpha = abs(grid[y_coord][x_coord])
+                    if Theme.TERRITORY_DISPLAY == "trinary":
+                        alpha = 1 if alpha>Theme.TRINARY_THRESHOLD/2 else 0
 
                 x_coord = max(0, min(x_coord, board_size_x - 1))
                 y_coord = max(0, min(y_coord, board_size_y - 1))
@@ -764,6 +770,8 @@ class BadukPanWidget(Widget):
                 idx = 4 * y * (board_size_x + 2) + x * 4
                 bytes[idx:idx+4] = pixel
 
+        if Theme.TERRITORY_DISPLAY == "trinary":
+            texture.mag_filter = "nearest"
         texture.blit_buffer(bytes, colorfmt='rgba', bufferfmt='ubyte')
         Color(1, 1, 1, 1)
         lx = board_size_x-1
