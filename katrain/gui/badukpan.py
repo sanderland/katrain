@@ -230,10 +230,11 @@ class BadukPanWidget(Widget):
         stone_size = self.stone_size * scale
         if ownership is not None:
             (owner, other) = ("B", "W") if ownership > 0 else ("W", "B")
-            if player == owner:
-                alpha = Theme.OWNERSHIP_MAX_ALPHA + (1.0 - Theme.OWNERSHIP_MAX_ALPHA)*abs(ownership)
-            else:
-                alpha = Theme.OWNERSHIP_MAX_ALPHA
+            if Theme.TERRITORY_DISPLAY != "marks":
+                if player == owner:
+                    alpha = Theme.OWNERSHIP_MAX_ALPHA + (1.0 - Theme.OWNERSHIP_MAX_ALPHA)*abs(ownership)
+                else:
+                    alpha = Theme.OWNERSHIP_MAX_ALPHA
         Color(1, 1, 1, alpha)
         Rectangle(
             pos=(self.gridpos[y, x, 0] - stone_size, self.gridpos[y, x, 1] - stone_size),
@@ -603,10 +604,10 @@ class BadukPanWidget(Widget):
                     for y in range(board_size_y - 1, -1, -1):
                         for x in range(board_size_x):
                             loss_grid[y][x] = max(0, (-1 if current_node.children[-1].move.player == "B" else 1) * loss_grid[y][x])
-                    self.draw_territory_color(loss_grid, Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3])
+                    self.draw_territory(loss_grid, Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3])
                 else:
                     ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
-                    self.draw_territory_color(ownership_grid)
+                    self.draw_territory(ownership_grid)
             # stones
             all_dots_off = not katrain.analysis_controls.eval.active
             has_stone = {}
@@ -731,7 +732,32 @@ class BadukPanWidget(Widget):
 
         self.redraw_hover_contents_trigger()
 
+    def draw_territory(self, grid, loss_color=None):
+        if Theme.TERRITORY_DISPLAY == "marks":
+            self.draw_territory_marks(grid, loss_color=None)
+        else:
+            self.draw_territory_color(grid, loss_color=None)
 
+    def draw_territory_marks(self, grid, loss_color=None):
+        board_size_x, board_size_y = self.katrain.game.board_size
+        for y in range(board_size_y - 1, -1, -1):
+            for x in range(board_size_x):
+                if abs(grid[y][x]) < 0.01:
+                    continue
+                (ix_owner, other) = ("B", "W") if grid[y][x] > 0 else ("W", "B")
+                Color(
+                    *Theme.STONE_COLORS[ix_owner][:3], 1.0
+                    # Theme.OWNERSHIP_MAX_ALPHA #abs(ownership_grid[y][x]) * 1.0 # Theme.OWNERSHIP_MAX_ALPHA
+                )
+                rect_size = 0.42 * abs(grid[y][x]) * self.stone_size * 2.0
+                Rectangle(
+                    pos=(
+                        self.gridpos[y, x, 0] - rect_size / 2,
+                        self.gridpos[y, x, 1] - rect_size / 2,
+                    ),
+                    # radius=[rect_size / 4],
+                    size=(rect_size, rect_size),
+                )
     def draw_territory_color(self, grid, loss_color=None):
         # This draws the expected black and white territories, or the loss during a teching game.
         # We draw a blended territory by creating a small texture of size 19x19 (more precisely board_size)
