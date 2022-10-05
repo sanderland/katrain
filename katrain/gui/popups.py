@@ -23,6 +23,8 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
+from katrain.gui.kivyutils import find_child_by_name
+
 from katrain.core.ai import ai_rank_estimation, game_report
 from katrain.core.constants import (
     AI_CONFIG_DEFAULT,
@@ -839,8 +841,24 @@ class SaveSGFPopup(BoxLayout):
 
 
 class ReAnalyzeGamePopup(BoxLayout):
-    katrain = ObjectProperty(None)
     popup = ObjectProperty(None)
+
+    def on_checkbox_active(self, checkbox, value):
+        self.start_move.disabled = not value
+        self.end_move.disabled = not value
+
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+
+        self.katrain = katrain
+        self.checkbox = find_child_by_name(self, "move_range")
+        self.checkbox.bind(active=self.on_checkbox_active)
+
+        self.start_move = find_child_by_name(self, "start_move")
+        self.end_move = find_child_by_name(self, "end_move")
+        self.start_move.disabled = True
+        self.end_move.disabled = True
+        self.start_move.text = str(katrain.game.current_node.depth)
 
     def on_submit(self):
         self.button.trigger_action(duration=0)
