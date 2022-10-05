@@ -162,7 +162,7 @@ class BadukPanWidget(Widget):
                     self.set_animating_pv(None, None)  # any click kills PV from label/move
             if inside and self.animating_pv is not None:
                 d_sq = (pos[0] - self.animating_pv[3][0]) ** 2 + (pos[1] - self.animating_pv[3][1])
-                if d_sq > 2 * self.stone_size ** 2:  # move too far from where it was activated
+                if d_sq > 2 * self.stone_size**2:  # move too far from where it was activated
                     self.set_animating_pv(None, None)  # any click kills PV from label/move
             self.last_mouse_pos = pos
 
@@ -226,13 +226,15 @@ class BadukPanWidget(Widget):
         self.draw_board()
         self.draw_board_contents()
 
-    def draw_stone(self, x, y, player, alpha=1, innercol=None, evalcol=None, evalscale=1.0, scale=1.0, ownership=None, loss = None):
+    def draw_stone(
+        self, x, y, player, alpha=1, innercol=None, evalcol=None, evalscale=1.0, scale=1.0, ownership=None, loss=None
+    ):
         stone_size = self.stone_size * scale
         if ownership is not None:
             (owner, other) = ("B", "W") if ownership > 0 else ("W", "B")
             if Theme.TERRITORY_DISPLAY != "marks":
                 if player == owner:
-                    alpha = Theme.OWNERSHIP_MAX_ALPHA + (1.0 - Theme.OWNERSHIP_MAX_ALPHA)*abs(ownership)
+                    alpha = Theme.OWNERSHIP_MAX_ALPHA + (1.0 - Theme.OWNERSHIP_MAX_ALPHA) * abs(ownership)
                 else:
                     alpha = Theme.OWNERSHIP_MAX_ALPHA
         Color(1, 1, 1, alpha)
@@ -242,15 +244,15 @@ class BadukPanWidget(Widget):
             texture=cached_texture(Theme.STONE_TEXTURE[player]),
         )
         # Draw ownership marks on stones; the mark is a square with an outline.
-        if (ownership is not None or loss is not None) and \
-              (Theme.STONE_MARKS == "all" or
-                 (Theme.STONE_MARKS == "weak" and player != owner)):
+        if (ownership is not None or loss is not None) and (
+            Theme.STONE_MARKS == "all" or (Theme.STONE_MARKS == "weak" and player != owner)
+        ):
             if ownership is not None:
                 mark_color = *Theme.STONE_COLORS[owner][:3], 1.0
                 other_color = *Theme.STONE_COLORS[other][:3], 1.0
                 outline_color = tuple(map(lambda y: sum(y) / float(len(y)), zip(*(mark_color, other_color))))
             if loss is not None:
-                mark_color = *Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3],loss
+                mark_color = *Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3], loss
                 outline_color = mark_color
 
             mark_size = 0.42 * abs(ownership if ownership else loss) * self.stone_size * 2.0
@@ -265,11 +267,12 @@ class BadukPanWidget(Widget):
             Color(*outline_color)
             Line(
                 rectangle=(
-                    self.gridpos[y, x, 0]-mark_size / 2,
-                    self.gridpos[y, x, 1]-mark_size / 2,
-                    mark_size, mark_size
+                    self.gridpos[y, x, 0] - mark_size / 2,
+                    self.gridpos[y, x, 1] - mark_size / 2,
+                    mark_size,
+                    mark_size,
                 ),
-                width=1.0
+                width=1.0,
             )
         if evalcol:
             eval_radius = math.sqrt(evalscale)  # scale area by evalscale
@@ -603,7 +606,9 @@ class BadukPanWidget(Widget):
                     )
                     for y in range(board_size_y - 1, -1, -1):
                         for x in range(board_size_x):
-                            loss_grid[y][x] = max(0, (-1 if current_node.children[-1].move.player == "B" else 1) * loss_grid[y][x])
+                            loss_grid[y][x] = max(
+                                0, (-1 if current_node.children[-1].move.player == "B" else 1) * loss_grid[y][x]
+                            )
                     self.draw_territory(loss_grid, Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3])
                 else:
                     ownership_grid = var_to_grid(ownership, (board_size_x, board_size_y))
@@ -648,8 +653,9 @@ class BadukPanWidget(Widget):
                             evalcol=evalcol,
                             evalscale=evalscale,
                             ownership=ownership_grid[m.coords[1]][m.coords[0]]
-                                if ownership_grid and not loss_grid else None,
-                            loss = loss_grid[m.coords[1]][m.coords[0]] if loss_grid else None
+                            if ownership_grid and not loss_grid
+                            else None,
+                            loss=loss_grid[m.coords[1]][m.coords[0]] if loss_grid else None,
                         )
                 realized_points_lost = node.parent_realized_points_lost
 
@@ -746,7 +752,8 @@ class BadukPanWidget(Widget):
                     continue
                 (ix_owner, other) = ("B", "W") if grid[y][x] > 0 else ("W", "B")
                 Color(
-                    *Theme.STONE_COLORS[ix_owner][:3], 1.0
+                    *Theme.STONE_COLORS[ix_owner][:3],
+                    1.0
                     # Theme.OWNERSHIP_MAX_ALPHA #abs(ownership_grid[y][x]) * 1.0 # Theme.OWNERSHIP_MAX_ALPHA
                 )
                 rect_size = 0.42 * abs(grid[y][x]) * self.stone_size * 2.0
@@ -758,6 +765,7 @@ class BadukPanWidget(Widget):
                     # radius=[rect_size / 4],
                     size=(rect_size, rect_size),
                 )
+
     def draw_territory_color(self, grid, loss_color=None):
         # This draws the expected black and white territories, or the loss during a teching game.
         # We draw a blended territory by creating a small texture of size 19x19 (more precisely board_size)
@@ -768,7 +776,7 @@ class BadukPanWidget(Widget):
         # extra rows is 0.
 
         board_size_x, board_size_y = self.katrain.game.board_size
-        texture = Texture.create(size=(board_size_x + 2, board_size_y + 2), colorfmt='rgba')
+        texture = Texture.create(size=(board_size_x + 2, board_size_y + 2), colorfmt="rgba")
         bytes = bytearray(4 * (board_size_y + 2) * (board_size_x + 2))
         for y in range(board_size_y + 2):
             for x in range(board_size_x + 2):
@@ -781,27 +789,26 @@ class BadukPanWidget(Widget):
                 else:
                     alpha = abs(grid[y_coord][x_coord])
                     if Theme.TERRITORY_DISPLAY == "trinary":
-                        alpha = 1 if alpha>Theme.TRINARY_THRESHOLD/2 else 0
+                        alpha = 1 if alpha > Theme.TRINARY_THRESHOLD / 2 else 0
 
                 x_coord = max(0, min(x_coord, board_size_x - 1))
                 y_coord = max(0, min(y_coord, board_size_y - 1))
 
                 ix_owner = "B" if grid[y_coord][x_coord] > 0 else "W"
                 if loss_color is None:
-                    pixel = *Theme.STONE_COLORS[ix_owner][:3], \
-                            alpha * Theme.OWNERSHIP_MAX_ALPHA
+                    pixel = *Theme.STONE_COLORS[ix_owner][:3], alpha * Theme.OWNERSHIP_MAX_ALPHA
                 else:
-                    pixel = *loss_color, min(1.0,alpha)
-                pixel = tuple(map(lambda p: int(p*255), pixel))
+                    pixel = *loss_color, min(1.0, alpha)
+                pixel = tuple(map(lambda p: int(p * 255), pixel))
                 idx = 4 * y * (board_size_x + 2) + x * 4
-                bytes[idx:idx+4] = pixel
+                bytes[idx : idx + 4] = pixel
 
         if Theme.TERRITORY_DISPLAY == "trinary":
             texture.mag_filter = "nearest"
-        texture.blit_buffer(bytes, colorfmt='rgba', bufferfmt='ubyte')
+        texture.blit_buffer(bytes, colorfmt="rgba", bufferfmt="ubyte")
         Color(1, 1, 1, 1)
-        lx = board_size_x-1
-        ly = board_size_y-1
+        lx = board_size_x - 1
+        ly = board_size_y - 1
         left = min(self.gridpos[0, 0, 1], self.gridpos[ly, lx, 1])
         bottom = min(self.gridpos[0, 0, 0], self.gridpos[ly, lx, 0])
 
@@ -809,24 +816,22 @@ class BadukPanWidget(Widget):
         # for the edge blending, and the additional 1 is because the grid of
         # intersections is 1 smaller than the board state. We will shift the texture by 3/2 square
         # to align it.
-        left = left - self.grid_size*3/2
-        bottom = bottom - self.grid_size*3/2
+        left = left - self.grid_size * 3 / 2
+        bottom = bottom - self.grid_size * 3 / 2
 
         PushMatrix()
 
-        Rotate(origin = (bottom, left),
-               axis=(0,0,1),
-               angle = -self.rotation_degree)
-        if self.rotation_degree in (90,180):
-            Translate(-self.grid_size*(board_size_x+2), 0, 0)
-        if self.rotation_degree in (180,270):
+        Rotate(origin=(bottom, left), axis=(0, 0, 1), angle=-self.rotation_degree)
+        if self.rotation_degree in (90, 180):
+            Translate(-self.grid_size * (board_size_x + 2), 0, 0)
+        if self.rotation_degree in (180, 270):
             Translate(0, -self.grid_size * (board_size_y + 2), 0)
 
         Rectangle(
-            pos=(bottom,left),
-            size=(self.grid_size * (board_size_x + 2),
-                  self.grid_size * (board_size_y + 2)),
-            texture=texture)
+            pos=(bottom, left),
+            size=(self.grid_size * (board_size_x + 2), self.grid_size * (board_size_y + 2)),
+            texture=texture,
+        )
 
         PopMatrix()
 

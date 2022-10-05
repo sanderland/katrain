@@ -121,15 +121,15 @@ class Theme:
     GHOST_ALPHA = 0.6
     POLICY_ALPHA = 0.5
     OWNERSHIP_MAX_ALPHA = 0.7  # max ownership brightness
-                               # stone opacity starts at this value
-                               # and reaches 1.0 for stones certain to be retained
+    #                            stone opacity starts at this value
+    #                            and reaches 1.0 for stones certain to be retained
 
-    TERRITORY_DISPLAY = "blended" # other possibilities are "marks" and "trinary"
-    TRINARY_THRESHOLD = 0.6 # in "trinary" mode, territory which is this likely to be
-                            # a certain player's gets his color
-    STONE_MARKS = "all" # "all": always display marks on stones
-                         # "none": no marks on stones, indicate ownership by transparency only
-                         # weak: draw marks only on stones likely (>50%) to be captured
+    TERRITORY_DISPLAY = "blended"  # other possibilities are "marks" and "trinary"
+    TRINARY_THRESHOLD = 0.6  # in "trinary" mode, territory which is this likely to be
+    #                          a certain player's gets his color
+    STONE_MARKS = "all"  # all: always display marks on stones
+    #                      none: no marks on stones, indicate ownership by transparency only
+    #                      weak: draw marks only on stones likely (>50%) to be captured
 
     HINTS_LO_ALPHA = 0.6
     HINTS_ALPHA = 0.8
