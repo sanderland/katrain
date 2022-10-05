@@ -815,6 +815,9 @@
     visits: visits
     orientation: 'vertical'
     button: button
+    moverange: moverange
+    start: start
+    end: end
     BoxLayout:
         size_hint: 1, 1.5
         orientation: 'horizontal'
@@ -824,6 +827,25 @@
             LabelledIntInput:
                 id: visits
                 text: '2500'
+    BoxLayout:
+        size_hint: 1, 1.5
+        orientation: 'horizontal'
+        AnchorLayout:
+            LabelledCheckBox:
+                id: moverange
+                name: 'move range'
+        DescriptionLabel:
+            text: 'Move range'
+        AnchorLayout:
+            LabelledIntInput:
+                id: start
+                name: 'start'
+                text: '0'
+        AnchorLayout:
+            LabelledIntInput:
+                name: 'end'
+                id: end
+                text: '999'
     BoxLayout:
         size_hint: 1, 1.5
         orientation: 'horizontal'
@@ -840,7 +862,8 @@
             size_hint: None,0.66
             text: i18n._("analysis:game") # re-use string
             on_press:
-                root.katrain("analyze-extra", "game", visits=visits.input_value, mistakes_only=mistakes.input_value)
+                #root.katrain("analyze-extra", "game", visits=visits.input_value, mistakes_only=mistakes.input_value)
+                root.peep("analyze-extra", "game", visits.input_value, mistakes.input_value, moverange.input_value, start.input_value, end.input_value)
                 root.popup.dismiss()
 
 <TsumegoFramePopup>:
