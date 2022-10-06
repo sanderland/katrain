@@ -615,7 +615,7 @@ class Game(BaseGame):
                 max_point_loss = max(c.points_lost or 0 for c in [node] + node.children)
                 if only_mistakes and max_point_loss <= threshold:
                     continue
-                if move_range and node.depth <= start_move or node.depth > end_move + 1:
+                if move_range and (node.depth <= start_move or node.depth > end_move + 1):
                     continue
                 node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
             if not move_range:

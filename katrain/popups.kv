@@ -811,6 +811,8 @@
         on_ref_press:  app.webbrowser('engine:help') if args[1]=='engine_help' else  app.gui('config-popup')
 
 
+
+
 <ReAnalyzeGamePopup>:
     visits: visits
     orientation: 'vertical'
@@ -818,52 +820,56 @@
     move_range: move_range
     start_move: start_move
     end_move: end_move
+    mistakes: mistakes
+    box_move_range: box_move_range
     BoxLayout:
         size_hint: 1, 1.5
-        orientation: 'horizontal'
-        DescriptionLabel:
-            text: i18n._('reanalyze max visits')
-        AnchorLayout:
-            LabelledIntInput:
-                id: visits
-                text: '2500'
-    BoxLayout:
-        size_hint: 1, 1.5
-        orientation: 'horizontal'
-        AnchorLayout:
-            LabelledCheckBox:
+        orientation: 'vertical'
+        BoxLayout:
+            size_hint: 1, 1.5
+            orientation: 'horizontal'
+            DescriptionLabel:
+                text: i18n._('reanalyze max visits')
+            AnchorLayout:
+                LabelledIntInput:
+                    id: visits
+                    text: '2500'
+        BoxLayout:
+            size_hint: 1, 1.5
+            id: box_move_range
+            orientation: 'horizontal'
+            AnalysisToggle
                 id: move_range
-                name: 'move_range'
-        DescriptionLabel:
-            text: 'Move range'
-        AnchorLayout:
-            LabelledIntInput:
-                id: start_move
-                name: 'start_move'
-                text: '0'
-        AnchorLayout:
-            LabelledIntInput:
-                name: 'end_move'
-                id: end_move
-                text: '999'
-    BoxLayout:
-        size_hint: 1, 1.5
-        orientation: 'horizontal'
-        DescriptionLabel:
-            text: i18n._('reanalyze mistakes only')
-        AnchorLayout:
-            LabelledCheckBox:
+                text: "Limit to Moves"
+                default_active: False
+            AnchorLayout:
+                LabelledIntInput:
+                    helper_text: "from move"
+                    helper_text_mode: "persistent"
+                    id: start_move
+                    text: '0'
+            AnchorLayout:
+                LabelledIntInput:
+                    helper_text: "to move"
+                    helper_text_mode: "persistent"
+                    id: end_move
+                    text: '999'
+        BoxLayout:
+            orientation: 'horizontal'
+            AnalysisToggle:
+                text: i18n._('reanalyze mistakes only')
                 id: mistakes
-    AnchorLayout:
-        size_hint: 1, 1
-        AutoSizedRoundedRectangleButton:
-            id: button
-            padding_x: 15
-            size_hint: None,0.66
-            text: i18n._("analysis:game") # re-use string
-            on_press:
-                root.katrain("analyze-extra", "game", visits=visits.input_value, mistakes_only=mistakes.input_value, move_range=move_range.input_value,start_move=start_move.input_value, end_move=end_move.input_value)
-                root.popup.dismiss()
+                default_active: False
+        AnchorLayout:
+            size_hint: 1, 1
+            AutoSizedRoundedRectangleButton:
+                id: button
+                padding_x: 15
+                size_hint: None,0.66
+                text: i18n._("analysis:game") # re-use string
+                on_press:
+                    root.katrain("analyze-extra", "game", visits=visits.input_value, start_move=start_move.input_value, end_move=end_move.input_value, move_range=move_range.checkbox.active, mistakes_only=mistakes.checkbox.active)
+                    root.popup.dismiss()
 
 <TsumegoFramePopup>:
     ko: ko

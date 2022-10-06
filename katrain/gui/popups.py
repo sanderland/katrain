@@ -842,17 +842,33 @@ class ReAnalyzeGamePopup(BoxLayout):
     popup = ObjectProperty(None)
 
     def on_checkbox_active(self, checkbox, value):
+        self.start_move.opacity = 1.0 if value else 0.5
+        self.end_move.opacity = 1.0 if value else 0.5
         self.start_move.disabled = not value
         self.end_move.disabled = not value
+
+    def switch_label_and_checkbox(self, widget):
+        widget.remove_widget(widget.label)
+        widget.remove_widget(widget.checkbox)
+        widget.add_widget(widget.checkbox)
+        widget.add_widget(widget.label)
 
     def __init__(self, katrain, **kwargs):
         super().__init__(**kwargs)
 
         self.katrain = katrain
-        self.move_range.bind(active=self.on_checkbox_active)
+
+        # Change the order of the elements so that the checkbox appears before the label
+        self.switch_label_and_checkbox(self.move_range)
+        self.switch_label_and_checkbox(self.mistakes)
+
+        self.move_range.checkbox.bind(active=self.on_checkbox_active)
 
         self.start_move.disabled = True
         self.end_move.disabled = True
+        self.start_move.opacity = 0.5
+        self.end_move.opacity = 0.5
+
         self.start_move.text = str(katrain.game.current_node.depth)
 
     def on_submit(self):
