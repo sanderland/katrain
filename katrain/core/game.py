@@ -601,6 +601,10 @@ class Game(BaseGame):
         if mode == "game":
             nodes = self.root.nodes_in_tree
             only_mistakes = kwargs.get("mistakes_only", False)
+            move_range = kwargs.get("move_range", False)
+            if move_range:
+                start_move = kwargs.get("start_move")
+                end_move = kwargs.get("end_move")
             threshold = self.katrain.config("trainer/eval_thresholds")[-4]
             if "visits" in kwargs:
                 visits = kwargs["visits"]
@@ -609,9 +613,18 @@ class Game(BaseGame):
                 visits = min_visits + engine.config["max_visits"]
             for node in nodes:
                 max_point_loss = max(c.points_lost or 0 for c in [node] + node.children)
-                if not only_mistakes or max_point_loss > threshold:
-                    node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
-            self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)
+                if only_mistakes and max_point_loss <= threshold:
+                    continue
+                if move_range and node.depth <= start_move or node.depth > end_move + 1:
+                    continue
+                node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
+            if not move_range:
+                self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)
+            else:
+                # TODO: i18n
+                self.katrain.controls.set_status(
+                    "Analyzing moves from %d to %d with %d visits." % (start_move, end_move, visits), STATUS_ANALYSIS
+                )
             return
 
         elif mode == "sweep":

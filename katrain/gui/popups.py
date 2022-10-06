@@ -842,26 +842,24 @@ class SaveSGFPopup(BoxLayout):
 
 class ReAnalyzeGamePopup(BoxLayout):
     popup = ObjectProperty(None)
-    def peep(self, *args):
-        find_child_by_name(self)
-        print(f' Kwargs: {args}')
-        print("peep")
+
     def on_checkbox_active(self, checkbox, value):
-            self.start.disabled = not value
-            self.end.disabled = not value
+        self.start_move.disabled = not value
+        self.end_move.disabled = not value
+
     def __init__(self, katrain, **kwargs):
         super().__init__(**kwargs)
 
         self.katrain = katrain
-        # "move range" checkbox
-        self.checkbox = find_child_by_name(self, 'move range')
+        self.checkbox = find_child_by_name(self, "move_range")
         self.checkbox.bind(active=self.on_checkbox_active)
 
-        self.start = find_child_by_name(self, 'start')
-        self.end = find_child_by_name(self, 'end')
-        self.start.disabled = True
-        self.end.disabled = True
-        self.start.text = "50"
+        self.start_move = find_child_by_name(self, "start_move")
+        self.end_move = find_child_by_name(self, "end_move")
+        self.start_move.disabled = True
+        self.end_move.disabled = True
+        self.start_move.text = str(katrain.game.current_node.depth)
+
     def on_submit(self):
         self.button.trigger_action(duration=0)
 
