@@ -628,6 +628,7 @@ class CollapsablePanel(MDBoxLayout):
     def on_option_state(self, options):
         pass
 
+
 class StatsBox(MDBoxLayout, BackgroundMixin):
     winrate = StringProperty("...")
     score = StringProperty("...")
