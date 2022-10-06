@@ -628,18 +628,6 @@ class CollapsablePanel(MDBoxLayout):
     def on_option_state(self, options):
         pass
 
-def find_child_by_name(widget, name):
-    from queue import Queue
-    q = Queue()
-    q.put(widget)
-    while (not q.empty()):
-        w = q.get()
-        if hasattr(w, 'name'):
-            if w.name == name:
-                return w
-        for child in w.children:
-            q.put(child)
-    return None
 class StatsBox(MDBoxLayout, BackgroundMixin):
     winrate = StringProperty("...")
     score = StringProperty("...")
