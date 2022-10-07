@@ -847,22 +847,12 @@ class ReAnalyzeGamePopup(BoxLayout):
         self.start_move.disabled = not value
         self.end_move.disabled = not value
 
-    def switch_label_and_checkbox(self, widget):
-        widget.remove_widget(widget.label)
-        widget.remove_widget(widget.checkbox)
-        widget.add_widget(widget.checkbox)
-        widget.add_widget(widget.label)
 
     def __init__(self, katrain, **kwargs):
         super().__init__(**kwargs)
 
         self.katrain = katrain
-
-        # Change the order of the elements so that the checkbox appears before the label
-        self.switch_label_and_checkbox(self.move_range)
-        self.switch_label_and_checkbox(self.mistakes)
-
-        self.move_range.checkbox.bind(active=self.on_checkbox_active)
+        self.move_range.bind(active=self.on_checkbox_active)
 
         self.start_move.disabled = True
         self.end_move.disabled = True

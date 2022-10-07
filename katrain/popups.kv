@@ -821,47 +821,55 @@
     start_move: start_move
     end_move: end_move
     mistakes: mistakes
-    box_move_range: box_move_range
     BoxLayout:
         size_hint: 1, 1.5
         orientation: 'vertical'
-        BoxLayout:
-            size_hint: 1, 1.5
-            orientation: 'horizontal'
+        GridLayout:
+            cols: 2
+            rows: 2
+            size_hint: 1, 2
             DescriptionLabel:
                 text: i18n._('reanalyze max visits')
             AnchorLayout:
                 LabelledIntInput:
                     id: visits
                     text: '2500'
+            BoxLayout:
+                AnchorLayout:
+                    size_hint: 0.3333, 1
+                    LabelledCheckBox:
+                        id: move_range
+                        default_active: False
+                DescriptionLabel:
+                    size_hint: 0.6667, 1
+                    text: "Limit to Moves"
+                    halign: 'left'
+            BoxLayout:
+                AnchorLayout:
+                    LabelledIntInput:
+                        helper_text: "from move"
+                        helper_text_mode: "persistent"
+                        id: start_move
+                        text: '0'
+                AnchorLayout:
+                    LabelledIntInput:
+                        helper_text: "to move"
+                        helper_text_mode: "persistent"
+                        id: end_move
+                        text: '999'
         BoxLayout:
-            size_hint: 1, 1.5
-            id: box_move_range
-            orientation: 'horizontal'
-            AnalysisToggle
-                id: move_range
-                text: "Limit to Moves"
-                default_active: False
-            AnchorLayout:
-                LabelledIntInput:
-                    helper_text: "from move"
-                    helper_text_mode: "persistent"
-                    id: start_move
-                    text: '0'
-            AnchorLayout:
-                LabelledIntInput:
-                    helper_text: "to move"
-                    helper_text_mode: "persistent"
-                    id: end_move
-                    text: '999'
-        BoxLayout:
-            orientation: 'horizontal'
-            AnalysisToggle:
-                text: i18n._('reanalyze mistakes only')
-                id: mistakes
-                default_active: False
-        AnchorLayout:
             size_hint: 1, 1
+            AnchorLayout:
+                size_hint: 0.16666, 1
+                LabelledCheckBox:
+                    id: mistakes
+                    default_active: False
+            DescriptionLabel:
+                size_hint: 0.833333, 1
+                text: i18n._('reanalyze mistakes only')
+                halign: 'left'
+        AnchorLayout:
+            size_hint: 1, 0.66
             AutoSizedRoundedRectangleButton:
                 id: button
                 padding_x: 15
