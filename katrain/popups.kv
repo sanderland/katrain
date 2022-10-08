@@ -842,18 +842,18 @@
                         default_active: False
                 DescriptionLabel:
                     size_hint: 0.6667, 1
-                    text: "Limit to Moves"
+                    text: i18n._('limit to moves')
                     halign: 'left'
             BoxLayout:
                 AnchorLayout:
                     LabelledIntInput:
-                        helper_text: "from move"
+                        helper_text: i18n._('from move')
                         helper_text_mode: "persistent"
                         id: start_move
                         text: '0'
                 AnchorLayout:
                     LabelledIntInput:
-                        helper_text: "to move"
+                        helper_text: i18n._('to move')
                         helper_text_mode: "persistent"
                         id: end_move
                         text: '999'

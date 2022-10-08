@@ -954,3 +954,19 @@ msgstr "Ko allowed?"
 #. TODO - Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
 msgstr "Tsumego Frame"
+
+#. TODO
+msgid "from move"
+msgstr "от хода"
+
+#. TODO - status message
+msgid "move range analysis"
+msgstr "Анализ ходов от {start_move} до {end_move} с {visits} посещениями"
+
+#. TODO
+msgid "to move"
+msgstr "до хода"
+
+#. TODO - Restrict analysis to move range
+msgid "limit to moves"
+msgstr "Только для ходов"
