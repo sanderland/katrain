@@ -876,7 +876,7 @@
                 size_hint: None,0.66
                 text: i18n._("analysis:game") # re-use string
                 on_press:
-                    root.katrain("analyze-extra", "game", visits=visits.input_value, start_move=start_move.input_value, end_move=end_move.input_value, move_range=move_range.input_value, mistakes_only=mistakes.input_value)
+                    root.katrain("analyze-extra", "game", visits=visits.input_value, move_range=(start_move.input_value, end_move.input_value) if move_range.input_value else None, mistakes_only=mistakes.input_value)
                     root.popup.dismiss()
 
 <TsumegoFramePopup>:
