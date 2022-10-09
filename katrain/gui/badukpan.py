@@ -793,6 +793,9 @@ class BadukPanWidget(Widget):
                             text_on = False
                             alpha = Theme.HINTS_LO_ALPHA
 
+                        if scale <= 0:  # if theme turns hints off, do not draw them
+                            continue
+
                         if "pv" in move_dict:
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:
