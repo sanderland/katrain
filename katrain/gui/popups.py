@@ -839,8 +839,27 @@ class SaveSGFPopup(BoxLayout):
 
 
 class ReAnalyzeGamePopup(BoxLayout):
-    katrain = ObjectProperty(None)
     popup = ObjectProperty(None)
+
+    def on_checkbox_active(self, checkbox, value):
+        self.start_move.opacity = 1.0 if value else 0.3
+        self.end_move.opacity = 1.0 if value else 0.3
+        self.start_move.disabled = not value
+        self.end_move.disabled = not value
+
+
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+
+        self.katrain = katrain
+        self.move_range.bind(active=self.on_checkbox_active)
+
+        self.start_move.disabled = True
+        self.end_move.disabled = True
+        self.start_move.opacity = 0.3
+        self.end_move.opacity = 0.3
+
+        self.start_move.text = str(katrain.game.current_node.depth)
 
     def on_submit(self):
         self.button.trigger_action(duration=0)

@@ -161,7 +161,7 @@ class BadukPanWidget(Widget):
                     self.set_animating_pv(None, None)  # any click kills PV from label/move
             if inside and self.animating_pv is not None:
                 d_sq = (pos[0] - self.animating_pv[3][0]) ** 2 + (pos[1] - self.animating_pv[3][1])
-                if d_sq > 2 * self.stone_size ** 2:  # move too far from where it was activated
+                if d_sq > 2 * self.stone_size**2:  # move too far from where it was activated
                     self.set_animating_pv(None, None)  # any click kills PV from label/move
             self.last_mouse_pos = pos
 
@@ -1049,9 +1049,10 @@ class BadukPanWidget(Widget):
 
 class AnalysisDropDown(DropDown):
     def open_game_analysis_popup(self, *_args):
-        analysis_popup = I18NPopup(title_key="analysis:game", size=[dp(500), dp(350)], content=ReAnalyzeGamePopup())
+        analysis_popup = I18NPopup(
+            title_key="analysis:game", size=[dp(500), dp(350)], content=ReAnalyzeGamePopup(MDApp.get_running_app().gui)
+        )
         analysis_popup.content.popup = analysis_popup
-        analysis_popup.content.katrain = MDApp.get_running_app().gui
         analysis_popup.open()
 
     def open_report_popup(self, *_args):
