@@ -42,7 +42,7 @@ setup(
         "wheel",
         "setuptools",
         "kivy[full]>=2.1.0",
-        "kivymd==0.104.1",  # 0.104.2 was breaking MRO
+        "kivymd==0.104.1",  # 0.104.2+ was breaking MRO
         "ffpyplayer",
         "urllib3",
         "numpy",
@@ -51,7 +51,7 @@ setup(
         "chardet",  # for automatic encoding detection
     ],
     dependency_links=["https://kivy.org/downloads/simple/"],
-    python_requires=">=3.7, <3.10",
+    python_requires=">=3.7, <3.11",
     entry_points={"console_scripts": ["katrain=katrain.__main__:run_app"]},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
