@@ -917,6 +917,9 @@ class BadukPanWidget(Widget):
                             text_on = False
                             alpha = Theme.HINTS_LO_ALPHA
 
+                        if scale <= 0:  # if theme turns hints off, do not draw them
+                            continue
+
                         if "pv" in move_dict:
                             self.active_pv_moves.append((move.coords, move_dict["pv"], current_node))
                         else:
@@ -1173,9 +1176,10 @@ class BadukPanWidget(Widget):
 
 class AnalysisDropDown(DropDown):
     def open_game_analysis_popup(self, *_args):
-        analysis_popup = I18NPopup(title_key="analysis:game", size=[dp(500), dp(350)], content=ReAnalyzeGamePopup())
+        analysis_popup = I18NPopup(
+            title_key="analysis:game", size=[dp(500), dp(350)], content=ReAnalyzeGamePopup(MDApp.get_running_app().gui)
+        )
         analysis_popup.content.popup = analysis_popup
-        analysis_popup.content.katrain = MDApp.get_running_app().gui
         analysis_popup.open()
 
     def open_report_popup(self, *_args):

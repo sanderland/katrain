@@ -105,6 +105,16 @@ msgstr "Fast analysis of all moves"
 msgid "analysis:game"
 msgstr "Deeper full game analysis"
 
+#. Restrict analysis to move range
+msgid "limit to moves"
+msgstr "Limit to moves"
+
+msgid "from move"
+msgstr "from move"
+
+msgid "to move"
+msgstr "to move"
+
 #. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
 msgstr "Tsumego Frame"
@@ -209,6 +219,11 @@ msgstr "Equalizing analysis of candidate moves to {visits} visits"
 #. status message
 msgid "game re-analysis"
 msgstr "Re-analyzing entire game using {visits} visits"
+
+#. status message
+msgid "move range analysis"
+msgstr ""
+"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
 
 #. right panel buttons and below board
 msgid "pass-button-text"
