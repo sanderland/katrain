@@ -234,9 +234,9 @@ class BadukPanWidget(Widget):
             (owner, other) = ("B", "W") if ownership > 0 else ("W", "B")
             if Theme.TERRITORY_DISPLAY != "marks":
                 if player == owner:
-                    alpha = Theme.OWNERSHIP_MAX_ALPHA + (1.0 - Theme.OWNERSHIP_MAX_ALPHA) * abs(ownership)
+                    alpha = Theme.STONE_MIN_ALPHA + (1.0 - Theme.STONE_MIN_ALPHA) * abs(ownership)
                 else:
-                    alpha = Theme.OWNERSHIP_MAX_ALPHA
+                    alpha = Theme.STONE_MIN_ALPHA
         Color(1, 1, 1, alpha)
         Rectangle(
             pos=(self.gridpos[y, x, 0] - stone_size, self.gridpos[y, x, 1] - stone_size),
@@ -255,7 +255,7 @@ class BadukPanWidget(Widget):
                 mark_color = *Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3], loss
                 outline_color = mark_color
 
-            mark_size = 0.42 * abs(ownership if ownership else loss) * self.stone_size * 2.0
+            mark_size = Theme.MARK_SIZE * abs(ownership if ownership else loss) * self.stone_size * 2.0
             Color(*mark_color)
             Rectangle(
                 pos=(
@@ -756,7 +756,7 @@ class BadukPanWidget(Widget):
                     1.0
                     # Theme.OWNERSHIP_MAX_ALPHA #abs(ownership_grid[y][x]) * 1.0 # Theme.OWNERSHIP_MAX_ALPHA
                 )
-                rect_size = 0.42 * abs(grid[y][x]) * self.stone_size * 2.0
+                rect_size = Theme.MARK_SIZE * abs(grid[y][x]) * self.stone_size * 2.0
                 Rectangle(
                     pos=(
                         self.gridpos[y, x, 0] - rect_size / 2,
@@ -788,8 +788,8 @@ class BadukPanWidget(Widget):
                     alpha = 0
                 else:
                     alpha = abs(grid[y_coord][x_coord])
-                    if Theme.TERRITORY_DISPLAY == "trinary":
-                        alpha = 1 if alpha > Theme.TRINARY_THRESHOLD / 2 else 0
+                    if Theme.TERRITORY_DISPLAY == "blocks":
+                        alpha = 1 if alpha > Theme.BLOCKS_THRESHOLD / 2 else 0
 
                 x_coord = max(0, min(x_coord, board_size_x - 1))
                 y_coord = max(0, min(y_coord, board_size_y - 1))
@@ -803,7 +803,7 @@ class BadukPanWidget(Widget):
                 idx = 4 * y * (board_size_x + 2) + x * 4
                 bytes[idx : idx + 4] = pixel
 
-        if Theme.TERRITORY_DISPLAY == "trinary":
+        if Theme.TERRITORY_DISPLAY == "blocks":
             texture.mag_filter = "nearest"
         texture.blit_buffer(bytes, colorfmt="rgba", bufferfmt="ubyte")
         Color(1, 1, 1, 1)

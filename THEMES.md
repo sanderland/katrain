@@ -38,6 +38,7 @@ The relevant variables are:
     STONE_MARKS = "all" | "weak" | "none"
     OWNERSHIP_MAX_ALPHA = 0.7 
     BLOCKS_THRESHOLD = 0.6
+    MARK_SIZE = 0.42  # as fraction of stone size
 ```
 
 ## Installation
