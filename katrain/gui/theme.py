@@ -125,7 +125,7 @@ class Theme:
     #                            and reaches 1.0 for stones certain to be retained
     STONE_MIN_ALPHA = 0.7  # the minimal alpha for dead/weak stones
 
-    TERRITORY_DISPLAY = "blocks"  # other possibilities are "marks" and "blocks"
+    TERRITORY_DISPLAY = "blended"  # other possibilities are "marks" and "blocks"
     BLOCKS_THRESHOLD = 0.6  # in "blocks" mode, territory which is this likely to be
     #                          a certain player's gets his color
     STONE_MARKS = "all"  # all: always display marks on stones
