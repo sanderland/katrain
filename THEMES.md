@@ -24,14 +24,14 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
   * Weak stones only - marks will appear only on stones which are over 50% likely to die before the end of the game.
   * No stone marks.
 
-|                                                      blended                                                       |                                                                                    marks                                                                                    |                                                       blocks                                                       |
-|:------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------:|
-| ![Preview](https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/blended-all.png) |                              ![Preview](https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/marks-weak.png)                              | ![Preview](https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/blocks-none.png) |
-|                                               **all stones marked**                                                |                                                                           **weak stones marked**                                                                            |                                                **no stones marked**                                                |
+|  <img src="https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/blended-all.png" width="400px"/><br>Blended style, all stones marked  | <img src="https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/marks-weak.png" width="400px"/><br>Marks on intersections, weak stones marked |
+|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| <img src="https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/blocks-none.png" width="400px"/><br>Territory blocks, no stones marked |  <img src="https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/blended-weak.png" width="400px"/><br>Blended territory, weak stones marked   |
+                             
 
 <sup>The game used in the screenshots is [Albert Yen vs. Eric Yoder](https://www.usgo.org/news/2022/03/members-edition-midwest-open-round-2-the-broken-ladder-game).</sup>
 
-The stone marks and territory display are independent; the table above presents 3 possible variants out of 9.
+The stone marks and territory style are independent; the table above presents 4 possible variants out of 9.
 The relevant variables are:
 ```
     TERRITORY_DISPLAY = "blended" | "marks" | "blocks"

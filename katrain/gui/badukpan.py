@@ -789,7 +789,7 @@ class BadukPanWidget(Widget):
                 else:
                     alpha = abs(grid[y_coord][x_coord])
                     if Theme.TERRITORY_DISPLAY == "blocks":
-                        alpha = 1 if alpha > Theme.BLOCKS_THRESHOLD / 2 else 0
+                        alpha = 1 if alpha > Theme.BLOCKS_THRESHOLD else 0
 
                 x_coord = max(0, min(x_coord, board_size_x - 1))
                 y_coord = max(0, min(y_coord, board_size_y - 1))
