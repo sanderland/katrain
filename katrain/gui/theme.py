@@ -124,6 +124,7 @@ class Theme:
     STONE_MIN_ALPHA = 0.7  # the minimal alpha for dead/weak stones
 
     TERRITORY_DISPLAY = "blended"  # other possibilities are "marks" and "blocks"
+    TERRITORY_COLOR_TINT = [1*0.9, 0.95*0.9, 0.8*0.9, 1]  # multiplied by texture
     BLOCKS_THRESHOLD = 0.3  # in "blocks" mode, territory which is this likely to be
     #                          a certain player's gets his color
     STONE_MARKS = "all"  # all: always display marks on stones

@@ -501,7 +501,11 @@ class BadukPanWidget(Widget):
         if katrain.game.insert_mode:
             Color(*Theme.INSERT_BOARD_COLOR_TINT)  # dreamy
         else:
-            Color(*Theme.BOARD_COLOR_TINT)  # image is a bit too light
+            ownership = MDApp.get_running_app().gui.analysis_controls.ownership.active
+            if Theme.TERRITORY_DISPLAY == "blended" and ownership:
+                Color(*Theme.TERRITORY_COLOR_TINT)  # image is a bit too light
+            else:
+                Color(*Theme.BOARD_COLOR_TINT)  # image is a bit too light
         Rectangle(
             pos=(
                 gridpos_x[0] - self.grid_size * grid_spaces_margin_x[0],
