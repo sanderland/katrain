@@ -501,7 +501,14 @@ class BadukPanWidget(Widget):
         if katrain.game.insert_mode:
             Color(*Theme.INSERT_BOARD_COLOR_TINT)  # dreamy
         else:
-            Color(*Theme.BOARD_COLOR_TINT)  # image is a bit too light
+            if katrain.analysis_controls.ownership.active:
+                dimmed = Theme.BOARD_COLOR_TINT[:4]
+                dimmed[0] *= 0.9
+                dimmed[1] *= 0.9
+                dimmed[2] *= 0.9
+                Color(dimmed)  # image is a bit too light
+            else
+                Color(*Theme.BOARD_COLOR_TINT)  # image is a bit too light
         Rectangle(
             pos=(
                 gridpos_x[0] - self.grid_size * grid_spaces_margin_x[0],
