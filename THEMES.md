@@ -15,7 +15,10 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
   ```
 * All resources (including icons, which can not be renamed for now) will be looked up in `<home dir>/.katrain` first, so files with identical names there can be used to override sounds and images.
 * If variables are specified in multiple theme files, the *latest* alphabetically takes precedence. That is, each later theme file overwrites the settings from any previous one.
-* Katrain supports different styles of display of expected territory:
+
+## Expected territory options
+
+* KaTrain supports different styles of display of expected territory:
   * Blended style colors the board with an intensity proportional to the likelihood of a player controlling that territory at the end of the game.
   * In the Marks style, each point of the board is marked with a square of size which is proportional to ownership likelihood.
   * The Blocks style divides the whole board into black, white, and neutral territory, based on a likelihood threshold. This style is appropriate as a counting aid, but may be misleading before endgame if much of the territory is unsettled.

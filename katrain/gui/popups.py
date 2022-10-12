@@ -847,7 +847,6 @@ class ReAnalyzeGamePopup(BoxLayout):
         self.start_move.disabled = not value
         self.end_move.disabled = not value
 
-
     def __init__(self, katrain, **kwargs):
         super().__init__(**kwargs)
 
