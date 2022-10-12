@@ -120,9 +120,7 @@ class Theme:
 
     GHOST_ALPHA = 0.6
     POLICY_ALPHA = 0.5
-    OWNERSHIP_MAX_ALPHA = 0.7  # max ownership brightness
-    #                            stone opacity starts at this value
-    #                            and reaches 1.0 for stones certain to be retained
+    OWNERSHIP_COLORS = {"B": [0.0, 0.0, 0.0, 0.7], "W": [0.95, 0.95, 1.0, 0.825]}
     STONE_MIN_ALPHA = 0.7  # the minimal alpha for dead/weak stones
 
     TERRITORY_DISPLAY = "blended"  # other possibilities are "marks" and "blocks"
