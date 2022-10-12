@@ -130,6 +130,8 @@ class KaTrainGui(Screen, KaTrainBase):
         self.last_key_down = None
         self.last_focus_event = 0
 
+        self.territory_estimate = self.analysis_controls.ownership.active
+
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
@@ -240,6 +242,11 @@ class KaTrainGui(Screen, KaTrainBase):
         self, redraw_board=False
     ):  # is called after every message and on receiving analyses and config changes
         # AI and Trainer/auto-undo handlers
+        ownership = self.analysis_controls.ownership.active
+        if self.territory_estimate != ownership:
+            self.territory_estimate = ownership
+            redraw_board = True
+
         if not self.game or not self.game.current_node:
             return
         cn = self.game.current_node
