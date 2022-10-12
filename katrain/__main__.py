@@ -408,7 +408,6 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_redo(self, n_times=1):
         self.board_gui.animating_pv = None
         self.game.redo(n_times)
-
     def _do_rotate(self):
         self.board_gui.rotate_gridpos()
 
@@ -420,7 +419,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.controls.move_tree.switch_branch(*args)
 
-    def _play_stone_sound(self, _dt=None):
+    def _play_stone_sound(self,_dt=None):
         play_sound(random.choice(Theme.STONE_SOUNDS))
 
     def _do_play(self, coords):
