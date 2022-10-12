@@ -637,6 +637,7 @@ class BadukPanWidget(Widget):
                         evalscale = min(1, max(0, realized_points_lost / points_lost))
                 placements = node.placements
                 for m in node.moves + placements:
+                    new_move = (m.coords == current_node.move.coords) and not current_node.ownership
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
                         move_eval_on = not all_dots_off and show_dots_for.get(m.player) and i < show_n_eval
                         if move_eval_on and points_lost is not None:
@@ -653,7 +654,7 @@ class BadukPanWidget(Widget):
                             evalcol=evalcol,
                             evalscale=evalscale,
                             ownership=ownership_grid[m.coords[1]][m.coords[0]]
-                            if ownership_grid and not loss_grid
+                            if ownership_grid and not loss_grid and not new_move
                             else None,
                             loss=loss_grid[m.coords[1]][m.coords[0]] if loss_grid else None,
                         )
