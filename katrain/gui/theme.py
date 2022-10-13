@@ -104,7 +104,7 @@ class Theme:
     HINT_TEXT_COLOR = BLACK
 
     REGION_BORDER_COLOR = LIGHTER_BACKGROUND_COLOR
-    INSERT_BOARD_COLOR_TINT = [1, 1, 1, 0.75]
+    INSERT_BOARD_COLOR_TINT = [1, 1, 1, 0.6]
     PASS_CIRCLE_COLOR = [0.45, 0.05, 0.45, 0.7]
     PASS_CIRCLE_TEXT_COLOR = [0.85, 0.85, 0.85]
 
@@ -122,6 +122,7 @@ class Theme:
     GHOST_ALPHA = 0.6
     POLICY_ALPHA = 0.5
     OWNERSHIP_COLORS = {"B": [0.0, 0.0, 0.10, 0.75], "W": [0.92, 0.92, 1.0, 0.800]}
+    OWNERSHIP_GAMMA = 1.33
     STONE_MIN_ALPHA = 0.7  # the minimal alpha for dead/weak stones
 
     TERRITORY_DISPLAY = "blended"  # other possibilities are "marks" and "blocks"
