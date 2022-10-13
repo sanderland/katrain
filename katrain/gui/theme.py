@@ -65,6 +65,7 @@ class Theme:
     LAST_MOVE_TEXTURE = "inner.png"
     TOP_MOVE_TEXTURE = "topmove.png"
     BOARD_TEXTURE = "board.png"
+    BOARD_TEXTURE = "wood6.jpg"
     GRAPH_TEXTURE = "graph_bg.png"
     # sounds
     STONE_SOUNDS = [f"stone{i}.wav" for i in [1, 2, 3, 4, 5]]
@@ -98,7 +99,7 @@ class Theme:
 
     # board theme
     APPROX_BOARD_COLOR = [0.95, 0.75, 0.47, 1]  # for drawing on top of / hiding what's under it
-    BOARD_COLOR_TINT = [1, 0.95, 0.8, 1]  # multiplied by texture
+    BOARD_COLOR_TINT = [1, 1, 1, 1]  # multiplied by texture
 
     HINT_TEXT_COLOR = BLACK
 
@@ -120,7 +121,7 @@ class Theme:
 
     GHOST_ALPHA = 0.6
     POLICY_ALPHA = 0.5
-    OWNERSHIP_COLORS = {"B": [0.0, 0.0, 0.0, 0.7], "W": [0.95, 0.95, 1.0, 0.825]}
+    OWNERSHIP_COLORS = {"B": [0.0, 0.0, 0.10, 0.75], "W": [0.92, 0.92, 1.0, 0.800]}
     STONE_MIN_ALPHA = 0.7  # the minimal alpha for dead/weak stones
 
     TERRITORY_DISPLAY = "blended"  # other possibilities are "marks" and "blocks"
