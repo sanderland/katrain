@@ -248,8 +248,8 @@ class BadukPanWidget(Widget):
             Theme.STONE_MARKS == "all" or (Theme.STONE_MARKS == "weak" and player != owner)
         ):
             if ownership is not None:
-                mark_color = *Theme.OWNERSHIP_COLORS[owner][:3], 1.0
-                other_color = *Theme.OWNERSHIP_COLORS[other][:3], 1.0
+                mark_color = *Theme.STONE_COLORS[owner][:3], 1.0
+                other_color = *Theme.STONE_COLORS[other][:3], 1.0
                 outline_color = tuple(map(lambda y: sum(y) / float(len(y)), zip(*(mark_color, other_color))))
             if loss is not None:
                 mark_color = *Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3], loss
