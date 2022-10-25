@@ -1,6 +1,7 @@
 import math
 import time
 from typing import List, Optional
+import copy
 
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -152,8 +153,8 @@ class BadukPanWidget(Widget):
                     for move, pv, node in self.active_pv_moves
                     if move[0] < len(self.gridpos[0])
                     and move[1] < len(self.gridpos)
-                    and abs(rel_pos[0] - self.gridpos[move[1], move[0], 0]) < self.grid_size / 2
-                    and abs(rel_pos[1] - self.gridpos[move[1], move[0], 1]) < self.grid_size / 2
+                    and abs(rel_pos[0] - self.gridpos[move[1]][move[0]][0]) < self.grid_size / 2
+                    and abs(rel_pos[1] - self.gridpos[move[1]][move[0]][1]) < self.grid_size / 2
                 ]
                 if near_move:
                     self.set_animating_pv(near_move[0][0], near_move[0][1])
@@ -1076,8 +1077,8 @@ class BadukPanWidget(Widget):
             while hide_node and hide_node.move and hide_node != node:
                 if not hide_node.move.is_pass:
                     pos = (
-                        self.gridpos[hide_node.move.coords[1], hide_node.move.coords[0], 0],
-                        self.gridpos[hide_node.move.coords[1], hide_node.move.coords[0], 1],
+                        self.gridpos[hide_node.move.coords[1]][hide_node.move.coords[0]][0],
+                        self.gridpos[hide_node.move.coords[1]][hide_node.move.coords[0]][1],
                     )
                     draw_circle(pos, self.stone_size, [0.85, 0.68, 0.40, 0.8])
                 hide_node = hide_node.parent
@@ -1095,7 +1096,7 @@ class BadukPanWidget(Widget):
                     katrain.board_controls.pass_btn.pos[1] + katrain.board_controls.pass_btn.size[1] / 2,
                 ]
             else:
-                board_coords = (self.gridpos[coords[1], coords[0], 0], self.gridpos[coords[1], coords[0], 1])
+                board_coords = (self.gridpos[coords[1]][coords[0]][0], self.gridpos[coords[1]][coords[0]][1])
                 sizefac = 1
 
             stone_size = self.stone_size * sizefac
@@ -1145,7 +1146,7 @@ class BadukPanWidget(Widget):
                 x0 = self.initial_gridpos_x[0]
                 y0 = self.initial_gridpos_y[0]
 
-            pos = self.gridpos.tolist()
+            pos = copy.deepcopy(self.gridpos)
             for yi in range(len(self.gridpos)):
                 for xi in range(len(self.gridpos[0])):
                     if self.rotation_degree == 90 or self.rotation_degree == 270:
@@ -1161,7 +1162,7 @@ class BadukPanWidget(Widget):
                     elif y0 > x0:
                         x = round(x - diff, 4)
                         y = round(y + diff, 4)
-                    self.gridpos[yi][xi] = (x, y)
+                    self.gridpos[yi][xi] = [x, y]
         else:
             self.gridpos = list(list(x) for x in zip(*self.gridpos[::-1]))
 
