@@ -637,6 +637,7 @@ class BadukPanWidget(Widget):
                         evalscale = min(1, max(0, realized_points_lost / points_lost))
                 placements = node.placements
                 for m in node.moves + placements:
+                    new_move = (current_node.move and m.coords == current_node.move.coords) and not current_node.ownership
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
                         move_eval_on = not all_dots_off and show_dots_for.get(m.player) and i < show_n_eval
                         if move_eval_on and points_lost is not None:
@@ -653,7 +654,7 @@ class BadukPanWidget(Widget):
                             evalcol=evalcol,
                             evalscale=evalscale,
                             ownership=ownership_grid[m.coords[1]][m.coords[0]]
-                            if ownership_grid and not loss_grid
+                            if ownership_grid and not loss_grid and not new_move
                             else None,
                             loss=loss_grid[m.coords[1]][m.coords[0]] if loss_grid else None,
                         )
@@ -754,7 +755,6 @@ class BadukPanWidget(Widget):
                 Color(
                     *Theme.STONE_COLORS[ix_owner][:3],
                     1.0
-                    # Theme.OWNERSHIP_MAX_ALPHA #abs(ownership_grid[y][x]) * 1.0 # Theme.OWNERSHIP_MAX_ALPHA
                 )
                 rect_size = Theme.MARK_SIZE * abs(grid[y][x]) * self.stone_size * 2.0
                 Rectangle(
@@ -790,13 +790,15 @@ class BadukPanWidget(Widget):
                     alpha = abs(grid[y_coord][x_coord])
                     if Theme.TERRITORY_DISPLAY == "blocks":
                         alpha = 1 if alpha > Theme.BLOCKS_THRESHOLD else 0
+                alpha = alpha**(1.0/Theme.OWNERSHIP_GAMMA)
 
                 x_coord = max(0, min(x_coord, board_size_x - 1))
                 y_coord = max(0, min(y_coord, board_size_y - 1))
 
                 ix_owner = "B" if grid[y_coord][x_coord] > 0 else "W"
                 if loss_color is None:
-                    pixel = *Theme.STONE_COLORS[ix_owner][:3], alpha * Theme.OWNERSHIP_MAX_ALPHA
+                    pixel = Theme.OWNERSHIP_COLORS[ix_owner][:4]
+                    pixel[3] *= alpha
                 else:
                     pixel = *loss_color, min(1.0, alpha)
                 pixel = tuple(map(lambda p: int(p * 255), pixel))
