@@ -843,8 +843,8 @@ class BadukPanWidget(Widget):
         Color(*Theme.REGION_BORDER_COLOR)
         Line(
             rectangle=(
-                self.gridpos[ymin, xmin, 0] - self.grid_size / 3,
-                self.gridpos[ymin, xmin, 1] - self.grid_size / 3,
+                self.gridpos[ymin][xmin][0] - self.grid_size / 3,
+                self.gridpos[ymin][xmin][1] - self.grid_size / 3,
                 (xmax - xmin + 2 / 3) * self.grid_size,
                 (ymax - ymin + 2 / 3) * self.grid_size,
             ),
