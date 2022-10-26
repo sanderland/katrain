@@ -1166,7 +1166,7 @@ class BadukPanWidget(Widget):
         else:
             # This is a rot90 for list of lists. Based on the code found in
             # stackoverflow.com/questions/8421337/rotating-a-two-dimensional-array-in-python
-            self.gridpos = list(list(x) for x in zip(*self.gridpos[::-1]))
+            self.gridpos = list(list(x) for x in zip(*reversed(self.gridpos)))
 
         self.rotation_degree += 90
         if self.rotation_degree == 360:
