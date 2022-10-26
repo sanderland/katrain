@@ -1164,6 +1164,8 @@ class BadukPanWidget(Widget):
                         y = round(y + diff, 4)
                     self.gridpos[yi][xi] = [x, y]
         else:
+            # This is a rot90 for list of lists. Based on the code found in
+            # stackoverflow.com/questions/8421337/rotating-a-two-dimensional-array-in-python
             self.gridpos = list(list(x) for x in zip(*self.gridpos[::-1]))
 
         self.rotation_degree += 90
