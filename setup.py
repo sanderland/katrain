@@ -49,6 +49,7 @@ setup(
         "pygame;platform_system=='Darwin'",  # some mac versions need this for kivy
         "screeninfo;platform_system!='Darwin'",  # for screen resolution, has problems on macos
         "chardet",  # for automatic encoding detection
+        "plyer", # for native file chooser.
     ],
     dependency_links=["https://kivy.org/downloads/simple/"],
     python_requires=">=3.7, <3.11",
