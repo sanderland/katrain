@@ -839,14 +839,17 @@ class BadukPanWidget(Widget):
         PopMatrix()
 
     def draw_roi_box(self, region_of_interest, width: float = 2):
-        xmin, xmax, ymin, ymax = region_of_interest
+        x1, x2, y1, y2 = region_of_interest
+        x_start, y_start = self.gridpos[y1][x1]
+        x_end, y_end = self.gridpos[y2][x2]
+
         Color(*Theme.REGION_BORDER_COLOR)
         Line(
             rectangle=(
-                self.gridpos[ymin][xmin][0] - self.grid_size / 3,
-                self.gridpos[ymin][xmin][1] - self.grid_size / 3,
-                (xmax - xmin + 2 / 3) * self.grid_size,
-                (ymax - ymin + 2 / 3) * self.grid_size,
+                min(x_start, x_end) - self.grid_size / 3,
+                min(y_start, y_end) - self.grid_size / 3,
+                abs(x_start - x_end) + (2 / 3) * self.grid_size,
+                abs(y_start - y_end) + (2 / 3) * self.grid_size,
             ),
             width=width,
         )
@@ -1034,8 +1037,7 @@ class BadukPanWidget(Widget):
                             )
 
             if self.selecting_region_of_interest and len(self.region_of_interest) == 4:
-                x1, x2, y1, y2 = self.region_of_interest
-                self.draw_roi_box([min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2)], width=dp(2))
+                self.draw_roi_box(self.region_of_interest, width=dp(2))
             else:
                 # hover next move ghost stone
                 if self.ghost_stone:
