@@ -1,7 +1,7 @@
 import math
 import time
 from typing import List, Optional
-import numpy as np
+import copy
 
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -42,7 +42,7 @@ class BadukPanWidget(Widget):
         super(BadukPanWidget, self).__init__(**kwargs)
         self.trainer_config = {}
         self.ghost_stone = []
-        self.gridpos = np.zeros((0, 0, 2))
+        self.gridpos = None
         self.initial_gridpos_x = []
         self.initial_gridpos_y = []
         self.rotation_degree = 0
@@ -77,16 +77,16 @@ class BadukPanWidget(Widget):
 
     # stone placement functions
     def _find_closest(self, pos_x, pos_y):
-        xd = abs(self.gridpos[0, 0, 0] - pos_x)
+        xd = abs(self.gridpos[0][0][0] - pos_x)
         xp = 0
-        yd = abs(self.gridpos[0, 0, 1] - pos_y)
+        yd = abs(self.gridpos[0][0][1] - pos_y)
         yp = 0
         for y in range(0, len(self.gridpos)):
             for x in range(0, len(self.gridpos[0])):
-                if abs(self.gridpos[y, x, 0] - pos_x) <= xd and abs(self.gridpos[y, x, 1] - pos_y) <= yd:
-                    xd = abs(self.gridpos[y, x, 0] - pos_x)
+                if abs(self.gridpos[y][x][0] - pos_x) <= xd and abs(self.gridpos[y][x][1] - pos_y) <= yd:
+                    xd = abs(self.gridpos[y][x][0] - pos_x)
                     xp = x
-                    yd = abs(self.gridpos[y, x, 1] - pos_y)
+                    yd = abs(self.gridpos[y][x][1] - pos_y)
                     yp = y
         return xd, xp, yd, yp
 
@@ -153,8 +153,8 @@ class BadukPanWidget(Widget):
                     for move, pv, node in self.active_pv_moves
                     if move[0] < len(self.gridpos[0])
                     and move[1] < len(self.gridpos)
-                    and abs(rel_pos[0] - self.gridpos[move[1], move[0], 0]) < self.grid_size / 2
-                    and abs(rel_pos[1] - self.gridpos[move[1], move[0], 1]) < self.grid_size / 2
+                    and abs(rel_pos[0] - self.gridpos[move[1]][move[0]][0]) < self.grid_size / 2
+                    and abs(rel_pos[1] - self.gridpos[move[1]][move[0]][1]) < self.grid_size / 2
                 ]
                 if near_move:
                     self.set_animating_pv(near_move[0][0], near_move[0][1])
@@ -239,7 +239,7 @@ class BadukPanWidget(Widget):
                     alpha = Theme.STONE_MIN_ALPHA
         Color(1, 1, 1, alpha)
         Rectangle(
-            pos=(self.gridpos[y, x, 0] - stone_size, self.gridpos[y, x, 1] - stone_size),
+            pos=(self.gridpos[y][x][0] - stone_size, self.gridpos[y][x][1] - stone_size),
             size=(2 * stone_size, 2 * stone_size),
             texture=cached_texture(Theme.STONE_TEXTURE[player]),
         )
@@ -259,16 +259,16 @@ class BadukPanWidget(Widget):
             Color(*mark_color)
             Rectangle(
                 pos=(
-                    self.gridpos[y, x, 0] - mark_size / 2,
-                    self.gridpos[y, x, 1] - mark_size / 2,
+                    self.gridpos[y][x][0] - mark_size / 2,
+                    self.gridpos[y][x][1] - mark_size / 2,
                 ),
                 size=(mark_size, mark_size),
             )
             Color(*outline_color)
             Line(
                 rectangle=(
-                    self.gridpos[y, x, 0] - mark_size / 2,
-                    self.gridpos[y, x, 1] - mark_size / 2,
+                    self.gridpos[y][x][0] - mark_size / 2,
+                    self.gridpos[y][x][1] - mark_size / 2,
                     mark_size,
                     mark_size,
                 ),
@@ -281,7 +281,7 @@ class BadukPanWidget(Widget):
             )
             Color(*evalcol)
             Rectangle(
-                pos=(self.gridpos[y, x, 0] - evalsize, self.gridpos[y, x, 1] - evalsize),
+                pos=(self.gridpos[y][x][0] - evalsize, self.gridpos[y][x][1] - evalsize),
                 size=(2 * evalsize, 2 * evalsize),
                 texture=cached_texture(Theme.EVAL_DOT_TEXTURE),
             )
@@ -289,7 +289,7 @@ class BadukPanWidget(Widget):
             Color(*innercol)
             inner_size = stone_size * 0.8
             Rectangle(
-                pos=(self.gridpos[y, x, 0] - inner_size, self.gridpos[y, x, 1] - inner_size),
+                pos=(self.gridpos[y][x][0] - inner_size, self.gridpos[y][x][1] - inner_size),
                 size=(2 * inner_size, 2 * inner_size),
                 texture=cached_texture(Theme.LAST_MOVE_TEXTURE),
             )
@@ -325,7 +325,7 @@ class BadukPanWidget(Widget):
             self.stone_size = self.calculate_stone_size(self.grid_size)
             # if not initiated or if changed
             if (
-                len(self.gridpos) == 0
+                self.gridpos is None
                 or abs(
                     self.pos[0]
                     + extra_px_margin_x
@@ -360,11 +360,11 @@ class BadukPanWidget(Widget):
 
             # if window size got changed
             if (
-                self.gridpos[0, 0, 0] not in current_gridpos_x
-                or self.gridpos[0, 0, 1] not in current_gridpos_y
+                self.gridpos[0][0][0] not in current_gridpos_x
+                or self.gridpos[0][0][1] not in current_gridpos_y
                 or (
-                    self.gridpos[len(self.gridpos) - 1, len(self.gridpos[0]) - 1, 0] in current_gridpos_x
-                    or self.gridpos[len(self.gridpos) - 1, len(self.gridpos[0]) - 1, 1] in current_gridpos_y
+                    self.gridpos[len(self.gridpos) - 1][len(self.gridpos[0]) - 1][0] in current_gridpos_x
+                    or self.gridpos[len(self.gridpos) - 1][len(self.gridpos[0]) - 1][1] in current_gridpos_y
                 )
             ):
                 self.resize_board()
@@ -418,7 +418,8 @@ class BadukPanWidget(Widget):
         return grid_size * Theme.STONE_SIZE
 
     def initialize_gridpos(self):
-        self.gridpos = np.zeros((len(self.initial_gridpos_y), len(self.initial_gridpos_x), 2))
+        self.gridpos = [[None for x in range(len(self.initial_gridpos_x))] for y in range(len(self.initial_gridpos_y))]
+                       #[[None]*len(self.initial_gridpos_x)]*len(self.initial_gridpos_y)
         for y in range(len(self.initial_gridpos_y)):
             for x in range(len(self.initial_gridpos_x)):
                 self.gridpos[y][x] = [self.initial_gridpos_x[x], self.initial_gridpos_y[y]]
@@ -479,8 +480,8 @@ class BadukPanWidget(Widget):
 
         for yi in range(len(self.gridpos)):
             for xi in range(len(self.gridpos[0])):
-                current_gridpos_x.append(self.gridpos[yi, xi, 0])
-                current_gridpos_y.append(self.gridpos[yi, xi, 1])
+                current_gridpos_x.append(self.gridpos[yi][xi][0])
+                current_gridpos_y.append(self.gridpos[yi][xi][1])
         sorted_current_gridpos_x = list(set(current_gridpos_x))
         sorted_current_gridpos_x.sort()
         sorted_current_gridpos_y = list(set(current_gridpos_y))
@@ -488,8 +489,8 @@ class BadukPanWidget(Widget):
 
         for yi in range(len(self.gridpos)):
             for xi in range(len(self.gridpos[0])):
-                index_x = sorted_current_gridpos_x.index(self.gridpos[yi, xi, 0])
-                index_y = sorted_current_gridpos_y.index(self.gridpos[yi, xi, 1])
+                index_x = sorted_current_gridpos_x.index(self.gridpos[yi][xi][0])
+                index_y = sorted_current_gridpos_y.index(self.gridpos[yi][xi][1])
                 if self.rotation_degree == 90 or self.rotation_degree == 270:
                     self.gridpos[yi][xi] = [rotated_gridpos_x[index_x], rotated_gridpos_y[index_y]]
                 else:
@@ -528,7 +529,7 @@ class BadukPanWidget(Widget):
         starpt_size = self.grid_size * Theme.STARPOINT_SIZE
         for x in star_point_coords(board_size_x):
             for y in star_point_coords(board_size_y):
-                draw_circle((self.gridpos[y, x, 0], self.gridpos[y, x, 1]), starpt_size, Theme.LINE_COLOR)
+                draw_circle((self.gridpos[y][x][0], self.gridpos[y][x][1]), starpt_size, Theme.LINE_COLOR)
 
     def draw_coordinates(self, gridpos_x, gridpos_y):
         if self.draw_coords_enabled:
@@ -580,7 +581,7 @@ class BadukPanWidget(Widget):
             return
         katrain = self.katrain
         board_size_x, board_size_y = katrain.game.board_size
-        if self.gridpos.shape[0] < board_size_y or self.gridpos.shape[1] < board_size_x:
+        if self.gridpos is None or len(self.gridpos) < board_size_y or len(self.gridpos[0]) < board_size_x:
             return  # race condition
         show_n_eval = self.trainer_config.get("eval_on_show_last", 3)
         ownership_grid = None
@@ -695,7 +696,7 @@ class BadukPanWidget(Widget):
                         pol_order = max(0, 5 + int(math.log10(max(1e-9, move_policy - 1e-9))))
                         if move_policy > text_lb:
                             draw_circle(
-                                (self.gridpos[y, x, 0], self.gridpos[y, x, 1]),
+                                (self.gridpos[y][x][0], self.gridpos[y][x][1]),
                                 self.stone_size * Theme.HINT_SCALE * 0.98,
                                 Theme.APPROX_BOARD_COLOR,
                             )
@@ -703,14 +704,14 @@ class BadukPanWidget(Widget):
                         else:
                             scale = 0.5
                         draw_circle(
-                            (self.gridpos[y, x, 0], self.gridpos[y, x, 1]),
+                            (self.gridpos[y][x][0], self.gridpos[y][x][1]),
                             Theme.HINT_SCALE * self.stone_size * scale,
                             (*colors[pol_order][:3], Theme.POLICY_ALPHA),
                         )
                         if move_policy > text_lb:
                             Color(*Theme.HINT_TEXT_COLOR)
                             draw_text(
-                                pos=(self.gridpos[y, x, 0], self.gridpos[y, x, 1]),
+                                pos=(self.gridpos[y][x][0], self.gridpos[y][x][1]),
                                 text=f"{100 * move_policy :.2f}"[:4] + "%",
                                 font_name="Roboto",
                                 font_size=self.grid_size / 4,
@@ -720,8 +721,8 @@ class BadukPanWidget(Widget):
                             Color(*Theme.TOP_MOVE_BORDER_COLOR[:3], Theme.POLICY_ALPHA)
                             Line(
                                 circle=(
-                                    self.gridpos[y, x, 0],
-                                    self.gridpos[y, x, 1],
+                                    self.gridpos[y][x][0],
+                                    self.gridpos[y][x][1],
                                     self.stone_size - dp(1.2),
                                 ),
                                 width=dp(2),
@@ -759,8 +760,8 @@ class BadukPanWidget(Widget):
                 rect_size = Theme.MARK_SIZE * abs(grid[y][x]) * self.stone_size * 2.0
                 Rectangle(
                     pos=(
-                        self.gridpos[y, x, 0] - rect_size / 2,
-                        self.gridpos[y, x, 1] - rect_size / 2,
+                        self.gridpos[y][x][0] - rect_size / 2,
+                        self.gridpos[y][x][1] - rect_size / 2,
                     ),
                     # radius=[rect_size / 4],
                     size=(rect_size, rect_size),
@@ -811,8 +812,8 @@ class BadukPanWidget(Widget):
         Color(1, 1, 1, 1)
         lx = board_size_x - 1
         ly = board_size_y - 1
-        left = min(self.gridpos[0, 0, 1], self.gridpos[ly, lx, 1])
-        bottom = min(self.gridpos[0, 0, 0], self.gridpos[ly, lx, 0])
+        left = min(self.gridpos[0][0][1], self.gridpos[ly][lx][1])
+        bottom = min(self.gridpos[0][0][0], self.gridpos[ly][lx][0])
 
         # Our texture is 3 squares larger than the grid of lines: we added 2 rows/columns
         # for the edge blending, and the additional 1 is because the grid of
@@ -842,8 +843,8 @@ class BadukPanWidget(Widget):
         Color(*Theme.REGION_BORDER_COLOR)
         Line(
             rectangle=(
-                self.gridpos[ymin, xmin, 0] - self.grid_size / 3,
-                self.gridpos[ymin, xmin, 1] - self.grid_size / 3,
+                self.gridpos[ymin][xmin][0] - self.grid_size / 3,
+                self.gridpos[ymin][xmin][1] - self.grid_size / 3,
                 (xmax - xmin + 2 / 3) * self.grid_size,
                 (ymax - ymin + 2 / 3) * self.grid_size,
             ),
@@ -931,8 +932,8 @@ class BadukPanWidget(Widget):
                         if text_on and top_moves_show:  # remove grid lines using a board colored circle
                             draw_circle(
                                 (
-                                    self.gridpos[move.coords[1], move.coords[0], 0],
-                                    self.gridpos[move.coords[1], move.coords[0], 1],
+                                    self.gridpos[move.coords[1]][move.coords[0]][0],
+                                    self.gridpos[move.coords[1]][move.coords[0]][1],
                                 ),
                                 self.stone_size * scale * 0.98,
                                 Theme.APPROX_BOARD_COLOR,
@@ -941,8 +942,8 @@ class BadukPanWidget(Widget):
                         Color(*evalcol[:3], alpha)
                         Rectangle(
                             pos=(
-                                self.gridpos[move.coords[1], move.coords[0], 0] - evalsize,
-                                self.gridpos[move.coords[1], move.coords[0], 1] - evalsize,
+                                self.gridpos[move.coords[1]][move.coords[0]][0] - evalsize,
+                                self.gridpos[move.coords[1]][move.coords[0]][1] - evalsize,
                             ),
                             size=(2 * evalsize, 2 * evalsize),
                             texture=cached_texture(Theme.TOP_MOVE_TEXTURE),
@@ -974,8 +975,8 @@ class BadukPanWidget(Widget):
                             Color(*Theme.HINT_TEXT_COLOR)
                             draw_text(
                                 pos=(
-                                    self.gridpos[move.coords[1], move.coords[0], 0],
-                                    self.gridpos[move.coords[1], move.coords[0], 1],
+                                    self.gridpos[move.coords[1]][move.coords[0]][0],
+                                    self.gridpos[move.coords[1]][move.coords[0]][1],
                                 ),
                                 text=fmt.format(**keys),
                                 font_name="Roboto",
@@ -989,8 +990,8 @@ class BadukPanWidget(Widget):
                             Color(*Theme.TOP_MOVE_BORDER_COLOR)
                             Line(
                                 circle=(
-                                    self.gridpos[move.coords[1], move.coords[0], 0],
-                                    self.gridpos[move.coords[1], move.coords[0], 1],
+                                    self.gridpos[move.coords[1]][move.coords[0]][0],
+                                    self.gridpos[move.coords[1]][move.coords[0]][1],
                                     self.stone_size - dp(1.2),
                                 ),
                                 width=dp(1.2),
@@ -1011,8 +1012,8 @@ class BadukPanWidget(Widget):
                             Color(*Theme.NEXT_MOVE_DASH_CONTRAST_COLORS[child_node.player])
                             Line(
                                 circle=(
-                                    self.gridpos[move.coords[1], move.coords[0], 0],
-                                    self.gridpos[move.coords[1], move.coords[0], 1],
+                                    self.gridpos[move.coords[1]][move.coords[0]][0],
+                                    self.gridpos[move.coords[1]][move.coords[0]][1],
                                     self.stone_size - dp(1.2),
                                 ),
                                 width=dp(1.2),
@@ -1023,8 +1024,8 @@ class BadukPanWidget(Widget):
                         for s in range(0, 360, 30):
                             Line(
                                 circle=(
-                                    self.gridpos[move.coords[1], move.coords[0], 0],
-                                    self.gridpos[move.coords[1], move.coords[0], 1],
+                                    self.gridpos[move.coords[1]][move.coords[0]][0],
+                                    self.gridpos[move.coords[1]][move.coords[0]][1],
                                     self.stone_size - dp(1.2),
                                     s,
                                     s + dashed_width,
@@ -1076,8 +1077,8 @@ class BadukPanWidget(Widget):
             while hide_node and hide_node.move and hide_node != node:
                 if not hide_node.move.is_pass:
                     pos = (
-                        self.gridpos[hide_node.move.coords[1], hide_node.move.coords[0], 0],
-                        self.gridpos[hide_node.move.coords[1], hide_node.move.coords[0], 1],
+                        self.gridpos[hide_node.move.coords[1]][hide_node.move.coords[0]][0],
+                        self.gridpos[hide_node.move.coords[1]][hide_node.move.coords[0]][1],
                     )
                     draw_circle(pos, self.stone_size, [0.85, 0.68, 0.40, 0.8])
                 hide_node = hide_node.parent
@@ -1095,7 +1096,7 @@ class BadukPanWidget(Widget):
                     katrain.board_controls.pass_btn.pos[1] + katrain.board_controls.pass_btn.size[1] / 2,
                 ]
             else:
-                board_coords = (self.gridpos[coords[1], coords[0], 0], self.gridpos[coords[1], coords[0], 1])
+                board_coords = (self.gridpos[coords[1]][coords[0]][0], self.gridpos[coords[1]][coords[0]][1])
                 sizefac = 1
 
             stone_size = self.stone_size * sizefac
@@ -1145,7 +1146,7 @@ class BadukPanWidget(Widget):
                 x0 = self.initial_gridpos_x[0]
                 y0 = self.initial_gridpos_y[0]
 
-            pos = self.gridpos.tolist()
+            pos = copy.deepcopy(self.gridpos)
             for yi in range(len(self.gridpos)):
                 for xi in range(len(self.gridpos[0])):
                     if self.rotation_degree == 90 or self.rotation_degree == 270:
@@ -1161,9 +1162,11 @@ class BadukPanWidget(Widget):
                     elif y0 > x0:
                         x = round(x - diff, 4)
                         y = round(y + diff, 4)
-                    self.gridpos[yi][xi] = (x, y)
+                    self.gridpos[yi][xi] = [x, y]
         else:
-            self.gridpos = np.rot90(self.gridpos, -1, (0, 1))
+            # This is a rot90 for list of lists. Based on the code found in
+            # stackoverflow.com/questions/8421337/rotating-a-two-dimensional-array-in-python
+            self.gridpos = list(list(x) for x in zip(*reversed(self.gridpos)))
 
         self.rotation_degree += 90
         if self.rotation_degree == 360:
