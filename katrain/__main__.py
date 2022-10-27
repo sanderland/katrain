@@ -559,9 +559,10 @@ class KaTrainGui(Screen, KaTrainBase):
             self.game.redo(999)
 
     def _do_analyze_sgf_popup(self):
-        filename = filechooser.open_file(title="Pick an SGF file..", multiple=False, filters=[("Smart Game Format", "*.sgf"), ("All files", "*.*")])[0]
-        print(filename)
-        self.load_sgf_file(filename)
+        pathslist = filechooser.open_file(title=i18n._("load sgf title"), multiple=False, filters=[("Smart Game Format", "*.sgf"), ("All files", "*.*")])
+        if pathslist:
+            filename = pathslist[0]
+            self.load_sgf_file(filename)
 
     def _do_save_game(self, filename=None):
         filename = filename or self.game.sgf_filename
