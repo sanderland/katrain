@@ -45,6 +45,7 @@ import time
 import random
 import glob
 
+from plyer import filechooser
 from kivy.base import ExceptionHandler, ExceptionManager
 from kivy.app import App
 from kivy.core.clipboard import Clipboard
@@ -558,28 +559,9 @@ class KaTrainGui(Screen, KaTrainBase):
             self.game.redo(999)
 
     def _do_analyze_sgf_popup(self):
-        if not self.fileselect_popup:
-            popup_contents = LoadSGFPopup(self)
-            popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
-            self.fileselect_popup = I18NPopup(
-                title_key="load sgf title", size=[dp(1200), dp(800)], content=popup_contents
-            ).__self__
-
-            def readfile(*_args):
-                filename = popup_contents.filesel.filename
-                self.fileselect_popup.dismiss()
-                path, file = os.path.split(filename)
-                if path != self.config("general/sgf_load"):
-                    self.log(f"Updating sgf load path default to {path}", OUTPUT_DEBUG)
-                    self._config["general"]["sgf_load"] = path
-                popup_contents.update_config(False)
-                self.save_config("general")
-                self.load_sgf_file(filename, popup_contents.fast.active, popup_contents.rewind.active)
-
-            popup_contents.filesel.on_success = readfile
-            popup_contents.filesel.on_submit = readfile
-        self.fileselect_popup.open()
-        self.fileselect_popup.content.filesel.ids.list_view._trigger_update()
+        filename = filechooser.open_file(title="Pick an SGF file..", multiple=False, filters=[("Smart Game Format", "*.sgf"), ("All files", "*.*")])[0]
+        print(filename)
+        self.load_sgf_file(filename)
 
     def _do_save_game(self, filename=None):
         filename = filename or self.game.sgf_filename
