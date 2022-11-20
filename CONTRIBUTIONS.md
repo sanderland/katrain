@@ -56,6 +56,8 @@ Many thanks to these additional authors:
 * "electricRGB" for help with adding configurable keyboard shortcuts.
 * "milescrawford" for work on restyling the territory estimate.
 * "Funkenschlag1" for capturing stones sound and implementation, and board rotation.
+* "waltheri" for one of the wooden board textures.
+* Jacob Minsky ("jacobm-tech") for various contributions including analysis move range and improvements to territory display.
 
 ## Translators
 

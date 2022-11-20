@@ -82,7 +82,7 @@ Simply download and run, everything is included.
 
 If you have a working Python 3.6-3.8 available, you should be able to simply:
 
-* Run `pip3 install -U katrain`
+* Run `pip3 install -U katrain` to install or upgrade.
 * Run the program by executing `katrain` in a terminal.
 
 ### <a name="LinuxSources"></a>Installation from sources 

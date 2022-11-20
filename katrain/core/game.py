@@ -575,7 +575,6 @@ class Game(BaseGame):
             return
 
         engine = self.engines[cn.next_player]
-        Clock.schedule_once(self.katrain.analysis_controls.hints.activate, 0)
 
         if mode == "ponder":
             cn.analyze(
@@ -602,6 +601,10 @@ class Game(BaseGame):
         if mode == "game":
             nodes = self.root.nodes_in_tree
             only_mistakes = kwargs.get("mistakes_only", False)
+            move_range = kwargs.get("move_range", None)
+            if move_range:
+                if move_range[1] < move_range[0]:
+                    move_range = reversed(move_range)
             threshold = self.katrain.config("trainer/eval_thresholds")[-4]
             if "visits" in kwargs:
                 visits = kwargs["visits"]
@@ -610,9 +613,20 @@ class Game(BaseGame):
                 visits = min_visits + engine.config["max_visits"]
             for node in nodes:
                 max_point_loss = max(c.points_lost or 0 for c in [node] + node.children)
-                if not only_mistakes or max_point_loss > threshold:
-                    node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
-            self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)
+                if only_mistakes and max_point_loss <= threshold:
+                    continue
+                if move_range and (not node.depth - 1 in range(move_range[0], move_range[1] + 1)):
+                    continue
+                node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
+            if not move_range:
+                self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)
+            else:
+                self.katrain.controls.set_status(
+                    i18n._("move range analysis").format(
+                        start_move=move_range[0], end_move=move_range[1], visits=visits
+                    ),
+                    STATUS_ANALYSIS,
+                )
             return
 
         elif mode == "sweep":

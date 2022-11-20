@@ -244,7 +244,7 @@ def request_ai_analysis(game: Game, cn: GameNode, extra_settings: Dict) -> Optio
         extra_settings=extra_settings,
     )
     while not (error or analysis):
-        time.sleep(0.01) # TODO: prevent deadlock if esc, check node in queries?
+        time.sleep(0.01)  # TODO: prevent deadlock if esc, check node in queries?
         engine.check_alive(exception_if_dead=True)
     return analysis
 

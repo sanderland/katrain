@@ -722,9 +722,9 @@ msgstr "Изменение счёта"
 msgid "show stats if"
 msgstr "Числа только если посещений больше чем"
 
-#. TODO - point loss precision options
+#. point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Show two digits for point loss near zero"
+msgstr "Показазывать две цифры после запятой для малой потери очков"
 
 msgid "cache analysis to sgf"
 msgstr "Кэшировать анализ в SGF"
@@ -929,28 +929,40 @@ msgstr ""
 msgid "Entire Game"
 msgstr "Полная игра"
 
-#. TODO
 msgid "ai:antimirror"
-msgstr "KataAntiMirror"
+msgstr "Противозеркальная"
 
-#. TODO - on move tree editing, deletes all other branches splitting off from
+#. on move tree editing, deletes all other branches splitting off from
 #. the
 #. path UP TO this node
 msgid "Prune Branch"
-msgstr "Prune Branch"
+msgstr "Удалить ответвления"
 
-#. TODO
 msgid "aihelp:antimirror"
-msgstr "Anti Mirror-go Mode of KataGo."
+msgstr "Режим противодействия зеркальной стратегии."
 
-#. TODO - distance of wall to existing stones
+#. distance of wall to existing stones
 msgid "tsumego:walldistance"
-msgstr "Distance of wall"
+msgstr "Расстояние до стены"
 
-#. TODO - tsumego: ko is good enough?
+#. tsumego: ko is good enough?
 msgid "tsumego:ko"
-msgstr "Ko allowed?"
+msgstr "Разрешить ко?"
 
-#. TODO - Menu option for tsumego frame around position
+#. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
-msgstr "Tsumego Frame"
+msgstr "Рамка для цумэ-го"
+
+#. Move range analysis messages
+msgid "from move"
+msgstr "от хода"
+
+msgid "to move"
+msgstr "до хода"
+
+msgid "limit to moves"
+msgstr "Только для ходов"
+
+#. status message
+msgid "move range analysis"
+msgstr "Анализ ходов от {start_move} до {end_move} с {visits} посещениями"
