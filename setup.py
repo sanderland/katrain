@@ -45,7 +45,6 @@ setup(
         "kivymd==0.104.1",  # 0.104.2+ was breaking MRO
         "ffpyplayer",
         "urllib3",
-        "numpy",
         "pygame;platform_system=='Darwin'",  # some mac versions need this for kivy
         "screeninfo;platform_system!='Darwin'",  # for screen resolution, has problems on macos
         "chardet",  # for automatic encoding detection

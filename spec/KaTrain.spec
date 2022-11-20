@@ -26,7 +26,7 @@ a = Analysis(
     ],
     hiddenimports=["win32file", "win32timezone", "six"],  #  FileChooser in kivy loads win32file conditionally, mkl needs six
     hookspath=[kivymd_hooks_path],
-    excludes=["matplotlib", "docutils", "scipy", "pandas"],
+    excludes=["scipy", "pandas", "numpy", "matplotlib", "docutils", "mkl"],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=None,
