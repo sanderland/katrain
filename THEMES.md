@@ -41,10 +41,12 @@ The relevant variables are:
 ```
     TERRITORY_DISPLAY = "blended" | "shaded" | "marks" | "blocks"
     STONE_MARKS = "all" | "weak" | "none"
-    OWNERSHIP_MAX_ALPHA = 0.7 
+    OWNERSHIP_COLORS = {"B": [0.0, 0.0, 0.10, 0.75], "W": [0.92, 0.92, 1.0, 0.800]}
     BLOCKS_THRESHOLD = 0.6
     MARK_SIZE = 0.42  # as fraction of stone size
 ```
+
+The colors are specified as RGB values and a maximum alpha transparency.
 
 ## Installation
 
