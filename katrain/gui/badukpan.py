@@ -806,7 +806,7 @@ class BadukPanWidget(Widget):
                 idx = 4 * y * (board_size_x + 2) + x * 4
                 bytes[idx : idx + 4] = pixel
 
-        if Theme.TERRITORY_DISPLAY == "blocks":
+        if Theme.TERRITORY_DISPLAY == "blocks" or Theme.TERRITORY_DISPLAY == "shaded":
             texture.mag_filter = "nearest"
         texture.blit_buffer(bytes, colorfmt="rgba", bufferfmt="ubyte")
         Color(1, 1, 1, 1)
