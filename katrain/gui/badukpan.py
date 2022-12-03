@@ -742,9 +742,9 @@ class BadukPanWidget(Widget):
 
     def draw_territory(self, grid, loss_color=None):
         if Theme.TERRITORY_DISPLAY == "marks":
-            self.draw_territory_marks(grid, loss_color=None)
+            self.draw_territory_marks(grid, loss_color)
         else:
-            self.draw_territory_color(grid, loss_color=None)
+            self.draw_territory_color(grid, loss_color)
 
     def draw_territory_marks(self, grid, loss_color=None):
         board_size_x, board_size_y = self.katrain.game.board_size
