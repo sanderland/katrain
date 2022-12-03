@@ -38,7 +38,7 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
 
 <sup>The game used in the screenshots is [Albert Yen vs. Eric Yoder](https://www.usgo.org/news/2022/03/members-edition-midwest-open-round-2-the-broken-ladder-game).</sup>
 
-The stone marks and territory style are independent; the table above presents 4 possible variants out of 9.
+The stone marks, transparency, and territory style are independent; the table above presents a collection of possible variants.
 The relevant variables are:
 ```
     TERRITORY_DISPLAY = "blended" | "shaded" | "marks" | "blocks"
