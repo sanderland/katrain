@@ -784,7 +784,6 @@ class BadukPanWidget(Widget):
                 x_coord = x - 1
                 y_coord = y - 1
 
-                remainder = 0
                 if x_coord < 0 or x_coord > board_size_x - 1 or y_coord < 0 or y_coord > board_size_y - 1:
                     # We're in the extra rows/columns outside the board
                     alpha = 0
