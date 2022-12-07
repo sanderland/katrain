@@ -252,10 +252,7 @@ class BadukPanWidget(Widget):
                 other_color = *Theme.STONE_COLORS[other][:3], 1.0
                 outline_color = tuple(map(lambda y: sum(y) / float(len(y)), zip(*(mark_color, other_color))))
             if loss is not None:
-                if loss < 1:
-                    mark_color = *Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3], loss
-                else:
-                    mark_color = *Theme.EVAL_COLORS[self.trainer_config["theme"]][0][:3], loss
+                mark_color = *Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3], 1
                 outline_color = mark_color
 
             mark_size = Theme.MARK_SIZE * abs(ownership if ownership else min(1,loss)) * self.stone_size * 2.0
@@ -756,11 +753,11 @@ class BadukPanWidget(Widget):
                 if abs(grid[y][x]) < 0.01:
                     continue
                 (ix_owner, other) = ("B", "W") if grid[y][x] > 0 else ("W", "B")
-                Color(
-                    *Theme.STONE_COLORS[ix_owner][:3],
-                    1.0
-                )
-                rect_size = Theme.MARK_SIZE * abs(grid[y][x]) * self.stone_size * 2.0
+                if loss_color is None:
+                    Color(*Theme.STONE_COLORS[ix_owner][:3], 1.0)
+                else:
+                    Color(*loss_color[:3], 1.0)
+                rect_size = Theme.MARK_SIZE * min(1.0, abs(grid[y][x])) * self.stone_size * 2.0
                 Rectangle(
                     pos=(
                         self.gridpos[y][x][0] - rect_size / 2,
@@ -794,7 +791,6 @@ class BadukPanWidget(Widget):
                 else:
                     alpha = abs(grid[y_coord][x_coord])
                     if (alpha > 1):
-                        remainder = alpha - 1
                         alpha = 1
                     if Theme.TERRITORY_DISPLAY == "blocks":
                         alpha = 1 if alpha > Theme.BLOCKS_THRESHOLD else 0
@@ -808,23 +804,13 @@ class BadukPanWidget(Widget):
                     pixel = Theme.OWNERSHIP_COLORS[ix_owner][:4]
                     pixel[3] *= alpha
                 else:
-                    if remainder > 0:
-                        print("found it %f"%remainder)
-                    l_c = Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3]
-                    b_l_c = Theme.EVAL_COLORS[self.trainer_config["theme"]][0][:3]
-                    if remainder > 0:
-                        color = b_l_c
-                    else:
-                        color = l_c
-                    # color = tuple(map(lambda y: (y[0]*(1-remainder)+y[1]*(1+remainder))/2, zip(*(l_c, b_l_c))))
-                    pixel = *color, alpha*0.8
+                    pixel = *loss_color, Theme.HINTS_ALPHA*alpha
                 pixel = tuple(map(lambda p: int(p * 255), pixel))
                 idx = 4 * y * (board_size_x + 2) + x * 4
                 bytes[idx : idx + 4] = pixel
 
         if Theme.TERRITORY_DISPLAY == "blocks" or Theme.TERRITORY_DISPLAY == "shaded":
             texture.mag_filter = "nearest"
-        # texture.mag_filter = "nearest"
         texture.blit_buffer(bytes, colorfmt="rgba", bufferfmt="ubyte")
         Color(1, 1, 1, 1)
         lx = board_size_x - 1
