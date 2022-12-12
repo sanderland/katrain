@@ -125,7 +125,7 @@ class Theme:
     OWNERSHIP_GAMMA = 1.33
     STONE_MIN_ALPHA = 0.7  # the minimal alpha for dead/weak stones
 
-    TERRITORY_DISPLAY = "blended"  # other possibilities are "marks" and "blocks"
+    TERRITORY_DISPLAY = "blended"  # other possibilities are "marks", "blocks" or "shaded"
     BLOCKS_THRESHOLD = 0.3  # in "blocks" mode, territory which is this likely to be
     #                          a certain player's gets his color
     STONE_MARKS = "all"  # all: always display marks on stones
