@@ -64,8 +64,7 @@ class Theme:
     EVAL_DOT_TEXTURE = "dot.png"
     LAST_MOVE_TEXTURE = "inner.png"
     TOP_MOVE_TEXTURE = "topmove.png"
-    BOARD_TEXTURE = "board.png"
-    BOARD_TEXTURE = "wood6.jpg"
+    BOARD_TEXTURE = "wood6.jpg" # "board.png"
     GRAPH_TEXTURE = "graph_bg.png"
     # sounds
     STONE_SOUNDS = [f"stone{i}.wav" for i in [1, 2, 3, 4, 5]]
@@ -128,9 +127,9 @@ class Theme:
     TERRITORY_DISPLAY = "blended"  # other possibilities are "marks", "blocks" or "shaded"
     BLOCKS_THRESHOLD = 0.3  # in "blocks" mode, territory which is this likely to be
     #                          a certain player's gets his color
-    STONE_MARKS = "all"  # all: always display marks on stones
-    #                      none: no marks on stones, indicate ownership by transparency only
-    #                      weak: draw marks only on stones likely (>50%) to be captured
+    STONE_MARKS = "weak"  # all: always display marks on stones
+    #                       none: no marks on stones, indicate ownership by transparency only
+    #                       weak: draw marks only on stones likely (>50%) to be captured
     MARK_SIZE = 0.42  # stone mark size as fraction of stone size
 
     HINTS_LO_ALPHA = 0.6

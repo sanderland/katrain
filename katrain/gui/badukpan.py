@@ -237,6 +237,8 @@ class BadukPanWidget(Widget):
                     alpha = Theme.STONE_MIN_ALPHA + (1.0 - Theme.STONE_MIN_ALPHA) * abs(ownership)
                 else:
                     alpha = Theme.STONE_MIN_ALPHA
+        else:
+            (owner, other) = ("B", "W")  # prevent errors in unused unset vars
         Color(1, 1, 1, alpha)
         Rectangle(
             pos=(self.gridpos[y][x][0] - stone_size, self.gridpos[y][x][1] - stone_size),
@@ -251,7 +253,8 @@ class BadukPanWidget(Widget):
                 mark_color = *Theme.STONE_COLORS[owner][:3], 1.0
                 other_color = *Theme.STONE_COLORS[other][:3], 1.0
                 outline_color = tuple(map(lambda y: sum(y) / float(len(y)), zip(*(mark_color, other_color))))
-            if loss is not None:
+            else:
+                assert loss is not None
                 mark_color = *Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3], 1
                 outline_color = mark_color
 
