@@ -122,13 +122,13 @@ class Theme:
     POLICY_ALPHA = 0.5
     OWNERSHIP_COLORS = {"B": [0.0, 0.0, 0.10, 0.75], "W": [0.92, 0.92, 1.0, 0.800]}
     OWNERSHIP_GAMMA = 1.33
-    STONE_MIN_ALPHA = 0.7  # the minimal alpha for dead/weak stones
+    STONE_MIN_ALPHA = 1.0  # the minimal alpha for dead/weak stones
 
     TERRITORY_DISPLAY = "blended"  # other possibilities are "marks", "blocks" or "shaded"
     BLOCKS_THRESHOLD = 0.3  # in "blocks" mode, territory which is this likely to be
     #                          a certain player's gets his color
     STONE_MARKS = "weak"  # all: always display marks on stones
-    #                       none: no marks on stones, indicate ownership by transparency only
+    #                       none: no marks on stones, indicate ownership by transparency only (if STONE_MIN_ALPHA < 1.0)
     #                       weak: draw marks only on stones likely (>50%) to be captured
     MARK_SIZE = 0.42  # stone mark size as fraction of stone size
 
