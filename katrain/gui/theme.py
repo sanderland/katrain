@@ -122,7 +122,7 @@ class Theme:
     POLICY_ALPHA = 0.5
     OWNERSHIP_COLORS = {"B": [0.0, 0.0, 0.10, 0.75], "W": [0.92, 0.92, 1.0, 0.800]}
     OWNERSHIP_GAMMA = 1.33
-    STONE_MIN_ALPHA = 1.0  # the minimal alpha for dead/weak stones
+    STONE_MIN_ALPHA = 0.85  # the minimal alpha for dead/weak stones
 
     TERRITORY_DISPLAY = "blended"  # other possibilities are "marks", "blocks" or "shaded"
     BLOCKS_THRESHOLD = 0.3  # in "blocks" mode, territory which is this likely to be
