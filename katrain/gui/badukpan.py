@@ -258,7 +258,7 @@ class BadukPanWidget(Widget):
                 mark_color = *Theme.EVAL_COLORS[self.trainer_config["theme"]][1][:3], 1
                 outline_color = mark_color
 
-            mark_size = Theme.MARK_SIZE * abs(ownership if ownership else min(1,loss)) * self.stone_size * 2.0
+            mark_size = Theme.MARK_SIZE * abs(ownership if ownership else min(1, loss)) * self.stone_size * 2.0
             Color(*mark_color)
             Rectangle(
                 pos=(
@@ -422,7 +422,7 @@ class BadukPanWidget(Widget):
 
     def initialize_gridpos(self):
         self.gridpos = [[None for x in range(len(self.initial_gridpos_x))] for y in range(len(self.initial_gridpos_y))]
-                       #[[None]*len(self.initial_gridpos_x)]*len(self.initial_gridpos_y)
+        # [[None]*len(self.initial_gridpos_x)]*len(self.initial_gridpos_y)
         for y in range(len(self.initial_gridpos_y)):
             for x in range(len(self.initial_gridpos_x)):
                 self.gridpos[y][x] = [self.initial_gridpos_x[x], self.initial_gridpos_y[y]]
@@ -641,7 +641,9 @@ class BadukPanWidget(Widget):
                         evalscale = min(1, max(0, realized_points_lost / points_lost))
                 placements = node.placements
                 for m in node.moves + placements:
-                    new_move = (current_node.move and m.coords == current_node.move.coords) and not current_node.ownership
+                    new_move = (
+                        current_node.move and m.coords == current_node.move.coords
+                    ) and not current_node.ownership
                     if has_stone.get(m.coords) and not drawn_stone.get(m.coords):  # skip captures, last only for
                         move_eval_on = not all_dots_off and show_dots_for.get(m.player) and i < show_n_eval
                         if move_eval_on and points_lost is not None:
@@ -792,11 +794,11 @@ class BadukPanWidget(Widget):
                     alpha = 0
                 else:
                     alpha = abs(grid[y_coord][x_coord])
-                    if (alpha > 1):
+                    if alpha > 1:
                         alpha = 1
                     if Theme.TERRITORY_DISPLAY == "blocks":
                         alpha = 1 if alpha > Theme.BLOCKS_THRESHOLD else 0
-                alpha = alpha**(1.0/Theme.OWNERSHIP_GAMMA)
+                alpha = alpha ** (1.0 / Theme.OWNERSHIP_GAMMA)
 
                 x_coord = max(0, min(x_coord, board_size_x - 1))
                 y_coord = max(0, min(y_coord, board_size_y - 1))
@@ -806,7 +808,7 @@ class BadukPanWidget(Widget):
                     pixel = Theme.OWNERSHIP_COLORS[ix_owner][:4]
                     pixel[3] *= alpha
                 else:
-                    pixel = *loss_color, Theme.HINTS_ALPHA*alpha
+                    pixel = *loss_color, Theme.HINTS_ALPHA * alpha
                 pixel = tuple(map(lambda p: int(p * 255), pixel))
                 idx = 4 * y * (board_size_x + 2) + x * 4
                 bytes[idx : idx + 4] = pixel
