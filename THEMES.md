@@ -20,29 +20,36 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
 
 * KaTrain supports different styles of display of expected territory:
   * Blended style colors the board with an intensity proportional to the likelihood of a player controlling that territory at the end of the game.
+  * Shaded style behaves the same as Blended, but uses square shades similar to
+  the Katago paper.
   * In the Marks style, each point of the board is marked with a square of size which is proportional to ownership likelihood.
   * The Blocks style divides the whole board into black, white, and neutral territory, based on a likelihood threshold. This style is appropriate as a counting aid, but may be misleading before endgame if much of the territory is unsettled.
 * Marks can also appear on stones to indicate the likelihood of these stones living at the end of the game. Three styles are supported:
   * All stones can be marked, with the color of the mark indicating the expected ownership and the size of the mark indicating certainty.
   * Weak stones only - marks will appear only on stones which are over 50% likely to die before the end of the game.
   * No stone marks.
+* Stones can also be made transparent based on their strength.
 
-| <img src="https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/blended-all.png" width="400px"/><br><span style="font-weight:normal">Blended style, all stones marked</span> | <img src="https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/marks-weak.png" width="400px"/><br><span style="font-weight:normal">Marks on intersections, weak stones marked</span> |
-|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-|                    <img src="https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/blocks-none.png" width="400px"/><br>Territory blocks, no stones marked                    |                      <img src="https://raw.githubusercontent.com/jacobm-tech/katrain/blended-territory-display/themes/blended-weak.png" width="400px"/><br>Blended territory, weak stones marked                       |
+| <img src="./themes/blended-all.png"  width="400"/> <br> Blended style, all stones marked| <img src="./themes/shaded-all.png"   width="400"/> <br> Shaded style, all stones marked |
+| --- | ---|
+| <img src="./themes/blocks-none.png"  width="400"/> <br> Territory blocks, no stones marked | <img src="./themes/blended-weak.png" width="400"/> <br> Blended territory, weak stones marked |
+| <img src="./themes/marks-weak.png"   width="400"/>  <br> Marks on intersections, weak stones marked | <img src="./themes/shaded-no-alpha.png"   width="400"/>  <br> Shaded, no stone alpha |
                              
 
 <sup>The game used in the screenshots is [Albert Yen vs. Eric Yoder](https://www.usgo.org/news/2022/03/members-edition-midwest-open-round-2-the-broken-ladder-game).</sup>
 
-The stone marks and territory style are independent; the table above presents 4 possible variants out of 9.
+The stone marks, transparency, and territory style are independent; the table above presents a collection of possible variants.
 The relevant variables are:
 ```
-    TERRITORY_DISPLAY = "blended" | "marks" | "blocks"
+    TERRITORY_DISPLAY = "blended" | "shaded" | "marks" | "blocks"
     STONE_MARKS = "all" | "weak" | "none"
-    OWNERSHIP_MAX_ALPHA = 0.7 
+    OWNERSHIP_COLORS = {"B": [0.0, 0.0, 0.10, 0.75], "W": [0.92, 0.92, 1.0, 0.800]}
     BLOCKS_THRESHOLD = 0.6
     MARK_SIZE = 0.42  # as fraction of stone size
+    STONE_MIN_ALPHA = 0.5
 ```
+
+The colors are specified as RGB values and a maximum alpha transparency.
 
 ## Installation
 
