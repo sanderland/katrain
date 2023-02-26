@@ -53,7 +53,8 @@ class PlayAnalyzeSelect(MDFloatLayout):
             self.katrain.controls.ids[id].set_option_state(button_state)
             self.katrain.controls.ids[id].state = panel_state
 
-    def select_mode(self, new_mode):  # actual switch state handler
+    def select_mode(self, new_mode, stone_color = None):  # actual switch state handler
+        self.katrain.override_stone_color = stone_color
         if self.mode == new_mode:
             return
         self.save_ui_state()

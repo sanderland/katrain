@@ -1110,17 +1110,31 @@
     active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
     ripple_color: Theme.BACKGROUND_COLOR
     text_color: self.inactive_background_color if self.state=='down' else self.active_background_color
-    size_hint: 0.5,1
+    size_hint: 0.8,1
     _font_size: self.height * 0.5
     group: 'play_analyze'
     allow_no_selection: False
+
+<SetBlackWhiteButton@SizedToggleButton>:
+    inactive_background_color: Theme.BOX_BACKGROUND_COLOR
+    active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
+    ripple_color: Theme.BACKGROUND_COLOR
+    text_color: BLACK
+    size_hint: 0.3,1
+    _font_size: self.height * 0.5
+    group: 'play_analyze'
+    allow_no_selection: False
+
+
 
 <PlayAnalyzeSelect>:
     katrain: app.gui
     play: play
     analyze: analyze
+    set_black: set_black
+    set_white: set_white
     OutlineBox:
-        size_hint: 0.7,0.7
+        size_hint: 0.8,0.7
         pos_hint: {'center_x':0.5,'center_y':0.45}
         PlayAnalyzeButton:
             text: i18n._('btn:Play')
@@ -1131,6 +1145,14 @@
             text: i18n._('btn:Analysis')
             id: analyze
             on_state: if self.state=='down': root.select_mode(MODE_ANALYZE)
+        SetBlackWhiteButton:
+            text: "●"
+            id: set_black
+            on_state: if self.state=='down': root.select_mode(MODE_ANALYZE, "B")
+        SetBlackWhiteButton:
+            text: "○"
+            id: set_white
+            on_state: if self.state=='down': root.select_mode(MODE_ANALYZE, "W")
 
 
 

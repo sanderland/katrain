@@ -876,7 +876,10 @@ class BadukPanWidget(Widget):
         katrain = self.katrain
         game_ended = katrain.game.end_result
         current_node = katrain.game.current_node
-        next_player = current_node.next_player
+        if katrain.override_stone_color is None:
+            next_player = current_node.next_player
+        else:
+            next_player = katrain.override_stone_color
 
         board_size_x, board_size_y = katrain.game.board_size
         if len(self.gridpos[0]) < board_size_x or len(self.gridpos) < board_size_y:

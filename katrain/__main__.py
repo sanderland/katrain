@@ -130,6 +130,8 @@ class KaTrainGui(Screen, KaTrainBase):
         self.last_key_down = None
         self.last_focus_event = 0
 
+        self.override_stone_color = None
+
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
@@ -318,6 +320,14 @@ class KaTrainGui(Screen, KaTrainBase):
                             i18n._("gui-locked").format(action=msg), STATUS_INFO, check_level=False
                         )
                         continue
+
+                if  self.override_stone_color is not None \
+                and self.play_analyze_mode == MODE_ANALYZE \
+                and msg == "play" \
+                and self.override_stone_color != self.next_player_info.player:
+                    self._do_play(None)      # pass
+                    self._do_update_state()
+
                 fn = getattr(self, f"_do_{msg}")
                 fn(*args, **kwargs)
                 if msg != "update_state":
