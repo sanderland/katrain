@@ -45,7 +45,7 @@ a.datas = [
 
 print("DATA FILTERED", len(a.datas))
 
-console_names = {True:"DebugKaTrain",False:"KaTrain"}
+console_names = {True:"DebugKaTrainSE",False:"KaTrainSE"}
 
 powershell = subprocess.Popen(["powershell"],  stdout=subprocess.PIPE, stdin=subprocess.PIPE)
 
