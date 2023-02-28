@@ -69,6 +69,7 @@ from katrain.core.constants import (
     OUTPUT_EXTRA_DEBUG,
     MODE_ANALYZE,
     HOMEPAGE,
+    PROGRAM_NAME,
     VERSION,
     STATUS_ERROR,
     STATUS_INFO,
@@ -843,7 +844,7 @@ class KaTrainApp(MDApp):
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
 
-        self.title = f"KaTrain v{VERSION}"
+        self.title = f"{PROGRAM_NAME} v{VERSION}"
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Gray"
         self.theme_cls.primary_hue = "200"

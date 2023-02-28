@@ -1,6 +1,7 @@
-PROGRAM_NAME = "KaTrain"
-VERSION = "1.12.3"
-HOMEPAGE = "https://github.com/sanderland/katrain"
+PROGRAM_NAME = "KaTrainSE"
+VERSION = "1.12.3.1"
+# HOMEPAGE = "https://github.com/sanderland/katrain"
+HOMEPAGE = "https://github.com/ljubo106/katrainse"
 CONFIG_MIN_VERSION = "1.11.0"  # keep config files from this version
 ANALYSIS_FORMAT_VERSION = "1.0"
 DATA_FOLDER = "~/.katrain"
