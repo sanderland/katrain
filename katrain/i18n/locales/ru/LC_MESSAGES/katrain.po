@@ -966,3 +966,7 @@ msgstr "Только для ходов"
 #. status message
 msgid "move range analysis"
 msgstr "Анализ ходов от {start_move} до {end_move} с {visits} посещениями"
+
+#. TODO
+msgid "contribute:passwordwarning"
+msgstr "(Stored as plain text, do not re-use this anywhere)"

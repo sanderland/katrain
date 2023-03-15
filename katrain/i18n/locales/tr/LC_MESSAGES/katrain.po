@@ -1066,3 +1066,7 @@ msgstr "to move"
 #. TODO - Restrict analysis to move range
 msgid "limit to moves"
 msgstr "Limit to moves"
+
+#. TODO
+msgid "contribute:passwordwarning"
+msgstr "(Stored as plain text, do not re-use this anywhere)"
