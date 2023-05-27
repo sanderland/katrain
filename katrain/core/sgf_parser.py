@@ -576,7 +576,10 @@ class SGF:
 
                         key = line[4]
                         raw_move = line[5:7].lower()
-                        value = chr(ord(raw_move[0]) - 1) + chr(ord(raw_move[1]) - 1)
+                        if raw_move == "aa":
+                            value = "" # pass
+                        else:
+                            value = chr(ord(raw_move[0]) - 1) + chr(ord(raw_move[1]) - 1)
 
                         node = cls._NODE_CLASS(parent=node)
                         node.set_property(key, value)

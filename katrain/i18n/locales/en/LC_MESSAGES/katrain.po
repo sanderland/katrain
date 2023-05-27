@@ -590,6 +590,9 @@ msgstr "Username"
 msgid "contribute:password"
 msgstr "Password"
 
+msgid "contribute:passwordwarning"
+msgstr "(Stored as plain text, do not re-use this anywhere)"
+
 msgid "contribute:register"
 msgstr "Register"
 

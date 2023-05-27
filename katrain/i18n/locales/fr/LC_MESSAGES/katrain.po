@@ -1000,3 +1000,7 @@ msgid "move range analysis"
 msgstr ""
 "Analyse de partie approfondie du coup {start_move} au coup {end_move} "
 "({visits} visites/coup)."
+
+#. TODO
+msgid "contribute:passwordwarning"
+msgstr "(Stored as plain text, do not re-use this anywhere)"

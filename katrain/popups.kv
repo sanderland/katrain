@@ -397,6 +397,9 @@
                     icon: "eye"
                     pos_hint: {"center_x": 0, "center_y": .5}
                     on_press: password.password = not password.password
+                SmallDescriptionLabel:
+                    padding_x: dp(40)
+                    text: i18n._("contribute:passwordwarning")
     DescriptionLabel:
         text: ''
         id: error
