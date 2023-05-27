@@ -50,7 +50,7 @@ setup(
         "chardet",  # for automatic encoding detection
     ],
     dependency_links=["https://kivy.org/downloads/simple/"],
-    python_requires=">=3.7, <3.11",
+    python_requires=">=3.7, <4.0",
     entry_points={"console_scripts": ["katrain=katrain.__main__:run_app"]},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
