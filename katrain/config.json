@@ -28,7 +28,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.12.1",
+        "version": "1.13.0",
         "load_fast_analysis": false,
         "load_sgf_rewind": true
     },
