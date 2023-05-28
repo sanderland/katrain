@@ -495,8 +495,6 @@ class BaseConfigPopup(QuickConfigGui):
         "just-descriptions": {
             "CUDA v1.13.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-cuda11.2-windows-x64.zip",
             "CUDA v1.13.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-cuda11.1-linux-x64.zip",
-            "Cuda/TensorRT v1.13.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.1-trt8.2-cuda11.2-windows-x64.zip",
-            "Cuda/TensorRT v1.13.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.12.1-trt8.2-cuda11.1-linux-x64.zip",
         },
     }
 
