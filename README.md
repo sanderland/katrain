@@ -67,12 +67,14 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
 
 ## <a name="kata"></a>  Configuring KataGo
 
-KaTrain comes pre-packaged with a working KataGo (OpenCL version) for Windows, Linux, and pre-M1 Mac operating systems, and the 15 block model.
+KaTrain comes pre-packaged with a working KataGo (OpenCL version) for Windows, Linux, and pre-M1 Mac operating systems, and the rather old 15 block model.
 
 To change the model, open 'General and Engine settings' in the application and 'Download models'. You can then select the model you want from the dropdown menu.
 
 To change the katago binary, e.g. to the Eigen/CPU version if you don't have a GPU, click 'Download KataGo versions'.
   You can then select the KataGo binary from the dropdown menu.
+There are also CUDA and TensorRT versions available on [the KataGo release site](https://github.com/lightvector/KataGo/releases). Particularly the latter may offer much better performance on NVIDIA GPUs, but will be harder to 
+set up: [see here for more details](https://github.com/lightvector/KataGo#opencl-vs-cuda-vs-tensorrt-vs-eigen).
 
 Finally, you can override the entire command used to start the analysis engine, which 
  can be useful for connecting to a remote server. Do keep in mind that KaTrain uses the *analysis engine*
