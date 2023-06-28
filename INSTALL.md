@@ -29,25 +29,8 @@ Users with the last generation M1 macs with different architecture should then `
 brew install python3
 brew install katago
 pip3 install katrain
-```
 
-If you are using a M1 Mac, at the point of writing, the latest stable release of Kivy (2.0) does not support the new architecture, so we have to use a development snapshot and build it from source:
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-brew install python3
-brew install katago
-
-# install dependencies: https://kivy.org/doc/stable/installation/installation-osx.html#install-source-osx
-brew install pkg-config sdl2 sdl2_image sdl2_ttf sdl2_mixer gstreamer ffmpeg
-
-# install Kivy from source: https://kivy.org/doc/stable/gettingstarted/installation.html#kivy-source-install
-pip3 install "kivy[base] @ https://github.com/kivy/kivy/archive/master.zip" --no-binary kivy
-
-pip3 install katrain
-```
-
-Now you can start KaTrain by simply typing `katrain` in a terminal.
+Now you can start KaTrain by simply typing `katrain` in a terminal after adding it to your path.
 
 These commands install [Homebrew](https://brew.sh), which simplifies installing packages,
  followed by the programming language Python, the KataGo AI, and KaTrain itself.
