@@ -468,15 +468,14 @@ class BaseConfigPopup(QuickConfigGui):
         "Strongest distributed model": "https://katagotraining.org/api/networks/get_strongest/",
     }
     MODELS = {
-        "20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
-        "30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
-        "40 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
-        "18 'nested residual block' model": "https://github.com/lightvector/KataGo/releases/download/v1.12.2/b18c384nbt-uec.bin.gz",
-        "18 block 'optimistic policy' model": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/b18c384nbt-optimisticv13-s5971M.bin.gz",
+        "old 15 block model": "https://github.com/lightvector/KataGo/releases/download/v1.3.2/g170e-b15c192-s1672170752-d466197061.txt.gz",
     }
     MODEL_DESC = {
         "Fat 40 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b40c384x2-s2348692992-d1229892979.zip",
-        "15 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b15c192-s1672170752-d466197061.bin.gz",
+        "Recommended 18b model": "https://media.katagotraining.org/uploaded/networks/models/kata1/kata1-b18c384nbt-s6582191360-d3422816034.bin.gz",
+        "old 20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
+        "old 30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
+        "old 40 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
     }
 
     KATAGOS = {
@@ -550,7 +549,7 @@ class BaseConfigPopup(QuickConfigGui):
         # no description to bottom
         model_files = sorted(
             [(find_description(path), path) for path in model_files],
-            key=lambda descpath: "Z" * 10 + path if descpath[0] == descpath[1] else descpath[0],
+            key=lambda descpath: ("Recommended" not in descpath[0], "  -  " not in descpath[0], descpath[0]),
         )
         models_available_msg = i18n._("models available").format(num=len(model_files))
         self.model_files.values = [models_available_msg] + [desc for desc, path in model_files]
@@ -909,7 +908,6 @@ class GameReportPopup(BoxLayout):
                 ("aitop5", "{:.1%}", "ai_top5_move", 1, True),
             ]
         ):
-
             statcell = {
                 bw: TableStatLabel(
                     text=fmt.format(sum_stats[bw][stat]) if stat in sum_stats[bw] else "",
