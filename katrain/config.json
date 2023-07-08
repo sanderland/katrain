@@ -2,7 +2,7 @@
     "engine": {
         "katago": "",
         "altcommand": "",
-        "model": "katrain/models/g170e-b15c192-s1672170752-d466197061.bin.gz",
+        "model": "katrain/models/kata1-b18c384nbt-s6582191360-d3422816034.bin.gz",
         "config": "katrain/KataGo/analysis_config.cfg",
         "threads": 12,
         "max_visits": 500,
@@ -28,7 +28,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.13.0",
+        "version": "1.14.0",
         "load_fast_analysis": false,
         "load_sgf_rewind": true
     },
