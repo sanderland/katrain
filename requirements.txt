@@ -1,12 +1,7 @@
-certifi==2022.12.7
-chardet==3.0.4
-docutils==0.16
-ffpyplayer==4.3.2
-idna==2.10
-Kivy==2.1.0
-Kivy-Garden==0.1.4
+kivy[full]==2.2.1
 kivymd==0.104.1
-Pillow==9.3.0
-Pygments==2.7.4
-requests==2.31.0
+ffpyplayer==4.5.0
 urllib3==1.26.5
+pygame==2.5.0;platform_system=='Darwin'
+screeninfo==0.8.1;platform_system!='Darwin'
+chardet==5.2.0
