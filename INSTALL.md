@@ -30,7 +30,6 @@ brew install python3
 brew install katago
 pip3 install katrain
 ```
-
 Now you can start KaTrain by simply typing `katrain` in a terminal after adding it to your path.
 
 These commands install [Homebrew](https://brew.sh), which simplifies installing packages,
