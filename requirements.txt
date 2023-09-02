@@ -7,6 +7,6 @@ Kivy==2.1.0
 Kivy-Garden==0.1.4
 kivymd==0.104.1
 Pillow==9.3.0
-Pygments==2.7.4
+Pygments==2.15.0
 requests==2.31.0
 urllib3==1.26.5
