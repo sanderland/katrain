@@ -144,20 +144,25 @@ class BadukPanWidget(Widget):
     def on_mouse_pos(self, *args):  # https://gist.github.com/opqopq/15c707dc4cffc2b6455f
         if self.get_root_window():  # don't proceed if I'm not displayed <=> If have no parent
             pos = args[1]
+            # On windows, according to DPI, the device(touch) resolution may differ from the window(mouse) resolution.
+            # If so, we need to recalculate the position of the mouse accordingly.
+            x_ratio, y_ratio = float(Window.size[0]) / Window.system_size[0], float(Window.size[1]) / Window.system_size[1]
+            pos = [pos[0] * x_ratio, pos[1] * y_ratio]
             rel_pos = self.to_widget(*pos)  # compensate for relative layout
             inside = self.collide_point(*rel_pos)
 
+            # If the Mouse is inside the board
             if inside and self.active_pv_moves and not self.selecting_region_of_interest:
-                near_move = [
-                    (pv, node)
-                    for move, pv, node in self.active_pv_moves
-                    if move[0] < len(self.gridpos[0])
-                    and move[1] < len(self.gridpos)
-                    and abs(rel_pos[0] - self.gridpos[move[1]][move[0]][0]) < self.grid_size / 2
-                    and abs(rel_pos[1] - self.gridpos[move[1]][move[0]][1]) < self.grid_size / 2
-                ]
-                if near_move:
-                    self.set_animating_pv(near_move[0][0], near_move[0][1])
+                # Find the closest previous move according to the mouse position
+                ani_move, ani_node = None, None
+                xd, xp, yd, yp = self._find_closest(*pos)
+                for (move, pv, node) in self.active_pv_moves:
+                    if move[0] == xp and move[1] == yp:
+                        ani_move, ani_node = pv, node
+                        break
+
+                if ani_move:
+                    self.set_animating_pv(ani_move, ani_node)
                 elif self.animating_pv is not None:
                     self.set_animating_pv(None, None)  # any click kills PV from label/move
             if inside and self.animating_pv is not None:
