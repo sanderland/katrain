@@ -764,7 +764,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.move_tree.toggle_selected_node_collapse()
         elif keycode[1] == Theme.KEY_NEW_GAME and ctrl_pressed:
             self("new-game-popup")
-        elif keycode[1] == Theme.KEY_LOAD_GAME and ctrl_pressed:
+        elif (keycode[1] == Theme.KEY_LOAD_GAME and ctrl_pressed) or (keycode[1] == Theme.KEY_OPEN_GAME):
             self("analyze-sgf-popup")
         elif keycode[1] == Theme.KEY_SAVE_GAME and ctrl_pressed:
             self("save-game")

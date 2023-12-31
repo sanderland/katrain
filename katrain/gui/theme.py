@@ -180,6 +180,7 @@ class Theme:
     KEY_SAVE_GAME = "s"
     KEY_SAVE_GAME_AS = "d"
     KEY_LOAD_GAME = "l"
+    KEY_OPEN_GAME = "o"
     KEY_SUBMIT_POPUP = ["enter", "numpadenter"]
 
     KEY_ANALYSIS_CONTROLS_SHOW_CHILDREN = "q"
