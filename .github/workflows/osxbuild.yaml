@@ -14,17 +14,17 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: 3.8
-    - name: Build KataGo
-      run: |
-        rm katrain/KataGo/katago
-        rm katrain/KataGo/*.dll
-        rm katrain/KataGo/katago.exe
-        cd ..
-        git clone --branch stable https://github.com/lightvector/KataGo.git
-        pushd KataGo/cpp
-        cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
-        make
-        cp katago ../../katrain/katrain/KataGo/katago-osx
+#    - name: Build KataGo
+#      run: |
+#        rm katrain/KataGo/katago
+#        rm katrain/KataGo/*.dll
+#        rm katrain/KataGo/katago.exe
+#        cd ..
+#        git clone --branch stable https://github.com/lightvector/KataGo.git
+#        pushd KataGo/cpp
+#        cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
+#        make
+#        cp katago ../../katrain/katrain/KataGo/katago-osx
     - name: Install platypus
       run: |
         curl -L --output "platypus.zip" https://github.com/sveinbjornt/Platypus/releases/download/5.3/platypus5.3.zip
@@ -39,6 +39,7 @@ jobs:
         chmod -R 755 /usr/local/share/platypus
     - name: Get Kivy dependencies
       run: |
+        brew install ninja
         cd ..
         git clone https://github.com/kivy/kivy-sdk-packager.git
         cd kivy-sdk-packager/osx
