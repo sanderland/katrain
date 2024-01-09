@@ -1,7 +1,7 @@
 kivy[full]==2.2.1
 kivymd==0.104.1
 ffpyplayer==4.5.0
-urllib3==1.26.5
+urllib3==1.26.18
 pygame==2.5.0;platform_system=='Darwin'
 screeninfo==0.8.1;platform_system!='Darwin'
 chardet==5.2.0
