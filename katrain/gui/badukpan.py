@@ -1136,6 +1136,8 @@ class BadukPanWidget(Widget):
             if self.animating_pv:
                 pv, node, start_time, _ = self.animating_pv
                 delay = self.katrain.config("general/anim_pv_time", 0.5)
+                if delay <= 0:
+                    return 99999
                 return (time.time() - start_time) / max(delay, 0.1)
             else:
                 return 0
