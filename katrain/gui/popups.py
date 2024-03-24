@@ -903,7 +903,7 @@ class GameReportPopup(BoxLayout):
         for i, (label, fmt, stat, scale, more_is_better) in enumerate(
             [
                 ("accuracy", "{:.1f}", "accuracy", 100, True),
-                ("meanpointloss", "{:.1f}", "mean_ptloss", 5, False),
+                ("meanpointloss", "{:.2f}", "mean_ptloss", 5, False),
                 ("aitopmove", "{:.1%}", "ai_top_move", 1, True),
                 ("aitop5", "{:.1%}", "ai_top5_move", 1, True),
             ]

@@ -128,7 +128,7 @@ class KataGoEngine(BaseEngine):
                 self.on_error(i18n._("Kata config not found").format(config=cfg), code="KATAGO-FILES")
                 return  # don't start
             self.command = shlex.split(
-                f'"{exe}" analysis -model "{model}" -config "{cfg}" -analysis-threads {config["threads"]} -override-config "homeDataDir={os.path.expanduser(DATA_FOLDER)}"'
+                f'"{exe}" analysis -model "{model}" -config "{cfg}" -override-config "homeDataDir={os.path.expanduser(DATA_FOLDER)}"'
             )
         self.start()
 
