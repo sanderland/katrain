@@ -68,6 +68,8 @@ If you have a working Python 3.6-3.8 available, you should be able to simply:
 * Run `pip3 install -U katrain` to install or upgrade.
 * Run the program by executing `katrain` in a terminal.
 
+### <a name="LinuxQuick"></a>Use docker for a quick install (nvidia gpu required)
+if you have a nvidia gpu, you can use [docker](./docker/) to run katrain without installing any dependencies. 
 ### <a name="LinuxSources"></a>Installation from sources 
 
 This section describes how to install KaTrain from sources,
