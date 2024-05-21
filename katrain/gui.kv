@@ -743,7 +743,7 @@
         halign: 'center'
         font_size: root.height / 3
         font_name: root.font_name
-        color: checkbox.disabled_color if root.disabled else (checkbox.selected_color if checkbox.active else checkbox.unselected_color)
+        color: "red"
         size_hint_x: None
         width: self.texture_size[0] + 4
         on_left_press: checkbox.trigger_action()
@@ -1142,7 +1142,7 @@
     analysis_controls: analysis_controls
     nav_drawer: nav_drawer
     nav_drawer_contents: nav_drawer_contents
-    NavigationLayout:
+    MDNavigationLayout:
         ScreenManager:
             Screen:
                 name: 'gui'
