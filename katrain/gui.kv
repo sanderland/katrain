@@ -95,16 +95,17 @@
 # new widgets
 
 
-<SizedButton>:
-    ripple_duration_in_slow: 0.6
+<SizedButton@BackgroundColorBehavior>
+    theme_bg_color: "Custom"
+    md_bg_color: Theme.BOX_BACKGROUND_COLOR
     text_color: Theme.TEXT_COLOR
-    background_color: Theme.BOX_BACKGROUND_COLOR
     label: label
     text_size: root.size
-    Label:
+    radius: 0
+    MDButtonText:
         id: label
         padding: [root.padding_x,root.padding_y]
-        color: root.text_color
+        text_color: root.text_color
         font_name: root.font_name
         font_size: 0.6 * self.height / len(self.text.split('\\n')) if root._font_size is None else root._font_size
         halign: root.halign
@@ -116,7 +117,7 @@
 <ToggleButtonMixin>:
     inactive_background_color: Theme.BACKGROUND_COLOR
     active_background_color: Theme.BOX_BACKGROUND_COLOR
-    background_color: self.active_background_color if self.state=='down' else self.inactive_background_color
+    md_bg_color: self.active_background_color if self.state=='down' else self.inactive_background_color
     outline_color: self.active_outline_color if self.state=='down' else self.inactive_outline_color
 
 <SizedRectangleButton>:
@@ -328,7 +329,7 @@
     BoxLayout:
         size_hint: 0.75, 1
         pos_hint: {'x':0,'y':0}
-        size_hint: 1,1
+        size_hint: 1,1 #WHY ARE THERE TWO SIZE HINTS HERE
         orientation: 'vertical'
         Label:
             size_hint: 1,0.6
@@ -680,7 +681,6 @@
                     hint_text: i18n._('SGF Notes Hint')
                     color_mode: 'custom'
                     line_color_focus: Theme.TEXT_COLOR
-                    size_hint: 1, 1
                     canvas.before:
                         Color:
                             rgba: LIGHTER_GREY
@@ -689,7 +689,6 @@
                             width: 1
     Label:
         size_hint_y: EPSILON # takes up remaining space if info is closed
-
 
 <MenuItem>
     font_size: self.height * 0.5
@@ -1106,12 +1105,13 @@
 
 
 <PlayAnalyzeButton@SizedToggleButton>:
+    theme_bg_color: "Custom"
     inactive_background_color: Theme.BOX_BACKGROUND_COLOR
     active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
     ripple_color: Theme.BACKGROUND_COLOR
     text_color: self.inactive_background_color if self.state=='down' else self.active_background_color
     size_hint: 0.5,1
-    _font_size: self.height * 0.5
+    font_size: self.height * 0.5
     group: 'play_analyze'
     allow_no_selection: False
 

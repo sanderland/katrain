@@ -23,7 +23,7 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import BaseButton
+from kivymd.uix.button import MDButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
 from kivymd.uix.textfield import MDTextField
 
@@ -106,7 +106,7 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
 
 
 # -- resizeable buttons / avoid baserectangular for sizing
-class SizedButton(BaseButton, RectangularRippleBehavior, BackgroundMixin):
+class SizedButton(LeftButtonBehavior, MDButton):
     text = StringProperty("")
     text_color = ListProperty(Theme.BUTTON_TEXT_COLOR)
     text_size = ListProperty([100, 100])
@@ -116,7 +116,6 @@ class SizedButton(BaseButton, RectangularRippleBehavior, BackgroundMixin):
     padding_y = NumericProperty(0)
     _font_size = NumericProperty(None)
     font_name = StringProperty(Theme.DEFAULT_FONT)
-
 
 class AutoSizedButton(SizedButton):
     pass
