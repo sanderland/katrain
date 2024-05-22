@@ -108,7 +108,7 @@
         font_name: root.font_name
         font_size: 0.6 * self.height / len(self.text.split('\\n')) if root._font_size is None else root._font_size
         halign: root.halign
-        text: root.text
+        text: root.text_katrain
 
 <AutoSizedButton>:
     width: root.label.texture_size[0]
@@ -743,7 +743,7 @@
         halign: 'center'
         font_size: root.height / 3
         font_name: root.font_name
-        color: checkbox.disabled_color if root.disabled else (checkbox.selected_color if checkbox.active else checkbox.unselected_color)
+        color: checkbox.disabled_color if root.disabled else (checkbox.selected_color if checkbox.active else checkbox.unselected_color) or [1,1,1]
         size_hint_x: None
         width: self.texture_size[0] + 4
         on_left_press: checkbox.trigger_action()
@@ -1142,7 +1142,7 @@
     analysis_controls: analysis_controls
     nav_drawer: nav_drawer
     nav_drawer_contents: nav_drawer_contents
-    NavigationLayout:
+    MDNavigationLayout:
         ScreenManager:
             Screen:
                 name: 'gui'

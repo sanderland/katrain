@@ -23,7 +23,7 @@ def play_sound(file, volume=1, cache=True):
     if app and app.gui and app.gui.config("timer/sound"):
         sound = cached_sounds.get(file)
         if sound is None:
-            sound = SoundLoader.load(file)
+            #sound = SoundLoader.load(file) #NO SOUNDS WITH KIVY 1.1.1
             if cache:
                 cached_sounds[file] = sound
         if sound is not None:
