@@ -145,16 +145,16 @@ Keyboard shortcuts are shown with **[key]**.
     allowing you to quickly switch between a more minimalistic 'play' mode and more complex 'analysis' mode.
 
 * The checkboxes at the top of the screen:
-    * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when 
+    * <kbd><strong>q</strong></kbd>: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when 
                wanting to guess the next move.
-    * **[w]**: Show all dots: Toggles showing coloured evaluation 'dots' on the last few moves or not.
+    * <kbd>w</kbd>: Show all dots: Toggles showing coloured evaluation 'dots' on the last few moves or not.
        * You can configure the thresholds, along with how many of the last moves they are shown for under 'Teaching/Analysis Settings'.
-    * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. 
+    * <kbd>e</kbd>: Top moves: Show the next moves KataGo considered, colored by their expected point loss. 
            Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). 
            Hover over any of them to see the principal variation.
-    * **[r]**: Policy moves: Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, 
+    * <kbd>r</kbd>: Policy moves: Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, 
        and in the absence of any 'reading'. This turns off the 'top moves' setting as the overlap is often not useful.
-    * **[t]**: Expected territory: Show expected ownership of each intersection.
+    * <kbd>t</kbd>: Expected territory: Show expected ownership of each intersection.
 
 * The analysis options available under the 'Analysis' button are used for deeper evaluation of the position:
     * **[a]**: Deeper analysis: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
