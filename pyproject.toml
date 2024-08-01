@@ -1,0 +1,61 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry]
+name = "KaTrain"
+version = "0.0.0"  # Placeholder. The poetry-dynamic-versioning sets the version
+description = "Go/Baduk/Weiqi playing and teaching app with a variety of AIs"
+authors = ["Sander Land"]
+license = "MIT"
+homepage = "https://github.com/sanderland/katrain"
+readme = "README.md"
+packages = [{include = "katrain"}]
+include = [
+    {path = "katrain/KataGo/*"},
+    {path = "katrain/models/*"},
+    {path = "katrain/fonts/*"},
+    {path = "katrain/sounds/*"},
+    {path = "katrain/img/*"},
+    {path = "katrain/img/flags/*"},
+    {path = "katrain/i18n/*"}
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: Games/Entertainment :: Board Games"
+]
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
+[tool.poetry-dynamic-versioning.from-file]
+source = "katrain/core/constants.py"
+pattern = "^VERSION\\s*=\\s*\"(.*)\""
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+kivy = {extras = ["full"], version = ">=2.1.0"}
+kivymd = "==0.104.1"  # TODO: upgrade this, the latest version is 1.1.1
+ffpyplayer = "*"
+urllib3 = "*"
+pygame = {version = "*", markers = "platform_system == 'Darwin'"}    # some mac versions need this for kivy
+screeninfo = {version = "*", markers = "platform_system != 'Darwin'"}  # for screen resolution, has problems on macos
+chardet = "*"  # for automatic encoding detection
+# Avoid PyPI/Poetry problem: https://github.com/python-poetry/poetry/issues/9293
+docutils = ">=0.21.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+polib = "*"
+
+[tool.poetry.group.test.dependencies]
+pytest = "*"
+
+[tool.poetry.scripts]
+katrain = "katrain.__main__:run_app"
+
+[tool.black]
+line-length = 120
