@@ -35,4 +35,4 @@ jobs:
       env:
         POETRY_HTTP_BASIC_KATRAIN_USERNAME: ${{ secrets.PYPI_USER }}
         POETRY_HTTP_BASIC_KATRAIN_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: poetry publish
+      run: poetry publish --verbose
