@@ -11,15 +11,6 @@ license = "MIT"
 homepage = "https://github.com/sanderland/katrain"
 readme = "README.md"
 packages = [{include = "katrain"}]
-include = [
-    {path = "katrain/KataGo/*"},
-    {path = "katrain/models/*"},
-    {path = "katrain/fonts/*"},
-    {path = "katrain/sounds/*"},
-    {path = "katrain/img/*"},
-    {path = "katrain/img/flags/*"},
-    {path = "katrain/i18n/*"}
-]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Operating System :: Microsoft :: Windows",
