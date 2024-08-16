@@ -27,10 +27,10 @@ jobs:
         poetry install --with dev,test
 
     - name: Run tests
-      run: pytest tests
+      run: poetry run pytest tests
 
     - name: Run I18N conversion
-      run: python i18n.py -todo
+      run: poetry run python i18n.py -todo
 
     - name: Build
       run: |
