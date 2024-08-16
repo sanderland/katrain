@@ -480,7 +480,7 @@ class BaseConfigPopup(QuickConfigGui):
 
     KATAGOS = {
         "win": {
-            "OpenCL v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-opencl-windows-x64.zip3",
+            "OpenCL v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-opencl-windows-x64.zip",
             "Eigen AVX2 (Modern CPUs) v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-eigenavx2-windows-x64.zip",
             "Eigen (CPU, Non-optimized) v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-eigen-windows-x64.zip",
             "OpenCL v1.15.3 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-opencl-windows-x64+bs29.zip",
