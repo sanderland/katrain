@@ -9,9 +9,9 @@ jobs:
   osx_app:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: 3.8
     - name: Build KataGo
@@ -49,7 +49,8 @@ jobs:
         pushd ../kivy-sdk-packager/osx/build/KaTrain.app/Contents/Resources/venv/bin
         source activate
         popd
-        python -m pip install .
+        python -m pip install poetry
+        poetry install
     - name: Finalize KaTrain bundle
       run: |
         export KATRAIN_VERSION=`python -c 'from katrain.core.constants import VERSION;print(VERSION)' `
@@ -69,7 +70,7 @@ jobs:
         mkdir osx_app
         cp ../kivy-sdk-packager/osx/KaTrain.dmg osx_app/
     - name: Upload app as artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: KaTrainOSX
         path: osx_app
