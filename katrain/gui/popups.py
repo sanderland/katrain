@@ -914,9 +914,12 @@ class GameReportPopup(BoxLayout):
                     side=side,
                     value=sum_stats[bw].get(stat, 0),
                     scale=scale,
-                    bar_color=Theme.STAT_BETTER_COLOR
-                    if (sum_stats[bw].get(stat, 0) < sum_stats[Move.opponent_player(bw)].get(stat, 0)) ^ more_is_better
-                    else Theme.STAT_WORSE_COLOR,
+                    bar_color=(
+                        Theme.STAT_BETTER_COLOR
+                        if (sum_stats[bw].get(stat, 0) < sum_stats[Move.opponent_player(bw)].get(stat, 0))
+                        ^ more_is_better
+                        else Theme.STAT_WORSE_COLOR
+                    ),
                     background_color=Theme.BOX_BACKGROUND_COLOR,
                 )
                 for (bw, side) in zip("BW", ["left", "right"])

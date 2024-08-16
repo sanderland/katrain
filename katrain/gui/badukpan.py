@@ -227,8 +227,18 @@ class BadukPanWidget(Widget):
         self.draw_board_contents()
 
     def draw_stone(
-            self, x, y, player, alpha=1, innercol=None, evalcol=None, evalscale=1.0, scale=1.0, ownership=None,
-            loss=None, depth=None
+        self,
+        x,
+        y,
+        player,
+        alpha=1,
+        innercol=None,
+        evalcol=None,
+        evalscale=1.0,
+        scale=1.0,
+        ownership=None,
+        loss=None,
+        depth=None,
     ):
         stone_size = self.stone_size * scale
         if ownership is not None:
@@ -665,9 +675,11 @@ class BadukPanWidget(Widget):
                             innercol=inner,
                             evalcol=evalcol,
                             evalscale=evalscale,
-                            ownership=ownership_grid[m.coords[1]][m.coords[0]]
-                            if ownership_grid and not loss_grid and not new_move
-                            else None,
+                            ownership=(
+                                ownership_grid[m.coords[1]][m.coords[0]]
+                                if ownership_grid and not loss_grid and not new_move
+                                else None
+                            ),
                             loss=loss_grid[m.coords[1]][m.coords[0]] if loss_grid else None,
                             depth=node.depth if katrain.show_move_num else None,
                         )
