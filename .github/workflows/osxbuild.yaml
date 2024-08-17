@@ -33,7 +33,7 @@ jobs:
         cp katago ../../katrain/katrain/KataGo/katago-osx
     - name: Install platypus
       run: |
-        curl -L --output "platypus.zip" https://github.com/sveinbjornt/Platypus/releases/download/v5.4.1/platypus5.4.1.zip
+        curl -L --output "platypus.zip" https://github.com/sveinbjornt/Platypus/releases/download/v5.3/platypus5.3.zip
         unzip "platypus.zip"
         gunzip Platypus.app/Contents/Resources/platypus_clt.gz
         gunzip Platypus.app/Contents/Resources/ScriptExec.gz
