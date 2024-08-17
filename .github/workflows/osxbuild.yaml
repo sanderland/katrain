@@ -9,19 +9,19 @@ jobs:
   osx_app:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.8
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        brew update
+        brew install libzip
+
     - name: Build KataGo
       run: |
-        export OPENSSL_ROOT_DIR=$(brew --prefix openssl@1.1)
-        export OPENSSL_LIBRARIES="${OPENSSL_ROOT_DIR}/lib"
-        echo $OPENSSL_ROOT_DIR
-        ls $OPENSSL_ROOT_DIR
-        echo $OPENSSL_LIBRARIES
-        ls $OPENSSL_LIBRARIES
         rm katrain/KataGo/katago
         rm katrain/KataGo/*.dll
         rm katrain/KataGo/katago.exe
@@ -37,14 +37,15 @@ jobs:
         unzip "platypus.zip"
         gunzip Platypus.app/Contents/Resources/platypus_clt.gz
         gunzip Platypus.app/Contents/Resources/ScriptExec.gz
-        mkdir -p /usr/local/bin
-        mkdir -p /usr/local/share/platypus
-        cp Platypus.app/Contents/Resources/platypus_clt /usr/local/bin/platypus
-        cp Platypus.app/Contents/Resources/ScriptExec /usr/local/share/platypus/ScriptExec
-        cp -a Platypus.app/Contents/Resources/MainMenu.nib /usr/local/share/platypus/MainMenu.nib
-        chmod -R 755 /usr/local/share/platypus
+        sudo mkdir -p /usr/local/bin
+        sudo mkdir -p /usr/local/share/platypus
+        sudo cp Platypus.app/Contents/Resources/platypus_clt /usr/local/bin/platypus
+        sudo cp Platypus.app/Contents/Resources/ScriptExec /usr/local/share/platypus/ScriptExec
+        sudo cp -a Platypus.app/Contents/Resources/MainMenu.nib /usr/local/share/platypus/MainMenu.nib
+        sudo chmod -R 755 /usr/local/share/platypus
     - name: Get Kivy dependencies
       run: |
+        brew install ninja
         cd ..
         git clone https://github.com/kivy/kivy-sdk-packager.git
         cd kivy-sdk-packager/osx
@@ -54,7 +55,8 @@ jobs:
         pushd ../kivy-sdk-packager/osx/build/KaTrain.app/Contents/Resources/venv/bin
         source activate
         popd
-        python -m pip install .
+        python -m pip install poetry
+        poetry install
     - name: Finalize KaTrain bundle
       run: |
         export KATRAIN_VERSION=`python -c 'from katrain.core.constants import VERSION;print(VERSION)' `
@@ -74,7 +76,7 @@ jobs:
         mkdir osx_app
         cp ../kivy-sdk-packager/osx/KaTrain.dmg osx_app/
     - name: Upload app as artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: KaTrainOSX
         path: osx_app

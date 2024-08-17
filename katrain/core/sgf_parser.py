@@ -577,7 +577,7 @@ class SGF:
                         key = line[4]
                         raw_move = line[5:7].lower()
                         if raw_move == "aa":
-                            value = "" # pass
+                            value = ""  # pass
                         else:
                             value = chr(ord(raw_move[0]) - 1) + chr(ord(raw_move[1]) - 1)
 

@@ -472,7 +472,7 @@ class BaseConfigPopup(QuickConfigGui):
     }
     MODEL_DESC = {
         "Fat 40 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b40c384x2-s2348692992-d1229892979.zip",
-        "Recommended 18b model": "https://media.katagotraining.org/uploaded/networks/models/kata1/kata1-b18c384nbt-s6582191360-d3422816034.bin.gz",
+        "Recommended 18b model": "https://media.katagotraining.org/uploaded/networks/models/kata1/kata1-b18c384nbt-s9996604416-d4316597426.bin.gz",
         "old 20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
         "old 30 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b30c320x2-s4824661760-d1229536699.bin.gz",
         "old 40 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170-b40c256x2-s5095420928-d1229425124.bin.gz",
@@ -480,23 +480,18 @@ class BaseConfigPopup(QuickConfigGui):
 
     KATAGOS = {
         "win": {
-            "OpenCL v1.13.0": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-opencl-windows-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.13.0": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-eigenavx2-windows-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.13.0": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-eigen-windows-x64.zip",
-            "OpenCL v1.13.0 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-opencl-windows-x64+bs29.zip",
+            "OpenCL v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-opencl-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-eigenavx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-eigen-windows-x64.zip",
+            "OpenCL v1.15.3 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-opencl-windows-x64+bs29.zip",
         },
         "linux": {
-            "OpenCL v1.13.0": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-opencl-linux-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.13.0": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-eigenavx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.13.0": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-eigen-linux-x64.zip",
-            "OpenCL v1.13.0 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-opencl-linux-x64+bs29.zip",
+            "OpenCL v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-opencl-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-eigenavx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-eigen-linux-x64.zip",            
+            "OpenCL v1.15.3 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-opencl-linux-x64+bs29.zip",
         },
-        "just-descriptions": {
-            "CUDA v1.13.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-cuda11.2-windows-x64.zip",
-            "CUDA v1.13.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.0-cuda11.1-linux-x64.zip",
-            "Cuda/TensorRT v1.13.0 (Windows)": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.13.1-trt8.2-cuda11.2-windows-x64.zip",
-            "Cuda/TensorRT v1.13.0 (Linux)": "https://github.com/lightvector/KataGo/releases/download/v1.13.0/katago-v1.12.1-trt8.2-cuda11.1-linux-x64.zip",
-        },
+        "just-descriptions": {},
     }
 
     def __init__(self, katrain):
@@ -914,9 +909,12 @@ class GameReportPopup(BoxLayout):
                     side=side,
                     value=sum_stats[bw].get(stat, 0),
                     scale=scale,
-                    bar_color=Theme.STAT_BETTER_COLOR
-                    if (sum_stats[bw].get(stat, 0) < sum_stats[Move.opponent_player(bw)].get(stat, 0)) ^ more_is_better
-                    else Theme.STAT_WORSE_COLOR,
+                    bar_color=(
+                        Theme.STAT_BETTER_COLOR
+                        if (sum_stats[bw].get(stat, 0) < sum_stats[Move.opponent_player(bw)].get(stat, 0))
+                        ^ more_is_better
+                        else Theme.STAT_WORSE_COLOR
+                    ),
                     background_color=Theme.BOX_BACKGROUND_COLOR,
                 )
                 for (bw, side) in zip("BW", ["left", "right"])
