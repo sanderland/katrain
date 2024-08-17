@@ -21,18 +21,18 @@ kivy = {extras = ["full"], version = ">=2.1.0"}
 kivymd = "==0.104.1"  # TODO: upgrade this, the latest version is 1.1.1
 ffpyplayer = "*"
 urllib3 = "*"
-pygame = {version = "*", markers = "platform_system == 'Darwin'"}    # some mac versions need this for kivy
-screeninfo = {version = "*", markers = "platform_system != 'Darwin'"}  # for screen resolution, has problems on macos
-chardet = "*"  # for automatic encoding detection
+pygame = {version = "^2.0", markers = "platform_system == 'Darwin'"}    # some mac versions need this for kivy
+screeninfo = {version = "^0.8.1", markers = "platform_system != 'Darwin'"}  # for screen resolution, has problems on macos
+chardet = "^5.2.0"  # for automatic encoding detection
 # Avoid PyPI/Poetry problem: https://github.com/python-poetry/poetry/issues/9293
 docutils = ">=0.21.2"
 
 [tool.poetry.group.dev.dependencies]
-black = "*"
-polib = "*"
+black = "^24.8.0"
+polib = "^1.2.0"
 
 [tool.poetry.group.test.dependencies]
-pytest = "*"
+pytest = "^8.3.2"
 
 [tool.poetry.scripts]
 katrain = "katrain.__main__:run_app"
