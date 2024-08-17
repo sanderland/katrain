@@ -9,31 +9,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.8
+        python-version: 3.12
 
     - name: Install dependencies
       run: |
-        pip3 install -e .
-        pip3 install pytest wheel twine polib
+        pip3 install poetry
+        poetry install --with dev,test
 
     - name: Run tests
-      run: pytest -v -s tests
+      run: poetry run pytest -v -s tests
 
     - name: Run I18N conversion
-      run: python i18n.py
+      run: poetry run python i18n.py
 
     - name: Build
       run: |
-        python3 setup.py sdist
-        python3 setup.py bdist_wheel
+        poetry build
 
     - name: Release to PyPI
       env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USER }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: twine upload --verbose dist/* || echo 'File exists'
+        POETRY_HTTP_BASIC_KATRAIN_USERNAME: ${{ secrets.PYPI_USER }}
+        POETRY_HTTP_BASIC_KATRAIN_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: poetry publish --verbose

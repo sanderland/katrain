@@ -183,6 +183,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 * **[~]** or **[ ` ]** or **[F12]**: Cycles through more minimalistic UI modes.
 * **[k]**: Toggle display of board coordinates.
 * **[p]**: Pass
+* **[m]**: Toggle the move number on the board
 * **[pause]**: Pause/Resume timer
 * **[arrow left]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
 * **[arrow right]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the end.

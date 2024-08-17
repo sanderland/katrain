@@ -1,4 +1,5 @@
 """isort:skip_file"""
+
 # first, logging level lower
 import os
 import sys
@@ -124,6 +125,8 @@ class KaTrainGui(Screen, KaTrainBase):
         self.contribute_popup = None
 
         self.pondering = False
+        self.show_move_num = False
+
         self.animate_contributing = False
         self.message_queue = Queue()
 
@@ -172,6 +175,10 @@ class KaTrainGui(Screen, KaTrainBase):
                 Clock.schedule_once(self.analysis_controls.hints.activate, 0)
             self.pondering = not self.pondering
             self.update_state()
+
+    def toggle_move_num(self):
+        self.show_move_num = not self.show_move_num
+        self.update_state()
 
     def start(self):
         if self.engine:
@@ -740,6 +747,8 @@ class KaTrainGui(Screen, KaTrainBase):
 
         if keycode[1] == Theme.KEY_TOGGLE_CONTINUOUS_ANALYSIS:
             self.toggle_continuous_analysis(quiet=shift_pressed)
+        elif keycode[1] == Theme.KEY_TOGGLE_MOVENUM:
+            self.toggle_move_num()
         elif keycode[1] == Theme.KEY_TOGGLE_COORDINATES:
             self.board_gui.toggle_coordinates()
         elif keycode[1] in Theme.KEY_PAUSE_TIMER and not ctrl_pressed:

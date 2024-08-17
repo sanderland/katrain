@@ -142,16 +142,18 @@ def game_report(game, thresholds, depth_filter=None):
         for bw in "BW"
     }
     sum_stats = {
-        bw: {
-            "accuracy": 100 * 0.75 ** wt_loss[bw],
-            "complexity": sum(w for w, aw in weights[bw]) / len(player_ptloss[bw]),
-            "mean_ptloss": sum(player_ptloss[bw]) / len(player_ptloss[bw]),
-            "weighted_ptloss": wt_loss[bw],
-            "ai_top_move": ai_top_move_count[bw] / len(player_ptloss[bw]),
-            "ai_top5_move": ai_approved_move_count[bw] / len(player_ptloss[bw]),
-        }
-        if len(player_ptloss[bw]) > 0
-        else {}
+        bw: (
+            {
+                "accuracy": 100 * 0.75 ** wt_loss[bw],
+                "complexity": sum(w for w, aw in weights[bw]) / len(player_ptloss[bw]),
+                "mean_ptloss": sum(player_ptloss[bw]) / len(player_ptloss[bw]),
+                "weighted_ptloss": wt_loss[bw],
+                "ai_top_move": ai_top_move_count[bw] / len(player_ptloss[bw]),
+                "ai_top5_move": ai_approved_move_count[bw] / len(player_ptloss[bw]),
+            }
+            if len(player_ptloss[bw]) > 0
+            else {}
+        )
         for bw in "BW"
     }
     return sum_stats, histogram, player_ptloss

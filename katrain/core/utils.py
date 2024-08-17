@@ -1,15 +1,13 @@
 import heapq
 import math
-import os
+from pathlib import Path
 import random
 import struct
 import sys
 from typing import List, Tuple, TypeVar
 
-try:
-    import importlib.resources as pkg_resources
-except ImportError:
-    import importlib_resources as pkg_resources
+import importlib.resources as pkg_resources
+
 
 T = TypeVar("T")
 
@@ -49,14 +47,13 @@ def find_package_resource(path, silent_errors=False):
     if path.startswith("katrain"):
         if not PATHS.get("PACKAGE"):
             try:
-                with pkg_resources.path("katrain", "gui.kv") as p:
-                    PATHS["PACKAGE"] = os.path.split(str(p))[0]
+                PATHS["PACKAGE"] = str(pkg_resources.files("katrain").absolute())
             except (ModuleNotFoundError, FileNotFoundError, ValueError) as e:
                 print(f"Package path not found, installation possibly broken. Error: {e}", file=sys.stderr)
                 return f"FILENOTFOUND/{path}"
-        return os.path.join(PATHS["PACKAGE"], path.replace("katrain\\", "katrain/").replace("katrain/", ""))
+        return str(Path(PATHS["PACKAGE"]) / path.replace("katrain\\", "katrain/").replace("katrain/", ""))
     else:
-        return os.path.abspath(os.path.expanduser(path))  # absolute path
+        return str(Path(path).expanduser().absolute())
 
 
 def pack_floats(float_list):
