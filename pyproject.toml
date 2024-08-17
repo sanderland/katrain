@@ -1,7 +1,3 @@
-[build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
-
 [tool.poetry]
 name = "KaTrain"
 version = "0.0.0"  # Placeholder. The poetry-dynamic-versioning sets the version
@@ -18,13 +14,6 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Games/Entertainment :: Board Games"
 ]
-
-[tool.poetry-dynamic-versioning]
-enable = true
-
-[tool.poetry-dynamic-versioning.from-file]
-source = "katrain/core/constants.py"
-pattern = "^VERSION\\s*=\\s*\"(.*)\""
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
@@ -50,3 +39,14 @@ katrain = "katrain.__main__:run_app"
 
 [tool.black]
 line-length = 120
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
+[tool.poetry-dynamic-versioning.from-file]
+source = "katrain/core/constants.py"
+pattern = "^VERSION\\s*=\\s*\"(.*)\""
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"
