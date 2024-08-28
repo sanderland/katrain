@@ -28,7 +28,7 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
     - [AIs](#ais)
   - [ Analysis](#-analysis)
   - [ Keyboard and mouse shortcuts](#-keyboard-and-mouse-shortcuts)
-  - [  Contributing to distributed training](#--contributing-to-distributed-training)
+  - [ Contributing to distributed training](#-contributing-to-distributed-training)
   - [ Themes](#-themes)
   - [ FAQ](#-faq)
   - [ Support / Contribute](#-support--contribute)
@@ -177,48 +177,50 @@ The analysis options available under the 'Analysis' button are used for deeper e
 
 In addition to shortcuts mentioned above and those shown in the main menu:
 
-* **[Alt]**: Open the main menu.
-* **[~]** or **[ ` ]** or **[F12]**: Cycles through more minimalistic UI modes.
-* **[k]**: Toggle display of board coordinates.
-* **[p]**: Pass
-* **[pause]**: Pause/Resume timer
-* **[arrow left]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
-* **[arrow right]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the end.
-* **[arrow up/down]** Switch branch, as would be expected from the move tree.
-* **[home/end]** Go to the beginning/end of the game.
-* **[pageup]** Make the currently selected node the main branch
-* **[Ctrl-delete]** Delete current node.
-* **[c]** Collapse/Uncollapse the branch from the current node to the previous branching point.
-* **[b]** Go back to the previous branching point.
-* **[Shift-b]** Go back the main branch.
-* **[n]** As in clicking the forward red arrow, go to one move before the next mistake (orange or worse) by a human player.
-* **[Shift-n]** As in clicking the backward red arrow, go to one move before the previous mistake.
-* **[scroll mouse]**:
-  * When hovering the cursor over the right panel: Redo/Undo move.
-  * When hovering over a candidate move: Scroll through principal variation.
-* **[middle/scroll wheel click]**: Add principal variation to the move tree. When scrolling, only moves up to the point you are viewing are added.
-* **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
-* **[double-click on a move]**: Navigate directly to just before that point in the game.
-* **[Ctrl-V]**: Load SGF from the clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
-* **[Ctrl-C]**: Save SGF to clipboard.
-* **[Escape]**: Stop all analysis.
+| Key                                            | Short Description                                                                    | Details                                                                                                                                 |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| <kbd>Alt</kbd>                                 | Open the main menu                                                                   |                                                                                                                                         |
+| <kbd>~</kbd> or <kbd>`</kbd> or <kbd>F12</kbd> | Cycles through more minimalistic UI modes                                            |                                                                                                                                         |
+| <kbd>k</kbd>                                   | Toggle display of board coordinates                                                  |                                                                                                                                         |
+| <kbd>p</kbd>                                   | Pass                                                                                 |                                                                                                                                         |
+| <kbd>Pause</kbd>                               | Pause/Resume timer                                                                   |                                                                                                                                         |
+| <kbd>←</kbd> or <kbd>z</kbd>                   | Undo move                                                                            | Hold shift for 10 moves at a time, or ctrl to skip to the start.                                                                        |
+| <kbd>→</kbd> or <kbd>x</kbd>                   | Redo move                                                                            | Hold shift for 10 moves at a time, or ctrl to skip to the end.                                                                          |
+| <kbd>↑</kbd>/<kbd>↓</kbd>                      | Switch branch                                                                        | As would be expected from the move tree.                                                                                                |
+| <kbd>Home</kbd>/<kbd>End</kbd>                 | Go to the beginning/end of the game                                                  |                                                                                                                                         |
+| <kbd>PageUp</kbd>                              | Make the currently selected node the main branch                                     |                                                                                                                                         |
+| <kbd>Ctrl</kbd> + <kbd>Delete</kbd>            | Delete current node                                                                  |                                                                                                                                         |
+| <kbd>c</kbd>                                   | Collapse/Uncollapse the branch from the current node to the previous branching point |                                                                                                                                         |
+| <kbd>b</kbd>                                   | Go back to the previous branching point                                              |                                                                                                                                         |
+| <kbd>Shift</kbd> + <kbd>b</kbd>                | Go back the main branch                                                              |                                                                                                                                         |
+| <kbd>n</kbd>                                   | Go to one move before the next mistake (orange or worse) by a human player           | As in clicking the forward red arrow                                                                                                    |
+| <kbd>Shift</kbd> + <kbd>n</kbd>                | Go to one move before the previous mistake                                           | As in clicking the backward red arrow                                                                                                   |
+| Scroll Mouse                                   | Redo/Undo move or Scroll through principal variation                                 | When hovering the cursor over the right panel: Redo/Undo move. When hovering over a candidate move: Scroll through principal variation. |
+| Middle Scroll Wheel Click                      | Add principal variation to the move tree                                             | When scrolling, only moves up to the point you are viewing are added.                                                                   |
+| Click on a Move                                | See detailed statistics for a previous move                                          | Along with expected variation that was best instead of this move                                                                        |
+| Double Click on a Move                         | Navigate directly to just before that point in the game                              |                                                                                                                                         |
+| <kbd>Ctrl</kbd> + <kbd>v</kbd>                 | Load SGF from the clipboard and do a 'fast' analysis of the game                     | With a high priority normal analysis for the last move.                                                                                 |
+| <kbd>Ctrl</kbd> + <kbd>c</kbd>                 | Save SGF to clipboard                                                                |                                                                                                                                         |
+| <kbd>Escape</kbd>                              | Stop all analysis                                                                    |                                                                                                                                         |
 
-## <a name="distributed"></a>  Contributing to distributed training
+## <a name="distributed"></a> Contributing to distributed training
+
 Starting in December 2020, KataGo started [distributed training](https://katagotraining.org/).
-This allows people to all help generate self-play games to increase KataGo's strength and train bigger models. 
+This allows people to all help generate self-play games to increase KataGo's strength and train bigger models.
 
 KaTrain 1.8.0+ makes it easy to contribute to distributed training: simply select the option from the main menu, register an account, and click run.
 During this mode you can do little more than watch games.
 
 Keep in mind that partial games are not uploaded,
- so it is best to plan to keep it running for at least an hour, if not several, for the most effective contribution.  
+so it is best to plan to keep it running for at least an hour, if not several, for the most effective contribution.
 
 A few keyboard shortcuts have special functions in this mode:
 
-* **[Spacebar]** Switch between manually navigating the current game, and automatically advancing it.
-* **[Escape]**: This sends the `quit` command to KataGo, which starts a slow shutdown, finishing partial games but not starting new ones. Only works on v1.11+.
-* **[Pause]**: Pauses/resumes contributions via the `pause` and `resume` commands introduced in KataGo v1.11. 
-
+| Key               | Short Description                                                  | Details                                                                                                |
+| ----------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| <kbd>Space</kbd>  | Switch between manually navigating the current game                | And automatically advancing it.                                                                        |
+| <kbd>Escape</kbd> | Sends the `quit` command to KataGo                                 | Which starts a slow shutdown, finishing partial games but not starting new ones. Only works on v1.11+. |
+| <kbd>Pause</kbd>  | Pauses/resumes contributions via the `pause` and `resume` commands | Introduced in KataGo v1.11                                                                             |
 
 ## <a name="themes"></a> Themes
 
