@@ -18,17 +18,20 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
 <table>
 <td>
 
-* [Previews and YouTube tutorials](#preview)
-* [Installation](#install)
-* [Manual](#ai)
-    * [Configuring KataGo](#kata)
-    * [Play against AI](#ai)
-    * [Analyzing your Games](#analysis)
-    * [Keyboard shortcuts](#keyboard)
-    * [Distributed training](#distributed)
-    * [Themes](#themes)
-* [FAQ and Troubleshooting](#faq)
-* [Contributing](#support)
+- [ KaTrain](#-katrain)
+  - [Manual](#manual)
+  - [  Preview and Youtube Videos](#--preview-and-youtube-videos)
+  - [ Installation](#-installation)
+  - [  Configuring KataGo](#--configuring-katago)
+  - [ Play against AI](#-play-against-ai)
+    - [Instant feedback](#instant-feedback)
+    - [AIs](#ais)
+  - [ Analysis](#-analysis)
+  - [ Keyboard and mouse shortcuts](#-keyboard-and-mouse-shortcuts)
+  - [  Contributing to distributed training](#--contributing-to-distributed-training)
+  - [ Themes](#-themes)
+  - [ FAQ](#-faq)
+  - [ Support / Contribute](#-support--contribute)
 
 
 <td>
@@ -137,24 +140,19 @@ Further technical details and discussion on some of these AIs can be found on [t
 
 Analysis options in KaTrain allow you to explore variations and request more in-depth analysis from the engine at any point in the game.
 
-Keyboard shortcuts are shown with **[key]**.
+| Key            | Short Description                      | Details                                                                                                                                                                                                                                                                                               |
+| -------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <kbd>Tab</kbd> | Switch between analysis and play modes | AI moves, teaching mode and timers are suspended in analysis mode. The state of the analysis options and right-hand side panels and options is saved independently for 'play' and 'analyze', allowing you to quickly switch between a more minimalistic 'play' mode and more complex 'analysis' mode. |
 
-* **[Tab]**: Switch between analysis and play modes.
-  * AI moves, teaching mode and timers are suspended in analysis mode.
-  * The state of the analysis options and right-hand side panels and options is saved independently for 'play' and 'analyze',
-    allowing you to quickly switch between a more minimalistic 'play' mode and more complex 'analysis' mode.
+The checkboxes at the top of the screen:
 
-* The checkboxes at the top of the screen:
-    * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when 
-               wanting to guess the next move.
-    * **[w]**: Show all dots: Toggles showing coloured evaluation 'dots' on the last few moves or not.
-       * You can configure the thresholds, along with how many of the last moves they are shown for under 'Teaching/Analysis Settings'.
-    * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. 
-           Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). 
-           Hover over any of them to see the principal variation.
-    * **[r]**: Policy moves: Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, 
-       and in the absence of any 'reading'. This turns off the 'top moves' setting as the overlap is often not useful.
-    * **[t]**: Expected territory: Show expected ownership of each intersection.
+| Key          | Short Description     | Details                                                                                                                                                                                                                                     |
+| ------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <kbd>q</kbd> | Child moves are shown | On by default, can turn it off to avoid obscuring other information or when wanting to guess the next move.                                                                                                                                 |
+| <kbd>w</kbd> | Show all dots         | Toggles showing coloured evaluation 'dots' on the last few moves or not. You can configure the thresholds, along with how many of the last moves they are shown for under 'Teaching/Analysis Settings'.                                     |
+| <kbd>e</kbd> | Top moves             | Show the next moves KataGo considered, colored by their expected point loss. Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). Hover over any of them to see the principal variation. |
+| <kbd>r</kbd> | Policy moves          | Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, and in the absence of any 'reading'. This turns off the 'top moves' setting as the overlap is often not useful.               |
+| <kbd>t</kbd> | Expected territory    | Show expected ownership of each intersection.                                                                                                                                                                                               |
 
 * The analysis options available under the 'Analysis' button are used for deeper evaluation of the position:
     * **[a]**: Deeper analysis: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
