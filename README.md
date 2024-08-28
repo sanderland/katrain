@@ -18,17 +18,20 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
 <table>
 <td>
 
-* [Previews and YouTube tutorials](#preview)
-* [Installation](#install)
-* [Manual](#ai)
-    * [Configuring KataGo](#kata)
-    * [Play against AI](#ai)
-    * [Analyzing your Games](#analysis)
-    * [Keyboard shortcuts](#keyboard)
-    * [Distributed training](#distributed)
-    * [Themes](#themes)
-* [FAQ and Troubleshooting](#faq)
-* [Contributing](#support)
+- [ KaTrain](#-katrain)
+  - [Manual](#manual)
+  - [  Preview and Youtube Videos](#--preview-and-youtube-videos)
+  - [ Installation](#-installation)
+  - [  Configuring KataGo](#--configuring-katago)
+  - [ Play against AI](#-play-against-ai)
+    - [Instant feedback](#instant-feedback)
+    - [AIs](#ais)
+  - [ Analysis](#-analysis)
+  - [ Keyboard and mouse shortcuts](#-keyboard-and-mouse-shortcuts)
+  - [ Contributing to distributed training](#-contributing-to-distributed-training)
+  - [ Themes](#-themes)
+  - [ FAQ](#-faq)
+  - [ Support / Contribute](#-support--contribute)
 
 
 <td>
@@ -137,91 +140,87 @@ Further technical details and discussion on some of these AIs can be found on [t
 
 Analysis options in KaTrain allow you to explore variations and request more in-depth analysis from the engine at any point in the game.
 
-Keyboard shortcuts are shown with **[key]**.
+| Key            | Short Description                      | Details                                                                                                                                                                                                                                                                                               |
+| -------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <kbd>Tab</kbd> | Switch between analysis and play modes | AI moves, teaching mode and timers are suspended in analysis mode. The state of the analysis options and right-hand side panels and options is saved independently for 'play' and 'analyze', allowing you to quickly switch between a more minimalistic 'play' mode and more complex 'analysis' mode. |
 
-* **[Tab]**: Switch between analysis and play modes.
-  * AI moves, teaching mode and timers are suspended in analysis mode.
-  * The state of the analysis options and right-hand side panels and options is saved independently for 'play' and 'analyze',
-    allowing you to quickly switch between a more minimalistic 'play' mode and more complex 'analysis' mode.
+The checkboxes at the top of the screen:
 
-* The checkboxes at the top of the screen:
-    * **[q]**: Child moves are shown. On by default, can turn it off to avoid obscuring other information or when 
-               wanting to guess the next move.
-    * **[w]**: Show all dots: Toggles showing coloured evaluation 'dots' on the last few moves or not.
-       * You can configure the thresholds, along with how many of the last moves they are shown for under 'Teaching/Analysis Settings'.
-    * **[e]**: Top moves: Show the next moves KataGo considered, colored by their expected point loss. 
-           Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). 
-           Hover over any of them to see the principal variation.
-    * **[r]**: Policy moves: Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, 
-       and in the absence of any 'reading'. This turns off the 'top moves' setting as the overlap is often not useful.
-    * **[t]**: Expected territory: Show expected ownership of each intersection.
+| Key          | Short Description     | Details                                                                                                                                                                                                                                     |
+| ------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <kbd>q</kbd> | Child moves are shown | On by default, can turn it off to avoid obscuring other information or when wanting to guess the next move.                                                                                                                                 |
+| <kbd>w</kbd> | Show all dots         | Toggles showing coloured evaluation 'dots' on the last few moves or not. You can configure the thresholds, along with how many of the last moves they are shown for under 'Teaching/Analysis Settings'.                                     |
+| <kbd>e</kbd> | Top moves             | Show the next moves KataGo considered, colored by their expected point loss. Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). Hover over any of them to see the principal variation. |
+| <kbd>r</kbd> | Policy moves          | Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, and in the absence of any 'reading'. This turns off the 'top moves' setting as the overlap is often not useful.               |
+| <kbd>t</kbd> | Expected territory    | Show expected ownership of each intersection.                                                                                                                                                                                               |
 
-* The analysis options available under the 'Analysis' button are used for deeper evaluation of the position:
-    * **[a]**: Deeper analysis: Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.
-    * **[s]**: Equalize visits: Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.
-    * **[d]**: Analyze all moves: Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but can be useful to see how many reasonable next moves are available.
-    * **[f]**: Find alternatives: Increases analysis of current candidate moves to at least the 'fast visits' level, and request a new query that excludes all current candidate moves.    
-    * **[g]**: Select area of interest: set an area and search only for moves in this box.
-               Good for solving tsumegos. Note that some results may appear outside the box due to establishing a baseline for the best move,
-               and the opponent can tenuki in variations.
-    * **[h]**: Reset analysis. This reverts the analysis to what the engine returns after a normal query, removing any additional exploration.
-    * **[i]**: Start insertion mode. Allows you to insert moves, to improve analysis when both players ignore an important exchange or life and death situation. Press again to stop inserting and copy the rest of the branch.
-    * **[l]**: Play out the game until the end and add as a collapsed branch, to visualize the potential effect of mistakes. This is done in the background, and can be started at several nodes at once when comparing the results at different starting positions.      
-    * **[spacebar]**: Turn continuous analysis on/off. This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.
-      * **[shift+spacebar]**: As above, but does not turn 'top moves' hints on when it is off.
-    * **[enter]** AI move. Makes the AI move for the current player regardless of current player selection.
-    * **[F2]**: Deeper full game analysis. Analyze the entire game to a higher number of visits.
-    * **[F3]**: Performance report. Show an overview of performance statistics for both players.  
-    * **[F10]**: Tsumego Frame. After placing a life and death problem in a corner/side, use this to fill up the rest of the board to improve AI's ability in solving life and death problems.
-    
-  
+The analysis options available under the 'Analysis' button are used for deeper evaluation of the position:
+
+| Key                                 | Short Description                                                                                            | Details                                                                                                                                                                                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <kbd>a</kbd>                        | Deeper analysis                                                                                              | Re-evaluate the position using more visits, usually resulting in a more accurate evaluation.                                                                                                                                 |
+| <kbd>s</kbd>                        | Equalize visits                                                                                              | Re-evaluate all currently shown next moves with the same visits as the current top move. Useful to increase confidence in the suggestions with high uncertainty.                                                             |
+| <kbd>d</kbd>                        | Analyze all moves                                                                                            | Evaluate all possible next moves. This can take a bit of time even though 'fast_visits' is used, but can be useful to see how many reasonable next moves are available.                                                      |
+| <kbd>f</kbd>                        | Find alternatives                                                                                            | Increases analysis of current candidate moves to at least the 'fast visits' level, and request a new query that excludes all current candidate moves.                                                                        |
+| <kbd>g</kbd>                        | Select area of interest                                                                                      | Set an area and search only for moves in this box. Good for solving tsumegos. Note that some results may appear outside the box due to establishing a baseline for the best move, and the opponent can tenuki in variations. |
+| <kbd>h</kbd>                        | Reset analysis                                                                                               | This reverts the analysis to what the engine returns after a normal query, removing any additional exploration.                                                                                                              |
+| <kbd>i</kbd>                        | Start insertion mode                                                                                         | Allows you to insert moves, to improve analysis when both players ignore an important exchange or life and death situation. Press again to stop inserting and copy the rest of the branch.                                   |
+| <kbd>l</kbd>                        | Play out the game until the end and add as a collapsed branch, to visualize the potential effect of mistakes | This is done in the background, and can be started at several nodes at once when comparing the results at different starting positions.                                                                                      |
+| <kbd>Space</kbd>                    | Turn continuous analysis on/off.                                                                             | This will continuously improve analysis of the current position, similar to Lizzie's 'pondering', but only when there are no other queries going on.                                                                         |
+| <kbd>Shift</kbd> + <kbd>Space</kbd> | As above, but does not turn 'top moves' hints on when it is off.                                             |                                                                                                                                                                                                                              |
+| <kbd>Enter</kbd>                    | AI move                                                                                                      | Makes the AI move for the current player regardless of current player selection.                                                                                                                                             |
+| <kbd>F2</kbd>                       | Deeper full game analysis                                                                                    | Analyze the entire game to a higher number of visits.                                                                                                                                                                        |
+| <kbd>F3</kbd>                       | Performance report                                                                                           | Show an overview of performance statistics for both players.                                                                                                                                                                 |
+| <kbd>F10</kbd>                      | Tsumego Frame                                                                                                | After placing a life and death problem in a corner/side, use this to fill up the rest of the board to improve AI's ability in solving life and death problems.                                                               |
+
 ## <a name="keyboard"></a> Keyboard and mouse shortcuts
 
 In addition to shortcuts mentioned above and those shown in the main menu:
 
-* **[Alt]**: Open the main menu.
-* **[~]** or **[ ` ]** or **[F12]**: Cycles through more minimalistic UI modes.
-* **[k]**: Toggle display of board coordinates.
-* **[p]**: Pass
-* **[m]**: Toggle the move number on the board
-* **[pause]**: Pause/Resume timer
-* **[arrow left]** or **[z]**: Undo move. Hold shift for 10 moves at a time, or ctrl to skip to the start.
-* **[arrow right]** or **[x]**: Redo move. Hold shift for 10 moves at a time, or ctrl to skip to the end.
-* **[arrow up/down]** Switch branch, as would be expected from the move tree.
-* **[home/end]** Go to the beginning/end of the game.
-* **[pageup]** Make the currently selected node the main branch
-* **[Ctrl-delete]** Delete current node.
-* **[c]** Collapse/Uncollapse the branch from the current node to the previous branching point.
-* **[b]** Go back to the previous branching point.
-* **[Shift-b]** Go back the main branch.
-* **[n]** As in clicking the forward red arrow, go to one move before the next mistake (orange or worse) by a human player.
-* **[Shift-n]** As in clicking the backward red arrow, go to one move before the previous mistake.
-* **[scroll mouse]**:
-  * When hovering the cursor over the right panel: Redo/Undo move.
-  * When hovering over a candidate move: Scroll through principal variation.
-* **[middle/scroll wheel click]**: Add principal variation to the move tree. When scrolling, only moves up to the point you are viewing are added.
-* **[click on a move]**: See detailed statistics for a previous move, along with expected variation that was best instead of this move.
-* **[double-click on a move]**: Navigate directly to just before that point in the game.
-* **[Ctrl-V]**: Load SGF from the clipboard and do a 'fast' analysis of the game (with a high priority normal analysis for the last move).
-* **[Ctrl-C]**: Save SGF to clipboard.
-* **[Escape]**: Stop all analysis.
+| Key                                            | Short Description                                                                    | Details                                                                                                                                 |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| <kbd>Alt</kbd>                                 | Open the main menu                                                                   |                                                                                                                                         |
+| <kbd>~</kbd> or <kbd>`</kbd> or <kbd>F12</kbd> | Cycles through more minimalistic UI modes                                            |                                                                                                                                         |
+| <kbd>k</kbd>                                   | Toggle display of board coordinates                                                  |                                                                                                                                         |
+| <kbd>p</kbd>                                   | Pass                                                                                 |                                                                                                                                         |
+| <kbd>Pause</kbd>                               | Pause/Resume timer                                                                   |                                                                                                                                         |
+| <kbd>←</kbd> or <kbd>z</kbd>                   | Undo move                                                                            | Hold shift for 10 moves at a time, or ctrl to skip to the start.                                                                        |
+| <kbd>→</kbd> or <kbd>x</kbd>                   | Redo move                                                                            | Hold shift for 10 moves at a time, or ctrl to skip to the end.                                                                          |
+| <kbd>↑</kbd>/<kbd>↓</kbd>                      | Switch branch                                                                        | As would be expected from the move tree.                                                                                                |
+| <kbd>Home</kbd>/<kbd>End</kbd>                 | Go to the beginning/end of the game                                                  |                                                                                                                                         |
+| <kbd>PageUp</kbd>                              | Make the currently selected node the main branch                                     |                                                                                                                                         |
+| <kbd>Ctrl</kbd> + <kbd>Delete</kbd>            | Delete current node                                                                  |                                                                                                                                         |
+| <kbd>c</kbd>                                   | Collapse/Uncollapse the branch from the current node to the previous branching point |                                                                                                                                         |
+| <kbd>b</kbd>                                   | Go back to the previous branching point                                              |                                                                                                                                         |
+| <kbd>Shift</kbd> + <kbd>b</kbd>                | Go back the main branch                                                              |                                                                                                                                         |
+| <kbd>n</kbd>                                   | Go to one move before the next mistake (orange or worse) by a human player           | As in clicking the forward red arrow                                                                                                    |
+| <kbd>Shift</kbd> + <kbd>n</kbd>                | Go to one move before the previous mistake                                           | As in clicking the backward red arrow                                                                                                   |
+| Scroll Mouse                                   | Redo/Undo move or Scroll through principal variation                                 | When hovering the cursor over the right panel: Redo/Undo move. When hovering over a candidate move: Scroll through principal variation. |
+| Middle Scroll Wheel Click                      | Add principal variation to the move tree                                             | When scrolling, only moves up to the point you are viewing are added.                                                                   |
+| Click on a Move                                | See detailed statistics for a previous move                                          | Along with expected variation that was best instead of this move                                                                        |
+| Double Click on a Move                         | Navigate directly to just before that point in the game                              |                                                                                                                                         |
+| <kbd>Ctrl</kbd> + <kbd>v</kbd>                 | Load SGF from the clipboard and do a 'fast' analysis of the game                     | With a high priority normal analysis for the last move.                                                                                 |
+| <kbd>Ctrl</kbd> + <kbd>c</kbd>                 | Save SGF to clipboard                                                                |                                                                                                                                         |
+| <kbd>Escape</kbd>                              | Stop all analysis                                                                    |                                                                                                                                         |
 
-## <a name="distributed"></a>  Contributing to distributed training
+## <a name="distributed"></a> Contributing to distributed training
+
 Starting in December 2020, KataGo started [distributed training](https://katagotraining.org/).
-This allows people to all help generate self-play games to increase KataGo's strength and train bigger models. 
+This allows people to all help generate self-play games to increase KataGo's strength and train bigger models.
 
 KaTrain 1.8.0+ makes it easy to contribute to distributed training: simply select the option from the main menu, register an account, and click run.
 During this mode you can do little more than watch games.
 
 Keep in mind that partial games are not uploaded,
- so it is best to plan to keep it running for at least an hour, if not several, for the most effective contribution.  
+so it is best to plan to keep it running for at least an hour, if not several, for the most effective contribution.
 
 A few keyboard shortcuts have special functions in this mode:
 
-* **[Spacebar]** Switch between manually navigating the current game, and automatically advancing it.
-* **[Escape]**: This sends the `quit` command to KataGo, which starts a slow shutdown, finishing partial games but not starting new ones. Only works on v1.11+.
-* **[Pause]**: Pauses/resumes contributions via the `pause` and `resume` commands introduced in KataGo v1.11. 
-
+| Key               | Short Description                                                  | Details                                                                                                |
+| ----------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| <kbd>Space</kbd>  | Switch between manually navigating the current game                | And automatically advancing it.                                                                        |
+| <kbd>Escape</kbd> | Sends the `quit` command to KataGo                                 | Which starts a slow shutdown, finishing partial games but not starting new ones. Only works on v1.11+. |
+| <kbd>Pause</kbd>  | Pauses/resumes contributions via the `pause` and `resume` commands | Introduced in KataGo v1.11                                                                             |
 
 ## <a name="themes"></a> Themes
 
