@@ -64,7 +64,7 @@ class Theme:
     EVAL_DOT_TEXTURE = "dot.png"
     LAST_MOVE_TEXTURE = "inner.png"
     TOP_MOVE_TEXTURE = "topmove.png"
-    BOARD_TEXTURE = "wood6.jpg"  # "board.png"
+    BOARD_TEXTURE = "board.png"
     GRAPH_TEXTURE = "graph_bg.png"
     # sounds
     STONE_SOUNDS = [f"stone{i}.wav" for i in [1, 2, 3, 4, 5]]
