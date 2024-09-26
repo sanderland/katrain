@@ -286,10 +286,10 @@ msgstr "B+{score_scale}"
 msgid "score scale white"
 msgstr "W+{score_scale}"
 
-msgid "short player color B"
+msgid "short color B"
 msgstr "B"
 
-msgid "short player color W"
+msgid "short color W"
 msgstr "W"
 
 msgid "closedlabel:movestats"
