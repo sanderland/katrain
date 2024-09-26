@@ -263,6 +263,12 @@ msgstr "Skor Grafiği"
 msgid "Jigo"
 msgstr "Jigo"
 
+msgid "score scale black"
+msgstr "S+{score_scale}"
+
+msgid "score scale white"
+msgstr "B+{score_scale}"
+
 msgid "closedlabel:movestats"
 msgstr "Hamle İstatistikleri"
 

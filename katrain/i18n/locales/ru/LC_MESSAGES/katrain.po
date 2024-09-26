@@ -160,6 +160,12 @@ msgstr "График очков"
 msgid "Jigo"
 msgstr "Ничья"
 
+msgid "score scale black"
+msgstr "Ч+{score_scale}"
+
+msgid "score scale white"
+msgstr "Б+{score_scale}"
+
 msgid "closedlabel:movestats"
 msgstr "Статистика ходов"
 
