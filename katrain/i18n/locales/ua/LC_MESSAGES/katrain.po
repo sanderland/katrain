@@ -285,7 +285,7 @@ msgstr "Графік очок"
 
 #. on the graph
 msgid "Jigo"
-msgstr "Джиґо (нічия)"
+msgstr "Джиґо"
 
 msgid "closedlabel:movestats"
 msgstr "Статистика ходів"
