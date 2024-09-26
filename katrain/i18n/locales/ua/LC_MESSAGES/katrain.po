@@ -262,7 +262,7 @@ msgid "tab:score"
 msgstr "Рахунок"
 
 msgid "tab:winrate"
-msgstr "Шанс на перемогу"
+msgstr "Шанс"
 
 #. shown on a graph tab
 msgid "tab:rank_est"
