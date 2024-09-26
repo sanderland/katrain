@@ -166,11 +166,11 @@ msgstr "目差グラフ"
 msgid "Jigo"
 msgstr "持碁"
 
-msgid "score scale black"
-msgstr "黒+{score_scale}"
+msgid "short color B"
+msgstr "黒"
 
-msgid "score scale white"
-msgstr "白+{score_scale}"
+msgid "short color W"
+msgstr "白"
 
 msgid "closedlabel:movestats"
 msgstr "着手の分析結果"

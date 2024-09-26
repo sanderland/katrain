@@ -280,12 +280,6 @@ msgstr "Score Graph"
 msgid "Jigo"
 msgstr "Jigo"
 
-msgid "score scale black"
-msgstr "B+{score_scale}"
-
-msgid "score scale white"
-msgstr "W+{score_scale}"
-
 msgid "short color B"
 msgstr "B"
 

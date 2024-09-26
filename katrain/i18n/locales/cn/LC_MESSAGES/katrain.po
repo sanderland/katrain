@@ -135,11 +135,11 @@ msgstr "分数图"
 msgid "Jigo"
 msgstr "和棋"
 
-msgid "score scale black"
-msgstr "黑+{score_scale}"
+msgid "short color B"
+msgstr "黑"
 
-msgid "score scale white"
-msgstr "白+{score_scale}"
+msgid "short color W"
+msgstr "白"
 
 msgid "closedlabel:movestats"
 msgstr "每步统计"
