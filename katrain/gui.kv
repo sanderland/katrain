@@ -499,7 +499,7 @@
     StatsLabel:
         id: pointloss_label
         label: i18n._('stats:pointslost') if root.points_lost is None or root.points_lost > 0 else i18n._('stats:pointsgained')
-        text: '{}: {:.1f}'.format(root.player,abs(root.points_lost)) if root.points_lost is not None else '...'
+        text: '{}: {:.1f}'.format(i18n._('short player color ' + root.player), abs(root.points_lost)) if root.points_lost is not None else '...'
         color: Theme.POINTLOSS_COLOR
 
 <ScrollableLabel>:
