@@ -178,17 +178,18 @@ class LightLabel(Label):
     pass
 
 
-class StatsLabel(Label):
-    label = StringProperty("")
-    color = ListProperty([1, 1, 1, 1])
+class StatsItem(Label):
     hidden = BooleanProperty(False)
     font_name = StringProperty(Theme.DEFAULT_FONT)
 
-class StatsValue(Label):
-    text = StringProperty("")
+
+class StatsLabel(StatsItem):
+    label = StringProperty("")
+
+
+class StatsValue(StatsItem):
+    value = StringProperty("")
     color = ListProperty([1, 1, 1, 1])
-    hidden = BooleanProperty(False)
-    font_name = StringProperty(Theme.DEFAULT_FONT)
 
 
 class MyNavigationDrawer(MDNavigationDrawer):
