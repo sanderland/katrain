@@ -178,13 +178,13 @@ class LightLabel(Label):
     pass
 
 
-class StatsLabel(MDBoxLayout):
+class StatsLabel(Label):
     label = StringProperty("")
     color = ListProperty([1, 1, 1, 1])
     hidden = BooleanProperty(False)
     font_name = StringProperty(Theme.DEFAULT_FONT)
 
-class StatsValue(MDBoxLayout):
+class StatsValue(Label):
     text = StringProperty("")
     color = ListProperty([1, 1, 1, 1])
     hidden = BooleanProperty(False)
