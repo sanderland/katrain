@@ -457,7 +457,6 @@
 
 
 <StatsLabel>:
-    orientation: 'horizontal'
     size_hint_y: EPSILON if root.hidden else 1
     opacity: 0 if root.hidden else 1
     Label:
@@ -470,37 +469,53 @@
         halign: 'center'
         text: root.label
         max_lines: 1
+
+<StatsValue>:
+    size_hint_y: EPSILON if root.hidden else 1
+    opacity: 0 if root.hidden else 1
     Label:
         size_hint: 0.4,1
         color: root.color
-        font_size: desc.font_size
+        font_size: self.height * 0.7
         font_name: root.font_name
         text_size: self.size
         valign: 'middle'
-        halign: 'center'
+        halign: 'left'
         bold: True
         text: root.text
         max_lines: 1
 
 <StatsBox>
-    orientation: 'vertical'
+    cols: 2
     background_color: Theme.BOX_BACKGROUND_COLOR
     labels: {'score':score_label,'winrate':winrate_label,'points':pointloss_label}
     StatsLabel:
         id: winrate_label
         label: i18n._('stats:winrate')
-        text: root.winrate
         color: Theme.WINRATE_COLOR
+    StatsValue:
+        id: winrate_value
+        hidden: winrate_label.hidden
+        color: winrate_label.color
+        text: root.winrate
     StatsLabel:
         id: score_label
         label: i18n._('stats:score')
-        text: root.score
         color: Theme.SCORE_COLOR
+    StatsValue:
+        id: score_value
+        hidden: score_label.hidden
+        color: score_label.color
+        text: root.score
     StatsLabel:
         id: pointloss_label
         label: i18n._('stats:pointslost') if root.points_lost is None or root.points_lost > 0 else i18n._('stats:pointsgained')
-        text: '{}: {:.1f}'.format(i18n._(f'short color {root.player}'), abs(root.points_lost)) if root.points_lost is not None else '...'
         color: Theme.POINTLOSS_COLOR
+    StatsValue:
+        id: pointloss_value
+        hidden: pointloss_label.hidden
+        color: pointloss_label.color
+        text: '{}: {:.1f}'.format(i18n._(f'short color {root.player}'), abs(root.points_lost)) if root.points_lost is not None else '...'
 
 <ScrollableLabel>:
     background_color: Theme.BOX_BACKGROUND_COLOR
