@@ -40,7 +40,7 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
 
 The stone marks, transparency, and territory style are independent; the table above presents a collection of possible variants.
 The relevant variables are:
-```json
+```
 {
     "TERRITORY_DISPLAY" : "blended" | "shaded" | "marks" | "blocks",
     "STONE_MARKS" : "all" | "weak" | "none",
