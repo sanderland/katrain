@@ -137,6 +137,12 @@ msgstr "집 차이/승률 그래프"
 msgid "Jigo"
 msgstr "무승부"
 
+msgid "short color B"
+msgstr "흑"
+
+msgid "short color W"
+msgstr "백"
+
 msgid "closedlabel:movestats"
 msgstr "착수 통계"
 

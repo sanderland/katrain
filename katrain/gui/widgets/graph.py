@@ -211,7 +211,7 @@ Builder.load_string(
         font_size: root.marker_font_size
         color: Theme.SCORE_MARKER_COLOR
         pos: root.x + root.width - self.width-1, root.pos[1]+root.height - self.font_size - 1
-        text: 'B+{}'.format(root.score_scale)
+        text: '{}+{}'.format(i18n._('short color B'), root.score_scale)
         opacity: int(root.show_score)
     GraphMarkerLabel:
         font_size: root.marker_font_size
@@ -223,7 +223,7 @@ Builder.load_string(
         font_size: root.marker_font_size
         color: Theme.SCORE_MARKER_COLOR
         pos: root.x + root.width - self.width-1, root.pos[1]
-        text: 'W+' + str(int(root.score_scale))
+        text: '{}+{}'.format(i18n._('short color W'), root.score_scale)
         opacity: int(root.show_score)
     # wr ticks
     GraphMarkerLabel:

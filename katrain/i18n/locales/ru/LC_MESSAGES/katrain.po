@@ -160,6 +160,12 @@ msgstr "График очков"
 msgid "Jigo"
 msgstr "Ничья"
 
+msgid "short color B"
+msgstr "Ч"
+
+msgid "short color W"
+msgstr "Б"
+
 msgid "closedlabel:movestats"
 msgstr "Статистика ходов"
 

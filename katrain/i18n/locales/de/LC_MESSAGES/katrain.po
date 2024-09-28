@@ -137,6 +137,12 @@ msgstr "Punkte-Graph"
 msgid "Jigo"
 msgstr "Jigo"
 
+msgid "short color B"
+msgstr "S"
+
+msgid "short color W"
+msgstr "W"
+
 msgid "closedlabel:movestats"
 msgstr "Zug-Statistik"
 

@@ -263,6 +263,12 @@ msgstr "Skor Grafiği"
 msgid "Jigo"
 msgstr "Jigo"
 
+msgid "short color B"
+msgstr "S"
+
+msgid "short color W"
+msgstr "B"
+
 msgid "closedlabel:movestats"
 msgstr "Hamle İstatistikleri"
 

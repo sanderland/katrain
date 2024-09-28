@@ -207,6 +207,12 @@ msgstr "分數圖"
 msgid "Jigo"
 msgstr "和棋"
 
+msgid "short color B"
+msgstr "黑"
+
+msgid "short color W"
+msgstr "白"
+
 msgid "closedlabel:movestats"
 msgstr "每步統計"
 

@@ -166,6 +166,12 @@ msgstr "目差グラフ"
 msgid "Jigo"
 msgstr "持碁"
 
+msgid "short color B"
+msgstr "黒"
+
+msgid "short color W"
+msgstr "白"
+
 msgid "closedlabel:movestats"
 msgstr "着手の分析結果"
 

@@ -292,7 +292,9 @@ class GameNode(SGFNode):
     def format_score(self, score=None):
         score = score or self.score
         if score is not None:
-            return f"{'B' if score >= 0 else 'W'}+{abs(score):.1f}"
+            leading_player = 'B' if score >= 0 else 'W'
+            leading_player_color = i18n._(f"short color {leading_player}")
+            return f"{leading_player_color}+{abs(score):.1f}"
 
     @property
     def winrate(self) -> Optional[float]:
@@ -302,7 +304,9 @@ class GameNode(SGFNode):
     def format_winrate(self, win_rate=None):
         win_rate = win_rate or self.winrate
         if win_rate is not None:
-            return f"{'B' if win_rate > 0.5 else 'W'} {max(win_rate,1-win_rate):.1%}"
+            leading_player = 'B' if win_rate > 0.5 else 'W'
+            leading_player_color = i18n._(f"short color {leading_player}")
+            return f"{leading_player_color} {max(win_rate,1-win_rate):.1%}"
 
     def move_policy_stats(self) -> Tuple[Optional[int], float, List]:
         single_move = self.move

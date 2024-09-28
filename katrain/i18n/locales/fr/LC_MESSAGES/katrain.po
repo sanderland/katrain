@@ -153,6 +153,12 @@ msgstr "Graphes"
 msgid "Jigo"
 msgstr "Jigo"
 
+msgid "short color B"
+msgstr "N"
+
+msgid "short color W"
+msgstr "B"
+
 msgid "closedlabel:movestats"
 msgstr "Évaluation"
 
