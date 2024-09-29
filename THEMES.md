@@ -5,7 +5,7 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
 ## Creating and editing themes
 
 * Look at the `Theme` class in [`katrain/gui/theme.py`](https://github.com/sanderland/katrain/blob/master/katrain/gui/theme.py).
-* Make a `theme<yourthemename>.json` file in your `<home dir>/.katrain` directory and specify any variables from the above class you want to override, e.g. 
+* Make a `theme-<yourthemename>.json` file in your `<home dir>/.katrain` directory and specify any variables from the above class you want to override, e.g. 
  ```json
  {
   "BACKGROUND_COLOR": [1,0,0,1],
@@ -41,12 +41,14 @@ Version 1.7 brings basic support for themes, and 1.9 extends it to include keybo
 The stone marks, transparency, and territory style are independent; the table above presents a collection of possible variants.
 The relevant variables are:
 ```
-    TERRITORY_DISPLAY = "blended" | "shaded" | "marks" | "blocks"
-    STONE_MARKS = "all" | "weak" | "none"
-    OWNERSHIP_COLORS = {"B": [0.0, 0.0, 0.10, 0.75], "W": [0.92, 0.92, 1.0, 0.800]}
-    BLOCKS_THRESHOLD = 0.6
-    MARK_SIZE = 0.42  # as fraction of stone size
-    STONE_MIN_ALPHA = 0.5
+{
+    "TERRITORY_DISPLAY" : "blended" | "shaded" | "marks" | "blocks",
+    "STONE_MARKS" : "all" | "weak" | "none",
+    "OWNERSHIP_COLORS" : {"B": [0.0, 0.0, 0.10, 0.75], "W": [0.92, 0.92, 1.0, 0.800]},
+    "BLOCKS_THRESHOLD" : 0.6,
+    "MARK_SIZE" : 0.42,  # as fraction of stone size
+    "STONE_MIN_ALPHA" : 0.5
+}
 ```
 
 The colors are specified as RGB values and a maximum alpha transparency.
