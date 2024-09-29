@@ -455,52 +455,56 @@
     text: '+0'
     size: self.texture_size
 
-
-<StatsLabel>:
-    orientation: 'horizontal'
+<StatsItem>:
     size_hint_y: EPSILON if root.hidden else 1
     opacity: 0 if root.hidden else 1
-    Label:
-        size_hint: 0.6,1
-        id: desc
-        font_size: self.height * 0.7
-        font_name: root.font_name
-        text_size: self.size
-        valign: 'middle'
-        halign: 'center'
-        text: root.label
-        max_lines: 1
-    Label:
-        size_hint: 0.4,1
-        color: root.color
-        font_size: desc.font_size
-        font_name: root.font_name
-        text_size: self.size
-        valign: 'middle'
-        halign: 'center'
-        bold: True
-        text: root.text
-        max_lines: 1
+    font_size: self.height * 0.7
+    font_name: root.font_name
+    text_size: self.size
+    valign: 'middle'
+    max_lines: 1
+
+<StatsLabel>:
+    size_hint: 0.6,1
+    halign: 'left'
+    text: root.label
+
+<StatsValue>:
+    size_hint: 0.4,1
+    color: root.color
+    halign: 'left'
+    bold: True
+    text: root.value
 
 <StatsBox>
-    orientation: 'vertical'
+    cols: 2
     background_color: Theme.BOX_BACKGROUND_COLOR
     labels: {'score':score_label,'winrate':winrate_label,'points':pointloss_label}
+    padding: CP_PADDING
     StatsLabel:
         id: winrate_label
         label: i18n._('stats:winrate')
-        text: root.winrate
+    StatsValue:
+        id: winrate_value
+        hidden: winrate_label.hidden
         color: Theme.WINRATE_COLOR
+        value: root.winrate
     StatsLabel:
         id: score_label
         label: i18n._('stats:score')
-        text: root.score
+    StatsValue:
+        id: score_value
+        hidden: score_label.hidden
         color: Theme.SCORE_COLOR
+        value: root.score
     StatsLabel:
         id: pointloss_label
         label: i18n._('stats:pointslost') if root.points_lost is None or root.points_lost > 0 else i18n._('stats:pointsgained')
-        text: '{}: {:.1f}'.format(i18n._(f'short color {root.player}'), abs(root.points_lost)) if root.points_lost is not None else '...'
+    StatsValue:
+        id: pointloss_value
+        hidden: pointloss_label.hidden
         color: Theme.POINTLOSS_COLOR
+        value: '{}: {:.1f}'.format(i18n._(f'short color {root.player}'), abs(root.points_lost)) if root.points_lost is not None else '...'
 
 <ScrollableLabel>:
     background_color: Theme.BOX_BACKGROUND_COLOR
