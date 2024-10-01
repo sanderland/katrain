@@ -201,7 +201,7 @@ msgstr "Gain"
 msgid "SGF start message"
 msgstr ""
 "Les coup préférés de KataGo sont marqué d'un X. En comparaison, ceux perdant"
-" moins de 0.5 points sont marqués d'un carré"
+" moins de 0.5 point sont marqués d'un carré"
 
 msgid "Info:score"
 msgstr "Score : {score}"
@@ -210,7 +210,7 @@ msgid "Info:winrate"
 msgstr "Pronostic : {winrate}"
 
 msgid "Info:point loss"
-msgstr "Points perdus: {points_lost:.1f}"
+msgstr "Points perdus : {points_lost:.1f}"
 
 #. as in 'Move 125: B5'
 msgid "move"
@@ -241,13 +241,13 @@ msgid "Info:undo predicted PV"
 msgstr "Continuation attendue : {pv}"
 
 msgid "Info:AI thoughts"
-msgstr "Raisonnement de he l'IA : {thoughts}"
+msgstr "Raisonnement de l'IA : {thoughts}"
 
 msgid "No analysis available"
 msgstr "Pas d'analyse disponible"
 
 msgid "Analyzing move..."
-msgstr "Analyse en cours..."
+msgstr "Analyse en cours…"
 
 msgid "SGF Notes Hint"
 msgstr "Rédigez une note SGF concernant la position en cours."
@@ -359,14 +359,14 @@ msgstr "Mettre à jour"
 
 # main config settings
 msgid "restarting engine"
-msgstr "Restarting Engine after Settings Change."
+msgstr "Redémarrage du moteur de jeu"
 
 # title
 msgid "general settings title"
 msgstr "Paramètres généraux"
 
 msgid "file not found"
-msgstr "Chemin d'accès est introuvable"
+msgstr "Chemin d'accès introuvable"
 
 msgid "general settings"
 msgstr "Divers"
@@ -448,7 +448,7 @@ msgstr ""
 "signaler des erreurs"
 
 msgid "config file path"
-msgstr "TOUTES les options sont sauvegardées dans:"
+msgstr "TOUTES les options sont sauvegardées dans :"
 
 msgid "update settings"
 msgstr "Mettre à jour"
@@ -479,7 +479,7 @@ msgstr "SGF enregistré dans le presse-papier."
 msgid "Failed to import from clipboard"
 msgstr ""
 "Impossible de charger la partie du presse-papier : {error}\n"
-"Contenu du presse-papier : {contents}..."
+"Contenu du presse-papier : {contents}…"
 
 msgid "Failed to load SGF"
 msgstr "Impossible de charger le SGF: {error}"
@@ -511,13 +511,13 @@ msgstr ""
 "généraux"
 
 msgid "Engine died unexpectedly"
-msgstr "Le moteur de jeu est tombé en panne: {error}"
+msgstr "Le moteur de jeu est tombé en panne : {error}"
 
 msgid "teaching undo message"
 msgstr ""
-"Le coup {move} a été annulé car il perdait {points_lost:.1f} points.Vous "
+"Le coup {move} a été annulé car il perdait {points_lost:.1f} points. Vous "
 "pouvez consulter les Prévisions territoriales (t) pour identifier les "
-"régions concernées, et survoler le coup pour connaître sa réfutation.Pour "
+"régions concernées, et survoler le coup pour connaître sa réfutation. Pour "
 "continuer la partie, veuillez jouer un nouveau coup."
 
 msgid "sweep analysis"
@@ -574,7 +574,7 @@ msgstr "Intuitif"
 msgid "aihelp:policy"
 msgstr ""
 "Le niveau de jeu dépend du réseau neuronal (cf. Paramètres généraux), \n"
-"étant donné que sa première intuition sera joué sans calcul. \n"
+"étant donné que sa première intuition sera jouée sans calcul. \n"
 "Néanmoins, on peut varier les débuts de partie \n"
 "pour un nombre donné de coups d'ouverture \n"
 "grâce au champ opening_moves."
@@ -587,7 +587,7 @@ msgstr ""
 "Jouera le coup proportionnellement à ses intuitions. \n"
 "Plus lower_bound (0~1) est haut, moins les coups bizarres seront joués. \n"
 "Plus pick_override (0~1) est bas, plus le coup naturel sera forcé. \n"
-"Plus weaken_fac est bas plus le coup naturel pourra être joué."
+"Plus weaken_fac est bas, plus le coup naturel pourra être joué."
 
 msgid "ai:p:pick"
 msgstr "Myope"
@@ -598,7 +598,7 @@ msgstr ""
 "Échantillon = pick_n + (pick_frac multiplié par le nombre de coups légaux). \n"
 "Pick_n ajoute un nombre de coups à l'échantillon considéré. \n"
 "Plus pick_frac (0~1) est haut, plus des coups intuitifs seront joués. \n"
-"Plus pick_override (0~1) est bas, plus la première intuition sera forcé."
+"Plus pick_override (0~1) est bas, plus la première intuition sera forcée."
 
 msgid "ai:p:local"
 msgstr "Local"
@@ -746,7 +746,7 @@ msgid "top_move_delta_winrate"
 msgstr "Variation pronostiq."
 
 msgid "top_move_visits"
-msgstr "Nombre de Visites"
+msgstr "Nombre de visites"
 
 msgid "top_move_score"
 msgstr "Score"
@@ -771,7 +771,7 @@ msgid "cache analysis to sgf"
 msgstr "Sauvegarder un cache SGF de l'analyse"
 
 msgid "menu:save-as"
-msgstr "Enregistrer sous..."
+msgstr "Enregistrer sous…"
 
 msgid "Load File"
 msgstr "Charger"
@@ -898,7 +898,7 @@ msgstr "Nouvelle position"
 
 msgid "setup position explanation"
 msgstr ""
-"Vous voulez gagner de l'expérience dans les milieux ou les fins de parties ?"
+"Vous voulez gagner de l'expérience dans les milieux ou les fins de partie ?"
 " Apprendre à grappiller les points, maintenir votre avantage ou renverser la"
 " situation ? Alors jouez des positions fictives composées selon vos besoins."
 
@@ -951,13 +951,13 @@ msgid "header:num moves"
 msgstr "Nombre de coups"
 
 msgid "Opening"
-msgstr "Début de Partie"
+msgstr "Début de partie"
 
 msgid "Endgame"
-msgstr "Fin de Partie"
+msgstr "Fin de partie"
 
 msgid "Midgame"
-msgstr "Milieu de Partie"
+msgstr "Milieu de partie"
 
 msgid "stat:meanpointloss"
 msgstr "Perte moyenne"
