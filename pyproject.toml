@@ -17,7 +17,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-kivy = {extras = ["full"], version = ">=2.1.0"}
+kivy = {extras = ["full"], version = "^2.3.0"}
 kivymd = "==0.104.1"  # TODO: upgrade this, the latest version is 1.1.1
 ffpyplayer = "*"
 urllib3 = "*"
