@@ -56,7 +56,7 @@ jobs:
         pushd ../kivy-sdk-packager/osx/build/KaTrain.app/Contents/Resources/venv/bin
         source activate
         popd
-        python -m pip install poetry
+        python -m pip install poetry==1.8.4 pip==24.2
         poetry install
     - name: Finalize KaTrain bundle
       run: |
