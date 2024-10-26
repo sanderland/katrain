@@ -48,8 +48,8 @@ jobs:
         brew install ninja
         cd ..
         git clone https://github.com/kivy/kivy-sdk-packager.git
-        git reset --hard e88d756462846d164e90d014557c8ba94b78c09e
         cd kivy-sdk-packager/osx
+        git reset --hard e88d756462846d164e90d014557c8ba94b78c09e
         ./create-osx-bundle.sh -n "KaTrain" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
     - name: Install KaTrain pip dependencies
       run: |
