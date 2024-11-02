@@ -66,7 +66,7 @@ The colors are specified as RGB values and a maximum alpha transparency.
 
 [Download](https://github.com/sanderland/katrain/blob/master/themes/koast-theme.zip)
 
-![Preview](https://raw.githubusercontent.com/sanderland/katrain/master/themes/koast.png)
+<img src="https://raw.githubusercontent.com/sanderland/katrain/master/themes/koast.png" width="400">
 
 ### Lizzie-like theme
 
@@ -76,8 +76,16 @@ The colors are specified as RGB values and a maximum alpha transparency.
 
 [Download](https://github.com/sanderland/katrain/blob/master/themes/eric-lizzie-look.zip)
 
-![Preview](https://raw.githubusercontent.com/sanderland/katrain/master/themes/eric-lizzie.png)
+<img src="https://raw.githubusercontent.com/sanderland/katrain/master/themes/eric-lizzie.png" width="400">
 
+### Milos Theme
+* Clean and crisp display.
+* Blocks for territory, textureless evaluation markers, no dots/alpha/etc with redundant ownership/strength info.
+* Resembles AI Sensei's design.
+
+[Download](themes/theme-milos.zip)
+
+<img src="themes/theme-milos.png" width="400"
 
 ### Jeff sounds
 
