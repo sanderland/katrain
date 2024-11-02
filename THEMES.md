@@ -66,7 +66,7 @@ The colors are specified as RGB values and a maximum alpha transparency.
 
 [Download](https://github.com/sanderland/katrain/blob/master/themes/koast-theme.zip)
 
-<img src="https://raw.githubusercontent.com/sanderland/katrain/master/themes/koast.png" width="400">
+<img src="https://raw.githubusercontent.com/sanderland/katrain/master/themes/koast.png" width="500">
 
 ### Lizzie-like theme
 
@@ -76,7 +76,7 @@ The colors are specified as RGB values and a maximum alpha transparency.
 
 [Download](https://github.com/sanderland/katrain/blob/master/themes/eric-lizzie-look.zip)
 
-<img src="https://raw.githubusercontent.com/sanderland/katrain/master/themes/eric-lizzie.png" width="400">
+<img src="https://raw.githubusercontent.com/sanderland/katrain/master/themes/eric-lizzie.png" width="500">
 
 ### Milos Theme
 * Clean and crisp display.
@@ -85,7 +85,7 @@ The colors are specified as RGB values and a maximum alpha transparency.
 
 [Download](themes/theme-milos.zip)
 
-<img src="themes/theme-milos.png" width="400"
+<img src="themes/milos.png" width="500">
 
 ### Jeff sounds
 
