@@ -704,7 +704,7 @@ msgid "show stats if"
 msgstr "... visit 이상일 때만 정보 보이기"
 
 msgid "show two digits for point loss near zero"
-msgstr "Show two digits for point loss near zero"
+msgstr "0에 가까운 손해값일때 소수점 아래 두자리 표시"
 
 #. analysis option
 msgid "cache analysis to sgf"
@@ -926,23 +926,17 @@ msgstr "패로 충분?"
 msgid "analysis:tsumegoframe"
 msgstr "묘수풀이 틀"
 
-#. TODO
 msgid "from move"
-msgstr "from move"
+msgstr "번째 수부터"
 
-#. TODO - status message
 msgid "move range analysis"
-msgstr ""
-"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+msgstr "{start_move} 번째 수부터 {end_move} 번째 수까지 {visits} visit을 하며 재분석"
 
-#. TODO
 msgid "to move"
-msgstr "to move"
+msgstr "번째 수까지"
 
-#. TODO - Restrict analysis to move range
 msgid "limit to moves"
-msgstr "Limit to moves"
+msgstr "수를 제한"
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr "(평문으로 저장하니, 다른 곳에서 재사용하지 마십시오)"
