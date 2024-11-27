@@ -23,9 +23,9 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.button import BaseFlatButton, BasePressedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
-from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import (
@@ -178,12 +178,18 @@ class LightLabel(Label):
     pass
 
 
-class StatsLabel(MDBoxLayout):
-    text = StringProperty("")
-    label = StringProperty("")
-    color = ListProperty([1, 1, 1, 1])
+class StatsItem(Label):
     hidden = BooleanProperty(False)
     font_name = StringProperty(Theme.DEFAULT_FONT)
+
+
+class StatsLabel(StatsItem):
+    label = StringProperty("")
+
+
+class StatsValue(StatsItem):
+    value = StringProperty("")
+    color = ListProperty([1, 1, 1, 1])
 
 
 class MyNavigationDrawer(MDNavigationDrawer):
@@ -629,7 +635,7 @@ class CollapsablePanel(MDBoxLayout):
         pass
 
 
-class StatsBox(MDBoxLayout, BackgroundMixin):
+class StatsBox(MDGridLayout, BackgroundMixin):
     winrate = StringProperty("...")
     score = StringProperty("...")
     points_lost = NumericProperty(None, allownone=True)
