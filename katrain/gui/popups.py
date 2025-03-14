@@ -269,6 +269,8 @@ class ConfigTimerPopup(QuickConfigGui):
 
 class NewGamePopup(QuickConfigGui):
     mode = StringProperty("newgame")
+    random_advantage = BooleanProperty(False)
+    advantage_options = StringProperty("-15,0,15")  # default values
 
     def __init__(self, katrain):
         super().__init__(katrain)
@@ -335,7 +337,21 @@ class NewGamePopup(QuickConfigGui):
                 self.katrain.game.analyze_all_nodes(analyze_fast=True)
         else:  # setup position
             self.katrain._do_new_game()
-            self.katrain("selfplay-setup", props["game/setup_move"], props["game/setup_advantage"])
+            if self.random_advantage:
+                try:
+                    advantage_values = [float(x.strip()) for x in self.advantage_options.split(",")]
+                    if not advantage_values:
+                        raise ValueError("No values provided")
+                    import random
+
+                    target_advantage = random.choice(advantage_values)
+                    self.katrain.log(f"Using random advantage from options: {target_advantage}", OUTPUT_INFO)
+                    self.katrain("selfplay-setup", props["game/setup_move"], target_advantage)
+                except Exception as e:
+                    self.katrain.log(f"Error parsing advantage options: {e}", OUTPUT_ERROR)
+                    self.katrain("selfplay-setup", props["game/setup_move"], props["game/setup_advantage"])
+            else:
+                self.katrain("selfplay-setup", props["game/setup_move"], props["game/setup_advantage"])
         self.update_playerinfo()  # name
 
 
@@ -488,7 +504,7 @@ class BaseConfigPopup(QuickConfigGui):
         "linux": {
             "OpenCL v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-opencl-linux-x64.zip",
             "Eigen AVX2 (Modern CPUs) v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-eigenavx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-eigen-linux-x64.zip",            
+            "Eigen (CPU, Non-optimized) v1.15.3": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-eigen-linux-x64.zip",
             "OpenCL v1.15.3 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.15.3/katago-v1.15.3-opencl-linux-x64+bs29.zip",
         },
         "just-descriptions": {},

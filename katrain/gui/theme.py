@@ -198,6 +198,7 @@ class Theme:
     KEY_RESET_ANALYSIS = "h"
     KEY_INSERT_MODE = "i"
     KEY_SELFPLAY_TO_END = "l"
+    KEY_REGENERATE_GAME = ";"
     KEY_STOP_ANALYSIS = "escape"
     KEY_TOGGLE_CONTINUOUS_ANALYSIS = "spacebar"
     KEY_TOGGLE_MOVENUM = "m"

@@ -450,6 +450,19 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_selfplay_setup(self, until_move, target_b_advantage=None):
         self.game.selfplay(int(until_move) if isinstance(until_move, float) else until_move, target_b_advantage)
 
+    def _do_regenerate_game(self):
+        self._do_new_game()
+        use_random_advantage = self.config(f"game/use_random_advantage")
+        if use_random_advantage:
+            advantage_options = self.config("game/random_advantage_options")
+            advantage_values = [float(x.strip()) for x in advantage_options.split(",")]
+            target_advantage = random.choice(advantage_values)
+            self.log(f"Using random advantage from options: {target_advantage}", OUTPUT_INFO)
+        else:
+            target_advantage = self.config("game/setup_advantage")
+        num_moves = int(self.config("game/setup_move"))
+        self.game.selfplay(num_moves, target_advantage)
+
     def _do_select_box(self):
         self.controls.set_status(i18n._("analysis:region:start"), STATUS_INFO)
         self.board_gui.selecting_region_of_interest = True
@@ -688,6 +701,7 @@ class KaTrainGui(Screen, KaTrainBase):
                 (Theme.KEY_INSERT_MODE, ("insert-mode",)),
                 (Theme.KEY_PASS, ("play", None)),
                 (Theme.KEY_SELFPLAY_TO_END, ("selfplay-setup", "end", None)),
+                (Theme.KEY_REGENERATE_GAME, ("regenerate-game",)),
                 (Theme.KEY_NAV_PREV_BRANCH, ("undo", "branch")),
                 (Theme.KEY_NAV_BRANCH_DOWN, ("switch-branch", 1)),
                 (Theme.KEY_NAV_BRANCH_UP, ("switch-branch", -1)),

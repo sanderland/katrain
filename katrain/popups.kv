@@ -717,18 +717,48 @@
         orientation: 'vertical'
         SmallDescriptionLabel:
             text: i18n._('setup position explanation')
-            size_hint: 1, 1.5
+            size_hint: 1, 1.0
         GridLayout:
             cols: 2
-            rows: 2
-            size_hint: 1,2
+            rows: 4
+            spacing: [10, 15]  # Add spacing between elements
+            padding: [5, 10]   # Add padding around grid
+            size_hint: 1, 2.5  # Increase height to accommodate spacing
+            
+            # Random Advantage Checkbox
+            DescriptionLabel:
+                text: i18n._('Random Advantage')
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: 'game/use_random_advantage'
+                    active: root.random_advantage
+                    on_active: root.random_advantage = self.active
+            
+            # Advantage Options
+            DescriptionLabel:
+                text: i18n._('Advantage Options')
+                opacity: 1 if root.random_advantage else 0.5
+            AnchorLayout:
+                LabelledTextInput:
+                    input_property: 'game/random_advantage_options'
+                    text: root.advantage_options
+                    on_text: root.advantage_options = self.text
+                    disabled: not root.random_advantage
+                    opacity: 1 if root.random_advantage else 0.5
+            
+            # Target Score for Black
             DescriptionLabel:
                 text: i18n._('setup position black score')
+                opacity: 1 if not root.random_advantage else 0.5
             AnchorLayout:
                 LabelledSelectionSlider:
                     input_property: 'game/setup_advantage'
                     key_option: True
                     values: [(pt,f"{pt}") for pt in range(-150,151)]
+                    disabled: root.random_advantage
+                    opacity: 1 if not root.random_advantage else 0.5
+            
+            # Move Number
             DescriptionLabel:
                 text: i18n._('setup position move number')
             AnchorLayout:
