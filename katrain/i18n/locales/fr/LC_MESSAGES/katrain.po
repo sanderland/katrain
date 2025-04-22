@@ -898,9 +898,9 @@ msgstr "Nouvelle position"
 
 msgid "setup position explanation"
 msgstr ""
-"Vous voulez gagner de l'expérience dans les milieux ou les fins de partie ?"
-" Apprendre à grappiller les points, maintenir votre avantage ou renverser la"
-" situation ? Alors jouez des positions fictives composées selon vos besoins."
+"Vous voulez gagner de l'expérience dans les milieux ou les fins de partie ? "
+"Apprendre à grappiller les points, maintenir votre avantage ou renverser la "
+"situation ? Alors jouez des positions fictives composées selon vos besoins."
 
 msgid "editgame"
 msgstr "Partie en cours"
