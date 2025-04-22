@@ -1,0 +1,1015 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: Japanese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "対局者設定"
+
+msgid "menu:newgame"
+msgstr "新規対局・ルール変更"
+
+msgid "menu:save"
+msgstr "棋譜保存"
+
+msgid "menu:load"
+msgstr "棋譜読込"
+
+msgid "menu:settings"
+msgstr "一般・エンジン設定"
+
+msgid "menu:clocksettings"
+msgstr "時間設定"
+
+msgid "menu:teachsettings"
+msgstr "指導・分析設定"
+
+msgid "menu:aisettings"
+msgstr "AI設定"
+
+msgid "menu:lang"
+msgstr "言語"
+
+msgid "menu:support"
+msgstr "貢献するには"
+
+msgid "menu:manual"
+msgstr "マニュアル"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "プレイヤー"
+
+msgid "player:human"
+msgstr "人間"
+
+msgid "player:ai"
+msgstr "AI"
+
+msgid "aistrategy"
+msgstr "AIの戦略"
+
+msgid "gametype"
+msgstr "対局の種類"
+
+msgid "game:normal"
+msgstr "通常対局"
+
+msgid "game:teach"
+msgstr "指導対局"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"次の\n"
+"着手"
+
+msgid "analysis:dots"
+msgstr ""
+"ドット\n"
+"表示"
+
+msgid "analysis:topmoves"
+msgstr ""
+"上位\n"
+"候補"
+
+msgid "analysis:policy"
+msgstr ""
+"第一\n"
+"感"
+
+msgid "analysis:territory"
+msgstr ""
+"地合\n"
+"推定"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "さらに深く分析"
+
+msgid "analysis:equalize"
+msgstr "候補手を均等に分析"
+
+msgid "analysis:sweep"
+msgstr "盤上すべての手を簡易分析"
+
+#. Analyze every node in the game more deeply
+msgid "analysis:game"
+msgstr "一局全体を深く分析"
+
+#. Keep improving current position analysis when there is nothing else to do
+msgid "analysis:continuous"
+msgstr "分析の継続・停止"
+
+msgid "analysis:aimove"
+msgstr "AIの推奨手を打つ"
+
+#. status message
+msgid "extra analysis"
+msgstr "さらに深く分析中（のべ{visits}手）"
+
+#. status message
+msgid "sweep analysis"
+msgstr "盤面すべての手を分析中（各{visits}手）"
+
+#. status message
+msgid "equalizing analysis"
+msgstr "候補手を均等に分析中（各{visits}手）"
+
+#. status message
+msgid "game re-analysis"
+msgstr "一局全体を再分析中（各{visits}手）"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "パス"
+
+msgid "ai-ponder"
+msgstr "この印はエンジンの状態をシンプルに表します（緑＝空き、オレンジ＝処理中）。エンジンが止まったり起動できなかったりすると赤くなります。"
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "待った"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "目差"
+
+msgid "tab:winrate"
+msgstr "勝率"
+
+#. shown on a graph tab
+msgid "tab:rank_est"
+msgstr "推定段級位"
+
+msgid "tab:points"
+msgstr "損失目数"
+
+msgid "tab:info"
+msgstr "情報"
+
+msgid "tab:info-details"
+msgstr "詳細"
+
+msgid "tab:notes"
+msgstr "コメント"
+
+msgid "closedlabel:scoregraph"
+msgstr "目差グラフ"
+
+#. on the graph
+msgid "Jigo"
+msgstr "持碁"
+
+msgid "short color B"
+msgstr "黒"
+
+msgid "short color W"
+msgstr "白"
+
+msgid "closedlabel:movestats"
+msgstr "着手の分析結果"
+
+msgid "closedlabel:info&notes"
+msgstr "着手の情報・コメント"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "パス"
+
+msgid "board-game-end"
+msgstr "終局"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "対局"
+
+msgid "btn:Analysis"
+msgstr "分析"
+
+msgid "btn:Analyze"
+msgstr "分析オプション"
+
+msgid "stats:winrate"
+msgstr "勝率"
+
+msgid "stats:score"
+msgstr "推定目差"
+
+msgid "stats:pointslost"
+msgstr "損失目数"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "獲得目数"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr "×印はKataGoの推奨手、四角は半目損以内の手"
+
+msgid "Info:score"
+msgstr "目差：{score}"
+
+msgid "Info:winrate"
+msgstr "勝率：{winrate}"
+
+msgid "Info:point loss"
+msgstr "推定損失目数：{points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "手数{number}"
+
+msgid "Info:top move"
+msgstr "最善手は{top_move} ({score})"
+
+msgid "Info:best move"
+msgstr "最善手"
+
+msgid "Info:PV"
+msgstr "予想手順：{pv}"
+
+msgid "Info:policy rank"
+msgstr "第一感では{rank}位  ({probability:.2%})"
+
+msgid "Info:policy best"
+msgstr "第一感での最有力手は{move} ({probability:.1%})"
+
+msgid "Info:teaching undo"
+msgstr "指導モードにより自動的に待ったがかかりました"
+
+msgid "Info:undo predicted PV"
+msgstr "予想手順：{pv}"
+
+msgid "Info:AI thoughts"
+msgstr "AIの思考過程：{thoughts}"
+
+msgid "No analysis available"
+msgstr "分析結果なし"
+
+msgid "Analyzing move..."
+msgstr "分析中…"
+
+msgid "SGF Notes Hint"
+msgstr "この手に対するコメント記入欄（SGF記録用）"
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "SGFファイルを読み込んで解析"
+
+msgid "load sgf fast analysis"
+msgstr "簡易解析"
+
+msgid "load sgf rewind"
+msgstr "初手に巻戻す"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "時間設定の調整"
+
+msgid "byoyomi length"
+msgstr "秒読み時間"
+
+msgid "byoyomi periods"
+msgstr "秒読み回数"
+
+msgid "count down sound"
+msgstr "音声オン"
+
+#. submit button
+msgid "update timer"
+msgstr "時間設定を更新"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "新規対局の設定"
+
+msgid "board size"
+msgstr "碁盤サイズ"
+
+msgid "handicap"
+msgstr "置き石"
+
+msgid "komi"
+msgstr "コミ"
+
+msgid "ruleset"
+msgstr "ルール"
+
+#. ruleset names
+msgid "japanese"
+msgstr "日本"
+
+msgid "chinese"
+msgstr "中国"
+
+msgid "korean"
+msgstr "韓国"
+
+msgid "aga"
+msgstr "AGA"
+
+msgid "stone_scoring"
+msgstr "古代中国"
+
+msgid "clear cache"
+msgstr "思考記録をクリア"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"同一手順の\n"
+"再現を防ぐ"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "長方形碁盤は x:y と記入（例 19:9）"
+
+#. submit new game
+msgid "newgame"
+msgstr "新規対局を開始"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "指導設定を編集"
+
+msgid "point loss threshold"
+msgstr "何目より損なら"
+
+msgid "num undos"
+msgstr ""
+"再考を促す回数\n"
+"（指導対局時）"
+
+msgid "dot color"
+msgstr "色"
+
+msgid "show dots"
+msgstr "ドットを表示"
+
+msgid "save dots"
+msgstr "SGFに保存"
+
+msgid "show last n dots"
+msgstr "直近何手のドットを表示"
+
+msgid "show ai dots"
+msgstr "AIの手にもドットやSGFコメントをつける"
+
+#. submit button
+msgid "update teacher"
+msgstr "指導設定を更新"
+
+# main config settings
+msgid "restarting engine"
+msgstr "設定変更後にエンジンを再起動中"
+
+# title
+msgid "general settings title"
+msgstr "一般・エンジン設定"
+
+msgid "file not found"
+msgstr "ファイルがありません"
+
+msgid "general settings"
+msgstr "一般設定"
+
+msgid "katago settings"
+msgstr "KataGo設定"
+
+msgid "engine settings"
+msgstr "エンジン設定"
+
+msgid "config file path"
+msgstr "全オプションの保存先："
+
+msgid "engine:katago"
+msgstr "KataGo実行ファイル （フルパス）"
+
+msgid "engine:katago:hint"
+msgstr "内蔵KataGoを使うなら空のまま"
+
+msgid "engine:model"
+msgstr "KataGoモデルファイルの場所"
+
+msgid "engine:config"
+msgstr "KataGo設定ファイルの場所"
+
+msgid "engine:max_visits"
+msgstr "分析時の最大探索手数"
+
+msgid "engine:fast_visits"
+msgstr "簡易分析時の最大探索手数"
+
+msgid "engine:max_time"
+msgstr "分析の最大時間"
+
+msgid "engine:wide_root_noise"
+msgstr "Wide root noise (考慮する手の範囲を広げる)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"候補手を増やすには\n"
+"0.02から0.1の値を設定"
+
+msgid "engine:time:hint"
+msgstr "秒数"
+
+msgid "general:anim_pv_time"
+msgstr "手順アニメーションの一手毎の時間"
+
+msgid "general:debug_level"
+msgstr "コンソールのデバッグレベル"
+
+msgid "general:debug_level:hint"
+msgstr "エラーを報告する際は1に設定を"
+
+msgid "update settings"
+msgstr "設定を更新"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "高度なAI設定"
+
+msgid "Select AI"
+msgstr "AIの戦略"
+
+msgid "update ai settings"
+msgstr "AI設定を更新"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "分析結果入りSGFを{file_name}に保存"
+
+msgid "wait-before-extra-analysis"
+msgstr "初期分析が完了しないと均等分析はできません"
+
+msgid "Copied SGF to clipboard."
+msgstr "クリップボードにSGFをコピーしました"
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"クリップボードの読み込みに失敗しました：{error}\n"
+"クリップボードの内容：{contents}..."
+
+msgid "Failed to load SGF"
+msgstr "SGFのロードに失敗しました：{error}"
+
+msgid "Kata exe not found"
+msgstr "KataGoの実行ファイル {exe} がありません。一般設定を確認してください。"
+
+msgid "Kata exe not found in path"
+msgstr ""
+"KataGoの実行ファイル '{exe}' "
+"がPATH内にありません。環境変数を確認するか、もしくは一般設定でフルパスを記入してください。MacOSの場合は、まずbrewを使ってkatagoをインストールする方法について、マニュアルを参照ください。"
+
+msgid "Kata model not found"
+msgstr "KataGoのモデル {model} がありません。一般設定を確認してください。"
+
+msgid "Kata config not found"
+msgstr "KataGo設定ファイル {config} がありません。一般設定を確認してください。"
+
+msgid "Starting Kata failed"
+msgstr "コマンド '{command}' によるKataGoの起動に失敗しました。エラー {error}"
+
+msgid "Engine died unexpectedly"
+msgstr "出力なしで予期せずエンジンが止まりました：{error}"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "級"
+
+msgid "strength:dan"
+msgstr "段"
+
+msgid "ai:default"
+msgstr "手加減なし"
+
+msgid "aihelp:default"
+msgstr ""
+"手加減なしのKataGo AI. 強さは, 一般設定のエンジンの探索手数とモデル, およびエンジンの設定ファイルによります. "
+"オプション設定はありません."
+
+#. ai which handles handicap games better
+msgid "ai:handicap"
+msgstr "Kata置碁"
+
+msgid "aihelp:handicap"
+msgstr ""
+"置き石が多い場合向けに最適化されたKataGo. "
+"'pda'設定は黒側から見たKataGoの'playoutDoublingAdvantage'に対応します. 'automatic'を設定しておけば, "
+"適切な値をKaTrainが自動的にみつけます."
+
+msgid "ai:jigo"
+msgstr "Kata持碁"
+
+msgid "aihelp:jigo"
+msgstr "指定された目差ちょうど（デフォルトは半目）だけ勝つことをめざします. それ以外は制限なし."
+
+msgid "ai:scoreloss"
+msgstr "損も混ぜて"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"損する目数に応じた確率でランダムに手を選択します（損が大きいほど低確率）. 探索手数の設定値を大きくするほど多彩で弱い打ち方をするでしょう."
+
+msgid "ai:policy"
+msgstr "第一感"
+
+msgid "aihelp:policy"
+msgstr ""
+"一手も読まずに第一感での最有力手を打ちます. 強さは主にエンジン設定のモデルしだいです. "
+"'opening_moves'は序盤の何手目までをよりランダムにするかの設定です."
+
+msgid "ai:p:weighted"
+msgstr "第一感（比重）"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"第一感での確率にしたがって手を選びます. 'weaken_fac'は弱そうな手を選ぶ度合を調整します. これを非常に小さな値にすれば, "
+"本来の「第一感」と似たような打ち方になります. なお, "
+"最有力手の第一感での確率が'pick_override'より大きい場合はその手が無条件で選ばれます. 逆に, "
+"第一感での確率が'lower_bound'より小さい手は決して選ばれません."
+
+msgid "ai:p:pick"
+msgstr "第一感（盲点）"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"'pick_n + pick_frac * <合法手の個数>'個の手をランダムに選んだ上で, その中での最善手を打ちます. "
+"'pick_frac=1'にすれば, 本来の「第一感」と同じような打ち方になります. なお, 明らかなミスを避けるために, "
+"最有力手の第一感での確率が'pick_override'より大きい場合は無条件でその手を打ちます."
+
+msgid "ai:p:local"
+msgstr "おつきあい派"
+
+msgid "aihelp:p:local"
+msgstr ""
+"直前の着手に近い位置ほど重みをつけて'pick_n + pick_frac * <合法手の個数>'個の手をランダムに選び, その中での最善手を打ちます."
+" ただし, 明らかなミスを避けるために, 最有力手の第一感での確率が'pick_override'より大きい場合は無条件でその手を打ちます."
+
+msgid "ai:p:tenuki"
+msgstr "手抜き派"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"直前の着手から遠い位置ほど重みをつけて'pick_n + pick_frac * <合法手の個数>'個の手をランダムに選び, "
+"その中での最善手を打ちます. ただし, 明らかなミスを避けるために, "
+"最有力手の第一感での確率が'pick_override'より大きい場合は無条件でその手を打ちます. "
+"'stddev'を大きくするほどより遠くの手を打ちます."
+
+msgid "ai:p:influence"
+msgstr "勢力派"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"'threshold'線より高い（天元寄りの）手に重みをつけて何個かの手を選び, その中での最善手を打ちます. "
+"'line_weight'を大きくするほど, 盤端に近い手をより避けるようになります. なお, "
+"盤全体のうち'endgame'の割合が埋まったあとにはこの重みづけは適用しません."
+
+msgid "ai:p:territory"
+msgstr "実利派"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"'threshold'線より低い（盤端寄りの）手に重みをつけて何個かの手を選び, その中での最善手を打ちます. "
+"'line_weight'を大きくするほど, 天元に近い手をより避けるようになります. なお, "
+"盤全体のうち'endgame'の割合が埋まったあとにはこの重みづけは適用しません."
+
+msgid "ai:p:rank"
+msgstr "段級位相応"
+
+msgid "aihelp:p:rank"
+msgstr ""
+"すべての合法手の中からランダムに何個かの候補手を選んで, その中での最有力手を打ちます. "
+"強い設定にするほどより多くの候補手の中から最有力手を選ぶようになります. なお, 3段は-2 kyuに対応します（0級／段はないので数字がずれる）. "
+
+#. in AI settings
+msgid "estimated strength"
+msgstr "推定段級位"
+
+#. button in general settings for downloading models
+msgid "download models button"
+msgstr "追加モデルをダウンロード"
+
+#. shown on on the model select dropdown
+msgid "models available"
+msgstr "入手済モデルの一覧（{num}個みつかりました）"
+
+#. error message on trying to download models when already done
+msgid "All models downloaded"
+msgstr "利用できるモデルはすべてダウンロード済です"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze max visits"
+msgstr "着手毎の探索手数"
+
+#. on move tree editing
+msgid "Delete Node"
+msgstr "この手以降を削除"
+
+#. theme name
+msgid "theme:red-green-colourblind"
+msgstr "赤緑色弱"
+
+#. theme name
+msgid "theme:normal"
+msgstr "デフォルト"
+
+#. theme label
+msgid "theme"
+msgstr "カラーテーマ"
+
+msgid "engine:altcommand:hint"
+msgstr "エンジン起動コマンド全体 (plinkでリモートエンジンに接続, 等). 他のモデルオプションはすべて無視されます."
+
+msgid "engine:altcommand"
+msgstr "エンジンコマンドの上書き"
+
+#. button in general settings for downloading katago executables
+msgid "download katago button"
+msgstr "別版KataGoをダウンロード"
+
+#. shown on on the binaries select dropdown
+msgid "katago binaries available"
+msgstr "入手済KataGoの一覧（{num}個みつかりました）"
+
+#. shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "内蔵KataGo（OpenCL版）"
+
+#. error message on trying to download models when already done
+msgid "All binaries downloaded"
+msgstr "KataGo実行ファイルはすべてダウンロード済です"
+
+msgid "Engine missing DLL"
+msgstr ""
+"KataGoの起動に失敗しました. DLLがみつかりません. 必要なものをKataGoの説明書で確認するか, "
+"KataGo実行ファイル自体を直接実行して詳細を調べてください."
+
+#. resign the game
+msgid "resign"
+msgstr "投了"
+
+#. Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "他の候補手を分析"
+
+#. message shown when move is undone
+msgid "teaching undo message"
+msgstr ""
+"待った。{move}は{points_lost:.1f}目損です。打ち直してください。ヒント：マウスカーソルをこの手にかざせばとがめる手順が表示されます。あるいは、地合推定をオンに（tキー）すれば盤上どのあたりで損をしたかが見られます。"
+
+#. status message
+msgid "alternative analysis"
+msgstr "他の候補手を分析中"
+
+#. ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "早打ち禁止秒数"
+
+msgid "move too fast"
+msgstr "早打ちすぎです。{num}秒は考えてください。"
+
+#. in minutes
+msgid "main time"
+msgstr "持ち時間（分）"
+
+msgid "aihelp:simple"
+msgstr ""
+"盤面の単純化をめざして, 次の基準で手を選びます (括弧内は重視度): 損する目数が少ない, 自分の確定地が多い (settled_weight), "
+"相手も確定地が多い (settled_weight × opponent fac), 相手が打った手の近辺…縦横とも3間以内 "
+"(tenuki_penalty), 相手の石に接触しない (attachment_penalty). ただし, 損が大きすぎたり "
+"(max_points_lost目以上) 探索手数が少なすぎたり (min_visits手未満) する候補手は除きます. 重視度を負にすれば, "
+"逆に盤面の複雑化をめざします. また, 一般設定のwide root noiseを大きくすれば, 強さは犠牲になりますが, "
+"より前述の基準に忠実な打ち方をします."
+
+msgid "ai:simple"
+msgstr "簡明派"
+
+#. status message
+msgid "local analysis"
+msgstr "近辺の応手を分析中"
+
+#. on move tree editing
+msgid "Make Main Branch"
+msgstr "こちらを主分岐に"
+
+#. setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "候補手上の表示"
+
+#. Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "勝率の損失"
+
+#. Dropdown menu option
+msgid "top_move_visits"
+msgstr "探索手数"
+
+#. Dropdown menu option
+msgid "top_move_score"
+msgstr "目差"
+
+#. Dropdown menu option
+msgid "top_move_nothing"
+msgstr "なし"
+
+#. Dropdown menu option
+msgid "top_move_winrate"
+msgstr "勝率"
+
+#. Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "損失目数"
+
+#. top move stats show threshold description
+msgid "show stats if"
+msgstr "表示候補の最低探索数"
+
+#. point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "損失目数の高精度表示（絶対値１以下の場合）"
+
+#. analysis option
+msgid "cache analysis to sgf"
+msgstr "分析結果をSGFに保存"
+
+msgid "menu:save-as"
+msgstr "名前をつけて棋譜保存"
+
+# sgf load button
+msgid "Load File"
+msgstr "読込"
+
+# sgf save popup
+msgid "save sgf title"
+msgstr "SGFファイルを保存"
+
+# sgf save as button
+msgid "Save File"
+msgstr "保存"
+
+#. status message on starting insert mode
+msgid "starting insert mode"
+msgstr "挿入モードを開始します。済んだらiを押してください。"
+
+#. status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "入力された手順を挿入した上で、後続の{num_copied}手をコピーしました。"
+
+#. when a user tries to go to a different move/node while in insert
+#. mode
+msgid "finish inserting before navigating"
+msgstr "挿入モード中は他の手に移動できません。iを押して挿入モードを終了してください。"
+
+#. in new game options
+msgid "player names"
+msgstr "対局者名"
+
+#. Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "棋譜の途中に手を追加"
+
+#. Status message
+msgid "analysis:region:start"
+msgstr ""
+"マウスをドラッグして分析する領域を設定してください。領域を解除したいときは、このメッセージが表示されている状態で碁盤上のどこか一点だけを選んでください。"
+
+#. Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "領域を絞って分析"
+
+#. on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "折畳み／展開"
+
+#. Menu option
+msgid "analysis:playtoend"
+msgstr "終局まで簡易自動対局"
+
+#. hint on player name input
+msgid "black player name hint"
+msgstr "黒番"
+
+#. hint on player name input
+msgid "white player name hint"
+msgstr "白番"
+
+#. in self-play mode
+msgid "gui-locked"
+msgstr "自己対局モードではこの動作 {action} はできません。分散訓練モードを抜けるにはKaTrainを再起動してください。"
+
+#. menu item
+msgid "menu:distributed"
+msgstr "自己対局による分散訓練"
+
+msgid "contribute:register"
+msgstr "登録"
+
+msgid "contribute:start"
+msgstr "貢献を開始！"
+
+#. contribute settings popup
+msgid "contribute settings title"
+msgstr "KataGoの分散訓練に協力"
+
+msgid "contribute:username"
+msgstr "ユーザ名"
+
+#. description for input
+msgid "contribute:maxgames"
+msgstr "最大同時対局数"
+
+msgid "contribute:password"
+msgstr "パスワード"
+
+#. hint for max games
+msgid "contribute:maxgames:hint"
+msgstr ""
+"あなたの環境での最適なnumSearchThreads（探索スレッド数、中級品のGPUなら8程度）に合わせるのが最良です。短時間だけ稼働する場合にはそれよりやや小さい値にするのもよいでしょう（未完了の対局はアップロードされないので）。"
+
+#. hint for ownership
+msgid "contribute:ownership:hint"
+msgstr "訓練速度は若干落ちてしまいますが、黒地か白地かを可視化します"
+
+msgid "contribute:ownership"
+msgstr "黒地か白地かを予測"
+
+#. title
+msgid "contribute:login"
+msgstr "ログイン情報 (katagotraining.org)"
+
+#. description
+msgid "contribute:movespeed"
+msgstr "着手の速さ"
+
+#. hint for move speed
+msgid "contribute:movespeed:hint"
+msgstr "何秒ごとに一手進めるか"
+
+#. description
+msgid "contribute:savesgf"
+msgstr "SGFを保存"
+
+#. hint for save
+msgid "contribute:savesgf:hint"
+msgstr "表示しおわった対局のSGFファイルを./dist_sgfに保存"
+
+#. title
+msgid "contribute:viewer settings"
+msgstr "表示設定"
+
+#. Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "分析をリセット"
+
+#. Description for black target score
+msgid "setup position black score"
+msgstr "黒の何目リードを目標に："
+
+#. Description for how many moves
+msgid "setup position move number"
+msgstr "何手目まで生成："
+
+#. Progress message
+msgid "setup game status message"
+msgstr "AIの自己対局により局面を生成：{move}手/{until_move}手まで"
+
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "局面を生成"
+
+#. Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr ""
+"設定に応じた途中局面を自動生成して、そこから打ち継ぎます。たとえば、形勢の良い中盤や終盤の色々な局面から、強いAIを相手に続きを打つといった使い方ができます。"
+
+#. change komi etc in current game
+msgid "editgame"
+msgstr "対局情報を編集"
+
+msgid "new zealand"
+msgstr "ニュージーランド"
+
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+#. View a player performance report
+msgid "analysis:report"
+msgstr "評価レポート"
+
+msgid "engine died popup opening message"
+msgstr ""
+"おおっと！KataGoエンジンが起動に失敗したか、クラッシュしました。\n"
+" エラー内容：{error_message}\n"
+"エラーコード {code}"
+
+#. Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr "それでもだめなら、{link}して最新のトラブルシューティングページへ。"
+
+#. Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr "まずは、{link}から別バージョンのKataGoをダウンロードしてうまくいくか試してください。"
+
+#. as in "click here" to go to this page,
+msgid "link_here"
+msgstr "ここをクリック"
+
+#. popup title
+msgid "engine recovery"
+msgstr "KataGoセットアップのヘルプ"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "分析を悪手だけに限定"
+
+#. statistic in performance report
+msgid "stat:accuracy"
+msgstr "正確度の評点"
+
+#. header in performance report
+msgid "header:keystats"
+msgstr "基本統計"
+
+#. header in performance report
+msgid "header:num moves"
+msgstr "手数"
+
+#. opening of the game filter in performance report
+msgid "Opening"
+msgstr "序盤"
+
+#. end of the game filter in performance report
+msgid "Endgame"
+msgstr "終盤"
+
+#. middle of the game filter in performance report
+msgid "Midgame"
+msgstr "中盤"
+
+#. statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "平均損失目数"
+
+#. statistic in performance report
+msgid "stat:aitop5"
+msgstr "AIの上位5候補手との一致率"
+
+#. statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AIの最善手との一致率"
+
+#. game filter in performance report
+msgid "Entire Game"
+msgstr "全局"
+
+msgid "ai:antimirror"
+msgstr "Kataマネ碁破り"
+
+#. on move tree editing, deletes all other branches splitting off from
+#. the path UP TO this node
+msgid "Prune Branch"
+msgstr "この枝だけ残して他を削除"
+
+msgid "aihelp:antimirror"
+msgstr "KataGoの「マネ碁破りモード」"
+
+#. distance of wall to existing stones
+msgid "tsumego:walldistance"
+msgstr "壁までの距離"
+
+#. tsumego: ko is good enough?
+msgid "tsumego:ko"
+msgstr "劫でもOK"
+
+#. Menu option for tsumego frame around position
+msgid "analysis:tsumegoframe"
+msgstr "詰碁用の外枠"
+
+#. TODO
+msgid "from move"
+msgstr "from move"
+
+#. TODO - status message
+msgid "move range analysis"
+msgstr ""
+"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+
+#. TODO
+msgid "to move"
+msgstr "to move"
+
+#. TODO - Restrict analysis to move range
+msgid "limit to moves"
+msgstr "Limit to moves"
+
+#. TODO
+msgid "contribute:passwordwarning"
+msgstr "(Stored as plain text, do not re-use this anywhere)"

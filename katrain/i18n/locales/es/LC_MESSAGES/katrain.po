@@ -1,0 +1,1031 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: Spanish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "Jugadores"
+
+msgid "menu:newgame"
+msgstr "Nuevo Juego"
+
+msgid "menu:save"
+msgstr "Guardar Juego"
+
+msgid "menu:load"
+msgstr "Cargar Juego"
+
+msgid "menu:settings"
+msgstr "Conf General y Motores"
+
+msgid "menu:clocksettings"
+msgstr "Conf Reloj"
+
+msgid "menu:teachsettings"
+msgstr "Conf Juego Enseñanza"
+
+msgid "menu:aisettings"
+msgstr "Conf IA"
+
+msgid "menu:lang"
+msgstr "Idioma"
+
+msgid "menu:support"
+msgstr "Soporte"
+
+msgid "menu:manual"
+msgstr "Manual"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "Jugador"
+
+msgid "player:human"
+msgstr "Humano"
+
+msgid "player:ai"
+msgstr "IA"
+
+msgid "aistrategy"
+msgstr "Estrategia IA"
+
+msgid "gametype"
+msgstr "Tipo de Juego"
+
+msgid "game:normal"
+msgstr "Normal"
+
+msgid "game:teach"
+msgstr "Enseñanza"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"Siguientes\n"
+"Jugadas"
+
+msgid "analysis:dots"
+msgstr ""
+"Mostrar\n"
+"Puntos"
+
+msgid "analysis:topmoves"
+msgstr ""
+"Jugadas\n"
+"Superiores"
+
+msgid "analysis:policy"
+msgstr ""
+"Jugadas\n"
+"Intuitivas"
+
+msgid "analysis:territory"
+msgstr ""
+"Territorio\n"
+"Tentativo"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "Profundizar Análisis"
+
+msgid "analysis:equalize"
+msgstr "Igualar visitas potenciales movimientos"
+
+msgid "analysis:sweep"
+msgstr "Análisis rápido todos los movimientos"
+
+msgid "analysis:aimove"
+msgstr "Forzar jugada IA"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "Pasar"
+
+#. TODO: updated
+msgid "teaching undo message"
+msgstr ""
+"Deshice jugada {move} ya que perdía {points_lost:.1f} puntos. Coloca el "
+"cursor sobre la jugada para ver la refutación esperada. Por favor intenta de"
+" nuevo."
+
+msgid "ai-ponder"
+msgstr ""
+"Indica el estado del motor, yendo de verde (en espera) a naranja (procesando"
+" consultas). Se convierte en rojo cuando el motor se bloquea o no empieza"
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "Deshacer"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "Puntaje"
+
+msgid "tab:winrate"
+msgstr "Pronóstico"
+
+msgid "tab:points"
+msgstr "Perdidas"
+
+msgid "tab:info"
+msgstr "Info"
+
+msgid "tab:notes"
+msgstr "Notas"
+
+msgid "closedlabel:scoregraph"
+msgstr "Gráfica Puntos"
+
+#. on the graph
+msgid "Jigo"
+msgstr "Jigo"
+
+msgid "closedlabel:movestats"
+msgstr "Estadística Jugada"
+
+msgid "closedlabel:info&notes"
+msgstr "Info y Notas Jugada"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "paso"
+
+msgid "board-game-end"
+msgstr ""
+"terminar\n"
+"juego"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "Jugar"
+
+msgid "btn:Analysis"
+msgstr "Análisis"
+
+msgid "btn:Analyze"
+msgstr "Análisis"
+
+msgid "stats:winrate"
+msgstr "Pronóstico"
+
+msgid "stats:score"
+msgstr "Puntaje"
+
+msgid "stats:pointslost"
+msgstr "Perdidas"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "Puntos Ganados"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr ""
+"Jugadas marcadas 'X' indican la mejor jugada segúnKataGo, aquellas con un "
+"cuadrado son jugadas que pierden menos de 0.5 puntos"
+
+msgid "Info:score"
+msgstr "Puntaje: {score}"
+
+msgid "Info:winrate"
+msgstr "Pronóstico: {winrate}"
+
+msgid "Info:point loss"
+msgstr "Pérdida esperada de puntos: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "Jugada {number}"
+
+msgid "Info:top move"
+msgstr "El movimiento superior previsto era {top_move} ({score})."
+
+msgid "Info:best move"
+msgstr "Jugada predicha como la mejor jugada"
+
+msgid "Info:PV"
+msgstr "PV: {pv}"
+
+msgid "Info:policy rank"
+msgstr "Jugada fue #{rank} en intuitividad ({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "La jugada más intuitiva fue {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr "La jugada fue devuelta automáticamente en modo enseñanza."
+
+msgid "Info:undo predicted PV"
+msgstr "Continuación predicha: {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "Cadena de pensamiento IA: {thoughts}"
+
+msgid "No analysis available"
+msgstr "Análisis no disponibe"
+
+msgid "Analyzing move..."
+msgstr "Analizando jugada..."
+
+msgid "SGF Notes Hint"
+msgstr "Acá las notas de tu SGF para la posición."
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "Cargar archivo SGF a Analizar"
+
+msgid "load sgf fast analysis"
+msgstr "usar análisis rápido"
+
+msgid "load sgf rewind"
+msgstr "Devolver al inicio"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "Conf de Reloj"
+
+msgid "byoyomi length"
+msgstr "Segundos Byo-yomi"
+
+msgid "byoyomi periods"
+msgstr "Número de Periodos"
+
+#. submit button
+msgid "update timer"
+msgstr "Actualizar Reloj"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "Configurar Nuevo Juego"
+
+msgid "board size"
+msgstr "Tamaño del tablero"
+
+msgid "handicap"
+msgstr "Handicap"
+
+msgid "komi"
+msgstr "Komi"
+
+msgid "ruleset"
+msgstr "Reglas"
+
+#. ruleset names
+msgid "japanese"
+msgstr "Japonesas"
+
+msgid "chinese"
+msgstr "Chinas"
+
+msgid "korean"
+msgstr "Koreanas"
+
+msgid "aga"
+msgstr "AGA"
+
+#. TODO check
+msgid "stone_scoring"
+msgstr "Antiguas Chinas"
+
+msgid "clear cache"
+msgstr "Vaciar Cache"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"Evita reproducir\n"
+"juegos idénticos"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "Usa x:y (i.e. 19:9) para tableros no cuadrados"
+
+#. submit new game
+msgid "newgame"
+msgstr "Empezar Nuevo Juego"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "Editar Conf Enseñanza"
+
+msgid "point loss threshold"
+msgstr "Pérdida de puntaje mayor a"
+
+msgid "num undos"
+msgstr "Número de jugadas desechas"
+
+msgid "dot color"
+msgstr "Color"
+
+msgid "show dots"
+msgstr "Mostrar Puntos"
+
+msgid "save dots"
+msgstr "Guardar en SGF"
+
+msgid "show last n dots"
+msgstr "Mostar puntos de las últimas número de jugadas moves"
+
+msgid "show ai dots"
+msgstr "Mostrar puntos/comentarios para motores de IA"
+
+#. submit button
+msgid "update teacher"
+msgstr "Actualizar conf"
+
+# main config settings
+msgid "restarting engine"
+msgstr "Reinicar Motor por cambio en conf."
+
+# title
+msgid "general settings title"
+msgstr "Conf Generales y de Motores"
+
+msgid "file not found"
+msgstr "Ruta no existe"
+
+msgid "general settings"
+msgstr "Conf Generales"
+
+msgid "engine settings"
+msgstr "Conf Motor"
+
+msgid "katago settings"
+msgstr "Conf KataGo"
+
+msgid "config file path"
+msgstr "La Conf se guardan en:"
+
+msgid "engine:katago"
+msgstr "Ruta al ejecutable de KataGo"
+
+msgid "engine:katago:hint"
+msgstr "Dejar vacío para usar el motor interno por defecto"
+
+msgid "engine:model"
+msgstr "Ruta al modelo de KataGo"
+
+msgid "engine:config"
+msgstr "Ruta al archivo de conf de KataGo"
+
+msgid "engine:max_visits"
+msgstr "Máximo número de visitas en análisis"
+
+msgid "engine:fast_visits"
+msgstr "Máximo número de visitas en análisis rápido"
+
+msgid "engine:max_time"
+msgstr "Tiempo máximo para análisis"
+
+msgid "engine:wide_root_noise"
+msgstr ""
+"Ruido base de nodo raiz (incrementa la variedad de jugadas a considerar)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"Usa 0.02-0.1 para mostrar\n"
+"un mayor número de posibles jugadas"
+
+msgid "engine:time:hint"
+msgstr "Tiempo en segundos"
+
+msgid "general:anim_pv_time"
+msgstr "Tiempo entre juagadas animando una secuencia"
+
+msgid "general:debug_level"
+msgstr "Nivel de depuración en consola"
+
+msgid "general:debug_level:hint"
+msgstr "Usar 1 para reportar errores"
+
+msgid "update settings"
+msgstr "Actualizar conf"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "Conf avanzadas IA"
+
+msgid "Select AI"
+msgstr "Estrategia para IA"
+
+msgid "update ai settings"
+msgstr "Actualizar conf IA"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "SGF con análisis escrito en {file_name}"
+
+msgid "wait-before-extra-analysis"
+msgstr ""
+"Esperar completar análisis inicial antes de solicitar un refinamiento."
+
+msgid "Copied SGF to clipboard."
+msgstr "SGF copiado al portapapeles."
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"Error al importar el juego desde el portapapeles: {error}\n"
+"Contenido portapapeles: {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "Error al cargar SGF: {error}"
+
+msgid "Starting Kata failed"
+msgstr ""
+"Empezando KataGo con el comando '{command}' fallo con error {error}. "
+"Porfavor asegurar que el ejecutable de 'katago' dentro de la conf del motor "
+"'engine' al valor correcto del ejecutable KataGo."
+
+msgid "Engine died unexpectedly"
+msgstr "El motor murió inesperadamente sin mandar alguna señal: {error}"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "k"
+
+msgid "strength:dan"
+msgstr "d"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"Fuerza máxima de KataGo IA. La fuerza es afectada por el número 'máximo "
+"visitas' y 'modelo' en conf general del 'motor' y el archivo de conf  del "
+"motor. No hay opciones disponibles acá."
+
+msgid "ai:jigo"
+msgstr "KataJigo"
+
+msgid "aihelp:jigo"
+msgstr ""
+"Trata de ganar por una cantidad de puntos (default 0.5), sin  restriciones."
+
+msgid "ai:scoreloss"
+msgstr "Perdida de puntos"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"Las jugadas que conllevan a mayor pérdida de puntos se juegan con una menor "
+"probabilidad. Probablemente juega mas variado/débil con un mayor número de "
+"visitas."
+
+msgid "ai:policy"
+msgstr "Jugadas intuitivas"
+
+msgid "aihelp:policy"
+msgstr ""
+"Juega la jugada que se considera la más intuitvda sin leer. La fuerza esta "
+"dada por el 'model' en la conf del motor. El parámetro 'opening_moves' "
+"afecta cuantas jugadas en la apertura son al azar."
+
+msgid "ai:p:weighted"
+msgstr "Parcial"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"Hace jugadas deacuerdo a las jugadas más intuitivas y sus probabilidades, "
+"con 'weaken_fac' influenciando que tan probable es que jugadas debiles sean "
+"jugadas. Un valor más pequeño se acerca a  jugadas más intuitivas según "
+"IA.'pick_override' determina que tan frecuente una la mejor jugada es "
+"ecogida sin azar, y 'lower_bound' determina el rango bajopermitido."
+
+msgid "ai:p:pick"
+msgstr "Politica Ciega"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"Escoge 'pick_n + pick_frac * <#jugadas legales>' al azar y juega la mejor.El"
+" 'pick_frac=1' juega como la politica intuitiva del IA. Juega la mejor "
+"jugada si la probabilidad del IA es por encima de 'pick_override'. Esto con "
+"el fin de prevenir errores obvios."
+
+msgid "ai:p:local"
+msgstr "Estilo Local"
+
+msgid "aihelp:p:local"
+msgstr ""
+"Escoge 'pick_n + pick_frac * <#jugadas legales>' con un peso superior a "
+"jugadas alrededor de la última jugada y escoge la mejor. Juega la mejor "
+"jugada si el valor de la politica está por encima 'pick_override' con el fin"
+" de prevenir errores obvios."
+
+msgid "ai:p:tenuki"
+msgstr "Estilo Tenuki"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"Escoge 'pick_n + pick_frac * <#jugadas legales>' con un peso en contra de la"
+" última jugada y escoge la mejor. Juega la mejor jugada si el valor de la "
+"politica esta por encima 'pick_override' con el fin de prevenir errores "
+"obvios. Un 'stddev' más grande hace que juegue más lejos."
+
+msgid "ai:p:influence"
+msgstr "Estilo Influencia"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"Escoje jugadas preferiendo aquellas por encima de la linea 'threshold' y "
+"juega la mejor. Incrementar 'line_weight' para penalizar más jugadas cerca "
+"al borde. Para estrategia cuando la fase 'endgame' del tablero ha llegado."
+
+msgid "ai:p:territory"
+msgstr "Estilo Territorial"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"Escoje jugadas preferiendo aquellas por debajo de la linea 'threshold' y "
+"juega la mejor. Incrementar 'line_weight' para penalizar más jugadas cerca "
+"al centro. Para estrategia cuando la fase 'endgame' del tablero ha llegado."
+
+msgid "aihelp:p:rank"
+msgstr ""
+"Elige una selección limitada de jugadas y juega la mejor. Configuraciones "
+"más fuertes toma la mejor jugada de una selección más amplia de jugadas. "
+"Como no hay 0 kyu/dan, 3 dan = -2 kyu."
+
+msgid "Kata model not found"
+msgstr "El modelo KataGo {model} no existe, revisar conf general."
+
+msgid "equalizing analysis"
+msgstr "Ecualizar análsis de jugadas candidatas a {visits} visitas"
+
+msgid "Kata exe not found in path"
+msgstr ""
+"El binario de KataGo '{exe}' no se encuentra en la 'PATH', revisar variables"
+" ambiente o usar la ruta completa en la conf general. Si estas en MacOS, ve "
+"el manual de como usar homebrew para instalar KataGo primero"
+
+msgid "ai:p:rank"
+msgstr "Fuerza Calibrada"
+
+msgid "tab:info-details"
+msgstr "Detalles"
+
+msgid "Kata exe not found"
+msgstr "El binario KataGo {exe} no existe, revisar conf general."
+
+msgid "sweep analysis"
+msgstr "Analizando tablero entero usando {visits} visitas/jugada"
+
+msgid "count down sound"
+msgstr "Sonido on"
+
+msgid "Kata config not found"
+msgstr ""
+"El archivo de conf de KataGo {config} no existe, revisar conf general."
+
+msgid "extra analysis"
+msgstr "Realizar análisis adicional a {visits} visitas"
+
+msgid "models available"
+msgstr "{num} de modelo(s) disponibles"
+
+msgid "download models button"
+msgstr "Descargar Modelos"
+
+msgid "All models downloaded"
+msgstr "Todos los modelos fueron descargados"
+
+msgid "tab:rank_est"
+msgstr "Estimación fuerza"
+
+msgid "game re-analysis"
+msgstr "Re-analizar juego usando {visits} visitas"
+
+msgid "analysis:game"
+msgstr "Re-analizar juego"
+
+msgid "analysis:continuous"
+msgstr "Analizar continuamente "
+
+msgid "ai:handicap"
+msgstr "KataVentaja"
+
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo optimizado para jugar con ventaja al oponente. El parámetro 'pda' "
+"corresponde a 'playoutDoublingAdvantage' en KataGo, desde la perspectiva de "
+"negro.Cuando 'automatic' está establecido, KaTrain encontrará un valor "
+"adecuado automáticamente."
+
+msgid "estimated strength"
+msgstr "Fuerza Estimada"
+
+msgid "reanalyze max visits"
+msgstr "Número de visitas por jugada"
+
+#. TODO - on move tree editing
+msgid "Delete Node"
+msgstr "Delete Node"
+
+#. TODO - theme name
+msgid "theme:red-green-colourblind"
+msgstr "Red-Green Colourblind"
+
+#. TODO - theme name
+msgid "theme:normal"
+msgstr "Default Theme"
+
+#. TODO - theme label
+msgid "theme"
+msgstr "Colour Theme"
+
+#. TODO
+msgid "engine:altcommand:hint"
+msgstr ""
+"Full command used to start the engine, for e.g. using plink to connect to a "
+"remote engine. All other model options will be ignored."
+
+#. TODO
+msgid "engine:altcommand"
+msgstr "Override Engine Command"
+
+#. TODO - button in general settings for downloading katago executables
+msgid "download katago button"
+msgstr "Download KataGo versions"
+
+#. TODO - shown on on the binaries select dropdown
+msgid "katago binaries available"
+msgstr "{num} available katago versions found"
+
+#. TODO - shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "Detect platform and use provided OpenCL KataGo binary"
+
+#. TODO - error message on trying to download models when already done
+msgid "All binaries downloaded"
+msgstr "All available binaries already downloaded"
+
+#. TODO
+msgid "Engine missing DLL"
+msgstr ""
+"Failed to start KataGo due to missing DLL. Check the requirements, or try "
+"running the binary by itself for details. "
+
+#. TODO - resign the game
+msgid "resign"
+msgstr "Resign"
+
+#. TODO - Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "Find alternative moves"
+
+#. TODO - status message
+msgid "alternative analysis"
+msgstr "Searching for alternative moves"
+
+#. TODO - ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "Minimal time use in byo-yomi (s)"
+
+#. TODO
+msgid "move too fast"
+msgstr "Think for at least {num} seconds before playing."
+
+#. TODO - in minutes
+msgid "main time"
+msgstr "Main time (min.)"
+
+#. TODO
+msgid "aihelp:simple"
+msgstr "Plays moves that lead to simplifying the board state."
+
+#. TODO
+msgid "ai:simple"
+msgstr "Simple Style"
+
+#. TODO - status message
+msgid "local analysis"
+msgstr "Searching for local responses"
+
+#. TODO - on move tree editing
+msgid "Make Main Branch"
+msgstr "Make Main Branch"
+
+#. TODO - setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "Stats on top moves"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "Change in win rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_visits"
+msgstr "Visits"
+
+#. TODO - Dropdown menu option
+msgid "top_move_score"
+msgstr "Score"
+
+#. TODO - Dropdown menu option
+msgid "top_move_nothing"
+msgstr "(nothing)"
+
+#. TODO - Dropdown menu option
+msgid "top_move_winrate"
+msgstr "Win rate"
+
+#. TODO - Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "Change in score"
+
+#. TODO - top move stats show threshold description
+msgid "show stats if"
+msgstr "Show stats if more than ... visits"
+
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
+#. TODO - analysis option
+msgid "cache analysis to sgf"
+msgstr "Cache analysis in SGF"
+
+#. TODO
+msgid "menu:save-as"
+msgstr "Save Game As..."
+
+#. TODO
+# sgf load button
+msgid "Load File"
+msgstr "Load File"
+
+#. TODO
+# sgf save popup
+msgid "save sgf title"
+msgstr "Save SGF File"
+
+#. TODO
+# sgf save as button
+msgid "Save File"
+msgstr "Save File"
+
+#. TODO - status message on starting insert mode
+msgid "starting insert mode"
+msgstr "Starting insert mode, press 'i' to finish inserting."
+
+#. TODO - status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
+
+#. TODO - when a user tries to go to a different move/node while in insert
+#. mode
+msgid "finish inserting before navigating"
+msgstr ""
+"Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "
+
+#. TODO - in new game options
+msgid "player names"
+msgstr "Player Names"
+
+#. TODO - Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "Insert moves"
+
+#. TODO - Status message
+msgid "analysis:region:start"
+msgstr ""
+"Drag to select the region of interest. Select a single point to remove the "
+"region."
+
+#. TODO - Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "Set region of interest"
+
+#. TODO - on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "Expand/Collapse"
+
+#. TODO - Menu option
+msgid "analysis:playtoend"
+msgstr "Fast playout to game end"
+
+#. TODO - hint on player name input
+msgid "black player name hint"
+msgstr "Black player's name"
+
+#. TODO - hint on player name input
+msgid "white player name hint"
+msgstr "White player's name"
+
+#. TODO - in self-play mode
+msgid "gui-locked"
+msgstr ""
+"Action {action} not allowed in distributed training mode. Restart KaTrain to"
+" exit this mode."
+
+#. TODO - menu item
+msgid "menu:distributed"
+msgstr "Distributed Self-play Training"
+
+#. TODO
+msgid "contribute:register"
+msgstr "Register"
+
+#. TODO
+msgid "contribute:start"
+msgstr "Start Contributing!"
+
+#. TODO - contribute settings popup
+msgid "contribute settings title"
+msgstr "Contribute To KataGo Distributed Training"
+
+#. TODO
+msgid "contribute:username"
+msgstr "Username"
+
+#. TODO - description for input
+msgid "contribute:maxgames"
+msgstr "Simultaneous Games"
+
+#. TODO
+msgid "contribute:password"
+msgstr "Password"
+
+#. TODO - hint for max games
+msgid "contribute:maxgames:hint"
+msgstr ""
+"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
+" set it slightly lower for shorter runs, as half-finished games are not "
+"uploaded."
+
+#. TODO - hint for ownership
+msgid "contribute:ownership:hint"
+msgstr "Slightly slows down training, but allows ownership visualization."
+
+#. TODO
+msgid "contribute:ownership"
+msgstr "Enable Ownership"
+
+#. TODO - title
+msgid "contribute:login"
+msgstr "Login Information for katagotraining.org"
+
+#. TODO - description
+msgid "contribute:movespeed"
+msgstr "Move speed"
+
+#. TODO - hint for move speed
+msgid "contribute:movespeed:hint"
+msgstr "Move playing delay in seconds/move."
+
+#. TODO - description
+msgid "contribute:savesgf"
+msgstr "Save SGFs"
+
+#. TODO - hint for save
+msgid "contribute:savesgf:hint"
+msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+
+#. TODO - title
+msgid "contribute:viewer settings"
+msgstr "Viewer Settings"
+
+#. TODO - Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "Reset analysis"
+
+#. TODO - Description for black target score
+msgid "setup position black score"
+msgstr "Target score for Black (Can be negative):"
+
+#. TODO - Description for how many moves
+msgid "setup position move number"
+msgstr "Generate game until move:"
+
+#. TODO - Progress message
+msgid "setup game status message"
+msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+
+#. TODO - generate position alongside starting new game
+msgid "setupposition"
+msgstr "Set up Position"
+
+#. TODO - Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr ""
+"This generates a partial game for you to start playing from. For example, "
+"you can use this to play against stronger AIs starting from an advantage in "
+"a variety of middle- or end-game positions."
+
+#. TODO - change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"
+
+#. TODO
+msgid "new zealand"
+msgstr "New Zealand"
+
+#. TODO
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+#. TODO - View a player performance report
+msgid "analysis:report"
+msgstr "Performance Report"
+
+#. TODO
+msgid "engine died popup opening message"
+msgstr ""
+"The KataGo Engine failed to start, or crashed.\n"
+"\n"
+"The error was: [color=#661111]{error_message}[/color]\n"
+"\n"
+"The error code was: [color=#661111]{code}[/color]."
+
+#. TODO - Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr ""
+"First, try downloading KataGo versions and try if changing to a different "
+"executable helps in {link} ."
+
+#. TODO - as in "click here" to go to this page,
+msgid "link_here"
+msgstr "click here"
+
+#. TODO - Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr ""
+"If you are still having difficulties, {link} for an up-to-date "
+"troubleshooting page."
+
+#. TODO - popup title
+msgid "engine recovery"
+msgstr "Help with KataGo setup"
+
+#. TODO - label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Limit analysis to mistakes only"
+
+#. TODO - statistic in performance report
+msgid "stat:accuracy"
+msgstr "Accuracy Rating"
+
+#. TODO - header in performance report
+msgid "header:keystats"
+msgstr "Key Statistics"
+
+#. TODO - header in performance report
+msgid "header:num moves"
+msgstr "# Moves"
+
+#. TODO - opening of the game filter in performance report
+msgid "Opening"
+msgstr "Opening"
+
+#. TODO - end of the game filter in performance report
+msgid "Endgame"
+msgstr "Endgame"
+
+#. TODO - middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Midgame"
+
+#. TODO - statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Mean Point Loss"
+
+#. TODO - statistic in performance report
+msgid "stat:aitop5"
+msgstr "AI Top 5 Match %"
+
+#. TODO - statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AI Best Move Match %"
+
+#. TODO - game filter in performance report
+msgid "Entire Game"
+msgstr "Entire Game"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"
+
+#. TODO - on move tree editing, deletes all other branches splitting off from
+#. the
+#. path UP TO this node
+msgid "Prune Branch"
+msgstr "Prune Branch"
+
+#. TODO
+msgid "aihelp:antimirror"
+msgstr "Anti Mirror-go Mode of KataGo."
+
+#. TODO - distance of wall to existing stones
+msgid "tsumego:walldistance"
+msgstr "Distance of wall"
+
+#. TODO - tsumego: ko is good enough?
+msgid "tsumego:ko"
+msgstr "Ko allowed?"
+
+#. TODO - Menu option for tsumego frame around position
+msgid "analysis:tsumegoframe"
+msgstr "Tsumego Frame"

@@ -1,0 +1,1043 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "Spieler-Setup"
+
+msgid "menu:newgame"
+msgstr "Neue Partie"
+
+msgid "menu:save"
+msgstr "Partie speichern"
+
+msgid "menu:load"
+msgstr "Partie laden"
+
+msgid "menu:settings"
+msgstr "Allgemeine Einstellungen"
+
+msgid "menu:clocksettings"
+msgstr "Bedenkzeit"
+
+msgid "menu:teachsettings"
+msgstr "Analyse-Einstellungen"
+
+msgid "menu:aisettings"
+msgstr "AI-Einstellungen"
+
+msgid "menu:lang"
+msgstr "Spracheinstellungen"
+
+msgid "menu:support"
+msgstr "Unterstützung"
+
+msgid "menu:manual"
+msgstr "Handbuch"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "Spieler"
+
+msgid "player:human"
+msgstr "Mensch"
+
+msgid "player:ai"
+msgstr "AI"
+
+msgid "aistrategy"
+msgstr "AI-Strategie"
+
+msgid "gametype"
+msgstr "Partieart"
+
+msgid "game:normal"
+msgstr "Normale Partie"
+
+msgid "game:teach"
+msgstr "Übungspartie"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"Nächste\n"
+"Züge"
+
+msgid "analysis:dots"
+msgstr ""
+"Zeige\n"
+"Dots"
+
+msgid "analysis:topmoves"
+msgstr ""
+"Beste\n"
+"Züge"
+
+msgid "analysis:policy"
+msgstr ""
+"Policy\n"
+"Züge"
+
+msgid "analysis:territory"
+msgstr ""
+"Erwartetes\n"
+"Gebiet"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "Tiefere Analyse"
+
+msgid "analysis:equalize"
+msgstr "Ausgeglichene Beachtung möglicher Züge"
+
+msgid "analysis:sweep"
+msgstr "Schnelle Analyse aller Züge"
+
+msgid "analysis:aimove"
+msgstr "AI-Zug erzwingen"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "Passen"
+
+msgid "ai-ponder"
+msgstr ""
+"Zeigt den Enginestatus an von grün (Leerlauf) bis orange (Zugberechnung). "
+"Ist rot, wenn die Engine abgestürzt ist oder nicht starten konnte."
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "Undo"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "Ergebnis"
+
+msgid "tab:winrate"
+msgstr "Gewinnrate"
+
+msgid "tab:points"
+msgstr "Punktverlust"
+
+msgid "tab:info"
+msgstr "Info"
+
+msgid "tab:notes"
+msgstr "Anmerkungen"
+
+msgid "closedlabel:scoregraph"
+msgstr "Punkte-Graph"
+
+#. on the graph
+msgid "Jigo"
+msgstr "Jigo"
+
+msgid "short color B"
+msgstr "S"
+
+msgid "short color W"
+msgstr "W"
+
+msgid "closedlabel:movestats"
+msgstr "Zug-Statistik"
+
+msgid "closedlabel:info&notes"
+msgstr "Zug-Info & Anmerkungen"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "Passen"
+
+msgid "board-game-end"
+msgstr ""
+"Partie-\n"
+"Ende"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "Spielen"
+
+msgid "btn:Analysis"
+msgstr "Analyse"
+
+msgid "btn:Analyze"
+msgstr "Analyseoptionen"
+
+msgid "stats:winrate"
+msgstr "Gewinnrate"
+
+msgid "stats:score"
+msgstr "Ergebnis"
+
+msgid "stats:pointslost"
+msgstr "Punkte verloren"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "Punkte gewonnen"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr ""
+"Züge, die mit 'X' markiert sind, sind die besten Züge für KataGo; die mit "
+"einem Quadrat sind Züge, die weniger als 0.5 Punkte verlieren."
+
+msgid "Info:score"
+msgstr "Ergebnis: {score}"
+
+msgid "Info:winrate"
+msgstr "Gewinnrate: {winrate}"
+
+msgid "Info:point loss"
+msgstr "Geschätzter Punktverlust: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "Zug {number}"
+
+msgid "Info:top move"
+msgstr "Bestvorhergesagter Zug war {top_move} ({score})."
+
+msgid "Info:best move"
+msgstr "Zug war der bestvorhergesagte Zug"
+
+msgid "Info:PV"
+msgstr "PV: {pv}"
+
+msgid "Info:policy rank"
+msgstr "Zug war #{rank} gemäß Policy ({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "Bester Policy-Zug war {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr "Zug wurde automatisch im Lehrmodus zurückgenommen."
+
+msgid "Info:undo predicted PV"
+msgstr "Fortsetzung vorhersagen: {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "AI denkt nach: {thoughts}"
+
+msgid "No analysis available"
+msgstr "Keine Analyse vorhanden"
+
+msgid "Analyzing move..."
+msgstr "Zug wird analysiert..."
+
+msgid "SGF Notes Hint"
+msgstr "Deine SGF-Anmerkungen für diese Position."
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "SGF-Datei für Analyse laden"
+
+msgid "load sgf fast analysis"
+msgstr "Schnelle Analyse verwenden"
+
+msgid "load sgf rewind"
+msgstr "Am Anfang beginnen"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "Timereinstellungen anpassen"
+
+msgid "byoyomi length"
+msgstr "Zeit pro Byo-yomi-Periode"
+
+msgid "byoyomi periods"
+msgstr "Anzahl Perioden"
+
+msgid "count down sound"
+msgstr "Sound an"
+
+#. submit button
+msgid "update timer"
+msgstr "Timer aktualisieren"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "Neues Spiel erstellen"
+
+msgid "board size"
+msgstr "Brettgröße"
+
+msgid "handicap"
+msgstr "Vorgabe"
+
+msgid "komi"
+msgstr "Komi"
+
+msgid "ruleset"
+msgstr "Regeln"
+
+#. ruleset names
+msgid "japanese"
+msgstr "Japanisch"
+
+msgid "chinese"
+msgstr "Chinesisch"
+
+msgid "korean"
+msgstr "Koreanisch"
+
+msgid "aga"
+msgstr "AGA"
+
+msgid "stone_scoring"
+msgstr "Alte chinesische"
+
+msgid "clear cache"
+msgstr "Cache leeren"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"Vermeidet, identische\n"
+"Partien zu spielen"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "Benutze x:y (z.B. 19:9) für nichtquadratische Grössen"
+
+#. submit new game
+msgid "newgame"
+msgstr "Neues Spiel starten"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "Übungsspieleinstellungen bearbeiten"
+
+msgid "point loss threshold"
+msgstr "Punktverlust größer als"
+
+msgid "num undos"
+msgstr "Anzahl der Undos"
+
+msgid "dot color"
+msgstr "Farbe"
+
+msgid "show dots"
+msgstr "Dots zeigen"
+
+msgid "save dots"
+msgstr "In SGF speichern"
+
+msgid "show last n dots"
+msgstr "Dots für die letzten <n> Züge zeigen"
+
+msgid "show ai dots"
+msgstr "Dots/SGF-Kommentare für AI Spieler zeigen"
+
+#. submit button
+msgid "update teacher"
+msgstr "Feedbackeinstellungen aktualisieren"
+
+# main config settings
+msgid "restarting engine"
+msgstr "Engine nach Änderungen der Einstellungen neustarten."
+
+# title
+msgid "general settings title"
+msgstr "Allgemeine und Engine-Einstellungen"
+
+msgid "file not found"
+msgstr "Pfad existiert nicht"
+
+msgid "general settings"
+msgstr "Allgemeine Einstellungen"
+
+msgid "engine settings"
+msgstr "Engine-Einstellungen"
+
+msgid "katago settings"
+msgstr "KataGo-Einstellungen"
+
+msgid "config file path"
+msgstr "Alle Optionen sind gespeichert in:"
+
+msgid "engine:katago"
+msgstr "Pfad zur KataGo-Datei"
+
+msgid "engine:katago:hint"
+msgstr "Leer = beigefügte Datei verwenden"
+
+msgid "engine:model"
+msgstr "Pfad zur KataGo-Model-Datei"
+
+msgid "engine:config"
+msgstr "Pfad zur KataGo-Config-Datei"
+
+msgid "engine:max_visits"
+msgstr "Maximale Anzahl der Visits in Analyse"
+
+msgid "engine:fast_visits"
+msgstr "Maximale Anzahl der Visits in schneller Analyse"
+
+msgid "engine:max_time"
+msgstr "Maximalzeit für Analyse"
+
+msgid "engine:wide_root_noise"
+msgstr "Breites Grundrauschen (erhöht die Varianz der berücksichtigten Züge)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"Benutze 0.02-0.1 um mehr\n"
+"mögliche Züge zu sehen"
+
+msgid "engine:time:hint"
+msgstr "Zeit in Sekunden"
+
+msgid "general:anim_pv_time"
+msgstr "Zeit zwischen Zügen, wenn Sequenz animiert wird"
+
+msgid "general:debug_level"
+msgstr "Debuglevel in der Konsole"
+
+msgid "general:debug_level:hint"
+msgstr "Auf 1 setzen, wenn Fehler gemeldet werden sollen"
+
+msgid "update settings"
+msgstr "Einstellungen aktualisieren"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "Erweiterte AI-Einstellungen"
+
+msgid "Select AI"
+msgstr "AI-Strategie zum Konfigurieren auswählen"
+
+msgid "update ai settings"
+msgstr "AI-Einstellungen aktualisieren"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "SGF mit Analyse gespeichert unter {file_name}"
+
+msgid "wait-before-extra-analysis"
+msgstr ""
+"Auf Abschluss der Initialanalyse warten, bevor eine Verfeinerung erfolgt."
+
+msgid "Copied SGF to clipboard."
+msgstr "SGF in Clipboard kopiert."
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"Failed to import game from clipboard: {error}\n"
+"Clipboard contents: {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "SGF konnte nicht geladen werde: {error}"
+
+msgid "Starting Kata failed"
+msgstr ""
+"Der Start von KataGo mit Befehl '{command}' ist fehlgeschlagen mit Fehler "
+"{error}. Bitte überprüfe, dass der Wert 'katago' in 'engine' bei den "
+"Einstellungen auf die richtige KataGo-Datei zeigt."
+
+msgid "Engine died unexpectedly"
+msgstr "Engine ist unerwartet abgestürzt: {error}"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "k"
+
+msgid "strength:dan"
+msgstr "d"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"Spielstärkste KataGo-AI. Spielstärke wird von 'max visits' und 'model' in "
+"den allgemeinen Einstellungen im Bereich 'engine' und dem Engine-"
+"Konfigurationsfile bestimmt. Hier gibt es sonst keine Optionen."
+
+msgid "ai:jigo"
+msgstr "KataJigo"
+
+msgid "aihelp:jigo"
+msgstr ""
+"Versucht mit einem eingestellen Punktwert (Standard 0.5) zu gewinnen, ohne "
+"weitere Einschränkungen."
+
+msgid "ai:scoreloss"
+msgstr "Punktverlust"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"Wählt Züge, die zu grösserem Punktverlust mit niedriger Wahrscheinlichkeit "
+"führen. Spielt mit höherem Visit-Wert variabler/schlechter."
+
+msgid "ai:policy"
+msgstr "Policy"
+
+msgid "aihelp:policy"
+msgstr ""
+"Wählt den besten Zug vom Policy-Netzwerk ohne Analyse. Die Stärke ist am "
+"meisten von der 'model' Einstellung in den Engine Einstellungen abhängig. "
+"Die 'opening_moves' Einstellung bestimmt wie viele Züge der Eröffnung "
+"zufällig sind."
+
+msgid "ai:p:weighted"
+msgstr "Policy Gewichtet"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"Wählt den Zug gemäß der Policy-Wahrscheinlichkeit, beeinflusst durch "
+"'weaken_fac' wie wahrscheinlich schlechtere Züge gespielt werden. Mit einem "
+"kleinen Wert spielt wie die AI 'Policy'. 'pick_override' legt fest, wann der"
+" beste Zug gewählt wird ohne Zufall und 'lower_bound' bestimmt die untere "
+"Grenze des erlaubten Policy-Wertes."
+
+msgid "ai:p:pick"
+msgstr "Blinde Policy"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"Wählt 'pick_n + pick_frac * <number of legal moves>' gewichtete Züge "
+"zufällig und spielt den besten. Spielt wie die AI 'Policy', wenn "
+"'pick_frac=1'. Spielt besten Zug, wenn Policy-Wert höher als 'pick_override'"
+" ist, um offensichtliche Fehler zu vermeiden."
+
+msgid "ai:p:local"
+msgstr "Lokaler Stil"
+
+msgid "aihelp:p:local"
+msgstr ""
+"Wählt 'pick_n + pick_frac * <number of legal moves>' gewichtete Züge nahe "
+"dem letzten Zug und spielt den besten. Spielt besten Zug, wenn Policy-Wert "
+"höher als'pick_override' ist, um offensichtliche Fehler zu vermeiden."
+
+msgid "ai:p:tenuki"
+msgstr "Tenuki-Stil"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"Wählt 'pick_n + pick_frac * <number of legal moves>' gewichtete Züge fern "
+"vom letzten Zug und spielt den besten. Spielt besten Zug, wenn Policy-Wert "
+"höher als'pick_override' ist, um offensichtliche Fehler zu vermeiden. Eine "
+"höhere 'stddev' führt zu weiter entfernten Zügen."
+
+msgid "ai:p:influence"
+msgstr "Einflussstil"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"Wählt Züge oberhalb des Grenzwertes und spielt den Besten. Erhöhe "
+"'line_weight', um Züge nahe der Ecken mehr zu bestrafen. Stoppt die "
+"Strategie nachdem der 'endgame'-Anteil des Brettes gefüllt ist."
+
+msgid "ai:p:territory"
+msgstr "Gebietsstil"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"Wählt Züge unterhalb des Grenzwertes und spielt den besten. Erhöhe "
+"'line_weight', um Züge nahe der Mitte mehr zu bestrafen. Stoppt die "
+"Strategie nachdem der 'endgame'-Anteil des Brettes gefüllt ist."
+
+msgid "aihelp:p:rank"
+msgstr ""
+"Wählt eine begrenzte Anzahl zufälliger Züge und spielt den besten. Stärkere "
+"Einstellungen wählen den besten Zug aus einer grösseren Auswahl. Da es "
+"keinen 0 Kyu/Dan gibt, ist 3 Dan = -2 Kyu."
+
+msgid "ai:p:rank"
+msgstr "Kalibrierter Rang"
+
+#. this is between 'info' and 'notes' to show extra move statistics in the
+#. info box
+msgid "tab:info-details"
+msgstr "Details"
+
+msgid "Kata exe not found"
+msgstr ""
+"KataGo-Binary {exe} nicht gefunden, bitte prüfe allgemeine Einstellungen."
+
+msgid "Kata config not found"
+msgstr ""
+"KataGo-Konfigurationsdatei {config} nicht gefunden, bitte prüfe allgemeine "
+"Einstellungen."
+
+msgid "Kata exe not found in path"
+msgstr ""
+"KataGo-Binary {exe} nicht im PATH gefunden, prüfe deine Umgebungsvariablen "
+"oder benutze den vollen Pfad in den allgemeinen Einstellungen. Wenn unter "
+"MacOS, konsultiere das Handbuch, wie brew verwendet werden soll, um KataGo "
+"zu installieren."
+
+msgid "Kata model not found"
+msgstr ""
+"KataGo-Modell {model} nicht gefunden, bitte prüfe allgemeine Einstellungen."
+
+msgid "extra analysis"
+msgstr "Erweiterte Analyse wird ausgeführt mit {visits} Visits"
+
+msgid "equalizing analysis"
+msgstr "Analyse der Kandidatenzüge wird abgeglichen mit {visits} Visits"
+
+msgid "sweep analysis"
+msgstr "Analysiere gesamtes Brett mit {visits} Visits/Zug"
+
+msgid "models available"
+msgstr "{num} verfügbare Modelle gefunden"
+
+msgid "download models button"
+msgstr "Modelle herunterladen"
+
+msgid "All models downloaded"
+msgstr "Alle verfügbaren Modelle bereits heruntergeladen"
+
+msgid "tab:rank_est"
+msgstr "Rangschätzung"
+
+msgid "game re-analysis"
+msgstr "Neuanalyse des gesamten Spiels mit {visits} Visits"
+
+msgid "analysis:game"
+msgstr "Tiefere Gesamtspielanalyse"
+
+msgid "analysis:continuous"
+msgstr "Kontinuierliche Analyse ein/aus"
+
+msgid "ai:handicap"
+msgstr "Kata-Vorgabesteine"
+
+msgid "aihelp:handicap"
+msgstr ""
+"Optimiertes KataGo für höhere Vorgabe-Spiele. Die Einstellung 'pda' "
+"entspricht 'playoutDoublingAdvantage' in KataGo, aus Sicht von Schwarz. Wenn"
+" 'automatic' eingestellt ist, wird KaTrain automatischeinen geeigneten Wert "
+"finden."
+
+msgid "estimated strength"
+msgstr "Geschätzte Spielstärke"
+
+msgid "reanalyze max visits"
+msgstr "Anzahl der Visits pro Zug"
+
+msgid "Delete Node"
+msgstr "Node löschen"
+
+msgid "theme:red-green-colourblind"
+msgstr "Rot-Grün-farbenblind"
+
+msgid "theme:normal"
+msgstr "Standard-Farbschema"
+
+msgid "theme"
+msgstr "Farbschema"
+
+msgid "engine:altcommand:hint"
+msgstr ""
+"Kompletter Befehl, um die Engine zu starten. Alle anderen Modelloptionen "
+"werden ignoriert."
+
+msgid "engine:altcommand"
+msgstr "Engine-Befehl überschreiben"
+
+msgid "download katago button"
+msgstr "KataGo-Prog. herunterladen"
+
+msgid "katago binaries available"
+msgstr "{num} KataGo-Programme verfügbar"
+
+msgid "default katago option"
+msgstr "Plattform erkennen und angebotenes Programm benutzen"
+
+msgid "All binaries downloaded"
+msgstr "Alle verfügbaren Programme wurden bereits heruntergeladen"
+
+msgid "Engine missing DLL"
+msgstr ""
+"Konnte KataGo wegen fehlender DLL nicht starten. Überprüfe die Anforderungen"
+" in der KataGo-Dokumentation oder versuche, KataGo alleine zu starten, um "
+"Einzelheiten zu erfahren."
+
+msgid "teaching undo message"
+msgstr ""
+"Zug {move} zurückgenommen, da er {points_lost:.1f} Punkte verliert. Bitte "
+"versuche es erneut. Bewege den Mauszeiger über den Zug, um die erwartete "
+"Widerlegung zu sehen, oder setze ein Häkchen bei “Erwartetes Gebiet” (t), um"
+" die Bereiche des Bretts zu sehen, wo Punktverlust zu erwarten ist."
+
+#. resign the game
+msgid "resign"
+msgstr "Aufgeben"
+
+#.  - Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "Finde alternative Züge"
+
+#.  - status message
+msgid "alternative analysis"
+msgstr "Suche nach alternativen Zügen"
+
+#. ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "Mindest-Zeitnutzung im Byo-Yomi (s)"
+
+msgid "move too fast"
+msgstr "Denke mindestens {num} Sekunden nach, bevor Du setzt."
+
+msgid "main time"
+msgstr "Hauptbedenkzeit (min)"
+
+msgid "aihelp:simple"
+msgstr ""
+"Spielt Züge, die dazu zu einer Vereinfachung des Brettzustandes führen. Von "
+"Zügen, die höchstens 'max_points_lost' Punkte verlieren und mit wenigstens "
+"'min_visits' Visits, bevorzuge die Züge, die weniger Punkte verlieren und "
+"eigenes Gebiet mehr sichern."
+
+msgid "ai:simple"
+msgstr "Einfacher Stil"
+
+msgid "local analysis"
+msgstr "Suche nach lokalen Antworten"
+
+msgid "Make Main Branch"
+msgstr "Zum Hauptzweig machen"
+
+#. setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "Anzeige für den besten Zug"
+
+#. Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "Gewinnrate Änderung"
+
+#. Dropdown menu option
+msgid "top_move_visits"
+msgstr "Visits"
+
+#.  Dropdown menu option
+msgid "top_move_score"
+msgstr "Score"
+
+#. Dropdown menu option
+msgid "top_move_nothing"
+msgstr "(nichts)"
+
+#. Dropdown menu option
+msgid "top_move_winrate"
+msgstr "Gewinnrate"
+
+#. Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "Punktänderung"
+
+#. top move stats show threshold description
+msgid "show stats if"
+msgstr "Zeige Bewertung wenn mehr als ... Visits"
+
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
+#. analysis option
+msgid "cache analysis to sgf"
+msgstr "Cache-Analyse in SGF"
+
+#. Speichern als
+msgid "menu:save-as"
+msgstr "Spiel speichern als..."
+
+# sgf load button
+#. Laden
+msgid "Load File"
+msgstr "Spiel laden"
+
+# sgf save popup
+#. Save SGF (Popup)
+msgid "save sgf title"
+msgstr "SGF-Datei speichern"
+
+# sgf save button
+#. Save button
+msgid "Save File"
+msgstr "Datei speichern"
+
+#. Status message on starting insert mode
+msgid "starting insert mode"
+msgstr "Starte Einfüge-Modus; drücke 'i' zum beenden"
+
+#. Status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "Einfügen beendet, {num_copied} Züge kopiert"
+
+#. When a user tries to go to a different move/node while in insert
+#. mode
+msgid "finish inserting before navigating"
+msgstr ""
+"Navigation ist im Einfüge-Modus deaktiviert, beende erst Einfüge-Modus durch"
+" Drücken von 'i'"
+
+#. In new game options
+msgid "player names"
+msgstr "Spielernamen"
+
+#. Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "Züge einfügen"
+
+#. Status message
+msgid "analysis:region:start"
+msgstr ""
+"Ziehen, um einen Bereich zu markieren. Wähle einen einzelnen Punkt, um die "
+"Bereichsauswahl abzubrechen."
+
+#. Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "Bereich auswählen"
+
+#. on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "Aus-/Einklappen"
+
+#. Menu option
+msgid "analysis:playtoend"
+msgstr "Schnelles Ausspielen bis Spielende"
+
+#. Hint on player name input
+msgid "black player name hint"
+msgstr "Name von Schwarz"
+
+#. Hint on player name input
+msgid "white player name hint"
+msgstr "Name von Weiß"
+
+#. in self-play mode
+msgid "gui-locked"
+msgstr ""
+"Aktion {action} nicht erlaubt im verteilten Selbstspieltraining Modus. Neu "
+"starten, damit Katrain diesen Modus verlässt."
+
+#. menu item
+msgid "menu:distributed"
+msgstr "Verteiltes Selbstspieltraining"
+
+msgid "contribute:register"
+msgstr "Registrieren"
+
+msgid "contribute:start"
+msgstr "Anfangen beizutragen!"
+
+#. contribute settings popup
+msgid "contribute settings title"
+msgstr "Zu KataGo's verteiltem Training beitragen"
+
+msgid "contribute:username"
+msgstr "Benutzername"
+
+#. description for input
+msgid "contribute:maxgames"
+msgstr "Gleichzeitige Spiele"
+
+msgid "contribute:password"
+msgstr "Passwort"
+
+#. hint for max games
+msgid "contribute:maxgames:hint"
+msgstr ""
+"Am besten gleich zu eurem optimalen numSearchThreads, ungefähr 8 für "
+"mittlemäßige GPUs. setzt es leicht kleiner für kürzere Beiträge, da "
+"unbeendete Spiele nicht hochgeladen werden."
+
+#. hint for ownership
+msgid "contribute:ownership:hint"
+msgstr "Macht Training leicht langsamer, aber erlaubt Eigentum visualisierung"
+
+msgid "contribute:ownership"
+msgstr "Eigentum aktivieren"
+
+#. title
+msgid "contribute:login"
+msgstr "Anmeldung Information (katagotraining.org)"
+
+#. description
+msgid "contribute:movespeed"
+msgstr "Zuggeschwindigkeit"
+
+#. hint for move speed
+msgid "contribute:movespeed:hint"
+msgstr "Zuggeschwindigkeit in Sekunden/Zug."
+
+#. description
+msgid "contribute:savesgf"
+msgstr "SGFs speichern"
+
+#. hint for save
+msgid "contribute:savesgf:hint"
+msgstr "SGF Dateien von beendete Spiele in ./dist_sgf speichern"
+
+#. title
+msgid "contribute:viewer settings"
+msgstr "Beobachtereinstellungen"
+
+#. Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "Analysis zurücksetzen"
+
+#. Description for black target score
+msgid "setup position black score"
+msgstr "Zielergebnis für Schwarz:"
+
+#. Description for how many moves
+msgid "setup position move number"
+msgstr "Spiel generieren bis zum Zug:"
+
+#. Progress message
+msgid "setup game status message"
+msgstr "Spiel durch KI generieren: Zug {move}/{until_move} generiert."
+
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "Position aufsetzen"
+
+#. Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr ""
+"Dies generiert ein Teil eines Spieles, von dem ihr anfangen könnt, zu "
+"spielen. Zum Beispiel könnt ihr es benutzen um im Vorteil gegen stärkere KIs"
+" in verschiedene Mittel- oder Endspielsituationen zu Spielen."
+
+#. change komi etc in current game
+msgid "editgame"
+msgstr "Spiel editieren"
+
+msgid "new zealand"
+msgstr "Neuseeländisch"
+
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+#.  - View a player performance report
+msgid "analysis:report"
+msgstr "Leistungsbericht"
+
+msgid "engine died popup opening message"
+msgstr ""
+"Das KataGo Engine konnte nicht starten, oder ist abgestürzt.\n"
+"\n"
+"Der Fehler war: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Der Fehlercode war: [color=#CC2222]{code}[/color]."
+
+#.  - Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr ""
+"Wenn sie immer noch Schwierigkeiten haben, {link} für eine Hilfe-Seite auf "
+"dem neuesten Stand."
+
+#.  - Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr ""
+"Versuchen sie erstmal KataGo Versionen runterzuladen und ob eine andere "
+"ausführbare Datei in {link} hilft. "
+
+#.  - as in "click here" to go to this page,
+msgid "link_here"
+msgstr "klicken sie hier"
+
+#.  - popup title
+msgid "engine recovery"
+msgstr "Hilfe für KataGo Konfiguration"
+
+#.  - label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Analysis auf Fehler begrenzen"
+
+#.  - statistic in performance report
+msgid "stat:accuracy"
+msgstr "Genauigkeitsbewertung"
+
+#.  - header in performance report
+msgid "header:keystats"
+msgstr "Schlüsselstatistiken"
+
+#.  - header in performance report
+msgid "header:num moves"
+msgstr "# Züge"
+
+#.  - opening of the game filter in performance report
+msgid "Opening"
+msgstr "Eröffnung"
+
+#.  - end of the game filter in performance report
+msgid "Endgame"
+msgstr "Endspiel"
+
+#.  - middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Mittelspiel"
+
+#.  - statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Durchschnittlicher Punkteverlust"
+
+#.  - statistic in performance report
+msgid "stat:aitop5"
+msgstr "KI Top 5 Übereinstimmung %"
+
+#.  - statistic in performance report
+msgid "stat:aitopmove"
+msgstr "Bester KI Zug Übereinstimmung %"
+
+#.  - game filter in performance report
+msgid "Entire Game"
+msgstr "Gesamtes Spiel"
+
+#. TODO
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"
+
+#. TODO - on move tree editing, deletes all other branches splitting off from
+#. the
+#. path UP TO this node
+msgid "Prune Branch"
+msgstr "Prune Branch"
+
+#. TODO
+msgid "aihelp:antimirror"
+msgstr "Anti Mirror-go Mode of KataGo."
+
+#. TODO - distance of wall to existing stones
+msgid "tsumego:walldistance"
+msgstr "Distance of wall"
+
+#. TODO - tsumego: ko is good enough?
+msgid "tsumego:ko"
+msgstr "Ko allowed?"
+
+#. TODO - Menu option for tsumego frame around position
+msgid "analysis:tsumegoframe"
+msgstr "Tsumego Frame"
+
+#. TODO
+msgid "from move"
+msgstr "from move"
+
+#. TODO - status message
+msgid "move range analysis"
+msgstr ""
+"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+
+#. TODO
+msgid "to move"
+msgstr "to move"
+
+#. TODO - Restrict analysis to move range
+msgid "limit to moves"
+msgstr "Limit to moves"
+
+#. TODO
+msgid "contribute:passwordwarning"
+msgstr "(Stored as plain text, do not re-use this anywhere)"

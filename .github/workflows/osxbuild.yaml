@@ -1,0 +1,82 @@
+name: build_osx
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  osx_app:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        brew update
+        brew install libzip
+
+    - name: Build KataGo
+      run: |
+        rm katrain/KataGo/katago
+        rm katrain/KataGo/*.dll
+        rm katrain/KataGo/katago.exe
+        cd ..
+        git clone --branch stable https://github.com/lightvector/KataGo.git
+        pushd KataGo/cpp
+        cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
+        make
+        cp katago ../../katrain/katrain/KataGo/katago-osx
+    - name: Install platypus
+      run: |
+        curl -L --output "platypus.zip" https://github.com/sveinbjornt/Platypus/releases/download/5.3/platypus5.3.zip
+        unzip "platypus.zip"
+        gunzip Platypus.app/Contents/Resources/platypus_clt.gz
+        gunzip Platypus.app/Contents/Resources/ScriptExec.gz
+        sudo mkdir -p /usr/local/bin
+        sudo mkdir -p /usr/local/share/platypus
+        sudo cp Platypus.app/Contents/Resources/platypus_clt /usr/local/bin/platypus
+        sudo cp Platypus.app/Contents/Resources/ScriptExec /usr/local/share/platypus/ScriptExec
+        sudo cp -a Platypus.app/Contents/Resources/MainMenu.nib /usr/local/share/platypus/MainMenu.nib
+        sudo chmod -R 755 /usr/local/share/platypus
+    - name: Get Kivy dependencies
+      run: |
+        brew install ninja
+        cd ..
+        git clone https://github.com/kivy/kivy-sdk-packager.git
+        cd kivy-sdk-packager/osx
+        ./create-osx-bundle.sh -n "KaTrain" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
+    - name: Install KaTrain pip dependencies
+      run: |
+        pushd ../kivy-sdk-packager/osx/build/KaTrain.app/Contents/Resources/venv/bin
+        source activate
+        popd
+        python -m pip install poetry
+        poetry install
+    - name: Finalize KaTrain bundle
+      run: |
+        export KATRAIN_VERSION=`python -c 'from katrain.core.constants import VERSION;print(VERSION)' `
+        echo "Setting version to ${KATRAIN_VERSION}"
+        cd ../kivy-sdk-packager/osx/build
+        pushd KaTrain.app/Contents/Resources/
+        ln -s ./venv/bin/KaTrain yourapp
+        popd
+        ../fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "${KATRAIN_VERSION}" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
+        ../cleanup-app.sh KaTrain.app
+        ../relocate.sh KaTrain.app
+    - name: Create dmg
+      run: |
+        pushd ../kivy-sdk-packager/osx
+        ./create-osx-dmg.sh build/KaTrain.app KaTrain
+        popd
+        mkdir osx_app
+        cp ../kivy-sdk-packager/osx/KaTrain.dmg osx_app/
+    - name: Upload app as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: KaTrainOSX
+        path: osx_app

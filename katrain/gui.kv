@@ -1,0 +1,1189 @@
+#:kivy 1.11.0
+#:import i18n katrain.core.lang.i18n
+
+#:import PLAYER_TYPES katrain.core.constants.PLAYER_TYPES
+#:import PLAYER_HUMAN katrain.core.constants.PLAYER_HUMAN
+#:import PLAYER_AI    katrain.core.constants.PLAYER_AI
+#:import PLAYING_NORMAL katrain.core.constants.PLAYING_NORMAL
+#:import PLAYING_TEACHING katrain.core.constants.PLAYING_TEACHING
+#:import MODE_PLAY katrain.core.constants.MODE_PLAY
+#:import MODE_ANALYZE katrain.core.constants.MODE_ANALYZE
+#:import STATUS_INFO katrain.core.constants.STATUS_INFO
+
+#:import Theme katrain.gui.theme.Theme
+#:import BLACK katrain.gui.theme.BLACK
+#:import LIGHTER_GREY katrain.gui.theme.LIGHTER_GREY
+
+
+#:set CP_SPACING Theme.CP_SPACING
+#:set CP_SMALL_SPACING Theme.CP_SMALL_SPACING
+#:set CP_PADDING Theme.CP_PADDING
+
+#:set EPSILON 1e-9
+
+# for sizing help
+#<Label>:
+#    canvas.before:
+#        Color:
+#            rgba: [1,0,0,1]
+#        Line:
+#            rectangle:  (*self.pos,*self.size)
+#            width: 1
+
+
+
+# mixins
+<BackgroundMixin>:
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [root.background_radius, ]
+        Color:
+            rgba: root.outline_color
+        Line:
+            rounded_rectangle: (self.x + root.outline_width, self.y + root.outline_width, self.width - 2 * root.outline_width, self.height - 2*root.outline_width, root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
+            width: root.outline_width or 1
+
+# table cells, stats panel mainly
+
+<TableCellLabel>:
+    font_size: self.height/3
+    padding: [Theme.CP_PADDING,Theme.CP_PADDING]
+    line_height: 0.8
+    halign: 'center'
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    canvas:
+        Color:
+            rgba: root.outline_color
+        Line: # left
+            points: (root.x + root.outline_width,root.y,root.x + root.outline_width,root.y+root.size[1])
+            width: root.outline_width if 'left' in root.outlines else 1e-6
+            cap: 'square'
+        Line: # right
+            points: (root.x + root.size[0] - root.outline_width,root.y,root.x + root.size[0] - root.outline_width,root.y+root.size[1])
+            width: root.outline_width if 'right' in root.outlines else 1e-6
+            cap: 'square'
+        Line: # top
+            points: (root.x, root.y+root.size[1]-root.outline_width, root.x + root.size[0], root.y+root.size[1]-root.outline_width)
+            width: root.outline_width if 'top' in root.outlines else 1e-6
+            cap: 'square'
+        Line: # bottom
+            points:  (root.x, root.y+root.outline_width, root.x + root.size[0], root.y+root.outline_width)
+            width: root.outline_width * int('bottom' in root.outlines) + 1e-6
+            cap: 'square'
+
+<TableHeaderLabel>:
+    font_size: self.height/2.5
+
+<TableStatLabel>:
+    canvas.before:
+        Color:
+            rgba: root.bar_color
+        Rectangle:
+            pos: root.x if root.side=='right' else root.x+root.size[0]*(1 - min(1,root.value/root.scale)), root.y
+            size: root.size[0] * min(1,root.value/root.scale), root.size[1]
+
+
+# new widgets
+
+
+<SizedButton>:
+    ripple_duration_in_slow: 0.6
+    text_color: Theme.TEXT_COLOR
+    background_color: Theme.BOX_BACKGROUND_COLOR
+    label: label
+    text_size: root.size
+    Label:
+        id: label
+        padding: [root.padding_x,root.padding_y]
+        color: root.text_color
+        font_name: root.font_name
+        font_size: 0.6 * self.height / len(self.text.split('\\n')) if root._font_size is None else root._font_size
+        halign: root.halign
+        text: root.text
+
+<AutoSizedButton>:
+    width: root.label.texture_size[0]
+
+<ToggleButtonMixin>:
+    inactive_background_color: Theme.BACKGROUND_COLOR
+    active_background_color: Theme.BOX_BACKGROUND_COLOR
+    background_color: self.active_background_color if self.state=='down' else self.inactive_background_color
+    outline_color: self.active_outline_color if self.state=='down' else self.inactive_outline_color
+
+<SizedRectangleButton>:
+    outline_color: Theme.BUTTON_BORDER_COLOR
+    text_color: self.outline_color
+
+<AutoSizedRectangleButton>:
+    outline_color: Theme.BUTTON_BORDER_COLOR
+    text_color: self.outline_color
+
+<SizedRectangleToggleButton>:
+    inactive_outline_color: Theme.BUTTON_INACTIVE_COLOR
+    active_outline_color: Theme.BUTTON_BORDER_COLOR
+    text_color: self.outline_color
+
+<AutoSizedRectangleToggleButton>:
+    inactive_outline_color: Theme.BUTTON_INACTIVE_COLOR
+    active_outline_color: Theme.BUTTON_BORDER_COLOR
+    text_color: self.outline_color
+
+<SizedRoundedRectangleButton@SizedRectangleButton>:
+    background_radius: self.height/3.5
+
+<AutoSizedRoundedRectangleButton@AutoSizedRectangleButton>:
+    background_radius: self.height/3.5
+
+<BGBoxLayout>:
+    background_color: Theme.BOX_BACKGROUND_COLOR
+
+<TransparentIconButton>:
+    background_normal: ''
+    background_color: (0,0,0,0)
+    image: image
+    Image:
+        id: image
+        size: root.icon_size
+        pos: [root.pos[i] + (root.size[i] - root.icon_size[i])/2 for i in [0,1]]
+        source: root.icon
+        mipmap: True
+        color: [1,1,1,0.4] if root.disabled else root.color
+
+
+<I18NSpinnerOption@SpinnerOption>:
+    background_color: Theme.LIGHTER_BACKGROUND_COLOR
+    background_normal: ''
+    lang_change_tracking: i18n._('') # for font
+    color: Theme.INPUT_FONT_COLOR
+    canvas.after:
+        Color:
+            rgba: LIGHT_GREY
+        Line
+            points: self.x,self.y,self.x+self.width,self.y
+            width: 1
+
+<Spinner>:
+    -font_size: self.height * 0.5
+    background_color: [*[c*255/88 for c in Theme.BACKGROUND_COLOR[:3]], 1] # compensate for texture
+    option_cls: 'I18NSpinnerOption'
+
+<Button>:
+    track_lang: i18n._('')
+
+<I18NSpinner>
+    sync_height_frac: 1.0
+
+<CircleWithText>:
+    min_size: min(self.height,self.width)
+    Image:
+        id: image
+        pos: (root.pos[0] + (root.width - root.min_size)/2,root.pos[1] + (root.height - root.min_size)/2)
+        size: (root.min_size,root.min_size)
+        source: 'white_circle.png' if root.player=='W' else 'black_circle.png'
+        mipmap: True
+    Label:
+        id: lbl
+        text: root.text
+        text_size: None, root.min_size
+        bold: True
+        valign: 'center'
+        color: Theme.CIRCLE_TEXT_COLORS[root.player]
+        pos: (image.x, image.y)
+        size: image.size
+        font_size: root.min_size * 1.2 / (1 + 1 * len(self.text))
+
+# UI components
+
+<BadukPanWidget>:
+    size: self.parent.height, self.parent.height
+    katrain: app.gui
+
+
+<NavIconButton@TransparentIconButton>:
+    size_hint: 0.06, 0.4
+    icon_size: [min(self.size[0],self.height),min(self.size[0],self.height)]
+    pos_hint: {'center_y': 0.5}
+
+<BadukPanControls>:
+    katrain: app.gui
+    circles: [black_circle,white_circle]
+    mid_circles_container: mid_circles_container
+    pass_btn: pass_btn
+    adaptive_height: True
+    AutoSizedRoundedRectangleButton:
+        id: pass_btn
+        text: i18n._('pass-button-text')
+        size_hint: None, 0.5
+        pos_hint: {'center_x': 0.15,'center_y':0.5}
+        on_left_release: root.katrain("play",None)
+    BoxLayout:
+        size_hint: None, 1
+        width: 8 * self.height
+        pos_hint: {'center_x': 0.5,'center_y':0.5}
+        Label:
+            size_hint: 0.075, 0.5
+        NavIconButton:
+            icon: 'Previous-Mistake.png'
+            color: Theme.MISTAKE_BUTTON_COLOR
+            on_press: root.katrain('find-mistake','undo')
+        NavIconButton:
+            icon: 'Previous-End.png'
+            on_press: root.katrain('undo',9999)
+        NavIconButton:
+            icon: 'Previous-5.png'
+            on_press: root.katrain('undo',10)
+        NavIconButton:
+            icon: 'Previous.png'
+            on_press: root.katrain('undo')
+        MDFloatLayout:
+            size_hint: 0.05, 1
+            id: mid_circles_container
+            CircleWithText:
+                size_hint: 5/8, 1
+                pos_hint: {'center_x': 0.5-3/16}
+                id: black_circle
+                player: 'B'
+                text: ''
+            CircleWithText:
+                size_hint: 5/8, 1
+                pos_hint: {'center_x': 0.5+3/16}
+                id: white_circle
+                player: 'W'
+                text: ''
+        NavIconButton:
+            icon: 'Next.png'
+            on_press: root.katrain('redo')
+        NavIconButton:
+            icon: 'Next-5.png'
+            on_press: root.katrain('redo',10)
+        NavIconButton:
+            icon: 'Next-End.png'
+            on_press: root.katrain('redo',9999)
+        NavIconButton:
+            icon: 'Next-Mistake.png'
+            color: Theme.MISTAKE_BUTTON_COLOR
+            on_press: root.katrain('find-mistake','redo')
+        NavIconButton:
+            icon: 'Rotate.png'
+            on_press: root.katrain('rotate')
+    ClickableLabel:
+        pos_hint: {'center_x': 0.85,'center_y':0.5}
+        size_hint: None, 1
+        width: self.height
+        canvas.before:
+            Color:
+                rgba: Theme.ENGINE_PONDERING_COLOR
+            Ellipse:
+                pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
+                size: self.width/3, self.width/3
+            Color:
+                rgba: root.engine_status_col
+            Ellipse:
+                angle_start: 0 if root.engine_status_pondering==-1 else root.engine_status_pondering % 360
+                angle_end: 360 if root.engine_status_pondering==-1 else (root.engine_status_pondering  % 360 + 180)
+                pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
+                size: self.width/3, self.width/3
+            Color:
+                rgba: BLACK
+            Line:
+                circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.width/6
+                width: 1
+        text: str(root.queries_remaining) if root.queries_remaining >= 3 else ''
+        color: BLACK
+        font_size: 0.5 * self.width / max(2,len(self.text))
+        on_press: app.gui.controls.set_status(i18n._('ai-ponder'),STATUS_INFO)
+
+
+<HamburgerButton@TransparentIconButton>:
+    icon: 'hamburger.png'
+    width: self.height
+    icon_size: [self.height * 0.5, self.height * 0.5]
+
+# ---------- components of right pane -------
+
+<PlayerInfo>:
+    captures: 0
+    player: 'B'
+    player_type: 'player:human'
+    player_subtype: 'game:normal'
+    background_color: Theme.BOX_BACKGROUND_COLOR if self.active else Theme.BACKGROUND_COLOR
+    outline_color: Theme.BOX_BACKGROUND_COLOR
+    outline_width: 2
+    padding: [2*CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING]
+    subtype_label: subtype_label
+    CircleWithText:
+        size_hint_x: 0.32 if root.alignment=='right' else EPSILON
+        opacity: 1 if root.alignment=='right' else 0
+        player: root.player
+        text: str(root.captures)
+    BoxLayout:
+        size_hint: 0.75, 1
+        pos_hint: {'x':0,'y':0}
+        size_hint: 1,1
+        orientation: 'vertical'
+        Label:
+            size_hint: 1,0.6
+            text: i18n._(root.player_type)
+            font_size: 0.8 * self.height
+            size: self.texture_size
+            max_lines: 1
+            halign: 'center'
+            valign: 'middle'
+        Label: # todo: proper scaling/shortening label instead of this jank
+            id: subtype_label
+            text: i18n._(root.player_subtype)
+            size_hint: 1,0.4
+            font_size: self.height * 0.7 if root.player_type==PLAYER_HUMAN else self.height * 0.7 * min(1,18/len(self.text))
+            text_size: self.size if root.player_type==PLAYER_HUMAN else (None,self.height)
+            halign: 'center'
+            valign: 'middle'
+            shorten: root.player_type==PLAYER_HUMAN # overflow/cut rank off AI names
+            max_lines: 1
+    CircleWithText:
+        size_hint_x: EPSILON if root.alignment=='right' else 0.32
+        opacity: 0 if root.alignment=='right' else 1
+        player: root.player
+        text: str(root.captures)
+
+<PauseButton>:
+    height: self.width
+    size_hint: 1, None
+    min_size: min(self.height,self.width)
+    inactive_line_color: Theme.BUTTON_BORDER_COLOR
+    inactive_fill_color: [1,1,1,0]
+    active_line_color: Theme.PAUSE_ACTIVE_COLOR
+    active_fill_color: [1,1,1,0]
+    line_width: max(1.1,self.min_size/20)
+    line_color: root.active_line_color if self.active else root.inactive_line_color
+    fill_color: root.active_fill_color if self.active else root.inactive_fill_color
+
+    canvas:
+        Color:
+            rgba: root.fill_color
+        Ellipse:
+            pos: root.x + root.width/2 - root.min_size/2, root.y  + root.height/2 - root.min_size/2
+            size: root.min_size,root.min_size
+        Color:
+            rgba: root.inactive_line_color
+        Line:
+            circle: root.x + root.width/2, root.y + root.height/2, root.min_size/2 - root.line_width/2
+            width: root.line_width
+        Color:
+            rgba: root.line_color
+        Line:
+            points: root.x + root.width/2 - root.min_size/8, root.y + root.height/2 - root.min_size/6, root.x + root.width/2 - root.min_size/8, root.y + root.height/2 + root.min_size/6
+            width: root.line_width
+            cap: 'square'
+        Line:
+            points: root.x + root.width/2 + root.min_size/8, root.y + root.height/2 - root.min_size/6, root.x + root.width/2 + root.min_size/8, root.y + root.height/2 + root.min_size/6
+            width: root.line_width
+            cap: 'square'
+
+
+<TimerLabel@Label>
+    timeout: False
+    color: Theme.TIMER_TEXT_TIMEOUT_COLOR if self.timeout else Theme.TIMER_TEXT_COLOR
+    markup: True
+    max_lines: 1
+    font_name: 'digital-7 (mono).ttf'
+
+<Timer>:
+    spacing: CP_SPACING
+    padding: CP_PADDING * 4, CP_PADDING * 2
+    paused: True
+    timeout: root.state[1] is not None and root.state[1] <= 0
+    MDBoxLayout:
+        size_hint: 0.7,1
+        MDFloatLayout:
+            size_hint: 0.4,1
+            TimerLabel:
+                color: Theme.BACKGROUND_COLOR
+                text: '{}:88'.format('188' if root.state[0] >= 6000 else '88')
+                font_size: 0.85*self.height
+                pos_hint: {'right':1,'center_y':0.5}
+                halign: 'right'
+                valign: 'middle'
+            TimerLabel:
+                id: timer
+                timeout: root.timeout
+                text: "{:2d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
+                font_size: 0.85*self.height
+                pos_hint: {'right':1,'center_y':0.5}
+                halign: 'right'
+                valign: 'middle'
+        TimerLabel:
+            size_hint: 0.05,1
+            text: "x" if  root.state[1] is not None else ""
+            font_size: self.height * 0.3
+            text_size: self.width, self.height * 0.95
+            halign: 'right'
+            valign: 'top'
+            timeout: root.timeout
+        TimerLabel:
+            size_hint: 0.075,1
+            font_size: self.height * 0.35
+            text_size: self.size
+            halign: 'left'
+            valign: 'top'
+            id: periods
+            text: str(root.state[1]) if root.state[1] is not None else ""
+            max_lines: 1
+            timeout: root.timeout
+    MDBoxLayout:
+        size_hint: 0.2,1
+        PauseButton:
+            pos_hint: {'center_y':0.5}
+            id: pause
+            active: root.paused
+            on_left_press: root.paused = not root.paused
+
+
+
+
+<GraphMarkerLabel@Label>:
+    valign: 'bottom'
+    halign: 'left'
+    text: '+0'
+    size: self.texture_size
+
+
+<StatsLabel>:
+    orientation: 'horizontal'
+    size_hint_y: EPSILON if root.hidden else 1
+    opacity: 0 if root.hidden else 1
+    Label:
+        size_hint: 0.6,1
+        id: desc
+        font_size: self.height * 0.7
+        font_name: root.font_name
+        text_size: self.size
+        valign: 'middle'
+        halign: 'center'
+        text: root.label
+        max_lines: 1
+    Label:
+        size_hint: 0.4,1
+        color: root.color
+        font_size: desc.font_size
+        font_name: root.font_name
+        text_size: self.size
+        valign: 'middle'
+        halign: 'center'
+        bold: True
+        text: root.text
+        max_lines: 1
+
+<StatsBox>
+    orientation: 'vertical'
+    background_color: Theme.BOX_BACKGROUND_COLOR
+    labels: {'score':score_label,'winrate':winrate_label,'points':pointloss_label}
+    StatsLabel:
+        id: winrate_label
+        label: i18n._('stats:winrate')
+        text: root.winrate
+        color: Theme.WINRATE_COLOR
+    StatsLabel:
+        id: score_label
+        label: i18n._('stats:score')
+        text: root.score
+        color: Theme.SCORE_COLOR
+    StatsLabel:
+        id: pointloss_label
+        label: i18n._('stats:pointslost') if root.points_lost is None or root.points_lost > 0 else i18n._('stats:pointsgained')
+        text: '{}: {:.1f}'.format(i18n._(f'short color {root.player}'), abs(root.points_lost)) if root.points_lost is not None else '...'
+        color: Theme.POINTLOSS_COLOR
+
+<ScrollableLabel>:
+    background_color: Theme.BOX_BACKGROUND_COLOR
+    do_scroll_x: False
+    scroll_type: ['bars']
+    bar_width: 5
+    bar_color: Theme.SCROLLBAR_COLOR
+    label: label
+    canvas.before:
+        Color:
+            rgba: root.outline_color
+        Line:
+            rectangle:  (*self.pos,*self.size)
+            width: 1
+    Label:
+        id: label
+        lang_change_tracking: i18n._('')
+        markup: root.markup
+        padding: 5, 5
+        font_size: sp(Theme.NOTES_FONT_SIZE)
+        line_height: root.line_height
+        color: Theme.TEXT_COLOR
+        size_hint_y: None
+        height: self.texture_size[1]
+        text_size: self.width, None
+        text: root.text
+        on_ref_press: root.dispatch('on_ref_press',args[1])
+
+
+#:set player_box_height 0.15
+#:set timer_box_height  0.3
+#:set graph_box_height  0.37
+#:set STATS_BOX_HEIGHT  0.27
+#:set INFO_BOX_HEIGHT   1
+
+
+<CollapsablePanelHeader>:
+    canvas.after:
+        Color:
+            rgba: Theme.BOX_BACKGROUND_COLOR
+        Line:
+            width: 1
+            points: (self.x,self.y+1,self.x+self.width,self.y+1)
+
+
+<ControlsPanel>:
+    katrain: app.gui
+    orientation: 'vertical'
+    players: {'B':B_player,'W':W_player}
+    timer:timer
+    graph: graph
+    stats: stats
+    notes_panel: notes_panel
+    info: info
+    note: note
+    status: status
+    timer_or_movetree: timer_or_movetree
+    move_tree: move_tree
+    padding: CP_PADDING,CP_PADDING,CP_PADDING,0
+    spacing: CP_SPACING
+    tab_option_height: max(15,root.height / 30)
+    available_height: root.height - (3 * self.tab_option_height + 2*CP_PADDING - 4*CP_SPACING) # minus tabs fixed, spacing etc
+    player_box_height: max(50, 0.08 * root.available_height)
+    timer_box_height:  max(50, 0.11 * root.available_height)
+    graph_height:  max(75, 0.17 * root.height)
+    stat_height: max(20, 0.035 * root.height)
+    BoxLayout: # -- Players
+        size_hint_y: None
+        height: root.player_box_height
+        PlayerInfo:
+            id: B_player
+            player: 'B'
+        PlayerInfo:
+            id: W_player
+            player: 'W'
+    TimerOrMoveTree:
+        id: timer_or_movetree
+        size_hint_y: None
+        height: root.timer_box_height + max(0,int(self.mode != MODE_PLAY) * (root.tab_option_height + root.graph_height - graph_panel.height))
+        BoxLayout:
+            size_hint_x: EPSILON if self.parent.mode != MODE_PLAY else 1
+            opacity: 0 if self.parent.mode != MODE_PLAY else 1
+            spacing: CP_SPACING
+            Timer:
+                id: timer
+                size_hint_x: 0.65
+            MDBoxLayout:
+                orientation: 'vertical'
+                padding: 2*CP_PADDING,CP_PADDING
+                spacing: CP_SPACING
+                size_hint_x: 0.35
+                SizedRoundedRectangleButton:
+                    text: i18n._('undo-button-text')
+                    size_hint: 1, 0.5
+                    on_left_release: root.katrain("undo","smart")
+                SizedRoundedRectangleButton:
+                    text: i18n._('resign')
+                    size_hint: 1, 0.5
+                    on_left_release: root.katrain("resign")
+        MoveTree:
+            id: move_tree
+            min_height: root.timer_box_height
+            size_hint_x: EPSILON if self.parent.mode == MODE_PLAY else 1
+            opacity: 0 if self.parent.mode == MODE_PLAY else 1
+    CollapsablePanel:
+        id: graph_panel
+        content_height: graph.height
+        options_height: root.tab_option_height
+        closed_label: 'closedlabel:scoregraph'
+        options: ['score','winrate']
+        option_colors: [Theme.SCORE_COLOR,Theme.WINRATE_COLOR]
+        option_active: [True,False,False]
+        on_option_state:
+            graph.show_graphs(args[1])
+            graph.hidden = not (args[1]['score'] or args[1]['winrate'])
+        ScoreGraph:
+            id: graph
+            opacity: 0 if self.hidden else 1
+            size_hint_y: None
+            height: root.graph_height
+    CollapsablePanel:
+        id: stats_panel
+        num_active: 3
+        content_height: self.num_active * root.stat_height + EPSILON
+        options_height: root.tab_option_height
+        closed_label: 'closedlabel:movestats'
+        options: ['score','winrate','points']
+        option_colors: [Theme.SCORE_COLOR,Theme.WINRATE_COLOR,Theme.POINTLOSS_COLOR]
+        option_active: [True,True,True]
+        on_option_state:
+            for k, v in args[1].items(): stats.labels[k].hidden = not v
+            self.num_active = sum(args[1].values(),0)
+        StatsBox:
+            id: stats
+    CollapsablePanel:
+        id: notes_panel
+        size_hint_y_open: 1
+        closed_label: 'closedlabel:info&notes'
+        options: ['info','info-details','notes']
+        option_colors: [Theme.INFO_TAB_FONT_COLOR,Theme.INFO_TAB_FONT_COLOR,Theme.NOTES_TAB_FONT_COLOR]
+        option_active: [True,False,False]
+        on_option_state:
+            info.detailed = args[1]['info-details']
+            info.size_hint_y = int(args[1]['info'] or info.detailed)+EPSILON
+            info.opacity =  int(args[1]['info'] or info.detailed)
+            notebox.size_hint_y = int(args[1]['notes'])*0.66+EPSILON
+            notebox.opacity = int(args[1]['notes'])
+            app.gui.update_state()
+        options_height: root.tab_option_height
+        BGBoxLayout:
+            background_color: Theme.BOX_BACKGROUND_COLOR
+            orientation: 'vertical'
+            ScrollableLabel:
+                id: status
+                error: False
+                size_hint: 1, None
+                height: min(self.parent.height*0.66,self.label.texture_size[1])
+                outline_color: Theme.ERROR_BORDER_COLOR if self.error else Theme.INFO_TAB_FONT_COLOR
+                background_color: Theme.LIGHTER_BACKGROUND_COLOR
+            ScrollableLabel:
+                id: info
+                detailed: False
+                line_height: 1.25
+                markup: True
+                on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
+                size_hint: 1, 1
+                height: self.parent.height - status.height - note.height - 1
+            AnchorLayout:
+                padding: 0
+                id: notebox
+                size_hint: 1,0
+                LabelledTextInput:
+                    id: note
+                    font_size: sp(Theme.NOTES_FONT_SIZE)
+                    multiline: True
+                    on_text: root.katrain.set_note(self.text)
+                    hint_text: i18n._('SGF Notes Hint')
+                    color_mode: 'custom'
+                    line_color_focus: Theme.TEXT_COLOR
+                    size_hint: 1, 1
+                    canvas.before:
+                        Color:
+                            rgba: LIGHTER_GREY
+                        Line:
+                            points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
+                            width: 1
+    Label:
+        size_hint_y: EPSILON # takes up remaining space if info is closed
+
+
+<MenuItem>
+    font_size: self.height * 0.5
+    size_hint_y: None
+    height: dp(50)
+    background_color: Theme.BOX_BACKGROUND_COLOR
+    width_margin: 1.33
+    content_width: icon.width + label.texture_size[0] * self.width_margin
+    MDFloatLayout:
+        id: icon
+        size_hint: None, 1
+        width: self.height + 16
+        Image:
+            id:image
+            source: root.icon
+            mipmap: True
+            size_hint: 0.7,0.7
+            pos_hint: {'center_y': 0.5,'center_x': 0.5}
+    AnchorLayout:
+        size_hint_x: 1
+        anchor_x: 'left'
+        Label:
+            id: label
+            text: root.text
+            size: self.texture_size
+            size_hint: None, None
+            font_size: root.font_size
+            font_name: root.font_name
+            color: Theme.MENU_ITEM_FONT_COLOR
+    Label:
+        text: root.shortcut
+        halign: 'left'
+        valign: 'middle'
+        size_hint_x: 1/3
+        font_size: root.font_size
+        font_name: root.font_name
+        color: Theme.MENU_ITEM_SHORTCUT_COLOR
+
+
+
+<AnalysisToggle>:
+    adaptive_width: True
+    spacing: CP_SPACING
+    size_hint: None, 0.7
+    pos_hint: {'center_y':0.5}
+    checkbox: checkbox
+    label: label
+    ClickableLabel:
+        id: label
+        text: root.text
+        halign: 'center'
+        font_size: root.height / 3
+        font_name: root.font_name
+        color: checkbox.disabled_color if root.disabled else (checkbox.selected_color if checkbox.active else checkbox.unselected_color)
+        size_hint_x: None
+        width: self.texture_size[0] + 4
+        on_left_press: checkbox.trigger_action()
+    MDCheckbox:
+        id: checkbox
+        disabled: root.disabled
+        size_hint: None,0.5
+        pos_hint: {'center_y': 0.5}
+        width: self.height
+        active: root.default_active
+        on_active: if app.gui: app.gui.update_state()
+
+
+<AnalysisMenuItem@MenuItem>:
+    on_close: app.gui.analysis_controls.close_dropdown()
+    background_color: Theme.LIGHTER_BACKGROUND_COLOR
+    height: dp(45)
+    canvas.before:
+        Color:
+            rgba: Theme.MENU_ITEM_FONT_COLOR
+        Line:
+            points: self.x,self.y, self.x,self.y+self.height
+        Color:
+            rgba: Theme.MENU_ITEM_SHORTCUT_COLOR
+        Line
+            points: self.x,self.y,self.x+self.width,self.y
+            width: 1
+
+
+<AnalysisDropDown>:
+    width: 50
+    katrain: app.gui
+    AnalysisMenuItem:
+        text: i18n._("analysis:extra")
+        icon: 'Extra.png'
+        shortcut: 'a'
+        on_action: root.katrain("analyze-extra", "extra")
+    AnalysisMenuItem:
+        text: i18n._("analysis:equalize")
+        icon: 'Equalize.png'
+        shortcut: 's'
+        on_action: root.katrain("analyze-extra", "equalize")
+    AnalysisMenuItem:
+        text: i18n._("analysis:sweep")
+        icon: 'Sweep.png'
+        shortcut: 'd'
+        on_action: root.katrain("analyze-extra", "sweep")
+    AnalysisMenuItem:
+        text: i18n._("analysis:alternatives")
+        icon: 'Alternative.png'
+        shortcut: 'f'
+        on_action: root.katrain("analyze-extra", "alternative")
+    AnalysisMenuItem:
+        text: i18n._("analysis:region")
+        icon: 'local.png'
+        shortcut: 'g'
+        on_action: root.katrain("select-box",)
+    AnalysisMenuItem:
+        text: i18n._("analysis:reset")
+        icon: 'reset.png'
+        shortcut: 'h'
+        on_action: root.katrain("reset-analysis",)
+    AnalysisMenuItem:
+        text: i18n._("analysis:insert")
+        icon: 'Insert-Move.png'
+        shortcut: 'i'
+        on_action: root.katrain("insert-mode")
+    AnalysisMenuItem:
+        text: i18n._("analysis:playtoend")
+        icon: 'Finish.png'
+        shortcut: 'l'
+        on_action: root.katrain("selfplay-setup","end")
+    AnalysisMenuItem:
+        text: i18n._("analysis:game")
+        icon: 'Deeper all.png'
+        shortcut: 'F2'
+        on_action: root.open_game_analysis_popup()
+    AnalysisMenuItem:
+        text: i18n._("analysis:report")
+        icon: 'analysis.png'
+        shortcut: 'F3'
+        on_action: root.open_report_popup()
+    AnalysisMenuItem:
+        text: i18n._("analysis:tsumegoframe")
+        icon: 'New-Game.png'
+        shortcut: 'F10'
+        on_action: root.open_tsumego_frame_popup()
+    AnalysisMenuItem:
+        text: i18n._("analysis:continuous")
+        icon: 'play.png'
+        shortcut: 'space'
+        on_action: root.katrain.toggle_continuous_analysis()
+    AnalysisMenuItem:
+        text: i18n._("analysis:aimove")
+        icon: 'ai.png'
+        shortcut: 'enter'
+        on_action: root.katrain("ai-move")
+
+
+<AnalysisControls>:
+    katrain: app.gui
+    orientation: 'horizontal'
+    spacing: CP_SPACING
+    show_children: show_children
+    eval: eval
+    policy: policy
+    hints: hints
+    ownership: ownership
+    analysis_button: analysis_button
+    hamburger: hamburger
+    HamburgerButton:
+        id: hamburger
+        size_hint: None, 1
+        on_press: app.gui.nav_drawer.set_state("open")
+    AnchorLayout:
+        MDBoxLayout:
+            adaptive_width: True
+            spacing: root.height/4
+            AnalysisToggle:
+                id: show_children
+                text: i18n._("analysis:nextmoves")
+                default_active: True
+            AnalysisToggle:
+                id: eval
+                text: i18n._("analysis:dots")
+                tri_state: True
+            AnalysisToggle:
+                id: hints
+                text: i18n._("analysis:topmoves")
+                disabled: policy.checkbox.active
+            AnalysisToggle:
+                id: policy
+                text: i18n._("analysis:policy")
+            AnalysisToggle:
+                id: ownership
+                text: i18n._('analysis:territory')
+                padding: 0,0,show_children.width/8,0 # space button a bit more
+            MDFloatLayout:
+                width: analysis_button.width
+                size_hint: None, 1
+                AutoSizedRectangleButton:
+                    background_color: Theme.BOX_BACKGROUND_COLOR
+                    size_hint_y: 0.5
+                    pos_hint: {'center_y': 0.5, 'x': 0}
+                    id: analysis_button
+                    on_release: root.toggle_dropdown()
+                    text: '  ' + i18n._("btn:Analyze")
+                Image:
+                    pos_hint: {'center_y': 0.5}
+                    x: self.parent.x + 2
+                    size_hint: None, 0.4
+                    width: self.height/2
+                    source: 'menu.png'
+                    mipmap: True
+
+
+
+<MainMenuItem@MenuItem>
+    on_close: app.gui.nav_drawer.set_state("close")
+    height: self.parent.item_height or 50
+
+
+<LangButton@TransparentIconButton>
+    size_hint: 1,1
+    icon_size: self.height * 0.6, self.height  * 0.6
+
+
+<MenuLabel@BackgroundMixin+Label>:
+    background_color: Theme.BACKGROUND_COLOR
+    font_size: self.height * 0.5
+    height: self.parent.item_height or 50
+    size_hint: 1,None
+
+<MenuLink@ButtonBehavior+MenuLabel>:
+    site_key: ''
+    underline: True
+    on_press: app.webbrowser(self.site_key)
+
+<PlayerSetup>:
+    orientation: 'horizontal'
+    spacing: CP_SPACING
+    padding: 0, CP_PADDING
+    player_type: player_type
+    player_subtype_human: player_subtype_human
+    player_subtype_ai: player_subtype_ai
+    MDBoxLayout:
+        size_hint: 0.25, 1
+        ClickableCircle:
+            size_hint: 0.8, 0.8
+            pos_hint: {'center_x':0.5,'center_y':0.5}
+            text: root.player[0]
+            player: root.player
+            on_left_press: root.parent.swap_players()
+    MDBoxLayout:
+        size_hint: 0.5, 1
+        orientation: 'vertical'
+        spacing: CP_SPACING
+        Label:
+            text: i18n._('player:type')
+            font_size: self.height * 0.5            
+        I18NSpinner:
+            id: player_type
+            value_refs: PLAYER_TYPES
+            on_select: root.setup_options(*args)
+    MDBoxLayout:
+        size_hint: 0.5, 1
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: CP_SPACING
+            size_hint_x: 1 if root.mode != PLAYER_AI else EPSILON
+            opacity:1 if root.mode != PLAYER_AI else 0
+            Label:
+                text:  i18n._("gametype")
+                font_size: self.height * 0.5
+            BoxLayout:
+                I18NSpinner:
+                    id: player_subtype_human
+                    value_refs: []
+                    on_select: if root.mode==PLAYER_HUMAN: root.update_global_player_info()
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: CP_SPACING
+            size_hint_x: 1 if root.mode == PLAYER_AI else EPSILON
+            opacity: 1 if root.mode == PLAYER_AI else 0
+            Label:
+                text: i18n._("aistrategy")
+                font_size: self.height * 0.5
+            BoxLayout:
+                I18NSpinner:
+                    id: player_subtype_ai
+                    value_refs: []
+                    on_select: if root.mode==PLAYER_AI: root.update_global_player_info()
+
+
+
+<PlayerSetupBlock>:
+    orientation: 'vertical'
+    size_hint_y: None
+    spacing: 3*CP_SPACING
+    padding: CP_PADDING
+    height: (self.parent.item_height or 50) * 5
+
+
+
+
+<HamburgerMenuContents@MDBoxLayout+BackgroundMixin>:
+    katrain: app.gui
+    player_setup: player_setup
+    background_color: Theme.BOX_BACKGROUND_COLOR
+    orientation: 'vertical'
+    item_height: self.height/20
+    MenuLabel:
+        text: i18n._('menu:playersetup')
+    PlayerSetupBlock:
+        id: player_setup
+        update_global: True
+    MenuLabel:
+        size_hint: 1,1
+    MenuLabel:
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, None
+        adaptive_height: True
+        item_height: root.item_height
+        MainMenuItem:
+            text: i18n._('menu:newgame')
+            icon: 'New-Game.png'
+            shortcut: 'Ctrl-N'
+            on_action: root.katrain("new-game-popup")
+        MainMenuItem:
+            text: i18n._('menu:save')
+            icon: 'Save-Game.png'
+            shortcut: 'Ctrl-S'
+            on_action: root.katrain("save-game")
+        MainMenuItem:
+            text: i18n._('menu:save-as')
+            icon: 'Save-Game-As.png'
+            shortcut: 'Ctrl-D'
+            on_action: root.katrain("save-game-as-popup")
+        MainMenuItem:
+            text: i18n._('menu:load')
+            icon: 'Load-Game.png'
+            shortcut: 'Ctrl-L'
+            on_action: root.katrain("analyze-sgf-popup")
+        MainMenuItem:
+            text: i18n._('menu:clocksettings')
+            icon: 'Time-Settings.png'
+            shortcut: 'F5'
+            on_action: root.katrain('timer-popup')
+        MainMenuItem:
+            text: i18n._('menu:teachsettings')
+            icon: 'Teaching-Settings.png'
+            shortcut: 'F6'
+            on_action: root.katrain('teacher-popup')
+        MainMenuItem:
+            text: i18n._('menu:aisettings')
+            icon: 'AI-Settings.png'
+            shortcut: 'F7'
+            on_action: root.katrain('ai-popup')
+        MainMenuItem:
+            text: i18n._('menu:settings')
+            icon: 'General-Settings.png'
+            shortcut: 'F8'
+            on_action: root.katrain('config-popup')
+        MainMenuItem:
+            text: i18n._('menu:distributed')
+            shortcut: 'F9'
+            icon: 'collaboration.png'
+            on_action: root.katrain('contribute-popup')
+#            on_action: root.katrain('katago-contribute')
+    MenuLabel:
+        text: i18n._('menu:lang')
+    MDBoxLayout:
+        size_hint: 1, None
+        height: 1.5 * root.item_height
+        padding: CP_PADDING, 0
+        LangButton:
+            icon: 'flags/flag-uk.png'
+            on_press: app.language = 'en'
+        LangButton:
+            icon: 'flags/flag-de.png'
+            on_press: app.language = 'de'
+        LangButton:
+            icon: 'flags/flag-fr.png'
+            on_press: app.language = 'fr'
+        LangButton:
+            icon: 'flags/flag-ua.png'
+            on_press: app.language = 'ua'
+#        LangButton:
+#            icon: 'flags/flag-es.png'
+#            on_press: app.language = 'es'
+        LangButton:
+            icon: 'flags/flag-ru.png'
+            on_press: app.language = 'ru'
+        LangButton:
+            icon: 'flags/flag-cn.png'
+            on_press: app.language = 'cn'
+        LangButton:
+            icon: 'flags/flag-tw.png'
+            on_press: app.language = 'tw'
+        LangButton:
+            icon: 'flags/flag-ko.png'
+            on_press: app.language = 'ko'
+        LangButton:
+            icon: 'flags/flag-jp.png'
+            on_press: app.language = 'jp'
+        LangButton:
+            icon: 'flags/flag-tr.png'
+            on_press: app.language = 'tr'
+    BoxLayout:
+        size_hint: 1,None
+        height: root.item_height
+        item_height: root.item_height
+        MenuLink:
+            text: i18n._('menu:manual')
+            site_key: 'homepage'
+        MenuLink:
+            text: i18n._('menu:support')
+            site_key: 'support'
+
+
+<OutlineBox@MDBoxLayout+BackgroundMixin>:
+
+
+<PlayAnalyzeButton@SizedToggleButton>:
+    inactive_background_color: Theme.BOX_BACKGROUND_COLOR
+    active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
+    ripple_color: Theme.BACKGROUND_COLOR
+    text_color: self.inactive_background_color if self.state=='down' else self.active_background_color
+    size_hint: 0.5,1
+    _font_size: self.height * 0.5
+    group: 'play_analyze'
+    allow_no_selection: False
+
+<PlayAnalyzeSelect>:
+    katrain: app.gui
+    play: play
+    analyze: analyze
+    OutlineBox:
+        size_hint: 0.7,0.7
+        pos_hint: {'center_x':0.5,'center_y':0.45}
+        PlayAnalyzeButton:
+            text: i18n._('btn:Play')
+            id: play
+            state: 'down'
+            on_state: if self.state=='down': root.select_mode(MODE_PLAY)
+        PlayAnalyzeButton:
+            text: i18n._('btn:Analysis')
+            id: analyze
+            on_state: if self.state=='down': root.select_mode(MODE_ANALYZE)
+
+
+
+<KaTrainGui>:
+    board_gui: board_gui
+    controls: controls
+    board_controls: board_controls
+    play_mode: play_mode
+    analysis_controls: analysis_controls
+    nav_drawer: nav_drawer
+    nav_drawer_contents: nav_drawer_contents
+    NavigationLayout:
+        ScreenManager:
+            Screen:
+                name: 'gui'
+                BGBoxLayout:
+                    background_color: Theme.BACKGROUND_COLOR
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        AnalysisControls:
+                            id: analysis_controls
+                            size_hint_y: None
+                            height: 1 if root.zen > 0 else max(sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT),self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO))
+                            opacity: 0 if root.zen > 0 else 1
+                        BadukPanWidget:
+                            id: board_gui
+                        BadukPanControls:
+                            id: board_controls
+                            size_hint_y: None
+                            height: 1 if root.zen > 0 else max(sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT),self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO))
+                            opacity: 0 if root.zen > 0 else 1
+                    MDBoxLayout:
+                        size_hint_x: None
+                        width: 1 if root.zen == 2 else self.height * Theme.RIGHT_PANEL_ASPECT_RATIO
+                        opacity: 0 if root.zen == 2 else 1
+                        orientation: 'vertical'
+                        PlayAnalyzeSelect:
+                            id: play_mode
+                            size_hint_y: None
+                            height: analysis_controls.height
+                        ControlsPanel:
+                            id: controls
+        MyNavigationDrawer:
+            id: nav_drawer
+            state: "close"
+            y: 0
+            size_hint_y: None
+            -height: root.height - analysis_controls.height
+            -width: self.height * 0.5
+            swipe_edge_width: 0
+            on_state: if self.state=='close': root.update_state() # ai move etc on nav drawer close
+            HamburgerMenuContents:
+                id: nav_drawer_contents

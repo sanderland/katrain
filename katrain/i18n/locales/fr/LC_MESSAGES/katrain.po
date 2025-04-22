@@ -1,0 +1,1012 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: French\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "Paramètres des joueurs"
+
+msgid "menu:newgame"
+msgstr "Lancer/Éditer une partie"
+
+msgid "menu:save"
+msgstr "Enregistrer"
+
+msgid "menu:load"
+msgstr "Charger une partie"
+
+msgid "menu:settings"
+msgstr "Paramètres généraux"
+
+msgid "menu:clocksettings"
+msgstr "Pendule"
+
+msgid "menu:teachsettings"
+msgstr "Champ d'étude"
+
+msgid "menu:aisettings"
+msgstr "Joueurs artificiels"
+
+msgid "menu:lang"
+msgstr "Langue"
+
+msgid "menu:support"
+msgstr "Contribution"
+
+msgid "menu:manual"
+msgstr "Mode d'emploi"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "Joueur"
+
+msgid "player:human"
+msgstr "Humain"
+
+msgid "player:ai"
+msgstr "Artificiel"
+
+msgid "aistrategy"
+msgstr "Style de jeu"
+
+msgid "gametype"
+msgstr "Mode"
+
+msgid "game:normal"
+msgstr "Normal"
+
+msgid "game:teach"
+msgstr "Étudiant"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"Coups\n"
+"suivants"
+
+msgid "analysis:dots"
+msgstr ""
+"Marquer\n"
+"les pierres"
+
+msgid "analysis:topmoves"
+msgstr ""
+"Coups\n"
+"recommandés"
+
+msgid "analysis:policy"
+msgstr ""
+"Carte des\n"
+"intuitions"
+
+msgid "analysis:territory"
+msgstr ""
+"Prévisions\n"
+"territoriales"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "Approfondir l'analyse"
+
+msgid "analysis:equalize"
+msgstr "Égaliser l'analyse des coups"
+
+msgid "analysis:sweep"
+msgstr "Analyser tous les possibles"
+
+msgid "analysis:game"
+msgstr "Approfondir l'analyse de partie"
+
+msgid "analysis:continuous"
+msgstr "Lancer/Arrêter l'analyse continue"
+
+msgid "analysis:aimove"
+msgstr "Jouer le coup du joueur artificiel"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze max visits"
+msgstr "Nombre de visites par coup"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "Passer"
+
+msgid "ai-ponder"
+msgstr ""
+"Le statut du moteur de jeu est indiqué par la couleur verte (en veille), "
+"orange (“en cours de tâche”) ou rouge (inopérant)"
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "Annuler"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "Score"
+
+msgid "tab:winrate"
+msgstr "Pronostic"
+
+msgid "tab:rank_est"
+msgstr "Niveau"
+
+msgid "tab:points"
+msgstr "Pertes"
+
+msgid "tab:info"
+msgstr "Info"
+
+msgid "tab:info-details"
+msgstr "Diagnostic"
+
+msgid "tab:notes"
+msgstr "Note"
+
+msgid "closedlabel:scoregraph"
+msgstr "Graphes"
+
+#. on the graph
+msgid "Jigo"
+msgstr "Jigo"
+
+msgid "short color B"
+msgstr "N"
+
+msgid "short color W"
+msgstr "B"
+
+msgid "closedlabel:movestats"
+msgstr "Évaluation"
+
+msgid "closedlabel:info&notes"
+msgstr "Commentaires"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "passer"
+
+msgid "board-game-end"
+msgstr ""
+"Fin de\n"
+"partie"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "Partie"
+
+msgid "btn:Analysis"
+msgstr "Analyse"
+
+msgid "btn:Analyze"
+msgstr "Analyser"
+
+msgid "stats:winrate"
+msgstr "Pronostic "
+
+msgid "stats:score"
+msgstr "Score"
+
+msgid "stats:pointslost"
+msgstr "Perte"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "Gain"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr ""
+"Les coup préférés de KataGo sont marqué d'un X. En comparaison, ceux perdant"
+" moins de 0.5 points sont marqués d'un carré"
+
+msgid "Info:score"
+msgstr "Score : {score}"
+
+msgid "Info:winrate"
+msgstr "Pronostic : {winrate}"
+
+msgid "Info:point loss"
+msgstr "Points perdus: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "Coup {number}"
+
+msgid "Info:top move"
+msgstr "Le coup attendu était {top_move} ({score})."
+
+msgid "Info:best move"
+msgstr "Ce coup était le plus recommandé."
+
+msgid "Info:PV"
+msgstr "Séquence attendue : {pv}"
+
+msgid "Info:policy rank"
+msgstr ""
+"Ce coup était classé n°{rank} d'un point de vue intuitif "
+"({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "La première intuition était {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr ""
+"Ce coup ayant été joué en mode pédagogique, il a été annulé automatiquement."
+
+msgid "Info:undo predicted PV"
+msgstr "Continuation attendue : {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "Raisonnement de he l'IA : {thoughts}"
+
+msgid "No analysis available"
+msgstr "Pas d'analyse disponible"
+
+msgid "Analyzing move..."
+msgstr "Analyse en cours..."
+
+msgid "SGF Notes Hint"
+msgstr "Rédigez une note SGF concernant la position en cours."
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "Charger le fichier SGF à analyser"
+
+msgid "load sgf fast analysis"
+msgstr "Analyse rapide"
+
+msgid "load sgf rewind"
+msgstr "Reprendre au début"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "Cadence de jeu"
+
+msgid "byoyomi length"
+msgstr "Secondes par période"
+
+msgid "byoyomi periods"
+msgstr "Nombre de périodes"
+
+msgid "count down sound"
+msgstr "Activer le son"
+
+#. submit button
+msgid "update timer"
+msgstr "Confirmer"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "Nouvelle partie"
+
+msgid "board size"
+msgstr "Dimensions"
+
+msgid "handicap"
+msgstr "Handicap"
+
+msgid "komi"
+msgstr "Komi"
+
+msgid "ruleset"
+msgstr "Règles"
+
+#. ruleset names
+msgid "japanese"
+msgstr "Japonaises"
+
+msgid "chinese"
+msgstr "Chinoises"
+
+msgid "korean"
+msgstr "Coréennes"
+
+msgid "aga"
+msgstr "AGA"
+
+msgid "stone_scoring"
+msgstr "Chinoises anciennes"
+
+msgid "clear cache"
+msgstr "Vider le cache"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"Pour éviter de rejouer\n"
+"des parties identiques"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "Noter x:y (p. ex. 19:9) pour les non-carrés"
+
+#. submit new game
+msgid "newgame"
+msgstr "Nouvelle partie"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "Champ d'étude"
+
+msgid "point loss threshold"
+msgstr "Pertes plus larges que"
+
+msgid "num undos"
+msgstr "Nouvelles tentatives"
+
+msgid "dot color"
+msgstr "Couleurs"
+
+msgid "show dots"
+msgstr "Pierres marquées"
+
+msgid "save dots"
+msgstr "Diagnostics sauvegardés"
+
+msgid "show last n dots"
+msgstr "Dernier(s) coup(s) à marquer :"
+
+msgid "show ai dots"
+msgstr "Étudier les coups du joueur artificiel"
+
+#. submit button
+msgid "update teacher"
+msgstr "Mettre à jour"
+
+# main config settings
+msgid "restarting engine"
+msgstr "Restarting Engine after Settings Change."
+
+# title
+msgid "general settings title"
+msgstr "Paramètres généraux"
+
+msgid "file not found"
+msgstr "Chemin d'accès est introuvable"
+
+msgid "general settings"
+msgstr "Divers"
+
+msgid "katago settings"
+msgstr "KataGo"
+
+msgid "engine settings"
+msgstr "Moteur de Jeu"
+
+msgid "engine:katago"
+msgstr ""
+"Chemin d'accès de \n"
+"l'exécutable"
+
+msgid "engine:katago:hint"
+msgstr "(Optionnel)"
+
+msgid "engine:model"
+msgstr ""
+"Chemin d'accès du \n"
+"réseau neuronal"
+
+msgid "engine:config"
+msgstr ""
+"Chemin d'accès du \n"
+"fichier de configuration"
+
+msgid "models available"
+msgstr "{num} modèle(s) disponible(s) pour le réseau neuronal"
+
+msgid "download models button"
+msgstr "Télécharger des modèles"
+
+msgid "All models downloaded"
+msgstr "Pas de nouveaux modèles disponibles pour le réseau neuronal"
+
+msgid "engine:max_visits"
+msgstr ""
+"Maximum de visites \n"
+"durant l'analyse"
+
+msgid "engine:fast_visits"
+msgstr ""
+"Maximum de visites \n"
+"durant l'analyse rapide"
+
+msgid "engine:max_time"
+msgstr ""
+"Durée maximum \n"
+"de l'analyse"
+
+msgid "engine:wide_root_noise"
+msgstr ""
+"Champ des possibles \n"
+"(0.0 par défaut)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"0.1 considérera PLUS de coups \n"
+"mais MOINS en profondeur"
+
+msgid "engine:time:hint"
+msgstr "En secondes"
+
+msgid "general:anim_pv_time"
+msgstr ""
+"Durée entre chaque coup \n"
+"d'une animation"
+
+msgid "general:debug_level"
+msgstr ""
+"Niveau de débogage \n"
+"affiché dans la console"
+
+msgid "general:debug_level:hint"
+msgstr ""
+"Afficher 1 pour \n"
+"signaler des erreurs"
+
+msgid "config file path"
+msgstr "TOUTES les options sont sauvegardées dans:"
+
+msgid "update settings"
+msgstr "Mettre à jour"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "Joueurs artificiels"
+
+msgid "Select AI"
+msgstr "Style de jeu :"
+
+msgid "estimated strength"
+msgstr "Niveau estimé"
+
+msgid "update ai settings"
+msgstr "Mettre à jour"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "Analyse SGF rédigée dans {file_name}"
+
+msgid "wait-before-extra-analysis"
+msgstr "Attendez la fin de l'analyse en cours avant de l'approfondir."
+
+msgid "Copied SGF to clipboard."
+msgstr "SGF enregistré dans le presse-papier."
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"Impossible de charger la partie du presse-papier : {error}\n"
+"Contenu du presse-papier : {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "Impossible de charger le SGF: {error}"
+
+msgid "Kata model not found"
+msgstr ""
+"Le réseau neuronal {model} est introuvable. \n"
+"Veuillez vérifier son chemin d'accès dans les paramètres généraux."
+
+msgid "Kata config not found"
+msgstr ""
+"Le fichier de configuration {config} est introuvable. Veuillez vérifier son "
+"chemin d'accès dans les paramètres généraux."
+
+msgid "Kata exe not found in path"
+msgstr ""
+"L'exécutable {exe} est introuvable dans votre PATH (cf. les Variables d'environnement dans vos Propriétés système). Veuillez vérifier ce dernier ou entrer dans les paramètres généraux le chemin absolu de l'exécutable. \n"
+"Sur MacOS, veuillez consulter le manuel pour savoir comment installer KataGo en utilisant BREW."
+
+msgid "Kata exe not found"
+msgstr ""
+"L'exécutable '{exe}' est introuvable. \n"
+"Veuillez vérifier son chemin d'accès dans les paramètres généraux."
+
+msgid "Starting Kata failed"
+msgstr ""
+"L'Erreur {error} a empêché de lancer KataGo avec la commande '{command}'. "
+"Vérifiez le chemin d'accès de l'exécutable 'katago' dans les paramètres "
+"généraux"
+
+msgid "Engine died unexpectedly"
+msgstr "Le moteur de jeu est tombé en panne: {error}"
+
+msgid "teaching undo message"
+msgstr ""
+"Le coup {move} a été annulé car il perdait {points_lost:.1f} points.Vous "
+"pouvez consulter les Prévisions territoriales (t) pour identifier les "
+"régions concernées, et survoler le coup pour connaître sa réfutation.Pour "
+"continuer la partie, veuillez jouer un nouveau coup."
+
+msgid "sweep analysis"
+msgstr "Analyse de tous les possibles ({visits} visites/coup)."
+
+msgid "extra analysis"
+msgstr "Analyse approfondie ({visits} visites)."
+
+msgid "equalizing analysis"
+msgstr "Égalisation de l'analyse ({visits} visites/coup considéré)."
+
+msgid "game re-analysis"
+msgstr "Analyse de partie approfondie ({visits} visites/coup)."
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "k"
+
+msgid "strength:dan"
+msgstr "d"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"Le moteur de jeu joue au mieux de ses capacités. \n"
+"Son niveau dépend de la profondeur d'analyse et du réseau neuronal \n"
+"indiqués dans les Paramètres généraux."
+
+msgid "ai:jigo"
+msgstr "KataJigo"
+
+msgid "aihelp:jigo"
+msgstr ""
+"Le moteur de jeu tentera de gagner la partie \n"
+"du nombre de points indiqué dans le champ \n"
+"target_score."
+
+msgid "ai:scoreloss"
+msgstr "Décontracté"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"Le moteur de jeu choisit des coups recommandés, mais pas forcément les meilleurs. \n"
+"Au niveau 0, il joue l'un d'eux au hasard et perd des points régulièrement. \n"
+"Au niveau 5, il évite presque toujours de jouer les coups perdant 1 point et plus, \n"
+"à moins d'augmenter le champ des possibles et/ou le nombre de visites \n"
+"(cf. Paramètres généraux)"
+
+msgid "ai:policy"
+msgstr "Intuitif"
+
+msgid "aihelp:policy"
+msgstr ""
+"Le niveau de jeu dépend du réseau neuronal (cf. Paramètres généraux), \n"
+"étant donné que sa première intuition sera joué sans calcul. \n"
+"Néanmoins, on peut varier les débuts de partie \n"
+"pour un nombre donné de coups d'ouverture \n"
+"grâce au champ opening_moves."
+
+msgid "ai:p:weighted"
+msgstr "Biaisé"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"Jouera le coup proportionnellement à ses intuitions. \n"
+"Plus lower_bound (0~1) est haut, moins les coups bizarres seront joués. \n"
+"Plus pick_override (0~1) est bas, plus le coup naturel sera forcé. \n"
+"Plus weaken_fac est bas plus le coup naturel pourra être joué."
+
+msgid "ai:p:pick"
+msgstr "Myope"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"Jouera le coup le plus intuitif parmi un échantillon sélectionné au hasard. \n"
+"Échantillon = pick_n + (pick_frac multiplié par le nombre de coups légaux). \n"
+"Pick_n ajoute un nombre de coups à l'échantillon considéré. \n"
+"Plus pick_frac (0~1) est haut, plus des coups intuitifs seront joués. \n"
+"Plus pick_override (0~1) est bas, plus la première intuition sera forcé."
+
+msgid "ai:p:local"
+msgstr "Local"
+
+msgid "aihelp:p:local"
+msgstr ""
+"Tendra à jouer près du dernier coup. \n"
+"Échantillon local = pick_n + (pick_frac multiplié par le nombre de coups légaux) \n"
+"Plus stddev (1~19) est bas, plus le coup joué sera forcément près du dernier. \n"
+"(Se reporter au style précédent pour une explication des autres valeurs)"
+
+msgid "ai:p:tenuki"
+msgstr "Tenuki"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"Tendra à jouer loin du dernier coup. \n"
+"Échantillon éloigné = pick_n + (pick_frac multiplié par le nombre de coups légaux) \n"
+"Endgame indique à partir de quand jouer normalement, entre le début (0) et la fin (1). \n"
+"(Se reporter aux styles précédents pour une explication des autres valeurs)"
+
+msgid "ai:p:influence"
+msgstr "Central"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"Tendra à jouer haut, près du centre. \n"
+"Threshold indique la ligne au-dessus de laquelle le coup tendra à être joué. \n"
+"Plus line_weight (1~10) est haut, plus il sera difficile de jouer en-dessous de treshold \n"
+"(Se reporter aux styles précédents pour une explication des autres valeurs)"
+
+msgid "ai:p:territory"
+msgstr "Territorial"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"Tendra à jouer bas, près du bord. \n"
+"Threshold indique la ligne en-dessous de laquelle le coup tendra à être joué. \n"
+"Plus line_weight (1~10) est haut, plus il sera difficile de jouer au-dessus de treshold \n"
+"(Se reporter aux styles précédents pour une explication des autres valeurs)"
+
+msgid "ai:p:rank"
+msgstr "Par niveau"
+
+msgid "aihelp:p:rank"
+msgstr ""
+"Jouera le coup le plus intuitif parmi un échantillon sélectionné au hasard. \n"
+"Plus kyu_rank (-3~18) est bas, plus l'échantillon sera large et le niveau de jeu élevé. \n"
+"Une valeur positive équivaudra à un niveau en kyu, 0 à 1er dan, -1 à 2e dan, etc. \n"
+"(Niveaux estimés sur OGS avec le réseau neuronal utilisé PAR DÉFAUT)"
+
+msgid "ai:handicap"
+msgstr "Par handicap"
+
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo recherchera/évitera les complications \n"
+"en fonction de la différence de niveau supposée des joueurs. \n"
+"Tout à gauche, un PDA de -3 (W+3) supposera que Blanc est bien plus fort que Noir. \n"
+"Tout à droite, un PDA de 3 (B+3) supposera que Noir est bien plus fort que Blanc. \n"
+"Cocher l'option 'automatic' adaptera la valeur PDA au handicap utilisé."
+
+msgid "Delete Node"
+msgstr "Supprimer le nœud"
+
+msgid "theme:red-green-colourblind"
+msgstr "Daltonisme rouge-vert"
+
+msgid "theme:normal"
+msgstr "Par défaut"
+
+msgid "theme"
+msgstr "Palette de couleurs"
+
+msgid "engine:altcommand:hint"
+msgstr ""
+"Commande personnelle outrepassant l'exécutable, la configuration et le "
+"réseau sélectionnés plus haut."
+
+msgid "engine:altcommand"
+msgstr "Redéfinir la commande"
+
+msgid "download katago button"
+msgstr "Télécharger des exécutables"
+
+msgid "katago binaries available"
+msgstr "{num} exécutable(s) trouvé(s)"
+
+msgid "default katago option"
+msgstr ""
+"Utilisation automatique de l'exécutable opencl approprié au système "
+"d'exploitation"
+
+msgid "All binaries downloaded"
+msgstr "Pas de nouveaux exécutables disponibles"
+
+msgid "Engine missing DLL"
+msgstr ""
+"Impossible de démarrer KataGo à cause d'un DLL manquant. Veuillez vérifier "
+"votre configuration système, ou bien essayez l'exécutable seul pour plus de "
+"détails."
+
+msgid "resign"
+msgstr "Abandon"
+
+msgid "analysis:alternatives"
+msgstr "Proposer des coups différents"
+
+msgid "alternative analysis"
+msgstr "Recherche de coups différents."
+
+msgid "minimal time use"
+msgstr ""
+"Temps de réflexion \n"
+"minimum (s/période)"
+
+msgid "move too fast"
+msgstr "Réfléchissez au moins {num} secondes avant de jouer."
+
+msgid "main time"
+msgstr "Temps principal (min)"
+
+msgid "aihelp:simple"
+msgstr ""
+"Par défaut, le moteur de jeu cherche à simplifier la position. \n"
+"Il joue un coup parmi ceux considérés au moins 'min_visits' fois et perdant au plus 'max_points_lost'. \n"
+"'settled_weight' le pousse à consolider ses territoires, et ceux adverses une fois multiplié par 'opponent_fac'. \n"
+"'tenuki_penalty' le pousse à jouer localement ; 'attach_penalty' à éviter les coups de contact direct. \n"
+"Quand elles sont possibles, les valeurs négatives favorisent au contraire un style de jeu compliqué. \n"
+"Élargir le Champ des possibles (cf. Paramètres généraux) peaufine le style au détriment du niveau de jeu."
+
+msgid "ai:simple"
+msgstr "Modéré"
+
+msgid "local analysis"
+msgstr "Recherche de coups locaux."
+
+msgid "Make Main Branch"
+msgstr "Mettre en branche principale"
+
+msgid "stats on top move"
+msgstr "Données des coups recommandés :"
+
+msgid "top_move_delta_winrate"
+msgstr "Variation pronostiq."
+
+msgid "top_move_visits"
+msgstr "Nombre de Visites"
+
+msgid "top_move_score"
+msgstr "Score"
+
+msgid "top_move_nothing"
+msgstr "(Néant)"
+
+msgid "top_move_winrate"
+msgstr "Pronostic"
+
+msgid "top_move_delta_score"
+msgstr "Variation du score"
+
+msgid "show stats if"
+msgstr "Nombre de visites minimum requis pour afficher les données :"
+
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
+msgid "cache analysis to sgf"
+msgstr "Sauvegarder un cache SGF de l'analyse"
+
+msgid "menu:save-as"
+msgstr "Enregistrer sous..."
+
+msgid "Load File"
+msgstr "Charger"
+
+msgid "save sgf title"
+msgstr "Sauvegarder un fichier SGF"
+
+msgid "Save File"
+msgstr "Enregistrer"
+
+msgid "starting insert mode"
+msgstr "Pour clore/valider l'insertion des coups, veuillez appuyer sur 'i'."
+
+msgid "ending insert mode"
+msgstr ""
+"L'insertion a été effectuée dans une nouvelle branche complétée par "
+"{num_copied} coup(s) d'origine."
+
+msgid "finish inserting before navigating"
+msgstr ""
+"Il est impossible de parcourir l'arbre de jeu tant que l'insertion des coups"
+" n'est pas close/validée (en appuyant sur 'i')."
+
+msgid "player names"
+msgstr "Nom des joueurs"
+
+msgid "analysis:insert"
+msgstr "Insérer des coups"
+
+msgid "analysis:region:start"
+msgstr ""
+"Cliquez et glissez pour sélectionner la région à analyser en priorité. \n"
+"Appuyez sur 'g' puis sélectionnez une intersection pour tout annuler."
+
+msgid "analysis:region"
+msgstr "Définir la zone d'intérêt"
+
+msgid "Toggle Collapse Branch"
+msgstr "Nouer/Dénouer la branche"
+
+msgid "analysis:playtoend"
+msgstr "Simuler la fin de partie"
+
+msgid "black player name hint"
+msgstr "Noir"
+
+msgid "white player name hint"
+msgstr "Blanc"
+
+msgid "gui-locked"
+msgstr ""
+"L'action {action} est interdite lors de l'entraînement distribué de KataGo. "
+"Vous pouvez quitter ce mode en redémarrant KaTrain."
+
+msgid "menu:distributed"
+msgstr "Entraîner Katago"
+
+msgid "contribute:register"
+msgstr "Créer le compte"
+
+msgid "contribute:start"
+msgstr "Je participe !"
+
+msgid "contribute settings title"
+msgstr "Participer à l'entraînement de KataGo"
+
+msgid "contribute:username"
+msgstr "Identifiant"
+
+msgid "contribute:maxgames"
+msgstr "Parties simultanées"
+
+msgid "contribute:password"
+msgstr "Mot de passe"
+
+msgid "contribute:maxgames:hint"
+msgstr ""
+"Idéalement égal à numSearchThread (autour de 8 pour un GPU ordinaire), mais "
+"préférer moins lors de courtes sessions, car les parties inachevées sont "
+"oubliées."
+
+msgid "contribute:ownership:hint"
+msgstr ""
+"Cette option permet de visualiser les prévisions territoriales, mais "
+"ralentit légèrement l'entrainement."
+
+msgid "contribute:ownership"
+msgstr "Prévisions territoriales"
+
+msgid "contribute:login"
+msgstr "Informations de connexion"
+
+msgid "contribute:movespeed"
+msgstr "Cadence des coups"
+
+msgid "contribute:movespeed:hint"
+msgstr "Délai d'affichage des coups en secondes."
+
+msgid "contribute:savesgf"
+msgstr "Sauvegarder les parties"
+
+msgid "contribute:savesgf:hint"
+msgstr ""
+"Sauvegarder les fichiers SGF des parties complétées dans le dossier "
+"./dist_sgf"
+
+msgid "contribute:viewer settings"
+msgstr "Visionneuse"
+
+msgid "analysis:reset"
+msgstr "Recommencer l'analyse"
+
+msgid "setup position black score"
+msgstr " Différence de points (pour Noir) :"
+
+msgid "setup position move number"
+msgstr "Nombre de coups simulés :"
+
+msgid "setup game status message"
+msgstr "Simulation de partie en cours : Coup {move}/{until_move}."
+
+msgid "setupposition"
+msgstr "Nouvelle position"
+
+msgid "setup position explanation"
+msgstr ""
+"Vous voulez gagner de l'expérience dans les milieux ou les fins de parties ?"
+" Apprendre à grappiller les points, maintenir votre avantage ou renverser la"
+" situation ? Alors jouez des positions fictives composées selon vos besoins."
+
+msgid "editgame"
+msgstr "Partie en cours"
+
+msgid "new zealand"
+msgstr "Néo-zélandaises"
+
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+msgid "analysis:report"
+msgstr "Rapport de partie"
+
+msgid "engine died popup opening message"
+msgstr ""
+"Le moteur de jeu KataGo ne fonctionne pas/plus.\n"
+"\n"
+"Rapport d'erreur : [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Code d'erreur : [color=#CC2222]{code}[/color]"
+
+msgid "go to engine help page"
+msgstr ""
+"Si le problème persiste, vous pouvez consulter une page d'aide tenue à jour "
+"en cliquant sur {link}."
+
+msgid "change engine suggestion"
+msgstr ""
+"L'exécutable et le modèle KataGo utilisés doivent être compatibles. Vous "
+"pouvez en télécharger et/ou en sélectionner d'autres dans les {link}. "
+
+msgid "link_here"
+msgstr "ce lien"
+
+msgid "engine recovery"
+msgstr "Aide au dépannage de KataGo"
+
+msgid "reanalyze mistakes only"
+msgstr "Restreindre l'analyse aux seules erreurs"
+
+msgid "stat:accuracy"
+msgstr "Acuité du jeu"
+
+msgid "header:keystats"
+msgstr "Statistiques des coups"
+
+msgid "header:num moves"
+msgstr "Nombre de coups"
+
+msgid "Opening"
+msgstr "Début de Partie"
+
+msgid "Endgame"
+msgstr "Fin de Partie"
+
+msgid "Midgame"
+msgstr "Milieu de Partie"
+
+msgid "stat:meanpointloss"
+msgstr "Perte moyenne"
+
+msgid "stat:aitop5"
+msgstr "L'un des 5 coups prioritaires"
+
+msgid "stat:aitopmove"
+msgstr "Ce que jouerait KataGo"
+
+msgid "Entire Game"
+msgstr "Partie entière"
+
+msgid "ai:antimirror"
+msgstr "Anti-symétrique"
+
+msgid "Prune Branch"
+msgstr "Élaguer les autres branches"
+
+msgid "aihelp:antimirror"
+msgstr ""
+"Mode dans lequel Katago cherche à déjouer la stratégie de Go symétrique \n"
+"(en d'autres termes, quand l'adversaire imite systématiquement ses coups)."
+
+msgid "tsumego:walldistance"
+msgstr "Distance du mur :"
+
+msgid "tsumego:ko"
+msgstr "Permettre les kos"
+
+msgid "analysis:tsumegoframe"
+msgstr "Composer un problème"
+
+#. Restrict analysis to move range
+msgid "limit to moves"
+msgstr "Limiter aux coups"
+
+msgid "from move"
+msgstr "du coup"
+
+msgid "to move"
+msgstr "au coup"
+
+#. status message
+msgid "move range analysis"
+msgstr ""
+"Analyse de partie approfondie du coup {start_move} au coup {end_move} "
+"({visits} visites/coup)."
+
+#. TODO
+msgid "contribute:passwordwarning"
+msgstr "(Stored as plain text, do not re-use this anywhere)"

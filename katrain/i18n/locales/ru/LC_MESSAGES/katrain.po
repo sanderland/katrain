@@ -1,0 +1,978 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "Настройка игроков"
+
+msgid "menu:newgame"
+msgstr "Новая игра"
+
+msgid "menu:save"
+msgstr "Сохранить игру"
+
+msgid "menu:load"
+msgstr "Загрузить игру"
+
+msgid "menu:settings"
+msgstr "Настройки системы"
+
+msgid "menu:clocksettings"
+msgstr "Контроль времени"
+
+msgid "menu:teachsettings"
+msgstr "Настройки анализа"
+
+msgid "menu:aisettings"
+msgstr "Настройки ИИ"
+
+msgid "menu:lang"
+msgstr "Язык"
+
+msgid "menu:support"
+msgstr "Содействие"
+
+msgid "menu:manual"
+msgstr "Помощь"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "Игрок"
+
+msgid "player:human"
+msgstr "Человек"
+
+msgid "player:ai"
+msgstr "Компьютер"
+
+msgid "aistrategy"
+msgstr "Стратегия ИИ"
+
+msgid "gametype"
+msgstr "Тип игры"
+
+msgid "game:normal"
+msgstr "Обычная"
+
+msgid "game:teach"
+msgstr "Обучающая"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"Следующие\n"
+"ходы"
+
+msgid "analysis:dots"
+msgstr ""
+"Показывать\n"
+"точки"
+
+msgid "analysis:topmoves"
+msgstr ""
+"Лучшие\n"
+"ходы"
+
+msgid "analysis:policy"
+msgstr ""
+"Политика\n"
+"сети"
+
+msgid "analysis:territory"
+msgstr ""
+"Ожидаемая\n"
+"территория"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "Более глубокий анализ"
+
+msgid "analysis:equalize"
+msgstr "Уравнять посещения потенциальных ходов"
+
+msgid "analysis:sweep"
+msgstr "Быстрый анализ всех ходов"
+
+msgid "analysis:aimove"
+msgstr "Сделать следующий ход ИИ"
+
+#. status message
+msgid "extra analysis"
+msgstr "Углублённый анализ до {visits} посещений"
+
+#. status message
+msgid "sweep analysis"
+msgstr "Анализ всех возможных ходов на доске до {visits} посещений/ход"
+
+#. status message
+msgid "equalizing analysis"
+msgstr "Дополнительный анализ всех ходов-кандидатов до {visits} посещений"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "Пас"
+
+#. Shown when a move is undone in teaching mode.
+msgid "teaching undo message"
+msgstr ""
+"Ход {move} отменён, т.к. это потеря {points_lost:.1f} очков. Попытайтесь "
+"снова. Наведите на этот ход, чтобы увидеть опровергающее продолжение, или "
+"посмотрите на ожидаемую территорию (t), чтобы увидеть, где на доске "
+"прогнозируется потеря очков."
+
+msgid "ai-ponder"
+msgstr ""
+"Индикатор статуса ИИ, от зелёного (бездействие) к оранжевому (обработка "
+"запросов). Становится красным если движок сломался или не запустился."
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "Отмена"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "Очки"
+
+msgid "tab:winrate"
+msgstr "Доля побед"
+
+msgid "tab:points"
+msgstr "Потеря очков"
+
+msgid "tab:info"
+msgstr "Инфо"
+
+msgid "tab:info-details"
+msgstr "Подробности"
+
+msgid "tab:notes"
+msgstr "Заметки"
+
+msgid "closedlabel:scoregraph"
+msgstr "График очков"
+
+#. on the graph
+msgid "Jigo"
+msgstr "Ничья"
+
+msgid "short color B"
+msgstr "Ч"
+
+msgid "short color W"
+msgstr "Б"
+
+msgid "closedlabel:movestats"
+msgstr "Статистика ходов"
+
+msgid "closedlabel:info&notes"
+msgstr "Информация о ходах и заметки"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "пас"
+
+msgid "board-game-end"
+msgstr ""
+"конец\n"
+"игры"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "Играть"
+
+msgid "btn:Analysis"
+msgstr "Анализ"
+
+msgid "btn:Analyze"
+msgstr "Действия"
+
+msgid "stats:winrate"
+msgstr "Доля побед"
+
+msgid "stats:score"
+msgstr "Оценка очков"
+
+msgid "stats:pointslost"
+msgstr "Потерянные очки"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "Полученные очки"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr ""
+"Ходы, отмеченные 'X', соответствуют лучшему ходу согласно KataGo, а ходы, "
+"отмеченные квадратом, соответствуют потере не более 0.5 очка"
+
+msgid "Info:score"
+msgstr "Очки: {score}"
+
+msgid "Info:winrate"
+msgstr "Доля побед: {winrate}"
+
+msgid "Info:point loss"
+msgstr "Ожидаемая потеря очков: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "Ход {number}"
+
+msgid "Info:top move"
+msgstr "Лучший предсказанный ход был {top_move} ({score})."
+
+msgid "Info:best move"
+msgstr "Ход совпадает с лучшим предсказанным"
+
+msgid "Info:PV"
+msgstr "PV: {pv}"
+
+msgid "Info:policy rank"
+msgstr "Сделан ход #{rank} согласно политике сети  ({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "Лучший ход согласно политике сети был {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr "Ход был автоматически отменён в режиме обучения."
+
+msgid "Info:undo predicted PV"
+msgstr "Ожидаемое продолжение: {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "Мысли ИИ: {thoughts}"
+
+msgid "No analysis available"
+msgstr "Анализ недоступен"
+
+msgid "Analyzing move..."
+msgstr "Анализ хода..."
+
+msgid "SGF Notes Hint"
+msgstr "Ваши SGF-заметки для этой позиции тут."
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "Загрузить SGF файл для анализа"
+
+msgid "load sgf fast analysis"
+msgstr "Быстрый анализ"
+
+msgid "load sgf rewind"
+msgstr "Перемотать к началу"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "Изменить настройки времени"
+
+msgid "byoyomi length"
+msgstr "Период бёёми"
+
+msgid "byoyomi periods"
+msgstr "Количество периодов"
+
+msgid "count down sound"
+msgstr "Звук"
+
+#. submit button
+msgid "update timer"
+msgstr "Сохранить"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "Настроить новую игру"
+
+msgid "board size"
+msgstr "Размер доски"
+
+msgid "handicap"
+msgstr "Фора"
+
+msgid "komi"
+msgstr "Коми"
+
+msgid "ruleset"
+msgstr "Правила"
+
+#. ruleset names
+msgid "japanese"
+msgstr "Японские"
+
+msgid "chinese"
+msgstr "Китайские"
+
+msgid "korean"
+msgstr "Корейские"
+
+msgid "aga"
+msgstr "AGA"
+
+msgid "stone_scoring"
+msgstr "Древние китайские"
+
+msgid "clear cache"
+msgstr "Очистить кэш"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"Избегает воспроизведения\n"
+"идентичных игр"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "Используйте x:y (e.g. 19:9) для прямоугольных размеров"
+
+#. submit new game
+msgid "newgame"
+msgstr "Начать новую игру"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "Редактировать настройки анализа"
+
+msgid "point loss threshold"
+msgstr "Потеря очков более"
+
+msgid "num undos"
+msgstr "Количество отмен хода"
+
+msgid "dot color"
+msgstr "Цвет"
+
+msgid "show dots"
+msgstr "Показывать точки"
+
+msgid "save dots"
+msgstr "Сохранить в SGF"
+
+msgid "show last n dots"
+msgstr "Показать точки для <этого количества> последних ходов"
+
+msgid "show ai dots"
+msgstr "Показать точки и SGF комментарии для ИИ игроков"
+
+#. submit button
+msgid "update teacher"
+msgstr "Сохранить настройки анализа"
+
+# main config settings
+msgid "restarting engine"
+msgstr "Перезапуск движка после смены настроек."
+
+# title
+msgid "general settings title"
+msgstr "Общие настройки и настройки движка"
+
+msgid "file not found"
+msgstr "Файл не найден"
+
+msgid "general settings"
+msgstr "Основные настройки"
+
+msgid "katago settings"
+msgstr "Настройки KataGo"
+
+msgid "engine settings"
+msgstr "Настройки движка KataGo"
+
+msgid "config file path"
+msgstr "Все настройки сохранены в:"
+
+msgid "engine:katago"
+msgstr "Путь к исполняемому файлу KataGo"
+
+msgid "engine:katago:hint"
+msgstr "По умолчанию используется встроенный движок"
+
+msgid "engine:model"
+msgstr "Путь к файлу модели KataGo"
+
+msgid "engine:config"
+msgstr "Путь к файлу конфигурации KataGo"
+
+msgid "engine:max_visits"
+msgstr "Максимальное число посещений в анализе"
+
+msgid "engine:fast_visits"
+msgstr "Максимальное число посещений в быстром анализе"
+
+msgid "engine:max_time"
+msgstr "Максимальное время анализа"
+
+msgid "engine:wide_root_noise"
+msgstr "Уровень шума (увеличивает разнообразие рассматриваемых ходов)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"Используйте 0.02-0.1 для показа\n"
+"большего числа возможных ходов"
+
+msgid "engine:time:hint"
+msgstr "Время в секундах"
+
+msgid "general:anim_pv_time"
+msgstr "Задержка между ходами в анимации"
+
+msgid "general:debug_level"
+msgstr "Уровень отладочных сообщение в консоли"
+
+msgid "general:debug_level:hint"
+msgstr "Используйте 1 для печати только ошибок"
+
+msgid "update settings"
+msgstr "Сохранить настройки"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "Расширенные настройки ИИ"
+
+msgid "Select AI"
+msgstr "Выбор стратегии ИИ"
+
+msgid "update ai settings"
+msgstr "Сохранить настройки ИИ"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "SGF с анализом сохранён в {file_name}"
+
+msgid "wait-before-extra-analysis"
+msgstr "Дождитесь начального анализа перед запросом уточнений."
+
+msgid "Copied SGF to clipboard."
+msgstr "SGF скопирован в буфер обмена."
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"Ошибка импорта из буфера обмена: {error}\n"
+"Содержимое буфера: {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "Ошибка загрузки SGF: {error}"
+
+msgid "Kata exe not found"
+msgstr ""
+"Исполняемый файл KataGo {exe} не существует, проверьте путь в основных "
+"настройках."
+
+msgid "Kata exe not found in path"
+msgstr ""
+"Исполняемый файл KataGo '{exe}' не найден в PATH, проверьте переменные "
+"окружения или используйте полный путь в основных настройках. Для MacOS "
+"посмотрите сначала инструкцию по установке katago с использованием brew"
+
+msgid "Kata model not found"
+msgstr ""
+"Файл модели KataGo {model} не существует, проверьте путь в основных "
+"настройках."
+
+msgid "Kata config not found"
+msgstr ""
+"Файл конфигурации KataGo {config} не существует, проверьте путь в основных "
+"настройках."
+
+msgid "Starting Kata failed"
+msgstr "Запуск KataGo командой '{command}' завершился с ошибкой {error}."
+
+msgid "Engine died unexpectedly"
+msgstr "Движок неожиданно умер, вероятно из-за нехватки памяти: {error}"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "к"
+
+msgid "strength:dan"
+msgstr "д"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"Полная сила ИИ KataGo. Сила зависит от настроек 'max visits' и 'model' в "
+"общих настройках и файле конфигурации."
+
+msgid "ai:jigo"
+msgstr "KataJigo"
+
+msgid "aihelp:jigo"
+msgstr ""
+"Пытается выиграть на заданное число очков (по умолчанию 0.5), без иных "
+"ограничений."
+
+msgid "ai:scoreloss"
+msgstr "Потеря очков"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"Избегает ходов с высокой вероятностью большой потери очков. Склонна играть "
+"более разнообразно/слабее при высокой настройке посещений ходов."
+
+msgid "ai:policy"
+msgstr "Политика сети"
+
+msgid "aihelp:policy"
+msgstr ""
+"Играет лучший ход согласно политике сети, без просчёта вариантов. Сила в "
+"основном зависит от 'model' в настройках движка. Настройка 'opening_moves' "
+"влияет на то, сколько начальных ходов будут более случайными."
+
+msgid "ai:p:weighted"
+msgstr "Слабая политика"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"Делает ходы согласно вероятности политики сети, при этом 'weaken_fac' влияет"
+" на то, как часто более слабые ходы будут сыграны. Малые значения играют "
+"аналогично 'Политика сети' ИИ. 'pick_override' определяет когда лучший ход "
+"будет выбран без случайности, и 'lower_bound' определяет нижнюю границу "
+"допустимого значения."
+
+msgid "ai:p:pick"
+msgstr "Слепая политика"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"Выбирает 'pick_n + pick_frac * <количество допустимых ходов>' случайных "
+"ходов и играет лучший из них. При 'pick_frac=1' играет как 'Политика сети' "
+"ИИ. Играет лучший ход, если значение политики сети выше 'pick_override' для "
+"избежания очевидных ошибок."
+
+msgid "ai:p:local"
+msgstr "Локальный стиль"
+
+msgid "aihelp:p:local"
+msgstr ""
+"Выбирает 'pick_n + pick_frac * <количество допустимых ходов>' ходов в "
+"окрестностях последнего хода и играет лучший из них. Играет лучший ход, если"
+" значение политики сети выше 'pick_override' для избежания очевидных ошибок."
+
+msgid "ai:p:tenuki"
+msgstr "Стиль тэнуки"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"Выбирает 'pick_n + pick_frac * <количество допустимых ходов>' ходов вдалеке "
+"от последнего хода и играет лучший из них. Играет лучший ход, если значение "
+"политики сети выше 'pick_override' для избежания очевидных ошибок. Более "
+"высокое значение 'stddev' заставляет ИИ играть более далеко."
+
+msgid "ai:p:influence"
+msgstr "Влияние"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"Выбирает ходы с оценкой выше 'threshold' и играет лучший из них. "
+"Увеличивайте 'line_weight' для штрафования ходов, близких к краю доски. "
+"Прекращает такую стратегию после того, как 'endgame' часть доски была "
+"заполнена."
+
+msgid "ai:p:territory"
+msgstr "Территория"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"Выбирает ходы с оценкой выше 'threshold' и играет лучший из них. "
+"Увеличивайте 'line_weight' для штрафования ходов, близких к центру доски. "
+"Прекращает такую стратегию после того, как 'endgame' часть доски была "
+"заполнена."
+
+msgid "ai:p:rank"
+msgstr "Точный кю / дан"
+
+msgid "aihelp:p:rank"
+msgstr ""
+"Выбирает случайные ходы из ограниченного множества и играет лучший из них. "
+"Более сильные настройки расширяют множество для выбора. Т.к. на шкале "
+"отсутствуют 0 кю/дан, то 3 дан = -2 кю."
+
+msgid "models available"
+msgstr "{num} доступных моделей найдено"
+
+msgid "download models button"
+msgstr "Скачать модели"
+
+msgid "All models downloaded"
+msgstr "Все доступные модели уже загружены"
+
+msgid "tab:rank_est"
+msgstr "Оценка ранга"
+
+msgid "game re-analysis"
+msgstr "Повторить анализ всей игры, используя {visits} посещений"
+
+msgid "analysis:game"
+msgstr "Более глубокий анализ всей игры"
+
+msgid "analysis:continuous"
+msgstr "Непрерывный анализ"
+
+msgid "ai:handicap"
+msgstr "KataHandicap"
+
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo оптимизированный под игры с большой форой. Настройка 'pda' "
+"соответствует 'playoutDoublingAdvantage' в KataGo, с точки зрения чёрных. "
+"При установке 'automatic', KaTrain выберет значение автоматически."
+
+msgid "estimated strength"
+msgstr "Оценка силы"
+
+msgid "reanalyze max visits"
+msgstr "Количество посещений на ход"
+
+msgid "Delete Node"
+msgstr "Удалить ход"
+
+msgid "theme:red-green-colourblind"
+msgstr "Режим красно-зелёной слепоты"
+
+msgid "theme:normal"
+msgstr "Стандартная тема"
+
+msgid "theme"
+msgstr "Цветовая тема"
+
+msgid "engine:altcommand:hint"
+msgstr ""
+"Полная команда использована для запуска движка. Все остальные настройки "
+"игнорированы."
+
+msgid "engine:altcommand"
+msgstr "Переопределить команду движка"
+
+msgid "download katago button"
+msgstr "Скачать бинарные файлы"
+
+msgid "katago binaries available"
+msgstr "{num} доступных бинарных файлов найдено"
+
+msgid "default katago option"
+msgstr "Определить платформу и использовать соответствующий бинарный файл"
+
+msgid "All binaries downloaded"
+msgstr "Все доступные бинарные файлы уже загружены"
+
+msgid "Engine missing DLL"
+msgstr ""
+"Не удалось запустить KataGo из-за отсутствующих DLL. Проверьте требования "
+"или запустите бинарный файл сам по себе для получения подробностей."
+
+msgid "resign"
+msgstr "Сдаться"
+
+msgid "analysis:alternatives"
+msgstr "Поискать альтернативные ходы"
+
+msgid "alternative analysis"
+msgstr "Поиск альтернативных ходов"
+
+msgid "minimal time use"
+msgstr "Минимально потраченное время в бёёми (сек.)"
+
+msgid "move too fast"
+msgstr "Подумайте как минимум {num} секунд."
+
+msgid "main time"
+msgstr "Основное время (мин.)"
+
+msgid "aihelp:simple"
+msgstr ""
+"Делает ходы, упрощающие позицию на доске. Из ходов, теряющих не более чем "
+"'max_points_lost' очков и имеющих как минимум 'min_visits', предпочитает "
+"ходы, укрепляющие собственную территорию (коэффициент settled_weight), "
+"укрепляющие территорию оппонента (коэффициент settled_weight * "
+"opponent_fac), избегает тэнуки (более 5 пунктов, коэффициент "
+"tenuki_penalty), и избегает прилипаний (коэффициент attachment_penalty). "
+"Коэффициенты могут быть отрицательными, чтобы напротив сделать игру сложнее."
+" 'Уровень шума' (в 'Настройках системы') может быть использован для "
+"увеличения вариативности игры за счёт небольшой потери силы. "
+
+msgid "ai:simple"
+msgstr "Простой стиль"
+
+msgid "local analysis"
+msgstr "Поиск локальных ответов"
+
+msgid "Make Main Branch"
+msgstr "Сделать главной веткой"
+
+msgid "stats on top move"
+msgstr "Показывать числа поверх ходов"
+
+msgid "top_move_delta_winrate"
+msgstr "Изменение процента"
+
+msgid "top_move_visits"
+msgstr "Посещения"
+
+msgid "top_move_score"
+msgstr "Счёт"
+
+msgid "top_move_nothing"
+msgstr "-"
+
+msgid "top_move_winrate"
+msgstr "Процент побед"
+
+msgid "top_move_delta_score"
+msgstr "Изменение счёта"
+
+msgid "show stats if"
+msgstr "Числа только если посещений больше чем"
+
+#. point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Показазывать две цифры после запятой для малой потери очков"
+
+msgid "cache analysis to sgf"
+msgstr "Кэшировать анализ в SGF"
+
+msgid "menu:save-as"
+msgstr "Сохранить игру как..."
+
+# sgf load button
+msgid "Load File"
+msgstr "Загрузить файл"
+
+# sgf save popup
+msgid "save sgf title"
+msgstr "Сохранить SGF файл"
+
+# sgf save as button
+msgid "Save File"
+msgstr "Сохранить файл"
+
+msgid "starting insert mode"
+msgstr "Активен режим вставки, нажмите 'i' для завершения."
+
+msgid "ending insert mode"
+msgstr "Режим вставки завершён, скопировано {num_copied} следующих ходов."
+
+msgid "finish inserting before navigating"
+msgstr ""
+"Навигация отключена в режиме вставки, сначала завершите режим вставки нажав "
+"'i'."
+
+msgid "player names"
+msgstr "Имена игроков"
+
+msgid "analysis:insert"
+msgstr "Вставить ходы"
+
+msgid "analysis:region:start"
+msgstr "Выберите регион интереса. Выберите одну точку для сброса региона."
+
+msgid "analysis:region"
+msgstr "Выбрать регион интереса"
+
+msgid "Toggle Collapse Branch"
+msgstr "Развернуть/Свернуть"
+
+msgid "analysis:playtoend"
+msgstr "Быстро доиграть до конца"
+
+msgid "black player name hint"
+msgstr "Имя игрока чёрными"
+
+msgid "white player name hint"
+msgstr "Имя игрока белыми"
+
+msgid "gui-locked"
+msgstr ""
+"Действие {action} запрещено в режиме распределённой тренировки. "
+"Перезапустите KaTrain для выхода из этого режима."
+
+msgid "menu:distributed"
+msgstr "Распределённая тренировка"
+
+msgid "contribute:register"
+msgstr "Регистрация"
+
+msgid "contribute:start"
+msgstr "Начать помогать тренировке!"
+
+msgid "contribute settings title"
+msgstr "Помощь в распределённой тренировке KataGo"
+
+msgid "contribute:username"
+msgstr "Имя пользователя"
+
+msgid "contribute:maxgames"
+msgstr "Одновременные игры"
+
+msgid "contribute:password"
+msgstr "Пароль"
+
+msgid "contribute:maxgames:hint"
+msgstr ""
+"Оптимальное значение numSearchThreads, около 8 для GPU среднего уровня. Для "
+"коротких сессий обучения лучше установить поменьше, т.к. наполовину "
+"сыгранные игры не представляют интереса."
+
+msgid "contribute:ownership:hint"
+msgstr "Слегка замедляет тренировку, но позволяет визуализацию."
+
+msgid "contribute:ownership"
+msgstr "Включить визуализацию"
+
+msgid "contribute:login"
+msgstr "Информация для авторизации на katagotraining.org"
+
+msgid "contribute:movespeed"
+msgstr "Скорость хода"
+
+msgid "contribute:movespeed:hint"
+msgstr "Длительность хода в секундах/ход."
+
+msgid "contribute:savesgf"
+msgstr "Сохранить SGF файлы"
+
+msgid "contribute:savesgf:hint"
+msgstr "Сохраняет SGF файлы законченных игр в ./dist_sgf"
+
+msgid "contribute:viewer settings"
+msgstr "Настройки отображения"
+
+msgid "analysis:reset"
+msgstr "Перезапустить анализ"
+
+msgid "setup position black score"
+msgstr "Целевой счёт для чёрных:"
+
+msgid "setup position move number"
+msgstr "Генерировать игру до хода:"
+
+msgid "setupposition"
+msgstr "Установить позицию"
+
+msgid "setup position explanation"
+msgstr ""
+"Генерирует частичную игру. Например, вы можете использовать это для игры "
+"против сильного AI начиная с перевесом в середине или ближе к окончанию "
+"игры."
+
+msgid "setup game status message"
+msgstr ""
+"Генерация позиции с помощью игры AI с самим собой: Ход {move}/{until_move}."
+
+msgid "editgame"
+msgstr "Редактировать игры"
+
+msgid "new zealand"
+msgstr "Новозеландские"
+
+msgid "tromp-taylor"
+msgstr "Тромп-Тейлор"
+
+msgid "analysis:report"
+msgstr "Отчёт о производительности"
+
+msgid "engine died popup opening message"
+msgstr ""
+"Движок KataGo не смог запуститься или сломался\n"
+"\n"
+"Ошибка: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Код ошибки: [color=#CC2222]{code}[/color]."
+
+msgid "go to engine help page"
+msgstr ""
+"Если у вас до сих пор проблемы, вот ссылка {link} на страницу устранения "
+"неполадок."
+
+msgid "change engine suggestion"
+msgstr ""
+"Во-первых, попробуйте скачать и выбрать другую версию движка KataGo {link}"
+
+msgid "link_here"
+msgstr "Нажмите здесь"
+
+msgid "engine recovery"
+msgstr "Помощь в настройке KataGo"
+
+msgid "reanalyze mistakes only"
+msgstr "Анализировать только ошибки"
+
+msgid "stat:accuracy"
+msgstr "Рейтинг точности"
+
+msgid "header:keystats"
+msgstr "Ключевые статистики"
+
+msgid "header:num moves"
+msgstr "Количество ходов"
+
+msgid "Opening"
+msgstr "Начало игры"
+
+msgid "Endgame"
+msgstr "Окончание игры"
+
+msgid "Midgame"
+msgstr "Середина игры"
+
+msgid "stat:meanpointloss"
+msgstr "Главные потери очков"
+
+msgid "stat:aitop5"
+msgstr ""
+"% совпадения с\n"
+"топ-5 ходами ИИ"
+
+msgid "stat:aitopmove"
+msgstr ""
+"% совпадения с\n"
+"идеальными ходами ИИ"
+
+msgid "Entire Game"
+msgstr "Полная игра"
+
+msgid "ai:antimirror"
+msgstr "Противозеркальная"
+
+#. on move tree editing, deletes all other branches splitting off from
+#. the
+#. path UP TO this node
+msgid "Prune Branch"
+msgstr "Удалить ответвления"
+
+msgid "aihelp:antimirror"
+msgstr "Режим противодействия зеркальной стратегии."
+
+#. distance of wall to existing stones
+msgid "tsumego:walldistance"
+msgstr "Расстояние до стены"
+
+#. tsumego: ko is good enough?
+msgid "tsumego:ko"
+msgstr "Разрешить ко?"
+
+#. Menu option for tsumego frame around position
+msgid "analysis:tsumegoframe"
+msgstr "Рамка для цумэ-го"
+
+#. Move range analysis messages
+msgid "from move"
+msgstr "от хода"
+
+msgid "to move"
+msgstr "до хода"
+
+msgid "limit to moves"
+msgstr "Только для ходов"
+
+#. status message
+msgid "move range analysis"
+msgstr "Анализ ходов от {start_move} до {end_move} с {visits} посещениями"
+
+#. TODO
+msgid "contribute:passwordwarning"
+msgstr "(Stored as plain text, do not re-use this anywhere)"

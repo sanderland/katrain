@@ -1,0 +1,1050 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "Player Setup"
+
+msgid "menu:newgame"
+msgstr "New Game/Change Rules"
+
+msgid "menu:save"
+msgstr "Save Game"
+
+msgid "menu:save-as"
+msgstr "Save Game As..."
+
+msgid "menu:load"
+msgstr "Load Game"
+
+msgid "menu:settings"
+msgstr "General & Engine Settings"
+
+msgid "menu:clocksettings"
+msgstr "Timer Settings"
+
+msgid "menu:teachsettings"
+msgstr "Teaching/Analysis Settings"
+
+msgid "menu:aisettings"
+msgstr "AI Settings"
+
+msgid "menu:lang"
+msgstr "Language"
+
+msgid "menu:support"
+msgstr "Contribute"
+
+msgid "menu:manual"
+msgstr "Manual"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "Player"
+
+msgid "player:human"
+msgstr "Human"
+
+msgid "player:ai"
+msgstr "AI"
+
+msgid "aistrategy"
+msgstr "AI Strategy"
+
+msgid "gametype"
+msgstr "Game Type"
+
+msgid "game:normal"
+msgstr "Normal Game"
+
+msgid "game:teach"
+msgstr "Teaching Game"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"Next\n"
+"Moves"
+
+msgid "analysis:dots"
+msgstr ""
+"Show\n"
+"Dots"
+
+msgid "analysis:topmoves"
+msgstr ""
+"Top\n"
+"Moves"
+
+msgid "analysis:policy"
+msgstr ""
+"Policy\n"
+"Moves"
+
+msgid "analysis:territory"
+msgstr ""
+"Expected\n"
+"Territory"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "Deeper analysis"
+
+msgid "analysis:equalize"
+msgstr "Equalize visits of potential moves"
+
+msgid "analysis:sweep"
+msgstr "Fast analysis of all moves"
+
+#. Analyze every node in the game more deeply
+msgid "analysis:game"
+msgstr "Deeper full game analysis"
+
+#. Restrict analysis to move range
+msgid "limit to moves"
+msgstr "Limit to moves"
+
+msgid "from move"
+msgstr "from move"
+
+msgid "to move"
+msgstr "to move"
+
+#. Menu option for tsumego frame around position
+msgid "analysis:tsumegoframe"
+msgstr "Tsumego Frame"
+
+#. View a player performance report
+msgid "analysis:report"
+msgstr "Performance Report"
+
+#. game filter in performance report
+msgid "Entire Game"
+msgstr "Entire Game"
+
+#. opening of the game filter in performance report
+msgid "Opening"
+msgstr "Opening"
+
+#. middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Midgame"
+
+#. end of the game filter in performance report
+msgid "Endgame"
+msgstr "Endgame"
+
+#. header in performance report
+msgid "header:keystats"
+msgstr "Key Statistics"
+
+#. statistic in performance report
+msgid "stat:accuracy"
+msgstr "Accuracy Rating"
+
+#. statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Mean Point Loss"
+
+#. statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AI Best Move Match %"
+
+#. statistic in performance report
+msgid "stat:aitop5"
+msgstr "AI Top 5 Match %"
+
+#. header in performance report
+msgid "header:num moves"
+msgstr "# Moves"
+
+#. Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "Find alternative moves"
+
+#. Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "Reset analysis"
+
+#. Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "Set region of interest"
+
+#. Status message
+msgid "analysis:region:start"
+msgstr ""
+"Drag to select the region of interest. Select a single point to cancel the "
+"region."
+
+#. Menu option
+msgid "analysis:playtoend"
+msgstr "Fast playout to game end"
+
+#. Keep improving current position analysis when there is nothing else to do
+msgid "analysis:continuous"
+msgstr "Toggle continuous analysis"
+
+msgid "analysis:aimove"
+msgstr "Force AI Move"
+
+#. Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "Insert moves"
+
+#. status message
+msgid "extra analysis"
+msgstr "Performing additional analysis to {visits} visits"
+
+#. status message
+msgid "sweep analysis"
+msgstr "Analyzing entire board using {visits} visits/move"
+
+#. status message
+msgid "alternative analysis"
+msgstr "Searching for alternative moves"
+
+#. status message
+msgid "local analysis"
+msgstr "Searching for local responses"
+
+#. status message
+msgid "equalizing analysis"
+msgstr "Equalizing analysis of candidate moves to {visits} visits"
+
+#. status message
+msgid "game re-analysis"
+msgstr "Re-analyzing entire game using {visits} visits"
+
+#. status message
+msgid "move range analysis"
+msgstr ""
+"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "Pass"
+
+#. resign the game
+msgid "resign"
+msgstr "Resign"
+
+#. Shown when a move is undone in teaching mode.
+msgid "teaching undo message"
+msgstr ""
+"Undid move {move} as it lost {points_lost:.1f} points. Please try again. For"
+" a hint, hover over the move to see expected refutation, or check expected "
+"territory (t) to see the areas of the board where point loss is expected."
+
+msgid "ai-ponder"
+msgstr ""
+"This simply indicates the Engine status, going from green (idle) to orange "
+"(processing queries). It turns red when the engine has crashed or fails to "
+"start."
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "Undo"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "Score"
+
+msgid "tab:winrate"
+msgstr "Win Rate"
+
+#. shown on a graph tab
+msgid "tab:rank_est"
+msgstr "Rank Estimate"
+
+msgid "tab:points"
+msgstr "Point Loss"
+
+msgid "tab:info"
+msgstr "Info"
+
+msgid "tab:info-details"
+msgstr "Details"
+
+msgid "tab:notes"
+msgstr "Notes"
+
+msgid "closedlabel:scoregraph"
+msgstr "Score Graph"
+
+#. on the graph
+msgid "Jigo"
+msgstr "Jigo"
+
+msgid "short color B"
+msgstr "B"
+
+msgid "short color W"
+msgstr "W"
+
+msgid "closedlabel:movestats"
+msgstr "Move Stats"
+
+msgid "closedlabel:info&notes"
+msgstr "Move Info & Notes"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "pass"
+
+msgid "board-game-end"
+msgstr ""
+"game\n"
+"end"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "Play"
+
+msgid "btn:Analysis"
+msgstr "Analysis"
+
+msgid "btn:Analyze"
+msgstr "Analysis Options"
+
+msgid "stats:winrate"
+msgstr "Win Rate"
+
+msgid "stats:score"
+msgstr "Estimated Score"
+
+msgid "stats:pointslost"
+msgstr "Points Lost"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "Points Gained"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr ""
+"Moves marked 'X' indicate the top move according to KataGo, those with a "
+"square are moves that lose less than 0.5 points"
+
+msgid "Info:score"
+msgstr "Score: {score}"
+
+msgid "Info:winrate"
+msgstr "Win rate: {winrate}"
+
+msgid "Info:point loss"
+msgstr "Estimated point loss: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "Move {number}"
+
+msgid "Info:top move"
+msgstr "Predicted top move was {top_move} ({score})."
+
+msgid "Info:best move"
+msgstr "Move was predicted best move"
+
+msgid "Info:PV"
+msgstr "PV: {pv}"
+
+msgid "Info:policy rank"
+msgstr "Move was #{rank} according to policy  ({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "Top policy move was {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr "Move was automatically undone in teaching mode."
+
+msgid "Info:undo predicted PV"
+msgstr "Predicted follow-up: {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "AI thought process: {thoughts}"
+
+msgid "No analysis available"
+msgstr "No analysis available"
+
+msgid "Analyzing move..."
+msgstr "Analyzing move..."
+
+msgid "SGF Notes Hint"
+msgstr "Your SGF notes for this position here."
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "Load SGF File to Analyze"
+
+# sgf load button
+msgid "Load File"
+msgstr "Load File"
+
+# sgf save as button
+msgid "Save File"
+msgstr "Save File"
+
+# sgf save popup
+msgid "save sgf title"
+msgstr "Save SGF File"
+
+msgid "load sgf fast analysis"
+msgstr "Use fast analysis"
+
+msgid "load sgf rewind"
+msgstr "Rewind to start"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "Adjust Timer Settings"
+
+msgid "byoyomi length"
+msgstr "Time per byo-yomi period (s)"
+
+msgid "byoyomi periods"
+msgstr "Number of periods"
+
+msgid "count down sound"
+msgstr "Sound on"
+
+#. in minutes
+msgid "main time"
+msgstr "Main time (min.)"
+
+#. ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "Minimal time use in byo-yomi (s)"
+
+msgid "move too fast"
+msgstr "Think for at least {num} seconds before playing."
+
+#. submit button
+msgid "update timer"
+msgstr "Update Timer"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "Set up New Game / Edit Game Info and Rules"
+
+#. in new game options
+msgid "player names"
+msgstr "Player Names"
+
+#. hint on player name input
+msgid "black player name hint"
+msgstr "Black player's name"
+
+#. hint on player name input
+msgid "white player name hint"
+msgstr "White player's name"
+
+msgid "board size"
+msgstr "Board size"
+
+msgid "handicap"
+msgstr "Handicap"
+
+msgid "komi"
+msgstr "Komi"
+
+msgid "ruleset"
+msgstr "Rules"
+
+#. ruleset names
+msgid "japanese"
+msgstr "Japanese"
+
+msgid "chinese"
+msgstr "Chinese"
+
+msgid "korean"
+msgstr "Korean"
+
+msgid "aga"
+msgstr "AGA"
+
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+msgid "new zealand"
+msgstr "New Zealand"
+
+msgid "stone_scoring"
+msgstr "Ancient Chinese"
+
+msgid "clear cache"
+msgstr "Clear cache"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"Avoids replaying\n"
+"identical games"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "Use x:y (e.g. 19:9) for non-square size"
+
+#. submit new game
+msgid "newgame"
+msgstr "Start New Game"
+
+#. change komi etc in current game
+msgid "editgame"
+msgstr "Edit Game Info"
+
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "Set up Position"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "Edit Teaching/Analysis Settings"
+
+msgid "point loss threshold"
+msgstr "Point loss greater than"
+
+msgid "num undos"
+msgstr ""
+"Number of undos\n"
+"(teaching games)"
+
+msgid "dot color"
+msgstr "Colour"
+
+msgid "show dots"
+msgstr "Show dots"
+
+msgid "save dots"
+msgstr "Save in SGF"
+
+msgid "show last n dots"
+msgstr "Show dots for the last <this many> moves"
+
+msgid "show ai dots"
+msgstr "Show dots/SGF comments for AI players"
+
+#. point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
+#. analysis option
+msgid "cache analysis to sgf"
+msgstr "Cache analysis in SGF"
+
+#. submit button
+msgid "update teacher"
+msgstr "Update Feedback Settings"
+
+# main config settings
+msgid "restarting engine"
+msgstr "Restarting Engine after Settings Change."
+
+#. contribute settings popup
+msgid "contribute settings title"
+msgstr "Contribute To KataGo Distributed Training"
+
+#. title
+msgid "contribute:viewer settings"
+msgstr "Viewer Settings"
+
+#. title
+msgid "contribute:login"
+msgstr "Login Information for katagotraining.org"
+
+#. description for input
+msgid "contribute:maxgames"
+msgstr "Simultaneous Games"
+
+#. hint for max games
+msgid "contribute:maxgames:hint"
+msgstr ""
+"Best equal to your optimal numSearchThreads, around 8 for mid-tier GPUs. Can"
+" set it slightly lower for shorter runs, as half-finished games are not "
+"uploaded."
+
+msgid "contribute:ownership"
+msgstr "Enable Ownership"
+
+#. hint for ownership
+msgid "contribute:ownership:hint"
+msgstr "Slightly slows down training, but allows ownership visualization."
+
+#. description
+msgid "contribute:movespeed"
+msgstr "Move speed"
+
+#. hint for move speed
+msgid "contribute:movespeed:hint"
+msgstr "Move playing delay in seconds/move."
+
+#. description
+msgid "contribute:savesgf"
+msgstr "Save SGFs"
+
+#. hint for save
+msgid "contribute:savesgf:hint"
+msgstr "Save SGF files of games that are finished showing in ./dist_sgf"
+
+msgid "contribute:username"
+msgstr "Username"
+
+msgid "contribute:password"
+msgstr "Password"
+
+msgid "contribute:passwordwarning"
+msgstr "(Stored as plain text, do not re-use this anywhere)"
+
+msgid "contribute:register"
+msgstr "Register"
+
+msgid "contribute:start"
+msgstr "Start Contributing!"
+
+# title
+msgid "general settings title"
+msgstr "General and Engine Settings"
+
+msgid "file not found"
+msgstr "Path does not exist"
+
+msgid "general settings"
+msgstr "General Settings"
+
+msgid "katago settings"
+msgstr "KataGo settings"
+
+msgid "engine settings"
+msgstr "Engine Settings"
+
+msgid "config file path"
+msgstr "All options are saved in:"
+
+msgid "engine:katago"
+msgstr "Path to KataGo executable"
+
+msgid "engine:katago:hint"
+msgstr "Leave blank to use included executable"
+
+msgid "engine:model"
+msgstr "Path to KataGo model file"
+
+msgid "engine:config"
+msgstr "Path to KataGo config file"
+
+msgid "engine:altcommand"
+msgstr "Override Engine Command"
+
+msgid "engine:altcommand:hint"
+msgstr ""
+"Full command used to start the engine. All other model options will be "
+"ignored."
+
+msgid "engine:max_visits"
+msgstr "Maximum number of visits in analysis"
+
+msgid "engine:fast_visits"
+msgstr "Maximum number of visits in fast analysis"
+
+msgid "engine:max_time"
+msgstr "Maximum time for analysis"
+
+msgid "engine:wide_root_noise"
+msgstr "Wide root noise (increases variety of moves considered)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"Use 0.02-0.1 to show\n"
+"more possible moves"
+
+msgid "engine:time:hint"
+msgstr "Time in seconds"
+
+msgid "general:anim_pv_time"
+msgstr "Time between moves when animating a sequence"
+
+msgid "general:debug_level"
+msgstr "Debug level in the console"
+
+msgid "general:debug_level:hint"
+msgstr "Set to 1 when reporting errors"
+
+msgid "update settings"
+msgstr "Update Settings"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "Advanced AI Settings"
+
+msgid "Select AI"
+msgstr "Select AI strategy to configure"
+
+msgid "update ai settings"
+msgstr "Update AI Settings"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "SGF with analysis written to {file_name}"
+
+msgid "wait-before-extra-analysis"
+msgstr "Wait for initial analysis to complete before requesting a refinement."
+
+msgid "Copied SGF to clipboard."
+msgstr "Copied SGF to clipboard."
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"Failed to import game from clipboard: {error}\n"
+"Clipboard contents: {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "Failed to load SGF: {error}"
+
+msgid "Kata exe not found"
+msgstr "KataGo binary {exe} does not exist, please check general settings."
+
+msgid "Kata exe not found in path"
+msgstr ""
+"KataGo binary '{exe}' not found in your PATH, check your environment "
+"variables or use the full path in general settings instead. If on MacOS, see"
+" the manual on how to use brew to install katago first"
+
+msgid "Kata model not found"
+msgstr "KataGo model {model} does not exist, please check general settings."
+
+msgid "Kata config not found"
+msgstr ""
+"KataGo config file {config} does not exist, please check general settings."
+
+msgid "Starting Kata failed"
+msgstr "Starting KataGo with command '{command}' failed with error {error}."
+
+msgid "Engine died unexpectedly"
+msgstr "Engine died unexpectedly without sending output: {error}"
+
+msgid "Engine missing DLL"
+msgstr ""
+"Failed to start KataGo due to missing DLL. Check the requirements in the "
+"KataGo documentation, or try running the binary by itself for details. "
+
+#. popup title
+msgid "engine recovery"
+msgstr "Help with KataGo setup"
+
+msgid "engine died popup opening message"
+msgstr ""
+"The KataGo Engine failed to start, or crashed.\n"
+"\n"
+"The error was: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"The error code was: [color=#CC2222]{code}[/color]."
+
+#. Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr ""
+"First, try downloading KataGo versions and try if changing to a different "
+"executable helps in {link} ."
+
+#. Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr ""
+"If you are still having difficulties, {link} for an up-to-date "
+"troubleshooting page."
+
+#. as in "click here" to go to this page,
+msgid "link_here"
+msgstr "click here"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "k"
+
+msgid "strength:dan"
+msgstr "d"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"Full strength KataGo AI. Strength is affected by 'max visits' and 'model' in"
+" the general settings 'engine' section and engine configuration file. No "
+"options are available here."
+
+#. ai which handles handicap games better
+msgid "ai:handicap"
+msgstr "KataHandicap"
+
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo optimized for playing higher handicap games.The 'pda' setting "
+"corresponds to 'playoutDoublingAdvantage' in KataGo, from black's "
+"perspective. When 'automatic' is set, KaTrain will find a suitable value "
+"automatically."
+
+msgid "ai:simple"
+msgstr "Simple Style"
+
+msgid "aihelp:simple"
+msgstr ""
+"Plays moves that lead to simplifying the board state. Of moves that lose at "
+"most 'max_points_lost' points and with at least 'min_visits', prefer moves "
+"that lose fewer points, settle own territory more (with importance "
+"settled_weight), settle opponent's territory more (importance settled_weight"
+" * opponent_fac), avoid tenuki (more than 5 spaces, importance "
+"tenuki_penalty), and avoid attachments (importance attachment_penalty). "
+"Weights can be negative to make it complicate the game instead, and wide "
+"root noise (in general settings) can be used to play more according to the "
+"style at the cost of strength. "
+
+msgid "ai:jigo"
+msgstr "KataJigo"
+
+msgid "ai:antimirror"
+msgstr "KataAntiMirror"
+
+msgid "aihelp:antimirror"
+msgstr "Anti Mirror-go Mode of KataGo."
+
+msgid "aihelp:jigo"
+msgstr ""
+"Will try to win by a set amount of points (default 0.5), without further "
+"restrictions."
+
+msgid "ai:scoreloss"
+msgstr "Score Loss"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"Plays moves that lead to more points lost with lower probability. Likely to "
+"play more varied/weaker with higher visits settings."
+
+msgid "ai:policy"
+msgstr "Policy"
+
+msgid "aihelp:policy"
+msgstr ""
+"Plays the top move from the policy network, without any reading. Strength is"
+" mainly affected by 'model' in engine settings. The 'opening_moves' setting "
+"affects how many moves in the opening are more random."
+
+msgid "ai:p:weighted"
+msgstr "Policy Weighted"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"Plays moves according to policy probability, with 'weaken_fac' influencing "
+"how much more likely weaker moves are played. With a very low value it plays"
+" like the 'Policy' AI. 'pick_override' determines when top move is chosen "
+"without randomness, and 'lower_bound' determines the lower bound policy "
+"value that is allowed."
+
+msgid "ai:p:pick"
+msgstr "Blinded Policy"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"Picks 'pick_n + pick_frac * <number of legal moves>' at random and plays the"
+" best one. For 'pick_frac=1' plays like the 'Policy' AI. Plays top move if "
+"policy value is above 'pick_override' to avoid obvious mistakes."
+
+msgid "ai:p:local"
+msgstr "Local Style"
+
+msgid "aihelp:p:local"
+msgstr ""
+"Picks 'pick_n + pick_frac * <number of legal moves>' weighted towards the "
+"last move and plays the best one. Plays top move if policy value is above "
+"'pick_override' to avoid obvious mistakes."
+
+msgid "ai:p:tenuki"
+msgstr "Tenuki Style"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"Picks 'pick_n + pick_frac * <number of legal moves>' weighted away from the "
+"last move and plays the best one. Plays top move if policy value is above "
+"'pick_override' to avoid obvious mistakes. A higher 'stddev' makes it play "
+"further away."
+
+msgid "ai:p:influence"
+msgstr "Influential Style"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"Picks moves biased above the 'threshold' line and plays the best one. "
+"Increase 'line_weight' to penalize moves near the edge more. Stops strategy "
+"after the 'endgame' fraction of the board is filled."
+
+msgid "ai:p:territory"
+msgstr "Territorial Style"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"Picks moves biased below the 'threshold' line and plays the best one. "
+"Increase 'line_weight' to penalize moves near the center more. Stops "
+"strategy after the 'endgame' fraction of the board is filled."
+
+msgid "ai:p:rank"
+msgstr "Calibrated Rank"
+
+msgid "aihelp:p:rank"
+msgstr ""
+"Picks a limited number of legal moves at random and plays the best one. "
+"Stronger settings select the best move from a larger selection. Since there "
+"is no 0 kyu/dan, 3 dan = -2 kyu."
+
+#. in AI settings
+msgid "estimated strength"
+msgstr "Estimated Strength"
+
+#. button in general settings for downloading models
+msgid "download models button"
+msgstr "Download Models"
+
+#. button in general settings for downloading katago executables
+msgid "download katago button"
+msgstr "Download KataGo versions"
+
+#. shown on on the model select dropdown
+msgid "models available"
+msgstr "{num} available model(s) found"
+
+#. shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "Detect platform and use provided OpenCL KataGo binary"
+
+#. shown on on the binaries select dropdown
+msgid "katago binaries available"
+msgstr "{num} available katago versions found"
+
+#. error message on trying to download models when already done
+msgid "All models downloaded"
+msgstr "All available models already downloaded"
+
+#. error message on trying to download katago when already done
+msgid "All binaries downloaded"
+msgstr "All available binaries already downloaded"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze max visits"
+msgstr "Number of visits per move"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Limit analysis to mistakes only"
+
+#. on move tree editing
+msgid "Delete Node"
+msgstr "Delete Node"
+
+#. on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "Expand/Collapse"
+
+#. on move tree editing
+msgid "Make Main Branch"
+msgstr "Make Main Branch"
+
+#. on move tree editing, deletes all other branches splitting off from the
+#. path UP TO this node
+msgid "Prune Branch"
+msgstr "Prune Branch"
+
+#. theme label
+msgid "theme"
+msgstr "Colour Theme"
+
+#. theme name
+msgid "theme:normal"
+msgstr "Default Theme"
+
+#. theme name
+msgid "theme:red-green-colourblind"
+msgstr "Red-Green Colourblind"
+
+#. setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "Stats on top moves"
+
+#. Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "Change in score"
+
+#. Dropdown menu option
+msgid "top_move_score"
+msgstr "Score"
+
+#. Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "Change in win rate"
+
+#. Dropdown menu option
+msgid "top_move_winrate"
+msgstr "Win rate"
+
+#. Dropdown menu option
+msgid "top_move_visits"
+msgstr "Visits"
+
+#. Dropdown menu option
+msgid "top_move_nothing"
+msgstr "(nothing)"
+
+#. top move stats show threshold description
+msgid "show stats if"
+msgstr "Show stats if more than ... visits"
+
+#. status message on starting insert mode
+msgid "starting insert mode"
+msgstr "Starting insert mode, press 'i' to finish inserting."
+
+#. status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "Inserting exchange(s) done, copied {num_copied} following moves."
+
+#. when a user tries to go to a different move/node while in insert mode
+msgid "finish inserting before navigating"
+msgstr ""
+"Navigation is disabled in insert mode, finish insert mode by pressing 'i'. "
+
+#. menu item
+msgid "menu:distributed"
+msgstr "Distributed Self-play Training"
+
+#. in self-play mode
+msgid "gui-locked"
+msgstr ""
+"Action {action} not allowed in distributed self-play training mode. Restart "
+"KaTrain to exit this mode."
+
+#. Progress message
+msgid "setup game status message"
+msgstr "Generating game via AI self-play:  Move {move}/{until_move} done."
+
+#. Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr ""
+"This generates a partial game for you to start playing from. For example, "
+"you can use this to play against stronger AIs starting from an advantage in "
+"a variety of middle- or end-game positions."
+
+#. Description for black target score
+msgid "setup position black score"
+msgstr "Target score for Black:"
+
+#. Description for how many moves
+msgid "setup position move number"
+msgstr "Generate game until move:"
+
+#. distance of wall to existing stones
+msgid "tsumego:walldistance"
+msgstr "Distance of wall"
+
+#. tsumego: ko is good enough?
+msgid "tsumego:ko"
+msgstr "Ko allowed?"

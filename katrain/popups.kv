@@ -1,0 +1,1010 @@
+#:kivy 1.11.0
+#:import i18n katrain.core.lang.i18n
+#:import expanduser os.path.expanduser
+#:import abspath os.path.abspath
+#:import kivy_version kivy.__version__
+
+#:import Theme katrain.gui.theme.Theme
+#:import LIGHT_GREY katrain.gui.theme.LIGHT_GREY
+
+#:set CP_SPACING Theme.CP_SPACING
+#:set CP_SMALL_SPACING Theme.CP_SMALL_SPACING
+#:set CP_PADDING Theme.CP_PADDING
+#:set EPSILON 1e-9
+
+#:import TOP_MOVE_OPTIONS katrain.core.constants.TOP_MOVE_OPTIONS
+
+
+# MDTextField:
+#    hint_text: "Helper text on focus"
+#    helper_text: "This will disappear when you click off"
+#    helper_text_mode: "on_focus"
+#    font_size: sp(Theme.INPUT_FONT_SIZE)
+
+<LabelledTextInput>:
+    font_size: sp(Theme.INPUT_FONT_SIZE)
+    helper_text_mode: "none"
+    hint_text: ""
+    helper_text: ""
+    color_mode: 'custom'
+    line_color_focus: Theme.TEXT_COLOR
+
+<LabelledPathInput>:
+    font_size: sp(16)
+    multiline: False
+    write_tab: False
+    helper_text_mode: "on_error"
+    helper_text: i18n._("file not found")
+
+<LabelledIntInput>:
+    font_size: sp(Theme.INPUT_FONT_SIZE)
+    write_tab: False
+    size_hint: 0.5, None
+
+<LabelledFloatInput>:
+    font_size: sp(Theme.INPUT_FONT_SIZE)
+    write_tab: False
+    size_hint: 0.5, None
+
+<LabelledCheckBox>:
+    size: sp(Theme.DESC_FONT_SIZE)*2,sp(Theme.DESC_FONT_SIZE)*2
+    size_hint: None,None
+
+<QuickInputButton@SizedRectangleButton>
+    on_left_press: if self.target: self.target.text = self.text
+    size: sp(Theme.DESC_FONT_SIZE) * 2, sp(Theme.DESC_FONT_SIZE) * 2
+    font_size: sp(Theme.DESC_FONT_SIZE)
+
+<I18NPopup>:
+    background_color: Theme.BACKGROUND_COLOR
+    background: self.background if kivy_version < '2.0' else ''
+    title: i18n._(self.title_key)
+    title_size: sp(Theme.DESC_FONT_SIZE)
+    title_font: self.font_name
+    size_hint: None, None
+
+<QuickConfigGui>:
+    orientation: 'vertical'
+    spacing: CP_SPACING
+    padding: 4*CP_PADDING,CP_PADDING, 4*CP_PADDING, CP_PADDING
+
+<DescriptionLabel>:
+    font_size: sp(Theme.DESC_FONT_SIZE)
+    multiline: True
+    text_size: self.width, None
+    halign: 'center'
+    valign: 'center'
+
+<SmallDescriptionLabel@DescriptionLabel>
+    font_size: sp(Theme.DESC_FONT_SIZE) * 0.66
+
+<ConfigPopup>:
+    model_path: model_path
+    katago_path: katago_path
+    model_files: model_files
+    katago_files: katago_files
+    download_progress_box: download_progress_box
+    katago_download_progress_box: katago_download_progress_box
+    DescriptionLabel:
+        text: i18n._('katago settings')
+        font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
+    GridLayout:
+        cols: 2
+        rows: 6
+        size_hint: 1,6
+        spacing: CP_SPACING
+        DescriptionLabel:
+            text: i18n._("engine:katago")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                id: katago_path
+                input_property: "engine/katago"
+                hint_text: i18n._("engine:katago:hint")
+                on_text: root.check_katas()
+        AnchorLayout:
+            size_hint: 0.33, 1
+            AutoSizedRoundedRectangleButton:
+                text: i18n._("download katago button")
+                on_press: root.download_katas()
+                size_hint_y: 0.7
+        AnchorLayout:
+            KeyValueSpinner:
+                id: katago_files
+                text: ''
+                text_autoupdate: True
+                -text_size: self.width, None
+                -halign: 'center'
+                -shorten: True
+                -shorten_from: 'right'
+                on_select:
+                    if self.selected_index != 0: katago_path.text = self.value_keys[self.selected_index]
+                size_hint_y: 0.7
+                sync_height_frac: 1.0
+                -font_size: self.height * 0.5
+                -background_color: [*[c*255/88 for c in Theme.BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+        DescriptionLabel:
+            text: i18n._("engine:config")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "engine/config"
+        DescriptionLabel:
+            text: i18n._("engine:model")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                id: model_path
+                input_property: "engine/model"
+                on_text: root.check_models()
+        AnchorLayout:
+            size_hint: 0.33, 1
+            AutoSizedRoundedRectangleButton:
+                text: i18n._("download models button")
+                on_press: root.download_models()
+                size_hint_y: 0.7
+        AnchorLayout:
+            KeyValueSpinner:
+                id: model_files
+                text: ''
+                text_autoupdate: True
+                -text_size: self.width, None
+                -halign: 'center'
+                -shorten: True
+                -shorten_from: 'right'
+                on_select:
+                    if self.selected_index != 0: model_path.text = self.value_keys[self.selected_index]
+                size_hint_y: 0.7
+                sync_height_frac: 1.0
+                -font_size: self.height * 0.5
+                -background_color: [*[c*255/88 for c in Theme.BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+        DescriptionLabel:
+            text: i18n._("engine:altcommand")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                check_path: False
+                input_property: "engine/altcommand"
+                hint_text: i18n._("engine:altcommand:hint")
+    BoxLayout:
+        size_hint: 1,1
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('general settings')
+            font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
+        DescriptionLabel:
+            font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
+            text: i18n._('engine settings')
+    BoxLayout:
+        size_hint: 1,5
+        orientation: 'horizontal'
+        GridLayout:
+            cols: 2
+            rows: 4
+            spacing: CP_SPACING
+            DescriptionLabel:
+                text: i18n._('count down sound')
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "timer/sound"
+            DescriptionLabel:
+                text: i18n._("general:anim_pv_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "general/anim_pv_time"
+                    hint_text: i18n._("engine:time:hint")
+            DescriptionLabel:
+                text: i18n._("general:debug_level")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "general/debug_level"
+                    helper_text: i18n._("general:debug_level:hint")
+                    helper_text_mode: "on_focus"
+            DescriptionLabel:
+                text: 'Restore window size on startup'
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "ui_state/restoresize"
+        BackgroundMixin:
+            background_color: LIGHT_GREY
+            size_hint: None, 1
+            width: 2
+        GridLayout:
+            cols: 2
+            rows: 4
+            spacing: CP_SPACING
+            padding: CP_PADDING*2,0,0,0
+            DescriptionLabel:
+                text: i18n._("engine:max_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/max_visits"
+            DescriptionLabel:
+                text: i18n._("engine:fast_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/fast_visits"
+            DescriptionLabel:
+                text: i18n._("engine:max_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/max_time"
+                    hint_text: i18n._("engine:time:hint")
+            DescriptionLabel:
+                text: i18n._("engine:wide_root_noise")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/wide_root_noise"
+                    hint_text: i18n._("engine:wide_root_noise:hint")
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1,2
+        MDBoxLayout:
+            size_hint_x: 3.5 if self.children else 0.0001
+            orientation: 'vertical'
+            id: download_progress_box
+        MDBoxLayout:
+            size_hint_x: 3.5 if self.children else 0.0001
+            orientation: 'vertical'
+            id: katago_download_progress_box
+        AnchorLayout:
+            AutoSizedRoundedRectangleButton:
+                padding_x: 15
+                size_hint: None,None
+                height: sp(40)
+                text: i18n._("update settings")
+                on_press: root.update_config(True)
+#       BoxLayout:
+#            orientation: 'vertical'
+#            SmallDescriptionLabel:
+#                text: i18n._('config file path')
+#            SmallDescriptionLabel:
+#                id: configfile
+#                text:
+
+<ContributePopup>:
+    katago_path: katago_path
+    katago_files: katago_files
+    katago_download_progress_box: katago_download_progress_box
+    error: error
+    DescriptionLabel:
+        text: i18n._('katago settings')
+        font_size: sp(Theme.DESC_FONT_SIZE) * 1.25
+    GridLayout:
+        cols: 2
+        rows: 5
+        size_hint: 1, 6
+        spacing: CP_SPACING
+        DescriptionLabel:
+            text: i18n._("engine:katago")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                id: katago_path
+                input_property: "contribute/katago"
+                hint_text: i18n._("engine:katago:hint")
+                on_text: root.check_katas()
+        AnchorLayout:
+            size_hint: 0.33, 1
+            AutoSizedRoundedRectangleButton:
+                text: i18n._("download katago button")
+                on_press: root.download_katas()
+                size_hint_y: 0.66
+        AnchorLayout:
+            KeyValueSpinner:
+                id: katago_files
+                text: ''
+                text_autoupdate: True
+                -text_size: self.width, None
+                -halign: 'center'
+                -shorten: True
+                -shorten_from: 'right'
+                on_select:
+                    if self.selected_index != 0: katago_path.text = self.value_keys[self.selected_index]
+                size_hint_y: 0.7
+                sync_height_frac: 1.0
+                -font_size: self.height * 0.5
+                -background_color: [*[c*255/88 for c in Theme.BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+        DescriptionLabel:
+            text: i18n._("engine:config")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                input_property: "contribute/config"
+        DescriptionLabel:
+            size_hint: 0.2, 1
+            text: i18n._("contribute:maxgames")
+        BoxLayout:
+            AnchorLayout:
+                size_hint: 0.5, 1
+                LabelledIntInput:
+                    input_property: "contribute/maxgames"
+            SmallDescriptionLabel:
+                text: i18n._("contribute:maxgames:hint")
+        DescriptionLabel:
+            size_hint: 0.2, 1
+            text: i18n._("contribute:ownership")
+        BoxLayout:
+            AnchorLayout:
+                size_hint: 0.5, 1
+                LabelledCheckBox:
+                    input_property: "contribute/ownership"
+            SmallDescriptionLabel:
+                text: i18n._("contribute:ownership:hint")
+    DescriptionLabel:
+        text: i18n._('contribute:viewer settings')
+        font_size: sp(Theme.DESC_FONT_SIZE) * 1.25
+    GridLayout:
+        cols: 3
+        rows: 2
+        size_hint: 1, 2
+        spacing: CP_SPACING
+        DescriptionLabel:
+            size_hint: 0.5, 1
+            text: i18n._("contribute:savesgf")
+        AnchorLayout:
+            size_hint: 0.5, 1
+            LabelledCheckBox:
+                input_property: "contribute/savesgf"
+        SmallDescriptionLabel:
+            text: i18n._("contribute:savesgf:hint")
+        DescriptionLabel:
+            size_hint: 0.5, 1
+            text: i18n._("contribute:movespeed")
+        AnchorLayout:
+            size_hint: 0.5, 1
+            LabelledFloatInput:
+                input_property: "contribute/movespeed"
+        SmallDescriptionLabel:
+            text: i18n._("contribute:movespeed:hint")
+    DescriptionLabel:
+        text: i18n._('contribute:login')
+        font_size: sp(Theme.DESC_FONT_SIZE) * 1.25
+    AnchorLayout:
+        size_hint: 1,2
+        GridLayout:
+            cols: 3
+            rows: 2
+            size_hint: 0.85,1
+            DescriptionLabel:
+                size_hint: 0.35, 1
+                text: i18n._("contribute:username")
+            AnchorLayout:
+                size_hint: 0.65, 1
+                LabelledTextInput:
+                    input_property: "contribute/username"
+                    write_tab: False
+            AnchorLayout:
+                size_hint: 0.5, 1
+                AutoSizedRoundedRectangleButton:
+                    text: i18n._("contribute:register")
+                    size_hint: 0.8, 0.7
+                    on_press: app.webbrowser('contribute:signup')
+            DescriptionLabel:
+                size_hint: 0.35, 1
+                text: i18n._("contribute:password")
+            AnchorLayout:
+                size_hint: 0.65, 1
+                LabelledTextInput:
+                    input_property: "contribute/password"
+                    write_tab: False
+                    password: True
+                    id: password
+            AnchorLayout:
+                anchor_x: 'left'
+                size_hint: 0.5, 1
+                MDIconButton:
+                    icon: "eye"
+                    pos_hint: {"center_x": 0, "center_y": .5}
+                    on_press: password.password = not password.password
+                SmallDescriptionLabel:
+                    padding_x: dp(40)
+                    text: i18n._("contribute:passwordwarning")
+    DescriptionLabel:
+        text: ''
+        id: error
+        font_size: sp(Theme.DESC_FONT_SIZE)
+        color: Theme.ERROR_BORDER_COLOR
+        size_hint: 1, 0.5
+    MDBoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1, 1
+        MDBoxLayout:
+            size_hint_x: 2.5 if self.children else 0.0001
+            orientation: 'vertical'
+            id: katago_download_progress_box
+        AnchorLayout:
+            AutoSizedRoundedRectangleButton:
+                padding_x: 15
+                size_hint: None,None
+                height: sp(40)
+                text: i18n._("contribute:start")
+                on_press: root.start_contributing()
+
+
+
+<ConfigTeacherPopup>
+    options_grid: options_grid
+    themes_spinner: themes_spinner
+    GridLayout:
+        cols: 5
+        rows: 7
+        size_hint: 1, 6.5
+        id: options_grid
+        DescriptionLabel:
+            text: i18n._("dot color")
+        DescriptionLabel:
+            text: i18n._("point loss threshold")
+        DescriptionLabel:
+            text: i18n._("num undos")
+        DescriptionLabel:
+            text: i18n._("show dots")
+        DescriptionLabel:
+            text: i18n._("save dots")
+    AnchorLayout:
+        size_hint: 1, 5
+        GridLayout:
+            cols: 2
+            rows: 7
+            padding: 4
+            size_hint: 0.95, 1
+            DescriptionLabel:
+                font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
+                text: i18n._("theme")
+            AnchorLayout:
+                LabelledSpinner:
+                    size_hint: 0.95,0.8
+                    input_property: 'trainer/theme'
+                    id: themes_spinner
+            DescriptionLabel:
+                font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
+                text: i18n._("stats on top move")
+            AnchorLayout:
+                BoxLayout:
+                    size_hint: 1, 0.75
+                    orientation: 'horizontal'
+                    LabelledSpinner:
+                        id: top_moves_show
+                        value_refs: TOP_MOVE_OPTIONS
+                        input_property: "trainer/top_moves_show"
+                    Label:
+                        size_hint: 0.1, 1
+                        text: '&'
+                        font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
+                    LabelledSpinner:
+                        id: top_moves_show_secondary
+                        value_refs: TOP_MOVE_OPTIONS
+                        input_property: "trainer/top_moves_show_secondary"
+            DescriptionLabel:
+                font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
+                text: i18n._("show stats if")
+                line_height: 0.75
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "trainer/low_visits"
+            DescriptionLabel:
+                font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
+                text: i18n._("show last n dots")
+                line_height: 0.75
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "trainer/eval_on_show_last"
+            DescriptionLabel:
+                font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
+                text: i18n._("show ai dots")
+                line_height: 0.75
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/eval_show_ai"
+            DescriptionLabel:
+                font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
+                text: i18n._("show two digits for point loss near zero")
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/extra_precision"
+            DescriptionLabel:
+                font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
+                text: i18n._("cache analysis to sgf")
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/save_analysis"
+    AnchorLayout:
+        size_hint: 1,1
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.75
+            text: i18n._("update teacher")
+            on_press: root.update_config(True)
+
+
+<ConfigTimerPopup>:
+    MDGridLayout:
+        cols: 2
+        rows: 4
+        spacing: 1.5 * CP_SPACING
+        size_hint: 1,2.5
+        DescriptionLabel:
+            text: i18n._('main time')
+        AnchorLayout:
+            LabelledIntInput:
+                text: "10"
+                input_property: "timer/main_time"
+        DescriptionLabel:
+            text: i18n._('byoyomi length')
+        AnchorLayout:
+            LabelledIntInput:
+                text: "30"
+                input_property: "timer/byo_length"
+        DescriptionLabel:
+            text: i18n._('byoyomi periods')
+        AnchorLayout:
+            LabelledIntInput:
+                text: "5"
+                input_property: "timer/byo_periods"
+        DescriptionLabel:
+            text: i18n._('minimal time use')
+        AnchorLayout:
+            LabelledIntInput:
+                text: "0"
+                input_property: "timer/minimal_use"
+    AnchorLayout:
+        size_hint: 1,1
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("update timer")
+            on_press: root.update_config(True)
+
+
+<NewGameModeButton@SizedToggleButton>:
+    inactive_background_color: Theme.LIGHTER_BACKGROUND_COLOR
+    active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
+    ripple_color: Theme.LIGHTER_BACKGROUND_COLOR
+    text_color: self.inactive_background_color if self.state=='down' else self.active_background_color
+    size_hint: 0.33,1
+    _font_size: self.height * 0.45
+    group: 'new_game_mode'
+    allow_no_selection: False
+
+<HideyBoxLayout@BoxLayout>:
+    opacity: 1 if self.size_hint_y > EPSILON else 0
+
+<NewGamePopup>:
+    restart: restart
+    rules_spinner: rules_spinner
+    km: km
+    player_setup: player_setup
+    player_name: {"W": white_player_name, "B": black_player_name}
+    BoxLayout:
+        size_hint: 1, 0.66
+        BoxLayout:
+            size_hint: 0.7,0.7
+            pos_hint: {'center_x':0.5,'center_y':0.5}
+            NewGameModeButton:
+                text: i18n._('newgame')
+                id: play
+                state: 'down'
+                on_state: if self.state=='down': root.mode = 'newgame'
+            NewGameModeButton:
+                text: i18n._('setupposition')
+                id: analyze
+                on_state: if self.state=='down': root.mode = 'setupposition'
+            NewGameModeButton:
+                text: i18n._('editgame')
+                id: analyze
+                on_state: if self.state=='down': root.mode = 'editgame'
+    PlayerSetupBlock:
+        size_hint: 1, 2
+        id: player_setup
+    GridLayout:
+        rows: 3
+        cols: 3
+        size_hint: 1, 1.5
+        spacing: CP_SPACING
+        padding: CP_PADDING
+        DescriptionLabel:
+            text: i18n._("player names")
+        AnchorLayout:
+            LabelledTextInput:
+                text: ''
+                id: black_player_name
+                write_tab: False
+                hint_text: i18n._("black player name hint")
+                size_hint: 0.75, None
+        AnchorLayout:
+            LabelledTextInput:
+                text: ''
+                id: white_player_name
+                write_tab: False
+                hint_text: i18n._("white player name hint")
+                size_hint: 0.75, None
+        DescriptionLabel:
+            text: i18n._("ruleset")
+        AnchorLayout:
+            LabelledSpinner:
+                size_hint: 0.95,0.8
+                input_property: 'game/rules'
+                font_size: sp(Theme.DESC_FONT_SIZE)
+                id: rules_spinner
+        Label:
+        DescriptionLabel:
+            text:  i18n._("komi")
+        AnchorLayout:
+            LabelledFloatInput:
+                text: '6.5'
+                id: km
+                input_property: 'game/komi'
+        AnchorLayout:
+            MDBoxLayout:
+                adaptive_size: True
+                spacing: CP_SPACING
+                QuickInputButton:
+                    text: '0.5'
+                    target: km
+                QuickInputButton:
+                    text: '6.5'
+                    target: km
+                QuickInputButton:
+                    text: '7.5'
+                    target: km
+    HideyBoxLayout:
+        size_hint_y: 1 if root.mode != 'editgame' else EPSILON
+        id: board_setup_section
+        GridLayout:
+            cols: 3
+            rows: 2
+            DescriptionLabel:
+                text: i18n._("board size")
+            AnchorLayout:
+                LabelledTextInput:
+                    text: '19'
+                    id: boardsize
+                    input_property: 'game/size'
+                    write_tab: False
+                    size_hint: 0.5, None
+                    hint_text: i18n._("non square board hint")
+            AnchorLayout:
+                MDBoxLayout:
+                    adaptive_size: True
+                    spacing: CP_SPACING
+                    QuickInputButton:
+                        text: '9'
+                        target: boardsize
+                    QuickInputButton:
+                        text: '13'
+                        target: boardsize
+                    QuickInputButton:
+                        text: '19'
+                        target: boardsize
+            DescriptionLabel:
+                text:  i18n._("handicap")
+            AnchorLayout:
+                LabelledIntInput:
+                    text: '0'
+                    input_property: 'game/handicap'
+                    write_tab: False
+                    id: handicap
+            AnchorLayout:
+                MDBoxLayout:
+                    adaptive_size: True
+                    spacing: CP_SPACING
+                    QuickInputButton:
+                        text: '0'
+                        on_left_press: km.text='6.5'
+                        target: handicap
+                    QuickInputButton:
+                        text: '2'
+                        on_left_press: km.text='0.5'
+                        target: handicap
+                    QuickInputButton:
+                        text: '9'
+                        on_left_press: km.text='0.5'
+                        target: handicap
+    HideyBoxLayout:
+        id: new_game_section
+        size_hint_y: 1.5 if root.mode == 'newgame' else EPSILON
+        DescriptionLabel:
+            text: i18n._('clear cache')
+        AnchorLayout:
+            LabelledCheckBox:
+                id: restart
+                input_property: 'game/clear_cache'
+        SmallDescriptionLabel:
+            text: i18n._('avoids replaying')
+    HideyBoxLayout:
+        id: setup_game_section
+        size_hint_y: 1.5 if root.mode == 'setupposition' else EPSILON
+        orientation: 'vertical'
+        SmallDescriptionLabel:
+            text: i18n._('setup position explanation')
+            size_hint: 1, 1.5
+        GridLayout:
+            cols: 2
+            rows: 2
+            size_hint: 1,2
+            DescriptionLabel:
+                text: i18n._('setup position black score')
+            AnchorLayout:
+                LabelledSelectionSlider:
+                    input_property: 'game/setup_advantage'
+                    key_option: True
+                    values: [(pt,f"{pt}") for pt in range(-150,151)]
+            DescriptionLabel:
+                text: i18n._('setup position move number')
+            AnchorLayout:
+                LabelledSelectionSlider:
+                    input_property: 'game/setup_move'
+                    key_option: True
+                    values: [(mv,str(mv)) for mv in range(50,251)]
+    BoxLayout:
+        size_hint_y: 2.5 if root.mode == 'editgame' else EPSILON
+    HideyBoxLayout:
+        size_hint: 1,0.75
+        AnchorLayout:
+            AutoSizedRoundedRectangleButton:
+                padding_x: 15
+                size_hint: None,0.66
+                text: i18n._(root.mode)
+                on_press: root.update_config(True)
+
+
+<LabelledSelectionSlider>:
+    slider: slider
+    textbox: textbox
+    SelectionSlider:
+        id: slider
+        size_hint: 2.25,1
+        values: root.values
+        on_change: textbox.text = str(slider.value)
+        track_color: LIGHT_GREY
+        thumb_color: (0.6, 0.7, 0.9, 1) if root.key_option else (0.3, 0.4, 0.6, 1)
+    LabelledFloatInput:
+        id: textbox
+
+<ConfigAIPopup>:
+    options_grid: options_grid
+    help_label: help_label
+    estimated_rank_label: estimated_rank_label
+    ai_select: ai_select
+    BoxLayout:
+        size_hint: 1,1
+        DescriptionLabel:
+            font_size: sp(Theme.DESC_FONT_SIZE)
+            text: i18n._('Select AI')
+        AnchorLayout:
+            I18NSpinner:
+                size_hint: 0.8, 0.5
+                id: ai_select
+    BoxLayout:
+        size_hint: 1,1
+        DescriptionLabel:
+            font_size: sp(Theme.DESC_FONT_SIZE)
+            size_hint: 1, 1
+            text: i18n._('estimated strength')
+        DescriptionLabel:
+            size_hint: 0.8, 1
+            font_size: sp(Theme.DESC_FONT_SIZE)
+            id: estimated_rank_label
+            text: '?' + i18n._('strength:kyu')
+    SmallDescriptionLabel:
+        id: help_label
+        size_hint: 1,1.25
+        text: i18n._('')
+    GridLayout:
+        size_hint: 1, 4
+        id: options_grid
+        rows: root.max_options
+        cols: 2
+    AnchorLayout:
+        size_hint: 1, 1.5
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None,0.5
+            text: i18n._("update ai settings")
+            on_press: root.update_config(True)
+
+<EngineRecoveryPopup>:
+    Label:
+        padding: CP_PADDING, CP_PADDING*3
+        text: i18n._("engine died popup opening message").format(code=root.code,error_message=root.error_message) + "\n\n" +  i18n._("change engine suggestion").format(link="[color=#CCCC11][u][ref=engine_settings]"+i18n._('menu:settings')+"[/ref][/u][/color]") + "\n\n" +  i18n._("go to engine help page").format(link="[color=#CCCC11][u][ref=engine_help]"+i18n._('link_here')+"[/ref][/u][/color]")
+        text_size: self.size
+        font_size: sp(Theme.DESC_FONT_SIZE)
+        markup: True
+        valign: 'top'
+        on_ref_press:  app.webbrowser('engine:help') if args[1]=='engine_help' else  app.gui('config-popup')
+
+
+
+
+<ReAnalyzeGamePopup>:
+    visits: visits
+    orientation: 'vertical'
+    button: button
+    move_range: move_range
+    start_move: start_move
+    end_move: end_move
+    mistakes: mistakes
+    BoxLayout:
+        size_hint: 1, 1.5
+        orientation: 'vertical'
+        GridLayout:
+            cols: 2
+            rows: 2
+            size_hint: 1, 2
+            DescriptionLabel:
+                text: i18n._('reanalyze max visits')
+            AnchorLayout:
+                LabelledIntInput:
+                    id: visits
+                    text: '2500'
+            BoxLayout:
+                AnchorLayout:
+                    size_hint: 0.3333, 1
+                    LabelledCheckBox:
+                        id: move_range
+                        default_active: False
+                DescriptionLabel:
+                    size_hint: 0.6667, 1
+                    text: i18n._('limit to moves')
+                    halign: 'left'
+            BoxLayout:
+                AnchorLayout:
+                    LabelledIntInput:
+                        helper_text: i18n._('from move')
+                        helper_text_mode: "persistent"
+                        id: start_move
+                        text: '0'
+                AnchorLayout:
+                    LabelledIntInput:
+                        helper_text: i18n._('to move')
+                        helper_text_mode: "persistent"
+                        id: end_move
+                        text: '999'
+        BoxLayout:
+            size_hint: 1, 1
+            AnchorLayout:
+                size_hint: 0.16666, 1
+                LabelledCheckBox:
+                    id: mistakes
+                    default_active: False
+            DescriptionLabel:
+                size_hint: 0.833333, 1
+                text: i18n._('reanalyze mistakes only')
+                halign: 'left'
+        AnchorLayout:
+            size_hint: 1, 0.66
+            AutoSizedRoundedRectangleButton:
+                id: button
+                padding_x: 15
+                size_hint: None,0.66
+                text: i18n._("analysis:game") # re-use string
+                on_press:
+                    root.katrain("analyze-extra", "game", visits=visits.input_value, move_range=(start_move.input_value, end_move.input_value) if move_range.input_value else None, mistakes_only=mistakes.input_value)
+                    root.popup.dismiss()
+
+<TsumegoFramePopup>:
+    ko: ko
+    margin: margin
+    orientation: 'vertical'
+    button: button
+    BoxLayout:
+        size_hint: 1, 1.5
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('tsumego:walldistance')
+        AnchorLayout:
+            LabelledIntInput:
+                id: margin
+                text: '4'
+    BoxLayout:
+        size_hint: 1, 1.5
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('tsumego:ko')
+        AnchorLayout:
+            LabelledCheckBox:
+                id: ko
+    AnchorLayout:
+        size_hint: 1, 1
+        AutoSizedRoundedRectangleButton:
+            id: button
+            padding_x: 15
+            size_hint: None,0.66
+            text: i18n._("analysis:tsumegoframe") # re-use string
+            on_press:
+                root.katrain("tsumego-frame", ko=ko.input_value, margin=margin.input_value)
+                root.popup.dismiss()
+
+<LoadSGFPopup>:
+    fast: fast
+    rewind: rewind
+    filesel: filesel
+    orientation: 'vertical'
+    AnchorLayout:
+        size_hint: 1,1
+        BoxLayout:
+            size_hint: 0.5,1
+            orientation: 'horizontal'
+            DescriptionLabel:
+                text: i18n._("load sgf fast analysis")
+                size_hint: 0.45,1
+                halign: 'right'
+            LabelledCheckBox:
+                id: fast
+                size_hint: 0.05,1
+                input_property: "general/load_fast_analysis"
+            DescriptionLabel:
+                text: i18n._("load sgf rewind")
+                halign: 'right'
+                size_hint: 0.45,1
+            LabelledCheckBox:
+                id: rewind
+                active: True
+                size_hint: 0.05,1
+                input_property: "general/load_sgf_rewind"
+    I18NFileBrowser:
+        id: filesel
+        multiselect: False
+        file_must_exist: True
+        filters: ["*.sgf","*.gib","*.ngf"]
+        path: "."
+        size_hint: 1,7
+
+<SaveSGFPopup>:
+    filesel: filesel
+    orientation: 'vertical'
+    I18NFileBrowser:
+        id: filesel
+        multiselect: False
+        file_must_exist: False
+        filters: ["*.sgf","*.gib","*.ngf"]
+        path: "."
+        size_hint: 1,7
+
+
+<GameReportPopup>
+    player_infos: {'B': player_b, 'W': player_w}
+    stats: stats
+    orientation: 'vertical'
+    padding: Theme.CP_PADDING
+    BoxLayout:
+        size_hint_y: 0.8
+        spacing: CP_SPACING
+        padding: CP_PADDING
+        SizedRectangleToggleButton:
+            text: i18n._('Entire Game')
+            allow_no_selection: False
+            size_hint: 1,1
+            group: 'stats_depth'
+            state: 'down'
+            on_press: root.set_depth_filter(None)
+        SizedRectangleToggleButton:
+            text: i18n._('Opening')
+            allow_no_selection: False
+            size_hint: 1,1
+            group: 'stats_depth'
+            on_press: root.set_depth_filter((0,0.14))
+        SizedRectangleToggleButton:
+            text: i18n._('Midgame')
+            allow_no_selection: False
+            size_hint: 1,1
+            group: 'stats_depth'
+            on_press: root.set_depth_filter((0.14,0.4))
+        SizedRectangleToggleButton:
+            text: i18n._('Endgame')
+            group: 'stats_depth'
+            allow_no_selection: False
+            size_hint: 1,1
+            on_press: root.set_depth_filter((0.4,10))
+    BoxLayout:
+        size_hint_y: 1.33
+        PlayerInfo:
+            player: 'B'
+            id: player_b
+        PlayerInfo:
+            player: 'W'
+            id: player_w
+            alignment: 'left'
+    BoxLayout:
+        id: stats
+        size_hint_y: 10

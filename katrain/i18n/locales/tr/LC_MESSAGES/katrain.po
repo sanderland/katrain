@@ -1,0 +1,1078 @@
+# KaTrain localization file
+msgid ""
+msgstr ""
+"Language: Turkish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. main hamburger menu
+msgid "menu:playersetup"
+msgstr "Oyuncu Ayarları"
+
+msgid "menu:newgame"
+msgstr "Yeni Oyun/Kuralları Değiştir"
+
+msgid "menu:save"
+msgstr "Oyunu Kaydet"
+
+msgid "menu:save-as"
+msgstr "Oyunu Farklı Kaydet..."
+
+msgid "menu:load"
+msgstr "Oyun Yükle"
+
+msgid "menu:settings"
+msgstr "Genel ve Motor Ayarları"
+
+msgid "menu:clocksettings"
+msgstr "Saat Ayarları"
+
+msgid "menu:teachsettings"
+msgstr "Eğitim/Analiz Ayarları"
+
+msgid "menu:aisettings"
+msgstr "AI Ayarları"
+
+msgid "menu:lang"
+msgstr "Dil"
+
+msgid "menu:support"
+msgstr "Katkı"
+
+msgid "menu:manual"
+msgstr "Kılavuz (EN)"
+
+#. player options in the setup and on the right
+msgid "player:type"
+msgstr "Oyuncu"
+
+msgid "player:human"
+msgstr "İnsan"
+
+msgid "player:ai"
+msgstr "AI"
+
+msgid "aistrategy"
+msgstr "AI Stratejisi"
+
+msgid "gametype"
+msgstr "Oyun Türü"
+
+msgid "game:normal"
+msgstr "Normal Oyun"
+
+msgid "game:teach"
+msgstr "Eğitici Oyun"
+
+#. buttons at the top - should all include a line break
+msgid "analysis:nextmoves"
+msgstr ""
+"Sonraki\n"
+"Hamleler"
+
+msgid "analysis:dots"
+msgstr ""
+"Renkli\n"
+"Ölçek"
+
+msgid "analysis:topmoves"
+msgstr ""
+"En İyi\n"
+"Hamleler"
+
+msgid "analysis:policy"
+msgstr ""
+"İlke\n"
+"Hamleleri"
+
+msgid "analysis:territory"
+msgstr ""
+"Tahmini\n"
+"Bölge"
+
+#. analysis menu items
+msgid "analysis:extra"
+msgstr "Derin analiz"
+
+msgid "analysis:equalize"
+msgstr "Olası hamlelere ait ziyaretleri eşitle"
+
+msgid "analysis:sweep"
+msgstr "Tüm hamleleri hızlıca analiz et"
+
+#. Analyze every node in the game more deeply
+msgid "analysis:game"
+msgstr "Tüm oyununun derin analizi"
+
+#. View a player performance report
+msgid "analysis:report"
+msgstr "Performans Raporu"
+
+#. game filter in performance report
+msgid "Entire Game"
+msgstr "Tüm Oyun"
+
+#. opening of the game filter in performance report
+msgid "Opening"
+msgstr "Açılış"
+
+#. middle of the game filter in performance report
+msgid "Midgame"
+msgstr "Oyun Ortası"
+
+#. end of the game filter in performance report
+msgid "Endgame"
+msgstr "Oyun Sonu"
+
+#. header in performance report
+msgid "header:keystats"
+msgstr "Temel İstatistikler"
+
+#. statistic in performance report
+msgid "stat:accuracy"
+msgstr "Doğruluk Derecesi"
+
+#. statistic in performance report
+msgid "stat:meanpointloss"
+msgstr "Ortalama Puan Kaybı"
+
+#. statistic in performance report
+msgid "stat:aitopmove"
+msgstr "AI En İyi Hamle Eşleşme Oranı"
+
+#. statistic in performance report
+msgid "stat:aitop5"
+msgstr "AI En İyi 5 Hamle Eşleşme Oranı"
+
+#. header in performance report
+msgid "header:num moves"
+msgstr "Hamle Sayısı"
+
+#. Analyze again but exclude all currently considered moves
+msgid "analysis:alternatives"
+msgstr "Alternatif hamleleri bul"
+
+#. Clear all results and reset to normal query
+msgid "analysis:reset"
+msgstr "Analizi sıfırla"
+
+#. Restrict analysis to a specific region
+msgid "analysis:region"
+msgstr "İlgi bölgesi ayarla"
+
+#. Status message
+msgid "analysis:region:start"
+msgstr ""
+"İlgi bölgesi seçmek için sürükleyin. Bölgeyi iptal etmek için bir nokta "
+"seçin."
+
+#. Menu option
+msgid "analysis:playtoend"
+msgstr "Oyun sonuna kadar hızlıca oyna"
+
+#. Keep improving current position analysis when there is nothing else to do
+msgid "analysis:continuous"
+msgstr "Sürekli analizi başlat/sonlandır"
+
+msgid "analysis:aimove"
+msgstr "AI Hamlesi Yap"
+
+#. Option in dropdown to insert some moves between the current and next
+msgid "analysis:insert"
+msgstr "Hamle ekle"
+
+#. status message
+msgid "extra analysis"
+msgstr "{visits} ziyaret kadar ek analiz gerçekleştiriyor"
+
+#. status message
+msgid "sweep analysis"
+msgstr ""
+"Hamle başına {visits} ziyaret olacak şekilde tüm tahtayı analiz ediyor"
+
+#. status message
+msgid "alternative analysis"
+msgstr "Alternatif hamleler arıyor"
+
+#. status message
+msgid "local analysis"
+msgstr "Yerel yanıtlar arıyor"
+
+#. status message
+msgid "equalizing analysis"
+msgstr "Aday hamlelerin analizini {visits} ziyarete eşitliyor"
+
+#. status message
+msgid "game re-analysis"
+msgstr "Tüm oyunu {visits} ziyaret kadar yeniden analiz ediyor"
+
+#. right panel buttons and below board
+msgid "pass-button-text"
+msgstr "Pas"
+
+#. resign the game
+msgid "resign"
+msgstr "Terk Et"
+
+#. Shown when a move is undone in teaching mode.
+msgid "teaching undo message"
+msgstr ""
+"{points_lost:.1f} puan kaybettirdiğinden {move}. hamleyi geri alın. Lütfen "
+"tekrar deneyin. İpucu için karşı analizi görmek amacıyla fare imlecini hamle"
+" üzerine getirin veya puan kaybının beklendiği tahtabölgelerini görmek "
+"amacıyla tahmini bölgeyi (t) kontrol edin."
+
+msgid "ai-ponder"
+msgstr ""
+"Bu işaret basitçe yeşil (boşta) renkten turuncu (sorguları işliyor) renge "
+"değişerek Motor durumunu gösterir. Motor kilitlenirse ya da başlatılmazsa "
+"kırmızı renkte yanar."
+
+#. undo button on the right
+msgid "undo-button-text"
+msgstr "Geri Al"
+
+#. tabs and labels on the right panel
+msgid "tab:score"
+msgstr "Puan"
+
+msgid "tab:winrate"
+msgstr "Kazanma Oranı"
+
+#. shown on a graph tab
+msgid "tab:rank_est"
+msgstr "Seviye Tahmini"
+
+msgid "tab:points"
+msgstr "Puan Kaybı"
+
+msgid "tab:info"
+msgstr "Hamle Bilgisi"
+
+msgid "tab:info-details"
+msgstr "Ayrıntılar"
+
+msgid "tab:notes"
+msgstr "Notlar"
+
+msgid "closedlabel:scoregraph"
+msgstr "Skor Grafiği"
+
+#. on the graph
+msgid "Jigo"
+msgstr "Jigo"
+
+msgid "short color B"
+msgstr "S"
+
+msgid "short color W"
+msgstr "B"
+
+msgid "closedlabel:movestats"
+msgstr "Hamle İstatistikleri"
+
+msgid "closedlabel:info&notes"
+msgstr "Hamle Bilgileri ve Notlar"
+
+#. on the board after passing once/twice
+msgid "board-pass"
+msgstr "pas"
+
+msgid "board-game-end"
+msgstr ""
+"oyun\n"
+"sonu"
+
+#. Select mode
+msgid "btn:Play"
+msgstr "Oyna"
+
+msgid "btn:Analysis"
+msgstr "Analiz"
+
+msgid "btn:Analyze"
+msgstr "Analiz Seçenekleri"
+
+msgid "stats:winrate"
+msgstr "Kazanma Oranı"
+
+msgid "stats:score"
+msgstr "Tahmini Skor"
+
+msgid "stats:pointslost"
+msgstr "Kaybedilen Puan"
+
+#. better than expected best move
+msgid "stats:pointsgained"
+msgstr "Kazanılan Puan"
+
+#. SGF and move comment messages
+msgid "SGF start message"
+msgstr ""
+"'X' ile işaretlenen hamleler KataGo’ya göre en iyi hamleleri gösterir, "
+"kareyle işaretlenenler 0,5 puandan daha az kaybettiren hamlelerdir"
+
+msgid "Info:score"
+msgstr "Skor: {score}"
+
+msgid "Info:winrate"
+msgstr "Kazanma oranı: {winrate}"
+
+msgid "Info:point loss"
+msgstr "Tahmini puan kaybı: {points_lost:.1f}"
+
+#. as in 'Move 125: B5'
+msgid "move"
+msgstr "Hamle {number}"
+
+msgid "Info:top move"
+msgstr "Ön görülen en iyi hamle: {top_move} ({score})."
+
+msgid "Info:best move"
+msgstr "Bu hamle en iyi hamle olarak ön görüldü"
+
+msgid "Info:PV"
+msgstr "Devam yolu: {pv}"
+
+msgid "Info:policy rank"
+msgstr "Hamle AI ilkesine göre {rank}. sıradadır  ({probability:.2%})."
+
+msgid "Info:policy best"
+msgstr "En iyi AI ilkesi hamlesi: {move} ({probability:.1%})."
+
+msgid "Info:teaching undo"
+msgstr "Hamle eğitim modunda otomatik olarak geri alındı."
+
+msgid "Info:undo predicted PV"
+msgstr "Ön görülen devam yolu: {pv}"
+
+msgid "Info:AI thoughts"
+msgstr "AI analiz süreci: {thoughts}"
+
+msgid "No analysis available"
+msgstr "Analiz mevcut değil"
+
+msgid "Analyzing move..."
+msgstr "Hamle analiz ediliyor..."
+
+msgid "SGF Notes Hint"
+msgstr "Bu pozisyonla ilgili SGF notlarınızı yazın."
+
+# sgf load popup
+msgid "load sgf title"
+msgstr "Analiz Edilecek SGF Dosyasını Yükle"
+
+# sgf load button
+msgid "Load File"
+msgstr "Dosya Yükle"
+
+# sgf save as button
+msgid "Save File"
+msgstr "Dosyayı Kaydet"
+
+# sgf save popup
+msgid "save sgf title"
+msgstr "SGF Dosyasını Kaydet"
+
+msgid "load sgf fast analysis"
+msgstr "Hızlı analizi kullan"
+
+msgid "load sgf rewind"
+msgstr "İlk hamleye git"
+
+# timer settings from here
+msgid "timer settings"
+msgstr "Saat Ayarlarını Belirle"
+
+msgid "byoyomi length"
+msgstr "Byo-yomi periyodu süresi (sn)"
+
+msgid "byoyomi periods"
+msgstr "Periyot sayısı"
+
+msgid "count down sound"
+msgstr "Ses açık"
+
+#. in minutes
+msgid "main time"
+msgstr "Ana süre (dak.)"
+
+#. ignore moves if timer is on and less than this is used
+msgid "minimal time use"
+msgstr "Byo-yomi için geçerli en kısa süre (sn)"
+
+msgid "move too fast"
+msgstr "Hamle yapmadan önce en az {num} saniye düşün."
+
+#. submit button
+msgid "update timer"
+msgstr "Saati Güncelle"
+
+# new game settings from here
+msgid "New Game title"
+msgstr "Yeni Oyun Ayarla / Oyun Bilgisi ve Kuralları Düzenle"
+
+#. in new game options
+msgid "player names"
+msgstr "Oyuncu Adları"
+
+#. hint on player name input
+msgid "black player name hint"
+msgstr "Siyah oyuncu adı"
+
+#. hint on player name input
+msgid "white player name hint"
+msgstr "Beyaz oyuncu adı"
+
+msgid "board size"
+msgstr "Tahta boyutu"
+
+msgid "handicap"
+msgstr "Handikap"
+
+msgid "komi"
+msgstr "Komi"
+
+msgid "ruleset"
+msgstr "Kurallar"
+
+#. ruleset names
+msgid "japanese"
+msgstr "Japonya"
+
+msgid "chinese"
+msgstr "Çin"
+
+msgid "korean"
+msgstr "Kore"
+
+msgid "aga"
+msgstr "AGA"
+
+msgid "tromp-taylor"
+msgstr "Tromp-Taylor"
+
+msgid "new zealand"
+msgstr "Yeni Zelanda"
+
+msgid "stone_scoring"
+msgstr "Eski Çin"
+
+msgid "clear cache"
+msgstr "Önbelleği temizle"
+
+#. clear cache help
+msgid "avoids replaying"
+msgstr ""
+"Benzer oyunların\n"
+"oynamasını önler"
+
+#. hints on new game
+msgid "non square board hint"
+msgstr "Kare olmayan tahtalar için x:y (ör. 19:9) formatını kullan"
+
+#. submit new game
+msgid "newgame"
+msgstr "Yeni Oyun Başlat"
+
+#. change komi etc in current game
+msgid "editgame"
+msgstr "Oyun Bilgisi Düzenle"
+
+#. generate position alongside starting new game
+msgid "setupposition"
+msgstr "Pozisyon Ayarla"
+
+# teacher settings from here
+msgid "teacher settings"
+msgstr "Eğitim/Analiz Ayarlarını Düzenle"
+
+msgid "point loss threshold"
+msgstr "Puan kaybı eşiği"
+
+msgid "num undos"
+msgstr ""
+"Geri alma sayısı\n"
+"(eğitici oyun)"
+
+msgid "dot color"
+msgstr "Renk"
+
+msgid "show dots"
+msgstr "Renkli Ölçek"
+
+msgid "save dots"
+msgstr "SGF’ye Kaydet"
+
+msgid "show last n dots"
+msgstr "Son <...> hamle için renkli ölçek"
+
+msgid "show ai dots"
+msgstr "AI oyuncusu için renkli ölçeği/SGF açıklaması göster"
+
+#. analysis option
+msgid "cache analysis to sgf"
+msgstr "SGF’de önbellek analizi"
+
+#. submit button
+msgid "update teacher"
+msgstr "Geri Bildrm Ayarlrnı Güncelle"
+
+# main config settings
+msgid "restarting engine"
+msgstr "Ayarların Değişiminden Sonra Motoru Yeniden Başlatıyor."
+
+#. contribute settings popup
+msgid "contribute settings title"
+msgstr "KataGo Dağıtılmış Eğitimine Katkıda Bulun"
+
+#. title
+msgid "contribute:viewer settings"
+msgstr "Görüntüleyici Ayarları"
+
+#. title
+msgid "contribute:login"
+msgstr "Katagotraining.org için oturum açma bilgisi"
+
+#. description for input
+msgid "contribute:maxgames"
+msgstr "Eş Zamanlı Oyun Sayısı"
+
+#. hint for max games
+msgid "contribute:maxgames:hint"
+msgstr ""
+"Orta seviye GPU’lar için yaklaşık 8 olan optimum numSearchThreads değerinize"
+" eşittir. Yarım kalmış oyunların yüklenmemesi nedeniyle daha kısa işlem için"
+" bu değeri biraz daha düşük ayarlayabilirsiniz."
+
+msgid "contribute:ownership"
+msgstr "Bölge Sahipliği Etkinleştir"
+
+#. hint for ownership
+msgid "contribute:ownership:hint"
+msgstr ""
+"Eğitim modunu biraz yavaşlatır, ancak bölge sahipliğinin "
+"görselleştirilmesine izin verir."
+
+#. description
+msgid "contribute:movespeed"
+msgstr "Hamle hızı"
+
+#. hint for move speed
+msgid "contribute:movespeed:hint"
+msgstr "Saniye/hamle cinsinden hamle gecikme değeri"
+
+#. description
+msgid "contribute:savesgf"
+msgstr "SGF’leri Kaydet"
+
+#. hint for save
+msgid "contribute:savesgf:hint"
+msgstr ""
+"./dist_sgf altında gösterilen bitmiş oyunlara ait SGF dosyalarını kaydet"
+
+msgid "contribute:username"
+msgstr "Kullanıcı Adı"
+
+msgid "contribute:password"
+msgstr "Şifre"
+
+msgid "contribute:register"
+msgstr "Kaydol"
+
+msgid "contribute:start"
+msgstr "Katkı Yapmaya Başla!"
+
+# title
+msgid "general settings title"
+msgstr "Genel ve Motor Ayarları"
+
+msgid "file not found"
+msgstr "Dosya yolu yok"
+
+msgid "general settings"
+msgstr "Genel Ayarlar"
+
+msgid "katago settings"
+msgstr "KataGo ayarları"
+
+msgid "engine settings"
+msgstr "Motor Ayarları"
+
+msgid "config file path"
+msgstr "Tüm ayarlar şuraya kaydedilir:"
+
+msgid "engine:katago"
+msgstr "KataGo yürütülebilir dosya yolu"
+
+msgid "engine:katago:hint"
+msgstr "Dahil edilmiş yürütme dosyasını kullanmak için boş bırakın"
+
+msgid "engine:model"
+msgstr "KataGo model dosyası yolu"
+
+msgid "engine:config"
+msgstr "KataGo yapılandırma dosyası yolu"
+
+msgid "engine:altcommand"
+msgstr "Motor Komutunu Geçersiz Kıl"
+
+msgid "engine:altcommand:hint"
+msgstr ""
+"Motoru başlatmak için kullanılan komut satırının tamamı. Diğer tüm model "
+"ayarları yok sayılacaktır."
+
+msgid "engine:max_visits"
+msgstr "Analizdeki maksimum ziyaret sayısı"
+
+msgid "engine:fast_visits"
+msgstr "Hızlı analizdeki maksimum ziyaret sayısı"
+
+msgid "engine:max_time"
+msgstr "Analiz için maksimum süre"
+
+msgid "engine:wide_root_noise"
+msgstr ""
+"Genişletilmiş kök etkisi (değerlendirilen hamle çeşitliliğini arttırır)"
+
+msgid "engine:wide_root_noise:hint"
+msgstr ""
+"Daha fazla olası hamle göstermek\n"
+"için 0,02-0,1 arası bir değer kullanın"
+
+msgid "engine:time:hint"
+msgstr "Saniye cinsinden süre"
+
+msgid "general:anim_pv_time"
+msgstr "Varyasyon animasyonunda hamleler arasındaki süre"
+
+msgid "general:debug_level"
+msgstr "Konsoldaki hata ayıklama düzeyi"
+
+msgid "general:debug_level:hint"
+msgstr "Hataları bildirirken 1 olarak ayarla"
+
+msgid "update settings"
+msgstr "Ayarları Güncelle"
+
+# ai settings from here
+msgid "ai settings"
+msgstr "Gelişmiş AI Ayarları"
+
+msgid "Select AI"
+msgstr "Yapılandırılacak AI stratejisi seç"
+
+msgid "update ai settings"
+msgstr "AI Ayarlarını Güncelle"
+
+#. misc errors and info messages
+msgid "sgf written"
+msgstr "Analiz içeren SGF {file_name} dosyasına kaydedildi"
+
+msgid "wait-before-extra-analysis"
+msgstr ""
+"Düzeltme talebinde bulunmadan önce ilk analizin tamamlanmasını bekleyin."
+
+msgid "Copied SGF to clipboard."
+msgstr "SGF panoya kopyalandı."
+
+msgid "Failed to import from clipboard"
+msgstr ""
+"Oyun panodan içeri aktarılmadı: {error}\n"
+"Pano içeriği: {contents}..."
+
+msgid "Failed to load SGF"
+msgstr "SGF yüklenemedi: {error}"
+
+msgid "Kata exe not found"
+msgstr ""
+"KataGo ikili dosyası {exe} mevcut değil, lütfen genel ayarları kontrol edin."
+
+msgid "Kata exe not found in path"
+msgstr ""
+"KataGo ikili dosyası {exe}' YOLDA bulunamadı, ortam değişkenlerinizi kontrol"
+" edin veya bunun yerine genel ayarlardaki tam yolu kullanın. MacOS "
+"kullanıyorsanız, ilk önce katago’yu yüklemek için brew’in nasıl "
+"kullanıldığını görmek amacıyla kılavuza bakın"
+
+msgid "Kata model not found"
+msgstr ""
+"KataGo modeli {model} mevcut değil, lütfen genel ayarları kontrol edin."
+
+msgid "Kata config not found"
+msgstr ""
+"KataGo yapılandırma dosyası {config} mevcut değil, lütfen genel ayarları "
+"kontrol edin."
+
+msgid "Starting Kata failed"
+msgstr ""
+"'{command}' komutuyla KataGo’nun başlatılması {error} hatasıyla sonlandı."
+
+msgid "Engine died unexpectedly"
+msgstr "Motor şu çıktıyı göndererek beklenmedik bir şekilde sonlandı: {error}"
+
+msgid "Engine missing DLL"
+msgstr ""
+"Eksik DLL nedeniyle KataGo başlatılamadı. Ayrıntılar için KataGo "
+"belgelerindeki gereksinimlere bakın ya da ikili dosyayı tek başına "
+"çalıştırmayı deneyin."
+
+#. popup title
+msgid "engine recovery"
+msgstr "KataGo kurulumu yardımı"
+
+msgid "engine died popup opening message"
+msgstr ""
+"KataGo Motoru başlatılamadı veya kilitlendi.\n"
+"\n"
+"Hata açıklaması: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Hata kodu: [color=#CC2222]{code}[/color]."
+
+#. Link in tags should not be touched.
+msgid "change engine suggestion"
+msgstr ""
+"İlk önce, KataGo sürümlerini indirmeyi deneyin ve {link} bağlantısındaki "
+"farklı yürütme dosyalarını kullanmayı deneyin."
+
+#. Link in tags should not be touched (uses link_here msgid)
+msgid "go to engine help page"
+msgstr ""
+"Sorun halen devam ediyorsa, güncel sorun giderme sayfası için {link} "
+"bağlantısına gidin."
+
+#. as in "click here" to go to this page,
+msgid "link_here"
+msgstr "buraya tıklayın"
+
+#. AI names, help etc
+msgid "strength:kyu"
+msgstr "k"
+
+msgid "strength:dan"
+msgstr "d"
+
+msgid "ai:default"
+msgstr "KataGo"
+
+msgid "aihelp:default"
+msgstr ""
+"En üst seviye KataGo AI. Seviye, genel ayarlarda 'motor' bölümündeki 'maks "
+"ziyaret' ve 'model' değeriyle ve motor yapılandırma dosyasıyl belirlenir. "
+"Burada herhangi bir seçenek verilmez."
+
+#. ai which handles handicap games better
+msgid "ai:handicap"
+msgstr "KataHandikap"
+
+msgid "aihelp:handicap"
+msgstr ""
+"KataGo üst seviye handikap oyunları oynamak için optimize edilmiştir. 'pda' "
+"ayarı KataGo’da 'playoutDoublingAdvantage' ayarına karşılık gelir. "
+"'automatic' işaretlendiğinde, KaTrain uygun bir değeri otomatik olarak "
+"bulacaktır."
+
+msgid "ai:simple"
+msgstr "Basit Stil"
+
+msgid "aihelp:simple"
+msgstr ""
+"Tahta konumunu basitleştiren hamleler yapar. Bu hamlelerle en fazla "
+"'max_points_lost' puan kaybedilir ve en az 'min_visits’ ziyaret yapılır, "
+"daha az puan kaybettiren hamle tercih edilir, kendi bölgesine daha fazla "
+"odaklanır (settled_weight önem derecesine bağlı olarak), rakibin bölgesine "
+"daha fazla odaklanır (settled_weight * opponent_fac önem derecesine bağlı "
+"olarak), tenuki hamlesinden kaçınır (5 boşluktan daha fazlası, "
+"tenuki_penalty önem derecesine bağlı olarak) ve bitişik hamlelerden kaçınır "
+"(attachment_penalty önem derecesine bağlı olarak). Aynı zamanda oyunu "
+"güçleştirmek için ağırlıklar negatif olabilir ve genişletilmiş kök etkisi "
+"(genel ayarlardaki) seviyeden ödün verilerek bu stile daha çok odaklanılması"
+" için kullanılabilir."
+
+msgid "ai:antimirror"
+msgstr "KataAntiSimetri"
+
+msgid "aihelp:antimirror"
+msgstr "KataGo'nun Simetri Karşıtı Go Modu"
+
+msgid "ai:jigo"
+msgstr "KataJigo"
+
+msgid "aihelp:jigo"
+msgstr ""
+"Ek sınırlama olmaksızın belirli bir miktarda puan (varsayılan 0,5) farkla "
+"kazanmayı deneyecektir."
+
+msgid "ai:scoreloss"
+msgstr "Puan Kaybı"
+
+msgid "aihelp:scoreloss"
+msgstr ""
+"Daha düşük olasılığa sahip daha yüksek puan kaybına neden olacak hamleler "
+"oynar. Daha yüksek ziyaret ayarlarıyla çok çeşitli/daha düşük seviyede hamle"
+" yapacaktır."
+
+msgid "ai:policy"
+msgstr "İlke"
+
+msgid "aihelp:policy"
+msgstr ""
+"Herhangi derin analiz olmadan ilke ağına göre en iyi hamleyi oynar. Seviye, "
+"daha çok motor ayarlarındaki 'model' değeriyle belirlenir. 'opening_moves' "
+"ayarı açılışta kaç tane hamlenin rastgele yapılacağına etki eder."
+
+msgid "ai:p:weighted"
+msgstr "İlke Ağırlıklı"
+
+msgid "aihelp:p:weighted"
+msgstr ""
+"Daha zayıf hamlelerin oynanma olasılığına etki eden 'weaken_fac' değerine "
+"bağlı olarak ilke olasılığına göre hamle yapar. Çok düşük değer durumunda "
+"'İlke' AI’sı gibi oynar. 'pick_override' rastlantısallık olmadan en iyi "
+"hamlenin ne zaman seçileceğini belirler ve 'lower_bound' izin verilen alt "
+"sınır ilkesi değerini belirler."
+
+msgid "ai:p:pick"
+msgstr "Zayıf İlke"
+
+msgid "aihelp:p:pick"
+msgstr ""
+"Rastgele 'pick_n + pick_frac * <number of legal moves>' değeri kadar hamle "
+"seçer ve en iyi hamleyi oynar. 'pick_frac=1' ise 'İlke' AI’sı gibi oynar. "
+"Bariz hatalardan kaçınmak için ilke değeri 'pick_override' değerinin "
+"üzerindeyse en iyi hamleyi oynar."
+
+msgid "ai:p:local"
+msgstr "Yerel Stil"
+
+msgid "aihelp:p:local"
+msgstr ""
+"En son hamleye kadar ağırlıklandırılmış 'pick_n + pick_frac * <number of "
+"legal moves>' değeri kadar hamle seçer ve en iyi hamleyi oynar. Bariz "
+"hatalardan kaçınmak için ilke değeri 'pick_override' değerinin üzerindeyse "
+"en iyi hamleyi oynar."
+
+msgid "ai:p:tenuki"
+msgstr "Tenuki Stili"
+
+msgid "aihelp:p:tenuki"
+msgstr ""
+"En son hamle sonrasında ağırlıklandırılmış 'pick_n + pick_frac * <number of "
+"legal moves>' kadar hamle seçer ve en iyi hamleyi oynar. Bariz hatalardan "
+"kaçınmak için ilke değeri 'pick_override' değerinin üzerindeyse en iyi "
+"hamleyi oynar. Daha yüksek 'stddev' değeri en son hamleden daha fazla "
+"sapmaya neden olur."
+
+msgid "ai:p:influence"
+msgstr "Yüksek Stil"
+
+msgid "aihelp:p:influence"
+msgstr ""
+"'Eşik değeri' hattının üstünde kalan hamleleri seçer ve en iyi hamleyi "
+"oynar. Tahta kenarına daha yakın hamleleri geri plana almak için "
+"'line_weight' değerini arttırın. Tahtada 'oyun sonu’ bölümü tamamlandığından"
+" stratejiyi durdurur."
+
+msgid "ai:p:territory"
+msgstr "Alçak Stil"
+
+msgid "aihelp:p:territory"
+msgstr ""
+"'Eşik değeri' hattının altında kalan hamleleri seçer ve en iyi hamleyi "
+"oynar. Merkeze daha yakın hamleleri geri plana almak için 'line_weight' "
+"değerini arttırın. Tahtada 'oyun sonu’ bölümü tamamlandığından stratejiyi "
+"durdurur."
+
+msgid "ai:p:rank"
+msgstr "Ayarlı Seviye"
+
+msgid "aihelp:p:rank"
+msgstr ""
+"Rastgele sınırlı sayıda geçerli hamle seçer ve en iyi hamleyi oynar. Daha "
+"yüksek seviye ayarları, daha geniş bir seçimden en iyi hamleyi seçer. 0 "
+"kyu/dan eşitliği mümkün olmadığından, 3 dan = -2 kyu’dur."
+
+#. in AI settings
+msgid "estimated strength"
+msgstr "Tahmini Seviye"
+
+#. button in general settings for downloading models
+msgid "download models button"
+msgstr "Modelleri İndir"
+
+#. button in general settings for downloading katago executables
+msgid "download katago button"
+msgstr "KataGo sürümlerini indir"
+
+#. shown on on the model select dropdown
+msgid "models available"
+msgstr "Mevcut {num} model bulundu"
+
+#. shown on on the katago binary select dropdown
+msgid "default katago option"
+msgstr "Platformu tespit et ve verilen OpenCL KataGo ikili dosyasını kullan"
+
+#. shown on on the binaries select dropdown
+msgid "katago binaries available"
+msgstr "Mevcut {num} katago sürümü bulundu"
+
+#. error message on trying to download models when already done
+msgid "All models downloaded"
+msgstr "Mevcut tüm modeller zaten indirildi"
+
+#. error message on trying to download models when already done
+msgid "All binaries downloaded"
+msgstr "Mevcut tüm iki dosyalar önceden indirildi"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze max visits"
+msgstr "Hamle başına ziyaret sayısı"
+
+#. label in little popup for analyzing entire game
+msgid "reanalyze mistakes only"
+msgstr "Yalnızca hatalı hamle analizi yap"
+
+#. on move tree editing
+msgid "Delete Node"
+msgstr "Düğümü Sil"
+
+#. on move tree editing
+msgid "Toggle Collapse Branch"
+msgstr "Genişlet/Daralt"
+
+#. on move tree editing
+msgid "Make Main Branch"
+msgstr "Ana Varyasyon Yap"
+
+#. theme label
+msgid "theme"
+msgstr "Renk Teması"
+
+#. theme name
+msgid "theme:normal"
+msgstr "Varsayılan Tema"
+
+#. theme name
+msgid "theme:red-green-colourblind"
+msgstr "Kırmızı-Yeşil Renk Körü"
+
+#. setting: what to show on top move (e.g. point loss, visits, ...)
+msgid "stats on top move"
+msgstr "En iyi hamle istatistikleri"
+
+#. Dropdown menu option
+msgid "top_move_delta_score"
+msgstr "Skor değişimi"
+
+#. Dropdown menu option
+msgid "top_move_score"
+msgstr "Skor"
+
+#. Dropdown menu option
+msgid "top_move_delta_winrate"
+msgstr "Kaz. oranı değişimi"
+
+#. Dropdown menu option
+msgid "top_move_winrate"
+msgstr "Kazanma oranı"
+
+#. Dropdown menu option
+msgid "top_move_visits"
+msgstr "Ziyaret"
+
+#. Dropdown menu option
+msgid "top_move_nothing"
+msgstr "(yok)"
+
+#. top move stats show threshold description
+msgid "show stats if"
+msgstr "... ziyaretten daha fazlası yapıldıysa istatistikleri göster"
+
+#. status message on starting insert mode
+msgid "starting insert mode"
+msgstr ""
+"Ekleme modu başlatılıyor, Ekleme modundan çıkmak için 'i' tuşuna basın."
+
+#. status message on ending insert mode and copying the moves
+msgid "ending insert mode"
+msgstr "Hamlelerin eklenmesi bitti, takip eden {num_copied} hamle kopyalandı."
+
+#. when a user tries to go to a different move/node while in insert mode
+msgid "finish inserting before navigating"
+msgstr ""
+"Ekleme modununda navigasyon devre dışı bırakıldı, 'i’ tuşuna basarak ekleme "
+"modunu sonlandırın."
+
+#. menu item
+msgid "menu:distributed"
+msgstr "Dağıtılmış Öz Oyun Eğitimi"
+
+#. in self-play mode
+msgid "gui-locked"
+msgstr ""
+"Dağıtılmış kendi kendine oyun eğitimi modunda {action} eylemine izin "
+"verilmez.Bu moddan çıkmak için KaTrain’i yeniden başlatın."
+
+#. Progress message
+msgid "setup game status message"
+msgstr ""
+"AI öz oyun özelliğiyle oyun üretiyor:  {move}/{until_move} hamle yapıldı."
+
+#. Popup for generating position: top explanation
+msgid "setup position explanation"
+msgstr ""
+"Devam edebileceğiniz yarım kalmış bir oyun üretir. Örneğin, çeşitli oyun "
+"ortası veya oyun sonu pozisyonlarından başlayıp daha yüksek seviye yapay "
+"zekaya karşı avantajlı olduğunuz oyunlar oynamak için bu özelliği "
+"kullanabilirsiniz."
+
+#. Description for black target score
+msgid "setup position black score"
+msgstr "Siyah için hedef puan:"
+
+#. Description for how many moves
+msgid "setup position move number"
+msgstr "Şu hamleye kadar oyun üret:"
+
+#. on move tree editing, deletes all other branches splitting off from the
+#. path UP TO this node
+msgid "Prune Branch"
+msgstr "Varyasyonu Buda"
+
+#. distance of wall to existing stones
+msgid "tsumego:walldistance"
+msgstr "Duvar mesafesi"
+
+#. tsumego: ko is good enough?
+msgid "tsumego:ko"
+msgstr "Ko'ya izin veriliyor mu?"
+
+#. Menu option for tsumego frame around position
+msgid "analysis:tsumegoframe"
+msgstr "Tsumego Çerçevesi"
+
+#. TODO - point loss precision options
+msgid "show two digits for point loss near zero"
+msgstr "Show two digits for point loss near zero"
+
+#. TODO
+msgid "from move"
+msgstr "from move"
+
+#. TODO - status message
+msgid "move range analysis"
+msgstr ""
+"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+
+#. TODO
+msgid "to move"
+msgstr "to move"
+
+#. TODO - Restrict analysis to move range
+msgid "limit to moves"
+msgstr "Limit to moves"
+
+#. TODO
+msgid "contribute:passwordwarning"
+msgstr "(Stored as plain text, do not re-use this anywhere)"
