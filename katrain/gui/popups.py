@@ -468,7 +468,7 @@ class BaseConfigPopup(QuickConfigGui):
         "Strongest distributed model": "https://katagotraining.org/api/networks/get_strongest/",
     }
     MODELS = {
-        "old 15 block model": "https://github.com/lightvector/KataGo/releases/download/v1.3.2/g170e-b15c192-s1672170752-d4661970612.txt.gz",
+        "old 15 block model": "https://github.com/lightvector/KataGo/releases/download/v1.3.2/g170e-b15c192-s1672170752-d466197061.txt.gz",
     }
     MODEL_DESC = {
         "Fat 40 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b40c384x2-s2348692992-d1229892979.zip",
