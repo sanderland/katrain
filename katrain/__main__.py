@@ -839,6 +839,15 @@ class KaTrainApp(MDApp):
     def __init__(self):
         super().__init__()
 
+    def is_valid_window_position(self, left, top, width, height):
+        from screeninfo import get_monitors
+        monitors = get_monitors()
+        for monitor in monitors:
+            if (left >= monitor.x and left + width <= monitor.x + monitor.width and
+                top >= monitor.y and top + height <= monitor.y + monitor.height):
+                return True
+        return False
+
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
 
@@ -890,7 +899,7 @@ class KaTrainApp(MDApp):
             win_size = [1300 * window_scale_fac, 1000 * window_scale_fac]
         self.gui.log(f"Setting window size to {win_size} and position to {[win_left, win_top]}", OUTPUT_DEBUG)
         Window.size = (win_size[0], win_size[1])
-        if win_left is not None and win_top is not None:
+        if win_left is not None and win_top is not None and self.is_valid_window_position(win_left, win_top, win_size[0], win_size[1]):
             Window.left = win_left
             Window.top = win_top
 
