@@ -52,15 +52,19 @@ AI_TERRITORY = "ai:p:territory"
 AI_RANK = "ai:p:rank"
 AI_SIMPLE_OWNERSHIP = "ai:simple"
 AI_SETTLE_STONES = "ai:settle"
+AI_HUMAN = "ai:human"
+AI_PRO = "ai:pro"
 
 AI_CONFIG_DEFAULT = AI_RANK
 
 AI_STRATEGIES_ENGINE = [AI_DEFAULT, AI_HANDICAP, AI_SCORELOSS, AI_SIMPLE_OWNERSHIP, AI_JIGO, AI_ANTIMIRROR]
 AI_STRATEGIES_PICK = [AI_PICK, AI_LOCAL, AI_TENUKI, AI_INFLUENCE, AI_TERRITORY, AI_RANK]
 AI_STRATEGIES_POLICY = [AI_WEIGHTED, AI_POLICY] + AI_STRATEGIES_PICK
-AI_STRATEGIES = AI_STRATEGIES_ENGINE + AI_STRATEGIES_POLICY
+AI_STRATEGIES = AI_STRATEGIES_ENGINE + AI_STRATEGIES_POLICY + [AI_HUMAN, AI_PRO]
 AI_STRATEGIES_RECOMMENDED_ORDER = [
     AI_DEFAULT,
+    AI_HUMAN,
+    AI_PRO,
     AI_RANK,
     AI_HANDICAP,
     AI_SIMPLE_OWNERSHIP,
@@ -91,6 +95,8 @@ AI_STRENGTH = {  # dan ranks, backup if model is missing. TODO: remove some?
     AI_RANK: float("nan"),
     AI_SIMPLE_OWNERSHIP: 2,
     AI_SETTLE_STONES: 2,
+    AI_HUMAN: float("nan"),
+    AI_PRO: float("nan")
 }
 
 AI_OPTION_VALUES = {
@@ -115,7 +121,12 @@ AI_OPTION_VALUES = {
     "min_visits": range(1, 10),
     "attach_penalty": [x / 10 for x in range(-10, 51)],
     "tenuki_penalty": [x / 10 for x in range(-10, 51)],
+    "human_kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(30, 0, -1)] +
+                  [(k, f"{1-k}[strength:dan]") for k in range(0, -9,-1)],
+    "modern_style": "bool",
+    "pro_year": range(1800,2024),
 }
+
 AI_KEY_PROPERTIES = {
     "kyu_rank",
     "strength",

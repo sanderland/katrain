@@ -80,8 +80,10 @@
 
 <ConfigPopup>:
     model_path: model_path
+    humanlike_model_path: humanlike_model_path
     katago_path: katago_path
     model_files: model_files
+    humanlike_model_files: humanlike_model_files
     katago_files: katago_files
     download_progress_box: download_progress_box
     katago_download_progress_box: katago_download_progress_box
@@ -90,7 +92,7 @@
         font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
     GridLayout:
         cols: 2
-        rows: 6
+        rows: 8
         size_hint: 1,6
         spacing: CP_SPACING
         DescriptionLabel:
@@ -154,6 +156,32 @@
                 -shorten_from: 'right'
                 on_select:
                     if self.selected_index != 0: model_path.text = self.value_keys[self.selected_index]
+                size_hint_y: 0.7
+                sync_height_frac: 1.0
+                -font_size: self.height * 0.5
+                -background_color: [*[c*255/88 for c in Theme.BOX_BACKGROUND_COLOR[:3]], 1] # compensate for texture
+        DescriptionLabel:
+            text: i18n._("engine:humanlike_model")
+            size_hint: 0.33, 1
+        AnchorLayout:
+            LabelledPathInput:
+                id: humanlike_model_path
+                input_property: "engine/humanlike_model"
+                on_text: root.check_models()
+        DescriptionLabel:
+            text: ''
+            size_hint: 0.33, 1
+        AnchorLayout:
+            KeyValueSpinner:
+                id: humanlike_model_files
+                text: ''
+                text_autoupdate: True
+                -text_size: self.width, None
+                -halign: 'center'
+                -shorten: True
+                -shorten_from: 'right'
+                on_select:
+                    if self.selected_index != 0: humanlike_model_path.text = self.value_keys[self.selected_index]
                 size_hint_y: 0.7
                 sync_height_frac: 1.0
                 -font_size: self.height * 0.5
