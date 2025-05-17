@@ -1069,6 +1069,9 @@ class PickStrategy(PickBasedStrategy):
         self.game.katrain.log(f"[PickStrategy] Starting move generation using base PickBasedStrategy implementation", OUTPUT_DEBUG)
         return super().generate_move()
 
+    def handle_endgame(self, legal_policy_moves, policy_grid, size):
+        return None, "", None, False
+
 class RankStrategy(PickBasedStrategy):
     """Rank strategy - similar to Pick but calibrated based on rank"""
     
@@ -1143,6 +1146,9 @@ class RankStrategy(PickBasedStrategy):
         
         # Call the parent class method with calculated overrides
         return super().should_play_top_move(policy_moves, top_5_pass, override, overridetwo)
+    
+    def handle_endgame(self, legal_policy_moves, policy_grid, size):
+        return None, "", None, False
 
 class InfluenceStrategy(PickBasedStrategy):
     """Influence strategy - weights moves based on influence (distance from edge)"""
@@ -1373,7 +1379,7 @@ class HumanStyleStrategy(AIStrategy):
                 for y in range(board_size[1]):
                     idx = (board_size[1] - y - 1) * board_size[0] + x
                     if idx < len(human_policy) and human_policy[idx] > 0:
-                        moves.append((Move((x, y), player=self.cn.next_player), human_policy[idx]))
+                        moves.append((Move((x, y), player=self.cn.next_player), human_policy[idx] ** 2))
             
             self.game.katrain.log(f"[HumanStyleStrategy] Generated {len(moves)} candidate moves from human policy", OUTPUT_DEBUG)
                         
@@ -1385,17 +1391,23 @@ class HumanStyleStrategy(AIStrategy):
             # Select move according to policy probabilities
             if moves:
                 self.game.katrain.log(f"[HumanStyleStrategy] Performing weighted selection from {len(moves)} moves", OUTPUT_DEBUG)
-                top_moves = sorted(moves, key=lambda x: -x[1])[:5]
+                top_moves = sorted(moves, key=lambda x: -x[1])
                 self.game.katrain.log(f"[HumanStyleStrategy] Top 5 moves by probability:", OUTPUT_DEBUG)
-                for i, (move, prob) in enumerate(top_moves):
-                    self.game.katrain.log(f"[HumanStyleStrategy] #{i+1}: {move.gtp()} - {prob:.2%}", OUTPUT_DEBUG)
+                
+                # Create a formatted string of top 5 moves for ai_thoughts
+                top_moves_str = "\n".join([f"#{i+1}: {move.gtp()} - {prob:.1%}" for i, (move, prob) in enumerate(top_moves[:5])])
+
+                self.game.katrain.log(f"[HumanStyleStrategy]\n{top_moves_str}", OUTPUT_DEBUG)
                 
                 selected = weighted_selection_without_replacement(moves, 1)[0]
                 move = selected[0]
                 prob = selected[1]
                 
+                # Find the rank of the selected move
+                selected_rank = next((i+1 for i, (m, _) in enumerate(top_moves) if m.gtp() == move.gtp()), "ERROR: move not found in ranking")
+                
                 self.game.katrain.log(f"[HumanStyleStrategy] Selected move {move.gtp()} with probability {prob:.4f}", OUTPUT_DEBUG)
-                ai_thoughts = f"Playing human-like move {move.gtp()} ({prob:.1%}) based on {human_profile} profile."
+                ai_thoughts = f"\n{top_moves_str}\n\nPlayed move {move.gtp()} ({prob:.1%}) as the #{selected_rank} top move."
                 self.game.katrain.log(f"[HumanStyleStrategy] Final decision: {move.gtp()}", OUTPUT_DEBUG)
                 return move, ai_thoughts
         else:
