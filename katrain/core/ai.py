@@ -1274,7 +1274,7 @@ class HumanStyleStrategy(AIStrategy):
             human_style = "rank" if self.settings["modern_style"] else "preaz"
 
             if human_kyu_rank <= 0:  # dan ranks
-                rank_text = f"{-human_kyu_rank}d"
+                rank_text = f"{1-human_kyu_rank}d"
             else:  # kyu ranks
                 rank_text = f"{human_kyu_rank}k"
 
