@@ -1146,7 +1146,7 @@ class RankStrategy(PickBasedStrategy):
         
         # Call the parent class method with calculated overrides
         return super().should_play_top_move(policy_moves, top_5_pass, override, overridetwo)
-    
+
     def handle_endgame(self, legal_policy_moves, policy_grid, size):
         return None, "", None, False
 
@@ -1364,65 +1364,51 @@ class HumanStyleStrategy(AIStrategy):
         
         # Check if human policy is available
         self.game.katrain.log(f"[HumanStyleStrategy] Processing analysis results", OUTPUT_DEBUG)
-        if "humanPolicy" in analysis:
-            self.game.katrain.log(f"[HumanStyleStrategy] Human policy found in analysis", OUTPUT_DEBUG)
-            board_size = self.game.board_size
-            self.game.katrain.log(f"[HumanStyleStrategy] Board size: {board_size}", OUTPUT_DEBUG)
-            human_policy = analysis["humanPolicy"]
-            self.game.katrain.log(f"[HumanStyleStrategy] Human policy length: {len(human_policy)}", OUTPUT_DEBUG)
-            if len(human_policy) != 362:
-                self.game.katrain.log(f"[HumanStyleStrategy] WARNING: Human policy length {len(human_policy)} != 362", OUTPUT_ERROR)
-            
-            # Create a list of moves with their human policy weights
-            moves = []
-            for x in range(board_size[0]):
-                for y in range(board_size[1]):
-                    idx = (board_size[1] - y - 1) * board_size[0] + x
-                    if idx < len(human_policy) and human_policy[idx] > 0:
-                        moves.append((Move((x, y), player=self.cn.next_player), human_policy[idx] ** 2))
-            
-            self.game.katrain.log(f"[HumanStyleStrategy] Generated {len(moves)} candidate moves from human policy", OUTPUT_DEBUG)
-                        
-            # Add pass move if it has positive probability
-            if len(human_policy) > board_size[0] * board_size[1] and human_policy[-1] > 0:
-                self.game.katrain.log(f"[HumanStyleStrategy] Adding pass move with probability {human_policy[-1]}", OUTPUT_DEBUG)
-                moves.append((Move(None, player=self.cn.next_player), human_policy[-1]))
-                
-            # Select move according to policy probabilities
-            if moves:
-                self.game.katrain.log(f"[HumanStyleStrategy] Performing weighted selection from {len(moves)} moves", OUTPUT_DEBUG)
-                top_moves = sorted(moves, key=lambda x: -x[1])
-                self.game.katrain.log(f"[HumanStyleStrategy] Top 5 moves by probability:", OUTPUT_DEBUG)
-                
-                # Create a formatted string of top 5 moves for ai_thoughts
-                top_moves_str = "\n".join([f"#{i+1}: {move.gtp()} - {prob:.1%}" for i, (move, prob) in enumerate(top_moves[:5])])
-
-                self.game.katrain.log(f"[HumanStyleStrategy]\n{top_moves_str}", OUTPUT_DEBUG)
-                
-                selected = weighted_selection_without_replacement(moves, 1)[0]
-                move = selected[0]
-                prob = selected[1]
-                
-                # Find the rank of the selected move
-                selected_rank = next((i+1 for i, (m, _) in enumerate(top_moves) if m.gtp() == move.gtp()), "ERROR: move not found in ranking")
-                
-                self.game.katrain.log(f"[HumanStyleStrategy] Selected move {move.gtp()} with probability {prob:.4f}", OUTPUT_DEBUG)
-                ai_thoughts = f"\n{top_moves_str}\n\nPlayed move {move.gtp()} ({prob:.1%}) as the #{selected_rank} top move."
-                self.game.katrain.log(f"[HumanStyleStrategy] Final decision: {move.gtp()}", OUTPUT_DEBUG)
-                return move, ai_thoughts
-        else:
-            self.game.katrain.log(f"[HumanStyleStrategy] Human policy not found in analysis", OUTPUT_DEBUG)
-                
-        # Fall back to regular policy if the human policy isn't available
-        self.game.katrain.log(f"[HumanStyleStrategy] Falling back to regular policy", OUTPUT_DEBUG)
-        if not self.cn.policy_ranking:
-            self.game.katrain.log(f"[HumanStyleStrategy] No policy ranking available, returning pass move", OUTPUT_DEBUG)
-            return Move(None, player=self.cn.next_player), f"No policy data available for {human_profile}, returning pass."
-            
-        move = self.cn.policy_ranking[0][1]
-        self.game.katrain.log(f"[HumanStyleStrategy] Selected top policy move: {move.gtp()}", OUTPUT_DEBUG)
-        ai_thoughts = f"Human policy not available for {human_profile}, falling back to regular policy move {move.gtp()}."
+        if "humanPolicy" not in analysis:
+            error_msg = "humanPolicy not found in analysis—have you downloaded and configured your human model yet?"
+            raise Exception(error_msg)
         
+        self.game.katrain.log(f"[HumanStyleStrategy] Human policy found in analysis", OUTPUT_DEBUG)
+        board_size = self.game.board_size
+        self.game.katrain.log(f"[HumanStyleStrategy] Board size: {board_size}", OUTPUT_DEBUG)
+        human_policy = analysis["humanPolicy"]
+        self.game.katrain.log(f"[HumanStyleStrategy] Human policy length: {len(human_policy)}", OUTPUT_DEBUG)
+        if len(human_policy) != 362:
+            self.game.katrain.log(f"[HumanStyleStrategy] WARNING: Human policy length {len(human_policy)} != 362", OUTPUT_ERROR)
+        
+        # Create a list of moves with their human policy weights
+        moves = []
+        for x in range(board_size[0]):
+            for y in range(board_size[1]):
+                idx = (board_size[1] - y - 1) * board_size[0] + x
+                if idx < len(human_policy) and human_policy[idx] > 0:
+                    moves.append((Move((x, y), player=self.cn.next_player), human_policy[idx]))
+        
+        self.game.katrain.log(f"[HumanStyleStrategy] Generated {len(moves)} candidate moves from human policy", OUTPUT_DEBUG)
+                    
+        # Add pass move if it has positive probability
+        if len(human_policy) > board_size[0] * board_size[1] and human_policy[-1] > 0:
+            self.game.katrain.log(f"[HumanStyleStrategy] Adding pass move with probability {human_policy[-1]}", OUTPUT_DEBUG)
+            moves.append((Move(None, player=self.cn.next_player), human_policy[-1]))
+            
+        self.game.katrain.log(f"[HumanStyleStrategy] Performing weighted selection from {len(moves)} moves", OUTPUT_DEBUG)
+        top_moves = sorted(moves, key=lambda x: -x[1])
+        self.game.katrain.log(f"[HumanStyleStrategy] Top 5 moves by probability:", OUTPUT_DEBUG)
+        
+        # Create a formatted string of top 5 moves for ai_thoughts
+        top_moves_str = "\n".join([f"#{i+1}: {move.gtp()} - {prob:.1%}" for i, (move, prob) in enumerate(top_moves[:5])])
+
+        self.game.katrain.log(f"[HumanStyleStrategy]\n{top_moves_str}", OUTPUT_DEBUG)
+        
+        selected = weighted_selection_without_replacement(moves, 1)[0]
+        move = selected[0]
+        prob = selected[1]
+        
+        # Find the rank of the selected move
+        selected_rank = next((i+1 for i, (m, _) in enumerate(top_moves) if m.gtp() == move.gtp()), "ERROR: move not found in ranking")
+        
+        self.game.katrain.log(f"[HumanStyleStrategy] Selected move {move.gtp()} with probability {prob:.4f}", OUTPUT_DEBUG)
+        ai_thoughts = f"\n{top_moves_str}\n\nPlayed move {move.gtp()} ({prob:.1%}) as the #{selected_rank} top move."
         self.game.katrain.log(f"[HumanStyleStrategy] Final decision: {move.gtp()}", OUTPUT_DEBUG)
         return move, ai_thoughts
 
