@@ -17,6 +17,15 @@ from katrain.core.constants import (
 from katrain.core.game import Game, GameNode, Move
 from katrain.core.utils import var_to_grid, weighted_selection_without_replacement, evaluation_class
 
+# Decorator pattern for adding classes to the registry
+STRATEGY_REGISTRY = {}
+
+def register_strategy(strategy_name):
+    def decorator(strategy_class):
+        STRATEGY_REGISTRY[strategy_name] = strategy_class
+        return strategy_class
+    return decorator
+
 def interp_ix(lst, x):
     i = 0
     while i + 1 < len(lst) - 1 and lst[i + 1] < x:
@@ -268,6 +277,7 @@ class AIStrategy(ABC):
         self.game.katrain.log(f"[{self.strategy_name}] No override condition met, continuing with strategy", OUTPUT_DEBUG)    
         return None, ""
 
+@register_strategy(AI_DEFAULT)
 class DefaultStrategy(AIStrategy):
     """Default strategy - simply plays the top move from the engine"""
     
@@ -291,6 +301,7 @@ class DefaultStrategy(AIStrategy):
         
         return top_cand, ai_thoughts
 
+@register_strategy(AI_HANDICAP)
 class HandicapStrategy(AIStrategy):
     """Handicap strategy - uses playoutDoublingAdvantage to analyze the position"""
     
@@ -342,6 +353,7 @@ class HandicapStrategy(AIStrategy):
         self.game.katrain.log(f"[HandicapStrategy] Final decision: {top_cand.gtp()}", OUTPUT_DEBUG)
         return top_cand, ai_thoughts
 
+@register_strategy(AI_ANTIMIRROR)
 class AntimirrorStrategy(AIStrategy):
     """Antimirror strategy - uses antiMirror to analyze the position"""
     
@@ -380,6 +392,7 @@ class AntimirrorStrategy(AIStrategy):
         self.game.katrain.log(f"[AntimirrorStrategy] Final decision: {top_cand.gtp()}", OUTPUT_DEBUG)
         return top_cand, ai_thoughts
 
+@register_strategy(AI_JIGO)
 class JigoStrategy(AIStrategy):
     """Jigo strategy - aims for a specific score difference"""
     
@@ -431,6 +444,7 @@ class JigoStrategy(AIStrategy):
         self.game.katrain.log(f"[JigoStrategy] Final decision: {aimove.gtp()}", OUTPUT_DEBUG)
         return aimove, ai_thoughts
 
+@register_strategy(AI_SCORELOSS)
 class ScoreLossStrategy(AIStrategy):
     """ScoreLoss strategy - weights moves based on point loss"""
     
@@ -616,6 +630,7 @@ class OwnershipBaseStrategy(AIStrategy):
         # Return all data except the score which was just for debugging
         return [(move, own_settled, opp_settled, is_attach, is_tenuki, d) for move, own_settled, opp_settled, is_attach, is_tenuki, d, _ in sorted_moves]
 
+@register_strategy(AI_SIMPLE_OWNERSHIP)
 class SimpleOwnershipStrategy(OwnershipBaseStrategy):
     """Simple Ownership strategy - weights moves based on territory control"""
     
@@ -668,6 +683,7 @@ class SimpleOwnershipStrategy(OwnershipBaseStrategy):
         self.game.katrain.log(f"[SimpleOwnershipStrategy] Final decision: {aimove.gtp()}", OUTPUT_DEBUG)
         return aimove, ai_thoughts
 
+@register_strategy(AI_SETTLE_STONES)
 class SettleStonesStrategy(OwnershipBaseStrategy):
     """Settle Stones strategy - focuses on settled stones"""
     
@@ -745,6 +761,7 @@ class SettleStonesStrategy(OwnershipBaseStrategy):
         self.game.katrain.log(f"[SettleStonesStrategy] Final decision: {aimove.gtp()}", OUTPUT_DEBUG)
         return aimove, ai_thoughts
 
+@register_strategy(AI_POLICY)
 class PolicyStrategy(AIStrategy):
     """Policy strategy - plays the top move suggested by policy network"""
     
@@ -801,6 +818,7 @@ class PolicyStrategy(AIStrategy):
         self.game.katrain.log(f"[PolicyStrategy] Final decision: {aimove.gtp()}", OUTPUT_DEBUG)
         return aimove, ai_thoughts
 
+@register_strategy(AI_WEIGHTED)
 class WeightedStrategy(AIStrategy):
     """Weighted strategy - weights moves based on policy and a weakening factor"""
     
@@ -1062,6 +1080,7 @@ class PickBasedStrategy(AIStrategy):
         self.game.katrain.log(f"[{self.strategy_name}] Final decision: {move.gtp()}", OUTPUT_DEBUG)
         return move, ai_thoughts + thoughts
 
+@register_strategy(AI_PICK)
 class PickStrategy(PickBasedStrategy):
     """Pick strategy - picks a move from a subset of legal moves"""
     
@@ -1072,6 +1091,7 @@ class PickStrategy(PickBasedStrategy):
     def handle_endgame(self, legal_policy_moves, policy_grid, size):
         return None, "", None, False
 
+@register_strategy(AI_RANK)
 class RankStrategy(PickBasedStrategy):
     """Rank strategy - similar to Pick but calibrated based on rank"""
     
@@ -1150,6 +1170,7 @@ class RankStrategy(PickBasedStrategy):
     def handle_endgame(self, legal_policy_moves, policy_grid, size):
         return None, "", None, False
 
+@register_strategy(AI_INFLUENCE)
 class InfluenceStrategy(PickBasedStrategy):
     """Influence strategy - weights moves based on influence (distance from edge)"""
     
@@ -1171,6 +1192,7 @@ class InfluenceStrategy(PickBasedStrategy):
                 self.game.katrain.log(f"[InfluenceStrategy] #{i+1}: ({x},{y}) - policy={pol:.2%}, weight={wt}, combined={pol*wt:.2%}", OUTPUT_DEBUG)
         return weighted_coords, ai_thoughts
 
+@register_strategy(AI_TERRITORY)
 class TerritoryStrategy(PickBasedStrategy):
     """Territory strategy - weights moves based on territory (distance from center)"""
     
@@ -1192,6 +1214,7 @@ class TerritoryStrategy(PickBasedStrategy):
                 self.game.katrain.log(f"[TerritoryStrategy] #{i+1}: ({x},{y}) - policy={pol:.2%}, weight={wt}, combined={pol*wt:.2%}", OUTPUT_DEBUG)
         return weighted_coords, ai_thoughts
 
+@register_strategy(AI_LOCAL)
 class LocalStrategy(PickBasedStrategy):
     """Local strategy - weights moves based on proximity to the last move"""
     
@@ -1228,6 +1251,7 @@ class LocalStrategy(PickBasedStrategy):
                 self.game.katrain.log(f"[LocalStrategy] #{i+1}: ({x},{y}) - policy={pol:.2%}, weight={wt}, combined={pol*wt:.2%}", OUTPUT_DEBUG)
         return weighted_coords, ai_thoughts
 
+@register_strategy(AI_TENUKI)
 class TenukiStrategy(PickBasedStrategy):
     """Tenuki strategy - weights moves based on distance from the last move"""
     
@@ -1264,6 +1288,8 @@ class TenukiStrategy(PickBasedStrategy):
                 self.game.katrain.log(f"[TenukiStrategy] #{i+1}: ({x},{y}) - policy={pol:.2%}, weight={wt}, combined={pol*wt:.2%}", OUTPUT_DEBUG)
         return weighted_coords, ai_thoughts
 
+@register_strategy(AI_HUMAN)
+@register_strategy(AI_PRO)
 class HumanStyleStrategy(AIStrategy):
     """Strategy that imitates human play at various skill levels"""
     
@@ -1412,72 +1438,13 @@ class HumanStyleStrategy(AIStrategy):
         self.game.katrain.log(f"[HumanStyleStrategy] Final decision: {move.gtp()}", OUTPUT_DEBUG)
         return move, ai_thoughts
 
-class AIStrategyFactory:
-    """Factory for creating AI strategies"""
-    
-    @staticmethod
-    def create_strategy(game: Game, ai_mode: str, ai_settings: Dict) -> AIStrategy:
-        game.katrain.log(f"Creating AI strategy for mode: {ai_mode}, settings: {ai_settings}", OUTPUT_DEBUG)
-        
-        if ai_mode == AI_DEFAULT:
-            game.katrain.log(f"Creating DefaultStrategy", OUTPUT_DEBUG)
-            return DefaultStrategy(game, ai_settings)
-        elif ai_mode == AI_HANDICAP:
-            game.katrain.log(f"Creating HandicapStrategy", OUTPUT_DEBUG)
-            return HandicapStrategy(game, ai_settings)
-        elif ai_mode == AI_ANTIMIRROR:
-            game.katrain.log(f"Creating AntimirrorStrategy", OUTPUT_DEBUG)
-            return AntimirrorStrategy(game, ai_settings)
-        elif ai_mode == AI_JIGO:
-            game.katrain.log(f"Creating JigoStrategy", OUTPUT_DEBUG)
-            return JigoStrategy(game, ai_settings)
-        elif ai_mode == AI_SCORELOSS:
-            game.katrain.log(f"Creating ScoreLossStrategy", OUTPUT_DEBUG)
-            return ScoreLossStrategy(game, ai_settings)
-        elif ai_mode == AI_SIMPLE_OWNERSHIP:
-            game.katrain.log(f"Creating SimpleOwnershipStrategy", OUTPUT_DEBUG)
-            return SimpleOwnershipStrategy(game, ai_settings)
-        elif ai_mode == AI_SETTLE_STONES:
-            game.katrain.log(f"Creating SettleStonesStrategy", OUTPUT_DEBUG)
-            return SettleStonesStrategy(game, ai_settings)
-        elif ai_mode == AI_POLICY:
-            game.katrain.log(f"Creating PolicyStrategy", OUTPUT_DEBUG)
-            return PolicyStrategy(game, ai_settings)
-        elif ai_mode == AI_WEIGHTED:
-            game.katrain.log(f"Creating WeightedStrategy", OUTPUT_DEBUG)
-            return WeightedStrategy(game, ai_settings)
-        elif ai_mode == AI_PICK:
-            game.katrain.log(f"Creating PickStrategy", OUTPUT_DEBUG)
-            return PickStrategy(game, ai_settings)
-        elif ai_mode == AI_RANK:
-            game.katrain.log(f"Creating RankStrategy", OUTPUT_DEBUG)
-            return RankStrategy(game, ai_settings)
-        elif ai_mode == AI_INFLUENCE:
-            game.katrain.log(f"Creating InfluenceStrategy", OUTPUT_DEBUG)
-            return InfluenceStrategy(game, ai_settings)
-        elif ai_mode == AI_TERRITORY:
-            game.katrain.log(f"Creating TerritoryStrategy", OUTPUT_DEBUG)
-            return TerritoryStrategy(game, ai_settings)
-        elif ai_mode == AI_LOCAL:
-            game.katrain.log(f"Creating LocalStrategy", OUTPUT_DEBUG)
-            return LocalStrategy(game, ai_settings)
-        elif ai_mode == AI_TENUKI:
-            game.katrain.log(f"Creating TenukiStrategy", OUTPUT_DEBUG)
-            return TenukiStrategy(game, ai_settings)
-        elif ai_mode in [AI_HUMAN,AI_PRO]:
-            game.katrain.log(f"Creating HumanStyleStrategy", OUTPUT_DEBUG)
-            return HumanStyleStrategy(game, ai_settings)
-        else:
-            # Fallback
-            game.katrain.log(f"Unknown AI mode {ai_mode}, using default.", OUTPUT_INFO)
-            return DefaultStrategy(game, ai_settings)
-
 def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode]:
     """Generate a move using the selected AI strategy"""
     game.katrain.log(f"Generate AI move called with mode: {ai_mode}", OUTPUT_DEBUG)
     
     # Create the appropriate strategy based on mode
-    strategy = AIStrategyFactory.create_strategy(game, ai_mode, ai_settings)
+
+    strategy = STRATEGY_REGISTRY[ai_mode](game, ai_settings)
     
     # Generate the move
     game.katrain.log(f"Generating move using {strategy.__class__.__name__}", OUTPUT_DEBUG)
