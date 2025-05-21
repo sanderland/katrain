@@ -542,7 +542,9 @@ class BaseConfigPopup(QuickConfigGui):
             if files and path not in self.paths:
                 self.paths.append(path)  # persistent on paths with models found
             model_files += files
-            humanlike_model_files += files
+            for file in files:
+                if "human" in file:
+                    humanlike_model_files.append(file)
 
         # no description to bottom
         model_files = sorted(
