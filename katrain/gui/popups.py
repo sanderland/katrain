@@ -523,7 +523,7 @@ class BaseConfigPopup(QuickConfigGui):
         humanlike_model_files = []
         distributed_training_models = os.path.expanduser(os.path.join(DATA_FOLDER, "katago_contribute/kata1/models"))
         for path in self.paths + [self.model_path.text, self.humanlike_model_path.text, distributed_training_models]:
-            path = path.rstrip("/\\")
+            path = (path or "").rstrip("/\\")
             if path.startswith("katrain"):
                 path = path.replace("katrain", PATHS["PACKAGE"].rstrip("/\\"), 1)
             path = os.path.expanduser(path)
