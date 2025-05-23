@@ -29,7 +29,7 @@ jobs:
         git clone --branch stable https://github.com/lightvector/KataGo.git
         pushd KataGo/cpp
         cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
-        make
+        make -j$(sysctl -n hw.ncpu)
         cp katago ../../katrain/katrain/KataGo/katago-osx
     - name: Install platypus
       run: |
@@ -49,7 +49,8 @@ jobs:
         cd ..
         git clone https://github.com/kivy/kivy-sdk-packager.git
         cd kivy-sdk-packager/osx
-        ./create-osx-bundle.sh -n "KaTrain" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
+        export MACOSX_DEPLOYMENT_TARGET=12.0
+        ./create-osx-bundle.sh -k 2.3.1 -p 3.11.2 -n "KaTrain" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
     - name: Install KaTrain pip dependencies
       run: |
         pushd ../kivy-sdk-packager/osx/build/KaTrain.app/Contents/Resources/venv/bin
@@ -68,6 +69,24 @@ jobs:
         ../fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "${KATRAIN_VERSION}" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
         ../cleanup-app.sh KaTrain.app
         ../relocate.sh KaTrain.app
+        # Define UTExportedTypeDeclarations for SGF
+        plutil -replace UTExportedTypeDeclarations -xml "<array><dict><key>UTTypeIdentifier</key><string>org.katrain.sgf</string><key>UTTypeDescription</key><string>KaTrain SGF File</string><key>UTTypeConformsTo</key><array><string>public.data</string><string>public.text</string></array><key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>sgf</string><string>SGF</string></array></dict></dict></array>" "KaTrain.app/Contents/Info.plist"
+        # Define CFBundleDocumentTypes for SGF
+        plutil -replace CFBundleDocumentTypes -xml "<array><dict><key>CFBundleTypeName</key><string>Stone Game Format</string><key>CFBundleTypeRole</key><string>Editor</string><key>LSHandlerRank</key><string>Owner</string><key>LSItemContentTypes</key><array><string>org.katrain.sgf</string></array><key>CFBundleTypeExtensions</key><array><string>sgf</string><string>SGF</string></array></dict></array>" "KaTrain.app/Contents/Info.plist"
+        echo "Copying katago-osx to app bundle..."
+        cp ../../katrain/katrain/KataGo/katago-osx KaTrain.app/Contents/Resources/katago-osx
+        APP_BUNDLE_PATH="KaTrain.app"
+        echo "--- Signing components ---"
+        # Sign the copied KataGo binary
+        codesign -fs - --force --options runtime "${APP_BUNDLE_PATH}/Contents/Resources/katago-osx"
+        # Sign the main executable (Platypus ScriptExec or the one created by Kivy)
+        MAIN_EXEC_PATH=$(plutil -extract CFBundleExecutable raw "${APP_BUNDLE_PATH}/Contents/Info.plist")
+        codesign -fs - --force --options runtime "${APP_BUNDLE_PATH}/Contents/MacOS/${MAIN_EXEC_PATH}"
+        # Sign all dylibs, so, and executable files within the app bundle
+        find "${APP_BUNDLE_PATH}" -type f \( -name "*.dylib" -o -name "*.so" -o -perm +111 \) -exec codesign -fs - --force --options runtime {} \;
+        # Sign the .app bundle itself (should be done last)
+        codesign -fs - --force --options runtime --deep "${APP_BUNDLE_PATH}"
+        echo "--- Finished signing ---"
     - name: Create dmg
       run: |
         pushd ../kivy-sdk-packager/osx
