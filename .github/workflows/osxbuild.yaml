@@ -62,13 +62,10 @@ jobs:
         cat > katrain.spec << 'EOF'
         # -*- mode: python ; coding: utf-8 -*-
         import os
-        from kivy.tools.packaging.pyinstaller_hooks import get_deps_minimal, get_deps_all, hookspath, runtime_hooks
-        
+        from kivy.tools.packaging.pyinstaller_hooks import get_deps_minimal, hookspath, runtime_hooks
+
         block_cipher = None
-        
-        # Get Kivy dependencies
-        kivy_deps = get_deps_minimal()
-        
+
         a = Analysis(
             ['katrain/__main__.py'],
             pathex=[],
@@ -81,7 +78,7 @@ jobs:
                 ('katrain/models', 'katrain/models'),
                 ('katrain/*.kv', 'katrain/'),
             ],
-            hiddenimports=kivy_deps.hiddenimports,
+            hiddenimports=[],
             hookspath=hookspath(),
             hooksconfig={},
             runtime_hooks=runtime_hooks(),
@@ -90,10 +87,11 @@ jobs:
             win_private_assemblies=False,
             cipher=block_cipher,
             noarchive=False,
+            **get_deps_minimal()
         )
-        
+
         pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
-        
+
         exe = EXE(
             pyz,
             a.scripts,
@@ -111,7 +109,7 @@ jobs:
             codesign_identity=None,
             entitlements_file=None,
         )
-        
+
         coll = COLLECT(
             exe,
             a.binaries,
@@ -122,7 +120,7 @@ jobs:
             upx_exclude=[],
             name='KaTrain',
         )
-        
+
         app = BUNDLE(
             coll,
             name='KaTrain.app',
