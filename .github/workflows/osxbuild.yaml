@@ -78,7 +78,6 @@ jobs:
                 ('katrain/models', 'katrain/models'),
                 ('katrain/*.kv', 'katrain/'),
             ],
-            hiddenimports=[],
             hookspath=hookspath(),
             hooksconfig={},
             runtime_hooks=runtime_hooks(),
