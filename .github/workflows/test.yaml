@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9', '3.12']  # '3.11',
+        python-version: ['3.9', '3.13']
 
     steps:
     - uses: actions/checkout@v4
@@ -21,18 +21,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install dependencies
-      run: |
-        pip3 install poetry
-        poetry self add "poetry-dynamic-versioning[plugin]"
-        poetry install --with dev,test
-
     - name: Run tests
-      run: poetry run pytest tests
+      run: uv run pytest tests
 
     - name: Run I18N conversion
-      run: poetry run python i18n.py -todo
+      run: uv run python i18n.py -todo
 
     - name: Build
-      run: |
-        poetry build
+      run: uv build

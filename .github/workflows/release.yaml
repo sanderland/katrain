@@ -14,25 +14,23 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: 3.12
+        python-version: 3.13
 
     - name: Install dependencies
       run: |
-        pip3 install poetry
-        poetry self add "poetry-dynamic-versioning[plugin]"
-        poetry install --with dev,test
+        uv sync --with dev,test
 
     - name: Run tests
-      run: poetry run pytest -v -s tests
+      run: uv run pytest -v -s tests
 
     - name: Run I18N conversion
-      run: poetry run python i18n.py
+      run: uv run python i18n.py
 
     - name: Build
       run: |
-        poetry build
+        uv build
 
     - name: Release to PyPI
       env:
         POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-      run: poetry publish --verbose
+      run: uv publish --verbose

@@ -1,52 +1,67 @@
-[tool.poetry]
+[project]
 name = "KaTrain"
-version = "0.0.0"  # Placeholder. The poetry-dynamic-versioning sets the version
+dynamic = ["version"]
 description = "Go/Baduk/Weiqi playing and teaching app with a variety of AIs"
-authors = ["Sander Land"]
-license = "MIT"
-homepage = "https://github.com/sanderland/katrain"
+authors = [{ name = "Sander Land" }]
+requires-python = ">=3.9,<4.0"
 readme = "README.md"
-packages = [{include = "katrain"}]
+license = "MIT"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
-    "Topic :: Games/Entertainment :: Board Games"
+    "Topic :: Games/Entertainment :: Board Games",
+]
+dependencies = [
+    "kivy[full]>=2.1.0",
+    "kivymd==0.104.1",
+    "ffpyplayer",
+    "urllib3",
+    "pygame~=2.0 ; platform_system == 'Darwin'",
+    "screeninfo>=0.8.1,<0.9 ; platform_system != 'Darwin'",
+    "chardet>=5.2.0,<6",
+    "docutils>=0.21.2",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.9,<4.0"
-kivy = {extras = ["full"], version = ">=2.1.0"}
-kivymd = "==0.104.1"  # TODO: upgrade this, the latest version is 1.1.1
-ffpyplayer = "*"
-urllib3 = "*"
-pygame = {version = "^2.0", markers = "platform_system == 'Darwin'"}    # some mac versions need this for kivy
-screeninfo = {version = "^0.8.1", markers = "platform_system != 'Darwin'"}  # for screen resolution, has problems on macos
-chardet = "^5.2.0"  # for automatic encoding detection
-# Avoid PyPI/Poetry problem: https://github.com/python-poetry/poetry/issues/9293
-docutils = ">=0.21.2"
+[project.urls]
+Homepage = "https://github.com/sanderland/katrain"
 
-[tool.poetry.group.dev.dependencies]
-black = "^24.8.0"
-polib = "^1.2.0"
-
-[tool.poetry.group.test.dependencies]
-pytest = "^8.3.2"
-
-[tool.poetry.scripts]
+[project.scripts]
 katrain = "katrain.__main__:run_app"
+
+[dependency-groups]
+dev = [
+    "black>=24.8.0,<25",
+    "polib>=1.2.0,<2",
+]
+test = ["pytest>=8.3.2,<9"]
+
+[tool.uv]
+default-groups = [
+    "dev",
+    "test",
+]
 
 [tool.black]
 line-length = 120
 
-[tool.poetry-dynamic-versioning]
-enable = true
+[tool.hatch.build.targets.sdist]
+include = ["katrain"]
 
-[tool.poetry-dynamic-versioning.from-file]
+[tool.hatch.build.targets.wheel]
+include = ["katrain"]
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+fallback-version = "0.0.0"
+
+[tool.uv-dynamic-versioning.from-file]
 source = "katrain/core/constants.py"
 pattern = "^VERSION\\s*=\\s*\"(.*)\""
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
