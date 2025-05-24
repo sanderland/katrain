@@ -46,21 +46,16 @@ jobs:
     - name: Install Python dependencies
       run: |
         uv sync
-        source .venv/bin/activate
-        pip install Cython==3.0.11
-        pip install kivy[base]==2.3.1
-        pip install pyinstaller
+        uv pip install pyinstaller
 
     - name: Get app version
       run: |
-        source .venv/bin/activate
-        export KATRAIN_VERSION=$(python -c 'from katrain.core.constants import VERSION;print(VERSION)')
-        echo "KATRAIN_VERSION=${KATRAIN_VERSION}" >> $GITHUB_ENV
+        $version = python -c "from katrain.core.constants import VERSION; print(VERSION)"
+        echo "KATRAIN_VERSION=$version" >> $env:GITHUB_ENV
 
     - name: Build app with PyInstaller
       run: |
-        source .venv/bin/activate
-        pyinstaller spec/katrain.spec --clean --noconfirm
+        uv run pyinstaller spec/katrain.spec --clean --noconfirm
 
     - name: Sign the app (ad-hoc)
       run: |
