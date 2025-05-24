@@ -4,6 +4,11 @@ import sys
 import subprocess
 from pathlib import Path
 
+# Prevent Kivy from creating windows during build process
+os.environ['KIVY_HEADLESS'] = '1'
+os.environ['KIVY_NO_WINDOW'] = '1'
+os.environ['KIVY_GL_BACKEND'] = 'mock'
+
 block_cipher = None
 
 # Platform detection
@@ -32,30 +37,31 @@ if is_windows:
     except:
         version_info = None
 
-# Define common data files
-base_path = ".." if is_windows else "katrain"
-sep = "\\" if is_windows else "/"
+# Define common data files - all paths relative to spec file location
+base_path = "../katrain"
+sep = "/"
 
 datas = [
-    (f"{base_path}{sep}gui.kv", "katrain"),
-    (f"{base_path}{sep}popups.kv", "katrain"),
-    (f"{base_path}{sep}config.json", "katrain"),
-    (f"{base_path}{sep}models", f"katrain{sep}models"),
-    (f"{base_path}{sep}sounds", f"katrain{sep}sounds"),
-    (f"{base_path}{sep}img", f"katrain{sep}img"),
-    (f"{base_path}{sep}fonts", f"katrain{sep}fonts"),
-    (f"{base_path}{sep}i18n", f"katrain{sep}i18n"),
+    (f"{base_path}/gui.kv", "katrain"),
+    (f"{base_path}/popups.kv", "katrain"),
+    (f"{base_path}/config.json", "katrain"),
+    (f"{base_path}/models", "katrain/models"),
+    (f"{base_path}/sounds", "katrain/sounds"),
+    (f"{base_path}/img", "katrain/img"),
+    (f"{base_path}/fonts", "katrain/fonts"),
+    (f"{base_path}/i18n", "katrain/i18n"),
+    (f"{base_path}/KataGo", "katrain/KataGo"),
 ]
-
-# Platform-specific data files
-if is_windows:
-    datas.append((f"{base_path}{sep}KataGo", f"katrain{sep}KataGo"))
 
 # Platform-specific binaries
 binaries = kivy_deps.get('binaries', [])
 if is_macos:
-    # Add macOS-specific KataGo binary
-    binaries.append(('katrain/KataGo/katago-osx', 'katrain/KataGo/'))
+    # Add macOS-specific KataGo binary if it exists
+    katago_osx_path = f'{base_path}/KataGo/katago-osx'
+    if os.path.exists(katago_osx_path):
+        binaries.append((katago_osx_path, 'katrain/KataGo/'))
+    else:
+        print(f"Warning: {katago_osx_path} not found, skipping macOS KataGo binary")
 
 # Platform-specific hidden imports (add to Kivy's base)
 hiddenimports = kivy_deps.get('hiddenimports', [])
@@ -70,12 +76,12 @@ excludes = kivy_deps.get('excludes', []) + ["scipy", "pandas", "numpy", "matplot
 if is_windows:
     excludes.append("mkl")
 
-# Entry point
-entry_point = f"{base_path}{sep}__main__.py"
+# Entry point - relative to spec file location
+entry_point = f"{base_path}/__main__.py"
 
 a = Analysis(
     [entry_point],
-    pathex=[SPECPATH if is_windows else []],
+    pathex=[],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
@@ -126,7 +132,7 @@ if is_windows:
             strip=False,
             upx=True,
             console=console,
-            icon=f"{base_path}{sep}img{sep}icon.ico",
+            icon=f"{base_path}/img/icon.ico",
             version=version_info,
         )
 
@@ -155,7 +161,7 @@ if is_windows:
             upx=True,
             name=name,
             console=console,
-            icon=f"{base_path}{sep}img{sep}icon.ico",
+            icon=f"{base_path}/img/icon.ico",
             version=version_info,
         )
         
@@ -206,7 +212,7 @@ else:
         app = BUNDLE(
             coll,
             name='KaTrain.app',
-            icon='katrain/img/icon.ico',
+            icon=f'{base_path}/img/icon.ico',
             bundle_identifier='org.katrain.KaTrain',
             version=app_version,
             info_plist={

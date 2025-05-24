@@ -53,6 +53,10 @@ jobs:
         echo "KATRAIN_VERSION=$(python -c 'from katrain.core.constants import VERSION; print(VERSION)')" >> "$GITHUB_ENV"
 
     - name: Build app with PyInstaller
+      env:
+        KIVY_HEADLESS: 1
+        KIVY_NO_WINDOW: 1
+        KIVY_GL_BACKEND: mock
       run: |
         uv run pyinstaller spec/katrain.spec --clean --noconfirm
 
