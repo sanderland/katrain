@@ -3,7 +3,7 @@ name = "KaTrain"
 dynamic = ["version"]
 description = "Go/Baduk/Weiqi playing and teaching app with a variety of AIs"
 authors = [{ name = "Sander Land" }]
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.9,<3.13"
 readme = "README.md"
 license = "MIT"
 classifiers = [
@@ -14,14 +14,14 @@ classifiers = [
     "Topic :: Games/Entertainment :: Board Games",
 ]
 dependencies = [
-    "kivy[full]>=2.1.0",
-    "kivymd==0.104.1",
-    "ffpyplayer",
-    "urllib3",
     "pygame~=2.0 ; platform_system == 'Darwin'",
     "screeninfo>=0.8.1,<0.9 ; platform_system != 'Darwin'",
     "chardet>=5.2.0,<6",
     "docutils>=0.21.2",
+    "kivy>=2.3.0",
+    "ffpyplayer>=4.5.1",
+    "urllib3>=2.2.2",
+    "kivymd>=0.104.1",
 ]
 
 [project.urls]

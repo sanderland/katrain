@@ -1,6 +1,6 @@
 version = 1
 revision = 2
-requires-python = ">=3.9, <4.0"
+requires-python = ">=3.9, <3.13"
 
 [[package]]
 name = "black"
@@ -215,7 +215,7 @@ dependencies = [
     { name = "chardet" },
     { name = "docutils" },
     { name = "ffpyplayer" },
-    { name = "kivy", extra = ["full"] },
+    { name = "kivy" },
     { name = "kivymd" },
     { name = "pygame", marker = "sys_platform == 'darwin'" },
     { name = "screeninfo", marker = "sys_platform != 'darwin'" },
@@ -235,12 +235,12 @@ test = [
 requires-dist = [
     { name = "chardet", specifier = ">=5.2.0,<6" },
     { name = "docutils", specifier = ">=0.21.2" },
-    { name = "ffpyplayer" },
-    { name = "kivy", extras = ["full"], specifier = ">=2.1.0" },
-    { name = "kivymd", specifier = "==0.104.1" },
+    { name = "ffpyplayer", specifier = ">=4.5.1" },
+    { name = "kivy", specifier = ">=2.3.0" },
+    { name = "kivymd", specifier = ">=0.104.1" },
     { name = "pygame", marker = "sys_platform == 'darwin'", specifier = "~=2.0" },
     { name = "screeninfo", marker = "sys_platform != 'darwin'", specifier = ">=0.8.1,<0.9" },
-    { name = "urllib3" },
+    { name = "urllib3", specifier = ">=2.2.2" },
 ]
 
 [package.metadata.requires-dev]
@@ -287,19 +287,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d2/49/40917dd88eaab1da256ef3de81d2d6ff6d99a7f0530753629cd06df33139/Kivy-2.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:c332ff319db7648004d486c40fc4e700972f8e79a882d698e18eb238b2009e98", size = 4585883, upload-time = "2024-01-05T10:31:53.629Z" },
 ]
 
-[package.optional-dependencies]
-full = [
-    { name = "docutils" },
-    { name = "ffpyplayer", marker = "sys_platform == 'darwin' or sys_platform == 'linux'" },
-    { name = "kivy-deps-angle", marker = "sys_platform == 'win32'" },
-    { name = "kivy-deps-glew", marker = "sys_platform == 'win32'" },
-    { name = "kivy-deps-gstreamer", marker = "sys_platform == 'win32'" },
-    { name = "kivy-deps-sdl2", marker = "sys_platform == 'win32'" },
-    { name = "pillow" },
-    { name = "pygments" },
-    { name = "pypiwin32", marker = "sys_platform == 'win32'" },
-]
-
 [[package]]
 name = "kivy-deps-angle"
 version = "0.4.0"
@@ -311,7 +298,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/c3/b1/d1ca22a7b18e7b2b90152a78a0c2d09a96fdb924f87be1914d70d9bee543/kivy_deps.angle-0.4.0-cp311-cp311-win_amd64.whl", hash = "sha256:574381d4e66f3198bc48aa10f238e7a3816ad56b80ec939f5d56fb33a378d0b1", size = 5130936, upload-time = "2023-12-08T09:46:19.348Z" },
     { url = "https://files.pythonhosted.org/packages/c1/89/bb8b9a0fee422972fcf38a406ee9d0b1636968d7d2b5e97aafea8fdec251/kivy_deps.angle-0.4.0-cp312-cp312-win32.whl", hash = "sha256:4fa7a6366899fba13f7624baf4645787165f45731db08d14557da29c12ee48f0", size = 4588969, upload-time = "2023-12-08T09:45:36.62Z" },
     { url = "https://files.pythonhosted.org/packages/c7/f2/d1500b880d3079454af0f935408ddd37cfce4fd11f53d0917e169d478869/kivy_deps.angle-0.4.0-cp312-cp312-win_amd64.whl", hash = "sha256:668e670d4afd2551af0af2c627ceb0feac884bd799fb6a3dff78fdbfa2ea0451", size = 5130935, upload-time = "2023-12-08T09:46:38.767Z" },
-    { url = "https://files.pythonhosted.org/packages/47/7e/ad805773fb76f07cb1bdf5147e66ba264a94f5ac54553cd9dee809a161bb/kivy_deps.angle-0.4.0-cp313-cp313-win_amd64.whl", hash = "sha256:9afbf702f8bb9a993c48f39c018ca3b4d2ec381a5d3f82fe65bdaa6af0bba29b", size = 5133260, upload-time = "2024-10-07T19:14:24.171Z" },
     { url = "https://files.pythonhosted.org/packages/3a/0c/430e68efbe76eb6f942314ec46b9cb5630037a218dd5c04ff3568b7d1787/kivy_deps.angle-0.4.0-cp39-cp39-win32.whl", hash = "sha256:6546a62aba2b7e18a800b3df79daa757af3a980c297646c986896522395794e2", size = 4588965, upload-time = "2023-12-08T09:47:59.873Z" },
     { url = "https://files.pythonhosted.org/packages/54/bf/283f2f77e0ffd94c425e87069b9dc83780eab10fa76d2751c2938352f202/kivy_deps.angle-0.4.0-cp39-cp39-win_amd64.whl", hash = "sha256:bfaf9b37f2ecc3e4e7736657eed507716477af35cdd3118903e999d9d567ae8c", size = 5130932, upload-time = "2023-12-08T09:47:05.386Z" },
 ]
@@ -327,24 +313,8 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d6/37/884034260818569547347cc2ba89780ff3f83a9ce6b9a894360c1d86e82c/kivy_deps.glew-0.3.1-cp311-cp311-win_amd64.whl", hash = "sha256:22e155ec59ce717387f5d8804811206d200a023ba3d0bc9bbf1393ee28d0053e", size = 123574, upload-time = "2022-10-27T18:36:49.17Z" },
     { url = "https://files.pythonhosted.org/packages/2b/3b/a960053dccd627e4483db4765fa84318a831cbf3af648aee20297ae56815/kivy_deps.glew-0.3.1-cp312-cp312-win32.whl", hash = "sha256:b64ee4e445a04bc7c848c0261a6045fc2f0944cc05d7f953e3860b49f2703424", size = 126458, upload-time = "2023-12-06T21:24:08.893Z" },
     { url = "https://files.pythonhosted.org/packages/ad/3a/37a0a051dd3c7298d9e149a489457a6196665444c1a1473ad4fa617e05af/kivy_deps.glew-0.3.1-cp312-cp312-win_amd64.whl", hash = "sha256:3acbbd30da05fc10c185b5d4bb75fbbc882a6ef2192963050c1c94d60a6e795a", size = 123573, upload-time = "2023-12-06T21:25:58.922Z" },
-    { url = "https://files.pythonhosted.org/packages/21/99/e3478c34afed7a820b3348ce7fefc53f2034fa340348dca57162695e69d9/kivy_deps.glew-0.3.1-cp313-cp313-win_amd64.whl", hash = "sha256:f4aa8322078359862ccd9e16e5cea61976d75fb43125d87922e20c916fa31a11", size = 123595, upload-time = "2024-10-07T18:46:16.273Z" },
     { url = "https://files.pythonhosted.org/packages/85/8c/7ee60cee4a635f4e953fc96c92f50ca133f8a8cf37a419d2e8733ea83893/kivy_deps.glew-0.3.1-cp39-cp39-win32.whl", hash = "sha256:4e377ed97670dfda619a1b63a82345a8589be90e7c616a458fba2810708810b1", size = 126471, upload-time = "2022-02-15T20:22:58.535Z" },
     { url = "https://files.pythonhosted.org/packages/8c/64/7fb0092751f33b370ca3b6249f96f0a9384a3e7de08ce03f392ddd19a179/kivy_deps.glew-0.3.1-cp39-cp39-win_amd64.whl", hash = "sha256:081a09b92f7e7817f489f8b6b31c9c9623661378de1dce1d6b097af5e7d42b45", size = 123587, upload-time = "2022-02-15T20:23:58.375Z" },
-]
-
-[[package]]
-name = "kivy-deps-gstreamer"
-version = "0.3.3"
-source = { registry = "https://pypi.org/simple" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/35/84/f0dd0066a81e591df0735349b39954f153686ca4e7ca6b343597bf202cd0/kivy_deps.gstreamer-0.3.3-cp310-cp310-win32.whl", hash = "sha256:c52a2bf7a957b443dd80a85e581124c782f2cc1709d8929a163283746bf1b6b1", size = 133792715, upload-time = "2022-01-12T02:01:40.812Z" },
-    { url = "https://files.pythonhosted.org/packages/d7/97/6d074c292b182d9bcc221ac53727025771269250e35f9209061acaa04a0e/kivy_deps.gstreamer-0.3.3-cp310-cp310-win_amd64.whl", hash = "sha256:f6a41fa7879d99eb5ef21d4524e47ed46e8a59277b53b80d5f3d641472f571fa", size = 139101851, upload-time = "2022-01-12T02:03:00.079Z" },
-    { url = "https://files.pythonhosted.org/packages/6f/73/150a1f591a683aa93cf054e49322bbc2a05214a5137522c94a94d7191f36/kivy_deps.gstreamer-0.3.3-cp311-cp311-win32.whl", hash = "sha256:a50597cf6438dceefa88f42287582dc93707e4783e8806593cc9e2ccef32cbac", size = 133792721, upload-time = "2022-11-05T20:50:59.516Z" },
-    { url = "https://files.pythonhosted.org/packages/4a/7c/5b5cfbf4e011b48cb4401c1c2c8863019920c1f45028492dd5cbb46870be/kivy_deps.gstreamer-0.3.3-cp311-cp311-win_amd64.whl", hash = "sha256:2c584c363cdd2cc2bffa22faccbbfccda49fb545d9f7e033dbe6725486bba354", size = 139101850, upload-time = "2022-11-05T20:51:12.321Z" },
-    { url = "https://files.pythonhosted.org/packages/2b/90/9ac607da39e32ebb8eaea12220676cde06e9faa6fe99ceb28d9c15926193/kivy_deps.gstreamer-0.3.3-cp312-cp312-win32.whl", hash = "sha256:f60ab4def786f5b0b365df92e6fbe45efceffd4074ef8caa79c672458978bf74", size = 133792721, upload-time = "2023-12-06T20:49:15.632Z" },
-    { url = "https://files.pythonhosted.org/packages/86/3b/8913523dfbbfe1edd028d1f4a4d9a4a3deccb84ce019c94a3acf23d8c0d6/kivy_deps.gstreamer-0.3.3-cp312-cp312-win_amd64.whl", hash = "sha256:824d6057eff82c60539586aaa1598e66ef29621b4a43c321e988beebf15a9862", size = 139101850, upload-time = "2023-12-06T20:49:26.926Z" },
-    { url = "https://files.pythonhosted.org/packages/47/5b/3c5fb8d90e103bdac3275cba1dca4056ba620c67d63c6bbd26fcb101c857/kivy_deps.gstreamer-0.3.3-cp39-cp39-win32.whl", hash = "sha256:b2969483da7132716410331ca3d9df366b2d2ecc10283a20aac4d36f8cfb4a2b", size = 133792714, upload-time = "2022-01-12T02:08:53.607Z" },
-    { url = "https://files.pythonhosted.org/packages/e4/1d/792ea09dad26cb7221c73865ee4655870d585d640f28f379b4bc2fc2aace/kivy_deps.gstreamer-0.3.3-cp39-cp39-win_amd64.whl", hash = "sha256:b157bb7c1634abd140318dcca9e043d2bf7d6a07445847d8e6a489ffb30b737c", size = 139101848, upload-time = "2022-01-12T02:08:53.406Z" },
 ]
 
 [[package]]
@@ -453,17 +423,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/55/04/5e6de6e6120451ec0c24516c41dbaf80cce1b6451f96561235ef2429da2e/pillow-10.4.0-cp312-cp312-win32.whl", hash = "sha256:7dfecdbad5c301d7b5bde160150b4db4c659cee2b69589705b6f8a0c509d9f42", size = 2235690, upload-time = "2024-07-01T09:46:36.587Z" },
     { url = "https://files.pythonhosted.org/packages/74/0a/d4ce3c44bca8635bd29a2eab5aa181b654a734a29b263ca8efe013beea98/pillow-10.4.0-cp312-cp312-win_amd64.whl", hash = "sha256:1d846aea995ad352d4bdcc847535bd56e0fd88d36829d2c90be880ef1ee4668a", size = 2554951, upload-time = "2024-07-01T09:46:38.777Z" },
     { url = "https://files.pythonhosted.org/packages/b5/ca/184349ee40f2e92439be9b3502ae6cfc43ac4b50bc4fc6b3de7957563894/pillow-10.4.0-cp312-cp312-win_arm64.whl", hash = "sha256:e553cad5179a66ba15bb18b353a19020e73a7921296a7979c4a2b7f6a5cd57f9", size = 2243427, upload-time = "2024-07-01T09:46:43.15Z" },
-    { url = "https://files.pythonhosted.org/packages/c3/00/706cebe7c2c12a6318aabe5d354836f54adff7156fd9e1bd6c89f4ba0e98/pillow-10.4.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:8bc1a764ed8c957a2e9cacf97c8b2b053b70307cf2996aafd70e91a082e70df3", size = 3525685, upload-time = "2024-07-01T09:46:45.194Z" },
-    { url = "https://files.pythonhosted.org/packages/cf/76/f658cbfa49405e5ecbfb9ba42d07074ad9792031267e782d409fd8fe7c69/pillow-10.4.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:6209bb41dc692ddfee4942517c19ee81b86c864b626dbfca272ec0f7cff5d9fb", size = 3374883, upload-time = "2024-07-01T09:46:47.331Z" },
-    { url = "https://files.pythonhosted.org/packages/46/2b/99c28c4379a85e65378211971c0b430d9c7234b1ec4d59b2668f6299e011/pillow-10.4.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bee197b30783295d2eb680b311af15a20a8b24024a19c3a26431ff83eb8d1f70", size = 4339837, upload-time = "2024-07-01T09:46:49.647Z" },
-    { url = "https://files.pythonhosted.org/packages/f1/74/b1ec314f624c0c43711fdf0d8076f82d9d802afd58f1d62c2a86878e8615/pillow-10.4.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1ef61f5dd14c300786318482456481463b9d6b91ebe5ef12f405afbba77ed0be", size = 4455562, upload-time = "2024-07-01T09:46:51.811Z" },
-    { url = "https://files.pythonhosted.org/packages/4a/2a/4b04157cb7b9c74372fa867096a1607e6fedad93a44deeff553ccd307868/pillow-10.4.0-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:297e388da6e248c98bc4a02e018966af0c5f92dfacf5a5ca22fa01cb3179bca0", size = 4366761, upload-time = "2024-07-01T09:46:53.961Z" },
-    { url = "https://files.pythonhosted.org/packages/ac/7b/8f1d815c1a6a268fe90481232c98dd0e5fa8c75e341a75f060037bd5ceae/pillow-10.4.0-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:e4db64794ccdf6cb83a59d73405f63adbe2a1887012e308828596100a0b2f6cc", size = 4536767, upload-time = "2024-07-01T09:46:56.664Z" },
-    { url = "https://files.pythonhosted.org/packages/e5/77/05fa64d1f45d12c22c314e7b97398ffb28ef2813a485465017b7978b3ce7/pillow-10.4.0-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:bd2880a07482090a3bcb01f4265f1936a903d70bc740bfcb1fd4e8a2ffe5cf5a", size = 4477989, upload-time = "2024-07-01T09:46:58.977Z" },
-    { url = "https://files.pythonhosted.org/packages/12/63/b0397cfc2caae05c3fb2f4ed1b4fc4fc878f0243510a7a6034ca59726494/pillow-10.4.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:4b35b21b819ac1dbd1233317adeecd63495f6babf21b7b2512d244ff6c6ce309", size = 4610255, upload-time = "2024-07-01T09:47:01.189Z" },
-    { url = "https://files.pythonhosted.org/packages/7b/f9/cfaa5082ca9bc4a6de66ffe1c12c2d90bf09c309a5f52b27759a596900e7/pillow-10.4.0-cp313-cp313-win32.whl", hash = "sha256:551d3fd6e9dc15e4c1eb6fc4ba2b39c0c7933fa113b220057a34f4bb3268a060", size = 2235603, upload-time = "2024-07-01T09:47:03.918Z" },
-    { url = "https://files.pythonhosted.org/packages/01/6a/30ff0eef6e0c0e71e55ded56a38d4859bf9d3634a94a88743897b5f96936/pillow-10.4.0-cp313-cp313-win_amd64.whl", hash = "sha256:030abdbe43ee02e0de642aee345efa443740aa4d828bfe8e2eb11922ea6a21ea", size = 2554972, upload-time = "2024-07-01T09:47:06.152Z" },
-    { url = "https://files.pythonhosted.org/packages/48/2c/2e0a52890f269435eee38b21c8218e102c621fe8d8df8b9dd06fabf879ba/pillow-10.4.0-cp313-cp313-win_arm64.whl", hash = "sha256:5b001114dd152cfd6b23befeb28d7aee43553e2402c9f159807bf55f33af8a8d", size = 2243375, upload-time = "2024-07-01T09:47:09.065Z" },
     { url = "https://files.pythonhosted.org/packages/31/85/955fa5400fa8039921f630372cfe5056eed6e1b8e0430ee4507d7de48832/pillow-10.4.0-cp39-cp39-macosx_10_10_x86_64.whl", hash = "sha256:0ae24a547e8b711ccaaf99c9ae3cd975470e1a30caa80a6aaee9a2f19c05701d", size = 3509283, upload-time = "2024-07-01T09:47:36.394Z" },
     { url = "https://files.pythonhosted.org/packages/23/9c/343827267eb28d41cd82b4180d33b10d868af9077abcec0af9793aa77d2d/pillow-10.4.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:298478fe4f77a4408895605f3482b6cc6222c018b2ce565c2b6b9c354ac3229b", size = 3375691, upload-time = "2024-07-01T09:47:38.853Z" },
     { url = "https://files.pythonhosted.org/packages/60/a3/7ebbeabcd341eab722896d1a5b59a3df98c4b4d26cf4b0385f8aa94296f7/pillow-10.4.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:134ace6dc392116566980ee7436477d844520a26a4b1bd4053f6f47d096997fd", size = 4328295, upload-time = "2024-07-01T09:47:41.765Z" },

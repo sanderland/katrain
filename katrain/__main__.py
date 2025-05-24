@@ -840,13 +840,16 @@ class KaTrainApp(MDApp):
         super().__init__()
 
     def is_valid_window_position(self, left, top, width, height):
-        from screeninfo import get_monitors
-        monitors = get_monitors()
-        for monitor in monitors:
-            if (left >= monitor.x and left + width <= monitor.x + monitor.width and
-                top >= monitor.y and top + height <= monitor.y + monitor.height):
-                return True
-        return False
+        try:
+            from screeninfo import get_monitors
+            monitors = get_monitors()
+            for monitor in monitors:
+                if (left >= monitor.x and left + width <= monitor.x + monitor.width and
+                    top >= monitor.y and top + height <= monitor.y + monitor.height):
+                    return True
+            return False
+        except Exception as e:
+            return True # yolo
 
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
