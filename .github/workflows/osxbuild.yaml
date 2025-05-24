@@ -5,6 +5,10 @@ on:
     branches: [ master ]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   osx_app:
     runs-on: macos-latest
@@ -13,12 +17,17 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: 3.13
+        python-version: 3.12
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "0.7.8"
 
     - name: Install dependencies
       run: |
         brew update
-        brew install libzip uv
+        brew install libzip
 
     - name: Build KataGo
       run: |
