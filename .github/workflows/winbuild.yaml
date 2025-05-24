@@ -32,8 +32,7 @@ jobs:
 
     - name: Get app version
       run: |
-        $version = python -c "from katrain.core.constants import VERSION; print(VERSION)"
-        echo "KATRAIN_VERSION=$version" >> $env:GITHUB_ENV
+        echo "KATRAIN_VERSION=$(python -c 'from katrain.core.constants import VERSION; print(VERSION)')" >> "$GITHUB_ENV"
       shell: powershell
 
     - name: Build executables with PyInstaller
