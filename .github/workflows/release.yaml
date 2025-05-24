@@ -23,7 +23,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv sync --with dev,test
+        uv sync --group dev,test
 
     - name: Run tests
       run: uv run pytest -v -s tests
