@@ -13,12 +13,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: 3.9
+        python-version: 3.13
 
     - name: Install dependencies
       run: |
         brew update
-        brew install libzip
+        brew install libzip uv
 
     - name: Build KataGo
       run: |
@@ -56,8 +56,7 @@ jobs:
         pushd ../kivy-sdk-packager/osx/build/KaTrain.app/Contents/Resources/venv/bin
         source activate
         popd
-        python -m pip install poetry
-        poetry install
+        uv sync
     - name: Finalize KaTrain bundle
       run: |
         export KATRAIN_VERSION=`python -c 'from katrain.core.constants import VERSION;print(VERSION)' `
