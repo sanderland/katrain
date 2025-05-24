@@ -1,0 +1,92 @@
+name: build_windows
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  windows_exe:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.11
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pipx
+        pipx install uv
+
+    - name: Build KataGo
+      run: |
+        # Remove any existing binaries
+        if (Test-Path "katrain/KataGo/katago.exe") { Remove-Item "katrain/KataGo/katago.exe" }
+        if (Test-Path "katrain/KataGo/katago") { Remove-Item "katrain/KataGo/katago" }
+        if (Test-Path "katrain/KataGo/katago-osx") { Remove-Item "katrain/KataGo/katago-osx" }
+        
+        # Clone KataGo
+        cd ..
+        git clone --branch stable https://github.com/lightvector/KataGo.git
+        cd KataGo/cpp
+        
+        # Build KataGo for Windows
+        cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
+        cmake --build . --config Release --parallel
+        
+        # Copy to katrain directory
+        Copy-Item "Release/katago.exe" "../../katrain/katrain/KataGo/katago.exe"
+      shell: powershell
+
+    - name: Install Python dependencies
+      run: |
+        uv sync
+        uv pip install Cython==3.0.11
+        uv pip install kivy[base]==2.3.1 kivymd
+        uv pip install kivy-deps.sdl2 kivy-deps.glew
+        uv pip install pyinstaller
+
+    - name: Get app version
+      run: |
+        $version = python -c "from katrain.core.constants import VERSION; print(VERSION)"
+        echo "KATRAIN_VERSION=$version" >> $env:GITHUB_ENV
+      shell: powershell
+
+    - name: Build executables with PyInstaller
+      run: |
+        pyinstaller spec/katrain.spec --clean --noconfirm
+      shell: powershell
+
+    - name: Create archives
+      run: |
+        # Create output directory
+        New-Item -ItemType Directory -Path "windows_exe" -Force
+        
+        # Copy executables to output directory
+        if (Test-Path "dist/KaTrain") {
+            Compress-Archive -Path "dist/KaTrain" -DestinationPath "windows_exe/KaTrain-${{ env.KATRAIN_VERSION }}-folder.zip"
+        }
+        if (Test-Path "dist/DebugKaTrain") {
+            Compress-Archive -Path "dist/DebugKaTrain" -DestinationPath "windows_exe/DebugKaTrain-${{ env.KATRAIN_VERSION }}-folder.zip"
+        }
+        if (Test-Path "dist/KaTrain.exe") {
+            Copy-Item "dist/KaTrain.exe" "windows_exe/KaTrain-${{ env.KATRAIN_VERSION }}.exe"
+        }
+        if (Test-Path "dist/DebugKaTrain.exe") {
+            Copy-Item "dist/DebugKaTrain.exe" "windows_exe/DebugKaTrain-${{ env.KATRAIN_VERSION }}.exe"
+        }
+      shell: powershell
+
+    - name: Upload Windows executables as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: KaTrainWindows
+        path: windows_exe 
