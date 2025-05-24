@@ -66,10 +66,17 @@ jobs:
 
         block_cipher = None
 
+        # Get Kivy dependencies
+        kivy_deps = get_deps_minimal()
+
+        # Add our custom binary to whatever binaries Kivy provides
+        custom_binaries = [('katrain/KataGo/katago-osx', 'katrain/KataGo/')]
+        all_binaries = kivy_deps.get('binaries', []) + custom_binaries
+
         a = Analysis(
             ['katrain/__main__.py'],
             pathex=[],
-            binaries=[('katrain/KataGo/katago-osx', 'katrain/KataGo/')],
+            binaries=all_binaries,
             datas=[
                 ('katrain/img', 'katrain/img'),
                 ('katrain/sounds', 'katrain/sounds'), 
@@ -78,12 +85,15 @@ jobs:
                 ('katrain/models', 'katrain/models'),
                 ('katrain/*.kv', 'katrain/'),
             ],
+            hiddenimports=kivy_deps.get('hiddenimports', []),
+            hookspath=kivy_deps.get('hookspath', []),
             hooksconfig={},
+            runtime_hooks=kivy_deps.get('runtime_hooks', []),
+            excludes=kivy_deps.get('excludes', []),
             win_no_prefer_redirects=False,
             win_private_assemblies=False,
             cipher=block_cipher,
             noarchive=False,
-            **get_deps_minimal()
         )
 
         pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
