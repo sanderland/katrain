@@ -20,13 +20,10 @@ from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
 from kivy.uix.widget import Widget
-from kivymd.app import MDApp
-from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
-from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import BaseFlatButton, BasePressedButton
-from kivymd.uix.navigationdrawer import MDNavigationDrawer
-from kivymd.uix.selectioncontrol import MDCheckbox
-from kivymd.uix.textfield import MDTextField
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.textinput import TextInput
+from kivy.uix.checkbox import CheckBox
+from kivy.app import App
 
 from katrain.core.constants import (
     AI_STRATEGIES_RECOMMENDED_ORDER,
@@ -39,6 +36,65 @@ from katrain.core.constants import (
 )
 from katrain.core.lang import i18n
 from katrain.gui.theme import Theme
+
+
+# Pure Kivy replacement for KivyMD ripple behavior
+class RippleBehavior:
+    """Simple replacement for KivyMD ripple effects"""
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+class CircularRippleBehavior(RippleBehavior):
+    pass
+
+class RectangularRippleBehavior(RippleBehavior):
+    pass
+
+
+# Pure Kivy replacement for KivyMD buttons
+class BaseFlatButton(Button):
+    pass
+
+class BasePressedButton(Button):
+    pass
+
+
+# Pure Kivy replacement for KivyMD BoxLayout
+class MDBoxLayout(BoxLayout):
+    pass
+
+
+# Pure Kivy replacement for KivyMD NavigationDrawer
+class MDNavigationDrawer(FloatLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.close_on_click = True
+        self.status = "closed"
+    
+    def set_state(self, state, animation=True):
+        if state == "toggle":
+            self.status = "closed" if self.status == "opened" else "opened"
+        else:
+            self.status = state
+    
+    def on_touch_down(self, touch):
+        return super().on_touch_down(touch)
+
+    def on_touch_up(self, touch):  # in PR - closes NavDrawer on any outside click
+        if self.status == "opened" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
+            self.set_state("close", animation=True)
+            return True
+        return super().on_touch_up(touch)
+
+
+# Pure Kivy replacement for KivyMD Checkbox
+class MDCheckbox(CheckBox):
+    pass
+
+
+# Pure Kivy replacement for KivyMD TextField
+class MDTextField(TextInput):
+    pass
 
 
 class BackgroundMixin(Widget):  # -- mixins
@@ -327,7 +383,7 @@ class I18NSpinner(KeyValueSpinner):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        MDApp.get_running_app().bind(language=self.build_values)
+        App.get_running_app().bind(language=self.build_values)
 
     def build_values(self, *_args):
         self.values = [i18n._(ref) for ref in self.value_refs]
@@ -369,7 +425,7 @@ class PlayerSetup(MDBoxLayout):
 
     def update_global_player_info(self):
         if self.parent and self.parent.update_global:
-            katrain = MDApp.get_running_app().gui
+            katrain = App.get_running_app().gui
             if katrain.game and katrain.game.current_node:
                 katrain.update_player(self.player, **self.player_type_dump)
 
@@ -527,7 +583,7 @@ class CollapsablePanel(MDBoxLayout):
             options_spacing=self.build_options,
         )
         self.bind(state=self._on_state, content_height=self._on_size, options_height=self._on_size)
-        MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
+        App.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
         self.build_options()
 
     def _on_state(self, *_args):

@@ -3,7 +3,7 @@ import time
 from kivy.clock import Clock
 from kivy.properties import ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
-from kivymd.uix.floatlayout import MDFloatLayout
+from kivy.uix.floatlayout import FloatLayout
 
 from katrain.core.constants import (
     MODE_ANALYZE,
@@ -20,7 +20,7 @@ from katrain.gui.theme import Theme
 from katrain.gui.sound import play_sound, stop_sound
 
 
-class PlayAnalyzeSelect(MDFloatLayout):
+class PlayAnalyzeSelect(FloatLayout):
     katrain = ObjectProperty(None)
     mode = OptionProperty(MODE_PLAY, options=[MODE_PLAY, MODE_ANALYZE])
 

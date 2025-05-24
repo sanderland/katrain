@@ -1,6 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
 from kivy_deps import sdl2, glew
-from kivymd import hooks_path as kivymd_hooks_path
 import subprocess
 import sys
 
@@ -25,7 +24,7 @@ a = Analysis(
         ("..\\katrain\\i18n", "katrain\\i18n"),
     ],
     hiddenimports=["win32file", "win32timezone", "six"],  #  FileChooser in kivy loads win32file conditionally, mkl needs six
-    hookspath=[kivymd_hooks_path],
+    hookspath=[],
     excludes=["scipy", "pandas", "numpy", "matplotlib", "docutils", "mkl"],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,

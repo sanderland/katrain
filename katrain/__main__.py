@@ -96,7 +96,6 @@ from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
 from katrain.gui.theme import Theme
-from kivymd.app import MDApp
 
 # used in kv
 from katrain.gui.kivyutils import *
@@ -202,7 +201,7 @@ class KaTrainGui(Screen, KaTrainBase):
         def set_focus_event(*args):
             self.last_focus_event = time.time()
 
-        MDApp.get_running_app().root_window.bind(focus=set_focus_event)
+        App.get_running_app().root_window.bind(focus=set_focus_event)
 
     def update_gui(self, cn, redraw_board=False):
         # Handle prisoners and next player display
@@ -832,7 +831,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.play_mode.switch_ui_mode()
 
 
-class KaTrainApp(MDApp):
+class KaTrainApp(App):
     gui = ObjectProperty(None)
     language = StringProperty(DEFAULT_LANGUAGE)
 
@@ -840,21 +839,21 @@ class KaTrainApp(MDApp):
         super().__init__()
 
     def is_valid_window_position(self, left, top, width, height):
-        from screeninfo import get_monitors
-        monitors = get_monitors()
-        for monitor in monitors:
-            if (left >= monitor.x and left + width <= monitor.x + monitor.width and
-                top >= monitor.y and top + height <= monitor.y + monitor.height):
-                return True
+        try:
+            from screeninfo import get_monitors
+            monitors = get_monitors()
+            for monitor in monitors:
+                if (left >= monitor.x and left + width <= monitor.x + monitor.width and
+                    top >= monitor.y and top + height <= monitor.y + monitor.height):
+                    return True
+        except Exception as e:
+            return True # yolo
         return False
 
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
 
         self.title = f"KaTrain v{VERSION}"
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Gray"
-        self.theme_cls.primary_hue = "200"
 
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
@@ -957,7 +956,7 @@ def run_app():
         def handle_exception(self, inst):
             ex_type, ex, tb = sys.exc_info()
             trace = "".join(traceback.format_tb(tb))
-            app = MDApp.get_running_app()
+            app = App.get_running_app()
 
             if app and app.gui:
                 app.gui.log(

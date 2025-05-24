@@ -5,7 +5,7 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty, Clock, ListProperty, NumericProperty, StringProperty
 from kivy.uix.widget import Widget
-from kivymd.app import MDApp
+from kivy.app import App
 
 from katrain.gui.theme import Theme
 
@@ -92,7 +92,7 @@ class ScoreGraph(Graph):
 
     def on_touch_up(self, touch):
         if self.collide_point(*touch.pos) and self.navigate_move[0] and "scroll" not in getattr(touch, "button", ""):
-            katrain = MDApp.get_running_app().gui
+            katrain = App.get_running_app().gui
             if katrain and katrain.game:
                 katrain.game.set_current_node(self.navigate_move[0])
                 katrain.update_state()

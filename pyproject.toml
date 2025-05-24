@@ -14,8 +14,7 @@ classifiers = [
     "Topic :: Games/Entertainment :: Board Games",
 ]
 dependencies = [
-    "kivy[full]>=2.1.0",
-    "kivymd==0.104.1",
+    "kivy[full]>=2.3.1",
     "ffpyplayer",
     "urllib3",
     "pygame~=2.0 ; platform_system == 'Darwin'",

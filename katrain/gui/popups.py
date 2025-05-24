@@ -18,10 +18,10 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.utils import platform
-from kivymd.app import MDApp
-from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.selectioncontrol import MDCheckbox
-from kivymd.uix.textfield import MDTextField
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout as MDBoxLayout
+from kivy.uix.checkbox import CheckBox as MDCheckbox
+from kivy.uix.textinput import TextInput as MDTextField
 
 from katrain.core.ai import ai_rank_estimation, game_report
 from katrain.core.constants import (
@@ -64,11 +64,11 @@ class I18NPopup(Popup):
 
     def __init__(self, size=None, **kwargs):
         if size:  # do not exceed window size
-            app = MDApp.get_running_app()
+            app = App.get_running_app()
             size[0] = min(app.gui.width, size[0])
             size[1] = min(app.gui.height, size[1])
         super().__init__(size=size, **kwargs)
-        self.bind(on_dismiss=Clock.schedule_once(lambda _dt: MDApp.get_running_app().gui.update_state(), 1))
+        self.bind(on_dismiss=Clock.schedule_once(lambda _dt: App.get_running_app().gui.update_state(), 1))
 
 
 class LabelledTextInput(MDTextField):
@@ -348,7 +348,7 @@ def wrap_anchor(widget):
 class ConfigTeacherPopup(QuickConfigGui):
     def __init__(self, katrain):
         super().__init__(katrain)
-        MDApp.get_running_app().bind(language=self.build_and_set_properties)
+        App.get_running_app().bind(language=self.build_and_set_properties)
 
     def add_option_widgets(self, widgets):
         for widget in widgets:
@@ -748,8 +748,8 @@ class ConfigPopup(BaseConfigPopup):
     def __init__(self, katrain):
         super().__init__(katrain)
         Clock.schedule_once(self.check_katas)
-        MDApp.get_running_app().bind(language=self.check_models)
-        MDApp.get_running_app().bind(language=self.check_katas)
+        App.get_running_app().bind(language=self.check_models)
+        App.get_running_app().bind(language=self.check_katas)
 
     def update_config(self, save_to_file=True, close_popup=True):
         updated = super().update_config(save_to_file=save_to_file, close_popup=close_popup)
@@ -782,7 +782,7 @@ class ConfigPopup(BaseConfigPopup):
 class ContributePopup(BaseConfigPopup):
     def __init__(self, katrain):
         super().__init__(katrain)
-        MDApp.get_running_app().bind(language=self.check_katas)
+        App.get_running_app().bind(language=self.check_katas)
         Clock.schedule_once(self.check_katas)
 
     def start_contributing(self):
@@ -800,7 +800,7 @@ class ContributePopup(BaseConfigPopup):
 class LoadSGFPopup(BaseConfigPopup):
     def __init__(self, katrain):
         super().__init__(katrain)
-        app = MDApp.get_running_app()
+        app = App.get_running_app()
         self.filesel.favorites = [
             (os.path.abspath(app.gui.config("general/sgf_load")), "Last Load Dir"),
             (os.path.abspath(app.gui.config("general/sgf_save")), "Last Save Dir"),
@@ -816,12 +816,12 @@ class SaveSGFPopup(BoxLayout):
     def __init__(self, suggested_filename, **kwargs):
         super().__init__(**kwargs)
         self.suggested_filename = suggested_filename
-        app = MDApp.get_running_app()
+        app = App.get_running_app()
         self.filesel.favorites = [
             (os.path.abspath(app.gui.config("general/sgf_load")), "Last Load Dir"),
             (os.path.abspath(app.gui.config("general/sgf_save")), "Last Save Dir"),
         ]
-        save_path = os.path.expanduser(MDApp.get_running_app().gui.config("general/sgf_save") or ".")
+        save_path = os.path.expanduser(App.get_running_app().gui.config("general/sgf_save") or ".")
 
         def set_suggested(_widget, path):
             self.filesel.ids.file_text.text = os.path.join(path, self.suggested_filename)
