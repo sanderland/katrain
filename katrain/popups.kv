@@ -1,4 +1,4 @@
-#:kivy 1.11.0
+#:kivy 2.3.1
 #:import i18n katrain.core.lang.i18n
 #:import expanduser os.path.expanduser
 #:import abspath os.path.abspath
@@ -236,14 +236,224 @@
                 LabelledFloatInput:
                     input_property: "engine/wide_root_noise"
                     hint_text: i18n._("engine:wide_root_noise:hint")
-    MDBoxLayout:
+    BoxLayout:
+        size_hint: 1,1
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('general settings')
+            font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
+        DescriptionLabel:
+            font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
+            text: i18n._('engine settings')
+    BoxLayout:
+        size_hint: 1,5
+        orientation: 'horizontal'
+        GridLayout:
+            cols: 2
+            rows: 4
+            spacing: CP_SPACING
+            DescriptionLabel:
+                text: i18n._('count down sound')
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "timer/sound"
+            DescriptionLabel:
+                text: i18n._("general:anim_pv_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "general/anim_pv_time"
+                    hint_text: i18n._("engine:time:hint")
+            DescriptionLabel:
+                text: i18n._("general:debug_level")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "general/debug_level"
+                    helper_text: i18n._("general:debug_level:hint")
+                    helper_text_mode: "on_focus"
+            DescriptionLabel:
+                text: 'Restore window size on startup'
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "ui_state/restoresize"
+        BackgroundMixin:
+            background_color: LIGHT_GREY
+            size_hint: None, 1
+            width: 2
+        GridLayout:
+            cols: 2
+            rows: 4
+            spacing: CP_SPACING
+            padding: CP_PADDING*2,0,0,0
+            DescriptionLabel:
+                text: i18n._("engine:max_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/max_visits"
+            DescriptionLabel:
+                text: i18n._("engine:fast_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/fast_visits"
+            DescriptionLabel:
+                text: i18n._("engine:max_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/max_time"
+                    hint_text: i18n._("engine:time:hint")
+            DescriptionLabel:
+                text: i18n._("engine:wide_root_noise")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/wide_root_noise"
+                    hint_text: i18n._("engine:wide_root_noise:hint")
+    BoxLayout:
+        size_hint: 1,1
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('general settings')
+            font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
+        DescriptionLabel:
+            font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
+            text: i18n._('engine settings')
+    BoxLayout:
+        size_hint: 1,5
+        orientation: 'horizontal'
+        GridLayout:
+            cols: 2
+            rows: 4
+            spacing: CP_SPACING
+            DescriptionLabel:
+                text: i18n._('count down sound')
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "timer/sound"
+            DescriptionLabel:
+                text: i18n._("general:anim_pv_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "general/anim_pv_time"
+                    hint_text: i18n._("engine:time:hint")
+            DescriptionLabel:
+                text: i18n._("general:debug_level")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "general/debug_level"
+                    helper_text: i18n._("general:debug_level:hint")
+                    helper_text_mode: "on_focus"
+            DescriptionLabel:
+                text: 'Restore window size on startup'
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "ui_state/restoresize"
+        BackgroundMixin:
+            background_color: LIGHT_GREY
+            size_hint: None, 1
+            width: 2
+        GridLayout:
+            cols: 2
+            rows: 4
+            spacing: CP_SPACING
+            padding: CP_PADDING*2,0,0,0
+            DescriptionLabel:
+                text: i18n._("engine:max_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/max_visits"
+            DescriptionLabel:
+                text: i18n._("engine:fast_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/fast_visits"
+            DescriptionLabel:
+                text: i18n._("engine:max_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/max_time"
+                    hint_text: i18n._("engine:time:hint")
+            DescriptionLabel:
+                text: i18n._("engine:wide_root_noise")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/wide_root_noise"
+                    hint_text: i18n._("engine:wide_root_noise:hint")
+    BoxLayout:
+        size_hint: 1,1
+        orientation: 'horizontal'
+        DescriptionLabel:
+            text: i18n._('general settings')
+            font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
+        DescriptionLabel:
+            font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
+            text: i18n._('engine settings')
+    BoxLayout:
+        size_hint: 1,5
+        orientation: 'horizontal'
+        GridLayout:
+            cols: 2
+            rows: 4
+            spacing: CP_SPACING
+            DescriptionLabel:
+                text: i18n._('count down sound')
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "timer/sound"
+            DescriptionLabel:
+                text: i18n._("general:anim_pv_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "general/anim_pv_time"
+                    hint_text: i18n._("engine:time:hint")
+            DescriptionLabel:
+                text: i18n._("general:debug_level")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "general/debug_level"
+                    helper_text: i18n._("general:debug_level:hint")
+                    helper_text_mode: "on_focus"
+            DescriptionLabel:
+                text: 'Restore window size on startup'
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "ui_state/restoresize"
+        BackgroundMixin:
+            background_color: LIGHT_GREY
+            size_hint: None, 1
+            width: 2
+        GridLayout:
+            cols: 2
+            rows: 4
+            spacing: CP_SPACING
+            padding: CP_PADDING*2,0,0,0
+            DescriptionLabel:
+                text: i18n._("engine:max_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/max_visits"
+            DescriptionLabel:
+                text: i18n._("engine:fast_visits")
+            AnchorLayout:
+                LabelledIntInput:
+                    input_property: "engine/fast_visits"
+            DescriptionLabel:
+                text: i18n._("engine:max_time")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/max_time"
+                    hint_text: i18n._("engine:time:hint")
+            DescriptionLabel:
+                text: i18n._("engine:wide_root_noise")
+            AnchorLayout:
+                LabelledFloatInput:
+                    input_property: "engine/wide_root_noise"
+                    hint_text: i18n._("engine:wide_root_noise:hint")
+    BoxLayout:
         orientation: 'horizontal'
         size_hint: 1,2
-        MDBoxLayout:
+        BoxLayout:
             size_hint_x: 3.5 if self.children else 0.0001
             orientation: 'vertical'
             id: download_progress_box
-        MDBoxLayout:
+        BoxLayout:
             size_hint_x: 3.5 if self.children else 0.0001
             orientation: 'vertical'
             id: katago_download_progress_box
@@ -393,7 +603,7 @@
             AnchorLayout:
                 anchor_x: 'left'
                 size_hint: 0.5, 1
-                MDIconButton:
+                Button:
                     icon: "eye"
                     pos_hint: {"center_x": 0, "center_y": .5}
                     on_press: password.password = not password.password
@@ -406,10 +616,10 @@
         font_size: sp(Theme.DESC_FONT_SIZE)
         color: Theme.ERROR_BORDER_COLOR
         size_hint: 1, 0.5
-    MDBoxLayout:
+    BoxLayout:
         orientation: 'horizontal'
         size_hint: 1, 1
-        MDBoxLayout:
+        BoxLayout:
             size_hint_x: 2.5 if self.children else 0.0001
             orientation: 'vertical'
             id: katago_download_progress_box
@@ -518,7 +728,7 @@
 
 
 <ConfigTimerPopup>:
-    MDGridLayout:
+    GridLayout:
         cols: 2
         rows: 4
         spacing: 1.5 * CP_SPACING
@@ -635,7 +845,7 @@
                 id: km
                 input_property: 'game/komi'
         AnchorLayout:
-            MDBoxLayout:
+            BoxLayout:
                 adaptive_size: True
                 spacing: CP_SPACING
                 QuickInputButton:
@@ -664,7 +874,7 @@
                     size_hint: 0.5, None
                     hint_text: i18n._("non square board hint")
             AnchorLayout:
-                MDBoxLayout:
+                BoxLayout:
                     adaptive_size: True
                     spacing: CP_SPACING
                     QuickInputButton:
@@ -685,7 +895,7 @@
                     write_tab: False
                     id: handicap
             AnchorLayout:
-                MDBoxLayout:
+                BoxLayout:
                     adaptive_size: True
                     spacing: CP_SPACING
                     QuickInputButton:

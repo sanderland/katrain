@@ -44,11 +44,19 @@ class RippleBehavior:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    def anim_complete(self, *args):
+        """Compatibility method for ripple animation completion"""
+        pass
+
 class CircularRippleBehavior(RippleBehavior):
-    pass
+    def anim_complete(self, *args):
+        """Compatibility method for ripple animation completion"""
+        pass
 
 class RectangularRippleBehavior(RippleBehavior):
-    pass
+    def anim_complete(self, *args):
+        """Compatibility method for ripple animation completion"""
+        pass
 
 
 # Pure Kivy replacement for KivyMD buttons
@@ -69,32 +77,61 @@ class MDNavigationDrawer(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.close_on_click = True
-        self.status = "closed"
+        self._state = "close"
+        self.size_hint_x = None
+        self.width = 0  # Start closed
+    
+    @property 
+    def state(self):
+        return self._state
+        
+    @state.setter
+    def state(self, value):
+        self._state = value
+        if value == "close":
+            self.width = 0
+            self.opacity = 0
+        elif value == "open":
+            # Set to a reasonable width when open
+            if self.parent:
+                self.width = min(400, self.parent.width * 0.5)
+            else:
+                self.width = 400
+            self.opacity = 1
     
     def set_state(self, state, animation=True):
         if state == "toggle":
-            self.status = "closed" if self.status == "opened" else "opened"
+            new_state = "close" if self.state == "open" else "open"
         else:
-            self.status = state
+            new_state = state
+        self.state = new_state
     
     def on_touch_down(self, touch):
-        return super().on_touch_down(touch)
-
-    def on_touch_up(self, touch):  # in PR - closes NavDrawer on any outside click
-        if self.status == "opened" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
-            self.set_state("close", animation=True)
-            return True
-        return super().on_touch_up(touch)
+        if self.state == "open" and self.collide_point(*touch.pos):
+            return super().on_touch_down(touch)
+        return False
 
 
 # Pure Kivy replacement for KivyMD Checkbox
 class MDCheckbox(CheckBox):
-    pass
+    def trigger_action(self, duration=0.1):
+        """Compatibility method to mimic KivyMD behavior"""
+        self.active = not self.active
+        return True
+    
+    def _do_press(self):
+        """Compatibility method for checkbox press"""
+        self.active = not self.active
+        return True
 
 
 # Pure Kivy replacement for KivyMD TextField
 class MDTextField(TextInput):
-    pass
+    hint_text = StringProperty("")
+    helper_text = StringProperty("")
+    helper_text_mode = StringProperty("none")
+    color_mode = StringProperty("primary")
+    line_color_focus = ListProperty([1, 1, 1, 1])
 
 
 class BackgroundMixin(Widget):  # -- mixins
@@ -102,6 +139,8 @@ class BackgroundMixin(Widget):  # -- mixins
     background_radius = NumericProperty(0)
     outline_color = ListProperty([0, 0, 0, 0])
     outline_width = NumericProperty(1)
+    
+    # Removed problematic __init__ method that was causing outline_width to be None
 
 
 class BackgroundLabel(BackgroundMixin, Label):
@@ -247,7 +286,7 @@ class MyNavigationDrawer(MDNavigationDrawer):
         return super().on_touch_down(touch)
 
     def on_touch_up(self, touch):  # in PR - closes NavDrawer on any outside click
-        if self.status == "opened" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
+        if self.state == "open" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
             self.set_state("close", animation=True)
             return True
         return super().on_touch_up(touch)

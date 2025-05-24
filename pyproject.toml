@@ -21,6 +21,7 @@ dependencies = [
     "screeninfo>=0.8.1,<0.9 ; platform_system != 'Darwin'",
     "chardet>=5.2.0,<6",
     "docutils>=0.21.2",
+    "kivymd>=1.2.0",
 ]
 
 [project.urls]

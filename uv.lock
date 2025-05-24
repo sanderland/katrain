@@ -265,6 +265,7 @@ dependencies = [
     { name = "docutils" },
     { name = "ffpyplayer" },
     { name = "kivy", extra = ["full"] },
+    { name = "kivymd" },
     { name = "pygame", marker = "sys_platform == 'darwin'" },
     { name = "screeninfo", marker = "sys_platform != 'darwin'" },
     { name = "urllib3" },
@@ -285,6 +286,7 @@ requires-dist = [
     { name = "docutils", specifier = ">=0.21.2" },
     { name = "ffpyplayer" },
     { name = "kivy", extras = ["full"], specifier = ">=2.3.1" },
+    { name = "kivymd", specifier = ">=1.2.0" },
     { name = "pygame", marker = "sys_platform == 'darwin'", specifier = "~=2.0" },
     { name = "screeninfo", marker = "sys_platform != 'darwin'", specifier = ">=0.8.1,<0.9" },
     { name = "urllib3" },
@@ -409,6 +411,16 @@ dependencies = [
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6a/55/cd1555bde62f809219cbc5d8a0836b0293399da2f4ba4e8ee84b6a7cc393/Kivy_Garden-0.1.5-py3-none-any.whl", hash = "sha256:ef50f44b96358cf10ac5665f27a4751bb34ef54051c54b93af891f80afe42929", size = 4623, upload-time = "2022-03-23T23:25:33.752Z" },
 ]
+
+[[package]]
+name = "kivymd"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "kivy" },
+    { name = "pillow" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/20/81/0b1154f5e581d5910702d9fadb3217f56cb186f72c8b36de0271e7ff9b5c/kivymd-1.2.0.tar.gz", hash = "sha256:2d33e2c59259998e93aee55acde647a4a20e5a0f962469db24ee4c9ec586962e", size = 2160842, upload-time = "2024-01-21T10:49:26.401Z" }
 
 [[package]]
 name = "mypy-extensions"
