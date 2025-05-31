@@ -17,91 +17,74 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: 3.12
+        python-version: 3.11
 
     - name: Install uv
       uses: astral-sh/setup-uv@v5
       with:
         version: "0.7.8"
 
-    - name: Install dependencies
+    - name: Install system dependencies
       run: |
         brew update
         brew install libzip
+        brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
 
     - name: Build KataGo
       run: |
-        rm katrain/KataGo/katago
-        rm katrain/KataGo/*.dll
-        rm katrain/KataGo/katago.exe
+        rm -f katrain/KataGo/katago
+        rm -f katrain/KataGo/*.dll
+        rm -f katrain/KataGo/katago.exe
         cd ..
         git clone --branch stable https://github.com/lightvector/KataGo.git
         pushd KataGo/cpp
         cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
         make -j$(sysctl -n hw.ncpu)
         cp katago ../../katrain/katrain/KataGo/katago-osx
-    - name: Install platypus
-      run: |
-        curl -L --output "platypus.zip" https://github.com/sveinbjornt/Platypus/releases/download/5.3/platypus5.3.zip
-        unzip "platypus.zip"
-        gunzip Platypus.app/Contents/Resources/platypus_clt.gz
-        gunzip Platypus.app/Contents/Resources/ScriptExec.gz
-        sudo mkdir -p /usr/local/bin
-        sudo mkdir -p /usr/local/share/platypus
-        sudo cp Platypus.app/Contents/Resources/platypus_clt /usr/local/bin/platypus
-        sudo cp Platypus.app/Contents/Resources/ScriptExec /usr/local/share/platypus/ScriptExec
-        sudo cp -a Platypus.app/Contents/Resources/MainMenu.nib /usr/local/share/platypus/MainMenu.nib
-        sudo chmod -R 755 /usr/local/share/platypus
-    - name: Get Kivy dependencies
-      run: |
-        brew install ninja
-        cd ..
-        git clone https://github.com/kivy/kivy-sdk-packager.git
-        cd kivy-sdk-packager/osx
-        export MACOSX_DEPLOYMENT_TARGET=12.0
-        ./create-osx-bundle.sh -k 2.3.1 -p 3.11.2 -n "KaTrain" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
-    - name: Install KaTrain pip dependencies
-      run: |
-        pushd ../kivy-sdk-packager/osx/build/KaTrain.app/Contents/Resources/venv/bin
-        source activate
         popd
+
+    - name: Install Python dependencies
+      run: |
         uv sync
-    - name: Finalize KaTrain bundle
+        uv pip install pyinstaller
+
+    - name: Get app version
       run: |
-        export KATRAIN_VERSION=`python -c 'from katrain.core.constants import VERSION;print(VERSION)' `
-        echo "Setting version to ${KATRAIN_VERSION}"
-        cd ../kivy-sdk-packager/osx/build
-        pushd KaTrain.app/Contents/Resources/
-        ln -s ./venv/bin/KaTrain yourapp
-        popd
-        ../fix-bundle-metadata.sh KaTrain.app -n KaTrain -v "${KATRAIN_VERSION}" -a "Sander Land" -o "org.katrain.KaTrain" -i "../../katrain/katrain/img/icon.ico"
-        ../cleanup-app.sh KaTrain.app
-        ../relocate.sh KaTrain.app
-        # Define UTExportedTypeDeclarations for SGF
-        plutil -replace UTExportedTypeDeclarations -xml "<array><dict><key>UTTypeIdentifier</key><string>org.katrain.sgf</string><key>UTTypeDescription</key><string>KaTrain SGF File</string><key>UTTypeConformsTo</key><array><string>public.data</string><string>public.text</string></array><key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>sgf</string><string>SGF</string></array></dict></dict></array>" "KaTrain.app/Contents/Info.plist"
-        # Define CFBundleDocumentTypes for SGF
-        plutil -replace CFBundleDocumentTypes -xml "<array><dict><key>CFBundleTypeName</key><string>Stone Game Format</string><key>CFBundleTypeRole</key><string>Editor</string><key>LSHandlerRank</key><string>Owner</string><key>LSItemContentTypes</key><array><string>org.katrain.sgf</string></array><key>CFBundleTypeExtensions</key><array><string>sgf</string><string>SGF</string></array></dict></array>" "KaTrain.app/Contents/Info.plist"
-        echo "Copying katago-osx to app bundle..."
-        cp ../../katrain/katrain/KataGo/katago-osx KaTrain.app/Contents/Resources/katago-osx
-        APP_BUNDLE_PATH="KaTrain.app"
-        echo "--- Signing components ---"
-        # Sign the copied KataGo binary
-        codesign -fs - --force --options runtime "${APP_BUNDLE_PATH}/Contents/Resources/katago-osx"
-        # Sign the main executable (Platypus ScriptExec or the one created by Kivy)
-        MAIN_EXEC_PATH=$(plutil -extract CFBundleExecutable raw "${APP_BUNDLE_PATH}/Contents/Info.plist")
-        codesign -fs - --force --options runtime "${APP_BUNDLE_PATH}/Contents/MacOS/${MAIN_EXEC_PATH}"
-        # Sign all dylibs, so, and executable files within the app bundle
-        find "${APP_BUNDLE_PATH}" -type f \( -name "*.dylib" -o -name "*.so" -o -perm +111 \) -exec codesign -fs - --force --options runtime {} \;
-        # Sign the .app bundle itself (should be done last)
-        codesign -fs - --force --options runtime --deep "${APP_BUNDLE_PATH}"
-        echo "--- Finished signing ---"
-    - name: Create dmg
+        echo "KATRAIN_VERSION=$(python -c 'from katrain.core.constants import VERSION; print(VERSION)')" >> "$GITHUB_ENV"
+
+    - name: Build app with PyInstaller
+      env:
+        KIVY_HEADLESS: 1
+        KIVY_NO_WINDOW: 1
+        KIVY_GL_BACKEND: mock
       run: |
-        pushd ../kivy-sdk-packager/osx
-        ./create-osx-dmg.sh build/KaTrain.app KaTrain
-        popd
-        mkdir osx_app
-        cp ../kivy-sdk-packager/osx/KaTrain.dmg osx_app/
+        uv run pyinstaller spec/katrain.spec --clean --noconfirm
+
+    - name: Sign the app (ad-hoc)
+      run: |
+        # Sign the app bundle for local testing
+        codesign --force --deep --sign - dist/KaTrain.app
+
+    - name: Create DMG
+      run: |
+        # Create a DMG file
+        mkdir -p dmg_temp
+        cp -R dist/KaTrain.app dmg_temp/
+        
+        # Create Applications symlink for drag-and-drop installation
+        ln -s /Applications dmg_temp/Applications
+        
+        # Create the DMG
+        hdiutil create -volname "KaTrain ${{ env.KATRAIN_VERSION }}" \
+                       -srcfolder dmg_temp \
+                       -ov \
+                       -format UDZO \
+                       "KaTrain-${{ env.KATRAIN_VERSION }}.dmg"
+        
+        # Prepare output directory
+        mkdir -p osx_app
+        mv "KaTrain-${{ env.KATRAIN_VERSION }}.dmg" osx_app/
+
     - name: Upload app as artifact
       uses: actions/upload-artifact@v4
       with:
