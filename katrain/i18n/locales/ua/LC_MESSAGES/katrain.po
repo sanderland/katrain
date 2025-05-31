@@ -1060,3 +1060,29 @@ msgstr "Дістанція до стінки"
 #. tsumego: ko is good enough?
 msgid "tsumego:ko"
 msgstr "Дозволити ко?"
+
+#. TODO
+msgid "ai:human"
+msgstr "Humanlike Model"
+
+#. TODO
+msgid "ai:pro"
+msgstr "Historical Pro"
+
+#. TODO
+msgid "aihelp:pro"
+msgstr ""
+"Picks moves according to a humanlike KataGo model. Specifically, Imitate pro"
+" and strong insei moves based on historical game records from the specified "
+"year and surrounding years."
+
+#. TODO
+msgid "aihelp:human"
+msgstr ""
+"Picks moves according to a humanlike KataGo model. If 'modern_style' is "
+"ticked, the model will play according to a post-2016 AlphaZero opening "
+"style."
+
+#. TODO
+msgid "engine:humanlike_model"
+msgstr "Path to human-like KataGo model"

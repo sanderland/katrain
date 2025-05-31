@@ -940,3 +940,29 @@ msgstr "수를 제한"
 
 msgid "contribute:passwordwarning"
 msgstr "(평문으로 저장하니, 다른 곳에서 재사용하지 마십시오)"
+
+#. TODO
+msgid "ai:human"
+msgstr "Humanlike Model"
+
+#. TODO
+msgid "ai:pro"
+msgstr "Historical Pro"
+
+#. TODO
+msgid "aihelp:pro"
+msgstr ""
+"Picks moves according to a humanlike KataGo model. Specifically, Imitate pro"
+" and strong insei moves based on historical game records from the specified "
+"year and surrounding years."
+
+#. TODO
+msgid "aihelp:human"
+msgstr ""
+"Picks moves according to a humanlike KataGo model. If 'modern_style' is "
+"ticked, the model will play according to a post-2016 AlphaZero opening "
+"style."
+
+#. TODO
+msgid "engine:humanlike_model"
+msgstr "Path to human-like KataGo model"

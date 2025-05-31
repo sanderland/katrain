@@ -750,18 +750,18 @@ msgstr "Cache-Analyse in SGF"
 msgid "menu:save-as"
 msgstr "Spiel speichern als..."
 
-#. Laden
 # sgf load button
+#. Laden
 msgid "Load File"
 msgstr "Spiel laden"
 
-#. Save SGF (Popup)
 # sgf save popup
+#. Save SGF (Popup)
 msgid "save sgf title"
 msgstr "SGF-Datei speichern"
 
-#. Save button
 # sgf save button
+#. Save button
 msgid "Save File"
 msgstr "Datei speichern"
 
@@ -1041,3 +1041,29 @@ msgstr "Limit to moves"
 #. TODO
 msgid "contribute:passwordwarning"
 msgstr "(Stored as plain text, do not re-use this anywhere)"
+
+#. TODO
+msgid "ai:human"
+msgstr "Humanlike Model"
+
+#. TODO
+msgid "ai:pro"
+msgstr "Historical Pro"
+
+#. TODO
+msgid "aihelp:pro"
+msgstr ""
+"Picks moves according to a humanlike KataGo model. Specifically, Imitate pro"
+" and strong insei moves based on historical game records from the specified "
+"year and surrounding years."
+
+#. TODO
+msgid "aihelp:human"
+msgstr ""
+"Picks moves according to a humanlike KataGo model. If 'modern_style' is "
+"ticked, the model will play according to a post-2016 AlphaZero opening "
+"style."
+
+#. TODO
+msgid "engine:humanlike_model"
+msgstr "Path to human-like KataGo model"
