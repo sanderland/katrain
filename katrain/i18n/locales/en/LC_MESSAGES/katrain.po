@@ -906,11 +906,11 @@ msgstr ""
 "is no 0 kyu/dan, 3 dan = -2 kyu."
 
 msgid "ai:human"
-msgstr "Humanlike Model"
+msgstr "Human-like"
 
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a humanlike KataGo model. If 'modern_style' is "
+"Picks moves according to a human-like KataGo model. If 'modern_style' is "
 "ticked, the model will play according to a post-2016 AlphaZero opening "
 "style."
 
@@ -919,9 +919,9 @@ msgstr "Historical Pro"
 
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a humanlike KataGo model. Specifically, Imitate pro"
-" and strong insei moves based on historical game records from the specified "
-"year and surrounding years."
+"Picks moves according to a human-like KataGo model. Specifically, Imitate "
+"pro and strong insei moves based on historical game records from the "
+"specified year and surrounding years."
 
 #. in AI settings
 msgid "estimated strength"

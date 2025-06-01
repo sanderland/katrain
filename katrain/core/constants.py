@@ -121,7 +121,7 @@ AI_OPTION_VALUES = {
     "min_visits": range(1, 10),
     "attach_penalty": [x / 10 for x in range(-10, 51)],
     "tenuki_penalty": [x / 10 for x in range(-10, 51)],
-    "human_kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(30, 0, -1)] +
+    "human_kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(20, 0, -1)] +
                   [(k, f"{1-k}[strength:dan]") for k in range(0, -9,-1)],
     "modern_style": "bool",
     "pro_year": range(1800,2024),
