@@ -1085,4 +1085,4 @@ msgstr ""
 
 #. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like KataGo model"
+msgstr "Path to human-like model"

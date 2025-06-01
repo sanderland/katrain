@@ -640,7 +640,7 @@ msgid "engine:model"
 msgstr "Path to KataGo model"
 
 msgid "engine:humanlike_model"
-msgstr "Path to human-like KataGo model"
+msgstr "Path to human-like model"
 
 msgid "engine:config"
 msgstr "Path to KataGo config file"
@@ -666,9 +666,7 @@ msgid "engine:wide_root_noise"
 msgstr "Wide root noise (increases variety of moves considered)"
 
 msgid "engine:wide_root_noise:hint"
-msgstr ""
-"Use 0.02-0.1 to show\n"
-"more possible moves"
+msgstr "Use 0.02-0.1"
 
 msgid "engine:time:hint"
 msgstr "Time in seconds"

@@ -1,4 +1,4 @@
-#:kivy 1.11.0
+#:kivy 2.3.0
 #:import i18n katrain.core.lang.i18n
 
 #:import PLAYER_TYPES katrain.core.constants.PLAYER_TYPES
@@ -886,11 +886,11 @@
                 size_hint: None, 1
                 AutoSizedRectangleButton:
                     background_color: Theme.BOX_BACKGROUND_COLOR
-                    size_hint_y: 0.5
+                    size_hint_y: 0.55
                     pos_hint: {'center_y': 0.5, 'x': 0}
                     id: analysis_button
                     on_release: root.toggle_dropdown()
-                    text: '  ' + i18n._("btn:Analyze")
+                    text: '   ' + i18n._("btn:Analyze")
                 Image:
                     pos_hint: {'center_y': 0.5}
                     x: self.parent.x + 2
