@@ -82,17 +82,20 @@ jobs:
     - name: Create archives
       run: |
         New-Item -ItemType Directory -Path "windows_exe" -Force
-        if (Test-Path "dist/KaTrain") {
-            Compress-Archive -Path "dist/KaTrain" -DestinationPath "windows_exe/KaTrain-${{ env.KATRAIN_VERSION }}-folder.zip"
-        }
-        if (Test-Path "dist/DebugKaTrain") {
-            Compress-Archive -Path "dist/DebugKaTrain" -DestinationPath "windows_exe/DebugKaTrain-${{ env.KATRAIN_VERSION }}-folder.zip"
-        }
+        
+        # Copy the standalone KaTrain.exe
         if (Test-Path "dist/KaTrain.exe") {
-            Copy-Item "dist/KaTrain.exe" "windows_exe/KaTrain-${{ env.KATRAIN_VERSION }}.exe"
+            Copy-Item "dist/KaTrain.exe" "windows_exe/KaTrain.exe"
         }
-        if (Test-Path "dist/DebugKaTrain.exe") {
-            Copy-Item "dist/DebugKaTrain.exe" "windows_exe/DebugKaTrain-${{ env.KATRAIN_VERSION }}.exe"
+        
+        # Create KaTrain.zip with debug executable inside
+        if (Test-Path "dist/KaTrain") {
+            # Copy the debug executable into the main KaTrain folder
+            if (Test-Path "dist/DebugKaTrain/KaTrain.exe") {
+                Copy-Item "dist/DebugKaTrain/KaTrain.exe" "dist/KaTrain/debugkatrain.exe"
+            }
+            # Create the zip file
+            Compress-Archive -Path "dist/KaTrain" -DestinationPath "windows_exe/KaTrain.zip"
         }
       shell: powershell
 
