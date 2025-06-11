@@ -1,0 +1,44 @@
+name: 'Setup Python and uv'
+description: 'Common setup for Python, uv, and dependencies'
+inputs:
+  python-version:
+    description: 'Python version to set up'
+    required: false
+    default: '3.11'
+  sync-groups:
+    description: 'uv sync groups'
+    required: false
+    default: ''
+  install-pyinstaller:
+    description: 'Install PyInstaller'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "0.7.8"
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.sync-groups }}" ]; then
+          uv sync --group ${{ inputs.sync-groups }}
+        else
+          uv sync
+        fi
+
+    - name: Install PyInstaller
+      if: inputs.install-pyinstaller == 'true'
+      shell: bash
+      run: uv pip install pyinstaller 

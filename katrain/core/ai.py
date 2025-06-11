@@ -1320,7 +1320,7 @@ class HumanStyleStrategy(AIStrategy):
         # Define override settings (separate from includePolicy)
         override_settings = {
             "humanSLProfile": human_profile,
-            "ignorePreRootHistory": False
+            "ignorePreRootHistory": False,
         }
         self.game.katrain.log(f"[HumanStyleStrategy] Override settings for engine: {override_settings}", OUTPUT_DEBUG)
         

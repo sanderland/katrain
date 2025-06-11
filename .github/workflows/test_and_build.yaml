@@ -1,0 +1,218 @@
+# .github/workflows/test_and_build.yml
+
+name: Test, Build, and Release
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Create draft release'
+        required: true
+        default: false
+        type: boolean
+      publish_pypi:
+        description: 'Publish to PyPI'
+        required: true
+        default: false
+        type: boolean
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # This job runs first to prepare shared information for other jobs.
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get project version
+        id: version
+        uses: ./.github/actions/get-version
+
+  test:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.12']
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python and uv
+      uses: ./.github/actions/setup-python-uv
+      with:
+        python-version: ${{ matrix.python-version }}
+        sync-groups: test
+
+    - name: Run tests
+      run: uv run pytest tests
+
+    - name: Check I18N conversion
+      run: uv run python i18n.py -todo
+
+    - name: Check package can be built
+      run: uv build
+
+  build-windows:
+    needs: [prepare, test]
+    runs-on: windows-latest
+    env:
+      KATRAIN_VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python, uv, and PyInstaller
+      uses: ./.github/actions/setup-python-uv
+      with:
+        install-pyinstaller: 'true'
+
+    - name: Build executables with PyInstaller
+      run: uv run pyinstaller spec/katrain.spec --clean --noconfirm
+      shell: powershell
+
+    - name: Create archives
+      run: |
+        New-Item -ItemType Directory -Path "windows_exe" -Force
+        if (Test-Path "dist/KaTrain") {
+            Compress-Archive -Path "dist/KaTrain" -DestinationPath "windows_exe/KaTrain-${{ env.KATRAIN_VERSION }}-folder.zip"
+        }
+        if (Test-Path "dist/DebugKaTrain") {
+            Compress-Archive -Path "dist/DebugKaTrain" -DestinationPath "windows_exe/DebugKaTrain-${{ env.KATRAIN_VERSION }}-folder.zip"
+        }
+        if (Test-Path "dist/KaTrain.exe") {
+            Copy-Item "dist/KaTrain.exe" "windows_exe/KaTrain-${{ env.KATRAIN_VERSION }}.exe"
+        }
+        if (Test-Path "dist/DebugKaTrain.exe") {
+            Copy-Item "dist/DebugKaTrain.exe" "windows_exe/DebugKaTrain-${{ env.KATRAIN_VERSION }}.exe"
+        }
+      shell: powershell
+
+    - name: Upload Windows artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: KaTrainWindows-${{ env.KATRAIN_VERSION }}
+        path: windows_exe
+
+  build-macos:
+    needs: [prepare, test]
+    runs-on: macos-latest
+    env:
+      KATRAIN_VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python, uv, and PyInstaller
+      uses: ./.github/actions/setup-python-uv
+      with:
+        install-pyinstaller: 'true'
+
+    - name: Install macOS dependencies
+      run: |
+        brew update
+        brew install libzip
+        brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
+
+    - name: Build KataGo
+      run: |
+        rm -f katrain/KataGo/katago katrain/KataGo/*.dll katrain/KataGo/katago.exe
+        git clone --depth 1 --branch stable https://github.com/lightvector/KataGo.git ../KataGo
+        pushd ../KataGo/cpp
+        cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
+        make -j$(sysctl -n hw.ncpu)
+        cp katago ../../katrain/katrain/KataGo/katago-osx
+        popd
+
+    - name: Build app with PyInstaller
+      env:
+        KIVY_HEADLESS: 1
+        KIVY_NO_WINDOW: 1
+        KIVY_GL_BACKEND: mock
+      run: uv run pyinstaller spec/katrain.spec --clean --noconfirm
+
+    - name: Sign the app (ad-hoc)
+      run: codesign --force --deep --sign - dist/KaTrain.app
+
+    - name: Create DMG
+      run: |
+        mkdir -p dmg_temp
+        cp -R dist/KaTrain.app dmg_temp/
+        ln -s /Applications dmg_temp/Applications
+        hdiutil create -volname "KaTrain ${{ env.KATRAIN_VERSION }}" \
+                       -srcfolder dmg_temp \
+                       -ov \
+                       -format UDZO \
+                       "KaTrain-${{ env.KATRAIN_VERSION }}.dmg"
+        mkdir -p osx_app
+        mv "KaTrain-${{ env.KATRAIN_VERSION }}.dmg" osx_app/
+
+    - name: Upload macOS artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: KaTrainMacOS-${{ env.KATRAIN_VERSION }}
+        path: osx_app
+
+  # This job publishes the package to PyPI.
+  publish-pypi:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_pypi == 'true'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python and uv
+      uses: ./.github/actions/setup-python-uv
+      with:
+        sync-groups: dev,test
+
+    - name: Finalize I18N for publishing
+      run: uv run python i18n.py
+
+    - name: Build and publish to PyPI
+      env:
+        # Assumes you are using trusted publishing or a PYPI_TOKEN secret
+        POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        uv build
+        uv publish --verbose
+
+  # This job creates a draft release on GitHub.
+  create-release:
+    needs: [prepare, build-windows, build-macos]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true'
+    permissions:
+      contents: write # Required for softprops/action-gh-release
+    steps:
+    - name: Download all build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./artifacts
+        pattern: KaTrain*
+        merge-multiple: true
+
+    - name: Create Draft Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: "v${{ needs.prepare.outputs.version }}"
+        name: "KaTrain v${{ needs.prepare.outputs.version }}"
+        body: |
+          ## KaTrain v${{ needs.prepare.outputs.version }}
+          Auto-generated draft release from the latest main branch.
+          
+          ### Downloads
+          - **Windows**: Download the `.exe` files or `.zip` folders.
+          - **macOS**: Download the `.dmg` file.
+        files: ./artifacts/*
+        draft: true
+        prerelease: false
