@@ -102,7 +102,12 @@ class KaTrainBase:
             else:
                 try:
                     if not os.path.exists(user_config_file):
-                        os.makedirs(os.path.split(user_config_file)[0], exist_ok=True)
+                        self.log("User config does not exist, creating it", OUTPUT_DEBUG)
+                        parent_dir = os.path.split(user_config_file)[0]
+                        self.log(f"Creating parent directory if needed: {parent_dir}", OUTPUT_DEBUG)
+                        os.makedirs(parent_dir, exist_ok=True)
+                        
+                        self.log(f"Copying package config {package_config_file} to user config {user_config_file}", OUTPUT_DEBUG)
                         shutil.copyfile(package_config_file, user_config_file)
                         config_file = user_config_file
                         self.log(f"Copied package config to local file {config_file}", OUTPUT_INFO)
@@ -110,7 +115,9 @@ class KaTrainBase:
                         try:
                             version_str = JsonStore(user_config_file).get("general")["version"]
                             version = parse_version(version_str)
-                        except Exception:  # noqa E722 broken file etc
+                            self.log(f"Parsed version: {version}", OUTPUT_DEBUG)
+                        except Exception as e:  # noqa E722 broken file etc
+                            self.log(f"Failed to read version from user config: {e}", OUTPUT_DEBUG)
                             version_str = "0.0.0"
                             version = [0, 0, 0]
                         min_version = parse_version(CONFIG_MIN_VERSION)

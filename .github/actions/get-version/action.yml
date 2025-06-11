@@ -1,0 +1,17 @@
+name: 'Get KaTrain Version'
+description: 'Extract version from katrain.core.constants'
+outputs:
+  version:
+    description: 'The version string'
+    value: ${{ steps.version.outputs.version }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get app version
+      id: version
+      shell: bash
+      run: |
+        version=$(python -c 'from katrain.core.constants import VERSION; print(VERSION)')
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+        echo "KATRAIN_VERSION=$version" >> "$GITHUB_ENV" 

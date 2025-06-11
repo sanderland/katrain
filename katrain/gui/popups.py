@@ -469,6 +469,7 @@ class BaseConfigPopup(QuickConfigGui):
     }
     MODELS = {
         "old 15 block model": "https://github.com/lightvector/KataGo/releases/download/v1.3.2/g170e-b15c192-s1672170752-d466197061.txt.gz",
+        "Human-like model": "https://github.com/lightvector/KataGo/releases/download/v1.15.0/b18c384nbt-humanv0.bin.gz",
     }
     MODEL_DESC = {
         "Fat 40 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b40c384x2-s2348692992-d1229892979.zip",
@@ -496,7 +497,7 @@ class BaseConfigPopup(QuickConfigGui):
 
     def __init__(self, katrain):
         super().__init__(katrain)
-        self.paths = [self.katrain.config("engine/model"), "katrain/models", DATA_FOLDER]
+        self.paths = [self.katrain.config("engine/model"), self.katrain.config("engine/humanlike_model"), "katrain/models", DATA_FOLDER]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
         self.last_clicked_download_models = 0
 
@@ -519,9 +520,10 @@ class BaseConfigPopup(QuickConfigGui):
 
         done = set()
         model_files = []
+        humanlike_model_files = []
         distributed_training_models = os.path.expanduser(os.path.join(DATA_FOLDER, "katago_contribute/kata1/models"))
-        for path in self.paths + [self.model_path.text, distributed_training_models]:
-            path = path.rstrip("/\\")
+        for path in self.paths + [self.model_path.text, self.humanlike_model_path.text, distributed_training_models]:
+            path = (path or "").rstrip("/\\")
             if path.startswith("katrain"):
                 path = path.replace("katrain", PATHS["PACKAGE"].rstrip("/\\"), 1)
             path = os.path.expanduser(path)
@@ -540,6 +542,9 @@ class BaseConfigPopup(QuickConfigGui):
             if files and path not in self.paths:
                 self.paths.append(path)  # persistent on paths with models found
             model_files += files
+            for file in files:
+                if "human" in file:
+                    humanlike_model_files.append(file)
 
         # no description to bottom
         model_files = sorted(
@@ -550,6 +555,15 @@ class BaseConfigPopup(QuickConfigGui):
         self.model_files.values = [models_available_msg] + [desc for desc, path in model_files]
         self.model_files.value_keys = [""] + [path for desc, path in model_files]
         self.model_files.text = models_available_msg
+
+        humanlike_model_files = sorted(
+            [(find_description(path), path) for path in humanlike_model_files],
+            key=lambda descpath: ("Recommended" not in descpath[0], "  -  " not in descpath[0], descpath[0]),
+        )
+        humanlike_models_available_msg = i18n._("models available").format(num=len(humanlike_model_files))
+        self.humanlike_model_files.values = [humanlike_models_available_msg] + [desc for desc, path in humanlike_model_files]
+        self.humanlike_model_files.value_keys = [""] + [path for desc, path in humanlike_model_files]
+        self.humanlike_model_files.text = humanlike_models_available_msg
 
     def check_katas(self, *args):
         def find_description(path):
@@ -636,7 +650,7 @@ class BaseConfigPopup(QuickConfigGui):
 
         for name, url in {**self.MODELS, **dist_models}.items():
             filename = os.path.split(url)[1]
-            if not any(os.path.split(f)[1] == filename for f in self.model_files.values):
+            if not any(os.path.split(f)[1] == filename for f in self.model_files.values + self.humanlike_model_files.values):
                 savepath = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 savepath_tmp = savepath + ".part"
                 self.katrain.log(f"Downloading {name} from {url} to {savepath_tmp}", OUTPUT_INFO)

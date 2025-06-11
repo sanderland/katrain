@@ -3,6 +3,7 @@
         "katago": "",
         "altcommand": "",
         "model": "katrain/models/kata1-b18c384nbt-s9996604416-d4316597426.bin.gz",
+        "humanlike_model": "",
         "config": "katrain/KataGo/analysis_config.cfg",
         "max_visits": 500,
         "fast_visits": 25,
@@ -27,7 +28,7 @@
         "anim_pv_time": 0.5,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.16.0",
+        "version": "1.17.0",
         "load_fast_analysis": false,
         "load_sgf_rewind": true
     },
@@ -44,8 +45,8 @@
         "handicap": 0,
         "rules": "japanese",
         "clear_cache": false,
-        "setup_move":100,
-        "setup_advantage":20
+        "setup_move": 100,
+        "setup_advantage": 20
     },
     "trainer": {
         "theme": "theme:normal",
@@ -157,6 +158,13 @@
         },
         "ai:p:rank": {
             "kyu_rank": 4.0
+        },
+        "ai:human": {
+            "human_kyu_rank": 8,
+            "modern_style": false
+        },
+        "ai:pro": {
+            "pro_year": 1914
         }
     },
     "ui_state": {
