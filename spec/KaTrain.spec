@@ -53,6 +53,8 @@ datas = [
     (f"{base_path}/KataGo", "katrain/KataGo"),
 ]
 
+# KivyMD data files will be handled by the custom hook
+
 # Platform-specific binaries
 binaries = kivy_deps.get('binaries', [])
 if is_macos:
@@ -71,10 +73,17 @@ if is_windows:
 # Platform-specific hooks and excludes
 hookspath = kivy_deps.get('hookspath', [])
 hookspath.append(kivymd_hooks_path)
+# Add custom KivyMD hook directory
+hookspath.append(SPECPATH)
 
+# Exclude problematic modules
 excludes = kivy_deps.get('excludes', []) + ["scipy", "pandas", "numpy", "matplotlib", "docutils"]
 if is_windows:
     excludes.append("mkl")
+
+# Fix SDL2 conflicts on macOS by excluding ffpyplayer
+if is_macos:
+    excludes.extend(["ffpyplayer", "pygame"])
 
 # Entry point - relative to spec file location
 entry_point = f"{base_path}/__main__.py"
