@@ -9,10 +9,6 @@ inputs:
     description: 'uv sync groups'
     required: false
     default: ''
-  install-pyinstaller:
-    description: 'Install PyInstaller'
-    required: false
-    default: 'false'
 
 runs:
   using: 'composite'
@@ -37,8 +33,3 @@ runs:
         else
           uv sync
         fi
-
-    - name: Install PyInstaller
-      if: inputs.install-pyinstaller == 'true'
-      shell: bash
-      run: uv pip install pyinstaller 

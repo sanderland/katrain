@@ -28,8 +28,7 @@ kivy_deps = get_deps_minimal()
 # Platform-specific additions
 if is_windows:
     from kivy_deps import sdl2, glew
-    
-    # Windows version info
+   # Windows version info
     sys.path.append(SPECPATH)
     try:
         import file_version as versionModule

@@ -70,10 +70,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Python, uv, and PyInstaller
+    - name: Setup Python, uv
       uses: ./.github/actions/setup-python-uv
-      with:
-        install-pyinstaller: 'true'
 
     - name: Build executables with PyInstaller
       run: uv run pyinstaller spec/katrain.spec --clean --noconfirm
