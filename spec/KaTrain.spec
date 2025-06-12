@@ -28,12 +28,13 @@ kivy_deps = get_deps_minimal()
 # Platform-specific additions
 if is_windows:
     from kivy_deps import sdl2, glew
-    
-    # Add Windows-specific paths
-    kivy_deps['binaries'].extend(sdl2.dep_bins)
-    kivy_deps['binaries'].extend(glew.dep_bins)
-
-print("Kivy dependencies collected:", list(kivy_deps.keys()))
+   # Windows version info
+    sys.path.append(SPECPATH)
+    try:
+        import file_version as versionModule
+        version_info = versionModule.versionInfo
+    except:
+        version_info = None
 
 # Define common data files - all paths relative to spec file location
 base_path = "../katrain"
@@ -52,11 +53,8 @@ datas = [
 ]
 
 # Platform-specific binaries
-binaries = []
-if is_windows:
-    # Use kivy_deps binaries for Windows
-    binaries = kivy_deps.get('binaries', [])
-elif is_macos:
+binaries = kivy_deps.get('binaries', [])
+if is_macos:
     # Add macOS-specific KataGo binary if it exists
     katago_osx_path = f'{base_path}/KataGo/katago-osx'
     if os.path.exists(katago_osx_path):
