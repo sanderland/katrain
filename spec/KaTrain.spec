@@ -52,8 +52,11 @@ datas = [
 ]
 
 # Platform-specific binaries
-binaries = kivy_deps.get('binaries', [])
-if is_macos:
+binaries = []
+if is_windows:
+    # Use kivy_deps binaries for Windows
+    binaries = kivy_deps.get('binaries', [])
+elif is_macos:
     # Add macOS-specific KataGo binary if it exists
     katago_osx_path = f'{base_path}/KataGo/katago-osx'
     if os.path.exists(katago_osx_path):
