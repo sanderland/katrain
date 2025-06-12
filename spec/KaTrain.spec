@@ -29,13 +29,11 @@ kivy_deps = get_deps_minimal()
 if is_windows:
     from kivy_deps import sdl2, glew
     
-    # Windows version info
-    sys.path.append(SPECPATH)
-    try:
-        import file_version as versionModule
-        version_info = versionModule.versionInfo
-    except:
-        version_info = None
+    # Add Windows-specific paths
+    kivy_deps['binaries'].extend(sdl2.dep_bins)
+    kivy_deps['binaries'].extend(glew.dep_bins)
+
+print("Kivy dependencies collected:", list(kivy_deps.keys()))
 
 # Define common data files - all paths relative to spec file location
 base_path = "../katrain"
@@ -52,8 +50,6 @@ datas = [
     (f"{base_path}/i18n", "katrain/i18n"),
     (f"{base_path}/KataGo", "katrain/KataGo"),
 ]
-
-# KivyMD data files will be handled by the custom hook
 
 # Platform-specific binaries
 binaries = kivy_deps.get('binaries', [])
@@ -73,8 +69,6 @@ if is_windows:
 # Platform-specific hooks and excludes
 hookspath = kivy_deps.get('hookspath', [])
 hookspath.append(kivymd_hooks_path)
-# Add custom KivyMD hook directory
-hookspath.append(SPECPATH)
 
 # Exclude problematic modules
 excludes = kivy_deps.get('excludes', []) + ["scipy", "pandas", "numpy", "matplotlib", "docutils"]
