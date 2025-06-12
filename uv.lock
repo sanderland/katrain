@@ -244,7 +244,7 @@ name = "importlib-metadata"
 version = "8.7.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "zipp", marker = "python_full_version < '3.10'" },
+    { name = "zipp" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/76/66/650a33bd90f786193e4de4b3ad86ea60b53c89b669a5c7be931fac31cdb0/importlib_metadata-8.7.0.tar.gz", hash = "sha256:d13b81ad223b890aa16c5471f2ac3056cf76c5f10f82d6f9292f0b415f389000", size = 56641, upload-time = "2025-04-27T15:29:01.736Z" }
 wheels = [
@@ -270,7 +270,6 @@ dependencies = [
     { name = "kivy" },
     { name = "kivymd" },
     { name = "pygame", marker = "sys_platform == 'darwin'" },
-    { name = "pyinstaller" },
     { name = "screeninfo", marker = "sys_platform != 'darwin'" },
     { name = "urllib3" },
 ]
@@ -279,6 +278,7 @@ dependencies = [
 dev = [
     { name = "black" },
     { name = "polib" },
+    { name = "pyinstaller" },
 ]
 test = [
     { name = "pytest" },
@@ -292,7 +292,6 @@ requires-dist = [
     { name = "kivy", specifier = ">=2.3.1" },
     { name = "kivymd", specifier = "==0.104.1" },
     { name = "pygame", marker = "sys_platform == 'darwin'", specifier = "~=2.0" },
-    { name = "pyinstaller", specifier = ">=6.14.1" },
     { name = "screeninfo", marker = "sys_platform != 'darwin'", specifier = ">=0.8.1,<0.9" },
     { name = "urllib3", specifier = ">=2.2.2" },
 ]
@@ -301,6 +300,7 @@ requires-dist = [
 dev = [
     { name = "black", specifier = ">=24.8.0,<25" },
     { name = "polib", specifier = ">=1.2.0,<2" },
+    { name = "pyinstaller", specifier = ">=6.14.1" },
 ]
 test = [{ name = "pytest", specifier = ">=8.3.2,<9" }]
 
