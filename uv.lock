@@ -281,6 +281,7 @@ dev = [
     { name = "polib" },
     { name = "pyinstaller" },
     { name = "pytest" },
+    { name = "tomli", marker = "python_full_version < '3.11'" },
 ]
 
 [package.metadata]
@@ -301,6 +302,7 @@ dev = [
     { name = "polib", specifier = ">=1.2.0,<2" },
     { name = "pyinstaller", specifier = ">=6.14.1" },
     { name = "pytest", specifier = ">=8.3.2,<9" },
+    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=1.2.0" },
 ]
 
 [[package]]
