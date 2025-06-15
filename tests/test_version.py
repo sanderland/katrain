@@ -1,4 +1,8 @@
-import tomllib
+try:
+    import tomllib  # Python 3.11+
+except ImportError:
+    import tomli as tomllib  # Python < 3.11
+
 from pathlib import Path
 
 from katrain.core.constants import VERSION
