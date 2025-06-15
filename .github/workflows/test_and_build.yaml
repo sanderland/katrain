@@ -181,8 +181,7 @@ jobs:
 
     - name: Build and publish to PyPI
       env:
-        # Assumes you are using trusted publishing or a PYPI_TOKEN secret
-        POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+        UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
       run: |
         uv build
         uv publish --verbose
