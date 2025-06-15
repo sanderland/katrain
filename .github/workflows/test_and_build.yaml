@@ -50,7 +50,7 @@ jobs:
       uses: ./.github/actions/setup-python-uv
       with:
         python-version: ${{ matrix.python-version }}
-        sync-groups: test
+        sync-groups: dev
 
     - name: Run tests
       run: uv run pytest tests
@@ -174,7 +174,7 @@ jobs:
     - name: Setup Python and uv
       uses: ./.github/actions/setup-python-uv
       with:
-        sync-groups: dev,test
+        sync-groups: dev
 
     - name: Finalize I18N for publishing
       run: uv run python i18n.py
