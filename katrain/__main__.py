@@ -22,7 +22,10 @@ kivy.require("2.0.0")
 from katrain.core.utils import find_package_resource, PATHS
 from kivy.config import Config
 
-ICON = find_package_resource("katrain/img/icon.ico")
+if kivy_platform == "macosx":
+    ICON = find_package_resource("katrain/img/icon.icns")
+else:
+    ICON = find_package_resource("katrain/img/icon.ico")
 Config.set("kivy", "window_icon", ICON)
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
