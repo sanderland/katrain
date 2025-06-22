@@ -110,7 +110,7 @@ EXCLUDE = ["KataGoData", "anim_", "screenshot_", "__pycache__"]
 a.datas = [
     (ff, ft, tp)
     for ff, ft, tp in a.datas
-    if not any(ff.endswith(suffix) for suffix in EXCLUDE_SUFFIX) 
+    if not any(ff.endswith(suffix) for suffix in EXCLUDE_SUFFIX)
     and not any(kw in ff for kw in EXCLUDE)
 ]
 
@@ -119,16 +119,16 @@ print("DATA FILTERED", len(a.datas))
 # Platform-specific build configurations
 if is_windows:
     console_names = {True: "DebugKaTrain", False: "KaTrain"}
-    
+
     # Setup PowerShell for signing (Windows only)
     try:
         powershell = subprocess.Popen(["powershell"], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     except:
         powershell = None
-    
+
     for console, name in console_names.items():
         pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
-        
+
         exe = EXE(
             pyz,
             a.scripts,
@@ -172,7 +172,7 @@ if is_windows:
             icon=f"{base_path}/img/icon.ico",
             version=version_info,
         )
-        
+
         # Code signing (Windows) - skip in CI environment
         if powershell and not os.environ.get('GITHUB_ACTIONS'):
             powershell.stdin.write(f"Set-AuthenticodeSignature dist/{name}.exe -Certificate (Get-ChildItem Cert:\\CurrentUser\\My -CodeSigningCert)\n".encode('ascii'))
@@ -216,11 +216,11 @@ else:
     if is_macos:
         # Get version from environment or default
         app_version = os.environ.get('KATRAIN_VERSION', '1.0.0')
-        
+
         app = BUNDLE(
             coll,
             name='KaTrain.app',
-            icon=f'{base_path}/img/icon.ico',
+            icon=f'{base_path}/img/icon.icns',
             bundle_identifier='org.katrain.KaTrain',
             version=app_version,
             info_plist={
