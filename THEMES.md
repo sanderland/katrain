@@ -94,3 +94,27 @@ The colors are specified as RGB values and a maximum alpha transparency.
 
 [Download](https://github.com/sanderland/katrain/blob/master/themes/jeff-sounds.zip)
 
+### Reunited Themes
+
+Reunited themes are all based on Milos Theme, adding User Interface color changes.
+
+#### Darkblue
+* Forget the UI, focus on the goban
+
+[Download](themes/theme-reunited-darkblue.zip)
+
+<img src="themes/reunited-darkblue.png" width="500">
+
+#### Cyber
+* Colorful and futuristic
+
+[Download](themes/theme-reunited-cyber.zip)
+
+<img src="themes/reunited-cyber.png" width="500">
+
+#### Forest
+* Soothing and natural colors
+
+[Download](themes/theme-reunited-forest.zip)
+
+<img src="themes/reunited-forest.png" width="500">
