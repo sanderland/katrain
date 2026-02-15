@@ -25,7 +25,7 @@ modules:
       - pip3 install --prefix=/app --no-build-isolation
           kivy kivymd==0.104.1 ffpyplayer "screeninfo>=0.8.1,<0.9"
           "chardet>=5.2.0,<6" docutils "urllib3>=2.2.2"
-      - pip3 install --prefix=/app --no-build-isolation --no-deps .
+      - pip3 install --prefix=/app --no-deps .
       - install -Dm644 flatpak/org.katrain.KaTrain.desktop
           /app/share/applications/org.katrain.KaTrain.desktop
       - install -Dm644 flatpak/org.katrain.KaTrain.png
