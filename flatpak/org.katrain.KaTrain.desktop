@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=KaTrain
+Comment=Go/Baduk/Weiqi playing and teaching app with AI analysis
+Exec=katrain
+Icon=org.katrain.KaTrain
+Terminal=false
+Type=Application
+Categories=Game;BoardGame;Education;
+MimeType=application/x-go-sgf;
+Keywords=Go;Baduk;Weiqi;KataGo;AI;

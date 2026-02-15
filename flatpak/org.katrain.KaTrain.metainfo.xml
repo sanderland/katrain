@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.katrain.KaTrain</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>KaTrain</name>
+  <summary>Go/Baduk/Weiqi playing and teaching app with AI analysis</summary>
+  <description>
+    <p>
+      KaTrain is a tool for analyzing and playing Go/Baduk/Weiqi with the
+      KataGo AI engine. It offers AI opponents at various strength levels,
+      teaching features that highlight mistakes, game review tools, and
+      full-strength analysis.
+    </p>
+    <p>
+      Features include multiple AI playing styles, rank-calibrated opponents,
+      real-time analysis with score graphs, SGF file support, and a modern
+      graphical interface.
+    </p>
+  </description>
+  <url type="homepage">https://github.com/sanderland/katrain</url>
+  <url type="bugtracker">https://github.com/sanderland/katrain/issues</url>
+  <launchable type="desktop-id">org.katrain.KaTrain.desktop</launchable>
+  <provides>
+    <binary>katrain</binary>
+  </provides>
+  <content_rating type="oars-1.1" />
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.png</image>
+    </screenshot>
+  </screenshots>
+</component>

@@ -1,0 +1,37 @@
+app-id: org.katrain.KaTrain
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: katrain
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=x11
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --device=dri
+  - --filesystem=home
+  - --persist=.katrain
+
+modules:
+  - name: katrain
+    buildsystem: simple
+    build-options:
+      build-args:
+        - --share=network
+    build-commands:
+      - pip3 install --prefix=/app --no-build-isolation
+          kivy kivymd==0.104.1 ffpyplayer "screeninfo>=0.8.1,<0.9"
+          "chardet>=5.2.0,<6" docutils "urllib3>=2.2.2"
+      - pip3 install --prefix=/app --no-build-isolation --no-deps .
+      - install -Dm644 flatpak/org.katrain.KaTrain.desktop
+          /app/share/applications/org.katrain.KaTrain.desktop
+      - install -Dm644 flatpak/org.katrain.KaTrain.png
+          /app/share/icons/hicolor/256x256/apps/org.katrain.KaTrain.png
+      - install -Dm644 flatpak/org.katrain.KaTrain.metainfo.xml
+          /app/share/metainfo/org.katrain.KaTrain.metainfo.xml
+    sources:
+      - type: dir
+        path: ..

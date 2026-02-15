@@ -170,6 +170,32 @@ jobs:
         name: KaTrainMacOS-${{ env.KATRAIN_VERSION }}-${{ matrix.arch }}
         path: osx_app
 
+  build-flatpak:
+    needs: [prepare, test]
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-24.08
+      options: --privileged
+    env:
+      KATRAIN_VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Flatpak
+      uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+      with:
+        bundle: KaTrain-${{ env.KATRAIN_VERSION }}-x86_64.flatpak
+        manifest-path: flatpak/org.katrain.KaTrain.yaml
+        cache-key: flatpak-builder-${{ github.sha }}
+        upload-artifact: false
+
+    - name: Upload Flatpak artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: KaTrainFlatpak-${{ env.KATRAIN_VERSION }}
+        path: KaTrain-${{ env.KATRAIN_VERSION }}-x86_64.flatpak
+
   # This job publishes the package to PyPI.
   publish-pypi:
     needs: test
@@ -196,7 +222,7 @@ jobs:
 
   # This job creates a draft release on GitHub.
   create-release:
-    needs: [prepare, build-windows, build-macos]
+    needs: [prepare, build-windows, build-macos, build-flatpak]
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true'
     permissions:
@@ -222,6 +248,7 @@ jobs:
           - **Windows**: Download the `.exe` files or `.zip` folders.
           - **macOS (Apple Silicon)**: Download the `arm64` `.dmg` file.
           - **macOS (Intel)**: Download the `x86_64` `.dmg` file.
+          - **Linux**: Download the `.flatpak` bundle.
         files: ./artifacts/*
         draft: true
         prerelease: false
