@@ -59,7 +59,10 @@ class PopupManager:
             popup.bind(on_dismiss=lambda *_: self._on_popup_dismissed())
 
         popup.open()
-        content.on_opened()
+        # Not all legacy popup contents implement `on_opened()`. Keep the new hook for
+        # `KtPopupContent` instances, but don't crash for older BoxLayout-based popups.
+        if hasattr(content, "on_opened"):
+            content.on_opened()
         return popup
 
     def dismiss(self, cache_key: str) -> None:

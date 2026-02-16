@@ -33,8 +33,6 @@ from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid, json_truncate_arrays
 from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
-from katrain.gui.components.popup import PopupSpec
-from katrain.gui.popups import ReAnalyzeGamePopup, GameReportPopup, TsumegoFramePopup
 from katrain.gui.theme import Theme
 
 
@@ -178,22 +176,7 @@ class BadukPanWidget(Widget):
                 self.selecting_region_of_interest = False
 
         elif self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
-            game = self.katrain and self.katrain.game
-            current_node = game and self.katrain.game.current_node
-            if (
-                current_node
-                and not current_node.children
-                and not self.katrain.next_player_info.ai
-                and not self.katrain.controls.timer.paused
-                and self.katrain.play_analyze_mode == MODE_PLAY
-                and self.katrain.config("timer/main_time", 0) * 60 - game.main_time_used <= 0
-                and current_node.time_used < self.katrain.config("timer/minimal_use", 0)
-            ):
-                self.katrain.controls.set_status(
-                    i18n._("move too fast").format(num=self.katrain.config("timer/minimal_use", 0)), STATUS_TEACHING
-                )
-            else:
-                katrain("play", self.ghost_stone)
+            katrain("play", self.ghost_stone)
         elif not self.ghost_stone:
             xd, xp, yd, yp = self._find_closest(touch.x, touch.y)
             nodes_here = [
@@ -1083,7 +1066,6 @@ class BadukPanWidget(Widget):
             if current_node.is_pass or game_ended:
                 if game_ended:
                     text = game_ended
-                    katrain.controls.timer.paused = True
                 else:
                     text = i18n._("board-pass")
                 Color(*Theme.PASS_CIRCLE_COLOR)
@@ -1210,26 +1192,6 @@ class BadukPanWidget(Widget):
 
 class AnalysisDropDown(DropDown):
     katrain = ObjectProperty(None)
-
-    def open_game_analysis_popup(self, *_args):
-        self.katrain.popup_manager.show(
-            PopupSpec(title_key="analysis:game", size=[500, 350]),
-            ReAnalyzeGamePopup(self.katrain),
-        )
-
-    def open_report_popup(self, *_args):
-        self.katrain.popup_manager.show(
-            PopupSpec(title_key="analysis:report", size=[750, 750]),
-            GameReportPopup(katrain=self.katrain),
-        )
-
-    def open_tsumego_frame_popup(self, *_args):
-        content = TsumegoFramePopup()
-        content.katrain = self.katrain
-        self.katrain.popup_manager.show(
-            PopupSpec(title_key="analysis:tsumegoframe", size=[500, 350]),
-            content,
-        )
 
 
 class AnalysisControls(BoxLayout):

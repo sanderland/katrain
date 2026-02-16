@@ -40,9 +40,13 @@ if getattr(sys, "frozen", False):
 import re
 import signal
 import json
+import shutil
+import stat
 import threading
 import traceback
+from zipfile import ZipFile
 from queue import Queue
+from typing import Optional
 import urllib3
 import webbrowser
 import time
@@ -60,6 +64,7 @@ from kivy.core.window import Window
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.label import Label
 from kivy.resources import resource_find
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
@@ -67,7 +72,7 @@ from kivy.metrics import dp, sp
 from kivy.factory import Factory
 from katrain.core.ai import generate_ai_move
 
-from katrain.core.lang import DEFAULT_LANGUAGE, i18n
+from katrain.core.lang import i18n
 from katrain.core.constants import (
     OUTPUT_ERROR,
     OUTPUT_KATAGO_STDERR,
@@ -88,17 +93,14 @@ from katrain.core.constants import (
 )
 from katrain.gui.popups import (
     ConfigTeacherPopup,
-    ConfigTimerPopup,
     SaveSGFPopup,
-    ContributePopup,
     EngineRecoveryPopup,
 )
 from katrain.gui.components.popup import PopupManager, PopupSpec
 from katrain.gui.sound import play_sound
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
-from katrain.core.contribute_engine import KataGoContributeEngine
-from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
+from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
 from katrain.gui.theme import Theme
@@ -107,6 +109,7 @@ from kivy.app import App
 # used in kv
 from katrain.gui.kivyutils import *
 from katrain.gui.widgets import MoveTree, I18NFileBrowser, SelectionSlider, ScoreGraph  # noqa F401
+from katrain.gui.widgets.progress_loader import ProgressLoader
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget  # noqa F401
 from katrain.gui.controlspanel import ControlsPanel, PlayAnalyzeSelect  # noqa F401
 
@@ -128,7 +131,13 @@ class KaTrainGui(Screen, KaTrainBase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.engine = None
-        self.contributing = False
+
+        # Many KV rules use `katrain: app.gui`. During `KaTrainApp.build`, the app assigns
+        # `self.gui = KaTrainGui()` only *after* this constructor returns, so without this
+        # early binding `app.gui` is still None while KV rules are being applied to child widgets.
+        app = App.get_running_app()
+        if app and getattr(app, "gui", None) is None:
+            app.gui = self
 
         # Centralized popup lifecycle/caching.
         self.popup_manager = PopupManager()
@@ -141,12 +150,10 @@ class KaTrainGui(Screen, KaTrainBase):
         self.ai_settings_popup = None
         self.teacher_settings_popup = None
         self.timer_settings_popup = None
-        self.contribute_popup = None
 
         self.pondering = False
         self.show_move_num = False
 
-        self.animate_contributing = False
         self.message_queue = Queue()
 
         self.last_key_down = None
@@ -240,9 +247,7 @@ class KaTrainGui(Screen, KaTrainBase):
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
         if level == OUTPUT_KATAGO_STDERR and "ERROR" not in self.controls.status.text:
-            if self.contributing:
-                self.controls.set_status(message, STATUS_INFO)
-            elif "starting" in message.lower():
+            if "starting" in message.lower():
                 self.controls.set_status("KataGo engine starting...", STATUS_INFO)
             elif message.startswith("Tuning"):
                 self.controls.set_status(
@@ -258,9 +263,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.set_status(f"ERROR: {message}", STATUS_ERROR)
 
     def handle_animations(self, *_args):
-        if self.contributing and self.animate_contributing:
-            self.engine.advance_showing_game()
-        if (self.contributing and self.animate_contributing) or self.pondering:
+        if self.pondering:
             self.board_controls.engine_status_pondering += 5
         else:
             self.board_controls.engine_status_pondering = -1
@@ -270,19 +273,211 @@ class KaTrainGui(Screen, KaTrainBase):
         return self.play_mode.mode
 
     def toggle_continuous_analysis(self, quiet=False):
-        if self.contributing:
-            self.animate_contributing = not self.animate_contributing
-        else:
-            if self.pondering:
-                self.controls.set_status("", STATUS_INFO)
-            elif not quiet:  # See #549
-                Clock.schedule_once(self.analysis_controls.hints.activate, 0)
-            self.pondering = not self.pondering
-            self.update_state()
+        if self.pondering:
+            self.controls.set_status("", STATUS_INFO)
+        elif not quiet:  # See #549
+            Clock.schedule_once(self.analysis_controls.hints.activate, 0)
+        self.pondering = not self.pondering
+        self.update_state()
 
     def toggle_move_num(self):
         self.show_move_num = not self.show_move_num
         self.update_state()
+
+    def _ensure_analysis_config_file(self) -> None:
+        """Ensure `~/.katrain/analysis_config.cfg` exists and config points to it if missing.
+
+        KaTrain v2 stops bundling `katrain/KataGo`, so the analysis config must be external.
+        """
+
+        data_dir = os.path.expanduser(DATA_FOLDER)
+        os.makedirs(data_dir, exist_ok=True)
+
+        desired_cfg_setting = os.path.join(DATA_FOLDER, "analysis_config.cfg")
+        desired_cfg_path = os.path.expanduser(desired_cfg_setting)
+        if not os.path.isfile(desired_cfg_path):
+            template = find_package_resource("katrain/resources/analysis_config.cfg")
+            shutil.copyfile(template, desired_cfg_path)
+
+        current_cfg_setting = (self.config("engine/config", "") or "").strip()
+        current_cfg_path = find_package_resource(current_cfg_setting) if current_cfg_setting else ""
+        if not current_cfg_setting or not os.path.isfile(current_cfg_path):
+            self._config.setdefault("engine", {})["config"] = desired_cfg_setting
+            self.save_config("engine")
+
+    def _resolve_executable_setting(self, exe_setting: str) -> Optional[str]:
+        """Resolve a config value to a concrete executable path, if it exists."""
+
+        exe_setting = (exe_setting or "").strip()
+        if not exe_setting:
+            return None
+
+        if exe_setting.startswith("katrain"):
+            resolved = find_package_resource(exe_setting)
+            return resolved if os.path.isfile(resolved) else None
+
+        expanded = os.path.expanduser(exe_setting)
+        exepath, _ = os.path.split(expanded)
+        if exepath:
+            resolved = os.path.abspath(expanded)
+            return resolved if os.path.isfile(resolved) else None
+
+        # No directory component -> look in PATH.
+        resolved = shutil.which(exe_setting)
+        return resolved if resolved and os.path.isfile(resolved) else None
+
+    def _resolve_katago_executable(self) -> Optional[str]:
+        exe_setting = (self.config("engine/katago", "") or "").strip()
+        resolved = self._resolve_executable_setting(exe_setting)
+        if resolved:
+            return resolved
+
+        # v2 default location for auto-downloaded binaries.
+        data_dir = os.path.expanduser(DATA_FOLDER)
+        local_name = "katago.exe" if kivy_platform == "win" else "katago"
+        local_exe = os.path.join(data_dir, local_name)
+        if os.path.isfile(local_exe):
+            return local_exe
+
+        # PATH fallback (useful on macOS via homebrew, and for developers).
+        if kivy_platform == "win":
+            for name in ["katago.exe", "katago"]:
+                resolved = shutil.which(name)
+                if resolved and os.path.isfile(resolved):
+                    return resolved
+        else:
+            resolved = shutil.which("katago")
+            return resolved if resolved and os.path.isfile(resolved) else None
+
+        return None
+
+    def _install_katago_zip(self, zip_path: str, exe_path: str) -> None:
+        with ZipFile(zip_path, "r") as zip_obj:
+            want = "katago.exe" if kivy_platform == "win" else "katago"
+            names = zip_obj.namelist()
+            candidates = [n for n in names if os.path.basename(n).lower() == want]
+            if not candidates:
+                candidates = [n for n in names if os.path.basename(n).lower().startswith("katago")]
+            if len(candidates) != 1:
+                raise FileNotFoundError(
+                    f"Zip file {zip_path} does not contain exactly 1 kata executable (contents: {names})"
+                )
+
+            os.makedirs(os.path.dirname(exe_path), exist_ok=True)
+            with open(exe_path, "wb") as fout:
+                fout.write(zip_obj.read(candidates[0]))
+
+            if kivy_platform != "win":
+                os.chmod(exe_path, os.stat(exe_path).st_mode | stat.S_IXUSR | stat.S_IXGRP)
+
+            # Windows builds need adjacent DLLs.
+            if kivy_platform == "win":
+                out_dir = os.path.dirname(exe_path)
+                for name in names:
+                    if name.lower().endswith(".dll"):
+                        with open(os.path.join(out_dir, os.path.basename(name)), "wb") as fout:
+                            fout.write(zip_obj.read(name))
+
+    def ensure_engine_ready(self, on_ready) -> None:
+        """Startup bootstrap: ensure engine assets exist, download if needed."""
+
+        self._ensure_analysis_config_file()
+        if self._resolve_katago_executable():
+            on_ready()
+            return
+
+        url_by_platform = {
+            "win": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-opencl-windows-x64.zip",
+            "linux": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-opencl-linux-x64.zip",
+        }
+        if kivy_platform not in url_by_platform:
+            # macOS: upstream KataGo doesn't provide official binaries; rely on PATH (brew) or manual setup.
+            msg = (
+                "KataGo executable not found.\n\n"
+                "On macOS, please install it via Homebrew (`brew install katago`) or set the path in Settings."
+            )
+            message_label = Label(
+                text=msg,
+                font_name=i18n.font_name,
+                halign="left",
+                valign="top",
+                text_size=(dp(540), None),
+            )
+            popup = Popup(
+                title="KataGo setup required",
+                content=message_label,
+                size_hint=(None, None),
+                size=(dp(560), dp(220)),
+                auto_dismiss=False,
+            )
+            popup.open()
+            return
+
+        url = url_by_platform[kivy_platform]
+        data_dir = os.path.expanduser(DATA_FOLDER)
+        os.makedirs(data_dir, exist_ok=True)
+
+        exe_setting = os.path.join(DATA_FOLDER, "katago.exe" if kivy_platform == "win" else "katago")
+        exe_path = os.path.expanduser(exe_setting)
+        zip_tmp = os.path.join(data_dir, os.path.basename(url) + ".part")
+
+        status_label = Label(
+            text="Downloading KataGo...",
+            font_name=i18n.font_name,
+            halign="left",
+            valign="middle",
+            text_size=(dp(536), None),
+            size_hint_y=None,
+            height=dp(30),
+        )
+        progress_box = BoxLayout(orientation="vertical", spacing=dp(8), size_hint_y=None)
+        progress_box.bind(minimum_height=progress_box.setter("height"))
+        content = BoxLayout(orientation="vertical", spacing=dp(12), padding=[dp(12)] * 4)
+        content.add_widget(status_label)
+        content.add_widget(progress_box)
+
+        popup = Popup(
+            title="Setting up KataGo",
+            content=content,
+            size_hint=(None, None),
+            size=(dp(560), dp(170)),
+            auto_dismiss=False,
+        )
+        popup.open()
+
+        def download_complete(_req):
+            status_label.text = "Installing KataGo..."
+            try:
+                self._install_katago_zip(zip_tmp, exe_path)
+                try:
+                    os.remove(zip_tmp)
+                except OSError:
+                    pass
+
+                self._config.setdefault("engine", {})["katago"] = exe_setting
+                self.save_config("engine")
+
+                status_label.text = "KataGo installed."
+                Clock.schedule_once(lambda _dt: popup.dismiss(), 0.25)
+                Clock.schedule_once(lambda _dt: on_ready(), 0.3)
+            except Exception as e:
+                self.log(f"Failed to install KataGo from {zip_tmp}: {e}", OUTPUT_ERROR)
+                status_label.text = f"Failed to install KataGo: {e}"
+
+        def download_error(_req, error):
+            self.log(f"Failed to download KataGo from {url}: {error}", OUTPUT_ERROR)
+            status_label.text = f"Download failed: {error}"
+
+        ProgressLoader(
+            root_instance=progress_box,
+            download_url=url,
+            path_to_file=zip_tmp,
+            downloading_text="Downloading KataGo: {}",
+            label_downloading_text="Starting download...",
+            download_complete=download_complete,
+            download_error=download_error,
+            download_redirected=lambda req: self.log(f"KataGo download redirected: {req.resp_headers}", OUTPUT_DEBUG),
+        )
 
     def start(self):
         if self.engine:
@@ -340,7 +535,6 @@ class KaTrainGui(Screen, KaTrainBase):
             self.board_gui.draw_board()
         self.board_gui.redraw_board_contents_trigger()
         self.controls.update_evaluation()
-        self.controls.update_timer(1)
         # update move tree
         self.controls.move_tree.current_node = self.game.current_node
 
@@ -354,40 +548,39 @@ class KaTrainGui(Screen, KaTrainBase):
         if not self.game or not self.game.current_node:
             return
         cn = self.game.current_node
-        if not self.contributing:
-            last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
-            if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
-                points_lost = cn.points_lost
-                if (
-                    last_player.human
-                    and cn.analysis_complete
-                    and points_lost is not None
-                    and points_lost > self.config("trainer/eval_thresholds")[-4]
-                ):
-                    self.play_mistake_sound(cn)
-                teaching_undo = cn.player and last_player.being_taught and cn.parent
-                if (
-                    teaching_undo
-                    and cn.analysis_complete
-                    and cn.parent.analysis_complete
-                    and not cn.children
-                    and not self.game.end_result
-                ):
-                    self.game.analyze_undo(cn)  # not via message loop
-                if (
-                    cn.analysis_complete
-                    and next_player.ai
-                    and not cn.children
-                    and not self.game.end_result
-                    and not (teaching_undo and cn.auto_undo is None)
-                ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
-                    self._do_ai_move(cn)
-                    Clock.schedule_once(self._play_stone_sound, 0.25)
-            if self.engine:
-                if self.pondering:
-                    self.game.analyze_extra("ponder")
-                else:
-                    self.engine.stop_pondering()
+        last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
+        if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
+            points_lost = cn.points_lost
+            if (
+                last_player.human
+                and cn.analysis_complete
+                and points_lost is not None
+                and points_lost > self.config("trainer/eval_thresholds")[-4]
+            ):
+                self.play_mistake_sound(cn)
+            teaching_undo = cn.player and last_player.being_taught and cn.parent
+            if (
+                teaching_undo
+                and cn.analysis_complete
+                and cn.parent.analysis_complete
+                and not cn.children
+                and not self.game.end_result
+            ):
+                self.game.analyze_undo(cn)  # not via message loop
+            if (
+                cn.analysis_complete
+                and next_player.ai
+                and not cn.children
+                and not self.game.end_result
+                and not (teaching_undo and cn.auto_undo is None)
+            ):  # cn mismatch stops this if undo fired. avoid message loop here or fires repeatedly.
+                self._do_ai_move(cn)
+                Clock.schedule_once(self._play_stone_sound, 0.25)
+        if self.engine:
+            if self.pondering:
+                self.game.analyze_extra("ponder")
+            else:
+                self.engine.stop_pondering()
         Clock.schedule_once(lambda _dt: self.update_gui(cn, redraw_board=redraw_board), -1)  # trigger?
 
     def update_player(self, bw, **kwargs):
@@ -416,19 +609,6 @@ class KaTrainGui(Screen, KaTrainBase):
                     )
                     continue
                 msg = msg.replace("-", "_")
-                if self.contributing:
-                    if msg not in [
-                        "katago_contribute",
-                        "redo",
-                        "undo",
-                        "update_state",
-                        "save_game",
-                        "find_mistake",
-                    ]:
-                        self.controls.set_status(
-                            i18n._("gui-locked").format(action=msg), STATUS_INFO, check_level=False
-                        )
-                        continue
                 fn = getattr(self, f"_do_{msg}")
                 fn(*args, **kwargs)
                 if msg != "update_state":
@@ -440,11 +620,6 @@ class KaTrainGui(Screen, KaTrainBase):
     def __call__(self, message, *args, **kwargs):
         if self.game:
             if message.endswith("popup"):  # gui code needs to run in main kivy thread.
-                if self.contributing and "save" not in message and message != "contribute-popup":
-                    self.controls.set_status(
-                        i18n._("gui-locked").format(action=message), STATUS_INFO, check_level=False
-                    )
-                    return
                 fn = getattr(self, f"_do_{message.replace('-', '_')}")
                 Clock.schedule_once(lambda _dt: fn(*args, **kwargs), -1)
             else:  # game related actions
@@ -474,20 +649,6 @@ class KaTrainGui(Screen, KaTrainBase):
             self.update_player(bw, player_type=player_info.player_type, player_subtype=player_info.player_subtype)
         self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
-
-    def _do_katago_contribute(self):
-        if self.contributing and not self.engine.server_error and self.engine.katago_process is not None:
-            return
-        self.contributing = self.animate_contributing = True  # special mode
-        if self.play_analyze_mode == MODE_PLAY:  # switch to analysis view
-            self.play_mode.switch_ui_mode()
-        self.pondering = False
-        self.board_gui.animating_pv = None
-        for bw, player_info in self.players_info.items():
-            self.update_player(bw, player_type=PLAYER_AI, player_subtype=AI_DEFAULT)
-        self.engine.shutdown(finish=False)
-        self.engine = KataGoContributeEngine(self)
-        self.game = BaseGame(self)
 
     def _do_insert_mode(self, mode="toggle"):
         self.game.set_insert_mode(mode)
@@ -559,29 +720,19 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.selecting_region_of_interest = True
 
     def _do_new_game_popup(self):
-        self.controls.timer.paused = True
         popup = self.popup_manager.show(
             PopupSpec(title_key="New Game title", size=[800, 900], cache_key="new_game"),
             NewGamePopup(self),
         )
         popup.content.update_from_current_game()
 
-    def _do_timer_popup(self):
-        self.controls.timer.paused = True
-        self.popup_manager.show(
-            PopupSpec(title_key="timer settings", size=[600, 500], cache_key="timer_settings"),
-            ConfigTimerPopup(self),
-        )
-
     def _do_teacher_popup(self):
-        self.controls.timer.paused = True
         self.popup_manager.show(
             PopupSpec(title_key="teacher settings", size=[800, 825], cache_key="teacher_settings"),
             ConfigTeacherPopup(self),
         )
 
     def _do_config_popup(self):
-        self.controls.timer.paused = True
         popup = self.popup_manager.show(
             PopupSpec(title_key="general settings title", size=[1200, 950], cache_key="general_settings"),
             ConfigPopup(self),
@@ -590,14 +741,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if self.config_file and self.config_file not in popup.title:
             popup.title += ": " + self.config_file
 
-    def _do_contribute_popup(self):
-        self.popup_manager.show(
-            PopupSpec(title_key="contribute settings title", size=[1100, 800], cache_key="contribute_settings"),
-            ContributePopup(self),
-        )
-
     def _do_ai_popup(self):
-        self.controls.timer.paused = True
         self.popup_manager.show(
             PopupSpec(title_key="ai settings", size=[750, 750], cache_key="ai_settings"),
             ConfigAIPopup(self),
@@ -613,38 +757,12 @@ class KaTrainGui(Screen, KaTrainBase):
             EngineRecoveryPopup(self, error_message=error_message, code=code),
         )
 
-    def _do_tsumego_frame(self, ko, margin):
-        from katrain.core.tsumego_frame import tsumego_frame_from_katrain_game
-
-        if not self.game.stones:
-            return
-
-        black_to_play_p = self.next_player_info.player == "B"
-        node, analysis_region = tsumego_frame_from_katrain_game(
-            self.game, self.game.komi, black_to_play_p, ko_p=ko, margin=margin
-        )
-        self.game.set_current_node(node)
-        if self.play_mode.mode == MODE_PLAY:
-            self.play_mode.switch_ui_mode()  # go to analysis mode
-        if analysis_region:
-            flattened_region = [
-                analysis_region[0][1],
-                analysis_region[0][0],
-                analysis_region[1][1],
-                analysis_region[1][0],
-            ]
-            self.game.set_region_of_interest(flattened_region)
-        node.analyze(self.game.engines[node.next_player])
-        self.update_state(redraw_board=True)
-
     def play_mistake_sound(self, node):
-        if self.config("timer/sound") and node.played_mistake_sound is None and Theme.MISTAKE_SOUNDS:
+        if self.config("general/sound", True) and node.played_mistake_sound is None and Theme.MISTAKE_SOUNDS:
             node.played_mistake_sound = True
             play_sound(random.choice(Theme.MISTAKE_SOUNDS))
 
     def load_sgf_file(self, file, fast=False, rewind=True):
-        if self.contributing:
-            return
         try:
             file = os.path.abspath(file)
             move_tree = KaTrainSGF.parse_file(file)
@@ -672,9 +790,10 @@ class KaTrainGui(Screen, KaTrainBase):
                 if path != self.config("general/sgf_load"):
                     self.log(f"Updating sgf load path default to {path}", OUTPUT_DEBUG)
                     self._config["general"]["sgf_load"] = path
-                popup_contents.update_config(False)
                 self.save_config("general")
-                self.load_sgf_file(filename, popup_contents.fast.active, popup_contents.rewind.active)
+                fast = bool(self.config("general/load_fast_analysis", False))
+                rewind = bool(self.config("general/load_sgf_rewind", True))
+                self.load_sgf_file(filename, fast=fast, rewind=rewind)
 
             popup_contents.filesel.on_success = readfile
             popup_contents.filesel.on_submit = readfile
@@ -772,10 +891,6 @@ class KaTrainGui(Screen, KaTrainBase):
                 (Theme.KEY_ANALYSIS_CONTROLS_OWNERSHIP, self.analysis_controls.ownership),
                 (Theme.KEY_ANALYSIS_CONTROLS_POLICY, self.analysis_controls.policy),
                 (Theme.KEY_AI_MOVE, ("ai-move",)),
-                (Theme.KEY_ANALYZE_EXTRA_EXTRA, ("analyze-extra", "extra")),
-                (Theme.KEY_ANALYZE_EXTRA_EQUALIZE, ("analyze-extra", "equalize")),
-                (Theme.KEY_ANALYZE_EXTRA_SWEEP, ("analyze-extra", "sweep")),
-                (Theme.KEY_ANALYZE_EXTRA_ALTERNATIVE, ("analyze-extra", "alternative")),
                 (Theme.KEY_SELECT_BOX, ("select-box",)),
                 (Theme.KEY_RESET_ANALYSIS, ("reset-analysis",)),
                 (Theme.KEY_INSERT_MODE, ("insert-mode",)),
@@ -784,11 +899,9 @@ class KaTrainGui(Screen, KaTrainBase):
                 (Theme.KEY_NAV_PREV_BRANCH, ("undo", "branch")),
                 (Theme.KEY_NAV_BRANCH_DOWN, ("switch-branch", 1)),
                 (Theme.KEY_NAV_BRANCH_UP, ("switch-branch", -1)),
-                (Theme.KEY_TIMER_POPUP, ("timer-popup",)),
                 (Theme.KEY_TEACHER_POPUP, ("teacher-popup",)),
                 (Theme.KEY_AI_POPUP, ("ai-popup",)),
                 (Theme.KEY_CONFIG_POPUP, ("config-popup",)),
-                (Theme.KEY_CONTRIBUTE_POPUP, ("contribute-popup",)),
                 (Theme.KEY_STOP_ANALYSIS, ("analyze-extra", "stop")),
             ]
             for k in (ks if isinstance(ks, list) else [ks])
@@ -810,14 +923,9 @@ class KaTrainGui(Screen, KaTrainBase):
         popup = self.popup_open
         if popup:
             if keycode[1] in [
-                Theme.KEY_DEEPERANALYSIS_POPUP,
-                Theme.KEY_REPORT_POPUP,
-                Theme.KEY_TIMER_POPUP,
                 Theme.KEY_TEACHER_POPUP,
                 Theme.KEY_AI_POPUP,
                 Theme.KEY_CONFIG_POPUP,
-                Theme.KEY_TSUMEGO_FRAME,
-                Theme.KEY_CONTRIBUTE_POPUP,
             ]:  # switch between popups
                 popup.dismiss()
 
@@ -830,22 +938,12 @@ class KaTrainGui(Screen, KaTrainBase):
             else:
                 return
 
-        if self.contributing:
-            if keycode[1] == Theme.KEY_STOP_CONTRIBUTING:
-                self.engine.graceful_shutdown()
-                return
-            elif keycode[1] in Theme.KEY_PAUSE_CONTRIBUTE:
-                self.engine.pause()
-                return
-
         if keycode[1] == Theme.KEY_TOGGLE_CONTINUOUS_ANALYSIS:
             self.toggle_continuous_analysis(quiet=shift_pressed)
         elif keycode[1] == Theme.KEY_TOGGLE_MOVENUM:
             self.toggle_move_num()
         elif keycode[1] == Theme.KEY_TOGGLE_COORDINATES:
             self.board_gui.toggle_coordinates()
-        elif keycode[1] in Theme.KEY_PAUSE_TIMER and not ctrl_pressed:
-            self.controls.timer.paused = not self.controls.timer.paused
         elif keycode[1] in Theme.KEY_ZEN:
             self.zen = (self.zen + 1) % 3
         elif keycode[1] in Theme.KEY_NAV_PREV:
@@ -879,12 +977,6 @@ class KaTrainGui(Screen, KaTrainBase):
             self.load_sgf_from_clipboard()
         elif keycode[1] == Theme.KEY_NAV_PREV_BRANCH and shift_pressed:
             self("undo", "main-branch")
-        elif keycode[1] == Theme.KEY_DEEPERANALYSIS_POPUP:
-            self.analysis_controls.dropdown.open_game_analysis_popup()
-        elif keycode[1] == Theme.KEY_TSUMEGO_FRAME:
-            self.analysis_controls.dropdown.open_tsumego_frame_popup()
-        elif keycode[1] == Theme.KEY_REPORT_POPUP:
-            self.analysis_controls.dropdown.open_report_popup()
         elif keycode[1] == "f10" and self.debug_level >= OUTPUT_EXTRA_DEBUG:
             import yappi
 
@@ -927,7 +1019,6 @@ class KaTrainGui(Screen, KaTrainBase):
 
 class KaTrainApp(App):
     gui = ObjectProperty(None)
-    language = StringProperty(DEFAULT_LANGUAGE)
 
     def __init__(self):
         super().__init__()
@@ -998,28 +1089,17 @@ class KaTrainApp(App):
 
         return self.gui
 
-    def on_language(self, _instance, language):
-        self.gui.log(f"Switching language to {language}", OUTPUT_INFO)
-        i18n.switch_lang(language)
-        self.gui._config["general"]["lang"] = language
-        self.gui.save_config()
-        if self.gui.game:
-            self.gui.update_state()
-            self.gui.controls.set_status("", STATUS_INFO)
-
     def webbrowser(self, site_key):
         websites = {
             "homepage": HOMEPAGE + "#manual",
             "support": HOMEPAGE + "#support",
-            "contribute:signup": "http://katagotraining.org/accounts/signup/",
             "engine:help": HOMEPAGE + "/blob/master/ENGINE.md",
         }
         if site_key in websites:
             webbrowser.open(websites[site_key])
 
     def on_start(self):
-        self.language = self.gui.config("general/lang")
-        self.gui.start()
+        self.gui.ensure_engine_ready(self.gui.start)
 
     def on_request_close(self, *_args, source=None):
         if source == "keyboard":

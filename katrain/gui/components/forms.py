@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable
 
+from kivy.clock import Clock
 from kivy.metrics import dp, sp
 from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
 from kivy.uix.anchorlayout import AnchorLayout
@@ -110,7 +111,9 @@ class KtFormRow(BoxLayout):
             halign="right",
             valign="middle",
         )
-        self._label.bind(size=lambda *_: setattr(self._label, "text_size", self._label.size))
+        # Wrap long labels and grow the row height instead of clipping.
+        self._label.bind(width=lambda *_: setattr(self._label, "text_size", (self._label.width, None)))
+        self._label.bind(texture_size=self._sync_height)
 
         # Anchor to keep small widgets (checkboxes) vertically centered.
         self._field_box = AnchorLayout(anchor_x="left", anchor_y="center", size_hint_x=0.55)
@@ -121,13 +124,25 @@ class KtFormRow(BoxLayout):
         self.bind(label_key=self._sync_label)
         self._sync_label()
 
+    def _sync_height(self, *_args):
+        label_h = self._label.texture_size[1] if self._label.texture_size else 0
+        field_h = 0
+        if self.field is not None:
+            field_h = getattr(self.field, "height", 0) or 0
+        # Keep default spacing and don't let single-line rows shrink.
+        self.height = max(dp(48), label_h + dp(16), field_h + dp(12))
+
     def _sync_label(self, *_args):
         self._label.text = i18n._(self.label_key) if self.label_key else ""
+        # Texture update happens on the next frame; resize after Kivy has updated it.
+        Clock.schedule_once(self._sync_height, 0)
 
     def set_field(self, widget) -> None:
         self._field_box.clear_widgets()
         self.field = widget
         self._field_box.add_widget(widget)
+        # Recompute row height when the field is swapped.
+        self._sync_height()
 
 
 class KtTextField(KaTrainTextInput):

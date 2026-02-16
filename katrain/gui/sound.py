@@ -20,7 +20,7 @@ def play_sound(file, volume=1, cache=True):
             sound.seek(0)
 
     app = App.get_running_app()
-    if app and app.gui and app.gui.config("timer/sound"):
+    if app and app.gui and app.gui.config("general/sound", True):
         sound = cached_sounds.get(file)
         if sound is None:
             sound = SoundLoader.load(file)

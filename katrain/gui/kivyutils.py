@@ -404,10 +404,6 @@ class I18NSpinner(KeyValueSpinner):
     selected_index = NumericProperty(0)
     font_name = StringProperty(Theme.DEFAULT_FONT)
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        App.get_running_app().bind(language=self.build_values)
-
     def build_values(self, *_args):
         self.values = [i18n._(ref) for ref in self.value_refs]
         super().build_values()
@@ -528,15 +524,6 @@ class PlayerInfo(BoxLayout, BackgroundMixin):
         self.subtype_label.text = text
 
 
-class TimerOrMoveTree(BoxLayout):
-    mode = StringProperty(MODE_PLAY)
-
-
-class Timer(BGBoxLayout):
-    state = ListProperty([30, 5, 1])
-    timeout = BooleanProperty(False)
-
-
 class AnalysisToggle(BoxLayout):
     text = StringProperty("")
     default_active = BooleanProperty(False)
@@ -615,7 +602,6 @@ class CollapsablePanel(BoxLayout):
             options_spacing=self.build_options,
         )
         self.bind(state=self._on_state, content_height=self._on_size, options_height=self._on_size)
-        App.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
         self.build_options()
 
     def _on_state(self, *_args):

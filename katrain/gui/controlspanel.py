@@ -1,5 +1,3 @@
-import time
-
 from kivy.clock import Clock
 from kivy.properties import ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
@@ -11,13 +9,9 @@ from katrain.core.constants import (
     PLAYER_HUMAN,
     STATUS_ANALYSIS,
     STATUS_ERROR,
-    AI_DEFAULT,
-    PLAYER_AI,
 )
 from katrain.core.lang import rank_label
 from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
-from katrain.gui.theme import Theme
-from katrain.gui.sound import play_sound, stop_sound
 
 
 class PlayAnalyzeSelect(FloatLayout):
@@ -58,7 +52,6 @@ class PlayAnalyzeSelect(FloatLayout):
             return
         self.save_ui_state()
         self.mode = new_mode
-        self.katrain.controls.timer_or_movetree.mode = self.mode
         self.load_ui_state()
         self.katrain.update_state()  # for lock ai even if nothing changed
 
@@ -79,11 +72,6 @@ class ControlsPanel(BoxLayout):
         super(ControlsPanel, self).__init__(**kwargs)
         self.status_state = (None, -1e9, None)
         self.active_comment_node = None
-        self.last_timer_update = (None, 0, False)
-        self.beep_start = 5.2
-        self.timer_interval = 0.07
-
-        Clock.schedule_interval(self.update_timer, self.timer_interval)
 
     def update_players(self, *_args):
         for bw, player_info in self.katrain.players_info.items():
@@ -141,22 +129,6 @@ class ControlsPanel(BoxLayout):
         lock_ai = katrain.config("trainer/lock_ai") and katrain.play_analyze_mode == MODE_PLAY
         details = self.info.detailed and not lock_ai
         info = ""
-        if katrain.contributing:
-            info += katrain.engine.status()
-            game_id = getattr(katrain.engine, "showing_game", None)
-            game = getattr(katrain.engine, "active_games", {}).get(game_id)
-            if game is not None:
-                info += f"Showing game {game_id}\n"
-                for bw in "BW":
-                    self.players[bw].rank = None
-                    network = game.root.get_property(f"P{bw}", AI_DEFAULT)
-                    parts = network.split("-")
-                    if len(parts) == 4:
-                        self.players[bw].player_type = parts[1]
-                        self.players[bw].player_subtype = parts[2]
-                    else:
-                        self.players[bw].player_type = PLAYER_AI
-                        self.players[bw].player_subtype = network
 
         if move or current_node.is_root:
             info += self.active_comment_node.comment(
@@ -177,78 +149,3 @@ class ControlsPanel(BoxLayout):
         self.graph.update_value(current_node)
         self.note.text = current_node.note
         self.info.text = info
-
-    def update_timer(self, _dt):
-        game = self.katrain and self.katrain.game
-        current_node = game and self.katrain.game.current_node
-        if current_node:
-            last_update_node, last_update_time, beeping = self.last_timer_update
-            new_beeping = beeping
-            now = time.time()
-            main_time = self.katrain.config("timer/main_time", 0) * 60
-            byo_len = max(1, self.katrain.config("timer/byo_length"))
-            byo_num = max(1, self.katrain.config("timer/byo_periods"))
-            sounds_on = self.katrain.config("timer/sound")
-            player = self.katrain.next_player_info
-            ai = player.ai
-            used_period = False
-
-            min_use = self.katrain.config("timer/minimal_use", 0)
-            boing_at_remaining = byo_len - min_use
-            main_time_remaining = main_time - game.main_time_used
-
-            if not self.timer.paused and not ai and self.katrain.play_analyze_mode == MODE_PLAY:
-                if last_update_node == current_node and not current_node.children:
-                    if main_time_remaining > 0:
-                        game.main_time_used += now - last_update_time
-                    else:
-                        current_node.time_used += now - last_update_time
-                else:
-                    current_node.time_used = 0
-                    new_beeping = False
-                time_remaining = byo_len - current_node.time_used
-                while time_remaining < 0 and player.periods_used < byo_num:
-                    current_node.time_used -= byo_len
-                    time_remaining += byo_len
-                    player.periods_used += 1
-                    used_period = True
-
-                if (
-                    self.beep_start - 2 * self.timer_interval < time_remaining < self.beep_start
-                    and player.periods_used < byo_num
-                ):
-                    new_beeping = True
-                elif time_remaining > self.beep_start:
-                    new_beeping = False
-
-                if (
-                    min_use
-                    and not new_beeping
-                    and boing_at_remaining - self.timer_interval
-                    < time_remaining
-                    < boing_at_remaining + self.timer_interval
-                    and player.periods_used < byo_num
-                ):
-                    play_sound(Theme.MINIMUM_TIME_PASSED_SOUND, volume=0.1)
-
-            else:
-                new_beeping = False
-
-            if player.periods_used == byo_num:
-                time_remaining = 0
-            else:
-                time_remaining = byo_len - current_node.time_used
-            periods_rem = byo_num - player.periods_used
-
-            if sounds_on:
-                if beeping and not new_beeping and not used_period:
-                    stop_sound(Theme.COUNTDOWN_SOUND)
-                elif not beeping and new_beeping:
-                    play_sound(Theme.COUNTDOWN_SOUND, volume=0.5 if periods_rem > 1 else 1)
-
-            self.last_timer_update = (current_node, now, new_beeping)
-
-            if main_time_remaining > 0:
-                self.timer.state = (main_time_remaining, None, ai)
-            else:
-                self.timer.state = (max(0, time_remaining), max(0, periods_rem), ai)

@@ -63,7 +63,13 @@ class BaseEngine:  # some common elements between analysis and contribute engine
 
     def get_engine_path(self, exe):
         if not exe:
-            if kivy_platform == "win":
+            # v2: KataGo binaries are no longer bundled in the package; prefer a local download in ~/.katrain.
+            data_dir = os.path.abspath(os.path.expanduser(DATA_FOLDER))
+            local_name = "katago.exe" if kivy_platform == "win" else "katago"
+            local_exe = os.path.join(data_dir, local_name)
+            if os.path.isfile(local_exe):
+                exe = local_exe
+            elif kivy_platform == "win":
                 exe = "katrain/KataGo/katago.exe"
             elif kivy_platform == "linux":
                 exe = "katrain/KataGo/katago"
@@ -71,9 +77,19 @@ class BaseEngine:  # some common elements between analysis and contribute engine
                 exe = find_package_resource("katrain/KataGo/katago-osx")  # github actions built
                 if not os.path.isfile(exe) or "arm64" in platform.version().lower():
                     exe = "katago"  # e.g. MacOS after brewing
+
         if exe.startswith("katrain"):
-            exe = find_package_resource(exe)
+            resolved = find_package_resource(exe)
+            if os.path.isfile(resolved):
+                exe = resolved
+            else:
+                # Legacy config pointing at bundled binaries - fall back to PATH.
+                exe = "katago.exe" if kivy_platform == "win" else "katago"
         exepath, exename = os.path.split(exe)
+        if exepath:
+            # Support configs like "~/.katrain/katago" (bootstrapper default) and other user paths.
+            exe = os.path.abspath(os.path.expanduser(exe))
+            exepath, exename = os.path.split(exe)
 
         if exepath and not os.path.isfile(exe):
             self.on_error(i18n._("Kata exe not found").format(exe=exe), "KATAGO-EXE")
@@ -340,6 +356,9 @@ class KataGoEngine(BaseEngine):
             except queue.Empty:
                 continue
             with self.thread_lock:
+                process = self.katago_process
+                if process is None:
+                    return
                 if "id" not in query:
                     self.query_counter += 1
                     query["id"] = f"QUERY:{str(self.query_counter)}"
@@ -368,8 +387,8 @@ class KataGoEngine(BaseEngine):
                 tag = "ponder " if ponder else ("terminate " if terminate else "")
                 self.katrain.log(f"Sending {tag}query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
                 try:
-                    self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
-                    self.katago_process.stdin.flush()
+                    process.stdin.write((json.dumps(query) + "\n").encode())
+                    process.stdin.flush()
                 except OSError as e:
                     self.katrain.log(f"Exception in writing to katago: {e}", OUTPUT_DEBUG)
                     return  # some other thread will take care of this

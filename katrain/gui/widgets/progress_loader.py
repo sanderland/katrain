@@ -1,4 +1,3 @@
-# From KivyMD which will remove it in their next version, with some fixes
 from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.lang import Builder
@@ -14,23 +13,23 @@ Builder.load_string(
 <ProgressLoader>
     opacity: 0
     spacing: 10
+    orientation: "horizontal"
     size_hint_y: None
-    height: dp(25)
-    MDSpinner
-        id: spinner
-        size_hint: None, 0.8
-        size: dp(23), dp(23)
-        color: 0.95,0.95,0.95,1
-    MDLabel:
+    height: dp(28)
+    ProgressBar:
+        id: progress
+        max: 1
+        value: 0
+        size_hint: None, 1
+        width: dp(120)
+    Label:
         id: label_download
         max_lines: 2
-        shorten: True
-        shorten_from: 'right'
-        halign: 'left'
-        valign: 'center'
+        halign: "left"
+        valign: "middle"
         text_size: self.size
-        height: dp(23)
-        color: 0.95,0.95,0.95,1
+        height: dp(28)
+        color: 0.95, 0.95, 0.95, 1
         text: root.label_downloading_text
 """
 )
@@ -113,7 +112,7 @@ class ProgressLoader(BoxLayout):
         if request.resp_status:
             status += f" ({request.resp_status})"
         self.label_downloading_text = self.downloading_text.format(status)
-        self.ids.spinner.active = False
+        self.ids.progress.value = 0
         if self.download_error:
             self.download_error(request, error)
 
@@ -121,6 +120,7 @@ class ProgressLoader(BoxLayout):
         if total_size < 1e4:
             current_size = 0
         percent = current_size / max(total_size, 1)
+        self.ids.progress.value = percent
         self.label_downloading_text = self.downloading_text.format(f"{percent:.1%}")
 
     def handle_success(self, request, result):

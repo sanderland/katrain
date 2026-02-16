@@ -331,21 +331,9 @@ class BaseGame:
     def write_sgf(self, filename: str, trainer_config: Optional[Dict] = None):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer", {})
-        save_feedback = trainer_config.get("save_feedback", False)
-        eval_thresholds = trainer_config["eval_thresholds"]
-        save_analysis = trainer_config.get("save_analysis", False)
-        save_marks = trainer_config.get("save_marks", False)
         self.update_root_properties()
-        show_dots_for = {
-            bw: trainer_config.get("eval_show_ai", True) or self.katrain.players_info[bw].human for bw in "BW"
-        }
-        sgf = self.root.sgf(
-            save_comments_player=show_dots_for,
-            save_comments_class=save_feedback,
-            eval_thresholds=eval_thresholds,
-            save_analysis=save_analysis,
-            save_marks=save_marks,
-        )
+        # v2: keep SGF output clean. Do not cache analysis, marks, or auto-generated feedback in SGF.
+        sgf = self.root.sgf()
         self.sgf_filename = filename
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         with open(filename, "w", encoding="utf-8") as f:
@@ -486,7 +474,6 @@ class Game(BaseGame):
         self.katrain.controls.set_status("", OUTPUT_INFO)
 
     def analyze_extra(self, mode, **kwargs):
-        stones = {s.coords for s in self.stones}
         cn = self.current_node
 
         if mode == "stop":
@@ -507,99 +494,7 @@ class Game(BaseGame):
                 time_limit=False,
             )
             return
-
-        if mode == "extra":
-            visits = cn.analysis_visits_requested + engine.config["max_visits"]
-            self.katrain.controls.set_status(i18n._("extra analysis").format(visits=visits), STATUS_ANALYSIS)
-            cn.analyze(
-                engine,
-                visits=visits,
-                priority=PRIORITY_EXTRA_ANALYSIS,
-                region_of_interest=self.region_of_interest,
-                time_limit=False,
-            )
-            return
-
-        if mode == "game":
-            nodes = self.root.nodes_in_tree
-            only_mistakes = kwargs.get("mistakes_only", False)
-            move_range = kwargs.get("move_range", None)
-            if move_range:
-                if move_range[1] < move_range[0]:
-                    move_range = reversed(move_range)
-            threshold = self.katrain.config("trainer/eval_thresholds")[-4]
-            if "visits" in kwargs:
-                visits = kwargs["visits"]
-            else:
-                min_visits = min(node.analysis_visits_requested for node in nodes)
-                visits = min_visits + engine.config["max_visits"]
-            for node in nodes:
-                max_point_loss = max(c.points_lost or 0 for c in [node] + node.children)
-                if only_mistakes and max_point_loss <= threshold:
-                    continue
-                if move_range and (not node.depth - 1 in range(move_range[0], move_range[1] + 1)):
-                    continue
-                node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
-            if not move_range:
-                self.katrain.controls.set_status(i18n._("game re-analysis").format(visits=visits), STATUS_ANALYSIS)
-            else:
-                self.katrain.controls.set_status(
-                    i18n._("move range analysis").format(
-                        start_move=move_range[0], end_move=move_range[1], visits=visits
-                    ),
-                    STATUS_ANALYSIS,
-                )
-            return
-
-        elif mode == "sweep":
-            board_size_x, board_size_y = self.board_size
-
-            if cn.analysis_exists:
-                policy_grid = (
-                    var_to_grid(self.current_node.policy, size=(board_size_x, board_size_y))
-                    if self.current_node.policy
-                    else None
-                )
-                analyze_moves = sorted(
-                    [
-                        Move(coords=(x, y), player=cn.next_player)
-                        for x in range(board_size_x)
-                        for y in range(board_size_y)
-                        if (policy_grid is None and (x, y) not in stones) or policy_grid[y][x] >= 0
-                    ],
-                    key=lambda mv: -policy_grid[mv.coords[1]][mv.coords[0]],
-                )
-            else:
-                analyze_moves = [
-                    Move(coords=(x, y), player=cn.next_player)
-                    for x in range(board_size_x)
-                    for y in range(board_size_y)
-                    if (x, y) not in stones
-                ]
-            visits = engine.config["fast_visits"]
-            self.katrain.controls.set_status(i18n._("sweep analysis").format(visits=visits), STATUS_ANALYSIS)
-            priority = PRIORITY_SWEEP
-        elif mode in ["equalize", "alternative", "local"]:
-            if not cn.analysis_complete and mode != "local":
-                self.katrain.controls.set_status(i18n._("wait-before-extra-analysis"), STATUS_INFO, self.current_node)
-                return
-            if mode == "alternative":  # also do a quick update on current candidates so it doesn't look too weird
-                self.katrain.controls.set_status(i18n._("alternative analysis"), STATUS_ANALYSIS)
-                cn.analyze(engine, priority=PRIORITY_ALTERNATIVES, time_limit=False, find_alternatives="alternative")
-                visits = engine.config["fast_visits"]
-            else:  # equalize
-                visits = max(d["visits"] for d in cn.analysis["moves"].values())
-                self.katrain.controls.set_status(i18n._("equalizing analysis").format(visits=visits), STATUS_ANALYSIS)
-            priority = PRIORITY_EQUALIZE
-            analyze_moves = [Move.from_gtp(gtp, player=cn.next_player) for gtp, _ in cn.analysis["moves"].items()]
-        else:
-            raise ValueError("Invalid analysis mode")
-
-        for move in analyze_moves:
-            if cn.analysis["moves"].get(move.gtp(), {"visits": 0})["visits"] < visits:
-                cn.analyze(
-                    engine, priority=priority, visits=visits, refine_move=move, time_limit=False
-                )  # explicitly requested so take as long as you need
+        raise ValueError("Invalid analysis mode")
 
     def selfplay(self, until_move, target_b_advantage=None):
         cn = self.current_node

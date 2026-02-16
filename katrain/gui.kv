@@ -375,101 +375,6 @@
         player: root.player
         text: str(root.captures)
 
-<PauseButton>:
-    height: self.width
-    size_hint: 1, None
-    min_size: min(self.height,self.width)
-    inactive_line_color: Theme.BUTTON_BORDER_COLOR
-    inactive_fill_color: [1,1,1,0]
-    active_line_color: Theme.PAUSE_ACTIVE_COLOR
-    active_fill_color: [1,1,1,0]
-    line_width: max(1.1,self.min_size/20)
-    line_color: root.active_line_color if self.active else root.inactive_line_color
-    fill_color: root.active_fill_color if self.active else root.inactive_fill_color
-
-    canvas:
-        Color:
-            rgba: root.fill_color
-        Ellipse:
-            pos: root.x + root.width/2 - root.min_size/2, root.y  + root.height/2 - root.min_size/2
-            size: root.min_size,root.min_size
-        Color:
-            rgba: root.inactive_line_color
-        Line:
-            circle: root.x + root.width/2, root.y + root.height/2, root.min_size/2 - root.line_width/2
-            width: root.line_width
-        Color:
-            rgba: root.line_color
-        Line:
-            points: root.x + root.width/2 - root.min_size/8, root.y + root.height/2 - root.min_size/6, root.x + root.width/2 - root.min_size/8, root.y + root.height/2 + root.min_size/6
-            width: root.line_width
-            cap: 'square'
-        Line:
-            points: root.x + root.width/2 + root.min_size/8, root.y + root.height/2 - root.min_size/6, root.x + root.width/2 + root.min_size/8, root.y + root.height/2 + root.min_size/6
-            width: root.line_width
-            cap: 'square'
-
-
-<TimerLabel@Label>
-    timeout: False
-    color: Theme.TIMER_TEXT_TIMEOUT_COLOR if self.timeout else Theme.TIMER_TEXT_COLOR
-    markup: True
-    max_lines: 1
-    font_name: 'digital-7 (mono).ttf'
-
-<Timer>:
-    spacing: CP_SPACING
-    padding: CP_PADDING * 4, CP_PADDING * 2
-    paused: True
-    timeout: root.state[1] is not None and root.state[1] <= 0
-    BoxLayout:
-        size_hint: 0.7,1
-        FloatLayout:
-            size_hint: 0.4,1
-            TimerLabel:
-                color: Theme.BACKGROUND_COLOR
-                text: '{}:88'.format('188' if root.state[0] >= 6000 else '88')
-                font_size: 0.85*self.height
-                pos_hint: {'right':1,'center_y':0.5}
-                halign: 'right'
-                valign: 'middle'
-            TimerLabel:
-                id: timer
-                timeout: root.timeout
-                text: "{:2d}:{:02d}".format(int(root.state[0]+0.99)//60,int((root.state[0]+0.99) % 60) )
-                font_size: 0.85*self.height
-                pos_hint: {'right':1,'center_y':0.5}
-                halign: 'right'
-                valign: 'middle'
-        TimerLabel:
-            size_hint: 0.05,1
-            text: "x" if  root.state[1] is not None else ""
-            font_size: self.height * 0.3
-            text_size: self.width, self.height * 0.95
-            halign: 'right'
-            valign: 'top'
-            timeout: root.timeout
-        TimerLabel:
-            size_hint: 0.075,1
-            font_size: self.height * 0.35
-            text_size: self.size
-            halign: 'left'
-            valign: 'top'
-            id: periods
-            text: str(root.state[1]) if root.state[1] is not None else ""
-            max_lines: 1
-            timeout: root.timeout
-    BoxLayout:
-        size_hint: 0.2,1
-        PauseButton:
-            pos_hint: {'center_y':0.5}
-            id: pause
-            active: root.paused
-            on_left_press: root.paused = not root.paused
-
-
-
-
 <GraphMarkerLabel@Label>:
     valign: 'bottom'
     halign: 'left'
@@ -571,14 +476,12 @@
     katrain: app.gui
     orientation: 'vertical'
     players: {'B':B_player,'W':W_player}
-    timer:timer
     graph: graph
     stats: stats
     notes_panel: notes_panel
     info: info
     note: note
     status: status
-    timer_or_movetree: timer_or_movetree
     move_tree: move_tree
     padding: CP_PADDING,CP_PADDING,CP_PADDING,0
     spacing: CP_SPACING
@@ -597,35 +500,13 @@
         PlayerInfo:
             id: W_player
             player: 'W'
-    TimerOrMoveTree:
-        id: timer_or_movetree
+    BoxLayout:
         size_hint_y: None
-        height: root.timer_box_height + max(0,int(self.mode != MODE_PLAY) * (root.tab_option_height + root.graph_height - graph_panel.height))
-        BoxLayout:
-            size_hint_x: EPSILON if self.parent.mode != MODE_PLAY else 1
-            opacity: 0 if self.parent.mode != MODE_PLAY else 1
-            spacing: CP_SPACING
-            Timer:
-                id: timer
-                size_hint_x: 0.65
-            BoxLayout:
-                orientation: 'vertical'
-                padding: 2*CP_PADDING,CP_PADDING
-                spacing: CP_SPACING
-                size_hint_x: 0.35
-                SizedRoundedRectangleButton:
-                    text: i18n._('undo-button-text')
-                    size_hint: 1, 0.5
-                    on_left_release: root.katrain("undo","smart")
-                SizedRoundedRectangleButton:
-                    text: i18n._('resign')
-                    size_hint: 1, 0.5
-                    on_left_release: root.katrain("resign")
+        height: root.timer_box_height
+        spacing: CP_SPACING
         MoveTree:
             id: move_tree
             min_height: root.timer_box_height
-            size_hint_x: EPSILON if self.parent.mode == MODE_PLAY else 1
-            opacity: 0 if self.parent.mode == MODE_PLAY else 1
     CollapsablePanel:
         id: graph_panel
         content_height: graph.height
@@ -797,26 +678,6 @@
     width: 50
     katrain: app.gui
     AnalysisMenuItem:
-        text: i18n._("analysis:extra")
-        icon: 'Extra.png'
-        shortcut: 'a'
-        on_action: root.katrain("analyze-extra", "extra")
-    AnalysisMenuItem:
-        text: i18n._("analysis:equalize")
-        icon: 'Equalize.png'
-        shortcut: 's'
-        on_action: root.katrain("analyze-extra", "equalize")
-    AnalysisMenuItem:
-        text: i18n._("analysis:sweep")
-        icon: 'Sweep.png'
-        shortcut: 'd'
-        on_action: root.katrain("analyze-extra", "sweep")
-    AnalysisMenuItem:
-        text: i18n._("analysis:alternatives")
-        icon: 'Alternative.png'
-        shortcut: 'f'
-        on_action: root.katrain("analyze-extra", "alternative")
-    AnalysisMenuItem:
         text: i18n._("analysis:region")
         icon: 'local.png'
         shortcut: 'g'
@@ -836,21 +697,6 @@
         icon: 'Finish.png'
         shortcut: 'l'
         on_action: root.katrain("selfplay-setup","end")
-    AnalysisMenuItem:
-        text: i18n._("analysis:game")
-        icon: 'Deeper all.png'
-        shortcut: 'F2'
-        on_action: root.open_game_analysis_popup()
-    AnalysisMenuItem:
-        text: i18n._("analysis:report")
-        icon: 'analysis.png'
-        shortcut: 'F3'
-        on_action: root.open_report_popup()
-    AnalysisMenuItem:
-        text: i18n._("analysis:tsumegoframe")
-        icon: 'New-Game.png'
-        shortcut: 'F10'
-        on_action: root.open_tsumego_frame_popup()
     AnalysisMenuItem:
         text: i18n._("analysis:continuous")
         icon: 'play.png'
@@ -924,18 +770,13 @@
 
 <MainMenuItem@MenuItem>
     on_close: app.gui.nav_drawer.set_state("close")
-    height: self.parent.item_height or 50
-
-
-<LangButton@TransparentIconButton>
-    size_hint: 1,1
-    icon_size: self.height * 0.6, self.height  * 0.6
+    height: (getattr(self.parent, "item_height", 50) if self.parent else 50) or 50
 
 
 <MenuLabel@BackgroundMixin+Label>:
     background_color: Theme.BACKGROUND_COLOR
     font_size: self.height * 0.5
-    height: self.parent.item_height or 50
+    height: (getattr(self.parent, "item_height", 50) if self.parent else 50) or 50
     size_hint: 1,None
 
 <MenuLink@ButtonBehavior+MenuLabel>:
@@ -1005,125 +846,64 @@
     size_hint_y: None
     spacing: 3*CP_SPACING
     padding: CP_PADDING
-    height: (self.parent.item_height or 50) * 5
+    height: ((getattr(self.parent, "item_height", 50) if self.parent else 50) or 50) * 5
 
 
 
 
 <HamburgerMenuContents@BoxLayout+BackgroundMixin>:
     katrain: app.gui
-    player_setup: player_setup
     background_color: Theme.BOX_BACKGROUND_COLOR
     orientation: 'vertical'
-    item_height: self.height/20
-    MenuLabel:
-        text: i18n._('menu:playersetup')
-    PlayerSetupBlock:
-        id: player_setup
-        update_global: True
-    MenuLabel:
-        size_hint: 1,1
-    MenuLabel:
-    BoxLayout:
-        orientation: 'vertical'
-        size_hint: 1, None
-        height: self.minimum_height
-        item_height: root.item_height
-        MainMenuItem:
-            text: i18n._('menu:newgame')
-            icon: 'New-Game.png'
-            shortcut: 'Ctrl-N'
-            on_action: root.katrain("new-game-popup")
-        MainMenuItem:
-            text: i18n._('menu:save')
-            icon: 'Save-Game.png'
-            shortcut: 'Ctrl-S'
-            on_action: root.katrain("save-game")
-        MainMenuItem:
-            text: i18n._('menu:save-as')
-            icon: 'Save-Game-As.png'
-            shortcut: 'Ctrl-D'
-            on_action: root.katrain("save-game-as-popup")
-        MainMenuItem:
-            text: i18n._('menu:load')
-            icon: 'Load-Game.png'
-            shortcut: 'Ctrl-L'
-            on_action: root.katrain("analyze-sgf-popup")
-        MainMenuItem:
-            text: i18n._('menu:clocksettings')
-            icon: 'Time-Settings.png'
-            shortcut: 'F5'
-            on_action: root.katrain('timer-popup')
-        MainMenuItem:
-            text: i18n._('menu:teachsettings')
-            icon: 'Teaching-Settings.png'
-            shortcut: 'F6'
-            on_action: root.katrain('teacher-popup')
-        MainMenuItem:
-            text: i18n._('menu:aisettings')
-            icon: 'AI-Settings.png'
-            shortcut: 'F7'
-            on_action: root.katrain('ai-popup')
-        MainMenuItem:
-            text: i18n._('menu:settings')
-            icon: 'General-Settings.png'
-            shortcut: 'F8'
-            on_action: root.katrain('config-popup')
-        MainMenuItem:
-            text: i18n._('menu:distributed')
-            shortcut: 'F9'
-            icon: 'collaboration.png'
-            on_action: root.katrain('contribute-popup')
-#            on_action: root.katrain('katago-contribute')
-    MenuLabel:
-        text: i18n._('menu:lang')
-    BoxLayout:
-        size_hint: 1, None
-        height: 1.5 * root.item_height
-        padding: CP_PADDING, 0
-        LangButton:
-            icon: 'flags/flag-uk.png'
-            on_press: app.language = 'en'
-        LangButton:
-            icon: 'flags/flag-de.png'
-            on_press: app.language = 'de'
-        LangButton:
-            icon: 'flags/flag-fr.png'
-            on_press: app.language = 'fr'
-        LangButton:
-            icon: 'flags/flag-ua.png'
-            on_press: app.language = 'ua'
-#        LangButton:
-#            icon: 'flags/flag-es.png'
-#            on_press: app.language = 'es'
-        LangButton:
-            icon: 'flags/flag-ru.png'
-            on_press: app.language = 'ru'
-        LangButton:
-            icon: 'flags/flag-cn.png'
-            on_press: app.language = 'cn'
-        LangButton:
-            icon: 'flags/flag-tw.png'
-            on_press: app.language = 'tw'
-        LangButton:
-            icon: 'flags/flag-ko.png'
-            on_press: app.language = 'ko'
-        LangButton:
-            icon: 'flags/flag-jp.png'
-            on_press: app.language = 'jp'
-        LangButton:
-            icon: 'flags/flag-tr.png'
-            on_press: app.language = 'tr'
-    BoxLayout:
-        size_hint: 1,None
-        height: root.item_height
-        item_height: root.item_height
-        MenuLink:
-            text: i18n._('menu:manual')
-            site_key: 'homepage'
-        MenuLink:
-            text: i18n._('menu:support')
-            site_key: 'support'
+    padding: CP_PADDING
+    spacing: CP_SPACING
+    ScrollView:
+        do_scroll_x: False
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            MainMenuItem:
+                text: i18n._('menu:newgame')
+                icon: 'New-Game.png'
+                shortcut: 'Ctrl-N'
+                on_action: root.katrain("new-game-popup")
+            MainMenuItem:
+                text: i18n._('menu:load')
+                icon: 'Load-Game.png'
+                shortcut: 'Ctrl-L'
+                on_action: root.katrain("analyze-sgf-popup")
+            MainMenuItem:
+                text: i18n._('menu:save')
+                icon: 'Save-Game.png'
+                shortcut: 'Ctrl-S'
+                on_action: root.katrain("save-game")
+            MainMenuItem:
+                text: i18n._('menu:save-as')
+                icon: 'Save-Game-As.png'
+                shortcut: 'Ctrl-D'
+                on_action: root.katrain("save-game-as-popup")
+            MainMenuItem:
+                text: i18n._('menu:teachsettings')
+                icon: 'Teaching-Settings.png'
+                shortcut: 'F6'
+                on_action: root.katrain('teacher-popup')
+            MainMenuItem:
+                text: i18n._('menu:aisettings')
+                icon: 'AI-Settings.png'
+                shortcut: 'F7'
+                on_action: root.katrain('ai-popup')
+            MainMenuItem:
+                text: i18n._('menu:settings')
+                icon: 'General-Settings.png'
+                shortcut: 'F8'
+                on_action: root.katrain('config-popup')
+            MenuLink:
+                text: i18n._('menu:manual')
+                site_key: 'homepage'
+            MenuLink:
+                text: i18n._('menu:support')
+                site_key: 'support'
 
 
 <OutlineBox@BoxLayout+BackgroundMixin>:

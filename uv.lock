@@ -285,7 +285,7 @@ wheels = [
 
 [[package]]
 name = "katrain"
-version = "1.17.1"
+version = "2.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "chardet" },
