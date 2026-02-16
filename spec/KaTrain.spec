@@ -19,7 +19,6 @@ is_linux = sys.platform.startswith('linux')
 print(f"Building for platform: {sys.platform}")
 
 # Cross-platform imports
-from kivymd import hooks_path as kivymd_hooks_path
 from kivy.tools.packaging.pyinstaller_hooks import get_deps_minimal
 
 # Get base Kivy dependencies (cross-platform)
@@ -52,8 +51,6 @@ datas = [
     (f"{base_path}/KataGo", "katrain/KataGo"),
 ]
 
-# KivyMD data files will be handled by the custom hook
-
 # Platform-specific binaries
 binaries = kivy_deps.get('binaries', [])
 if is_macos:
@@ -71,8 +68,6 @@ if is_windows:
 
 # Platform-specific hooks and excludes
 hookspath = kivy_deps.get('hookspath', [])
-hookspath.append(kivymd_hooks_path)
-# Add custom KivyMD hook directory
 hookspath.append(SPECPATH)
 
 # Exclude problematic modules

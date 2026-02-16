@@ -101,27 +101,34 @@ KV = """
             pos:
                 (self.x + self.padding, self.center_y - dp(4))
 
-    Thumb:
+    Widget:
         id: thumb
         size_hint: None, None
         size:
-            ((dp(24), dp(24))   if root.active else (dp(16), dp(16)))
+            ((dp(24), dp(24)) if root.active else (dp(16), dp(16)))
         pos:
             (slider.px_pos - dp(8), slider.center_y - thumb.height/2 - dp(2))
-        color:
-            root.thumb_color
-        elevation:
-            4 if root.active else 2
+        canvas:
+            Color:
+                rgba: root.thumb_color
+            Ellipse:
+                pos: self.pos
+                size: self.size
 
-    MDCard:
+    BoxLayout:
         id: hint_box
         size_hint: None, None
-        md_bg_color: [1, 1, 1, 1] if root.active else [0, 0, 0, 0]
-        elevation: 4 if root.active else 0
         size:
             (max(dp(28), label.texture_size[0]+4) , dp(28))
         pos:
             (slider.px_pos - dp(9), slider.center_y - hint_box.height / 2 + dp(30))
+        canvas.before:
+            Color:
+                rgba: [1, 1, 1, 1] if root.active else [0, 0, 0, 0]
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [dp(4)]
 
         Label:
             id: label

@@ -47,6 +47,10 @@
             rounded_rectangle: (self.x + root.outline_width, self.y + root.outline_width, self.width - 2 * root.outline_width, self.height - 2*root.outline_width, root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
             width: root.outline_width or 1
 
+# style checkboxes for dark theme
+<CheckBox>:
+    color: Theme.CHECKBOX_COLOR
+
 # table cells, stats panel mainly
 
 <TableCellLabel>:
@@ -96,11 +100,9 @@
 
 
 <SizedButton>:
-    ripple_duration_in_slow: 0.6
     text_color: Theme.TEXT_COLOR
     background_color: Theme.BOX_BACKGROUND_COLOR
     label: label
-    text_size: root.size
     Label:
         id: label
         padding: [root.padding_x,root.padding_y]
@@ -108,10 +110,12 @@
         font_name: root.font_name
         font_size: 0.6 * self.height / len(self.text.split('\\n')) if root._font_size is None else root._font_size
         halign: root.halign
+        valign: 'middle'
         text: root.text
 
 <AutoSizedButton>:
-    width: root.label.texture_size[0]
+    size_hint_x: None
+    width: root.label.texture_size[0] + 2 * self.padding_x if root.label else 100
 
 <ToggleButtonMixin>:
     inactive_background_color: Theme.BACKGROUND_COLOR
@@ -218,7 +222,6 @@
     circles: [black_circle,white_circle]
     mid_circles_container: mid_circles_container
     pass_btn: pass_btn
-    adaptive_height: True
     AutoSizedRoundedRectangleButton:
         id: pass_btn
         text: i18n._('pass-button-text')
@@ -244,7 +247,7 @@
         NavIconButton:
             icon: 'Previous.png'
             on_press: root.katrain('undo')
-        MDFloatLayout:
+        FloatLayout:
             size_hint: 0.05, 1
             id: mid_circles_container
             CircleWithText:
@@ -401,9 +404,9 @@
     padding: CP_PADDING * 4, CP_PADDING * 2
     paused: True
     timeout: root.state[1] is not None and root.state[1] <= 0
-    MDBoxLayout:
+    BoxLayout:
         size_hint: 0.7,1
-        MDFloatLayout:
+        FloatLayout:
             size_hint: 0.4,1
             TimerLabel:
                 color: Theme.BACKGROUND_COLOR
@@ -438,7 +441,7 @@
             text: str(root.state[1]) if root.state[1] is not None else ""
             max_lines: 1
             timeout: root.timeout
-    MDBoxLayout:
+    BoxLayout:
         size_hint: 0.2,1
         PauseButton:
             pos_hint: {'center_y':0.5}
@@ -587,7 +590,7 @@
             Timer:
                 id: timer
                 size_hint_x: 0.65
-            MDBoxLayout:
+            BoxLayout:
                 orientation: 'vertical'
                 padding: 2*CP_PADDING,CP_PADDING
                 spacing: CP_SPACING
@@ -678,8 +681,6 @@
                     multiline: True
                     on_text: root.katrain.set_note(self.text)
                     hint_text: i18n._('SGF Notes Hint')
-                    color_mode: 'custom'
-                    line_color_focus: Theme.TEXT_COLOR
                     size_hint: 1, 1
                     canvas.before:
                         Color:
@@ -698,7 +699,7 @@
     background_color: Theme.BOX_BACKGROUND_COLOR
     width_margin: 1.33
     content_width: icon.width + label.texture_size[0] * self.width_margin
-    MDFloatLayout:
+    FloatLayout:
         id: icon
         size_hint: None, 1
         width: self.height + 16
@@ -731,9 +732,10 @@
 
 
 <AnalysisToggle>:
-    adaptive_width: True
+    size_hint_x: None
+    width: self.minimum_width
     spacing: CP_SPACING
-    size_hint: None, 0.7
+    size_hint_y: 0.7
     pos_hint: {'center_y':0.5}
     checkbox: checkbox
     label: label
@@ -743,11 +745,11 @@
         halign: 'center'
         font_size: root.height / 3
         font_name: root.font_name
-        color: checkbox.disabled_color if root.disabled else (checkbox.selected_color if checkbox.active else checkbox.unselected_color)
+        color: [0.5, 0.5, 0.5, 1] if root.disabled else ([1, 1, 1, 1] if checkbox.active else [0.7, 0.7, 0.7, 1])
         size_hint_x: None
         width: self.texture_size[0] + 4
         on_left_press: checkbox.trigger_action()
-    MDCheckbox:
+    CheckBox:
         id: checkbox
         disabled: root.disabled
         size_hint: None,0.5
@@ -859,8 +861,9 @@
         size_hint: None, 1
         on_press: app.gui.nav_drawer.set_state("open")
     AnchorLayout:
-        MDBoxLayout:
-            adaptive_width: True
+        BoxLayout:
+            size_hint_x: None
+            width: self.minimum_width
             spacing: root.height/4
             AnalysisToggle:
                 id: show_children
@@ -881,7 +884,7 @@
                 id: ownership
                 text: i18n._('analysis:territory')
                 padding: 0,0,show_children.width/8,0 # space button a bit more
-            MDFloatLayout:
+            FloatLayout:
                 width: analysis_button.width
                 size_hint: None, 1
                 AutoSizedRectangleButton:
@@ -929,7 +932,7 @@
     player_type: player_type
     player_subtype_human: player_subtype_human
     player_subtype_ai: player_subtype_ai
-    MDBoxLayout:
+    BoxLayout:
         size_hint: 0.25, 1
         ClickableCircle:
             size_hint: 0.8, 0.8
@@ -937,7 +940,7 @@
             text: root.player[0]
             player: root.player
             on_left_press: root.parent.swap_players()
-    MDBoxLayout:
+    BoxLayout:
         size_hint: 0.5, 1
         orientation: 'vertical'
         spacing: CP_SPACING
@@ -948,9 +951,9 @@
             id: player_type
             value_refs: PLAYER_TYPES
             on_select: root.setup_options(*args)
-    MDBoxLayout:
+    BoxLayout:
         size_hint: 0.5, 1
-        MDBoxLayout:
+        BoxLayout:
             orientation: 'vertical'
             spacing: CP_SPACING
             size_hint_x: 1 if root.mode != PLAYER_AI else EPSILON
@@ -963,7 +966,7 @@
                     id: player_subtype_human
                     value_refs: []
                     on_select: if root.mode==PLAYER_HUMAN: root.update_global_player_info()
-        MDBoxLayout:
+        BoxLayout:
             orientation: 'vertical'
             spacing: CP_SPACING
             size_hint_x: 1 if root.mode == PLAYER_AI else EPSILON
@@ -989,7 +992,7 @@
 
 
 
-<HamburgerMenuContents@MDBoxLayout+BackgroundMixin>:
+<HamburgerMenuContents@BoxLayout+BackgroundMixin>:
     katrain: app.gui
     player_setup: player_setup
     background_color: Theme.BOX_BACKGROUND_COLOR
@@ -1003,10 +1006,10 @@
     MenuLabel:
         size_hint: 1,1
     MenuLabel:
-    MDBoxLayout:
+    BoxLayout:
         orientation: 'vertical'
         size_hint: 1, None
-        adaptive_height: True
+        height: self.minimum_height
         item_height: root.item_height
         MainMenuItem:
             text: i18n._('menu:newgame')
@@ -1056,7 +1059,7 @@
 #            on_action: root.katrain('katago-contribute')
     MenuLabel:
         text: i18n._('menu:lang')
-    MDBoxLayout:
+    BoxLayout:
         size_hint: 1, None
         height: 1.5 * root.item_height
         padding: CP_PADDING, 0
@@ -1105,13 +1108,12 @@
             site_key: 'support'
 
 
-<OutlineBox@MDBoxLayout+BackgroundMixin>:
+<OutlineBox@BoxLayout+BackgroundMixin>:
 
 
 <PlayAnalyzeButton@SizedToggleButton>:
     inactive_background_color: Theme.BOX_BACKGROUND_COLOR
     active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
-    ripple_color: Theme.BACKGROUND_COLOR
     text_color: self.inactive_background_color if self.state=='down' else self.active_background_color
     size_hint: 0.5,1
     _font_size: self.height * 0.5
@@ -1145,45 +1147,44 @@
     analysis_controls: analysis_controls
     nav_drawer: nav_drawer
     nav_drawer_contents: nav_drawer_contents
-    NavigationLayout:
-        ScreenManager:
-            Screen:
-                name: 'gui'
-                BGBoxLayout:
-                    background_color: Theme.BACKGROUND_COLOR
-                    MDBoxLayout:
-                        orientation: 'vertical'
-                        AnalysisControls:
-                            id: analysis_controls
-                            size_hint_y: None
-                            height: 1 if root.zen > 0 else max(sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT),self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO))
-                            opacity: 0 if root.zen > 0 else 1
-                        BadukPanWidget:
-                            id: board_gui
-                        BadukPanControls:
-                            id: board_controls
-                            size_hint_y: None
-                            height: 1 if root.zen > 0 else max(sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT),self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO))
-                            opacity: 0 if root.zen > 0 else 1
-                    MDBoxLayout:
-                        size_hint_x: None
-                        width: 1 if root.zen == 2 else self.height * Theme.RIGHT_PANEL_ASPECT_RATIO
-                        opacity: 0 if root.zen == 2 else 1
-                        orientation: 'vertical'
-                        PlayAnalyzeSelect:
-                            id: play_mode
-                            size_hint_y: None
-                            height: analysis_controls.height
-                        ControlsPanel:
-                            id: controls
+    FloatLayout:
+        BGBoxLayout:
+            background_color: Theme.BACKGROUND_COLOR
+            pos: root.pos
+            size: root.size
+            BoxLayout:
+                orientation: 'vertical'
+                AnalysisControls:
+                    id: analysis_controls
+                    size_hint_y: None
+                    height: 1 if root.zen > 0 else max(sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT),self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO))
+                    opacity: 0 if root.zen > 0 else 1
+                BadukPanWidget:
+                    id: board_gui
+                BadukPanControls:
+                    id: board_controls
+                    size_hint_y: None
+                    height: 1 if root.zen > 0 else max(sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT),self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO))
+                    opacity: 0 if root.zen > 0 else 1
+            BoxLayout:
+                size_hint_x: None
+                width: 1 if root.zen == 2 else self.height * Theme.RIGHT_PANEL_ASPECT_RATIO
+                opacity: 0 if root.zen == 2 else 1
+                orientation: 'vertical'
+                PlayAnalyzeSelect:
+                    id: play_mode
+                    size_hint_y: None
+                    height: analysis_controls.height
+                ControlsPanel:
+                    id: controls
         MyNavigationDrawer:
             id: nav_drawer
-            state: "close"
+            x: -self.width
             y: 0
-            size_hint_y: None
-            -height: root.height - analysis_controls.height
-            -width: self.height * 0.5
+            size_hint: None, None
+            height: root.height - analysis_controls.height
+            width: (root.height - analysis_controls.height) * 0.5
             swipe_edge_width: 0
-            on_state: if self.state=='close': root.update_state() # ai move etc on nav drawer close
+            on_state: if self.state=='close': root.update_state()
             HamburgerMenuContents:
                 id: nav_drawer_contents

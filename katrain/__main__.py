@@ -99,7 +99,7 @@ from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
 from katrain.gui.theme import Theme
-from kivymd.app import MDApp
+from kivy.app import App
 
 # used in kv
 from katrain.gui.kivyutils import *
@@ -205,7 +205,7 @@ class KaTrainGui(Screen, KaTrainBase):
         def set_focus_event(*args):
             self.last_focus_event = time.time()
 
-        MDApp.get_running_app().root_window.bind(focus=set_focus_event)
+        App.get_running_app().root_window.bind(focus=set_focus_event)
 
     def update_gui(self, cn, redraw_board=False):
         # Handle prisoners and next player display
@@ -835,7 +835,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.play_mode.switch_ui_mode()
 
 
-class KaTrainApp(MDApp):
+class KaTrainApp(App):
     gui = ObjectProperty(None)
     language = StringProperty(DEFAULT_LANGUAGE)
 
@@ -858,9 +858,6 @@ class KaTrainApp(MDApp):
         self.icon = ICON  # how you're supposed to set an icon
 
         self.title = f"KaTrain v{VERSION}"
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Gray"
-        self.theme_cls.primary_hue = "200"
 
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
@@ -963,7 +960,7 @@ def run_app():
         def handle_exception(self, inst):
             ex_type, ex, tb = sys.exc_info()
             trace = "".join(traceback.format_tb(tb))
-            app = MDApp.get_running_app()
+            app = App.get_running_app()
 
             if app and app.gui:
                 app.gui.log(

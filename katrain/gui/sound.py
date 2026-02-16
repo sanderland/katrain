@@ -1,5 +1,5 @@
 from kivy.clock import Clock
-from kivymd.app import MDApp
+from kivy.app import App
 from kivy.core.audio import SoundLoader
 from kivy.utils import platform
 
@@ -19,7 +19,7 @@ def play_sound(file, volume=1, cache=True):
             sound.play()
             sound.seek(0)
 
-    app = MDApp.get_running_app()
+    app = App.get_running_app()
     if app and app.gui and app.gui.config("timer/sound"):
         sound = cached_sounds.get(file)
         if sound is None:

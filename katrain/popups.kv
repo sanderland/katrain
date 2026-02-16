@@ -15,26 +15,15 @@
 #:import TOP_MOVE_OPTIONS katrain.core.constants.TOP_MOVE_OPTIONS
 
 
-# MDTextField:
-#    hint_text: "Helper text on focus"
-#    helper_text: "This will disappear when you click off"
-#    helper_text_mode: "on_focus"
-#    font_size: sp(Theme.INPUT_FONT_SIZE)
 
 <LabelledTextInput>:
     font_size: sp(Theme.INPUT_FONT_SIZE)
-    helper_text_mode: "none"
     hint_text: ""
-    helper_text: ""
-    color_mode: 'custom'
-    line_color_focus: Theme.TEXT_COLOR
 
 <LabelledPathInput>:
     font_size: sp(16)
     multiline: False
     write_tab: False
-    helper_text_mode: "on_error"
-    helper_text: i18n._("file not found")
 
 <LabelledIntInput>:
     font_size: sp(Theme.INPUT_FONT_SIZE)
@@ -78,7 +67,7 @@
 <SmallDescriptionLabel@DescriptionLabel>
     font_size: sp(Theme.DESC_FONT_SIZE) * 0.66
 
-<ConfigSectionGridLayout@MDGridLayout+BackgroundMixin>:
+<ConfigSectionGridLayout@GridLayout+BackgroundMixin>:
     padding: CP_PADDING/2
     spacing: CP_SMALL_SPACING
     background_color: Theme.BOX_BACKGROUND_COLOR
@@ -117,7 +106,7 @@
             size_hint: (0.3, 0.8)
 
     # Main Content Area
-    MDBoxLayout:
+    BoxLayout:
         orientation: 'vertical'
         size_hint: (1, 6)
         spacing: dp(15)
@@ -215,7 +204,7 @@
                     hint_text: i18n._("engine:altcommand:hint")
 
     # Settings Headers
-    MDBoxLayout:
+    BoxLayout:
         size_hint_y: 0.5
         orientation: 'horizontal'
         padding: dp(10)
@@ -230,7 +219,7 @@
             font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
 
     # Settings Area
-    MDBoxLayout:
+    BoxLayout:
         size_hint: (1, 4)
         orientation: 'horizontal'
         padding: dp(10)
@@ -308,16 +297,16 @@
                     hint_text: i18n._("engine:wide_root_noise:hint")
 
     # Bottom Section - Progress and Update Button
-    MDBoxLayout:
+    BoxLayout:
         orientation: 'horizontal'
         size_hint_y: 1
 
-        MDBoxLayout:
+        BoxLayout:
             size_hint_x: 3 if self.children else 0.0001
             orientation: 'vertical'
             id: download_progress_box
 
-        MDBoxLayout:
+        BoxLayout:
             size_hint_x: 3 if self.children else 0.0001
             orientation: 'vertical'
             id: katago_download_progress_box
@@ -463,10 +452,12 @@
             AnchorLayout:
                 anchor_x: 'left'
                 size_hint: 0.5, 1
-                MDIconButton:
-                    icon: "eye"
-                    pos_hint: {"center_x": 0, "center_y": .5}
-                    on_press: password.password = not password.password
+                SizedRectangleButton:
+                    text: 'Show' if password.password else 'Hide'
+                    size_hint: None, 0.5
+                    width: dp(60)
+                    pos_hint: {"center_y": .5}
+                    on_left_release: password.password = not password.password
                 SmallDescriptionLabel:
                     padding_x: dp(40)
                     text: i18n._("contribute:passwordwarning")
@@ -476,10 +467,10 @@
         font_size: sp(Theme.DESC_FONT_SIZE)
         color: Theme.ERROR_BORDER_COLOR
         size_hint: 1, 0.5
-    MDBoxLayout:
+    BoxLayout:
         orientation: 'horizontal'
         size_hint: 1, 1
-        MDBoxLayout:
+        BoxLayout:
             size_hint_x: 2.5 if self.children else 0.0001
             orientation: 'vertical'
             id: katago_download_progress_box
@@ -588,7 +579,7 @@
 
 
 <ConfigTimerPopup>:
-    MDGridLayout:
+    GridLayout:
         cols: 2
         rows: 4
         spacing: 1.5 * CP_SPACING
@@ -629,7 +620,6 @@
 <NewGameModeButton@SizedToggleButton>:
     inactive_background_color: Theme.LIGHTER_BACKGROUND_COLOR
     active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
-    ripple_color: Theme.LIGHTER_BACKGROUND_COLOR
     text_color: self.inactive_background_color if self.state=='down' else self.active_background_color
     size_hint: 0.33,1
     _font_size: self.height * 0.45
@@ -705,8 +695,10 @@
                 id: km
                 input_property: 'game/komi'
         AnchorLayout:
-            MDBoxLayout:
-                adaptive_size: True
+            BoxLayout:
+                size_hint: None, None
+                width: self.minimum_width
+                height: self.minimum_height
                 spacing: CP_SPACING
                 QuickInputButton:
                     text: '0.5'
@@ -734,8 +726,10 @@
                     size_hint: 0.5, None
                     hint_text: i18n._("non square board hint")
             AnchorLayout:
-                MDBoxLayout:
-                    adaptive_size: True
+                BoxLayout:
+                    size_hint: None, None
+                    width: self.minimum_width
+                    height: self.minimum_height
                     spacing: CP_SPACING
                     QuickInputButton:
                         text: '9'
@@ -755,8 +749,10 @@
                     write_tab: False
                     id: handicap
             AnchorLayout:
-                MDBoxLayout:
-                    adaptive_size: True
+                BoxLayout:
+                    size_hint: None, None
+                    width: self.minimum_width
+                    height: self.minimum_height
                     spacing: CP_SPACING
                     QuickInputButton:
                         text: '0'

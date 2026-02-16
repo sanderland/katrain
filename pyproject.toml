@@ -21,7 +21,6 @@ dependencies = [
     "ffpyplayer>=4.5.1",
     "urllib3>=2.2.2",
     "kivy>=2.3.1",
-    "kivymd==0.104.1",
 ]
 
 [project.urls]
