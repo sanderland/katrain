@@ -367,7 +367,7 @@ class KataGoEngine(BaseEngine):
                 if ponder:  # handle pondering in here to be in lock and such
                     pq = self.ponder_query or {}
                     # basically we handle pondering by just asking for these queries a lot and ignoring duplicates
-                    # when a different ponder query comes in, e.g. due to selecting a roi or different node, switch
+                    # when a different ponder query comes in (different node/settings), switch
                     differences = {
                         k: (pq.get(k), query.get(k))
                         for k in (query.keys() | pq.keys()) - {"id", "maxVisits", "reportDuringSearchEvery"}
@@ -405,7 +405,6 @@ class KataGoEngine(BaseEngine):
         analyze_fast: bool = False,
         time_limit=True,
         find_alternatives: bool = False,
-        region_of_interest: Optional[List] = None,
         priority: int = 0,
         ponder=False,  # infinite visits, cancellable
         ownership: Optional[bool] = None,
@@ -441,21 +440,6 @@ class KataGoEngine(BaseEngine):
                     "player": analysis_node.next_player,
                     "untilDepth": 1,
                 }
-            ]
-        elif region_of_interest:
-            xmin, xmax, ymin, ymax = region_of_interest
-            avoid = [
-                {
-                    "moves": [
-                        Move((x, y)).gtp()
-                        for x in range(0, size_x)
-                        for y in range(0, size_y)
-                        if x < xmin or x > xmax or y < ymin or y > ymax
-                    ],
-                    "player": player,
-                    "untilDepth": 1,  # tried a large number here, or 2, but this seems more natural
-                }
-                for player in "BW"
             ]
         else:
             avoid = []

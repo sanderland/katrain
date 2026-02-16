@@ -78,8 +78,6 @@ These currently inherit from `QuickConfigGui` and rely on widget-tree-walk colle
 - `ConfigPopup`: engine/model/katago download/config
 - `ConfigAIPopup`: AI strategy and options
 - `ConfigTeacherPopup`: teaching thresholds, evaluation, theme
-- `ConfigTimerPopup`: timer settings
-- `ContributePopup`: contribution engine settings
 - `NewGamePopup`: new game setup (mode, players, komi, handicap, etc.)
 
 Category: controller+view mixed (should become: popup view + form model + apply handler).
@@ -93,13 +91,7 @@ Category: reusable popup scaffolding + reusable file picker; app-specific behavi
 
 ### Analysis/Report/Action Popups
 
-Triggered in `katrain/gui/badukpan.py` via direct `I18NPopup(...)`.
-
-- `ReAnalyzeGamePopup`
-- `GameReportPopup`
-- `TsumegoFramePopup`
-
-Category: app-specific popup content, but should use a single popup API.
+Removed in v2 refactor baseline (keep popups centralized in `katrain/gui/popups.py`).
 
 ### Error/Recovery
 

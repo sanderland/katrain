@@ -127,7 +127,7 @@ class MoveTreeCanvas(Widget):
             return
         self.set_game_node(same_x_moves[new_index][1])
 
-    def draw_move_tree(self, current_node, insert_node):
+    def draw_move_tree(self, current_node):
         if not self.scroll_view_widget or not current_node:
             return
         spacing = 5
@@ -182,15 +182,6 @@ class MoveTreeCanvas(Widget):
 
         special_nodes = {current_node: Theme.MOVE_TREE_CURRENT, self.menu_selected_node: Theme.MOVE_TREE_SELECTED}
 
-        if insert_node:
-            special_nodes[insert_node.parent] = Theme.MOVE_TREE_INSERT_NODE_PARENT
-            insert_path = current_node
-            while insert_path != insert_node.parent and insert_path.parent:
-                special_nodes[insert_path] = (
-                    Theme.MOVE_TREE_INSERT_CURRENT if insert_path == current_node else Theme.MOVE_TREE_INSERT_OTHER
-                )
-                insert_path = insert_path.parent
-
         with self.canvas:
             self.canvas.clear()
             Color(*Theme.MOVE_TREE_LINE)
@@ -223,9 +214,8 @@ class MoveTree(ScrollView, BackgroundMixin):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.insert_node = None
         self.redraw_tree_trigger = Clock.create_trigger(
-            lambda _dt: self.move_tree_canvas.draw_move_tree(self.current_node, self.insert_node), 0.1
+            lambda _dt: self.move_tree_canvas.draw_move_tree(self.current_node), 0.1
         )
         self.bind(current_node=self.redraw_tree_trigger, size=self.redraw_tree_trigger)
 

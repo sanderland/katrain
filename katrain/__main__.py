@@ -119,7 +119,6 @@ class KaTrainGui(Screen, KaTrainBase):
 
     __no_builder__ = True
 
-    zen = NumericProperty(0)
     controls = ObjectProperty(None)
     board_gui = ObjectProperty(None)
     board_controls = ObjectProperty(None)
@@ -159,7 +158,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.last_key_down = None
         self.last_focus_event = 0
 
-        self.bind(size=lambda *_: self._sync_layout_metrics(), zen=lambda *_: self._sync_layout_metrics())
+        self.bind(size=lambda *_: self._sync_layout_metrics())
 
     def _build_main_layout(self):
         # Equivalent to the former `<KaTrainGui>` rule in `gui.kv`, but Python-built.
@@ -217,22 +216,20 @@ class KaTrainGui(Screen, KaTrainBase):
             sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),
             min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT), self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO),
         )
-        collapsed = self.zen > 0
 
-        self.analysis_controls.height = 1 if collapsed else controls_h
+        self.analysis_controls.height = controls_h
         self.analysis_controls.size_hint_y = None
-        self.analysis_controls.opacity = 0 if collapsed else 1
+        self.analysis_controls.opacity = 1
 
-        self.board_controls.height = 1 if collapsed else controls_h
+        self.board_controls.height = controls_h
         self.board_controls.size_hint_y = None
-        self.board_controls.opacity = 0 if collapsed else 1
+        self.board_controls.opacity = 1
 
-        # Right panel can be hidden entirely in zen=2.
         if self.play_mode and self.controls:
             right = self.play_mode.parent
             if right:
-                right.width = 1 if self.zen == 2 else self.height * Theme.RIGHT_PANEL_ASPECT_RATIO
-                right.opacity = 0 if self.zen == 2 else 1
+                right.width = self.height * Theme.RIGHT_PANEL_ASPECT_RATIO
+                right.opacity = 1
 
             self.play_mode.size_hint_y = None
             self.play_mode.height = self.analysis_controls.height
@@ -631,7 +628,6 @@ class KaTrainGui(Screen, KaTrainBase):
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
         self.board_gui.animating_pv = None
-        self.board_gui.reset_rotation()
         self.engine.on_new_game()  # clear queries
         self.game = Game(
             self,
@@ -649,11 +645,6 @@ class KaTrainGui(Screen, KaTrainBase):
             self.update_player(bw, player_type=player_info.player_type, player_subtype=player_info.player_subtype)
         self.controls.graph.initialize_from_game(self.game.root)
         self.update_state(redraw_board=True)
-
-    def _do_insert_mode(self, mode="toggle"):
-        self.game.set_insert_mode(mode)
-        if self.play_analyze_mode != MODE_ANALYZE:
-            self.play_mode.switch_ui_mode()
 
     def _do_ai_move(self, node=None):
         if node is None or self.game.current_node == node:
@@ -682,9 +673,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_gui.animating_pv = None
         self.game.redo(n_times)
 
-    def _do_rotate(self):
-        self.board_gui.rotate_gridpos()
-
     def _do_find_mistake(self, fn="redo"):
         self.board_gui.animating_pv = None
         getattr(self.game, fn)(9999, stop_on_mistake=self.config("trainer/eval_thresholds")[-4])
@@ -712,12 +700,8 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_analyze_extra(self, mode, **kwargs):
         self.game.analyze_extra(mode, **kwargs)
 
-    def _do_selfplay_setup(self, until_move, target_b_advantage=None):
-        self.game.selfplay(int(until_move) if isinstance(until_move, float) else until_move, target_b_advantage)
-
-    def _do_select_box(self):
-        self.controls.set_status(i18n._("analysis:region:start"), STATUS_INFO)
-        self.board_gui.selecting_region_of_interest = True
+    def _do_selfplay_setup(self, until_move):
+        self.game.selfplay(int(until_move) if isinstance(until_move, float) else until_move)
 
     def _do_new_game_popup(self):
         popup = self.popup_manager.show(
@@ -891,11 +875,9 @@ class KaTrainGui(Screen, KaTrainBase):
                 (Theme.KEY_ANALYSIS_CONTROLS_OWNERSHIP, self.analysis_controls.ownership),
                 (Theme.KEY_ANALYSIS_CONTROLS_POLICY, self.analysis_controls.policy),
                 (Theme.KEY_AI_MOVE, ("ai-move",)),
-                (Theme.KEY_SELECT_BOX, ("select-box",)),
                 (Theme.KEY_RESET_ANALYSIS, ("reset-analysis",)),
-                (Theme.KEY_INSERT_MODE, ("insert-mode",)),
                 (Theme.KEY_PASS, ("play", None)),
-                (Theme.KEY_SELFPLAY_TO_END, ("selfplay-setup", "end", None)),
+                (Theme.KEY_SELFPLAY_TO_END, ("selfplay-setup", "end")),
                 (Theme.KEY_NAV_PREV_BRANCH, ("undo", "branch")),
                 (Theme.KEY_NAV_BRANCH_DOWN, ("switch-branch", 1)),
                 (Theme.KEY_NAV_BRANCH_UP, ("switch-branch", -1)),
@@ -944,8 +926,6 @@ class KaTrainGui(Screen, KaTrainBase):
             self.toggle_move_num()
         elif keycode[1] == Theme.KEY_TOGGLE_COORDINATES:
             self.board_gui.toggle_coordinates()
-        elif keycode[1] in Theme.KEY_ZEN:
-            self.zen = (self.zen + 1) % 3
         elif keycode[1] in Theme.KEY_NAV_PREV:
             self("undo", 1 + shift_pressed * 9 + ctrl_pressed * 9999)
         elif keycode[1] in Theme.KEY_NAV_NEXT:

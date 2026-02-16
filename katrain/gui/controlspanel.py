@@ -126,8 +126,7 @@ class ControlsPanel(BoxLayout):
         elif both_players_are_robots and not current_node.analysis_exists and current_node.parent:
             self.active_comment_node = current_node.parent
 
-        lock_ai = katrain.config("trainer/lock_ai") and katrain.play_analyze_mode == MODE_PLAY
-        details = self.info.detailed and not lock_ai
+        details = self.info.detailed
         info = ""
 
         if move or current_node.is_root:

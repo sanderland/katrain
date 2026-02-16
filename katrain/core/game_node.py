@@ -392,13 +392,15 @@ class GameNode(SGFNode):
         refine_move=None,
         analyze_fast=False,
         find_alternatives=False,
-        region_of_interest=None,
         report_every=REPORT_DT,
     ):
         engine.request_analysis(
             self,
             callback=lambda result, partial_result: self.set_analysis(
-                result, refine_move, find_alternatives, region_of_interest, partial_result
+                result,
+                refine_move=refine_move,
+                additional_moves=find_alternatives,
+                partial_result=partial_result,
             ),
             priority=priority,
             visits=visits,
@@ -407,7 +409,6 @@ class GameNode(SGFNode):
             time_limit=time_limit,
             next_move=refine_move,
             find_alternatives=find_alternatives,
-            region_of_interest=region_of_interest,
             report_every=report_every,
         )
 
@@ -433,7 +434,6 @@ class GameNode(SGFNode):
         analysis_json: Dict,
         refine_move: Optional[Move] = None,
         additional_moves: bool = False,
-        region_of_interest=None,
         partial_result: bool = False,
     ):
         if refine_move:
@@ -452,7 +452,7 @@ class GameNode(SGFNode):
                 self.update_move_analysis(move_analysis, move_analysis["move"])
             self.analysis["ownership"] = analysis_json.get("ownership")
             self.analysis["policy"] = analysis_json.get("policy")
-            if not additional_moves and not region_of_interest:
+            if not additional_moves:
                 self.analysis["root"] = analysis_json["rootInfo"]
                 if self.parent and self.move:
                     analysis_json["rootInfo"]["pv"] = [self.move.gtp()] + (

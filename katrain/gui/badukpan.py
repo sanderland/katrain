@@ -23,8 +23,6 @@ from katrain.core.constants import (
     STATUS_TEACHING,
     TOP_MOVE_DELTA_SCORE,
     TOP_MOVE_DELTA_WINRATE,
-    TOP_MOVE_NOTHING,
-    TOP_MOVE_OPTIONS,
     TOP_MOVE_SCORE,
     TOP_MOVE_VISITS,
     TOP_MOVE_WINRATE,
@@ -47,8 +45,6 @@ class BadukPanWidget(Widget):
         self.rotation_degree = 0
         self.grid_size = 0
         self.stone_size = 0
-        self.selecting_region_of_interest = False
-        self.region_of_interest = []
         self.draw_coords_enabled = True
 
         self.active_pv_moves = []
@@ -101,25 +97,11 @@ class BadukPanWidget(Widget):
         if prev_ghost != self.ghost_stone:
             self.redraw_hover_contents_trigger()
 
-    def update_box_selection(self, touch, second_point=True):
-        if not self.initial_gridpos_x:
-            return
-        _, xp, _, yp = self._find_closest(touch.x, touch.y)
-        if second_point and len(self.region_of_interest) == 4:
-            self.region_of_interest[1] = xp
-            self.region_of_interest[3] = yp
-        else:
-            self.region_of_interest = [xp, xp, yp, yp]
-        self.redraw_hover_contents_trigger()
-
     def on_touch_down(self, touch):
         animating_pv = self.animating_pv
         if "button" in touch.profile:
             if touch.button == "left":
-                if self.selecting_region_of_interest:
-                    self.update_box_selection(touch, second_point=False)
-                else:
-                    self.check_next_move_ghost(touch)
+                self.check_next_move_ghost(touch)
             elif touch.button == "middle" and animating_pv:
                 pv, node, _, _ = animating_pv
                 upto = self.animating_pv_index or 1e9
@@ -135,10 +117,7 @@ class BadukPanWidget(Widget):
     def on_touch_move(self, touch):
         if "button" in touch.profile and touch.button != "left":
             return
-        if self.selecting_region_of_interest:
-            return self.update_box_selection(touch)
-        else:
-            return self.check_next_move_ghost(touch)
+        return self.check_next_move_ghost(touch)
 
     def on_mouse_pos(self, *args):  # https://gist.github.com/opqopq/15c707dc4cffc2b6455f
         if self.get_root_window():  # don't proceed if I'm not displayed <=> If have no parent
@@ -146,7 +125,7 @@ class BadukPanWidget(Widget):
             rel_pos = self.to_widget(*pos)  # compensate for relative layout
             inside = self.collide_point(*rel_pos)
 
-            if inside and self.active_pv_moves and not self.selecting_region_of_interest:
+            if inside and self.active_pv_moves:
                 near_move = [
                     (pv, node)
                     for move, pv, node in self.active_pv_moves
@@ -169,13 +148,7 @@ class BadukPanWidget(Widget):
         if ("button" in touch.profile and touch.button != "left") or not self.initial_gridpos_x:
             return
         katrain = self.katrain
-        if self.selecting_region_of_interest:
-            if len(self.region_of_interest) == 4:
-                self.katrain.game.set_region_of_interest(self.region_of_interest)
-                self.region_of_interest = []
-                self.selecting_region_of_interest = False
-
-        elif self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
+        if self.ghost_stone and ("button" not in touch.profile or touch.button == "left"):
             katrain("play", self.ghost_stone)
         elif not self.ghost_stone:
             xd, xp, yd, yp = self._find_closest(touch.x, touch.y)
@@ -502,10 +475,7 @@ class BadukPanWidget(Widget):
     def draw_board_background(
         self, katrain, gridpos_x, gridpos_y, x_grid_spaces, y_grid_spaces, grid_spaces_margin_x, grid_spaces_margin_y
     ):
-        if katrain.game.insert_mode:
-            Color(*Theme.INSERT_BOARD_COLOR_TINT)  # dreamy
-        else:
-            Color(*Theme.BOARD_COLOR_TINT)  # image is a bit too light
+        Color(*Theme.BOARD_COLOR_TINT)  # image is a bit too light
         Rectangle(
             pos=(
                 gridpos_x[0] - self.grid_size * grid_spaces_margin_x[0],
@@ -848,22 +818,6 @@ class BadukPanWidget(Widget):
 
         PopMatrix()
 
-    def draw_roi_box(self, region_of_interest, width: float = 2):
-        x1, x2, y1, y2 = region_of_interest
-        x_start, y_start = self.gridpos[y1][x1]
-        x_end, y_end = self.gridpos[y2][x2]
-
-        Color(*Theme.REGION_BORDER_COLOR)
-        Line(
-            rectangle=(
-                min(x_start, x_end) - self.grid_size / 3,
-                min(y_start, y_end) - self.grid_size / 3,
-                abs(x_start - x_end) + (2 / 3) * self.grid_size,
-                abs(y_start - y_end) + (2 / 3) * self.grid_size,
-            ),
-            width=width,
-        )
-
     def format_loss(self, x: float) -> str:
         if self.trainer_config.get("extra_precision"):
             if abs(x) < 0.005:
@@ -909,14 +863,7 @@ class BadukPanWidget(Widget):
             child_moves = {c.move.gtp() for c in current_node.children if c.move}
             if hint_moves:
                 low_visits_threshold = katrain.config("trainer/low_visits", 25)
-                top_moves_show = [
-                    opt
-                    for opt in [
-                        katrain.config("trainer/top_moves_show"),
-                        katrain.config("trainer/top_moves_show_secondary"),
-                    ]
-                    if opt in TOP_MOVE_OPTIONS and opt != TOP_MOVE_NOTHING
-                ]
+                top_moves_show = [TOP_MOVE_DELTA_SCORE, TOP_MOVE_VISITS]
                 for move_dict in hint_moves:
                     move = Move.from_gtp(move_dict["move"])
                     if move.coords is not None:
@@ -1046,21 +993,15 @@ class BadukPanWidget(Widget):
                                 width=dp(1.2),
                             )
 
-            if self.selecting_region_of_interest and len(self.region_of_interest) == 4:
-                self.draw_roi_box(self.region_of_interest, width=dp(2))
-            else:
-                # hover next move ghost stone
-                if self.ghost_stone:
-                    self.draw_stone(*self.ghost_stone, next_player, alpha=ghost_alpha)
+            # hover next move ghost stone
+            if self.ghost_stone:
+                self.draw_stone(*self.ghost_stone, next_player, alpha=ghost_alpha)
 
-                animating_pv = self.animating_pv
-                if animating_pv:
-                    pv, node, start_time, _ = animating_pv
-                    up_to_move = self.get_animate_pv_index()
-                    self.draw_pv(pv, node, up_to_move)
-
-                if getattr(self.katrain.game, "region_of_interest", None):
-                    self.draw_roi_box(self.katrain.game.region_of_interest, width=dp(1.25))
+            animating_pv = self.animating_pv
+            if animating_pv:
+                pv, node, start_time, _ = animating_pv
+                up_to_move = self.get_animate_pv_index()
+                self.draw_pv(pv, node, up_to_move)
 
             # pass circle
             if current_node.is_pass or game_ended:

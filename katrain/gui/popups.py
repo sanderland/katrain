@@ -39,7 +39,6 @@ from katrain.core.constants import (
     STATUS_INFO,
     PLAYER_HUMAN,
     ADDITIONAL_MOVE_ORDER,
-    TOP_MOVE_OPTIONS,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
@@ -465,21 +464,12 @@ class ConfigTeacherPopup(QuickConfigGui):
         self._themes_spinner = I18NSpinner(size_hint_y=None, height=dp(44))
         self._themes_spinner.bind(text=lambda *_: self._on_theme_changed())
 
-        self._top_moves = LabelledSpinner(input_property="trainer/top_moves_show", size_hint_y=None, height=dp(44))
-        self._top_moves.value_refs = TOP_MOVE_OPTIONS
-        self._top_moves_secondary = LabelledSpinner(
-            input_property="trainer/top_moves_show_secondary", size_hint_y=None, height=dp(44)
-        )
-        self._top_moves_secondary.value_refs = TOP_MOVE_OPTIONS
-
         self._low_visits = LabelledIntInput(input_property="trainer/low_visits")
         self._eval_on_show_last = LabelledIntInput(input_property="trainer/eval_on_show_last")
         self._eval_show_ai = LabelledCheckBox(input_property="trainer/eval_show_ai")
         self._extra_precision = LabelledCheckBox(input_property="trainer/extra_precision")
 
         self._trainer_rows.add_widget(self._row("theme", self._themes_spinner))
-        self._trainer_rows.add_widget(self._row("stats on top move", self._top_moves))
-        self._trainer_rows.add_widget(self._row("stats on top move", self._top_moves_secondary))
         self._trainer_rows.add_widget(self._row("show stats if", self._low_visits))
         self._trainer_rows.add_widget(self._row("show last n dots", self._eval_on_show_last))
         self._trainer_rows.add_widget(self._row("show ai dots", self._eval_show_ai))
