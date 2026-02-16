@@ -33,7 +33,8 @@ from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, var_to_grid, json_truncate_arrays
 from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
-from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup, GameReportPopup, TsumegoFramePopup
+from katrain.gui.components.popup import PopupSpec
+from katrain.gui.popups import ReAnalyzeGamePopup, GameReportPopup, TsumegoFramePopup
 from katrain.gui.theme import Theme
 
 
@@ -1208,29 +1209,27 @@ class BadukPanWidget(Widget):
 
 
 class AnalysisDropDown(DropDown):
+    katrain = ObjectProperty(None)
+
     def open_game_analysis_popup(self, *_args):
-        analysis_popup = I18NPopup(
-            title_key="analysis:game", size=[dp(500), dp(350)], content=ReAnalyzeGamePopup(App.get_running_app().gui)
+        self.katrain.popup_manager.show(
+            PopupSpec(title_key="analysis:game", size=[500, 350]),
+            ReAnalyzeGamePopup(self.katrain),
         )
-        analysis_popup.content.popup = analysis_popup
-        analysis_popup.open()
 
     def open_report_popup(self, *_args):
-        report_popup = I18NPopup(
-            title_key="analysis:report",
-            size=[dp(750), dp(750)],
-            content=GameReportPopup(katrain=App.get_running_app().gui),
+        self.katrain.popup_manager.show(
+            PopupSpec(title_key="analysis:report", size=[750, 750]),
+            GameReportPopup(katrain=self.katrain),
         )
-        report_popup.content.popup = report_popup
-        report_popup.open()
 
     def open_tsumego_frame_popup(self, *_args):
-        analysis_popup = I18NPopup(
-            title_key="analysis:tsumegoframe", size=[dp(500), dp(350)], content=TsumegoFramePopup()
+        content = TsumegoFramePopup()
+        content.katrain = self.katrain
+        self.katrain.popup_manager.show(
+            PopupSpec(title_key="analysis:tsumegoframe", size=[500, 350]),
+            content,
         )
-        analysis_popup.content.popup = analysis_popup
-        analysis_popup.content.katrain = App.get_running_app().gui
-        analysis_popup.open()
 
 
 class AnalysisControls(BoxLayout):

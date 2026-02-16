@@ -208,7 +208,10 @@
 # UI components
 
 <BadukPanWidget>:
-    size: self.parent.height, self.parent.height
+    size: (self.parent.height if self.parent else 0), (self.parent.height if self.parent else 0)
+    katrain: app.gui
+
+<ScoreGraph>:
     katrain: app.gui
 
 
@@ -1139,52 +1142,4 @@
 
 
 
-<KaTrainGui>:
-    board_gui: board_gui
-    controls: controls
-    board_controls: board_controls
-    play_mode: play_mode
-    analysis_controls: analysis_controls
-    nav_drawer: nav_drawer
-    nav_drawer_contents: nav_drawer_contents
-    FloatLayout:
-        BGBoxLayout:
-            background_color: Theme.BACKGROUND_COLOR
-            pos: root.pos
-            size: root.size
-            BoxLayout:
-                orientation: 'vertical'
-                AnalysisControls:
-                    id: analysis_controls
-                    size_hint_y: None
-                    height: 1 if root.zen > 0 else max(sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT),self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO))
-                    opacity: 0 if root.zen > 0 else 1
-                BadukPanWidget:
-                    id: board_gui
-                BadukPanControls:
-                    id: board_controls
-                    size_hint_y: None
-                    height: 1 if root.zen > 0 else max(sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT),self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO))
-                    opacity: 0 if root.zen > 0 else 1
-            BoxLayout:
-                size_hint_x: None
-                width: 1 if root.zen == 2 else self.height * Theme.RIGHT_PANEL_ASPECT_RATIO
-                opacity: 0 if root.zen == 2 else 1
-                orientation: 'vertical'
-                PlayAnalyzeSelect:
-                    id: play_mode
-                    size_hint_y: None
-                    height: analysis_controls.height
-                ControlsPanel:
-                    id: controls
-        MyNavigationDrawer:
-            id: nav_drawer
-            x: -self.width
-            y: 0
-            size_hint: None, None
-            height: root.height - analysis_controls.height
-            width: (root.height - analysis_controls.height) * 0.5
-            swipe_edge_width: 0
-            on_state: if self.state=='close': root.update_state()
-            HamburgerMenuContents:
-                id: nav_drawer_contents
+## NOTE: `KaTrainGui` is now Python-built (see `katrain/__main__.py`).

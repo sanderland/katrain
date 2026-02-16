@@ -28,14 +28,10 @@ from katrain.core.constants import (
     PRIORITY_DEFAULT,
 )
 from katrain.core.engine import KataGoEngine
-from katrain.core.game_node import GameNode
+from katrain.core.game_node import BoardState, GameNode, IllegalMoveException
 from katrain.core.lang import i18n, rank_label
 from katrain.core.sgf_parser import SGF, Move
 from katrain.core.utils import var_to_grid, weighted_selection_without_replacement
-
-
-class IllegalMoveException(Exception):
-    pass
 
 
 class KaTrainSGF(SGF):
@@ -116,108 +112,36 @@ class BaseGame:
             if shortcut_id and shortcut_id in shortcut_id_to_node:
                 shortcut_id_to_node[shortcut_id].add_shortcut(node)
 
-    # -- move tree functions --
-    def _init_state(self):
-        board_size_x, board_size_y = self.board_size
-        self.board = [
-            [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
-        ]  # type: List[List[int]]  #  board pos -> chain id
-        self.chains = []  # type: List[List[Move]]  #   chain id -> chain
-        self.prisoners = []  # type: List[Move]
-        self.last_capture = []  # type: List[Move]
+    # -- board state (delegated to current node) --
+    @property
+    def board_state(self) -> BoardState:
+        return self.current_node.board_state
 
-    def _calculate_groups(self):
-        with self._lock:
-            self._init_state()
-            try:
-                for node in self.current_node.nodes_from_root:
-                    for m in node.move_with_placements:
-                        self._validate_move_and_update_chains(
-                            m, True
-                        )  # ignore ko since we didn't know if it was forced
-                    if node.clear_placements:  # handle AE by playing all moves left from empty board
-                        clear_coords = {c.coords for c in node.clear_placements}
-                        stones = [m for c in self.chains for m in c if m.coords not in clear_coords]
-                        self._init_state()
-                        for m in stones:
-                            self._validate_move_and_update_chains(m, True)
-            except IllegalMoveException as e:
-                raise Exception(f"Unexpected illegal move ({str(e)})")
+    @property
+    def board(self) -> list[list[int]]:
+        return self.board_state.board
 
-    def _validate_move_and_update_chains(self, move: Move, ignore_ko: bool):
-        board_size_x, board_size_y = self.board_size
+    @property
+    def chains(self) -> list[list[Move]]:
+        return self.board_state.chains
 
-        def neighbours(moves):
-            return {
-                self.board[m.coords[1] + dy][m.coords[0] + dx]
-                for m in moves
-                for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]
-                if 0 <= m.coords[0] + dx < board_size_x and 0 <= m.coords[1] + dy < board_size_y
-            }
+    @property
+    def prisoners(self) -> list[Move]:
+        return self.board_state.prisoners
 
-        ko_or_snapback = len(self.last_capture) == 1 and self.last_capture[0] == move
-        self.last_capture = []
-
-        if move.is_pass:
-            return
-
-        if self.board[move.coords[1]][move.coords[0]] != -1:
-            raise IllegalMoveException("Space occupied")
-
-        # merge chains connected by this move, or create a new one
-        nb_chains = list({c for c in neighbours([move]) if c >= 0 and self.chains[c][0].player == move.player})
-        if nb_chains:
-            this_chain = nb_chains[0]
-            self.board = [[nb_chains[0] if sq in nb_chains else sq for sq in line] for line in self.board]
-            for oc in nb_chains[1:]:
-                self.chains[nb_chains[0]] += self.chains[oc]
-                self.chains[oc] = []
-            self.chains[nb_chains[0]].append(move)
-        else:
-            this_chain = len(self.chains)
-            self.chains.append([move])
-        self.board[move.coords[1]][move.coords[0]] = this_chain
-
-        # check captures
-        opp_nb_chains = {c for c in neighbours([move]) if c >= 0 and self.chains[c][0].player != move.player}
-        for c in opp_nb_chains:
-            if -1 not in neighbours(self.chains[c]):  # no liberties
-                self.last_capture += self.chains[c]
-                for om in self.chains[c]:
-                    self.board[om.coords[1]][om.coords[0]] = -1
-                self.chains[c] = []
-        if ko_or_snapback and len(self.last_capture) == 1 and not ignore_ko:
-            raise IllegalMoveException("Ko")
-        self.prisoners += self.last_capture
-
-        # suicide: check rules and throw exception if needed
-        if -1 not in neighbours(self.chains[this_chain]):
-            rules = self.rules
-            if len(self.chains[this_chain]) == 1:  # even in new zealand rules, single stone suicide is not allowed
-                raise IllegalMoveException("Single stone suicide")
-            elif (isinstance(rules, str) and rules in ["tromp-taylor", "new zealand"]) or (
-                isinstance(rules, dict) and rules.get("suicide", False)
-            ):
-                self.last_capture += self.chains[this_chain]
-                for om in self.chains[this_chain]:
-                    self.board[om.coords[1]][om.coords[0]] = -1
-                self.chains[this_chain] = []
-                self.prisoners += self.last_capture
-            else:  # suicide not allowed by rules
-                raise IllegalMoveException("Suicide")
+    @property
+    def last_capture(self) -> list[Move]:
+        return self.board_state.last_capture
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
     def play(self, move: Move, ignore_ko: bool = False):
         board_size_x, board_size_y = self.board_size
         if not move.is_pass and not (0 <= move.coords[0] < board_size_x and 0 <= move.coords[1] < board_size_y):
             raise IllegalMoveException(f"Move {move} outside of board coordinates")
-        try:
-            self._validate_move_and_update_chains(move, ignore_ko)
-        except IllegalMoveException:
-            self._calculate_groups()
-            raise
+        new_state = self.current_node.board_state.apply_move(move, self.board_size, self.rules, ignore_ko=ignore_ko)
         with self._lock:
             played_node = self.current_node.play(move)
+            played_node._board_state = new_state
             self.current_node = played_node
         return played_node
 
@@ -231,7 +155,6 @@ class BaseGame:
 
     def set_current_node(self, node):
         self.current_node = node
-        self._calculate_groups()
 
     def undo(self, n_times=1, stop_on_mistake=None):
         break_on_branch = False
@@ -301,7 +224,7 @@ class BaseGame:
     @property
     def stones(self):
         with self._lock:
-            return sum(self.chains, [])
+            return self.current_node.stones
 
     @property
     def end_result(self):
@@ -314,7 +237,7 @@ class BaseGame:
     def prisoner_count(
         self,
     ) -> Dict:  # returns prisoners that are of a certain colour as {B: black stones captures, W: white stones captures}
-        return {player: sum([m.player == player for m in self.prisoners]) for player in Move.PLAYERS}
+        return self.current_node.prisoner_count
 
     @property
     def rules(self):
@@ -477,7 +400,6 @@ class Game(BaseGame):
             if n_times == 1 and cn not in self.insert_after.nodes_from_root:
                 cn.parent.children = [c for c in cn.parent.children if c != cn]
                 self.current_node = cn.parent
-                self._calculate_groups()
             return
         super().undo(n_times=n_times, stop_on_mistake=stop_on_mistake)
 
@@ -515,22 +437,22 @@ class Game(BaseGame):
                 already_inserted_moves = [
                     n.move for n in copy_to_node.nodes_from_root if n not in above_insertion_root and n.move
                 ]
+                state = copy_to_node.board_state
                 try:
                     while True:
-                        for m in copy_from_node.move_with_placements:
-                            if m not in already_inserted_moves:
-                                self._validate_move_and_update_chains(m, True)
-                                # this inserts
-                                copy_to_node = GameNode(
-                                    parent=copy_to_node, properties=copy.deepcopy(copy_from_node.properties)
-                                )
-                                num_copied += 1
+                        node_moves = [m for m in copy_from_node.move_with_placements if m not in already_inserted_moves]
+                        if node_moves:
+                            for m in node_moves:
+                                state = state.apply_move(m, self.board_size, self.rules, ignore_ko=True)
+                            # this inserts
+                            copy_to_node = GameNode(parent=copy_to_node, properties=copy.deepcopy(copy_from_node.properties))
+                            copy_to_node._board_state = state
+                            num_copied += 1
                         if not copy_from_node.children:
                             break
                         copy_from_node = copy_from_node.ordered_children[0]
                 except IllegalMoveException:
                     pass  # illegal move = stop
-                self._calculate_groups()  # recalculate groups
                 self.katrain.controls.set_status(
                     i18n._("ending insert mode").format(num_copied=num_copied), STATUS_INFO
                 )

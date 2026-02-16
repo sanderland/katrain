@@ -3,7 +3,7 @@ import copy
 import gzip
 import json
 import random
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 from katrain.core.constants import (
     ANALYSIS_FORMAT_VERSION,
@@ -19,6 +19,185 @@ from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
 from katrain.core.utils import evaluation_class, pack_floats, unpack_floats, var_to_grid
 from katrain.gui.theme import Theme
+
+
+class IllegalMoveException(Exception):
+    pass
+
+
+_RULESETS_ABBR: list[tuple[str, str]] = [
+    ("jp", "japanese"),
+    ("cn", "chinese"),
+    ("ko", "korean"),
+    ("aga", "aga"),
+    ("tt", "tromp-taylor"),
+    ("nz", "new zealand"),
+    ("stone_scoring", "stone_scoring"),
+]
+_RULESETS: dict[str, str] = {fromkey: name for abbr, name in _RULESETS_ABBR for fromkey in [abbr, name]}
+
+
+def _normalized_rules(ruleset: Union[str, dict]) -> Union[str, dict]:
+    # Keep this local to avoid importing katrain.core.engine (which imports GameNode).
+    if isinstance(ruleset, str) and ruleset.strip().startswith("{"):
+        try:
+            ruleset = json.loads(ruleset)
+        except json.JSONDecodeError:
+            pass
+    if isinstance(ruleset, dict):
+        return ruleset
+    return _RULESETS.get(str(ruleset).lower(), "japanese")
+
+
+class BoardState:
+    """Immutable board state used for instant navigation.
+
+    `board[y][x]` contains the chain id, or -1 for empty.
+    `chains[chain_id]` contains a list of Move objects for stones in that chain; empty lists are allowed.
+    """
+
+    __slots__ = ("board", "chains", "prisoners", "last_capture")
+
+    def __init__(
+        self,
+        board: list[list[int]],
+        chains: list[list[Move]],
+        prisoners: list[Move],
+        last_capture: list[Move],
+    ):
+        self.board = board
+        self.chains = chains
+        self.prisoners = prisoners
+        self.last_capture = last_capture
+
+    @classmethod
+    def empty(cls, board_size: tuple[int, int]) -> "BoardState":
+        size_x, size_y = board_size
+        board = [[-1 for _x in range(size_x)] for _y in range(size_y)]
+        return cls(board=board, chains=[], prisoners=[], last_capture=[])
+
+    @staticmethod
+    def _neighbour_chain_ids(board: list[list[int]], board_size: tuple[int, int], moves: list[Move]) -> set[int]:
+        size_x, size_y = board_size
+        out: set[int] = set()
+        for m in moves:
+            if m.coords is None:
+                continue
+            x, y = m.coords
+            for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < size_x and 0 <= ny < size_y:
+                    out.add(board[ny][nx])
+        return out
+
+    @property
+    def stones(self) -> list[Move]:
+        return [m for chain in self.chains for m in chain]
+
+    @property
+    def prisoner_count(self) -> dict[str, int]:
+        return {pl: sum(m.player == pl for m in self.prisoners) for pl in Move.PLAYERS}
+
+    def apply_move(
+        self,
+        move: Move,
+        board_size: tuple[int, int],
+        rules: Union[str, dict],
+        *,
+        ignore_ko: bool,
+    ) -> "BoardState":
+        size_x, size_y = board_size
+        board = [row[:] for row in self.board]
+        chains = [ch[:] for ch in self.chains]
+        prisoners = self.prisoners[:]
+
+        ko_or_snapback = len(self.last_capture) == 1 and self.last_capture[0] == move
+        last_capture: list[Move] = []
+
+        if move.is_pass:
+            return BoardState(board=board, chains=chains, prisoners=prisoners, last_capture=last_capture)
+
+        if move.coords is None:
+            raise ValueError("Move.coords is None but move is not pass")
+
+        x, y = move.coords
+        if board[y][x] != -1:
+            raise IllegalMoveException("Space occupied")
+
+        # merge chains connected by this move, or create a new one
+        nb_chains = list(
+            {
+                c
+                for c in self._neighbour_chain_ids(board, board_size, [move])
+                if c >= 0 and chains[c] and chains[c][0].player == move.player
+            }
+        )
+        if nb_chains:
+            this_chain = nb_chains[0]
+            nb_set = set(nb_chains)
+            board = [[this_chain if sq in nb_set else sq for sq in line] for line in board]
+            for oc in nb_chains[1:]:
+                chains[this_chain] += chains[oc]
+                chains[oc] = []
+            chains[this_chain].append(move)
+        else:
+            this_chain = len(chains)
+            chains.append([move])
+        board[y][x] = this_chain
+
+        # check captures
+        opp_nb_chains = {
+            c
+            for c in self._neighbour_chain_ids(board, board_size, [move])
+            if c >= 0 and chains[c] and chains[c][0].player != move.player
+        }
+        for c in opp_nb_chains:
+            if -1 not in self._neighbour_chain_ids(board, board_size, chains[c]):  # no liberties
+                last_capture += chains[c]
+                for om in chains[c]:
+                    if om.coords is not None:
+                        ox, oy = om.coords
+                        board[oy][ox] = -1
+                chains[c] = []
+
+        if ko_or_snapback and len(last_capture) == 1 and not ignore_ko:
+            raise IllegalMoveException("Ko")
+
+        prisoners += last_capture
+
+        # suicide: check rules and throw exception if needed
+        if -1 not in self._neighbour_chain_ids(board, board_size, chains[this_chain]):
+            if len(chains[this_chain]) == 1:  # even in NZ rules, single stone suicide is not allowed
+                raise IllegalMoveException("Single stone suicide")
+            suicide_allowed = (isinstance(rules, str) and rules in ["tromp-taylor", "new zealand"]) or (
+                isinstance(rules, dict) and bool(rules.get("suicide", False))
+            )
+            if suicide_allowed:
+                last_capture += chains[this_chain]
+                for om in chains[this_chain]:
+                    if om.coords is not None:
+                        ox, oy = om.coords
+                        board[oy][ox] = -1
+                chains[this_chain] = []
+                prisoners += last_capture
+            else:
+                raise IllegalMoveException("Suicide")
+
+        return BoardState(board=board, chains=chains, prisoners=prisoners, last_capture=last_capture)
+
+    def apply_clear(
+        self,
+        clear_placements: list[Move],
+        board_size: tuple[int, int],
+        rules: Union[str, dict],
+    ) -> "BoardState":
+        clear_coords = {m.coords for m in clear_placements if m.coords is not None}
+        # Match prior behavior: rebuild from empty board by replaying remaining stones.
+        stones = [m for chain in self.chains for m in chain if m.coords not in clear_coords]
+        state = BoardState.empty(board_size)
+        for m in stones:
+            state = state.apply_move(m, board_size, rules, ignore_ko=True)
+        return state
 
 
 def analysis_dumps(analysis):
@@ -40,6 +219,7 @@ class GameNode(SGFNode):
 
     def __init__(self, parent=None, properties=None, move=None):
         super().__init__(parent=parent, properties=properties, move=move)
+        self._board_state: Optional[BoardState] = None
         self.auto_undo = None  # None = not analyzed. False: not undone (good move). True: undone (bad move)
         self.played_mistake_sound = None
         self.ai_thoughts = ""
@@ -52,6 +232,26 @@ class GameNode(SGFNode):
         self.shortcut_from = None
         self.analysis_from_sgf = None
         self.clear_analysis()
+
+    @property
+    def board_state(self) -> BoardState:
+        if self._board_state is None:
+            rules = _normalized_rules(self.ruleset)
+            state = BoardState.empty(self.board_size) if self.is_root else self.parent.board_state
+            for m in self.move_with_placements:
+                state = state.apply_move(m, self.board_size, rules, ignore_ko=True)
+            if self.clear_placements:
+                state = state.apply_clear(self.clear_placements, self.board_size, rules)
+            self._board_state = state
+        return self._board_state
+
+    @property
+    def stones(self) -> list[Move]:
+        return self.board_state.stones
+
+    @property
+    def prisoner_count(self) -> dict[str, int]:
+        return self.board_state.prisoner_count
 
     def add_shortcut(self, to_node):  # collapses the branch between them
         nodes = [to_node]

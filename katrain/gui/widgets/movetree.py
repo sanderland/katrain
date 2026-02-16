@@ -8,7 +8,6 @@ from kivy.properties import BooleanProperty, Clock, NumericProperty, ObjectPrope
 from kivy.uix.dropdown import DropDown
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.widget import Widget
-from kivy.app import App
 
 from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.theme import Theme
@@ -20,6 +19,7 @@ class MoveTreeDropdown(DropDown):
 
 class MoveTreeCanvas(Widget):
     scroll_view_widget = ObjectProperty(None)
+    katrain = ObjectProperty(None, allownone=True)
     move_size = NumericProperty(5)
     dropdown = ObjectProperty(None)
     is_open = BooleanProperty(False)
@@ -50,7 +50,7 @@ class MoveTreeCanvas(Widget):
         self.dropdown.bind(on_dismiss=self.close_dropdown)
 
     def set_game_node(self, node):
-        katrain = App.get_running_app().gui
+        katrain = self.katrain
         katrain.game.set_current_node(node)
         katrain.update_state()
 
@@ -279,6 +279,7 @@ Builder.load_string(
     move_tree_canvas: move_tree_canvas
     MoveTreeCanvas:
         scroll_view_widget: root
+        katrain: app.gui
         id: move_tree_canvas
         size_hint: None, None
 

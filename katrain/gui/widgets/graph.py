@@ -4,13 +4,14 @@ import threading
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty, Clock, ListProperty, NumericProperty, StringProperty
+from kivy.properties import ObjectProperty
 from kivy.uix.widget import Widget
-from kivy.app import App
 
 from katrain.gui.theme import Theme
 
 
 class Graph(Widget):
+    katrain = ObjectProperty(None, allownone=True)
     marker_font_size = NumericProperty(0)
     background_image = StringProperty(Theme.GRAPH_TEXTURE)
     background_color = ListProperty([1, 1, 1, 1])
@@ -97,7 +98,7 @@ class ScoreGraph(Graph):
 
     def on_touch_up(self, touch):
         if self.collide_point(*touch.pos) and self.navigate_move[0] and "scroll" not in getattr(touch, "button", ""):
-            katrain = App.get_running_app().gui
+            katrain = self.katrain
             if katrain and katrain.game:
                 katrain.game.set_current_node(self.navigate_move[0])
                 katrain.update_state()

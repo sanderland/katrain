@@ -4,6 +4,7 @@ from kivy.core.text import Label as CoreLabel
 from kivy.core.text.markup import MarkupLabel as CoreMarkupLabel
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse, Rectangle
+from kivy.metrics import dp
 from kivy.properties import (
     BooleanProperty,
     ListProperty,
@@ -270,6 +271,17 @@ class KaTrainTextInput(TextInput):
     color_mode = StringProperty("primary")
     line_color_focus = ListProperty([1, 1, 1, 1])
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Default dark-theme styling for *all* inputs unless explicitly overridden.
+        self.background_normal = ""
+        self.background_active = ""
+        self.background_color = getattr(self, "background_color", Theme.LIGHTER_BACKGROUND_COLOR)
+        self.foreground_color = getattr(self, "foreground_color", Theme.INPUT_FONT_COLOR)
+        self.cursor_color = getattr(self, "cursor_color", Theme.TEXT_COLOR)
+        if not getattr(self, "padding", None):
+            self.padding = [dp(10), dp(10), dp(10), dp(10)]
+
 
 class IMETextField(KaTrainTextInput):
     _imo_composition = StringProperty("")
@@ -398,6 +410,7 @@ class I18NSpinner(KeyValueSpinner):
 class PlayerSetup(BoxLayout):
     player = OptionProperty("B", options=["B", "W"])
     mode = StringProperty("")
+    katrain = ObjectProperty(None, allownone=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -430,7 +443,7 @@ class PlayerSetup(BoxLayout):
 
     def update_global_player_info(self):
         if self.parent and self.parent.update_global:
-            katrain = App.get_running_app().gui
+            katrain = self.katrain or getattr(self.parent, "katrain", None)
             if katrain.game and katrain.game.current_node:
                 katrain.update_player(self.player, **self.player_type_dump)
 
@@ -440,16 +453,25 @@ class PlayerSetupBlock(BoxLayout):
     black = ObjectProperty(None)
     white = ObjectProperty(None)
     update_global = BooleanProperty(False)
+    katrain = ObjectProperty(None, allownone=True)
     INSTANCES = []
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.black = PlayerSetup(player="B")
         self.white = PlayerSetup(player="W")
+        self.black.katrain = self.katrain
+        self.white.katrain = self.katrain
         self.players = {"B": self.black, "W": self.white}
         self.add_widget(self.black)
         self.add_widget(self.white)
         PlayerSetupBlock.INSTANCES.append(self)
+
+    def on_katrain(self, *_args):
+        if self.black:
+            self.black.katrain = self.katrain
+        if self.white:
+            self.white.katrain = self.katrain
 
     def swap_players(self):
         player_dump = {bw: p.player_type_dump for bw, p in self.players.items()}

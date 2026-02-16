@@ -58,10 +58,13 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.core.window import Window
 from kivy.uix.widget import Widget
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.resources import resource_find
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
-from kivy.metrics import dp
+from kivy.metrics import dp, sp
+from kivy.factory import Factory
 from katrain.core.ai import generate_ai_move
 
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
@@ -86,11 +89,11 @@ from katrain.core.constants import (
 from katrain.gui.popups import (
     ConfigTeacherPopup,
     ConfigTimerPopup,
-    I18NPopup,
     SaveSGFPopup,
     ContributePopup,
     EngineRecoveryPopup,
 )
+from katrain.gui.components.popup import PopupManager, PopupSpec
 from katrain.gui.sound import play_sound
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
@@ -105,19 +108,32 @@ from kivy.app import App
 from katrain.gui.kivyutils import *
 from katrain.gui.widgets import MoveTree, I18NFileBrowser, SelectionSlider, ScoreGraph  # noqa F401
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget  # noqa F401
-from katrain.gui.controlspanel import ControlsPanel  # noqa F401
+from katrain.gui.controlspanel import ControlsPanel, PlayAnalyzeSelect  # noqa F401
 
 
 class KaTrainGui(Screen, KaTrainBase):
     """Top level class responsible for tying everything together"""
 
+    __no_builder__ = True
+
     zen = NumericProperty(0)
     controls = ObjectProperty(None)
+    board_gui = ObjectProperty(None)
+    board_controls = ObjectProperty(None)
+    play_mode = ObjectProperty(None)
+    analysis_controls = ObjectProperty(None)
+    nav_drawer = ObjectProperty(None)
+    nav_drawer_contents = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.engine = None
         self.contributing = False
+
+        # Centralized popup lifecycle/caching.
+        self.popup_manager = PopupManager()
+
+        self._build_main_layout()
 
         self.new_game_popup = None
         self.fileselect_popup = None
@@ -135,6 +151,91 @@ class KaTrainGui(Screen, KaTrainBase):
 
         self.last_key_down = None
         self.last_focus_event = 0
+
+        self.bind(size=lambda *_: self._sync_layout_metrics(), zen=lambda *_: self._sync_layout_metrics())
+
+    def _build_main_layout(self):
+        # Equivalent to the former `<KaTrainGui>` rule in `gui.kv`, but Python-built.
+        root = FloatLayout()
+
+        bg = BGBoxLayout(background_color=Theme.BACKGROUND_COLOR)
+        bg.bind(pos=lambda *_: None, size=lambda *_: None)  # keep Kivy happy; BGBoxLayout uses canvas via KV.
+        bg.pos = self.pos
+        bg.size = self.size
+        self.bind(pos=lambda *_: setattr(bg, "pos", self.pos), size=lambda *_: setattr(bg, "size", self.size))
+
+        content = BoxLayout(orientation="horizontal")
+
+        left = BoxLayout(orientation="vertical")
+        self.analysis_controls = AnalysisControls()
+        self.board_gui = BadukPanWidget()
+        self.board_controls = BadukPanControls()
+        left.add_widget(self.analysis_controls)
+        left.add_widget(self.board_gui)
+        left.add_widget(self.board_controls)
+
+        right = BoxLayout(orientation="vertical", size_hint_x=None)
+        self.play_mode = PlayAnalyzeSelect()
+        self.controls = ControlsPanel()
+        right.add_widget(self.play_mode)
+        right.add_widget(self.controls)
+
+        content.add_widget(left)
+        content.add_widget(right)
+
+        bg.add_widget(content)
+        root.add_widget(bg)
+
+        self.nav_drawer = MyNavigationDrawer(
+            size_hint=(None, None),
+            swipe_edge_width=0,
+            close_on_click=True,
+        )
+        self.nav_drawer.x = -self.nav_drawer.width
+        self.nav_drawer.y = 0
+        self.nav_drawer.bind(state=lambda _inst, state: self.update_state() if state == "close" else None)
+
+        self.nav_drawer_contents = Factory.HamburgerMenuContents()
+        self.nav_drawer.add_widget(self.nav_drawer_contents)
+        root.add_widget(self.nav_drawer)
+
+        self.add_widget(root)
+        Clock.schedule_once(lambda _dt: self._sync_layout_metrics(), 0)
+
+    def _sync_layout_metrics(self):
+        if not self.analysis_controls or not self.board_controls:
+            return
+
+        controls_h = max(
+            sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),
+            min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT), self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO),
+        )
+        collapsed = self.zen > 0
+
+        self.analysis_controls.height = 1 if collapsed else controls_h
+        self.analysis_controls.size_hint_y = None
+        self.analysis_controls.opacity = 0 if collapsed else 1
+
+        self.board_controls.height = 1 if collapsed else controls_h
+        self.board_controls.size_hint_y = None
+        self.board_controls.opacity = 0 if collapsed else 1
+
+        # Right panel can be hidden entirely in zen=2.
+        if self.play_mode and self.controls:
+            right = self.play_mode.parent
+            if right:
+                right.width = 1 if self.zen == 2 else self.height * Theme.RIGHT_PANEL_ASPECT_RATIO
+                right.opacity = 0 if self.zen == 2 else 1
+
+            self.play_mode.size_hint_y = None
+            self.play_mode.height = self.analysis_controls.height
+
+        if self.nav_drawer:
+            available_h = self.height - self.analysis_controls.height
+            self.nav_drawer.height = available_h
+            self.nav_drawer.width = available_h * 0.5
+            if self.nav_drawer.state == "close":
+                self.nav_drawer.x = -self.nav_drawer.width
 
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
@@ -459,71 +560,58 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_new_game_popup(self):
         self.controls.timer.paused = True
-        if not self.new_game_popup:
-            self.new_game_popup = I18NPopup(
-                title_key="New Game title", size=[dp(800), dp(900)], content=NewGamePopup(self)
-            ).__self__
-            self.new_game_popup.content.popup = self.new_game_popup
-        self.new_game_popup.open()
-        self.new_game_popup.content.update_from_current_game()
+        popup = self.popup_manager.show(
+            PopupSpec(title_key="New Game title", size=[800, 900], cache_key="new_game"),
+            NewGamePopup(self),
+        )
+        popup.content.update_from_current_game()
 
     def _do_timer_popup(self):
         self.controls.timer.paused = True
-        if not self.timer_settings_popup:
-            self.timer_settings_popup = I18NPopup(
-                title_key="timer settings", size=[dp(600), dp(500)], content=ConfigTimerPopup(self)
-            ).__self__
-            self.timer_settings_popup.content.popup = self.timer_settings_popup
-        self.timer_settings_popup.open()
+        self.popup_manager.show(
+            PopupSpec(title_key="timer settings", size=[600, 500], cache_key="timer_settings"),
+            ConfigTimerPopup(self),
+        )
 
     def _do_teacher_popup(self):
         self.controls.timer.paused = True
-        if not self.teacher_settings_popup:
-            self.teacher_settings_popup = I18NPopup(
-                title_key="teacher settings", size=[dp(800), dp(825)], content=ConfigTeacherPopup(self)
-            ).__self__
-            self.teacher_settings_popup.content.popup = self.teacher_settings_popup
-        self.teacher_settings_popup.open()
+        self.popup_manager.show(
+            PopupSpec(title_key="teacher settings", size=[800, 825], cache_key="teacher_settings"),
+            ConfigTeacherPopup(self),
+        )
 
     def _do_config_popup(self):
         self.controls.timer.paused = True
-        if not self.config_popup:
-            self.config_popup = I18NPopup(
-                title_key="general settings title", size=[dp(1200), dp(950)], content=ConfigPopup(self)
-            ).__self__
-            self.config_popup.content.popup = self.config_popup
-            self.config_popup.title += ": " + self.config_file
-        self.config_popup.open()
+        popup = self.popup_manager.show(
+            PopupSpec(title_key="general settings title", size=[1200, 950], cache_key="general_settings"),
+            ConfigPopup(self),
+        )
+        # Preserve the existing behavior of showing which config file is active.
+        if self.config_file and self.config_file not in popup.title:
+            popup.title += ": " + self.config_file
 
     def _do_contribute_popup(self):
-        if not self.contribute_popup:
-            self.contribute_popup = I18NPopup(
-                title_key="contribute settings title", size=[dp(1100), dp(800)], content=ContributePopup(self)
-            ).__self__
-            self.contribute_popup.content.popup = self.contribute_popup
-        self.contribute_popup.open()
+        self.popup_manager.show(
+            PopupSpec(title_key="contribute settings title", size=[1100, 800], cache_key="contribute_settings"),
+            ContributePopup(self),
+        )
 
     def _do_ai_popup(self):
         self.controls.timer.paused = True
-        if not self.ai_settings_popup:
-            self.ai_settings_popup = I18NPopup(
-                title_key="ai settings", size=[dp(750), dp(750)], content=ConfigAIPopup(self)
-            ).__self__
-            self.ai_settings_popup.content.popup = self.ai_settings_popup
-        self.ai_settings_popup.open()
+        self.popup_manager.show(
+            PopupSpec(title_key="ai settings", size=[750, 750], cache_key="ai_settings"),
+            ConfigAIPopup(self),
+        )
 
     def _do_engine_recovery_popup(self, error_message, code):
         current_open = self.popup_open
         if current_open and isinstance(current_open.content, EngineRecoveryPopup):
             self.log(f"Not opening engine recovery popup with {error_message} as one is already open", OUTPUT_DEBUG)
             return
-        popup = I18NPopup(
-            title_key="engine recovery",
-            size=[dp(600), dp(700)],
-            content=EngineRecoveryPopup(self, error_message=error_message, code=code),
-        ).__self__
-        popup.content.popup = popup
-        popup.open()
+        self.popup_manager.show(
+            PopupSpec(title_key="engine recovery", size=[600, 700]),
+            EngineRecoveryPopup(self, error_message=error_message, code=code),
+        )
 
     def _do_tsumego_frame(self, ko, margin):
         from katrain.core.tsumego_frame import tsumego_frame_from_katrain_game
@@ -568,16 +656,18 @@ class KaTrainGui(Screen, KaTrainBase):
             self.game.redo(999)
 
     def _do_analyze_sgf_popup(self):
-        if not self.fileselect_popup:
+        cache_key = "load_sgf"
+        cached = self.popup_manager.get_cached(cache_key)
+        if cached:
+            popup = cached
+            popup.open()
+        else:
             popup_contents = LoadSGFPopup(self)
             popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
-            self.fileselect_popup = I18NPopup(
-                title_key="load sgf title", size=[dp(1200), dp(800)], content=popup_contents
-            ).__self__
 
             def readfile(*_args):
                 filename = popup_contents.filesel.filename
-                self.fileselect_popup.dismiss()
+                popup.dismiss()
                 path, file = os.path.split(filename)
                 if path != self.config("general/sgf_load"):
                     self.log(f"Updating sgf load path default to {path}", OUTPUT_DEBUG)
@@ -588,8 +678,11 @@ class KaTrainGui(Screen, KaTrainBase):
 
             popup_contents.filesel.on_success = readfile
             popup_contents.filesel.on_submit = readfile
-        self.fileselect_popup.open()
-        self.fileselect_popup.content.filesel.ids.list_view._trigger_update()
+            popup = self.popup_manager.show(
+                PopupSpec(title_key="load sgf title", size=[1200, 800], cache_key=cache_key),
+                popup_contents,
+            )
+        popup.content.filesel.ids.list_view._trigger_update()
 
     def _do_save_game(self, filename=None):
         filename = filename or self.game.sgf_filename
@@ -604,15 +697,12 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_save_game_as_popup(self):
         popup_contents = SaveSGFPopup(suggested_filename=self.game.generate_filename())
-        save_game_popup = I18NPopup(
-            title_key="save sgf title", size=[dp(1200), dp(800)], content=popup_contents
-        ).__self__
 
         def readfile(*_args):
             filename = popup_contents.filesel.filename
             if not filename.lower().endswith(".sgf"):
                 filename += ".sgf"
-            save_game_popup.dismiss()
+            popup.dismiss()
             path, file = os.path.split(filename.strip())
             if not path:
                 path = popup_contents.filesel.path  # whatever dir is shown
@@ -624,7 +714,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
         popup_contents.filesel.on_success = readfile
         popup_contents.filesel.on_submit = readfile
-        save_game_popup.open()
+        popup = self.popup_manager.show(PopupSpec(title_key="save sgf title", size=[1200, 800]), popup_contents)
 
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()

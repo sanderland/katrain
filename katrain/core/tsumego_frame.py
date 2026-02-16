@@ -13,7 +13,8 @@ WHITE = "W"
 
 def tsumego_frame_from_katrain_game(game, komi, black_to_play_p, ko_p, margin):
     current_node = game.current_node
-    bw_board = [[game.chains[c][0].player if c >= 0 else "-" for c in line] for line in game.board]
+    state = current_node.board_state
+    bw_board = [[state.chains[c][0].player if c >= 0 else "-" for c in line] for line in state.board]
     isize, jsize = ij_sizes(bw_board)
     blacks, whites, analysis_region = tsumego_frame(bw_board, komi, black_to_play_p, ko_p, margin)
     sgf_blacks = katrain_sgf_from_ijs(blacks, isize, jsize, "B")

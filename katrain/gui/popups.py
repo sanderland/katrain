@@ -17,6 +17,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.uix.scrollview import ScrollView
 from kivy.utils import platform
 from kivy.app import App
 from kivy.uix.checkbox import CheckBox
@@ -38,6 +39,7 @@ from katrain.core.constants import (
     STATUS_INFO,
     PLAYER_HUMAN,
     ADDITIONAL_MOVE_ORDER,
+    TOP_MOVE_OPTIONS,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
@@ -56,6 +58,40 @@ from katrain.gui.kivyutils import (
 )
 from katrain.gui.theme import Theme
 from katrain.gui.widgets.progress_loader import ProgressLoader
+from katrain.gui.components.buttons import KtButton
+from katrain.gui.components.forms import KtFormRow, KtNumberField, KtTextField
+from katrain.gui.components.layout import KtCard, KtColumn, KtRow
+
+
+class InputParseError(Exception):
+    pass
+
+
+class BoundForm:
+    """Explicit registry of input widgets keyed by `input_property`.
+
+    This replaces the previous implicit widget-tree traversal during save/apply.
+    """
+
+    def __init__(self):
+        self._widgets: dict[str, Any] = {}
+
+    def register(self, widget: Any) -> None:
+        key = getattr(widget, "input_property", "")
+        if not key:
+            return
+        self._widgets[key] = widget
+
+    def values(self) -> dict[str, Any]:
+        ret: dict[str, Any] = {}
+        for key, widget in self._widgets.items():
+            try:
+                ret[key] = widget.input_value
+            except Exception as e:
+                raise InputParseError(
+                    f"Could not parse value '{widget.raw_input_value}' for {key} ({widget.__class__.__name__}): {e}"
+                )
+        return ret
 
 
 class I18NPopup(Popup):
@@ -71,9 +107,43 @@ class I18NPopup(Popup):
         self.bind(on_dismiss=Clock.schedule_once(lambda _dt: App.get_running_app().gui.update_state(), 1))
 
 
+def _get_config_path(config: dict[str, Any], path: str) -> Any:
+    cur: Any = config
+    for k in path.split("/"):
+        cur = cur[k]
+    return cur
+
+
+def _set_config_path(config: dict[str, Any], path: str, value: Any) -> None:
+    keys = path.split("/")
+    cur: Any = config
+    for k in keys[:-1]:
+        if k not in cur or not isinstance(cur[k], dict):
+            cur[k] = {}
+        cur = cur[k]
+    cur[keys[-1]] = value
+
+
+class PopupContent(BoxLayout):
+    """Popup content base with a back-reference to its Popup wrapper."""
+
+    popup = ObjectProperty(None)
+
+
 class LabelledTextInput(KaTrainTextInput):
     input_property = StringProperty("")
     multiline = BooleanProperty(False)
+    _registered = BooleanProperty(False)
+
+    def on_parent(self, *_args):
+        if self._registered:
+            return
+        parent = self.parent
+        while parent is not None and not isinstance(parent, QuickConfigGui):
+            parent = getattr(parent, "parent", None)
+        if parent is not None:
+            parent.register_input_widget(self)
+            self._registered = True
 
     @property
     def input_value(self):
@@ -106,11 +176,22 @@ class LabelledPathInput(LabelledTextInput):
 
 class LabelledCheckBox(CheckBox):
     input_property = StringProperty("")
+    _registered = BooleanProperty(False)
 
     def __init__(self, text=None, **kwargs):
         if text is not None:
             kwargs["active"] = text.lower() == "true"
         super().__init__(**kwargs)
+
+    def on_parent(self, *_args):
+        if self._registered:
+            return
+        parent = self.parent
+        while parent is not None and not isinstance(parent, QuickConfigGui):
+            parent = getattr(parent, "parent", None)
+        if parent is not None:
+            parent.register_input_widget(self)
+            self._registered = True
 
     @property
     def input_value(self):
@@ -122,10 +203,21 @@ class LabelledCheckBox(CheckBox):
 
 class LabelledSpinner(I18NSpinner):
     input_property = StringProperty("")
+    _registered = BooleanProperty(False)
 
     @property
     def input_value(self):
         return self.selected[1]  # ref value
+
+    def on_parent(self, *_args):
+        if self._registered:
+            return
+        parent = self.parent
+        while parent is not None and not isinstance(parent, QuickConfigGui):
+            parent = getattr(parent, "parent", None)
+        if parent is not None:
+            parent.register_input_widget(self)
+            self._registered = True
 
     def raw_input_value(self):
         return self.text
@@ -151,6 +243,7 @@ class LabelledSelectionSlider(BoxLayout):
     input_property = StringProperty("")
     values = ListProperty([(0, "")])  # (value:numeric,label:string) pairs
     key_option = BooleanProperty(False)
+    _registered = BooleanProperty(False)
 
     def set_value(self, v):
         self.slider.set_value(v)
@@ -166,9 +259,15 @@ class LabelledSelectionSlider(BoxLayout):
     def raw_input_value(self):
         return self.textbox.text
 
-
-class InputParseError(Exception):
-    pass
+    def on_parent(self, *_args):
+        if self._registered:
+            return
+        parent = self.parent
+        while parent is not None and not isinstance(parent, QuickConfigGui):
+            parent = getattr(parent, "parent", None)
+        if parent is not None:
+            parent.register_input_widget(self)
+            self._registered = True
 
 
 class QuickConfigGui(BoxLayout):
@@ -176,24 +275,15 @@ class QuickConfigGui(BoxLayout):
         super().__init__()
         self.katrain = katrain
         self.popup = None
+        self.form = BoundForm()
         Clock.schedule_once(self.build_and_set_properties, 0)
 
-    def collect_properties(self, widget) -> Dict:
-        if isinstance(
-            widget, (LabelledTextInput, LabelledSpinner, LabelledCheckBox, LabelledSelectionSlider)
-        ) and getattr(widget, "input_property", None):
-            try:
-                ret = {widget.input_property: widget.input_value}
-            except Exception as e:  # TODO : on widget?
-                raise InputParseError(
-                    f"Could not parse value '{widget.raw_input_value}' for {widget.input_property} ({widget.__class__.__name__}): {e}"
-                )
-        else:
-            ret = {}
-        for c in widget.children:
-            for k, v in self.collect_properties(c).items():
-                ret[k] = v
-        return ret
+    def register_input_widget(self, widget: Any) -> None:
+        self.form.register(widget)
+
+    def collect_properties(self, _widget=None) -> Dict:
+        # No widget-tree traversal: values come from explicit registration.
+        return self.form.values()
 
     def get_setting(self, key) -> Union[Tuple[Any, Dict, str], Tuple[Any, List, int]]:
         keys = key.split("/")
@@ -256,9 +346,62 @@ class QuickConfigGui(BoxLayout):
         return updated
 
 
-class ConfigTimerPopup(QuickConfigGui):
-    def update_config(self, save_to_file=True, close_popup=True):
-        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
+class ConfigTimerPopup(PopupContent):
+    __no_builder__ = True
+
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
+        self.orientation = "vertical"
+        self.spacing = dp(Theme.CP_SPACING)
+        self.padding = [dp(Theme.CP_PADDING)] * 4
+
+        self._main_time = KtNumberField(number_type="int", multiline=False)
+        self._byo_length = KtNumberField(number_type="int", multiline=False)
+        self._byo_periods = KtNumberField(number_type="int", multiline=False)
+        self._minimal_use = KtNumberField(number_type="int", multiline=False)
+        self._sound = CheckBox(active=bool(self.katrain.config("timer/sound", True)), size_hint=(None, None))
+        self._sound.size = (dp(32), dp(32))
+
+        # Load current config values.
+        self._main_time.value = str(self.katrain.config("timer/main_time", 0) or 0)
+        self._byo_length.value = str(self.katrain.config("timer/byo_length", 30) or 0)
+        self._byo_periods.value = str(self.katrain.config("timer/byo_periods", 5) or 0)
+        self._minimal_use.value = str(self.katrain.config("timer/minimal_use", 0) or 0)
+
+        form = KtCard()
+        form.add_widget(self._row("main time", self._main_time))
+        form.add_widget(self._row("byoyomi length", self._byo_length))
+        form.add_widget(self._row("byoyomi periods", self._byo_periods))
+        form.add_widget(self._row("minimal time use", self._minimal_use))
+        form.add_widget(self._row("count down sound", self._sound))
+
+        self.add_widget(form)
+
+        buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
+        buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))
+        buttons.add_widget(KtButton(text_key="update timer", variant="primary", on_click=self.apply))
+        self.add_widget(buttons)
+
+    def _dismiss(self):
+        if self.popup:
+            self.popup.dismiss()
+
+    def _row(self, label_key: str, field_widget):
+        row = KtFormRow(label_key=label_key)
+        row.set_field(field_widget)
+        return row
+
+    def apply(self):
+        # Persist settings.
+        _set_config_path(self.katrain._config, "timer/main_time", int(self._main_time.value or "0"))
+        _set_config_path(self.katrain._config, "timer/byo_length", int(self._byo_length.value or "0"))
+        _set_config_path(self.katrain._config, "timer/byo_periods", int(self._byo_periods.value or "0"))
+        _set_config_path(self.katrain._config, "timer/minimal_use", int(self._minimal_use.value or "0"))
+        _set_config_path(self.katrain._config, "timer/sound", bool(self._sound.active))
+        self.katrain.save_config("timer")
+
+        # Reset timer state (legacy behavior).
         for p in self.katrain.players_info.values():
             p.periods_used = 0
         self.katrain.controls.timer.paused = True
@@ -266,77 +409,95 @@ class ConfigTimerPopup(QuickConfigGui):
         self.katrain.game.main_time_used = 0
         self.katrain.update_state()
 
+        self._dismiss()
 
-class NewGamePopup(QuickConfigGui):
+
+class NewGamePopup(PopupContent):
+    __no_builder__ = True
+
     mode = StringProperty("newgame")
 
-    def __init__(self, katrain):
-        super().__init__(katrain)
-        for bw, info in katrain.players_info.items():
-            self.player_setup.update_player_info(bw, info)
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
+        self.orientation = "vertical"
+        self.spacing = dp(Theme.CP_SPACING)
+        self.padding = [dp(Theme.CP_PADDING)] * 4
 
-        self.rules_spinner.value_refs = [name for abbr, name in katrain.engine.RULESETS_ABBR]
-        self.bind(mode=self.update_playername)
-        Clock.schedule_once(self.update_from_current_game, 0.1)
+        # Player setup block is already a reusable Python widget.
+        from katrain.gui.kivyutils import PlayerSetupBlock
 
-    def normalized_rules(self):
-        rules = self.katrain.game.root.get_property("RU", "japanese").strip().lower()
-        for abbr, name in self.katrain.engine.RULESETS_ABBR:
-            if abbr == rules or name == rules:
-                return name
+        self.player_setup = PlayerSetupBlock(update_global=False, katrain=katrain)
 
-    def update_playerinfo(self, *args):
+        self._size = KtTextField(multiline=False)
+        self._komi = KtNumberField(number_type="float", multiline=False)
+        self._handicap = KtNumberField(number_type="int", multiline=False)
+        self._rules = I18NSpinner(size_hint_y=None, height=dp(44))
+        self._clear_cache = CheckBox(active=bool(self.katrain.config("game/clear_cache", False)), size_hint=(None, None))
+        self._clear_cache.size = (dp(32), dp(32))
+
+        self._rules.value_refs = [name for _abbr, name in katrain.engine.RULESETS_ABBR]
+
+        form = KtCard()
+        form.add_widget(self._row("board size", self._size))
+        form.add_widget(self._row("komi", self._komi))
+        form.add_widget(self._row("handicap", self._handicap))
+        form.add_widget(self._row("ruleset", self._rules))
+        form.add_widget(self._row("clear cache", self._clear_cache))
+
+        scroll = ScrollView(do_scroll_x=False)
+        content = KtColumn(size_hint_y=None)
+        content.bind(minimum_height=content.setter("height"))
+        content.add_widget(self.player_setup)
+        content.add_widget(form)
+        scroll.add_widget(content)
+        self.add_widget(scroll)
+
+        buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
+        buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))
+        buttons.add_widget(KtButton(text_key="newgame", variant="primary", on_click=self.apply))
+        self.add_widget(buttons)
+
+        Clock.schedule_once(lambda _dt: self.update_from_current_game(), 0)
+
+    def _dismiss(self):
+        if self.popup:
+            self.popup.dismiss()
+
+    def _row(self, label_key: str, field_widget):
+        row = KtFormRow(label_key=label_key)
+        row.set_field(field_widget)
+        return row
+
+    def update_from_current_game(self, *_args):
+        # Initialize fields from current config/game.
+        self._size.value = str(self.katrain.config("game/size", "19"))
+        self._komi.value = str(self.katrain.config("game/komi", 6.5))
+        self._handicap.value = str(self.katrain.config("game/handicap", 0))
+
+        if self.katrain.game and self.katrain.game.root:
+            rules = self.katrain.game.root.get_property("RU", self.katrain.config("game/rules", "japanese"))
+            rules = (rules or "").strip()
+            if rules:
+                self._rules.select_key(rules)
+
+        for bw, info in self.katrain.players_info.items():
+            self.player_setup.players[bw].update_widget(info.player_type, info.player_subtype)
+
+    def apply(self):
+        _set_config_path(self.katrain._config, "game/size", self._size.value.strip() or "19")
+        _set_config_path(self.katrain._config, "game/komi", float(self._komi.value or "0"))
+        _set_config_path(self.katrain._config, "game/handicap", int(self._handicap.value or "0"))
+        _set_config_path(self.katrain._config, "game/rules", self._rules.selected[1] or "japanese")
+        _set_config_path(self.katrain._config, "game/clear_cache", bool(self._clear_cache.active))
+        self.katrain.save_config("game")
+
+        # Update players.
         for bw, player_setup in self.player_setup.players.items():
-            name = self.player_name[bw].text
-            if name:
-                self.katrain.game.root.set_property("P" + bw, name)
-            else:
-                self.katrain.game.root.clear_property("P" + bw)
             self.katrain.update_player(bw, **player_setup.player_type_dump)
 
-    def update_playername(self, *args):
-        for bw in "BW":
-            name = self.katrain.game.root.get_property("P" + bw, None)
-            if name and SGF_INTERNAL_COMMENTS_MARKER not in name:
-                self.player_name[bw].text = name if self.mode == "editgame" else ""
-
-    def update_from_current_game(self, *args):  # set rules and komi
-        rules = self.normalized_rules()
-        self.km.text = str(self.katrain.game.root.komi)
-        if rules is not None:
-            self.rules_spinner.select_key(rules.strip())
-
-    def update_config(self, save_to_file=True, close_popup=True):
-        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
-        props = self.collect_properties(self)
-        self.katrain.log(f"Mode: {self.mode}, settings: {self.katrain.config('game')}", OUTPUT_DEBUG)
-        self.update_playerinfo()  # type
-        if self.mode == "newgame":
-            if self.restart.active:
-                self.katrain.log("Restarting Engine", OUTPUT_DEBUG)
-                self.katrain.engine.restart()
-            self.katrain._do_new_game()
-        elif self.mode == "editgame":
-            root = self.katrain.game.root
-            changed = False
-            for k, currentval, newval in [
-                ("RU", self.normalized_rules(), props["game/rules"]),
-                ("KM", root.komi, props["game/komi"]),
-            ]:
-                if currentval != newval:
-                    changed = True
-                    self.katrain.log(
-                        f"Property {k} changed from {currentval} to {newval}, triggering re-analysis of entire game.",
-                        OUTPUT_INFO,
-                    )
-                    self.katrain.game.root.set_property(k, newval)
-            if changed:
-                self.katrain.engine.on_new_game()
-                self.katrain.game.analyze_all_nodes(analyze_fast=True)
-        else:  # setup position
-            self.katrain._do_new_game()
-            self.katrain("selfplay-setup", props["game/setup_move"], props["game/setup_advantage"])
-        self.update_playerinfo()  # name
+        self._dismiss()
+        self.katrain._do_new_game()
 
 
 def wrap_anchor(widget):
@@ -346,9 +507,76 @@ def wrap_anchor(widget):
 
 
 class ConfigTeacherPopup(QuickConfigGui):
+    __no_builder__ = True
+
     def __init__(self, katrain):
         super().__init__(katrain)
+        self.clear_widgets()
+        self.orientation = "vertical"
+        self.spacing = dp(Theme.CP_SPACING)
+        self.padding = [dp(Theme.CP_PADDING)] * 4
+
         App.get_running_app().bind(language=self.build_and_set_properties)
+
+        # Main trainer toggles.
+        self._trainer_rows = KtCard()
+        self._themes_spinner = I18NSpinner(size_hint_y=None, height=dp(44))
+        self._themes_spinner.bind(text=lambda *_: self._on_theme_changed())
+
+        self._top_moves = LabelledSpinner(input_property="trainer/top_moves_show", size_hint_y=None, height=dp(44))
+        self._top_moves.value_refs = TOP_MOVE_OPTIONS
+        self._top_moves_secondary = LabelledSpinner(
+            input_property="trainer/top_moves_show_secondary", size_hint_y=None, height=dp(44)
+        )
+        self._top_moves_secondary.value_refs = TOP_MOVE_OPTIONS
+
+        self._low_visits = LabelledIntInput(input_property="trainer/low_visits")
+        self._eval_on_show_last = LabelledIntInput(input_property="trainer/eval_on_show_last")
+        self._eval_show_ai = LabelledCheckBox(input_property="trainer/eval_show_ai")
+        self._extra_precision = LabelledCheckBox(input_property="trainer/extra_precision")
+        self._save_analysis = LabelledCheckBox(input_property="trainer/save_analysis")
+
+        self._trainer_rows.add_widget(self._row("theme", self._themes_spinner))
+        self._trainer_rows.add_widget(self._row("stats on top move", self._top_moves))
+        self._trainer_rows.add_widget(self._row("stats on top move", self._top_moves_secondary))
+        self._trainer_rows.add_widget(self._row("show stats if", self._low_visits))
+        self._trainer_rows.add_widget(self._row("show last n dots", self._eval_on_show_last))
+        self._trainer_rows.add_widget(self._row("show ai dots", self._eval_show_ai))
+        self._trainer_rows.add_widget(self._row("show two digits for point loss near zero", self._extra_precision))
+        self._trainer_rows.add_widget(self._row("cache analysis to sgf", self._save_analysis))
+
+        self.add_widget(self._trainer_rows)
+
+        # Threshold/dots table.
+        self.options_grid = GridLayout(cols=5, size_hint_y=None, spacing=dp(Theme.CP_SMALL_SPACING))
+        self.options_grid.bind(minimum_height=self.options_grid.setter("height"))
+        scroll = ScrollView(do_scroll_x=False)
+        scroll.add_widget(self.options_grid)
+        self.add_widget(scroll)
+
+        buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
+        buttons.add_widget(KtButton(text="Cancel", on_click=lambda: self.popup.dismiss() if self.popup else None))
+        buttons.add_widget(KtButton(text_key="update teacher", variant="primary", on_click=lambda: self.update_config(True)))
+        self.add_widget(buttons)
+
+        Clock.schedule_once(lambda _dt: self.build_and_set_properties(), 0)
+
+    def _row(self, label_key: str, field_widget):
+        row = KtFormRow(label_key=label_key)
+        row.set_field(field_widget)
+        return row
+
+    @property
+    def themes_spinner(self):
+        return self._themes_spinner
+
+    def _on_theme_changed(self):
+        # Persist theme choice immediately (and rebuild the colored table).
+        selected = self._themes_spinner.selected[1]
+        if selected:
+            self.katrain._config["trainer"]["theme"] = selected
+            self.katrain.save_config("trainer")
+        self.build_and_set_properties()
 
     def add_option_widgets(self, widgets):
         for widget in widgets:
@@ -362,6 +590,7 @@ class ConfigTeacherPopup(QuickConfigGui):
         show_dots = self.katrain.config("trainer/show_dots")
 
         self.themes_spinner.value_refs = list(Theme.EVAL_COLORS.keys())
+        self.themes_spinner.select_key(theme)
         self.options_grid.clear_widgets()
 
         for k in ["dot color", "point loss threshold", "num undos", "show dots", "save dots"]:
@@ -390,66 +619,122 @@ class DescriptionLabel(Label):
     pass
 
 
-class ConfigAIPopup(QuickConfigGui):
-    max_options = NumericProperty(6)
+class ConfigAIPopup(PopupContent):
+    __no_builder__ = True
 
-    def __init__(self, katrain):
-        super().__init__(katrain)
-        self.ai_select.value_refs = AI_STRATEGIES_RECOMMENDED_ORDER
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
+        self.orientation = "vertical"
+        self.spacing = dp(Theme.CP_SPACING)
+        self.padding = [dp(Theme.CP_PADDING)] * 4
+
+        self._strategy_select = I18NSpinner(size_hint_y=None, height=dp(44))
+        self._strategy_select.value_refs = AI_STRATEGIES_RECOMMENDED_ORDER
+
         selected_strategies = {p.strategy for p in katrain.players_info.values()}
         config_strategy = list((selected_strategies - {AI_DEFAULT}) or {AI_CONFIG_DEFAULT})[0]
-        self.ai_select.select_key(config_strategy)
-        self.build_ai_options()
-        self.ai_select.bind(text=self.build_ai_options)
+        self._strategy_select.select_key(config_strategy)
+        self._strategy_select.bind(text=lambda *_: self._rebuild_options())
 
-    def estimate_rank_from_options(self, *_args):
-        strategy = self.ai_select.selected[1]
-        try:
-            options = self.collect_properties(self)  # [strategy]
-        except InputParseError:
-            self.estimated_rank_label.text = "??"
-            return
-        prefix = f"ai/{strategy}/"
-        options = {k[len(prefix) :]: v for k, v in options.items() if k.startswith(prefix)}
-        dan_rank = ai_rank_estimation(strategy, options)
-        self.estimated_rank_label.text = rank_label(dan_rank)
+        top = KtCard(orientation="vertical", size_hint_y=None)
+        top.bind(minimum_height=top.setter("height"))
+        top.add_widget(self._row("ai settings", self._strategy_select))
 
-    def build_ai_options(self, *_args):
-        strategy = self.ai_select.selected[1]
-        mode_settings = self.katrain.config(f"ai/{strategy}")
-        self.options_grid.clear_widgets()
-        self.help_label.text = i18n._(strategy.replace("ai:", "aihelp:"))
-        for k, v in sorted(mode_settings.items(), key=lambda kv: (kv[0] not in AI_KEY_PROPERTIES, kv[0])):
-            self.options_grid.add_widget(DescriptionLabel(text=k, size_hint_x=0.275))
-            if k in AI_OPTION_VALUES:
-                values = AI_OPTION_VALUES[k]
-                if values == "bool":
-                    widget = LabelledCheckBox(input_property=f"ai/{strategy}/{k}")
-                    widget.active = v
-                    widget.bind(active=self.estimate_rank_from_options)
-                else:
-                    if isinstance(values[0], Tuple):  # with descriptions, possibly language-specific
-                        fixed_values = [(v, re.sub(r"\[(.*?)]", lambda m: i18n._(m[1]), l)) for v, l in values]
-                    else:  # just numbers
-                        fixed_values = [(v, str(v)) for v in values]
-                    widget = LabelledSelectionSlider(
-                        values=fixed_values, input_property=f"ai/{strategy}/{k}", key_option=(k in AI_KEY_PROPERTIES)
-                    )
-                    widget.set_value(v)
-                    widget.textbox.bind(text=self.estimate_rank_from_options)
-                self.options_grid.add_widget(wrap_anchor(widget))
+        self._estimated = Label(text="?", color=Theme.TEXT_COLOR, size_hint_y=None, height=dp(30))
+        top.add_widget(self._estimated)
+
+        self.add_widget(top)
+
+        self._options_scroll = ScrollView(do_scroll_x=False)
+        self._options_box = KtColumn(size_hint_y=None)
+        self._options_box.bind(minimum_height=self._options_box.setter("height"))
+        self._options_scroll.add_widget(self._options_box)
+        self.add_widget(self._options_scroll)
+
+        buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
+        buttons.add_widget(KtButton(text_key="cancel", on_click=self._dismiss))
+        buttons.add_widget(KtButton(text="Update", variant="primary", on_click=self.apply))
+        self.add_widget(buttons)
+
+        self._option_widgets: dict[str, Any] = {}
+        self._rebuild_options()
+
+    def _dismiss(self):
+        if self.popup:
+            self.popup.dismiss()
+
+    def _row(self, label_key: str, field_widget):
+        row = KtFormRow(label_key=label_key)
+        row.set_field(field_widget)
+        return row
+
+    def _rebuild_options(self):
+        self._options_box.clear_widgets()
+        self._option_widgets.clear()
+
+        strategy = self._strategy_select.selected[1]
+        mode_settings = dict(self.katrain.config(f"ai/{strategy}") or {})
+
+        for opt_key, opt_val in sorted(mode_settings.items(), key=lambda kv: (kv[0] not in AI_KEY_PROPERTIES, kv[0])):
+            if isinstance(opt_val, bool):
+                w = CheckBox(active=opt_val, size_hint=(None, None))
+                w.size = (dp(32), dp(32))
+            elif isinstance(opt_val, int):
+                w = KtNumberField(number_type="int", multiline=False)
+                w.value = str(opt_val)
+            elif isinstance(opt_val, float):
+                w = KtNumberField(number_type="float", multiline=False)
+                w.value = str(opt_val)
             else:
-                self.options_grid.add_widget(
-                    wrap_anchor(LabelledFloatInput(text=str(v), input_property=f"ai/{strategy}/{k}"))
-                )
-        for _ in range((self.max_options - len(mode_settings)) * 2):
-            self.options_grid.add_widget(Label(size_hint_x=None))
-        Clock.schedule_once(self.estimate_rank_from_options)
+                w = KtTextField(multiline=False)
+                w.value = str(opt_val)
+            self._option_widgets[opt_key] = w
+            self._options_box.add_widget(self._row(opt_key, w))
 
-    def update_config(self, save_to_file=True, close_popup=True):
-        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
+        Clock.schedule_once(lambda _dt: self._update_estimate())
+
+    def _update_estimate(self):
+        strategy = self._strategy_select.selected[1]
+        options: dict[str, Any] = {}
+        for k, w in self._option_widgets.items():
+            if isinstance(w, CheckBox):
+                options[k] = bool(w.active)
+            elif isinstance(w, KtNumberField):
+                options[k] = w.parsed_value()
+            elif isinstance(w, KtTextField):
+                # AI options are typically numeric/bool; keep string if provided.
+                try:
+                    options[k] = float(w.value)
+                except ValueError:
+                    options[k] = w.value
+            else:
+                options[k] = getattr(w, "value", None)
+
+        dan_rank = ai_rank_estimation(strategy, options)
+        self._estimated.text = f"{i18n._('estimated strength')}: {rank_label(dan_rank)}"
+
+    def apply(self):
+        strategy = self._strategy_select.selected[1]
+        settings = self.katrain._config["ai"][strategy]
+
+        for k, w in self._option_widgets.items():
+            if isinstance(w, CheckBox):
+                settings[k] = bool(w.active)
+            elif isinstance(w, KtNumberField):
+                settings[k] = w.parsed_value()
+            elif isinstance(w, KtTextField):
+                try:
+                    settings[k] = float(w.value)
+                except ValueError:
+                    settings[k] = w.value
+            else:
+                settings[k] = getattr(w, "value", None)
+
+        self.katrain.save_config("ai")
         self.katrain.update_calculated_ranks()
         Clock.schedule_once(self.katrain.controls.update_players, 0)
+        self._dismiss()
 
 
 class EngineRecoveryPopup(QuickConfigGui):
@@ -758,57 +1043,221 @@ class BaseConfigPopup(QuickConfigGui):
                 )
 
 
-class ConfigPopup(BaseConfigPopup):
-    def __init__(self, katrain):
-        super().__init__(katrain)
-        Clock.schedule_once(self.check_katas)
-        App.get_running_app().bind(language=self.check_models)
-        App.get_running_app().bind(language=self.check_katas)
+class ConfigPopup(PopupContent):
+    __no_builder__ = True
 
-    def update_config(self, save_to_file=True, close_popup=True):
-        updated = super().update_config(save_to_file=save_to_file, close_popup=close_popup)
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
+        self.orientation = "vertical"
+        self.spacing = dp(Theme.CP_SPACING)
+        self.padding = [dp(Theme.CP_PADDING)] * 4
+
+        self._engine_model = KtTextField(multiline=False)
+        self._engine_human_model = KtTextField(multiline=False)
+        self._engine_katago = KtTextField(multiline=False)
+        self._engine_config = KtTextField(multiline=False)
+        self._engine_altcommand = KtTextField(multiline=False)
+        self._engine_max_visits = KtNumberField(number_type="int", multiline=False)
+        self._engine_fast_visits = KtNumberField(number_type="int", multiline=False)
+        self._engine_max_time = KtNumberField(number_type="float", multiline=False)
+        self._engine_wide_root_noise = KtNumberField(number_type="float", multiline=False)
+
+        self._ui_restore_size = CheckBox(active=bool(self.katrain.config("ui_state/restoresize", True)), size_hint=(None, None))
+        self._ui_restore_size.size = (dp(32), dp(32))
+
+        self._general_anim_pv_time = KtNumberField(number_type="float", multiline=False)
+        self._general_debug_level = KtNumberField(number_type="int", multiline=False)
+        self._timer_sound = CheckBox(active=bool(self.katrain.config("timer/sound", True)), size_hint=(None, None))
+        self._timer_sound.size = (dp(32), dp(32))
+
+        # Load values from current config.
+        self._engine_model.value = str(self.katrain.config("engine/model", ""))
+        self._engine_human_model.value = str(self.katrain.config("engine/humanlike_model", ""))
+        self._engine_katago.value = str(self.katrain.config("engine/katago", ""))
+        self._engine_config.value = str(self.katrain.config("engine/config", ""))
+        self._engine_altcommand.value = str(self.katrain.config("engine/altcommand", ""))
+        self._engine_max_visits.value = str(self.katrain.config("engine/max_visits", 0) or 0)
+        self._engine_fast_visits.value = str(self.katrain.config("engine/fast_visits", 0) or 0)
+        self._engine_max_time.value = str(self.katrain.config("engine/max_time", 0.0) or 0.0)
+        self._engine_wide_root_noise.value = str(self.katrain.config("engine/wide_root_noise", 0.0) or 0.0)
+
+        self._general_anim_pv_time.value = str(self.katrain.config("general/anim_pv_time", 0.5) or 0.0)
+        self._general_debug_level.value = str(self.katrain.config("general/debug_level", OUTPUT_INFO) or 0)
+
+        scroll = ScrollView(do_scroll_x=False)
+        content = KtColumn(size_hint_y=None)
+        content.bind(minimum_height=content.setter("height"))
+
+        engine = KtCard()
+        engine.add_widget(self._row("engine:model", self._engine_model))
+        engine.add_widget(self._row("engine:humanlike_model", self._engine_human_model))
+        engine.add_widget(self._row("engine:katago", self._engine_katago))
+        engine.add_widget(self._row("engine:config", self._engine_config))
+        engine.add_widget(self._row("engine:altcommand", self._engine_altcommand))
+        engine.add_widget(self._row("engine:max_visits", self._engine_max_visits))
+        engine.add_widget(self._row("engine:fast_visits", self._engine_fast_visits))
+        engine.add_widget(self._row("engine:max_time", self._engine_max_time))
+        engine.add_widget(self._row("engine:wide_root_noise", self._engine_wide_root_noise))
+
+        general = KtCard()
+        general.add_widget(self._row("general:anim_pv_time", self._general_anim_pv_time))
+        general.add_widget(self._row("general:debug_level", self._general_debug_level))
+        general.add_widget(self._row("timer:sound", self._timer_sound))
+        general.add_widget(self._row("ui_state:restoresize", self._ui_restore_size))
+
+        content.add_widget(engine)
+        content.add_widget(general)
+        scroll.add_widget(content)
+        self.add_widget(scroll)
+
+        buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
+        buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))
+        buttons.add_widget(KtButton(text="Apply", variant="primary", on_click=self.apply))
+        self.add_widget(buttons)
+
+    def _dismiss(self):
+        if self.popup:
+            self.popup.dismiss()
+
+    def _row(self, label_key: str, field_widget):
+        row = KtFormRow(label_key=label_key)
+        row.set_field(field_widget)
+        return row
+
+    def apply(self):
+        before_engine = dict(self.katrain._config.get("engine", {}))
+
+        _set_config_path(self.katrain._config, "engine/model", self._engine_model.value.strip())
+        _set_config_path(self.katrain._config, "engine/humanlike_model", self._engine_human_model.value.strip())
+        _set_config_path(self.katrain._config, "engine/katago", self._engine_katago.value.strip())
+        _set_config_path(self.katrain._config, "engine/config", self._engine_config.value.strip())
+        _set_config_path(self.katrain._config, "engine/altcommand", self._engine_altcommand.value.strip())
+        _set_config_path(self.katrain._config, "engine/max_visits", int(self._engine_max_visits.value or "0"))
+        _set_config_path(self.katrain._config, "engine/fast_visits", int(self._engine_fast_visits.value or "0"))
+        _set_config_path(self.katrain._config, "engine/max_time", float(self._engine_max_time.value or "0"))
+        _set_config_path(self.katrain._config, "engine/wide_root_noise", float(self._engine_wide_root_noise.value or "0"))
+
+        _set_config_path(self.katrain._config, "general/anim_pv_time", float(self._general_anim_pv_time.value or "0"))
+        _set_config_path(self.katrain._config, "general/debug_level", int(self._general_debug_level.value or "0"))
+        _set_config_path(self.katrain._config, "timer/sound", bool(self._timer_sound.active))
+        _set_config_path(self.katrain._config, "ui_state/restoresize", bool(self._ui_restore_size.active))
+
+        self.katrain.save_config()
         self.katrain.debug_level = self.katrain.config("general/debug_level", OUTPUT_INFO)
 
-        ignore = {"max_visits", "fast_visits", "max_time", "enable_ownership", "wide_root_noise"}
-        detected_restart = [key for key in updated if "engine" in key and not any(ig in key for ig in ignore)]
-        if detected_restart:
+        after_engine = dict(self.katrain._config.get("engine", {}))
+        if before_engine != after_engine:
 
             def restart_engine(_dt):
                 self.katrain.controls.set_status("", STATUS_INFO)
-                self.katrain.log(f"Restarting Engine after {detected_restart} settings change")
+                self.katrain.log("Restarting Engine after engine settings change")
                 self.katrain.controls.set_status(i18n._("restarting engine"), STATUS_INFO)
 
-                old_engine = self.katrain.engine  # type: KataGoEngine
+                old_engine = self.katrain.engine
                 old_proc = old_engine.katago_process
                 if old_proc:
                     old_engine.shutdown(finish=False)
                 new_engine = KataGoEngine(self.katrain, self.katrain.config("engine"))
                 self.katrain.engine = new_engine
                 self.katrain.game.engines = {"B": new_engine, "W": new_engine}
-                self.katrain.game.analyze_all_nodes(
-                    analyze_fast=True
-                )  # old engine was possibly broken, so make sure we redo any failures
+                self.katrain.game.analyze_all_nodes(analyze_fast=True)
                 self.katrain.update_state()
 
             Clock.schedule_once(restart_engine, 0)
 
+        self._dismiss()
 
-class ContributePopup(BaseConfigPopup):
-    def __init__(self, katrain):
-        super().__init__(katrain)
-        App.get_running_app().bind(language=self.check_katas)
-        Clock.schedule_once(self.check_katas)
+
+class ContributePopup(PopupContent):
+    __no_builder__ = True
+
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
+        self.orientation = "vertical"
+        self.spacing = dp(Theme.CP_SPACING)
+        self.padding = [dp(Theme.CP_PADDING)] * 4
+
+        self._katago = KtTextField(multiline=False)
+        self._config = KtTextField(multiline=False)
+        self._ownership = CheckBox(active=bool(self.katrain.config("contribute/ownership", False)), size_hint=(None, None))
+        self._ownership.size = (dp(32), dp(32))
+        self._maxgames = KtNumberField(number_type="int", multiline=False)
+        self._movespeed = KtNumberField(number_type="int", multiline=False)
+        self._username = KtTextField(multiline=False)
+        self._password = KtTextField(multiline=False, password=True)
+        self._savepath = KtTextField(multiline=False)
+        self._savesgf = CheckBox(active=bool(self.katrain.config("contribute/savesgf", False)), size_hint=(None, None))
+        self._savesgf.size = (dp(32), dp(32))
+
+        self._error = Label(text="", color=Theme.ERROR_BORDER_COLOR, size_hint_y=None, height=dp(40))
+
+        self._katago.value = str(self.katrain.config("contribute/katago", ""))
+        self._config.value = str(self.katrain.config("contribute/config", ""))
+        self._maxgames.value = str(self.katrain.config("contribute/maxgames", 6) or 0)
+        self._movespeed.value = str(self.katrain.config("contribute/movespeed", 2) or 0)
+        self._username.value = str(self.katrain.config("contribute/username", ""))
+        self._password.value = str(self.katrain.config("contribute/password", ""))
+        self._savepath.value = str(self.katrain.config("contribute/savepath", "./dist_sgf/"))
+
+        scroll = ScrollView(do_scroll_x=False)
+        content = KtColumn(size_hint_y=None)
+        content.bind(minimum_height=content.setter("height"))
+
+        form = KtCard()
+        form.add_widget(self._row("engine:katago", self._katago))
+        form.add_widget(self._row("engine:config", self._config))
+        form.add_widget(self._row("contribute:ownership", self._ownership))
+        form.add_widget(self._row("contribute:maxgames", self._maxgames))
+        form.add_widget(self._row("contribute:movespeed", self._movespeed))
+        form.add_widget(self._row("contribute:username", self._username))
+        form.add_widget(self._row("contribute:password", self._password))
+        form.add_widget(self._row("Save path", self._savepath))
+        form.add_widget(self._row("contribute:savesgf", self._savesgf))
+        content.add_widget(form)
+        content.add_widget(self._error)
+
+        scroll.add_widget(content)
+        self.add_widget(scroll)
+
+        buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
+        buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))
+        buttons.add_widget(KtButton(text_key="contribute:start", variant="primary", on_click=self.start_contributing))
+        self.add_widget(buttons)
+
+    def _dismiss(self):
+        if self.popup:
+            self.popup.dismiss()
+
+    def _row(self, label_key: str, field_widget):
+        row = KtFormRow(label_key=label_key)
+        row.set_field(field_widget)
+        return row
 
     def start_contributing(self):
-        self.update_config(True, close_popup=False)
-        self.error.text = ""
+        self._error.text = ""
+
+        _set_config_path(self.katrain._config, "contribute/katago", self._katago.value.strip())
+        _set_config_path(self.katrain._config, "contribute/config", self._config.value.strip())
+        _set_config_path(self.katrain._config, "contribute/ownership", bool(self._ownership.active))
+        _set_config_path(self.katrain._config, "contribute/maxgames", int(self._maxgames.value or "0"))
+        _set_config_path(self.katrain._config, "contribute/movespeed", int(self._movespeed.value or "0"))
+        _set_config_path(self.katrain._config, "contribute/username", self._username.value.strip())
+        _set_config_path(self.katrain._config, "contribute/password", self._password.value)
+        _set_config_path(self.katrain._config, "contribute/savepath", self._savepath.value.strip())
+        _set_config_path(self.katrain._config, "contribute/savesgf", bool(self._savesgf.active))
+        self.katrain.save_config("contribute")
+
         log_settings = {**self.katrain.config("contribute"), "password": "***"}
         self.katrain.log(f"Updating contribution settings {log_settings}", OUTPUT_DEBUG)
+
         if not self.katrain.config("contribute/username") or not self.katrain.config("contribute/password"):
-            self.error.text = "Please enter your username and password for katagotraining.org"
-        else:
-            self.popup.dismiss()
-            self.katrain("katago-contribute")
+            self._error.text = "Please enter your username and password for katagotraining.org"
+            return
+
+        self._dismiss()
+        self.katrain("katago-contribute")
 
 
 class LoadSGFPopup(BaseConfigPopup):

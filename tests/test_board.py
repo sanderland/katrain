@@ -140,3 +140,41 @@ class TestBoard:
                     b.play(Move.from_gtp("B19", player="W"))
                 assert 4 == len(b.stones)
                 assert 0 == len(b.prisoners)
+
+
+def test_node_board_state_cached_for_navigation(monkeypatch):
+    # Build a move tree without going through Game.play, so no board_state is precomputed.
+    root = GameNode(properties={"SZ": 19})
+    node = root
+    for i in range(50):
+        player = "B" if i % 2 == 0 else "W"
+        node = GameNode(parent=node, move=Move(coords=(i % 19, i // 19), player=player))
+
+    game = Game(MockKaTrain(force_package_config=True), MockEngine(), move_tree=root)
+
+    import katrain.core.game_node as game_node_mod
+
+    calls = 0
+    original_apply_move = game_node_mod.BoardState.apply_move
+
+    def counting_apply_move(self, *args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return original_apply_move(self, *args, **kwargs)
+
+    monkeypatch.setattr(game_node_mod.BoardState, "apply_move", counting_apply_move)
+
+    # Navigation is O(1): set_current_node does not replay moves.
+    game.set_current_node(node)
+    assert calls == 0
+
+    # First access computes and caches board states along the path.
+    _ = game.stones
+    assert calls > 0
+
+    # Subsequent accesses are cached: no move replay needed.
+    calls = 0
+    game.set_current_node(root)
+    game.set_current_node(node)
+    _ = game.stones
+    assert calls == 0
