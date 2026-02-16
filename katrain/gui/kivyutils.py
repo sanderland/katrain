@@ -276,9 +276,15 @@ class KaTrainTextInput(TextInput):
         # Default dark-theme styling for *all* inputs unless explicitly overridden.
         self.background_normal = ""
         self.background_active = ""
-        self.background_color = getattr(self, "background_color", Theme.LIGHTER_BACKGROUND_COLOR)
-        self.foreground_color = getattr(self, "foreground_color", Theme.INPUT_FONT_COLOR)
-        self.cursor_color = getattr(self, "cursor_color", Theme.TEXT_COLOR)
+        # Kivy's TextInput always has these properties, so `getattr(self, ...)` will
+        # typically pick up the default (white) colors. Only keep user overrides when
+        # they are passed explicitly.
+        if "background_color" not in kwargs:
+            self.background_color = Theme.LIGHTER_BACKGROUND_COLOR
+        if "foreground_color" not in kwargs:
+            self.foreground_color = Theme.INPUT_FONT_COLOR
+        if "cursor_color" not in kwargs:
+            self.cursor_color = Theme.TEXT_COLOR
         if not getattr(self, "padding", None):
             self.padding = [dp(10), dp(10), dp(10), dp(10)]
 

@@ -49,7 +49,22 @@
 
 # style checkboxes for dark theme
 <CheckBox>:
-    color: Theme.CHECKBOX_COLOR
+    # Kivy's default checkbox textures are very low-contrast when tinted on a dark UI.
+    # Hide the built-in image and draw our own outline/checkmark for visibility.
+    color: 0, 0, 0, 0
+    canvas.after:
+        Color:
+            rgba: (0.6, 0.6, 0.6, 0.6) if self.disabled else (Theme.CHECKBOX_COLOR if self.active else (0.85, 0.85, 0.85, 1))
+        Line:
+            rectangle: (self.x + dp(2), self.y + dp(2), self.width - dp(4), self.height - dp(4))
+            width: dp(1.2)
+        Color:
+            rgba: (0, 0, 0, 0) if (self.disabled or (not self.active)) else Theme.CHECKBOX_COLOR
+        Line:
+            points: [self.x + self.width * 0.22, self.y + self.height * 0.55, self.x + self.width * 0.42, self.y + self.height * 0.30, self.x + self.width * 0.78, self.y + self.height * 0.75]
+            width: dp(2)
+            cap: 'round'
+            joint: 'round'
 
 # table cells, stats panel mainly
 
