@@ -165,7 +165,8 @@ class KtTextField(KaTrainTextInput):
         self.foreground_color = Theme.INPUT_FONT_COLOR
         self.cursor_color = Theme.TEXT_COLOR
         self.selection_color = [Theme.CHECKBOX_COLOR[0], Theme.CHECKBOX_COLOR[1], Theme.CHECKBOX_COLOR[2], 0.35]
-        self.padding = [dp(10), dp(10), dp(10), dp(10)]
+        # The previous padding caused vertical text clipping at 20sp/40dp on macOS.
+        self.padding = [dp(10), dp(6), dp(10), dp(6)]
 
         # Predictable sizing for forms.
         self.size_hint_y = None

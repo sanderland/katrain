@@ -898,12 +898,14 @@
                 icon: 'General-Settings.png'
                 shortcut: 'F8'
                 on_action: root.katrain('config-popup')
-            MenuLink:
+            MainMenuItem:
                 text: i18n._('menu:manual')
-                site_key: 'homepage'
-            MenuLink:
+                icon: 'analysis.png'
+                on_action: app.webbrowser('homepage')
+            MainMenuItem:
                 text: i18n._('menu:support')
-                site_key: 'support'
+                icon: 'collaboration.png'
+                on_action: app.webbrowser('support')
 
 
 <OutlineBox@BoxLayout+BackgroundMixin>:

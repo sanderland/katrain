@@ -61,7 +61,7 @@ from katrain.gui.theme import Theme
 from katrain.gui.widgets.progress_loader import ProgressLoader
 from katrain.gui.components.buttons import KtButton
 from katrain.gui.components.forms import KtFormRow, KtNumberField, KtTextField
-from katrain.gui.components.layout import KtCard, KtColumn, KtRow
+from katrain.gui.components.layout import KtCard, KtColumn, KtDivider, KtRow
 
 
 class InputParseError(Exception):
@@ -391,6 +391,8 @@ class NewGamePopup(PopupContent):
         scroll.add_widget(content)
         self.add_widget(scroll)
 
+        self.add_widget(KtDivider())
+
         buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
         buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))
         buttons.add_widget(KtButton(text_key="newgame", variant="primary", on_click=self.apply))
@@ -501,6 +503,8 @@ class ConfigTeacherPopup(QuickConfigGui):
         body_scroll.add_widget(body)
         self.add_widget(body_scroll)
 
+        self.add_widget(KtDivider())
+
         buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
         buttons.add_widget(KtButton(text="Cancel", on_click=lambda: self.popup.dismiss() if self.popup else None))
         buttons.add_widget(KtButton(text_key="update teacher", variant="primary", on_click=lambda: self.update_config(True)))
@@ -596,6 +600,8 @@ class ConfigAIPopup(PopupContent):
         self._options_box.bind(minimum_height=self._options_box.setter("height"))
         self._options_scroll.add_widget(self._options_box)
         self.add_widget(self._options_scroll)
+
+        self.add_widget(KtDivider())
 
         buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
         buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))
@@ -1168,6 +1174,8 @@ class ConfigPopup(PopupContent):
         content.add_widget(general)
         scroll.add_widget(content)
         self.add_widget(scroll)
+
+        self.add_widget(KtDivider())
 
         buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
         buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))

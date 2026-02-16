@@ -721,14 +721,14 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_new_game_popup(self):
         popup = self.popup_manager.show(
-            PopupSpec(title_key="New Game title", size=[800, 900], cache_key="new_game"),
+            PopupSpec(title_key="New Game title", size=[800, 620], cache_key="new_game"),
             NewGamePopup(self),
         )
         popup.content.update_from_current_game()
 
     def _do_teacher_popup(self):
         self.popup_manager.show(
-            PopupSpec(title_key="teacher settings", size=[800, 825], cache_key="teacher_settings"),
+            PopupSpec(title_key="teacher settings", size=[800, 850], cache_key="teacher_settings"),
             ConfigTeacherPopup(self),
         )
 
@@ -743,7 +743,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_ai_popup(self):
         self.popup_manager.show(
-            PopupSpec(title_key="ai settings", size=[750, 750], cache_key="ai_settings"),
+            PopupSpec(title_key="ai settings", size=[750, 480], cache_key="ai_settings"),
             ConfigAIPopup(self),
         )
 
@@ -753,7 +753,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.log(f"Not opening engine recovery popup with {error_message} as one is already open", OUTPUT_DEBUG)
             return
         self.popup_manager.show(
-            PopupSpec(title_key="engine recovery", size=[600, 700]),
+            PopupSpec(title_key="engine recovery", size=[600, 380]),
             EngineRecoveryPopup(self, error_message=error_message, code=code),
         )
 

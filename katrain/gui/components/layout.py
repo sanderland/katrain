@@ -1,3 +1,4 @@
+from kivy.graphics import Color, Rectangle
 from kivy.metrics import dp
 from kivy.properties import ListProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
@@ -19,6 +20,29 @@ class KtSpacer(Widget):
         self.size_hint = kwargs.get("size_hint", (None, None))
         self.width = kwargs.get("width", self.min_width)
         self.height = kwargs.get("height", self.min_height)
+
+
+class KtDivider(Widget):
+    """Thin horizontal line separator."""
+
+    rgba = ListProperty([*Theme.MENU_ITEM_SHORTCUT_COLOR[:3], 0.35])
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.size_hint_x = 1
+        self.size_hint_y = None
+        self.height = kwargs.get("height", dp(1))
+
+        with self.canvas:
+            self._color = Color(rgba=self.rgba)
+            self._rect = Rectangle(pos=self.pos, size=self.size)
+
+        self.bind(pos=self._sync_canvas, size=self._sync_canvas, rgba=self._sync_canvas)
+
+    def _sync_canvas(self, *_args):
+        self._color.rgba = self.rgba
+        self._rect.pos = self.pos
+        self._rect.size = self.size
 
 
 class KtRow(BoxLayout):
