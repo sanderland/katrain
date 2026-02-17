@@ -47,24 +47,24 @@
             rounded_rectangle: (self.x + root.outline_width, self.y + root.outline_width, self.width - 2 * root.outline_width, self.height - 2*root.outline_width, root.background_radius,root.background_radius,root.background_radius,root.background_radius,max(1,root.height))
             width: root.outline_width or 1
 
-# style checkboxes for dark theme
+# style checkboxes for light theme
 <CheckBox>:
     color: 0, 0, 0, 0
     canvas.after:
         Color:
-            rgba: (0.35, 0.35, 0.38, 0.6) if self.disabled else (Theme.CHECKBOX_COLOR if self.active else (0.55, 0.55, 0.58, 1))
+            rgba: (0.78, 0.78, 0.80, 0.6) if self.disabled else (Theme.CHECKBOX_COLOR if self.active else (0.72, 0.72, 0.75, 1))
         RoundedRectangle:
             pos: self.x + dp(2), self.y + dp(2)
             size: self.width - dp(4), self.height - dp(4)
-            radius: [dp(3)]
+            radius: [dp(4)]
         Color:
-            rgba: Theme.BACKGROUND_COLOR if self.active and not self.disabled else [0, 0, 0, 0]
+            rgba: [1, 1, 1, 1] if self.active and not self.disabled else [0, 0, 0, 0]
         RoundedRectangle:
             pos: self.x + dp(3), self.y + dp(3)
             size: self.width - dp(6), self.height - dp(6)
-            radius: [dp(2)]
+            radius: [dp(3)]
         Color:
-            rgba: (0, 0, 0, 0) if (self.disabled or (not self.active)) else [1, 1, 1, 1]
+            rgba: (0, 0, 0, 0) if (self.disabled or (not self.active)) else Theme.CHECKBOX_COLOR
         Line:
             points: [self.x + self.width * 0.24, self.y + self.height * 0.52, self.x + self.width * 0.42, self.y + self.height * 0.32, self.x + self.width * 0.76, self.y + self.height * 0.72]
             width: dp(1.8)
@@ -139,7 +139,7 @@
     width: root.label.texture_size[0] + 2 * self.padding_x if root.label else 100
 
 <ToggleButtonMixin>:
-    inactive_background_color: Theme.BACKGROUND_COLOR
+    inactive_background_color: Theme.LIGHTER_BACKGROUND_COLOR
     active_background_color: Theme.BOX_BACKGROUND_COLOR
     background_color: self.active_background_color if self.state=='down' else self.inactive_background_color
     outline_color: self.active_outline_color if self.state=='down' else self.inactive_outline_color
@@ -185,11 +185,11 @@
         pos: [root.pos[i] + (root.size[i] - root.icon_size[i])/2 for i in [0,1]]
         source: root.icon
         mipmap: True
-        color: [1,1,1,0.4] if root.disabled else root.color
+        color: [0,0,0,0.25] if root.disabled else root.color
 
 
 <I18NSpinnerOption@SpinnerOption>:
-    background_color: Theme.LIGHTER_BACKGROUND_COLOR
+    background_color: Theme.BOX_BACKGROUND_COLOR
     background_normal: ''
     lang_change_tracking: i18n._('') # for font
     color: Theme.INPUT_FONT_COLOR
@@ -201,9 +201,18 @@
             width: 1
 
 <Spinner>:
-    -font_size: self.height * 0.45
+    -font_size: max(sp(13), self.height * 0.45)
+    background_normal: ''
+    background_down: ''
     background_color: Theme.LIGHTER_BACKGROUND_COLOR
+    color: Theme.TEXT_COLOR
     option_cls: 'I18NSpinnerOption'
+    canvas.after:
+        Color:
+            rgba: Theme.BORDER_COLOR
+        Line:
+            rounded_rectangle: self.x, self.y, self.width, self.height, dp(Theme.RADIUS_SM)
+            width: 1
 
 <Button>:
     track_lang: i18n._('')
@@ -244,6 +253,7 @@
     size_hint: 0.055, 0.5
     icon_size: [min(self.size[0],self.height)*0.85, min(self.size[0],self.height)*0.85]
     pos_hint: {'center_y': 0.5}
+    color: Theme.TEXT_COLOR
 
 <BadukPanControls>:
     katrain: app.gui
@@ -251,6 +261,11 @@
     mid_circles_container: mid_circles_container
     pass_btn: pass_btn
     canvas.before:
+        Color:
+            rgba: Theme.BACKGROUND_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
         Color:
             rgba: Theme.BORDER_COLOR
         Line:
@@ -261,7 +276,9 @@
         text: i18n._('pass-button-text')
         size_hint: None, 0.55
         pos_hint: {'center_x': 0.08,'center_y':0.5}
-        background_color: Theme.LIGHTER_BACKGROUND_COLOR
+        background_color: Theme.BOX_BACKGROUND_COLOR
+        outline_color: Theme.BORDER_COLOR
+        text_color: Theme.TEXT_COLOR
         on_left_release: root.katrain("play",None)
     BoxLayout:
         size_hint: None, 1
@@ -269,7 +286,7 @@
         pos_hint: {'center_x': 0.48,'center_y':0.5}
         NavIconButton:
             icon: 'Previous-Mistake.png'
-            color: Theme.MISTAKE_BUTTON_COLOR
+            color: Theme.ERROR_COLOR
             on_press: root.katrain('find-mistake','undo')
         NavIconButton:
             icon: 'Previous-End.png'
@@ -306,7 +323,7 @@
             on_press: root.katrain('redo',9999)
         NavIconButton:
             icon: 'Next-Mistake.png'
-            color: Theme.MISTAKE_BUTTON_COLOR
+            color: Theme.ERROR_COLOR
             on_press: root.katrain('find-mistake','redo')
     ClickableLabel:
         pos_hint: {'center_x': 0.92,'center_y':0.5}
@@ -319,8 +336,8 @@
                 pos: self.pos[0] + self.width/2 - self.width/5, self.pos[1]  + self.height/2  - self.width/5
                 size: self.width*0.4, self.width*0.4
         text: str(root.queries_remaining) if root.queries_remaining >= 3 else ''
-        color: Theme.BACKGROUND_COLOR
-        font_size: 0.4 * self.width / max(2,len(self.text))
+        color: [1, 1, 1, 1]
+        font_size: max(sp(11), 0.5 * self.width / max(2,len(self.text)))
         on_press: app.gui.controls.set_status(i18n._('ai-ponder'),STATUS_INFO)
 
 
@@ -328,6 +345,7 @@
     icon: 'hamburger.png'
     width: dp(40)
     icon_size: [dp(20), dp(20)]
+    color: Theme.TEXT_COLOR
 
 # ---------- components of right pane -------
 
@@ -489,7 +507,12 @@
     spacing: dp(Theme.SPACING_XS)
     canvas.before:
         Color:
-            rgba: Theme.BORDER_COLOR
+            rgba: Theme.BACKGROUND_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: [0, 0, 0, 0.06]
         Line:
             points: self.x, self.y, self.x, self.y + self.height
             width: 1
@@ -614,6 +637,7 @@
         Image:
             id:image
             source: root.icon
+            color: Theme.TEXT_SECONDARY_COLOR
             mipmap: True
             size_hint: 0.7,0.7
             pos_hint: {'center_y': 0.5,'center_x': 0.5}
@@ -653,7 +677,7 @@
         halign: 'center'
         font_size: sp(Theme.FONT_SIZE_SM)
         font_name: root.font_name
-        color: [0.38, 0.38, 0.40, 1] if root.disabled else (Theme.PLAY_ANALYZE_TAB_COLOR if checkbox.active else Theme.TEXT_SECONDARY_COLOR)
+        color: [0.72, 0.72, 0.75, 1] if root.disabled else (Theme.PLAY_ANALYZE_TAB_COLOR if checkbox.active else Theme.TEXT_SECONDARY_COLOR)
         size_hint_x: None
         width: self.texture_size[0] + dp(8)
         on_left_press: checkbox.trigger_action()
@@ -713,7 +737,7 @@
     hamburger: hamburger
     canvas.before:
         Color:
-            rgba: Theme.BACKGROUND_COLOR
+            rgba: Theme.BOX_BACKGROUND_COLOR
         Rectangle:
             pos: self.pos
             size: self.size
@@ -760,13 +784,16 @@
             id: analysis_button
             on_release: root.toggle_dropdown()
             text: '  ' + i18n._("btn:Analyze")
+            text_color: Theme.TEXT_COLOR
             background_radius: dp(Theme.RADIUS_SM)
+            outline_color: Theme.BORDER_COLOR
         Image:
             pos_hint: {'center_y': 0.5}
             x: self.parent.x + dp(4)
             size_hint: None, 0.35
             width: self.height/2
             source: 'menu.png'
+            color: Theme.TEXT_COLOR
             mipmap: True
 
 
@@ -866,10 +893,10 @@
     spacing: 0
     canvas.before:
         Color:
-            rgba: [0, 0, 0, 0.5]
+            rgba: [0, 0, 0, 0.30 * max(0, self.right) / max(1, self.width)]
         Rectangle:
-            pos: self.right, self.y
-            size: 2000, self.height
+            pos: self.right, 0
+            size: 5000, 5000
     ScrollView:
         do_scroll_x: False
         BoxLayout:
@@ -918,11 +945,6 @@
                 text_size: self.size
                 valign: 'bottom'
             MainMenuItem:
-                text: i18n._('menu:teachsettings')
-                icon: 'Teaching-Settings.png'
-                shortcut: 'F6'
-                on_action: root.katrain('teacher-popup')
-            MainMenuItem:
                 text: i18n._('menu:aisettings')
                 icon: 'AI-Settings.png'
                 shortcut: 'F7'
@@ -946,24 +968,20 @@
                 text: i18n._('menu:manual')
                 icon: 'analysis.png'
                 on_action: app.webbrowser('homepage')
-            MainMenuItem:
-                text: i18n._('menu:support')
-                icon: 'collaboration.png'
-                on_action: app.webbrowser('support')
 
 
 <OutlineBox@BoxLayout+BackgroundMixin>:
 
 
 <PlayAnalyzeButton@SizedToggleButton>:
-    inactive_background_color: Theme.LIGHTER_BACKGROUND_COLOR
+    inactive_background_color: [0, 0, 0, 0]
     active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
-    text_color: Theme.BACKGROUND_COLOR if self.state=='down' else Theme.TEXT_SECONDARY_COLOR
-    size_hint: 0.5,1
-    _font_size: sp(Theme.FONT_SIZE_SM)
+    text_color: [1, 1, 1, 1] if self.state=='down' else Theme.TEXT_SECONDARY_COLOR
+    size_hint: 0.5, 1
+    _font_size: sp(Theme.FONT_SIZE_MD)
     group: 'play_analyze'
     allow_no_selection: False
-    background_radius: dp(Theme.RADIUS_SM)
+    background_radius: 0
 
 <PlayAnalyzeSelect>:
     katrain: app.gui
@@ -971,7 +989,7 @@
     analyze: analyze
     canvas.before:
         Color:
-            rgba: Theme.BACKGROUND_COLOR
+            rgba: Theme.LIGHTER_BACKGROUND_COLOR
         Rectangle:
             pos: self.pos
             size: self.size
@@ -981,9 +999,9 @@
             points: self.x, self.y, self.x + self.width, self.y
             width: 1
     OutlineBox:
-        size_hint: 0.9, 0.65
-        pos_hint: {'center_x':0.5,'center_y':0.5}
-        background_radius: dp(Theme.RADIUS_SM)
+        size_hint: 1, 1
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        background_radius: 0
         background_color: Theme.LIGHTER_BACKGROUND_COLOR
         outline_color: [0,0,0,0]
         PlayAnalyzeButton:

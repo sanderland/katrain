@@ -170,12 +170,10 @@ class KaTrainGui(Screen, KaTrainBase):
 
         outer = BoxLayout(orientation="vertical")
 
-        # unified top toolbar spanning full width
+        # top toolbar: analysis controls only (full width)
         toolbar = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(44))
         self.analysis_controls = AnalysisControls()
-        self.play_mode = PlayAnalyzeSelect()
         toolbar.add_widget(self.analysis_controls)
-        toolbar.add_widget(self.play_mode)
         outer.add_widget(toolbar)
 
         # main content: board (left) + sidebar (right)
@@ -188,7 +186,9 @@ class KaTrainGui(Screen, KaTrainBase):
         left.add_widget(self.board_controls)
 
         right = BoxLayout(orientation="vertical", size_hint_x=None)
+        self.play_mode = PlayAnalyzeSelect()
         self.controls = ControlsPanel()
+        right.add_widget(self.play_mode)
         right.add_widget(self.controls)
 
         content.add_widget(left)
@@ -226,18 +226,17 @@ class KaTrainGui(Screen, KaTrainBase):
         self.board_controls.size_hint_y = None
         self.board_controls.opacity = 1
 
-        # analysis controls fill the toolbar (minus play/analyze width)
+        # analysis controls fill the full toolbar width
         self.analysis_controls.size_hint_x = 1
         self.analysis_controls.height = toolbar_h
         self.analysis_controls.size_hint_y = None
         self.analysis_controls.opacity = 1
 
         if self.play_mode and self.controls:
-            # play/analyze segmented control
-            self.play_mode.size_hint_x = None
-            self.play_mode.width = dp(180)
+            # play/analyze at top of sidebar, full width
+            self.play_mode.size_hint_x = 1
             self.play_mode.size_hint_y = None
-            self.play_mode.height = toolbar_h
+            self.play_mode.height = dp(48)
 
             right = self.controls.parent
             if right:
@@ -385,51 +384,103 @@ class KaTrainGui(Screen, KaTrainBase):
                         with open(os.path.join(out_dir, os.path.basename(name)), "wb") as fout:
                             fout.write(zip_obj.read(name))
 
-    def ensure_engine_ready(self, on_ready) -> None:
-        """Startup bootstrap: ensure engine assets exist, download if needed."""
+    # URLs for auto-download of missing assets.
+    KATAGO_URLS = {
+        "win": {
+            "OpenCL": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-opencl-windows-x64.zip",
+            "Eigen AVX2": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-eigenavx2-windows-x64.zip",
+            "Eigen (CPU)": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-eigen-windows-x64.zip",
+        },
+        "linux": {
+            "OpenCL": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-opencl-linux-x64.zip",
+            "Eigen AVX2": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-eigenavx2-linux-x64.zip",
+            "Eigen (CPU)": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-eigen-linux-x64.zip",
+        },
+    }
+    MAIN_MODEL_URL = "https://media.katagotraining.org/uploaded/networks/models/kata1/kata1-b18c384nbt-s9996604416-d4316597426.bin.gz"
+    MAIN_MODEL_FILENAME = "kata1-b18c384nbt-s9996604416-d4316597426.bin.gz"
+    HUMAN_MODEL_URL = "https://github.com/lightvector/KataGo/releases/download/v1.15.0/b18c384nbt-humanv0.bin.gz"
+    HUMAN_MODEL_FILENAME = "b18c384nbt-humanv0.bin.gz"
 
+    def _resolve_model(self, config_key: str) -> Optional[str]:
+        """Return resolved path if the configured model exists, else None."""
+        setting = (self.config(config_key, "") or "").strip()
+        if not setting:
+            return None
+        resolved = find_package_resource(setting)
+        return resolved if os.path.isfile(resolved) else None
+
+    def _find_model_in_dir(self, models_dir: str, pattern: str) -> Optional[str]:
+        """Find first model file matching pattern in models_dir."""
+        if not os.path.isdir(models_dir):
+            return None
+        for f in sorted(os.listdir(models_dir)):
+            if f.endswith(".bin.gz") and ".tmp" not in f and pattern in f.lower():
+                return f
+        return None
+
+    def ensure_engine_ready(self, on_ready) -> None:
+        """Startup bootstrap: ensure katago + models exist, download any missing assets."""
         self._ensure_analysis_config_file()
-        if self._resolve_katago_executable():
+
+        # Build list of missing assets: (label, url, target_path, config_key, is_zip)
+        missing = []
+        data_dir = os.path.expanduser(DATA_FOLDER)
+        os.makedirs(data_dir, exist_ok=True)
+        models_dir = find_package_resource("katrain/models")
+        os.makedirs(models_dir, exist_ok=True)
+
+        # 1) KataGo executable
+        if not self._resolve_katago_executable():
+            if kivy_platform in self.KATAGO_URLS:
+                # Pick the first (best) option for this platform
+                label, url = next(iter(self.KATAGO_URLS[kivy_platform].items()))
+                exe_name = "katago.exe" if kivy_platform == "win" else "katago"
+                exe_setting = os.path.join(DATA_FOLDER, exe_name)
+                exe_path = os.path.expanduser(exe_setting)
+                missing.append(("KataGo engine", url, exe_path, "engine/katago", True, exe_setting))
+            elif kivy_platform == "macosx":
+                msg = (
+                    "KataGo executable not found.\n\n"
+                    "On macOS, install via Homebrew (`brew install katago`) or set the path in Settings."
+                )
+                message_label = Label(
+                    text=msg, font_name=i18n.font_name, halign="left", valign="top", text_size=(dp(540), None),
+                )
+                popup = Popup(
+                    title="KataGo setup required", content=message_label,
+                    size_hint=(None, None), size=(dp(560), dp(220)), auto_dismiss=False,
+                )
+                popup.open()
+                return
+
+        # 2) Main model
+        if not self._resolve_model("engine/model"):
+            existing = self._find_model_in_dir(models_dir, self.MAIN_MODEL_FILENAME.split("-")[0])
+            if existing:
+                self._config.setdefault("engine", {})["model"] = f"katrain/models/{existing}"
+                self.save_config("engine")
+            else:
+                target = os.path.join(models_dir, self.MAIN_MODEL_FILENAME)
+                missing.append(("Main model", self.MAIN_MODEL_URL, target, "engine/model", False, f"katrain/models/{self.MAIN_MODEL_FILENAME}"))
+
+        # 3) Human-like model
+        if not self._resolve_model("engine/humanlike_model"):
+            existing = self._find_model_in_dir(models_dir, "human")
+            if existing:
+                self._config.setdefault("engine", {})["humanlike_model"] = f"katrain/models/{existing}"
+                self.save_config("engine")
+            else:
+                target = os.path.join(models_dir, self.HUMAN_MODEL_FILENAME)
+                missing.append(("Human-like model", self.HUMAN_MODEL_URL, target, "engine/humanlike_model", False, f"katrain/models/{self.HUMAN_MODEL_FILENAME}"))
+
+        if not missing:
             on_ready()
             return
 
-        url_by_platform = {
-            "win": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-opencl-windows-x64.zip",
-            "linux": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-opencl-linux-x64.zip",
-        }
-        if kivy_platform not in url_by_platform:
-            # macOS: upstream KataGo doesn't provide official binaries; rely on PATH (brew) or manual setup.
-            msg = (
-                "KataGo executable not found.\n\n"
-                "On macOS, please install it via Homebrew (`brew install katago`) or set the path in Settings."
-            )
-            message_label = Label(
-                text=msg,
-                font_name=i18n.font_name,
-                halign="left",
-                valign="top",
-                text_size=(dp(540), None),
-            )
-            popup = Popup(
-                title="KataGo setup required",
-                content=message_label,
-                size_hint=(None, None),
-                size=(dp(560), dp(220)),
-                auto_dismiss=False,
-            )
-            popup.open()
-            return
-
-        url = url_by_platform[kivy_platform]
-        data_dir = os.path.expanduser(DATA_FOLDER)
-        os.makedirs(data_dir, exist_ok=True)
-
-        exe_setting = os.path.join(DATA_FOLDER, "katago.exe" if kivy_platform == "win" else "katago")
-        exe_path = os.path.expanduser(exe_setting)
-        zip_tmp = os.path.join(data_dir, os.path.basename(url) + ".part")
-
+        # Show download popup and process downloads sequentially.
         status_label = Label(
-            text="Downloading KataGo...",
+            text=f"Downloading {missing[0][0]}...",
             font_name=i18n.font_name,
             halign="left",
             valign="middle",
@@ -444,7 +495,7 @@ class KaTrainGui(Screen, KaTrainBase):
         content.add_widget(progress_box)
 
         popup = Popup(
-            title="Setting up KataGo",
+            title="Setting up KaTrain",
             content=content,
             size_hint=(None, None),
             size=(dp(560), dp(170)),
@@ -452,39 +503,78 @@ class KaTrainGui(Screen, KaTrainBase):
         )
         popup.open()
 
-        def download_complete(_req):
-            status_label.text = "Installing KataGo..."
-            try:
-                self._install_katago_zip(zip_tmp, exe_path)
+        download_queue = list(missing)
+
+        def _start_next():
+            if not download_queue:
+                status_label.text = "Setup complete!"
+                Clock.schedule_once(lambda _dt: popup.dismiss(), 0.5)
+                Clock.schedule_once(lambda _dt: on_ready(), 0.6)
+                return
+
+            label, url, target_path, config_key, is_zip, config_value = download_queue[0]
+            remaining = len(download_queue)
+            status_label.text = f"Downloading {label}... ({remaining} remaining)"
+            tmp_path = target_path + ".part"
+
+            # Clear stale partial downloads
+            for stale in [tmp_path, target_path + ".tmp.download"]:
                 try:
-                    os.remove(zip_tmp)
+                    if os.path.exists(stale):
+                        os.remove(stale)
                 except OSError:
                     pass
 
-                self._config.setdefault("engine", {})["katago"] = exe_setting
-                self.save_config("engine")
+            # Remove old progress bar widgets
+            for child in list(progress_box.children):
+                progress_box.remove_widget(child)
 
-                status_label.text = "KataGo installed."
-                Clock.schedule_once(lambda _dt: popup.dismiss(), 0.25)
-                Clock.schedule_once(lambda _dt: on_ready(), 0.3)
-            except Exception as e:
-                self.log(f"Failed to install KataGo from {zip_tmp}: {e}", OUTPUT_ERROR)
-                status_label.text = f"Failed to install KataGo: {e}"
+            def download_complete(_req):
+                try:
+                    if is_zip:
+                        self._install_katago_zip(tmp_path, target_path)
+                        try:
+                            os.remove(tmp_path)
+                        except OSError:
+                            pass
+                        self._config.setdefault("engine", {})[config_key.split("/")[1]] = config_value
+                    else:
+                        os.rename(tmp_path, target_path)
+                        self._config.setdefault("engine", {})[config_key.split("/")[1]] = config_value
+                    self.save_config("engine")
+                    self.log(f"Downloaded {label} to {target_path}")
+                except Exception as e:
+                    self.log(f"Failed to install {label}: {e}", OUTPUT_ERROR)
+                    status_label.text = f"Failed: {e}"
+                    return
 
-        def download_error(_req, error):
-            self.log(f"Failed to download KataGo from {url}: {error}", OUTPUT_ERROR)
-            status_label.text = f"Download failed: {error}"
+                download_queue.pop(0)
+                _start_next()
 
-        ProgressLoader(
-            root_instance=progress_box,
-            download_url=url,
-            path_to_file=zip_tmp,
-            downloading_text="Downloading KataGo: {}",
-            label_downloading_text="Starting download...",
-            download_complete=download_complete,
-            download_error=download_error,
-            download_redirected=lambda req: self.log(f"KataGo download redirected: {req.resp_headers}", OUTPUT_DEBUG),
-        )
+            def download_error(_req, error):
+                self.log(f"Failed to download {label} from {url}: {error}", OUTPUT_ERROR)
+                # Skip this item and continue with the rest
+                download_queue.pop(0)
+                if download_queue:
+                    status_label.text = f"Download of {label} failed, continuing..."
+                    Clock.schedule_once(lambda _dt: _start_next(), 0.5)
+                else:
+                    status_label.text = "Some downloads failed. Check Settings."
+                    Clock.schedule_once(lambda _dt: popup.dismiss(), 2)
+                    Clock.schedule_once(lambda _dt: on_ready(), 2.1)
+
+            ProgressLoader(
+                root_instance=progress_box,
+                download_url=url,
+                path_to_file=tmp_path,
+                downloading_text=f"Downloading {label}: " + "{}",
+                label_downloading_text="Starting download...",
+                download_complete=download_complete,
+                download_error=download_error,
+                download_redirected=lambda req: self.log(f"Download redirected: {req.resp_headers}", OUTPUT_DEBUG),
+            )
+
+        _start_next()
 
     def start(self):
         if self.engine:
@@ -509,6 +599,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.last_focus_event = time.time()
 
         App.get_running_app().root_window.bind(focus=set_focus_event)
+
 
     def update_gui(self, cn, redraw_board=False):
         # Handle prisoners and next player display

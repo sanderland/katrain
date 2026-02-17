@@ -1179,7 +1179,7 @@ class ConfigPopup(PopupContent):
         general.add_widget(self._row("general:anim_pv_time", self._general_anim_pv_time))
         general.add_widget(self._row("general:debug_level", self._general_debug_level))
         general.add_widget(self._row("Sound", self._sound_enabled))
-        general.add_widget(self._row("ui_state:restoresize", self._ui_restore_size))
+        general.add_widget(self._row("Restore window size on start", self._ui_restore_size))
 
         content.add_widget(engine)
         content.add_widget(general)

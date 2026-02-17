@@ -125,7 +125,11 @@ Builder.load_string(
     is_selected: self.path in ctx.controller().selection
     orientation: 'horizontal'
     size_hint_y: None
-    height: '24dp'
+    height: '28dp'
+    color_selected: [0.22, 0.50, 0.78, 0.15]
+    color_normal: [0, 0, 0, 0]
+    even_color: [0, 0, 0, 0.02]
+    odd_color: [0, 0, 0, 0]
     # Don't allow expansion of the ../ node
     is_leaf: not ctx.isdir or ctx.name.endswith('..' + ctx.sep) or self.locked
     on_touch_down: self.collide_point(*args[1].pos) and ctx.controller().entry_touched(self, args[1])
@@ -141,11 +145,15 @@ Builder.load_string(
             shorten: True
             text: ctx.name
             font_name: ctx.controller().font_name
+            color: [0.12, 0.12, 0.14, 1]
+            font_size: sp(14)
         Label:
             text_size: self.width, None
             size_hint_x: None
             halign: 'right'
             text: '{}'.format(ctx.get_nice_size())
+            color: [0.42, 0.42, 0.46, 1]
+            font_size: sp(12)
 
 <I18NFileChooserListView>:
     layout: layout
@@ -163,6 +171,8 @@ Builder.load_string(
 #:import i18n katrain.core.lang.i18n
 
 <TreeLabel>:
+    color: [0.12, 0.12, 0.14, 1]
+    font_size: sp(14)
     on_touch_down:
         self.parent.browser.path = self.path if self.collide_point(*args[1].pos) and self.path else self.parent.browser.path
     on_is_open: self.is_open and self.parent.trigger_populate(self)
@@ -192,18 +202,20 @@ Builder.load_string(
                     size_hint_y: None
                     height: self.minimum_height
                     on_parent: self.fill_tree(root.favorites)
-                    root_options: {'text': 'Locations', 'no_selection':True}
+                    root_options: {'text': 'Locations', 'no_selection':True, 'color': [0.12, 0.12, 0.14, 1]}
         BoxLayout:
             size_hint_x: .8
             orientation: 'vertical'
             Label:
                 size_hint_y: None
-                height: '22dp'
+                height: '28dp'
                 text_size: self.size
-                padding_x: '10dp'
+                padding: [dp(10), 0]
                 text: abspath(root.path)
                 track_lang: i18n._('')
                 valign: 'middle'
+                color: [0.42, 0.42, 0.46, 1]
+                font_size: sp(13)
             I18NFileChooserListView:
                 id: list_view
                 path: root.path
@@ -227,6 +239,8 @@ Builder.load_string(
             hint_text: i18n._('Filename')
             multiline: False
             height: '40dp'
+            foreground_color: [0.12, 0.12, 0.14, 1]
+            font_size: sp(14)
         AutoSizedRoundedRectangleButton:
             id: select_button
             padding_x: 15

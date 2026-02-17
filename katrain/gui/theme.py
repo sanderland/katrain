@@ -26,9 +26,9 @@ class Theme:
     FONT_SIZE_XL = 22  # popup titles, mode labels
 
     # legacy aliases (used throughout KV/popups)
-    INPUT_FONT_SIZE = 16  # sp -- was 20
-    DESC_FONT_SIZE = 16  # sp -- was 18
-    NOTES_FONT_SIZE = 14  # sp -- was 16
+    INPUT_FONT_SIZE = 16
+    DESC_FONT_SIZE = 16
+    NOTES_FONT_SIZE = 14
 
     # --- spacing ---
     SPACING_XS = 4
@@ -36,71 +36,71 @@ class Theme:
     SPACING_MD = 12
     SPACING_LG = 16
     SPACING_XL = 24
-    RADIUS_SM = 4
-    RADIUS_MD = 8
-    RADIUS_LG = 12
+    RADIUS_SM = 6
+    RADIUS_MD = 10
+    RADIUS_LG = 14
 
-    # --- color palette (modern dark) ---
-    BACKGROUND_COLOR = [24 / 255, 24 / 255, 28 / 255, 1]
-    BOX_BACKGROUND_COLOR = [35 / 255, 35 / 255, 40 / 255, 1]
-    LIGHTER_BACKGROUND_COLOR = [48 / 255, 48 / 255, 55 / 255, 1]
+    # --- color palette (modern light) ---
+    BACKGROUND_COLOR = [0.945, 0.945, 0.955, 1]  # warm off-white
+    BOX_BACKGROUND_COLOR = [1.0, 1.0, 1.0, 1]  # pure white cards
+    LIGHTER_BACKGROUND_COLOR = [0.96, 0.96, 0.97, 1]  # subtle light fill
 
-    TEXT_COLOR = [0.92, 0.92, 0.92, 1]
-    TEXT_SECONDARY_COLOR = [0.62, 0.62, 0.65, 1]
-    TEXT_TERTIARY_COLOR = [0.42, 0.42, 0.45, 1]
-    BORDER_COLOR = [1, 1, 1, 0.08]
+    TEXT_COLOR = [0.12, 0.12, 0.14, 1]  # near-black text
+    TEXT_SECONDARY_COLOR = [0.42, 0.42, 0.46, 1]  # medium grey
+    TEXT_TERTIARY_COLOR = [0.58, 0.58, 0.62, 1]  # light grey
+    BORDER_COLOR = [0.0, 0.0, 0.0, 0.08]  # subtle dividers
 
-    SCROLLBAR_COLOR = [0.5, 0.5, 0.5, 0.6]
+    SCROLLBAR_COLOR = [0.55, 0.55, 0.55, 0.35]
 
     # semantic / accent
-    SCORE_COLOR = [0.40, 0.72, 0.90, 1]  # muted blue
-    WINRATE_COLOR = [0.35, 0.75, 0.45, 1]  # muted green
-    POINTLOSS_COLOR = [0.90, 0.78, 0.30, 1]  # muted gold
-    ERROR_COLOR = [0.75, 0.25, 0.25, 1]
-    WARNING_COLOR = [0.85, 0.55, 0.25, 1]
-    SUCCESS_COLOR = [0.35, 0.75, 0.45, 1]
+    SCORE_COLOR = [0.18, 0.50, 0.72, 1]  # professional blue
+    WINRATE_COLOR = [0.22, 0.62, 0.35, 1]  # forest green
+    POINTLOSS_COLOR = [0.78, 0.60, 0.12, 1]  # warm amber
+    ERROR_COLOR = [0.78, 0.22, 0.22, 1]
+    WARNING_COLOR = [0.82, 0.52, 0.18, 1]
+    SUCCESS_COLOR = [0.22, 0.65, 0.35, 1]
 
     # buttons
-    BUTTON_INACTIVE_COLOR = [0.45, 0.45, 0.48, 1]
-    BUTTON_BORDER_COLOR = [1, 1, 1, 0.15]
-    BUTTON_TEXT_COLOR = [0.92, 0.92, 0.92, 1]
-    PRIMARY_BUTTON_COLOR = [0.22, 0.52, 0.75, 1]
-    MISTAKE_BUTTON_COLOR = [0.70, 0.18, 0.18, 1]
+    BUTTON_INACTIVE_COLOR = [0.60, 0.60, 0.62, 1]
+    BUTTON_BORDER_COLOR = [0, 0, 0, 0.10]
+    BUTTON_TEXT_COLOR = [0.18, 0.18, 0.20, 1]
+    PRIMARY_BUTTON_COLOR = [0.20, 0.48, 0.72, 1]
+    MISTAKE_BUTTON_COLOR = [0.72, 0.20, 0.20, 1]
 
     # interactive states
     PAUSE_ACTIVE_COLOR = ORANGE
-    TIMER_TEXT_COLOR = [0.35, 0.75, 0.45, 1]
+    TIMER_TEXT_COLOR = [0.22, 0.62, 0.35, 1]
     TIMER_TEXT_TIMEOUT_COLOR = ORANGE
-    CHECKBOX_COLOR = [0.40, 0.60, 0.85, 1]
+    CHECKBOX_COLOR = [0.22, 0.50, 0.78, 1]
 
     # player / circle
     CIRCLE_TEXT_COLORS = {"W": BLACK, "B": WHITE}
 
     # tabs and panels
-    NOTES_TAB_FONT_COLOR = [0.90, 0.78, 0.30, 1]
-    INFO_TAB_FONT_COLOR = [0.92, 0.92, 0.92, 1]
-    ERROR_BORDER_COLOR = [0.75, 0.25, 0.25, 1]
-    PLAY_ANALYZE_TAB_COLOR = [0.40, 0.72, 0.90, 1]
+    NOTES_TAB_FONT_COLOR = [0.72, 0.56, 0.08, 1]
+    INFO_TAB_FONT_COLOR = [0.18, 0.18, 0.20, 1]
+    ERROR_BORDER_COLOR = [0.78, 0.22, 0.22, 1]
+    PLAY_ANALYZE_TAB_COLOR = [0.22, 0.50, 0.78, 1]
 
     # menu
-    MENU_ITEM_FONT_COLOR = [0.88, 0.88, 0.88, 1]
-    MENU_ITEM_SHORTCUT_COLOR = [0.50, 0.50, 0.53, 1]
+    MENU_ITEM_FONT_COLOR = [0.18, 0.18, 0.22, 1]
+    MENU_ITEM_SHORTCUT_COLOR = [0.52, 0.52, 0.56, 1]
 
     # input
-    INPUT_FONT_COLOR = [0.92, 0.92, 0.92, 1]
+    INPUT_FONT_COLOR = [0.12, 0.12, 0.14, 1]
 
     # stats
-    STAT_WORSE_COLOR = [0.80, 0.40, 0.20, 1]
-    STAT_BETTER_COLOR = [0.30, 0.65, 0.25, 1]
+    STAT_WORSE_COLOR = [0.78, 0.35, 0.18, 1]
+    STAT_BETTER_COLOR = [0.22, 0.60, 0.22, 1]
 
     # --- gui spacing ---
-    RIGHT_PANEL_ASPECT_RATIO = 0.32  # W/H -- narrower than before
-    CONTROLS_PANEL_ASPECT_RATIO = 16  # W/H -- thinner toolbar
+    RIGHT_PANEL_ASPECT_RATIO = 0.32
+    CONTROLS_PANEL_ASPECT_RATIO = 16
     CONTROLS_PANEL_MIN_HEIGHT = 42
-    CONTROLS_PANEL_MAX_HEIGHT = 48  # dp
+    CONTROLS_PANEL_MAX_HEIGHT = 48
     CP_SPACING = 6
     CP_SMALL_SPACING = 3
-    CP_PADDING = 8  # was 6
+    CP_PADDING = 8
 
     # --- textures ---
     STONE_TEXTURE = {"B": "B_stone.png", "W": "W_stone.png"}
@@ -183,22 +183,22 @@ class Theme:
     ENGINE_DOWN_COLOR = EVAL_COLORS["theme:normal"][1]
     ENGINE_BUSY_COLOR = EVAL_COLORS["theme:normal"][2]
     ENGINE_READY_COLOR = EVAL_COLORS["theme:normal"][-1]
-    ENGINE_PONDERING_COLOR = [0.90, 0.78, 0.30, 1]
+    ENGINE_PONDERING_COLOR = [0.78, 0.60, 0.12, 1]
 
     # info PV link
-    INFO_PV_COLOR = to_hexcol([0.40, 0.72, 0.90, 1])
+    INFO_PV_COLOR = to_hexcol([0.18, 0.50, 0.72, 1])
 
     # graph
-    GRAPH_DOT_COLOR = [0.75, 0.30, 0.30, 1]
-    WINRATE_MARKER_COLOR = [0.30, 0.70, 0.40, 1]
-    SCORE_MARKER_COLOR = [0.35, 0.65, 0.85, 1]
-    POINTLOSS_MARKER_COLOR = [0.80, 0.72, 0.20, 1]
+    GRAPH_DOT_COLOR = [0.72, 0.28, 0.28, 1]
+    WINRATE_MARKER_COLOR = [0.22, 0.62, 0.35, 1]
+    SCORE_MARKER_COLOR = [0.18, 0.50, 0.72, 1]
+    POINTLOSS_MARKER_COLOR = [0.78, 0.60, 0.12, 1]
 
     # move tree
-    MOVE_TREE_LINE = [0.55, 0.55, 0.55, 1]
-    MOVE_TREE_CURRENT = [0.40, 0.72, 0.90, 1]
-    MOVE_TREE_SELECTED = [0.85, 0.40, 0.35, 1]
-    MOVE_TREE_COLLAPSED = [0.55, 0.55, 0.55, 1]
+    MOVE_TREE_LINE = [0.62, 0.62, 0.62, 1]
+    MOVE_TREE_CURRENT = [0.22, 0.50, 0.78, 1]
+    MOVE_TREE_SELECTED = [0.78, 0.35, 0.30, 1]
+    MOVE_TREE_COLLAPSED = [0.62, 0.62, 0.62, 1]
     MOVE_TREE_STONE_OUTLINE_COLORS = {"W": BLACK, "B": WHITE}
 
     # --- keyboard shortcuts ---

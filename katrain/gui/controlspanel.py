@@ -41,9 +41,15 @@ class PlayAnalyzeSelect(FloatLayout):
     def load_ui_state(self, _dt=None):
         state = self.katrain.config(f"ui_state/{self.mode}", {})
         for id, active in state.get("analysis_controls", {}).items():
-            cb = self.katrain.analysis_controls.ids[id].checkbox
-            cb.active = bool(active)
-        for id, (panel_state, button_state) in state.get("panels", {}).items():
+            if id in self.katrain.analysis_controls.ids:
+                cb = self.katrain.analysis_controls.ids[id].checkbox
+                cb.active = bool(active)
+        for id, value in state.get("panels", {}).items():
+            if id not in self.katrain.controls.ids:
+                continue
+            if not isinstance(value, (list, tuple)) or len(value) != 2:
+                continue
+            panel_state, button_state = value
             self.katrain.controls.ids[id].set_option_state(button_state)
             self.katrain.controls.ids[id].state = panel_state
 

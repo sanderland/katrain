@@ -26,7 +26,7 @@ class KtSpacer(Widget):
 class KtDivider(Widget):
     """Thin horizontal line separator."""
 
-    rgba = ListProperty([1, 1, 1, 0.08])
+    rgba = ListProperty([0, 0, 0, 0.10])
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

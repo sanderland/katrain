@@ -207,13 +207,13 @@ Builder.load_string(
             size: self.size
             pos: self.pos
         Color:
-            rgba: [1,1,1,0.6]
+            rgba: [1,1,1,0.4]
         Rectangle:
             pos: self.pos
             size: self.size
             source: root.background_image
         Color:
-            rgba: [1, 1, 1, 0.04]
+            rgba: [0, 0, 0, 0.06]
         Line:
             points: self.x, self.y + self.height/2, self.x + self.width, self.y + self.height/2
             width: 1

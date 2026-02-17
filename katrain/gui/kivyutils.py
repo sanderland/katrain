@@ -177,7 +177,7 @@ class AutoSizedRectangleToggleButton(ToggleButtonMixin, AutoSizedRectangleButton
 
 
 class TransparentIconButton(Button):
-    color = ListProperty([1, 1, 1, 1])
+    color = ListProperty(Theme.TEXT_COLOR)
     icon_size = ListProperty([25, 25])
     icon = StringProperty("")
     disabled = BooleanProperty(False)
@@ -273,14 +273,10 @@ class KaTrainTextInput(TextInput):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # Default dark-theme styling for *all* inputs unless explicitly overridden.
         self.background_normal = ""
         self.background_active = ""
-        # Kivy's TextInput always has these properties, so `getattr(self, ...)` will
-        # typically pick up the default (white) colors. Only keep user overrides when
-        # they are passed explicitly.
         if "background_color" not in kwargs:
-            self.background_color = Theme.LIGHTER_BACKGROUND_COLOR
+            self.background_color = Theme.BOX_BACKGROUND_COLOR
         if "foreground_color" not in kwargs:
             self.foreground_color = Theme.INPUT_FONT_COLOR
         if "cursor_color" not in kwargs:

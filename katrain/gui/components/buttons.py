@@ -71,18 +71,18 @@ class KtButton(Button):
     def _sync_variant(self, *_args):
         if self.disabled:
             self.fill_color = Theme.BUTTON_INACTIVE_COLOR
-            self.color = Theme.BACKGROUND_COLOR
+            self.color = [1, 1, 1, 0.6]
             return
 
         if self.variant == "primary":
             self.fill_color = Theme.PRIMARY_BUTTON_COLOR
-            self.color = Theme.BUTTON_TEXT_COLOR
+            self.color = [1, 1, 1, 1]
         elif self.variant == "danger":
             self.fill_color = Theme.MISTAKE_BUTTON_COLOR
-            self.color = Theme.BUTTON_TEXT_COLOR
+            self.color = [1, 1, 1, 1]
         else:
-            self.fill_color = Theme.BOX_BACKGROUND_COLOR
-            self.color = Theme.BUTTON_TEXT_COLOR
+            self.fill_color = Theme.LIGHTER_BACKGROUND_COLOR
+            self.color = Theme.TEXT_COLOR
 
     def _handle_release(self, *_args):
         if self.on_click:
