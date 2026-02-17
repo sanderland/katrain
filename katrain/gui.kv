@@ -1,6 +1,5 @@
 #:kivy 2.3.0
 #:import i18n katrain.core.lang.i18n
-
 #:import PLAYER_TYPES katrain.core.constants.PLAYER_TYPES
 #:import PLAYER_HUMAN katrain.core.constants.PLAYER_HUMAN
 #:import PLAYER_AI    katrain.core.constants.PLAYER_AI
@@ -21,17 +20,6 @@
 
 #:set EPSILON 1e-9
 
-# for sizing help
-#<Label>:
-#    canvas.before:
-#        Color:
-#            rgba: [1,0,0,1]
-#        Line:
-#            rectangle:  (*self.pos,*self.size)
-#            width: 1
-
-
-
 # mixins
 <BackgroundMixin>:
     canvas.before:
@@ -49,8 +37,6 @@
 
 # style checkboxes for dark theme
 <CheckBox>:
-    # Kivy's default checkbox textures are very low-contrast when tinted on a dark UI.
-    # Hide the built-in image and draw our own outline/checkmark for visibility.
     color: 0, 0, 0, 0
     canvas.after:
         Color:
@@ -231,94 +217,117 @@
 
 
 <NavIconButton@TransparentIconButton>:
-    size_hint: 0.06, 0.4
-    icon_size: [min(self.size[0],self.height),min(self.size[0],self.height)]
+    size_hint: 0.1, 0.8
+    icon_size: [min(self.size[0],self.height)*0.8, min(self.size[0],self.height)*0.8]
     pos_hint: {'center_y': 0.5}
+    color: Theme.TEXT_COLOR
 
 <BadukPanControls>:
     katrain: app.gui
     circles: [black_circle,white_circle]
     mid_circles_container: mid_circles_container
     pass_btn: pass_btn
-    AutoSizedRoundedRectangleButton:
-        id: pass_btn
-        text: i18n._('pass-button-text')
-        size_hint: None, 0.5
-        pos_hint: {'center_x': 0.15,'center_y':0.5}
-        on_left_release: root.katrain("play",None)
+    
+    # Redesigned Footer
+    canvas.before:
+        Color:
+            rgba: Theme.BOX_BACKGROUND_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
     BoxLayout:
-        size_hint: None, 1
-        width: 8 * self.height
-        pos_hint: {'center_x': 0.5,'center_y':0.5}
-        Label:
-            size_hint: 0.075, 0.5
-        NavIconButton:
-            icon: 'Previous-Mistake.png'
-            color: Theme.MISTAKE_BUTTON_COLOR
-            on_press: root.katrain('find-mistake','undo')
-        NavIconButton:
-            icon: 'Previous-End.png'
-            on_press: root.katrain('undo',9999)
-        NavIconButton:
-            icon: 'Previous-5.png'
-            on_press: root.katrain('undo',10)
-        NavIconButton:
-            icon: 'Previous.png'
-            on_press: root.katrain('undo')
-        FloatLayout:
-            size_hint: 0.05, 1
-            id: mid_circles_container
-            CircleWithText:
-                size_hint: 5/8, 1
-                pos_hint: {'center_x': 0.5-3/16}
-                id: black_circle
-                player: 'B'
-                text: ''
-            CircleWithText:
-                size_hint: 5/8, 1
-                pos_hint: {'center_x': 0.5+3/16}
-                id: white_circle
-                player: 'W'
-                text: ''
-        NavIconButton:
-            icon: 'Next.png'
-            on_press: root.katrain('redo')
-        NavIconButton:
-            icon: 'Next-5.png'
-            on_press: root.katrain('redo',10)
-        NavIconButton:
-            icon: 'Next-End.png'
-            on_press: root.katrain('redo',9999)
-        NavIconButton:
-            icon: 'Next-Mistake.png'
-            color: Theme.MISTAKE_BUTTON_COLOR
-            on_press: root.katrain('find-mistake','redo')
-    ClickableLabel:
-        pos_hint: {'center_x': 0.85,'center_y':0.5}
-        size_hint: None, 1
-        width: self.height
-        canvas.before:
-            Color:
-                rgba: Theme.ENGINE_PONDERING_COLOR
-            Ellipse:
-                pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
-                size: self.width/3, self.width/3
-            Color:
-                rgba: root.engine_status_col
-            Ellipse:
-                angle_start: 0 if root.engine_status_pondering==-1 else root.engine_status_pondering % 360
-                angle_end: 360 if root.engine_status_pondering==-1 else (root.engine_status_pondering  % 360 + 180)
-                pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
-                size: self.width/3, self.width/3
-            Color:
-                rgba: BLACK
-            Line:
-                circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.width/6
-                width: 1
-        text: str(root.queries_remaining) if root.queries_remaining >= 3 else ''
-        color: BLACK
-        font_size: 0.5 * self.width / max(2,len(self.text))
-        on_press: app.gui.controls.set_status(i18n._('ai-ponder'),STATUS_INFO)
+        orientation: 'horizontal'
+        padding: dp(10)
+        spacing: dp(10)
+        
+        # Left side: Pass / Ponder
+        AutoSizedRoundedRectangleButton:
+            id: pass_btn
+            text: i18n._('pass-button-text')
+            size_hint: None, 0.8
+            pos_hint: {'center_y':0.5}
+            on_left_release: root.katrain("play",None)
+            
+        ClickableLabel:
+            pos_hint: {'center_y':0.5}
+            size_hint: None, 0.8
+            width: self.height
+            canvas.before:
+                Color:
+                    rgba: Theme.ENGINE_PONDERING_COLOR
+                Ellipse:
+                    pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
+                    size: self.width/3, self.width/3
+                Color:
+                    rgba: root.engine_status_col
+                Ellipse:
+                    angle_start: 0 if root.engine_status_pondering==-1 else root.engine_status_pondering % 360
+                    angle_end: 360 if root.engine_status_pondering==-1 else (root.engine_status_pondering  % 360 + 180)
+                    pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
+                    size: self.width/3, self.width/3
+            text: str(root.queries_remaining) if root.queries_remaining >= 3 else ''
+            color: Theme.TEXT_COLOR
+            font_size: 0.5 * self.width / max(2,len(self.text))
+            on_press: app.gui.controls.set_status(i18n._('ai-ponder'),STATUS_INFO)
+
+        # Spacer
+        Widget:
+            size_hint_x: 1
+            
+        # Center: Navigation
+        BoxLayout:
+            size_hint: None, 1
+            width: self.height * 8
+            spacing: dp(5)
+            
+            NavIconButton:
+                icon: 'Previous-Mistake.png'
+                color: Theme.MISTAKE_BUTTON_COLOR
+                on_press: root.katrain('find-mistake','undo')
+            NavIconButton:
+                icon: 'Previous-End.png'
+                on_press: root.katrain('undo',9999)
+            NavIconButton:
+                icon: 'Previous-5.png'
+                on_press: root.katrain('undo',10)
+            NavIconButton:
+                icon: 'Previous.png'
+                on_press: root.katrain('undo')
+                
+            FloatLayout:
+                size_hint: 0.3, 1
+                id: mid_circles_container
+                CircleWithText:
+                    size_hint: 0.8, 0.8
+                    pos_hint: {'center_x': 0.3, 'center_y': 0.5}
+                    id: black_circle
+                    player: 'B'
+                    text: ''
+                CircleWithText:
+                    size_hint: 0.8, 0.8
+                    pos_hint: {'center_x': 0.7, 'center_y': 0.5}
+                    id: white_circle
+                    player: 'W'
+                    text: ''
+                    
+            NavIconButton:
+                icon: 'Next.png'
+                on_press: root.katrain('redo')
+            NavIconButton:
+                icon: 'Next-5.png'
+                on_press: root.katrain('redo',10)
+            NavIconButton:
+                icon: 'Next-End.png'
+                on_press: root.katrain('redo',9999)
+            NavIconButton:
+                icon: 'Next-Mistake.png'
+                color: Theme.MISTAKE_BUTTON_COLOR
+                on_press: root.katrain('find-mistake','redo')
+                
+        # Spacer
+        Widget:
+            size_hint_x: 1
 
 
 <HamburgerButton@TransparentIconButton>:
@@ -333,44 +342,40 @@
     player: 'B'
     player_type: 'player:human'
     player_subtype: 'game:normal'
-    background_color: Theme.BOX_BACKGROUND_COLOR if self.active else Theme.BACKGROUND_COLOR
-    outline_color: Theme.BOX_BACKGROUND_COLOR
-    outline_width: 2
-    padding: [2*CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING]
+    background_color: Theme.BOX_BACKGROUND_COLOR
+    orientation: 'horizontal'
+    padding: dp(5)
+    spacing: dp(10)
     subtype_label: subtype_label
+    
+    # Avatar
     CircleWithText:
-        size_hint_x: 0.32 if root.alignment=='right' else EPSILON
-        opacity: 1 if root.alignment=='right' else 0
+        size_hint: None, 1
+        width: self.height
         player: root.player
         text: str(root.captures)
+        
+    # Info
     BoxLayout:
-        size_hint: 0.75, 1
-        pos_hint: {'x':0,'y':0}
-        size_hint: 1,1
         orientation: 'vertical'
         Label:
-            size_hint: 1,0.6
             text: i18n._(root.player_type)
-            font_size: 0.8 * self.height
-            size: self.texture_size
-            max_lines: 1
-            halign: 'center'
-            valign: 'middle'
-        Label: # todo: proper scaling/shortening label instead of this jank
+            font_size: self.height * 0.5
+            halign: 'left'
+            valign: 'bottom'
+            text_size: self.size
+            bold: True
+            color: Theme.TEXT_COLOR
+        Label:
             id: subtype_label
             text: i18n._(root.player_subtype)
-            size_hint: 1,0.4
-            font_size: self.height * 0.7 if root.player_type==PLAYER_HUMAN else self.height * 0.7 * min(1,18/len(self.text))
-            text_size: self.size if root.player_type==PLAYER_HUMAN else (None,self.height)
-            halign: 'center'
-            valign: 'middle'
-            shorten: root.player_type==PLAYER_HUMAN # overflow/cut rank off AI names
-            max_lines: 1
-    CircleWithText:
-        size_hint_x: EPSILON if root.alignment=='right' else 0.32
-        opacity: 0 if root.alignment=='right' else 1
-        player: root.player
-        text: str(root.captures)
+            font_size: self.height * 0.4
+            halign: 'left'
+            valign: 'top'
+            text_size: self.size
+            color: Theme.MENU_ITEM_SHORTCUT_COLOR
+            shorten: True
+
 
 <GraphMarkerLabel@Label>:
     valign: 'bottom'
@@ -469,124 +474,228 @@
             points: (self.x,self.y+1,self.x+self.width,self.y+1)
 
 
+# New Toolbar Toggle Button
+<ToolbarToggle@ToggleButtonBehavior+Image>:
+    size_hint: None, 1
+    width: self.height
+    allow_stretch: True
+    keep_ratio: True
+    color: Theme.ACCENT_PRIMARY if self.state == 'down' else Theme.BUTTON_INACTIVE_COLOR
+    source: self.icon if hasattr(self, 'icon') else ''
+    checkbox: self 
+    active: self.state == 'down'
+
+<AnalysisControls>:
+    katrain: app.gui
+    orientation: 'horizontal'
+    spacing: CP_SPACING
+    
+    # Python ids mapping
+    show_children: show_children
+    eval: eval
+    policy: policy
+    hints: hints
+    ownership: ownership
+    analysis_button: analysis_button
+    hamburger: hamburger
+
+    HamburgerButton:
+        id: hamburger
+        size_hint: None, 1
+        on_press: app.gui.nav_drawer.set_state("open")
+
+    BoxLayout:
+        size_hint_x: 1
+        orientation: 'horizontal'
+        spacing: dp(10)
+        padding: dp(5)
+        
+        ToolbarToggle:
+            id: show_children
+            icon: 'Branch.png'
+            state: 'down'
+            on_state: root.toggle_option('show_children', self.state == 'down')
+            
+        ToolbarToggle:
+            id: eval
+            icon: 'dot.png'
+            group: 'eval'
+            allow_no_selection: True
+            on_state: root.toggle_option('eval', self.state == 'down')
+            
+        ToolbarToggle:
+            id: hints
+            icon: 'topmove.png'
+            disabled: policy.state == 'down'
+            on_state: root.toggle_option('hints', self.state == 'down')
+            
+        ToolbarToggle:
+            id: policy
+            icon: 'analysis.png'
+            group: 'policy'
+            allow_no_selection: True
+            on_state: root.toggle_option('policy', self.state == 'down')
+            
+        ToolbarToggle:
+            id: ownership
+            icon: 'setupfight.png' # Placeholder for Territory
+            on_state: root.toggle_option('ownership', self.state == 'down')
+
+    # Analyze Button
+    AutoSizedRectangleButton:
+        id: analysis_button
+        text: i18n._("btn:Analyze")
+        size_hint: None, 0.8
+        pos_hint: {'center_y': 0.5}
+        on_release: root.toggle_dropdown()
+
+
+<TabToggleButton@ToggleButton>:
+    group: 'controls_tab'
+    allow_no_selection: False
+    background_normal: ''
+    background_down: ''
+    background_color: Theme.BOX_BACKGROUND_COLOR if self.state == 'normal' else Theme.LIGHTER_BACKGROUND_COLOR
+    color: Theme.TEXT_SUB if self.state == 'normal' else Theme.TEXT_COLOR
+    bold: self.state == 'down'
+    font_size: self.height * 0.4
+
+
 <ControlsPanel>:
     katrain: app.gui
     orientation: 'vertical'
     players: {'B':B_player,'W':W_player}
     graph: graph
     stats: stats
-    notes_panel: notes_panel
+    notes_panel: notes_panel # We mock this or keep it invisible to avoid errors
     info: info
     note: note
     status: status
     move_tree: move_tree
-    padding: CP_PADDING,CP_PADDING,CP_PADDING,0
+    padding: CP_PADDING
     spacing: CP_SPACING
-    tab_option_height: max(15,root.height / 30)
-    available_height: root.height - (3 * self.tab_option_height + 2*CP_PADDING - 4*CP_SPACING) # minus tabs fixed, spacing etc
-    player_box_height: max(50, 0.08 * root.available_height)
-    timer_box_height:  max(50, 0.11 * root.available_height)
-    graph_height:  max(75, 0.17 * root.height)
-    stat_height: max(20, 0.035 * root.height)
-    BoxLayout: # -- Players
+    
+    # Header: Players
+    BoxLayout:
         size_hint_y: None
-        height: root.player_box_height
+        height: dp(60)
         PlayerInfo:
             id: B_player
             player: 'B'
         PlayerInfo:
             id: W_player
             player: 'W'
+
+    # Tabs
     BoxLayout:
         size_hint_y: None
-        height: root.timer_box_height
-        spacing: CP_SPACING
-        MoveTree:
-            id: move_tree
-            min_height: root.timer_box_height
-    CollapsablePanel:
-        id: graph_panel
-        content_height: graph.height
-        options_height: root.tab_option_height
-        closed_label: 'closedlabel:scoregraph'
-        options: ['score','winrate','points']
-        option_colors: [Theme.SCORE_COLOR,Theme.WINRATE_COLOR,Theme.POINTLOSS_COLOR]
-        option_active: [True,False,False]
-        on_option_state:
-            graph.show_graphs(args[1])
-            graph.hidden = not (args[1]['score'] or args[1]['winrate'] or args[1]['points'])
-        ScoreGraph:
-            id: graph
-            opacity: 0 if self.hidden else 1
-            size_hint_y: None
-            height: root.graph_height
-    CollapsablePanel:
-        id: stats_panel
-        num_active: 3
-        content_height: self.num_active * root.stat_height + EPSILON
-        options_height: root.tab_option_height
-        closed_label: 'closedlabel:movestats'
-        options: ['score','winrate','points']
-        option_colors: [Theme.SCORE_COLOR,Theme.WINRATE_COLOR,Theme.POINTLOSS_COLOR]
-        option_active: [True,True,True]
-        on_option_state:
-            for k, v in args[1].items(): stats.labels[k].hidden = not v
-            self.num_active = sum(args[1].values(),0)
-        StatsBox:
-            id: stats
-    CollapsablePanel:
-        id: notes_panel
-        size_hint_y_open: 1
-        closed_label: 'closedlabel:info&notes'
-        options: ['info','info-details','notes']
-        option_colors: [Theme.INFO_TAB_FONT_COLOR,Theme.INFO_TAB_FONT_COLOR,Theme.NOTES_TAB_FONT_COLOR]
-        option_active: [True,False,False]
-        on_option_state:
-            info.detailed = args[1]['info-details']
-            info.size_hint_y = int(args[1]['info'] or info.detailed)+EPSILON
-            info.opacity =  int(args[1]['info'] or info.detailed)
-            notebox.size_hint_y = int(args[1]['notes'])*0.66+EPSILON
-            notebox.opacity = int(args[1]['notes'])
-            app.gui.update_state()
-        options_height: root.tab_option_height
-        BGBoxLayout:
-            background_color: Theme.BOX_BACKGROUND_COLOR
-            orientation: 'vertical'
-            ScrollableLabel:
-                id: status
-                error: False
-                size_hint: 1, None
-                height: min(self.parent.height*0.66,self.label.texture_size[1])
-                outline_color: Theme.ERROR_BORDER_COLOR if self.error else Theme.INFO_TAB_FONT_COLOR
-                background_color: Theme.LIGHTER_BACKGROUND_COLOR
-            ScrollableLabel:
-                id: info
-                detailed: False
-                line_height: 1.25
-                markup: True
-                on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
-                size_hint: 1, 1
-                height: self.parent.height - status.height - note.height - 1
-            AnchorLayout:
-                padding: 0
-                id: notebox
-                size_hint: 1,0
+        height: dp(35)
+        spacing: dp(2)
+        TabToggleButton:
+            text: i18n._("Game")
+            state: 'down'
+            on_state: if self.state == 'down': tab_manager.current = 'game'
+        TabToggleButton:
+            text: i18n._("Graph")
+            on_state: if self.state == 'down': tab_manager.current = 'graph'
+        TabToggleButton:
+            text: i18n._("Info")
+            on_state: if self.state == 'down': tab_manager.current = 'info'
+
+    # Content
+    ScreenManager:
+        id: tab_manager
+        
+        Screen:
+            name: 'game'
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: CP_SPACING
+                MoveTree:
+                    id: move_tree
+                Label:
+                    id: status
+                    size_hint_y: None
+                    height: dp(30)
+                    text_size: self.size
+                    halign: 'center'
+                    valign: 'middle'
+                    color: Theme.ACCENT_INFO
+
+        Screen:
+            name: 'graph'
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: CP_SPACING
+                
+                # Graph Controls (replacing CollapsablePanel options)
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(30)
+                    spacing: dp(10)
+                    CheckBox:
+                        active: True
+                        size_hint_x: None
+                        width: self.height
+                        on_active: graph.show_graphs({'score': self.active, 'winrate': winrate_cb.active, 'points': points_cb.active})
+                    Label:
+                        text: i18n._('stats:score')
+                        color: Theme.SCORE_COLOR
+                        
+                    CheckBox:
+                        id: winrate_cb
+                        active: False
+                        size_hint_x: None
+                        width: self.height
+                        on_active: graph.show_graphs({'score': True, 'winrate': self.active, 'points': points_cb.active})
+                    Label:
+                        text: i18n._('stats:winrate')
+                        color: Theme.WINRATE_COLOR
+
+                    CheckBox:
+                        id: points_cb
+                        active: False
+                        size_hint_x: None
+                        width: self.height
+                        on_active: graph.show_graphs({'score': True, 'winrate': winrate_cb.active, 'points': self.active})
+                    Label:
+                        text: i18n._('stats:pointslost')
+                        color: Theme.POINTLOSS_COLOR
+
+                ScoreGraph:
+                    id: graph
+                    
+                StatsBox:
+                    id: stats
+                    size_hint_y: None
+                    height: dp(100)
+
+        Screen:
+            name: 'info'
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: CP_SPACING
+                
+                ScrollableLabel:
+                    id: info
+                    detailed: True
+                    markup: True
+                    on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
+                
                 LabelledTextInput:
                     id: note
-                    font_size: sp(Theme.NOTES_FONT_SIZE)
-                    multiline: True
-                    on_text: root.katrain.set_note(self.text)
+                    size_hint_y: 0.3
                     hint_text: i18n._('SGF Notes Hint')
-                    size_hint: 1, 1
-                    canvas.before:
-                        Color:
-                            rgba: LIGHTER_GREY
-                        Line:
-                            points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
-                            width: 1
-    Label:
-        size_hint_y: EPSILON # takes up remaining space if info is closed
+                    on_text: root.katrain.set_note(self.text)
 
+    # Invisible placeholders for Python code compatibility if needed
+    Widget:
+        id: notes_panel
+        size_hint: None, None
+        size: 0, 0
+        opacity: 0
+
+# ... (Menu items and others kept same) ...
 
 <MenuItem>
     font_size: self.height * 0.5
@@ -689,65 +798,6 @@
         icon: 'ai.png'
         shortcut: 'enter'
         on_action: root.katrain("ai-move")
-
-
-<AnalysisControls>:
-    katrain: app.gui
-    orientation: 'horizontal'
-    spacing: CP_SPACING
-    show_children: show_children
-    eval: eval
-    policy: policy
-    hints: hints
-    ownership: ownership
-    analysis_button: analysis_button
-    hamburger: hamburger
-    HamburgerButton:
-        id: hamburger
-        size_hint: None, 1
-        on_press: app.gui.nav_drawer.set_state("open")
-    AnchorLayout:
-        BoxLayout:
-            size_hint_x: None
-            width: self.minimum_width
-            spacing: root.height/4
-            AnalysisToggle:
-                id: show_children
-                text: i18n._("analysis:nextmoves")
-                default_active: True
-            AnalysisToggle:
-                id: eval
-                text: i18n._("analysis:dots")
-                tri_state: True
-            AnalysisToggle:
-                id: hints
-                text: i18n._("analysis:topmoves")
-                disabled: policy.checkbox.active
-            AnalysisToggle:
-                id: policy
-                text: i18n._("analysis:policy")
-            AnalysisToggle:
-                id: ownership
-                text: i18n._('analysis:territory')
-                padding: 0,0,show_children.width/8,0 # space button a bit more
-            FloatLayout:
-                width: analysis_button.width
-                size_hint: None, 1
-                AutoSizedRectangleButton:
-                    background_color: Theme.BOX_BACKGROUND_COLOR
-                    size_hint_y: 0.55
-                    pos_hint: {'center_y': 0.5, 'x': 0}
-                    id: analysis_button
-                    on_release: root.toggle_dropdown()
-                    text: '   ' + i18n._("btn:Analyze")
-                Image:
-                    pos_hint: {'center_y': 0.5}
-                    x: self.parent.x + 2
-                    size_hint: None, 0.4
-                    width: self.height/2
-                    source: 'menu.png'
-                    mipmap: True
-
 
 
 <MainMenuItem@MenuItem>
@@ -918,7 +968,3 @@
             text: i18n._('btn:Analysis')
             id: analyze
             on_state: if self.state=='down': root.select_mode(MODE_ANALYZE)
-
-
-
-## NOTE: `KaTrainGui` is now Python-built (see `katrain/__main__.py`).
