@@ -228,8 +228,6 @@ class GameNode(SGFNode):
         self.time_used = 0
         self.undo_threshold = random.random()  # for fractional undos
         self.end_state = None
-        self.shortcuts_to = []
-        self.shortcut_from = None
         self.analysis_from_sgf = None
         self.clear_analysis()
 
@@ -252,21 +250,6 @@ class GameNode(SGFNode):
     @property
     def prisoner_count(self) -> dict[str, int]:
         return self.board_state.prisoner_count
-
-    def add_shortcut(self, to_node):  # collapses the branch between them
-        nodes = [to_node]
-        while nodes[-1].parent and nodes[-1] != self:  # ensure on path
-            nodes.append(nodes[-1].parent)
-        if nodes[-1] == self and len(nodes) > 2:
-            via = nodes[-2]
-            self.shortcuts_to.append((to_node, via))  # and first child
-            to_node.shortcut_from = self
-
-    def remove_shortcut(self):
-        from_node = self.shortcut_from
-        if from_node:
-            from_node.shortcuts_to = [(m, v) for m, v in from_node.shortcuts_to if m != self]
-            self.shortcut_from = None
 
     def load_analysis(self):
         if not self.analysis_from_sgf:
@@ -359,13 +342,10 @@ class GameNode(SGFNode):
             properties["CA"] = ["UTF-8"]
             properties["AP"] = [f"{PROGRAM_NAME}:{VERSION}"]
             properties["KTV"] = [ANALYSIS_FORMAT_VERSION]
-        if self.shortcut_from:
-            properties["KTSF"] = [id(self.shortcut_from)]
-        elif "KTSF" in properties:
+        # v2: shortcut/collapse markers are no longer supported; strip any legacy fields.
+        if "KTSF" in properties:
             del properties["KTSF"]
-        if self.shortcuts_to:
-            properties["KTSID"] = [id(self)]
-        elif "KTSID" in properties:
+        if "KTSID" in properties:
             del properties["KTSID"]
         if note:
             comments.insert(0, f"{self.note}\n")  # user notes at top!

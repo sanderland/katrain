@@ -700,9 +700,6 @@ class KaTrainGui(Screen, KaTrainBase):
     def _do_analyze_extra(self, mode, **kwargs):
         self.game.analyze_extra(mode, **kwargs)
 
-    def _do_selfplay_setup(self, until_move):
-        self.game.selfplay(int(until_move) if isinstance(until_move, float) else until_move)
-
     def _do_new_game_popup(self):
         popup = self.popup_manager.show(
             PopupSpec(title_key="New Game title", size=[800, 620], cache_key="new_game"),
@@ -877,7 +874,6 @@ class KaTrainGui(Screen, KaTrainBase):
                 (Theme.KEY_AI_MOVE, ("ai-move",)),
                 (Theme.KEY_RESET_ANALYSIS, ("reset-analysis",)),
                 (Theme.KEY_PASS, ("play", None)),
-                (Theme.KEY_SELFPLAY_TO_END, ("selfplay-setup", "end")),
                 (Theme.KEY_NAV_PREV_BRANCH, ("undo", "branch")),
                 (Theme.KEY_NAV_BRANCH_DOWN, ("switch-branch", 1)),
                 (Theme.KEY_NAV_BRANCH_UP, ("switch-branch", -1)),
@@ -940,8 +936,6 @@ class KaTrainGui(Screen, KaTrainBase):
             self("find-mistake", "undo" if shift_pressed else "redo")
         elif keycode[1] == Theme.KEY_MOVE_TREE_DELETE_SELECTED_NODE and ctrl_pressed:
             self.controls.move_tree.delete_selected_node()
-        elif keycode[1] == Theme.KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE and not ctrl_pressed:
-            self.controls.move_tree.toggle_selected_node_collapse()
         elif keycode[1] == Theme.KEY_NEW_GAME and ctrl_pressed:
             self("new-game-popup")
         elif keycode[1] == Theme.KEY_LOAD_GAME and ctrl_pressed:
