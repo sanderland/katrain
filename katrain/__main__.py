@@ -65,6 +65,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.resources import resource_find
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
@@ -97,6 +98,7 @@ from katrain.gui.popups import (
     EngineRecoveryPopup,
 )
 from katrain.gui.components.popup import PopupManager, PopupSpec
+from katrain.gui.components.layout import KtToolbar
 from katrain.gui.sound import play_sound
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import KataGoEngine
@@ -170,26 +172,49 @@ class KaTrainGui(Screen, KaTrainBase):
         bg.size = self.size
         self.bind(pos=lambda *_: setattr(bg, "pos", self.pos), size=lambda *_: setattr(bg, "size", self.size))
 
+        main = BoxLayout(orientation="vertical")
+
+        self.toolbar = KtToolbar()
+        self.toolbar.padding = [dp(Theme.PADDING_MD), dp(Theme.PADDING_SM), dp(Theme.PADDING_MD), dp(Theme.PADDING_SM)]
+        self.toolbar.spacing = dp(Theme.SPACING_SM)
+
+        # Left: hamburger, center: mode selector, right: analysis toggles.
+        self.hamburger_button = Factory.HamburgerButton(size_hint=(None, 1))
+        self.toolbar.add_widget(self.hamburger_button)
+
+        mode_anchor = AnchorLayout(anchor_x="center", anchor_y="center")
+        self.play_mode = PlayAnalyzeSelect(size_hint=(None, 1), width=dp(220))
+        mode_anchor.add_widget(self.play_mode)
+        self.toolbar.add_widget(mode_anchor)
+
+        self.analysis_controls = AnalysisControls(show_hamburger=False, size_hint=(None, 1))
+        self.analysis_controls.bind(minimum_width=self.analysis_controls.setter("width"))
+        self.toolbar.add_widget(self.analysis_controls)
+
+        main.add_widget(self.toolbar)
+
         content = BoxLayout(orientation="horizontal")
 
         left = BoxLayout(orientation="vertical")
-        self.analysis_controls = AnalysisControls()
         self.board_gui = BadukPanWidget()
         self.board_controls = BadukPanControls()
-        left.add_widget(self.analysis_controls)
         left.add_widget(self.board_gui)
         left.add_widget(self.board_controls)
 
         right = BoxLayout(orientation="vertical", size_hint_x=None)
-        self.play_mode = PlayAnalyzeSelect()
         self.controls = ControlsPanel()
-        right.add_widget(self.play_mode)
         right.add_widget(self.controls)
+        self._right_panel = right
+
+        # Wire leaf widgets through explicit callbacks (avoid App.get_running_app().gui).
+        self.controls.move_tree.move_tree_canvas.on_select_node = self._navigate_to_node
+        self.controls.graph.on_navigate_node = self._navigate_to_node
 
         content.add_widget(left)
         content.add_widget(right)
 
-        bg.add_widget(content)
+        main.add_widget(content)
+        bg.add_widget(main)
         root.add_widget(bg)
 
         self.nav_drawer = MyNavigationDrawer(
@@ -206,38 +231,44 @@ class KaTrainGui(Screen, KaTrainBase):
         root.add_widget(self.nav_drawer)
 
         self.add_widget(root)
+        self.hamburger_button.bind(on_press=lambda *_: self.nav_drawer.set_state("open"))
         Clock.schedule_once(lambda _dt: self._sync_layout_metrics(), 0)
 
+    def _navigate_to_node(self, node) -> None:
+        self.game.set_current_node(node)
+        self.update_state()
+
     def _sync_layout_metrics(self):
-        if not self.analysis_controls or not self.board_controls:
+        if not self.toolbar or not self.board_controls:
             return
 
-        controls_h = max(
-            sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),
-            min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT), self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO),
-        )
+        toolbar_h = dp(Theme.TOOLBAR_HEIGHT)
+        self.toolbar.height = toolbar_h
+        self.toolbar.size_hint_y = None
 
-        self.analysis_controls.height = controls_h
+        self.analysis_controls.height = toolbar_h
         self.analysis_controls.size_hint_y = None
         self.analysis_controls.opacity = 1
 
-        self.board_controls.height = controls_h
+        self.play_mode.height = toolbar_h
+        self.play_mode.size_hint_y = None
+
+        self.board_controls.height = toolbar_h
         self.board_controls.size_hint_y = None
         self.board_controls.opacity = 1
 
-        if self.play_mode and self.controls:
-            right = self.play_mode.parent
-            if right:
-                right.width = self.height * Theme.RIGHT_PANEL_ASPECT_RATIO
-                right.opacity = 1
-
-            self.play_mode.size_hint_y = None
-            self.play_mode.height = self.analysis_controls.height
+        right = getattr(self, "_right_panel", None)
+        if right:
+            sidebar_w = dp(Theme.SIDEBAR_WIDTH)
+            sidebar_w = max(dp(Theme.SIDEBAR_MIN_WIDTH), min(dp(Theme.SIDEBAR_MAX_WIDTH), sidebar_w))
+            sidebar_w = min(sidebar_w, self.width * 0.45)
+            right.width = sidebar_w
+            right.opacity = 1
 
         if self.nav_drawer:
-            available_h = self.height - self.analysis_controls.height
+            available_h = self.height - toolbar_h
             self.nav_drawer.height = available_h
-            self.nav_drawer.width = available_h * 0.5
+            self.nav_drawer.width = min(dp(Theme.SIDEBAR_WIDTH), self.width * 0.6)
             if self.nav_drawer.state == "close":
                 self.nav_drawer.x = -self.nav_drawer.width
 
@@ -846,9 +877,9 @@ class KaTrainGui(Screen, KaTrainBase):
     def on_touch_up(self, touch):
         if touch.is_mouse_scrolling:
             touching_board = self.board_gui.collide_point(*touch.pos) or self.board_controls.collide_point(*touch.pos)
-            touching_control_nonscroll = self.controls.collide_point(
-                *touch.pos
-            ) and not self.controls.notes_panel.collide_point(*touch.pos)
+            touching_control_nonscroll = self.controls.collide_point(*touch.pos) and not (
+                self.controls.notes_panel.collide_point(*touch.pos) or self.controls.status.collide_point(*touch.pos)
+            )
             if self.board_gui.animating_pv is not None and touching_board:
                 if touch.button == "scrollup":
                     self.board_gui.adjust_animate_pv_index(1)
@@ -1027,7 +1058,7 @@ class KaTrainApp(App):
                 with open(theme_file) as f:
                     theme_overrides = json.load(f)
                 for k, v in theme_overrides.items():
-                    setattr(Theme, k, v)
+                    Theme.apply_override(k, v)
                     print(f"[{theme_file}] Found theme override {k} = {v}")
             except Exception as e:  # noqa E722
                 print(f"Failed to load theme file {theme_file}: {e}")

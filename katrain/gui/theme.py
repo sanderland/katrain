@@ -203,3 +203,142 @@ class Theme:
     KEY_MOVE_TREE_MAKE_SELECTED_NODE_MAIN_BRANCH = "pageup"
 
     KEY_TOGGLE_COORDINATES = "k"
+
+    # ---------------------------
+    # v2 design tokens (systematic)
+    #
+    # These tokens provide a more regular design system surface (spacing/typography/states)
+    # while keeping the legacy Theme.* attributes intact for existing KV and theme*.json.
+    # ---------------------------
+
+    # Surfaces (aliases for legacy colors)
+    SURFACE_BG = BACKGROUND_COLOR
+    SURFACE_CARD = BOX_BACKGROUND_COLOR
+    SURFACE_INPUT = LIGHTER_BACKGROUND_COLOR
+
+    # Text colors (keep legacy TEXT_COLOR as the canonical primary)
+    TEXT_PRIMARY = TEXT_COLOR
+    TEXT_SECONDARY = LIGHT_GREY
+    TEXT_DISABLED = GREY
+
+    # Spacing scale (dp)
+    SPACING_XS = CP_SMALL_SPACING
+    SPACING_SM = CP_SPACING
+    SPACING_MD = SPACING_SM * 2
+    SPACING_LG = SPACING_SM * 3
+    SPACING_XL = SPACING_SM * 4
+
+    # Padding scale (dp) - tuned for compact desktop UI.
+    PADDING_SM = CP_PADDING
+    PADDING_XS = max(2, PADDING_SM - 2)
+    PADDING_MD = PADDING_SM + 4
+    PADDING_LG = PADDING_MD + PADDING_SM
+
+    # Typography scale (sp)
+    FONT_SIZE_SM = NOTES_FONT_SIZE
+    FONT_SIZE_MD = DESC_FONT_SIZE
+    FONT_SIZE_LG = INPUT_FONT_SIZE
+    FONT_SIZE_XL = FONT_SIZE_LG + 4
+
+    LINE_HEIGHT_COMPACT = 1.1
+    LINE_HEIGHT_NORMAL = 1.25
+
+    # Component metrics (dp)
+    TOOLBAR_HEIGHT = 60
+    BUTTON_HEIGHT = 44
+    INPUT_HEIGHT = 40
+    FORM_ROW_HEIGHT = 48
+
+    # Sidebar sizing (dp). Used by the redesigned two-pane layout.
+    SIDEBAR_MIN_WIDTH = 300
+    SIDEBAR_WIDTH = 380
+    SIDEBAR_MAX_WIDTH = 520
+
+    # Radii (dp)
+    RADIUS_SM = 8
+    RADIUS_MD = 12
+    RADIUS_LG = 16
+
+    # Interactive states / affordances
+    DIVIDER_COLOR = [1, 1, 1, 0.12]
+    BORDER_COLOR = [1, 1, 1, 0.20]
+    HOVER_BG_COLOR = [1, 1, 1, 0.06]
+    FOCUS_RING_COLOR = CHECKBOX_COLOR
+
+    # Component-specific padding
+    INPUT_PADDING_X = 10
+    INPUT_PADDING_Y = 6
+
+    # ---- override/compat helpers ----
+
+    _TOKEN_ALIAS_PAIRS: list[tuple[str, str]] = [
+        # colors
+        ("BACKGROUND_COLOR", "SURFACE_BG"),
+        ("BOX_BACKGROUND_COLOR", "SURFACE_CARD"),
+        ("LIGHTER_BACKGROUND_COLOR", "SURFACE_INPUT"),
+        ("TEXT_COLOR", "TEXT_PRIMARY"),
+        # spacing/padding
+        ("CP_SMALL_SPACING", "SPACING_XS"),
+        ("CP_SPACING", "SPACING_SM"),
+        ("CP_PADDING", "PADDING_SM"),
+        # typography
+        ("NOTES_FONT_SIZE", "FONT_SIZE_SM"),
+        ("DESC_FONT_SIZE", "FONT_SIZE_MD"),
+        ("INPUT_FONT_SIZE", "FONT_SIZE_LG"),
+    ]
+
+    @classmethod
+    def apply_override(cls, key: str, value) -> None:
+        """Apply a theme override and keep legacy/new tokens in sync.
+
+        The theme loader used to do `setattr(Theme, key, value)`. We keep that behavior,
+        but also mirror alias tokens and update derived scale values when appropriate.
+        """
+
+        old_spacing_sm = cls.SPACING_SM
+        old_padding_sm = cls.PADDING_SM
+
+        setattr(cls, key, value)
+        cls._sync_aliases_for_key(key)
+
+        if key in {"CP_SPACING", "SPACING_SM"}:
+            cls._maybe_update_spacing_scale(old_spacing_sm, cls.SPACING_SM)
+
+        if key in {"CP_PADDING", "PADDING_SM"}:
+            cls._maybe_update_padding_scale(old_padding_sm, cls.PADDING_SM)
+
+    @classmethod
+    def _sync_aliases_for_key(cls, key: str) -> None:
+        for a, b in cls._TOKEN_ALIAS_PAIRS:
+            if key == a:
+                setattr(cls, b, getattr(cls, a))
+            elif key == b:
+                setattr(cls, a, getattr(cls, b))
+
+    @classmethod
+    def _maybe_update_spacing_scale(cls, old_sm: float, new_sm: float) -> None:
+        # Update derived spacing tokens only if they were still at defaults
+        # relative to the previous base.
+        derived = {
+            "SPACING_MD": 2,
+            "SPACING_LG": 3,
+            "SPACING_XL": 4,
+        }
+        for key, factor in derived.items():
+            if getattr(cls, key) == old_sm * factor:
+                setattr(cls, key, new_sm * factor)
+
+    @classmethod
+    def _default_padding_tokens(cls, padding_sm: float) -> dict[str, float]:
+        padding_xs = max(2, padding_sm - 2)
+        padding_md = padding_sm + 4
+        padding_lg = padding_md + padding_sm
+        return {"PADDING_XS": padding_xs, "PADDING_MD": padding_md, "PADDING_LG": padding_lg}
+
+    @classmethod
+    def _maybe_update_padding_scale(cls, old_sm: float, new_sm: float) -> None:
+        old_defaults = cls._default_padding_tokens(old_sm)
+        new_defaults = cls._default_padding_tokens(new_sm)
+        for key, old_val in old_defaults.items():
+            if getattr(cls, key) == old_val:
+                setattr(cls, key, new_defaults[key])

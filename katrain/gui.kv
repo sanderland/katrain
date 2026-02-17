@@ -11,6 +11,9 @@
 #:import STATUS_INFO katrain.core.constants.STATUS_INFO
 
 #:import Theme katrain.gui.theme.Theme
+#:import KtSegmentedControl katrain.gui.components.segmented_control.KtSegmentedControl
+#:import KtDivider katrain.gui.components.layout.KtDivider
+#:import KtSpacer katrain.gui.components.layout.KtSpacer
 #:import BLACK katrain.gui.theme.BLACK
 #:import LIGHTER_GREY katrain.gui.theme.LIGHTER_GREY
 
@@ -480,97 +483,84 @@
     note: note
     status: status
     move_tree: move_tree
-    padding: CP_PADDING,CP_PADDING,CP_PADDING,0
+    padding: CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING
     spacing: CP_SPACING
-    tab_option_height: max(15,root.height / 30)
-    available_height: root.height - (3 * self.tab_option_height + 2*CP_PADDING - 4*CP_SPACING) # minus tabs fixed, spacing etc
-    player_box_height: max(50, 0.08 * root.available_height)
-    timer_box_height:  max(50, 0.11 * root.available_height)
-    graph_height:  max(75, 0.17 * root.height)
-    stat_height: max(20, 0.035 * root.height)
-    BoxLayout: # -- Players
+
+    player_box_height: max(56, 0.09 * root.height)
+    move_tree_height: max(120, 0.22 * root.height)
+    tabs_height: max(36, 0.06 * root.height)
+
+    BoxLayout: # -- Player header
         size_hint_y: None
         height: root.player_box_height
+        spacing: CP_SPACING
         PlayerInfo:
             id: B_player
             player: 'B'
         PlayerInfo:
             id: W_player
             player: 'W'
-    BoxLayout:
+
+    MoveTree:
+        id: move_tree
         size_hint_y: None
-        height: root.timer_box_height
-        spacing: CP_SPACING
-        MoveTree:
-            id: move_tree
-            min_height: root.timer_box_height
-    CollapsablePanel:
-        id: graph_panel
-        content_height: graph.height
-        options_height: root.tab_option_height
-        closed_label: 'closedlabel:scoregraph'
-        options: ['score','winrate','points']
-        option_colors: [Theme.SCORE_COLOR,Theme.WINRATE_COLOR,Theme.POINTLOSS_COLOR]
-        option_active: [True,False,False]
-        on_option_state:
-            graph.show_graphs(args[1])
-            graph.hidden = not (args[1]['score'] or args[1]['winrate'] or args[1]['points'])
+        height: root.move_tree_height
+
+    ScrollableLabel:  # persistent status strip
+        id: status
+        error: False
+        size_hint: 1, None
+        height: min(dp(72), self.label.texture_size[1] + dp(12))
+        outline_color: Theme.ERROR_BORDER_COLOR if self.error else Theme.INFO_TAB_FONT_COLOR
+        background_color: Theme.LIGHTER_BACKGROUND_COLOR
+
+    BoxLayout:  # view switcher
+        size_hint_y: None
+        height: root.tabs_height
+        padding: 0, 0, 0, 0
+        KtSegmentedControl:
+            id: sidebar_tabs
+            options: [{'id': 'info', 'text_key': 'closedlabel:info&notes'}, {'id': 'graph', 'text_key': 'closedlabel:scoregraph'}, {'id': 'stats', 'text_key': 'closedlabel:movestats'}]
+            selected: root.sidebar_view
+            select_callback: root.set_sidebar_view
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+
         ScoreGraph:
             id: graph
-            opacity: 0 if self.hidden else 1
-            size_hint_y: None
-            height: root.graph_height
-    CollapsablePanel:
-        id: stats_panel
-        num_active: 3
-        content_height: self.num_active * root.stat_height + EPSILON
-        options_height: root.tab_option_height
-        closed_label: 'closedlabel:movestats'
-        options: ['score','winrate','points']
-        option_colors: [Theme.SCORE_COLOR,Theme.WINRATE_COLOR,Theme.POINTLOSS_COLOR]
-        option_active: [True,True,True]
-        on_option_state:
-            for k, v in args[1].items(): stats.labels[k].hidden = not v
-            self.num_active = sum(args[1].values(),0)
+            show_score: True
+            show_winrate: False
+            show_pointloss: False
+            opacity: 1 if root.sidebar_view == 'graph' else 0
+            size_hint_y: 1 if root.sidebar_view == 'graph' else None
+            height: self.parent.height if root.sidebar_view == 'graph' else 0
+
         StatsBox:
             id: stats
-    CollapsablePanel:
-        id: notes_panel
-        size_hint_y_open: 1
-        closed_label: 'closedlabel:info&notes'
-        options: ['info','info-details','notes']
-        option_colors: [Theme.INFO_TAB_FONT_COLOR,Theme.INFO_TAB_FONT_COLOR,Theme.NOTES_TAB_FONT_COLOR]
-        option_active: [True,False,False]
-        on_option_state:
-            info.detailed = args[1]['info-details']
-            info.size_hint_y = int(args[1]['info'] or info.detailed)+EPSILON
-            info.opacity =  int(args[1]['info'] or info.detailed)
-            notebox.size_hint_y = int(args[1]['notes'])*0.66+EPSILON
-            notebox.opacity = int(args[1]['notes'])
-            app.gui.update_state()
-        options_height: root.tab_option_height
+            opacity: 1 if root.sidebar_view == 'stats' else 0
+            size_hint_y: 1 if root.sidebar_view == 'stats' else None
+            height: self.parent.height if root.sidebar_view == 'stats' else 0
+
         BGBoxLayout:
+            id: notes_panel
             background_color: Theme.BOX_BACKGROUND_COLOR
             orientation: 'vertical'
-            ScrollableLabel:
-                id: status
-                error: False
-                size_hint: 1, None
-                height: min(self.parent.height*0.66,self.label.texture_size[1])
-                outline_color: Theme.ERROR_BORDER_COLOR if self.error else Theme.INFO_TAB_FONT_COLOR
-                background_color: Theme.LIGHTER_BACKGROUND_COLOR
+            opacity: 1 if root.sidebar_view == 'info' else 0
+            size_hint_y: 1 if root.sidebar_view == 'info' else None
+            height: self.parent.height if root.sidebar_view == 'info' else 0
             ScrollableLabel:
                 id: info
                 detailed: False
-                line_height: 1.25
+                line_height: Theme.LINE_HEIGHT_NORMAL
                 markup: True
                 on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
                 size_hint: 1, 1
-                height: self.parent.height - status.height - note.height - 1
             AnchorLayout:
+                size_hint_y: None
+                height: dp(140)
                 padding: 0
-                id: notebox
-                size_hint: 1,0
                 LabelledTextInput:
                     id: note
                     font_size: sp(Theme.NOTES_FONT_SIZE)
@@ -584,8 +574,6 @@
                         Line:
                             points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
                             width: 1
-    Label:
-        size_hint_y: EPSILON # takes up remaining space if info is closed
 
 
 <MenuItem>
@@ -705,6 +693,9 @@
     HamburgerButton:
         id: hamburger
         size_hint: None, 1
+        width: self.height if root.show_hamburger else 0
+        opacity: 1 if root.show_hamburger else 0
+        disabled: not root.show_hamburger
         on_press: app.gui.nav_drawer.set_state("open")
     AnchorLayout:
         BoxLayout:
@@ -843,6 +834,8 @@
         do_scroll_x: False
         BoxLayout:
             orientation: 'vertical'
+            item_height: dp(48)
+            spacing: CP_SMALL_SPACING
             size_hint_y: None
             height: self.minimum_height
             MainMenuItem:
@@ -865,6 +858,13 @@
                 icon: 'Save-Game-As.png'
                 shortcut: 'Ctrl-D'
                 on_action: root.katrain("save-game-as-popup")
+
+            KtSpacer:
+                height: dp(6)
+            KtDivider:
+            KtSpacer:
+                height: dp(6)
+
             MainMenuItem:
                 text: i18n._('menu:teachsettings')
                 icon: 'Teaching-Settings.png'
@@ -875,11 +875,25 @@
                 icon: 'AI-Settings.png'
                 shortcut: 'F7'
                 on_action: root.katrain('ai-popup')
+
+            KtSpacer:
+                height: dp(6)
+            KtDivider:
+            KtSpacer:
+                height: dp(6)
+
             MainMenuItem:
                 text: i18n._('menu:settings')
                 icon: 'General-Settings.png'
                 shortcut: 'F8'
                 on_action: root.katrain('config-popup')
+
+            KtSpacer:
+                height: dp(6)
+            KtDivider:
+            KtSpacer:
+                height: dp(6)
+
             MainMenuItem:
                 text: i18n._('menu:manual')
                 icon: 'analysis.png'

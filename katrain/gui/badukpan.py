@@ -1138,6 +1138,7 @@ class AnalysisDropDown(DropDown):
 class AnalysisControls(BoxLayout):
     dropdown = ObjectProperty(None)
     is_open = BooleanProperty(False)
+    show_hamburger = BooleanProperty(True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

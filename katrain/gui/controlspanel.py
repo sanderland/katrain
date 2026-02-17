@@ -11,7 +11,7 @@ from katrain.core.constants import (
     STATUS_ERROR,
 )
 from katrain.core.lang import rank_label
-from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
+from katrain.gui.kivyutils import AnalysisToggle
 
 
 class PlayAnalyzeSelect(FloatLayout):
@@ -30,10 +30,9 @@ class PlayAnalyzeSelect(FloatLayout):
                 for id, toggle in self.katrain.analysis_controls.ids.items()
                 if isinstance(toggle, AnalysisToggle)
             },
-            "panels": {
-                id: (panel.state, panel.option_state)
-                for id, panel in self.katrain.controls.ids.items()
-                if isinstance(panel, CollapsablePanel)
+            "sidebar": {
+                "view": getattr(self.katrain.controls, "sidebar_view", "info"),
+                "info_detailed": bool(getattr(self.katrain.controls.info, "detailed", False)),
             },
         }
         self.katrain.save_config("ui_state")
@@ -43,9 +42,12 @@ class PlayAnalyzeSelect(FloatLayout):
         for id, active in state.get("analysis_controls", {}).items():
             cb = self.katrain.analysis_controls.ids[id].checkbox
             cb.active = bool(active)
-        for id, (panel_state, button_state) in state.get("panels", {}).items():
-            self.katrain.controls.ids[id].set_option_state(button_state)
-            self.katrain.controls.ids[id].state = panel_state
+
+        sidebar = state.get("sidebar", {})
+        if "view" in sidebar:
+            self.katrain.controls.sidebar_view = sidebar["view"]
+        if "info_detailed" in sidebar:
+            self.katrain.controls.info.detailed = bool(sidebar["info_detailed"])
 
     def select_mode(self, new_mode):  # actual switch state handler
         if self.mode == new_mode:
@@ -67,11 +69,15 @@ class PlayAnalyzeSelect(FloatLayout):
 class ControlsPanel(BoxLayout):
     katrain = ObjectProperty(None)
     button_controls = ObjectProperty(None)
+    sidebar_view = OptionProperty("info", options=["info", "graph", "stats"])
 
     def __init__(self, **kwargs):
         super(ControlsPanel, self).__init__(**kwargs)
         self.status_state = (None, -1e9, None)
         self.active_comment_node = None
+
+    def set_sidebar_view(self, view: str) -> None:
+        self.sidebar_view = view
 
     def update_players(self, *_args):
         for bw, player_info in self.katrain.players_info.items():

@@ -66,6 +66,22 @@ The script writes logs to:
 macOS may require Screen Recording permission for your terminal/IDE to take screenshots.
 The error usually looks like `could not create image from window`.
 
+If you don't have Screen Recording permission (CI/agents), use the Kivy-native harness instead:
+
+```bash
+# Main window (no popup)
+uv run python scripts/popup_harness_screenshot.py main screenshots/main_1300x900.png --size 1300x900
+
+# Hamburger/nav drawer open
+uv run python scripts/popup_harness_screenshot.py menu screenshots/menu_1300x900.png --size 1300x900
+
+# Key popups
+uv run python scripts/popup_harness_screenshot.py config screenshots/config_1300x900.png --size 1300x900
+uv run python scripts/popup_harness_screenshot.py ai screenshots/ai_1300x900.png --size 1300x900
+uv run python scripts/popup_harness_screenshot.py teacher screenshots/teacher_1300x900.png --size 1300x900
+uv run python scripts/popup_harness_screenshot.py newgame screenshots/newgame_1300x900.png --size 1300x900
+```
+
 ### Reading the screenshot in Cursor
 
 - Open `screenshots/_katrain_last.png` and view it directly, or
@@ -76,4 +92,15 @@ The error usually looks like `could not create image from window`.
 - Keep the output path constant (e.g. `screenshots/_katrain_last.png`) so you can re-open the same tab.
 - If you need to capture multiple states, add a short `sleep` and take 2-3 screenshots with different names.
 - If you're iterating on a single widget/layout, make a tiny harness app (like `test_button.py`) to avoid click-through and engine startup time.
+
+## Manual UI QA Checklist (Redesign v2)
+
+Quick sanity checks after UI/layout work:
+
+- **Window sizes**: at least `1024x768`, `1300x900`, `1600x1000`; verify no overlaps and the sidebar stays usable.
+- **Top toolbar**: hamburger opens the drawer; Play/Review switch toggles; analysis toggles still clickable.
+- **Sidebar**: move tree always visible; switching sidebar view doesn't hide move tree; status strip stays visible and readable.
+- **Navigation**: clicking the score graph and clicking a move tree node both navigate to that node without errors.
+- **Popups**: Config / AI / Teacher / New Game open, search field filters, Apply/Cancel work, no crashes.
+- **File dialogs**: Load SGF / Save SGF open and basic interaction still works.
 

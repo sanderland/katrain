@@ -72,6 +72,8 @@ class KtCard(BoxLayout, BackgroundMixin):
     outline_color = ListProperty([0, 0, 0, 0])
 
     def __init__(self, **kwargs):
+        # `auto_height` is a convenience flag, not a Kivy Property.
+        auto_height = kwargs.pop("auto_height", True)
         super().__init__(**kwargs)
         self.orientation = kwargs.get("orientation", "vertical")
         self.spacing = kwargs.get("spacing", dp(Theme.CP_SPACING))
@@ -79,7 +81,26 @@ class KtCard(BoxLayout, BackgroundMixin):
         self.background_radius = kwargs.get("background_radius", dp(6))
 
         # Most cards should naturally size to content when used inside a ScrollView.
-        auto_height = kwargs.get("auto_height", True)
         if auto_height and self.orientation == "vertical":
             self.size_hint_y = None
             self.bind(minimum_height=self.setter("height"))
+
+
+class KtToolbar(BoxLayout, BackgroundMixin):
+    """A simple full-width top bar container."""
+
+    background_color = ListProperty(Theme.SURFACE_BG)
+    outline_color = ListProperty([0, 0, 0, 0])
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.orientation = "horizontal"
+        self.size_hint_y = None
+        self.height = kwargs.get("height", dp(Theme.TOOLBAR_HEIGHT))
+        self.spacing = kwargs.get("spacing", dp(Theme.SPACING_SM))
+        self.padding = kwargs.get(
+            "padding",
+            [dp(Theme.PADDING_MD), dp(Theme.PADDING_SM), dp(Theme.PADDING_MD), dp(Theme.PADDING_SM)],
+        )
+        self.background_radius = kwargs.get("background_radius", 0)
+        self.outline_width = kwargs.get("outline_width", 0)

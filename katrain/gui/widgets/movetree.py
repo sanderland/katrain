@@ -19,7 +19,7 @@ class MoveTreeDropdown(DropDown):
 
 class MoveTreeCanvas(Widget):
     scroll_view_widget = ObjectProperty(None)
-    katrain = ObjectProperty(None, allownone=True)
+    on_select_node = ObjectProperty(None, allownone=True)
     move_size = NumericProperty(5)
     dropdown = ObjectProperty(None)
     is_open = BooleanProperty(False)
@@ -50,9 +50,8 @@ class MoveTreeCanvas(Widget):
         self.dropdown.bind(on_dismiss=self.close_dropdown)
 
     def set_game_node(self, node):
-        katrain = self.katrain
-        katrain.game.set_current_node(node)
-        katrain.update_state()
+        # The coordinator (KaTrainGui) wires this callback.
+        self.on_select_node(node)
 
     def on_touch_up(self, touch):
         selected_node = None
@@ -238,7 +237,6 @@ Builder.load_string(
     move_tree_canvas: move_tree_canvas
     MoveTreeCanvas:
         scroll_view_widget: root
-        katrain: app.gui
         id: move_tree_canvas
         size_hint: None, None
 
@@ -255,12 +253,11 @@ Builder.load_string(
             width: 1
 
 <MoveTreeDropdown>:
-    katrain: app.gui
     MoveTreeDropdownItem:
         text: i18n._("Delete Node")
         icon: 'delete.png'
         shortcut: 'Ctr+Del'
-        on_action: root.katrain.controls.move_tree.delete_selected_node()
+        on_action: root.attach_to.delete_selected_node()
         -background_color: Theme.LIGHTER_BACKGROUND_COLOR
         -height: dp(45)
         -width_margin: 1.6
@@ -268,14 +265,14 @@ Builder.load_string(
         text: i18n._("Make Main Branch")
         icon: 'Branch.png'
         shortcut: 'PgUp'
-        on_action: root.katrain.controls.move_tree.make_selected_node_main_branch()
+        on_action: root.attach_to.make_selected_node_main_branch()
         -background_color: Theme.LIGHTER_BACKGROUND_COLOR
         -height: dp(45)
         -width_margin: 1.6
     MoveTreeDropdownItem:
         text: i18n._("Prune Branch")
         icon: 'Prune.png'
-        on_action: root.katrain.controls.move_tree.prune_branch()
+        on_action: root.attach_to.prune_branch()
         -background_color: Theme.LIGHTER_BACKGROUND_COLOR
         -height: dp(45)
         -width_margin: 1.6        

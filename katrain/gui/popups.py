@@ -59,8 +59,9 @@ from katrain.gui.kivyutils import (
 from katrain.gui.theme import Theme
 from katrain.gui.widgets.progress_loader import ProgressLoader
 from katrain.gui.components.buttons import KtButton
-from katrain.gui.components.forms import KtFormRow, KtNumberField, KtTextField
+from katrain.gui.components.forms import FieldSpec, FormModel, KtFormRow, KtNumberField, KtSelectField, KtTextField
 from katrain.gui.components.layout import KtCard, KtColumn, KtDivider, KtRow
+from katrain.gui.components.settings_popup import KtSettingsPopup
 
 
 class InputParseError(Exception):
@@ -92,19 +93,6 @@ class BoundForm:
                     f"Could not parse value '{widget.raw_input_value}' for {key} ({widget.__class__.__name__}): {e}"
                 )
         return ret
-
-
-class I18NPopup(Popup):
-    title_key = StringProperty("")
-    font_name = StringProperty(Theme.DEFAULT_FONT)
-
-    def __init__(self, size=None, **kwargs):
-        if size:  # do not exceed window size
-            app = App.get_running_app()
-            size[0] = min(app.gui.width, size[0])
-            size[1] = min(app.gui.height, size[1])
-        super().__init__(size=size, **kwargs)
-        self.bind(on_dismiss=Clock.schedule_once(lambda _dt: App.get_running_app().gui.update_state(), 1))
 
 
 def _get_config_path(config: dict[str, Any], path: str) -> Any:
@@ -349,86 +337,106 @@ class QuickConfigGui(BoxLayout):
         return updated
 
 
-class NewGamePopup(PopupContent):
+class NewGamePopup(KtSettingsPopup):
     __no_builder__ = True
 
     mode = StringProperty("newgame")
 
     def __init__(self, katrain, **kwargs):
-        super().__init__(**kwargs)
-        self.katrain = katrain
-        self.orientation = "vertical"
-        self.spacing = dp(Theme.CP_SPACING)
-        self.padding = [dp(Theme.CP_PADDING)] * 4
+        super().__init__(
+            katrain=katrain,
+            enable_search=False,
+            apply_text=i18n._("newgame"),
+            cancel_text=i18n._("cancel"),
+            **kwargs,
+        )
 
         # Player setup block is already a reusable Python widget.
         from katrain.gui.kivyutils import PlayerSetupBlock
 
         self.player_setup = PlayerSetupBlock(update_global=False, katrain=katrain)
 
+        # Add the player setup block above the form sections.
+        self._content.add_widget(self.player_setup)
+
         self._size = KtTextField(multiline=False)
         self._komi = KtNumberField(number_type="float", multiline=False)
         self._handicap = KtNumberField(number_type="int", multiline=False)
-        self._rules = I18NSpinner(size_hint_y=None, height=dp(44))
-        self._clear_cache = CheckBox(active=bool(self.katrain.config("game/clear_cache", False)), size_hint=(None, None))
+        self._rules = I18NSpinner(size_hint_y=None, height=dp(Theme.INPUT_HEIGHT))
+        self._clear_cache = CheckBox(active=False, size_hint=(None, None))
         self._clear_cache.size = (dp(32), dp(32))
 
         self._rules.value_refs = [name for _abbr, name in katrain.engine.RULESETS_ABBR]
 
-        form = KtCard()
-        form.add_widget(self._row("board size", self._size))
-        form.add_widget(self._row("komi", self._komi))
-        form.add_widget(self._row("handicap", self._handicap))
-        form.add_widget(self._row("ruleset", self._rules))
-        form.add_widget(self._row("clear cache", self._clear_cache))
-
-        scroll = ScrollView(do_scroll_x=False)
-        content = KtColumn(size_hint_y=None)
-        content.bind(minimum_height=content.setter("height"))
-        content.add_widget(self.player_setup)
-        content.add_widget(form)
-        scroll.add_widget(content)
-        self.add_widget(scroll)
-
-        self.add_widget(KtDivider())
-
-        buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
-        buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))
-        buttons.add_widget(KtButton(text_key="newgame", variant="primary", on_click=self.apply))
-        self.add_widget(buttons)
+        self.add_field(
+            FieldSpec(
+                key="game/size",
+                label_key="board size",
+                default=str(self.katrain.config("game/size", "19") or "19"),
+                required=True,
+                validator=lambda v: None if str(v).strip().isdigit() else "Enter a board size like 19.",
+                section="",
+            ),
+            self._size,
+        )
+        self.add_field(
+            FieldSpec(
+                key="game/komi",
+                label_key="komi",
+                default=float(self.katrain.config("game/komi", 6.5) or 0.0),
+                parser=lambda raw: float(str(raw or "0").strip() or "0"),
+                section="",
+            ),
+            self._komi,
+        )
+        self.add_field(
+            FieldSpec(
+                key="game/handicap",
+                label_key="handicap",
+                default=int(self.katrain.config("game/handicap", 0) or 0),
+                parser=lambda raw: int(str(raw or "0").strip() or "0"),
+                section="",
+            ),
+            self._handicap,
+        )
+        self.add_field(
+            FieldSpec(
+                key="game/rules",
+                label_key="ruleset",
+                default=str(self.katrain.config("game/rules", "japanese") or "japanese"),
+                section="",
+            ),
+            self._rules,
+        )
+        self.add_field(
+            FieldSpec(
+                key="game/clear_cache",
+                label_key="clear cache",
+                default=bool(self.katrain.config("game/clear_cache", False)),
+                section="",
+            ),
+            self._clear_cache,
+        )
 
         Clock.schedule_once(lambda _dt: self.update_from_current_game(), 0)
 
-    def _dismiss(self):
-        if self.popup:
-            self.popup.dismiss()
-
-    def _row(self, label_key: str, field_widget):
-        row = KtFormRow(label_key=label_key)
-        row.set_field(field_widget)
-        return row
-
     def update_from_current_game(self, *_args):
         # Initialize fields from current config/game.
-        self._size.value = str(self.katrain.config("game/size", "19"))
-        self._komi.value = str(self.katrain.config("game/komi", 6.5))
-        self._handicap.value = str(self.katrain.config("game/handicap", 0))
-
+        self.load_from_config(self.katrain._config)
         if self.katrain.game and self.katrain.game.root:
-            rules = self.katrain.game.root.get_property("RU", self.katrain.config("game/rules", "japanese"))
-            rules = (rules or "").strip()
-            if rules:
-                self._rules.select_key(rules)
+            rules_prop = self.katrain.game.root.get_property("RU", self.katrain.config("game/rules", "japanese"))
+            rules_prop = (rules_prop or "").strip()
+            if rules_prop:
+                rules = self.katrain.engine.get_rules(rules_prop) if hasattr(self.katrain.engine, "get_rules") else rules_prop
+                if isinstance(rules, str):
+                    self._rules.select_key(rules)
 
         for bw, info in self.katrain.players_info.items():
             self.player_setup.players[bw].update_widget(info.player_type, info.player_subtype)
 
-    def apply(self):
-        _set_config_path(self.katrain._config, "game/size", self._size.value.strip() or "19")
-        _set_config_path(self.katrain._config, "game/komi", float(self._komi.value or "0"))
-        _set_config_path(self.katrain._config, "game/handicap", int(self._handicap.value or "0"))
-        _set_config_path(self.katrain._config, "game/rules", self._rules.selected[1] or "japanese")
-        _set_config_path(self.katrain._config, "game/clear_cache", bool(self._clear_cache.active))
+    def on_apply(self, _values: dict[str, Any]) -> None:
+        # Update config from the form model.
+        self.form.apply_to_config(self.katrain._config)
         self.katrain.save_config("game")
 
         # Update players.
@@ -445,130 +453,184 @@ def wrap_anchor(widget):
     return anchor
 
 
-class ConfigTeacherPopup(QuickConfigGui):
+class ConfigTeacherPopup(KtSettingsPopup):
     __no_builder__ = True
 
     def __init__(self, katrain):
-        super().__init__(katrain)
-        self.clear_widgets()
-        self.orientation = "vertical"
-        self.spacing = dp(Theme.CP_SPACING)
-        self.padding = [dp(Theme.CP_PADDING)] * 4
+        super().__init__(
+            katrain=katrain,
+            enable_search=True,
+            apply_text=i18n._("update teacher"),
+            cancel_text=i18n._("cancel"),
+        )
 
-        body_scroll = ScrollView(do_scroll_x=False)
-        body = KtColumn(size_hint_y=None, padding=[0, 0, 0, 0])
-        body.bind(minimum_height=body.setter("height"))
+        int0 = lambda raw: int(str(raw or "0").strip() or "0")
+        float0 = lambda raw: float(str(raw or "0").strip() or "0")
 
-        # Main trainer toggles.
-        self._trainer_rows = KtCard()
-        self._themes_spinner = I18NSpinner(size_hint_y=None, height=dp(44))
-        self._themes_spinner.bind(text=lambda *_: self._on_theme_changed())
+        self._themes_spinner = I18NSpinner(size_hint_y=None, height=dp(Theme.INPUT_HEIGHT))
+        self._themes_spinner.value_refs = list(Theme.EVAL_COLORS.keys())
+        self._themes_spinner.bind(text=lambda *_: self._sync_table_colors())
 
-        self._low_visits = LabelledIntInput(input_property="trainer/low_visits")
-        self._eval_on_show_last = LabelledIntInput(input_property="trainer/eval_on_show_last")
-        self._eval_show_ai = LabelledCheckBox(input_property="trainer/eval_show_ai")
-        self._extra_precision = LabelledCheckBox(input_property="trainer/extra_precision")
+        self._low_visits = KtNumberField(number_type="int", multiline=False)
+        self._eval_on_show_last = KtNumberField(number_type="int", multiline=False)
 
-        self._trainer_rows.add_widget(self._row("theme", self._themes_spinner))
-        self._trainer_rows.add_widget(self._row("show stats if", self._low_visits))
-        self._trainer_rows.add_widget(self._row("show last n dots", self._eval_on_show_last))
-        self._trainer_rows.add_widget(self._row("show ai dots", self._eval_show_ai))
-        self._trainer_rows.add_widget(self._row("show two digits for point loss near zero", self._extra_precision))
+        self._eval_show_ai = CheckBox(active=False, size_hint=(None, None))
+        self._eval_show_ai.size = (dp(32), dp(32))
+        self._extra_precision = CheckBox(active=False, size_hint=(None, None))
+        self._extra_precision.size = (dp(32), dp(32))
 
-        body.add_widget(self._trainer_rows)
+        section = "Teaching"
+        self.add_field(
+            FieldSpec("trainer/theme", "theme", default=str(self.katrain.config("trainer/theme", "theme:normal")), section=section),
+            self._themes_spinner,
+        )
+        self.add_field(
+            FieldSpec("trainer/low_visits", "show stats if", default=int(self.katrain.config("trainer/low_visits", 25)), parser=int0, section=section),
+            self._low_visits,
+        )
+        self.add_field(
+            FieldSpec(
+                "trainer/eval_on_show_last",
+                "show last n dots",
+                default=int(self.katrain.config("trainer/eval_on_show_last", 3)),
+                parser=int0,
+                section=section,
+            ),
+            self._eval_on_show_last,
+        )
+        self.add_field(
+            FieldSpec(
+                "trainer/eval_show_ai",
+                "show ai dots",
+                default=bool(self.katrain.config("trainer/eval_show_ai", True)),
+                section=section,
+            ),
+            self._eval_show_ai,
+        )
+        self.add_field(
+            FieldSpec(
+                "trainer/extra_precision",
+                "show two digits for point loss near zero",
+                default=bool(self.katrain.config("trainer/extra_precision", False)),
+                section=section,
+            ),
+            self._extra_precision,
+        )
 
         # Threshold/dots table.
         self.options_grid = GridLayout(
             cols=4,
             size_hint_y=None,
-            spacing=dp(Theme.CP_SMALL_SPACING),
+            spacing=dp(Theme.SPACING_XS),
             row_force_default=True,
-            row_default_height=dp(40),
+            row_default_height=dp(Theme.INPUT_HEIGHT),
         )
         self.options_grid.bind(minimum_height=self.options_grid.setter("height"))
+
         table = KtCard()
         table.add_widget(self.options_grid)
-        body.add_widget(table)
+        self.add_section(section).add_widget(table)
 
-        body_scroll.add_widget(body)
-        self.add_widget(body_scroll)
+        self._color_previews: list[BackgroundMixin] = []
 
-        self.add_widget(KtDivider())
+        thresholds = list(self.katrain.config("trainer/eval_thresholds", []))
+        undos = list(self.katrain.config("trainer/num_undo_prompts", []))
+        show_dots = list(self.katrain.config("trainer/show_dots", []))
 
-        buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
-        buttons.add_widget(KtButton(text="Cancel", on_click=lambda: self.popup.dismiss() if self.popup else None))
-        buttons.add_widget(KtButton(text_key="update teacher", variant="primary", on_click=lambda: self.update_config(True)))
-        self.add_widget(buttons)
+        # Header row.
+        for k in ["dot color", "point loss threshold", "num undos", "show dots"]:
+            self.options_grid.add_widget(DescriptionLabel(text=i18n._(k), font_name=i18n.font_name, font_size=dp(17)))
 
-        Clock.schedule_once(lambda _dt: self.build_and_set_properties(), 0)
+        # Build widgets once; update only the preview colors on theme switch.
+        for i in range(len(thresholds) - 1, -1, -1):
+            preview = BackgroundMixin(background_color=Theme.EVAL_COLORS[self._themes_spinner.selected[1] or "theme:normal"][i], size_hint=[0.9, 0.9])
+            self._color_previews.append(preview)
 
-    def _row(self, label_key: str, field_widget):
-        row = KtFormRow(label_key=label_key)
-        row.set_field(field_widget)
-        return row
+            threshold_field = KtNumberField(number_type="float", multiline=False)
+            undo_field = KtNumberField(number_type="float", multiline=False)
+            show_dot_cb = CheckBox(active=False, size_hint=(None, None))
+            show_dot_cb.size = (dp(32), dp(32))
+
+            self.bind_field(
+                FieldSpec(
+                    key=f"trainer/eval_thresholds::{i}",
+                    label_key="",
+                    default=thresholds[i],
+                    parser=float0,
+                    section=section,
+                ),
+                threshold_field,
+                row=None,
+            )
+            self.bind_field(
+                FieldSpec(
+                    key=f"trainer/num_undo_prompts::{i}",
+                    label_key="",
+                    default=undos[i] if i < len(undos) else 0,
+                    parser=float0,
+                    section=section,
+                ),
+                undo_field,
+                row=None,
+            )
+            self.bind_field(
+                FieldSpec(
+                    key=f"trainer/show_dots::{i}",
+                    label_key="",
+                    default=bool(show_dots[i]) if i < len(show_dots) else True,
+                    section=section,
+                ),
+                show_dot_cb,
+                row=None,
+            )
+
+            self.options_grid.add_widget(wrap_anchor(preview))
+            self.options_grid.add_widget(wrap_anchor(threshold_field))
+            self.options_grid.add_widget(wrap_anchor(undo_field))
+            self.options_grid.add_widget(wrap_anchor(show_dot_cb))
+
+        self.load_from_config(self.katrain._config)
+        self._sync_table_colors()
 
     @property
     def themes_spinner(self):
         return self._themes_spinner
 
-    def _on_theme_changed(self):
-        # Persist theme choice immediately (and rebuild the colored table).
-        selected = self._themes_spinner.selected[1]
-        if selected:
-            self.katrain._config["trainer"]["theme"] = selected
-            self.katrain.save_config("trainer")
-        self.build_and_set_properties()
+    def _sync_table_colors(self):
+        theme_key = self._themes_spinner.selected[1] or str(self.katrain.config("trainer/theme", "theme:normal"))
+        colors = Theme.EVAL_COLORS.get(theme_key) or Theme.EVAL_COLORS["theme:normal"]
+        # Previews were added in reverse order; align from the bottom of the palette.
+        for ix, preview in enumerate(self._color_previews[::-1]):
+            if ix < len(colors):
+                preview.background_color = colors[ix]
 
-    def add_option_widgets(self, widgets):
-        for widget in widgets:
-            self.options_grid.add_widget(wrap_anchor(widget))
-
-    def build_and_set_properties(self, *_args):
-        theme = self.katrain.config("trainer/theme")
-        undos = self.katrain.config("trainer/num_undo_prompts")
-        thresholds = self.katrain.config("trainer/eval_thresholds")
-        show_dots = self.katrain.config("trainer/show_dots")
-
-        self.themes_spinner.value_refs = list(Theme.EVAL_COLORS.keys())
-        self.themes_spinner.select_key(theme)
-        self.options_grid.clear_widgets()
-
-        for k in ["dot color", "point loss threshold", "num undos", "show dots"]:
-            self.options_grid.add_widget(DescriptionLabel(text=i18n._(k), font_name=i18n.font_name, font_size=dp(17)))
-
-        for i, color, threshold, undo, show_dot in list(
-            zip(range(len(thresholds)), Theme.EVAL_COLORS[theme], thresholds, undos, show_dots)
-        )[::-1]:
-            self.add_option_widgets(
-                [
-                    BackgroundMixin(background_color=color, size_hint=[0.9, 0.9]),
-                    LabelledFloatInput(text=str(threshold), input_property=f"trainer/eval_thresholds::{i}"),
-                    LabelledFloatInput(text=str(undo), input_property=f"trainer/num_undo_prompts::{i}"),
-                    LabelledCheckBox(text=str(show_dot), input_property=f"trainer/show_dots::{i}"),
-                ]
-            )
-        super().build_and_set_properties()
-
-    def update_config(self, save_to_file=True, close_popup=True):
-        super().update_config(save_to_file=save_to_file, close_popup=close_popup)
-        self.build_and_set_properties()
+    def on_apply(self, _values: dict[str, Any]) -> None:
+        self.form.apply_to_config(self.katrain._config)
+        self.katrain.save_config("trainer")
+        self.katrain.update_state()
+        self._dismiss()
 
 
 class DescriptionLabel(Label):
     pass
 
 
-class ConfigAIPopup(PopupContent):
+class ConfigAIPopup(KtSettingsPopup):
     __no_builder__ = True
 
     def __init__(self, katrain, **kwargs):
-        super().__init__(**kwargs)
-        self.katrain = katrain
-        self.orientation = "vertical"
-        self.spacing = dp(Theme.CP_SPACING)
-        self.padding = [dp(Theme.CP_PADDING)] * 4
+        super().__init__(
+            katrain=katrain,
+            enable_search=False,
+            apply_text=i18n._("Update"),
+            cancel_text=i18n._("cancel"),
+            **kwargs,
+        )
 
-        self._strategy_select = I18NSpinner(size_hint_y=None, height=dp(44))
+        self._last_strategy = None
+        self._suspend_callbacks = False
+
+        self._strategy_select = I18NSpinner(size_hint_y=None, height=dp(Theme.INPUT_HEIGHT))
         self._strategy_select.value_refs = AI_STRATEGIES_RECOMMENDED_ORDER
 
         selected_strategies = {p.strategy for p in katrain.players_info.values()}
@@ -578,41 +640,30 @@ class ConfigAIPopup(PopupContent):
 
         top = KtCard(orientation="vertical", size_hint_y=None)
         top.bind(minimum_height=top.setter("height"))
-        top.add_widget(self._row("ai settings", self._strategy_select))
+        row = KtFormRow(label_key="ai settings")
+        row.set_field(self._strategy_select)
+        top.add_widget(row)
 
         self._estimated = Label(text="?", color=Theme.TEXT_COLOR, size_hint_y=None, height=dp(30))
         top.add_widget(self._estimated)
+        self._content.add_widget(top)
 
-        self.add_widget(top)
-
-        self._options_scroll = ScrollView(do_scroll_x=False)
         self._options_box = KtColumn(size_hint_y=None)
         self._options_box.bind(minimum_height=self._options_box.setter("height"))
-        self._options_scroll.add_widget(self._options_box)
-        self.add_widget(self._options_scroll)
+        options_card = KtCard(orientation="vertical", size_hint_y=None, padding=[0, 0, 0, 0])
+        options_card.bind(minimum_height=options_card.setter("height"))
+        options_card.add_widget(self._options_box)
+        self._content.add_widget(options_card)
 
-        self.add_widget(KtDivider())
-
-        buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
-        buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))
-        buttons.add_widget(KtButton(text="Update", variant="primary", on_click=self.apply))
-        self.add_widget(buttons)
-
-        # v2: keep AI settings UI explicitly curated, rather than dumping raw config keys.
-        self._last_strategy = None
-        self._suspend_callbacks = False
-
-        self._human_profile = KeyValueSpinner(size_hint_y=None, height=dp(44))
+        # Human profile widgets (AI_HUMAN).
+        self._human_profile = KeyValueSpinner(size_hint_y=None, height=dp(Theme.INPUT_HEIGHT))
         self._human_profile.values = ["Rank-based", "Pro-year"]
         self._human_profile.value_refs = ["rank", "proyear"]
         self._human_profile.bind(selected_index=lambda *_: self._on_human_profile_changed())
 
-        # Human rank is stored as kyu-rank style int where:
-        #   1..20 => 1k..20k
-        #   0,-1,-2,... => 1d,2d,3d,...
         rank_value_refs: list[int] = list(range(20, 0, -1)) + list(range(0, -8, -1))
         rank_values: list[str] = [f"{k}k" for k in range(20, 0, -1)] + [f"{d}d" for d in range(1, 9)]
-        self._human_rank = KeyValueSpinner(size_hint_y=None, height=dp(44))
+        self._human_rank = KeyValueSpinner(size_hint_y=None, height=dp(Theme.INPUT_HEIGHT))
         self._human_rank.values = rank_values
         self._human_rank.value_refs = rank_value_refs
         self._human_rank.bind(selected_index=lambda *_: self._on_human_option_changed())
@@ -628,7 +679,7 @@ class ConfigAIPopup(PopupContent):
             text="",
             color=Theme.TEXT_COLOR,
             font_name=i18n.font_name,
-            font_size=sp(Theme.DESC_FONT_SIZE),
+            font_size=sp(Theme.FONT_SIZE_MD),
             halign="left",
             valign="top",
             text_size=(None, None),
@@ -636,16 +687,42 @@ class ConfigAIPopup(PopupContent):
             height=dp(50),
         )
 
+        # Bind form fields for AI_HUMAN so Apply can validate/parse consistently.
+        self._row_human_profile = KtFormRow(label_key="Profile")
+        self._row_human_profile.set_field(self._human_profile)
+        self.bind_field(FieldSpec(key=f"ai/{AI_HUMAN}/profile", label_key="Profile", default="rank"), self._human_profile, row=self._row_human_profile)
+
+        self._row_human_rank = KtFormRow(label_key="Rank")
+        self._row_human_rank.set_field(self._human_rank)
+        self.bind_field(
+            FieldSpec(key=f"ai/{AI_HUMAN}/human_kyu_rank", label_key="Rank", default=8, parser=lambda raw: int(raw)),
+            self._human_rank,
+            row=self._row_human_rank,
+        )
+
+        self._row_human_modern = KtFormRow(label_key="Modern style")
+        self._row_human_modern.set_field(self._human_modern_style)
+        self.bind_field(
+            FieldSpec(key=f"ai/{AI_HUMAN}/modern_style", label_key="Modern style", default=False),
+            self._human_modern_style,
+            row=self._row_human_modern,
+        )
+
+        self._row_human_year = KtFormRow(label_key="Year")
+        self._row_human_year.set_field(self._human_pro_year)
+        self.bind_field(
+            FieldSpec(
+                key=f"ai/{AI_HUMAN}/pro_year",
+                label_key="Year",
+                default=1914,
+                parser=lambda raw: int(str(raw or "1914").strip() or "1914"),
+            ),
+            self._human_pro_year,
+            row=self._row_human_year,
+        )
+
+        self.load_from_config(self.katrain._config)
         self._rebuild_options()
-
-    def _dismiss(self):
-        if self.popup:
-            self.popup.dismiss()
-
-    def _row(self, label_key: str, field_widget):
-        row = KtFormRow(label_key=label_key)
-        row.set_field(field_widget)
-        return row
 
     def _on_human_profile_changed(self, *_args) -> None:
         if self._suspend_callbacks:
@@ -656,27 +733,6 @@ class ConfigAIPopup(PopupContent):
         if self._suspend_callbacks:
             return
         self._update_estimate()
-
-    def _load_human_from_config(self) -> None:
-        settings = dict(self.katrain.config(f"ai/{AI_HUMAN}") or {})
-        profile = str(settings.get("profile") or "").strip()
-        if not profile:
-            profile = "proyear" if "pro_year" in settings else "rank"
-
-        self._suspend_callbacks = True
-        try:
-            self._human_profile.select_key(profile)
-            try:
-                self._human_rank.select_key(int(round(settings.get("human_kyu_rank", 8))))
-            except Exception:
-                self._human_rank.select_key(8)
-            self._human_modern_style.active = bool(settings.get("modern_style", False))
-            try:
-                self._human_pro_year.value = str(int(round(settings.get("pro_year", 1914))))
-            except Exception:
-                self._human_pro_year.value = "1914"
-        finally:
-            self._suspend_callbacks = False
 
     def _current_ai_options(self, strategy: str) -> dict[str, Any]:
         if strategy == AI_DEFAULT:
@@ -703,16 +759,15 @@ class ConfigAIPopup(PopupContent):
 
     def _rebuild_options(self):
         self._options_box.clear_widgets()
-        # Widgets can remain parented to a row that we just removed from `_options_box`.
-        # Detach before re-adding to avoid "already has a parent" WidgetException.
-        for w in (self._human_profile, self._human_rank, self._human_modern_style, self._human_pro_year, self._hint):
-            if w.parent:
-                w.parent.remove_widget(w)
 
         strategy = self._strategy_select.selected[1]
         if strategy != self._last_strategy:
             if strategy == AI_HUMAN:
-                self._load_human_from_config()
+                self._suspend_callbacks = True
+                try:
+                    self.load_from_config(self.katrain._config)
+                finally:
+                    self._suspend_callbacks = False
             self._last_strategy = strategy
 
         self._hint.text = ""
@@ -736,15 +791,15 @@ class ConfigAIPopup(PopupContent):
             return
 
         if strategy == AI_HUMAN:
-            self._options_box.add_widget(self._row("Profile", self._human_profile))
+            self._options_box.add_widget(self._row_human_profile)
 
             profile = self._human_profile.selected[1] or "rank"
             if profile == "rank":
-                self._options_box.add_widget(self._row("Rank", self._human_rank))
-                self._options_box.add_widget(self._row("Modern style", self._human_modern_style))
+                self._options_box.add_widget(self._row_human_rank)
+                self._options_box.add_widget(self._row_human_modern)
                 self._hint.text = "Rank-based profile uses your chosen rank and modern/pre-AZ style."
             else:
-                self._options_box.add_widget(self._row("Year", self._human_pro_year))
+                self._options_box.add_widget(self._row_human_year)
                 self._hint.text = "Pro-year profile ignores rank and plays like historical pro games around that year."
 
             if self._hint.text:
@@ -775,13 +830,22 @@ class ConfigAIPopup(PopupContent):
         else:
             self._estimated.text = f"{i18n._('estimated strength')}: {rank_label(dan_rank)}"
 
-    def apply(self):
+    def on_apply(self, _values: dict[str, Any]) -> None:
         strategy = self._strategy_select.selected[1]
         if strategy == AI_DEFAULT:
             self._dismiss()
             return
 
-        options = self._current_ai_options(strategy)
+        # For AI_HUMAN use the parsed values from the unified form model.
+        if strategy == AI_HUMAN:
+            options = {
+                "profile": self.form.get(f"ai/{AI_HUMAN}/profile"),
+                "human_kyu_rank": self.form.get(f"ai/{AI_HUMAN}/human_kyu_rank"),
+                "modern_style": self.form.get(f"ai/{AI_HUMAN}/modern_style"),
+                "pro_year": self.form.get(f"ai/{AI_HUMAN}/pro_year"),
+            }
+        else:
+            options = self._current_ai_options(strategy)
         self.katrain._config.setdefault("ai", {})
         self.katrain._config["ai"].setdefault(strategy, {}).update(options)
 
@@ -791,17 +855,22 @@ class ConfigAIPopup(PopupContent):
         self._dismiss()
 
 
-class EngineRecoveryPopup(QuickConfigGui):
+class EngineRecoveryPopup(PopupContent):
     error_message = StringProperty("")
     code = ObjectProperty(None)
+    katrain = ObjectProperty(None, allownone=True)
 
-    def __init__(self, katrain, error_message, code):
-        super().__init__(katrain)
+    def __init__(self, katrain, error_message, code, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
         self.error_message = str(error_message)
         self.code = code
 
 
-class BaseConfigPopup(QuickConfigGui):
+class BaseConfigPopup(PopupContent):
+    # Legacy popup (unused in the redesigned UI). Kept only to avoid breaking
+    # older code paths while the refactor is in flight.
+    katrain = ObjectProperty(None, allownone=True)
     MODEL_ENDPOINTS = {
         "Latest distributed model": "https://katagotraining.org/api/networks/newest_training/",
         "Strongest distributed model": "https://katagotraining.org/api/networks/get_strongest/",
@@ -834,8 +903,9 @@ class BaseConfigPopup(QuickConfigGui):
         "just-descriptions": {},
     }
 
-    def __init__(self, katrain):
-        super().__init__(katrain)
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
         self.paths = [self.katrain.config("engine/model"), self.katrain.config("engine/humanlike_model"), "katrain/models", DATA_FOLDER]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
         self.last_clicked_download_models = 0
@@ -1097,15 +1167,17 @@ class BaseConfigPopup(QuickConfigGui):
                 )
 
 
-class ConfigPopup(PopupContent):
+class ConfigPopup(KtSettingsPopup):
     __no_builder__ = True
 
     def __init__(self, katrain, **kwargs):
-        super().__init__(**kwargs)
-        self.katrain = katrain
-        self.orientation = "vertical"
-        self.spacing = dp(Theme.CP_SPACING)
-        self.padding = [dp(Theme.CP_PADDING)] * 4
+        super().__init__(
+            katrain=katrain,
+            enable_search=True,
+            apply_text=i18n._("Apply"),
+            cancel_text=i18n._("cancel"),
+            **kwargs,
+        )
 
         self._engine_model = KtTextField(multiline=False)
         self._engine_human_model = KtTextField(multiline=False)
@@ -1117,88 +1189,80 @@ class ConfigPopup(PopupContent):
         self._engine_max_time = KtNumberField(number_type="float", multiline=False)
         self._engine_wide_root_noise = KtNumberField(number_type="float", multiline=False)
 
-        self._ui_restore_size = CheckBox(active=bool(self.katrain.config("ui_state/restoresize", True)), size_hint=(None, None))
+        self._ui_restore_size = CheckBox(active=False, size_hint=(None, None))
         self._ui_restore_size.size = (dp(32), dp(32))
 
         self._general_anim_pv_time = KtNumberField(number_type="float", multiline=False)
         self._general_debug_level = KtNumberField(number_type="int", multiline=False)
-        self._sound_enabled = CheckBox(active=bool(self.katrain.config("general/sound", True)), size_hint=(None, None))
+        self._sound_enabled = CheckBox(active=False, size_hint=(None, None))
         self._sound_enabled.size = (dp(32), dp(32))
 
-        # Load values from current config.
-        self._engine_model.value = str(self.katrain.config("engine/model", ""))
-        self._engine_human_model.value = str(self.katrain.config("engine/humanlike_model", ""))
-        self._engine_katago.value = str(self.katrain.config("engine/katago", ""))
-        self._engine_config.value = str(self.katrain.config("engine/config", ""))
-        self._engine_altcommand.value = str(self.katrain.config("engine/altcommand", ""))
-        self._engine_max_visits.value = str(self.katrain.config("engine/max_visits", 0) or 0)
-        self._engine_fast_visits.value = str(self.katrain.config("engine/fast_visits", 0) or 0)
-        self._engine_max_time.value = str(self.katrain.config("engine/max_time", 0.0) or 0.0)
-        self._engine_wide_root_noise.value = str(self.katrain.config("engine/wide_root_noise", 0.0) or 0.0)
+        int0 = lambda raw: int(str(raw or "0").strip() or "0")
+        float0 = lambda raw: float(str(raw or "0").strip() or "0")
 
-        self._general_anim_pv_time.value = str(self.katrain.config("general/anim_pv_time", 0.5) or 0.0)
-        self._general_debug_level.value = str(self.katrain.config("general/debug_level", OUTPUT_INFO) or 0)
+        # Engine
+        self.add_field(FieldSpec("engine/model", "engine:model", default="", section="Engine"), self._engine_model)
+        self.add_field(
+            FieldSpec("engine/humanlike_model", "engine:humanlike_model", default="", section="Engine"),
+            self._engine_human_model,
+        )
+        self.add_field(FieldSpec("engine/katago", "engine:katago", default="", section="Engine"), self._engine_katago)
+        self.add_field(FieldSpec("engine/config", "engine:config", default="", section="Engine"), self._engine_config)
+        self.add_field(
+            FieldSpec("engine/altcommand", "engine:altcommand", default="", section="Engine"), self._engine_altcommand
+        )
+        self.add_field(
+            FieldSpec("engine/max_visits", "engine:max_visits", default=0, parser=int0, section="Engine"),
+            self._engine_max_visits,
+        )
+        self.add_field(
+            FieldSpec("engine/fast_visits", "engine:fast_visits", default=0, parser=int0, section="Engine"),
+            self._engine_fast_visits,
+        )
+        self.add_field(
+            FieldSpec("engine/max_time", "engine:max_time", default=0.0, parser=float0, section="Engine"),
+            self._engine_max_time,
+        )
+        self.add_field(
+            FieldSpec("engine/wide_root_noise", "engine:wide_root_noise", default=0.0, parser=float0, section="Engine"),
+            self._engine_wide_root_noise,
+        )
 
-        scroll = ScrollView(do_scroll_x=False)
-        content = KtColumn(size_hint_y=None)
-        content.bind(minimum_height=content.setter("height"))
+        # General
+        self.add_field(
+            FieldSpec("general/anim_pv_time", "general:anim_pv_time", default=0.5, parser=float0, section="General"),
+            self._general_anim_pv_time,
+        )
+        self.add_field(
+            FieldSpec(
+                "general/debug_level",
+                "general:debug_level",
+                default=int(self.katrain.config("general/debug_level", OUTPUT_INFO) or OUTPUT_INFO),
+                parser=int0,
+                section="General",
+            ),
+            self._general_debug_level,
+        )
+        self.add_field(
+            FieldSpec("general/sound", "Sound", default=bool(self.katrain.config("general/sound", True)), section="General"),
+            self._sound_enabled,
+        )
+        self.add_field(
+            FieldSpec(
+                "ui_state/restoresize",
+                "ui_state:restoresize",
+                default=bool(self.katrain.config("ui_state/restoresize", True)),
+                section="General",
+            ),
+            self._ui_restore_size,
+        )
 
-        engine = KtCard()
-        engine.add_widget(self._row("engine:model", self._engine_model))
-        engine.add_widget(self._row("engine:humanlike_model", self._engine_human_model))
-        engine.add_widget(self._row("engine:katago", self._engine_katago))
-        engine.add_widget(self._row("engine:config", self._engine_config))
-        engine.add_widget(self._row("engine:altcommand", self._engine_altcommand))
-        engine.add_widget(self._row("engine:max_visits", self._engine_max_visits))
-        engine.add_widget(self._row("engine:fast_visits", self._engine_fast_visits))
-        engine.add_widget(self._row("engine:max_time", self._engine_max_time))
-        engine.add_widget(self._row("engine:wide_root_noise", self._engine_wide_root_noise))
+        self.load_from_config(self.katrain._config)
 
-        general = KtCard()
-        general.add_widget(self._row("general:anim_pv_time", self._general_anim_pv_time))
-        general.add_widget(self._row("general:debug_level", self._general_debug_level))
-        general.add_widget(self._row("Sound", self._sound_enabled))
-        general.add_widget(self._row("ui_state:restoresize", self._ui_restore_size))
-
-        content.add_widget(engine)
-        content.add_widget(general)
-        scroll.add_widget(content)
-        self.add_widget(scroll)
-
-        self.add_widget(KtDivider())
-
-        buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
-        buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))
-        buttons.add_widget(KtButton(text="Apply", variant="primary", on_click=self.apply))
-        self.add_widget(buttons)
-
-    def _dismiss(self):
-        if self.popup:
-            self.popup.dismiss()
-
-    def _row(self, label_key: str, field_widget):
-        row = KtFormRow(label_key=label_key)
-        row.set_field(field_widget)
-        return row
-
-    def apply(self):
+    def on_apply(self, _values: dict[str, Any]) -> None:
         before_engine = dict(self.katrain._config.get("engine", {}))
 
-        _set_config_path(self.katrain._config, "engine/model", self._engine_model.value.strip())
-        _set_config_path(self.katrain._config, "engine/humanlike_model", self._engine_human_model.value.strip())
-        _set_config_path(self.katrain._config, "engine/katago", self._engine_katago.value.strip())
-        _set_config_path(self.katrain._config, "engine/config", self._engine_config.value.strip())
-        _set_config_path(self.katrain._config, "engine/altcommand", self._engine_altcommand.value.strip())
-        _set_config_path(self.katrain._config, "engine/max_visits", int(self._engine_max_visits.value or "0"))
-        _set_config_path(self.katrain._config, "engine/fast_visits", int(self._engine_fast_visits.value or "0"))
-        _set_config_path(self.katrain._config, "engine/max_time", float(self._engine_max_time.value or "0"))
-        _set_config_path(self.katrain._config, "engine/wide_root_noise", float(self._engine_wide_root_noise.value or "0"))
-
-        _set_config_path(self.katrain._config, "general/anim_pv_time", float(self._general_anim_pv_time.value or "0"))
-        _set_config_path(self.katrain._config, "general/debug_level", int(self._general_debug_level.value or "0"))
-        _set_config_path(self.katrain._config, "general/sound", bool(self._sound_enabled.active))
-        _set_config_path(self.katrain._config, "ui_state/restoresize", bool(self._ui_restore_size.active))
-
+        self.form.apply_to_config(self.katrain._config)
         self.katrain.save_config()
         self.katrain.debug_level = self.katrain.config("general/debug_level", OUTPUT_INFO)
 
@@ -1225,9 +1289,13 @@ class ConfigPopup(PopupContent):
         self._dismiss()
 
 
-class LoadSGFPopup(BaseConfigPopup):
-    def __init__(self, katrain):
-        super().__init__(katrain)
+class LoadSGFPopup(PopupContent):
+    filesel = ObjectProperty(None)
+    katrain = ObjectProperty(None, allownone=True)
+
+    def __init__(self, katrain, **kwargs):
+        super().__init__(**kwargs)
+        self.katrain = katrain
         app = App.get_running_app()
         self.filesel.favorites = [
             (os.path.abspath(app.gui.config("general/sgf_load")), "Last Load Dir"),

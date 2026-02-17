@@ -15,10 +15,14 @@ Usage:
   uv run python scripts/popup_harness_screenshot.py save screenshots/popup_save.png
   uv run python scripts/popup_harness_screenshot.py menu screenshots/menu.png
   uv run python scripts/popup_harness_screenshot.py main screenshots/main_layout.png
+
+Optional:
+  --size 1300x1000   # Force window size for the screenshot
+  --delay 1.0        # Seconds to wait before screenshot (after opening state)
 """
 
+import argparse
 import os
-import sys
 
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -27,14 +31,30 @@ from katrain.__main__ import KaTrainApp
 
 
 def main() -> None:
-    which = (sys.argv[1] if len(sys.argv) > 1 else "config").strip().lower()
-    out = (sys.argv[2] if len(sys.argv) > 2 else "screenshots/_katrain_last.png").strip()
+    parser = argparse.ArgumentParser(description="KaTrain popup/layout harness + screenshot (no macOS screencapture).")
+    parser.add_argument("which", nargs="?", default="config", help="What to show: config|ai|teacher|menu|main|...")
+    parser.add_argument("out", nargs="?", default="screenshots/_katrain_last.png", help="Output PNG path")
+    parser.add_argument("--size", default=None, help="Window size as WxH (e.g. 1300x1000)")
+    parser.add_argument("--delay", type=float, default=1.0, help="Seconds to wait before taking the screenshot")
+    args = parser.parse_args()
+
+    which = args.which.strip().lower()
+    out = args.out.strip()
+    delay = args.delay
+
+    size = None
+    if args.size:
+        w_s, h_s = args.size.lower().split("x", 1)
+        size = (int(w_s), int(h_s))
 
     out_dir = os.path.dirname(out) or "."
     os.makedirs(out_dir, exist_ok=True)
 
     class HarnessApp(KaTrainApp):
         def on_start(self):
+            if size:
+                Window.size = size
+
             def after_ready():
                 self.gui.start()
 
@@ -88,7 +108,7 @@ def main() -> None:
                         Clock.schedule_once(lambda _dt3: self.stop(), 0.2)
 
                     # Give Kivy a moment to render the popup/menu state.
-                    Clock.schedule_once(take_screenshot, 1.0)
+                    Clock.schedule_once(take_screenshot, delay)
 
                 Clock.schedule_once(open_popup, 0.1)
 

@@ -12,6 +12,7 @@ from katrain.gui.theme import Theme
 
 class Graph(Widget):
     katrain = ObjectProperty(None, allownone=True)
+    on_navigate_node = ObjectProperty(None, allownone=True)
     marker_font_size = NumericProperty(0)
     background_image = StringProperty(Theme.GRAPH_TEXTURE)
     background_color = ListProperty([1, 1, 1, 1])
@@ -97,11 +98,13 @@ class ScoreGraph(Graph):
         return self.on_touch_down(touch)
 
     def on_touch_up(self, touch):
-        if self.collide_point(*touch.pos) and self.navigate_move[0] and "scroll" not in getattr(touch, "button", ""):
-            katrain = self.katrain
-            if katrain and katrain.game:
-                katrain.game.set_current_node(self.navigate_move[0])
-                katrain.update_state()
+        if (
+            self.collide_point(*touch.pos)
+            and self.navigate_move[0]
+            and "scroll" not in getattr(touch, "button", "")
+            and self.on_navigate_node
+        ):
+            self.on_navigate_node(self.navigate_move[0])
         self.navigate_move = [None, 0, 0, 0, 0]
 
     def show_graphs(self, keys):
