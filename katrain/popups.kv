@@ -10,9 +10,7 @@
 #:set CP_PADDING Theme.CP_PADDING
 
 # ---------------------------------------------------------------------------
-# Minimal popup KV.
-# This file intentionally contains only lightweight style rules and the
-# remaining popup layouts that are still KV-defined.
+# Popup styles
 # ---------------------------------------------------------------------------
 
 <LabelledTextInput>:
@@ -20,7 +18,7 @@
     hint_text: ""
 
 <LabelledPathInput>:
-    font_size: sp(16)
+    font_size: sp(Theme.FONT_SIZE_MD)
     multiline: False
     write_tab: False
 
@@ -35,46 +33,50 @@
     size_hint: 0.5, None
 
 <LabelledCheckBox>:
-    size: sp(Theme.DESC_FONT_SIZE)*2,sp(Theme.DESC_FONT_SIZE)*2
-    size_hint: None,None
-
-<I18NPopup>:
-    background_color: Theme.BACKGROUND_COLOR
-    background: self.background if kivy_version < '2.0' else ''
-    title: i18n._(self.title_key)
-    title_size: sp(Theme.DESC_FONT_SIZE)
-    title_font: self.font_name
+    size: sp(Theme.DESC_FONT_SIZE)*2, sp(Theme.DESC_FONT_SIZE)*2
     size_hint: None, None
 
+<I18NPopup>:
+    background_color: Theme.BOX_BACKGROUND_COLOR
+    background: self.background if kivy_version < '2.0' else ''
+    title: i18n._(self.title_key)
+    title_size: sp(Theme.FONT_SIZE_LG)
+    title_font: self.font_name
+    size_hint: None, None
+    separator_color: Theme.PLAY_ANALYZE_TAB_COLOR
+    separator_height: dp(2)
+
 <DescriptionLabel>:
-    font_size: sp(Theme.DESC_FONT_SIZE)
+    font_size: sp(Theme.FONT_SIZE_MD)
+    color: Theme.TEXT_SECONDARY_COLOR
     multiline: True
     text_size: self.width, None
     halign: 'center'
     valign: 'center'
 
 <SmallDescriptionLabel@DescriptionLabel>
-    font_size: sp(Theme.DESC_FONT_SIZE) * 0.66
+    font_size: sp(Theme.FONT_SIZE_SM)
 
 <LabelledSelectionSlider>:
     slider: slider
     textbox: textbox
     SelectionSlider:
         id: slider
-        size_hint: 2.25,1
+        size_hint: 2.25, 1
         values: root.values
         on_change: textbox.text = str(slider.value)
-        track_color: LIGHT_GREY
-        thumb_color: (0.6, 0.7, 0.9, 1) if root.key_option else (0.3, 0.4, 0.6, 1)
+        track_color: Theme.TEXT_TERTIARY_COLOR
+        thumb_color: Theme.PLAY_ANALYZE_TAB_COLOR if root.key_option else Theme.LIGHTER_BACKGROUND_COLOR
     LabelledFloatInput:
         id: textbox
 
 <EngineRecoveryPopup>:
     Label:
-        padding: CP_PADDING, CP_PADDING*3
-        text: i18n._("engine died popup opening message").format(code=root.code,error_message=root.error_message) + "\n\n" +  i18n._("change engine suggestion").format(link="[color=#CCCC11][u][ref=engine_settings]"+i18n._('menu:settings')+"[/ref][/u][/color]") + "\n\n" +  i18n._("go to engine help page").format(link="[color=#CCCC11][u][ref=engine_help]"+i18n._('link_here')+"[/ref][/u][/color]")
+        padding: dp(Theme.SPACING_MD), dp(Theme.SPACING_LG)
+        text: i18n._("engine died popup opening message").format(code=root.code,error_message=root.error_message) + "\n\n" +  i18n._("change engine suggestion").format(link="[color=#68B8E0][u][ref=engine_settings]"+i18n._('menu:settings')+"[/ref][/u][/color]") + "\n\n" +  i18n._("go to engine help page").format(link="[color=#68B8E0][u][ref=engine_help]"+i18n._('link_here')+"[/ref][/u][/color]")
         text_size: self.size
-        font_size: sp(Theme.DESC_FONT_SIZE)
+        font_size: sp(Theme.FONT_SIZE_MD)
+        color: Theme.TEXT_COLOR
         markup: True
         valign: 'top'
         on_ref_press:  app.webbrowser('engine:help') if args[1]=='engine_help' else  app.gui('config-popup')
@@ -88,7 +90,7 @@
         file_must_exist: True
         filters: ["*.sgf","*.gib","*.ngf"]
         path: "."
-        size_hint: 1,7
+        size_hint: 1, 7
 
 <SaveSGFPopup>:
     filesel: filesel
@@ -99,5 +101,4 @@
         file_must_exist: False
         filters: ["*.sgf","*.gib","*.ngf"]
         path: "."
-        size_hint: 1,7
-
+        size_hint: 1, 7

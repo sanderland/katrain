@@ -17,65 +17,107 @@ BLUE = [0.3, 0.7, 0.9, 1]
 
 
 class Theme:
-    # font
+    # --- typography ---
     DEFAULT_FONT = "NotoSansCJKsc-Regular.otf"
-    INPUT_FONT_SIZE = 20  # sp
-    DESC_FONT_SIZE = 18  # sp
-    NOTES_FONT_SIZE = 16  # sp
+    FONT_SIZE_XS = 12  # shortcuts, badges
+    FONT_SIZE_SM = 14  # secondary labels, stats values
+    FONT_SIZE_MD = 16  # body text, form labels (base)
+    FONT_SIZE_LG = 18  # section headers, player names
+    FONT_SIZE_XL = 22  # popup titles, mode labels
 
-    # gui colors
-    BACKGROUND_COLOR = [36 / 255, 48 / 255, 62 / 255, 1]
-    BOX_BACKGROUND_COLOR = [46 / 255, 65 / 255, 88 / 255, 1]
-    LIGHTER_BACKGROUND_COLOR = [64 / 255, 85 / 255, 110 / 255, 1]
-    SCROLLBAR_COLOR = LIGHT_GREY
-    TEXT_COLOR = WHITE
-    SCORE_COLOR = BLUE  # blue
-    WINRATE_COLOR = GREEN  # green
-    POINTLOSS_COLOR = YELLOW  # yellow
-    BUTTON_INACTIVE_COLOR = LIGHT_GREY
-    BUTTON_BORDER_COLOR = WHITE
-    BUTTON_TEXT_COLOR = WHITE
+    # legacy aliases (used throughout KV/popups)
+    INPUT_FONT_SIZE = 16  # sp -- was 20
+    DESC_FONT_SIZE = 16  # sp -- was 18
+    NOTES_FONT_SIZE = 14  # sp -- was 16
+
+    # --- spacing ---
+    SPACING_XS = 4
+    SPACING_SM = 8
+    SPACING_MD = 12
+    SPACING_LG = 16
+    SPACING_XL = 24
+    RADIUS_SM = 4
+    RADIUS_MD = 8
+    RADIUS_LG = 12
+
+    # --- color palette (modern dark) ---
+    BACKGROUND_COLOR = [24 / 255, 24 / 255, 28 / 255, 1]
+    BOX_BACKGROUND_COLOR = [35 / 255, 35 / 255, 40 / 255, 1]
+    LIGHTER_BACKGROUND_COLOR = [48 / 255, 48 / 255, 55 / 255, 1]
+
+    TEXT_COLOR = [0.92, 0.92, 0.92, 1]
+    TEXT_SECONDARY_COLOR = [0.62, 0.62, 0.65, 1]
+    TEXT_TERTIARY_COLOR = [0.42, 0.42, 0.45, 1]
+    BORDER_COLOR = [1, 1, 1, 0.08]
+
+    SCROLLBAR_COLOR = [0.5, 0.5, 0.5, 0.6]
+
+    # semantic / accent
+    SCORE_COLOR = [0.40, 0.72, 0.90, 1]  # muted blue
+    WINRATE_COLOR = [0.35, 0.75, 0.45, 1]  # muted green
+    POINTLOSS_COLOR = [0.90, 0.78, 0.30, 1]  # muted gold
+    ERROR_COLOR = [0.75, 0.25, 0.25, 1]
+    WARNING_COLOR = [0.85, 0.55, 0.25, 1]
+    SUCCESS_COLOR = [0.35, 0.75, 0.45, 1]
+
+    # buttons
+    BUTTON_INACTIVE_COLOR = [0.45, 0.45, 0.48, 1]
+    BUTTON_BORDER_COLOR = [1, 1, 1, 0.15]
+    BUTTON_TEXT_COLOR = [0.92, 0.92, 0.92, 1]
+    PRIMARY_BUTTON_COLOR = [0.22, 0.52, 0.75, 1]
+    MISTAKE_BUTTON_COLOR = [0.70, 0.18, 0.18, 1]
+
+    # interactive states
     PAUSE_ACTIVE_COLOR = ORANGE
-    TIMER_TEXT_COLOR = GREEN
+    TIMER_TEXT_COLOR = [0.35, 0.75, 0.45, 1]
     TIMER_TEXT_TIMEOUT_COLOR = ORANGE
-    CIRCLE_TEXT_COLORS = {"W": BLACK, "B": WHITE}
-    NOTES_TAB_FONT_COLOR = YELLOW
-    INFO_TAB_FONT_COLOR = WHITE
-    ERROR_BORDER_COLOR = RED
-    MENU_ITEM_FONT_COLOR = WHITE
-    MENU_ITEM_SHORTCUT_COLOR = LIGHT_GREY
-    PLAY_ANALYZE_TAB_COLOR = YELLOW
-    INPUT_FONT_COLOR = WHITE
-    CHECKBOX_COLOR = [0.45, 0.65, 0.9, 1]
-    PRIMARY_BUTTON_COLOR = [0.16, 0.50, 0.73, 1]
-    MISTAKE_BUTTON_COLOR = [0.79, 0.06, 0.06, 1]
-    STAT_WORSE_COLOR = [0.8, 0.4, 0.2, 1]
-    STAT_BETTER_COLOR = [0.2, 0.5, 0.1, 1]
+    CHECKBOX_COLOR = [0.40, 0.60, 0.85, 1]
 
-    # gui spacing
-    RIGHT_PANEL_ASPECT_RATIO = 0.4  # W/H
-    CONTROLS_PANEL_ASPECT_RATIO = 13.5  # W/H
-    CONTROLS_PANEL_MIN_HEIGHT = 50
-    CONTROLS_PANEL_MAX_HEIGHT = 75  # dp
+    # player / circle
+    CIRCLE_TEXT_COLORS = {"W": BLACK, "B": WHITE}
+
+    # tabs and panels
+    NOTES_TAB_FONT_COLOR = [0.90, 0.78, 0.30, 1]
+    INFO_TAB_FONT_COLOR = [0.92, 0.92, 0.92, 1]
+    ERROR_BORDER_COLOR = [0.75, 0.25, 0.25, 1]
+    PLAY_ANALYZE_TAB_COLOR = [0.40, 0.72, 0.90, 1]
+
+    # menu
+    MENU_ITEM_FONT_COLOR = [0.88, 0.88, 0.88, 1]
+    MENU_ITEM_SHORTCUT_COLOR = [0.50, 0.50, 0.53, 1]
+
+    # input
+    INPUT_FONT_COLOR = [0.92, 0.92, 0.92, 1]
+
+    # stats
+    STAT_WORSE_COLOR = [0.80, 0.40, 0.20, 1]
+    STAT_BETTER_COLOR = [0.30, 0.65, 0.25, 1]
+
+    # --- gui spacing ---
+    RIGHT_PANEL_ASPECT_RATIO = 0.32  # W/H -- narrower than before
+    CONTROLS_PANEL_ASPECT_RATIO = 16  # W/H -- thinner toolbar
+    CONTROLS_PANEL_MIN_HEIGHT = 42
+    CONTROLS_PANEL_MAX_HEIGHT = 48  # dp
     CP_SPACING = 6
     CP_SMALL_SPACING = 3
-    CP_PADDING = 6
+    CP_PADDING = 8  # was 6
 
-    # textures
+    # --- textures ---
     STONE_TEXTURE = {"B": "B_stone.png", "W": "W_stone.png"}
     EVAL_DOT_TEXTURE = "dot.png"
     LAST_MOVE_TEXTURE = "inner.png"
     TOP_MOVE_TEXTURE = "topmove.png"
     BOARD_TEXTURE = "board.png"
     GRAPH_TEXTURE = "graph_bg.png"
-    # sounds
+
+    # --- sounds ---
     STONE_SOUNDS = [f"stone{i}.wav" for i in [1, 2, 3, 4, 5]]
     CAPTURING_SOUND = "capturing.wav"
     COUNTDOWN_SOUND = "countdownbeep.wav"
     MINIMUM_TIME_PASSED_SOUND = "boing.wav"
     MISTAKE_SOUNDS = []
 
-    # eval dots
+    # --- eval dots ---
     EVAL_COLORS = {
         "theme:normal": [
             [0.447, 0.129, 0.42, 1],
@@ -98,9 +140,9 @@ class Theme:
     EVAL_DOT_MAX_SIZE = 0.5
     EVAL_DOT_MIN_SIZE = 0.25
 
-    # board theme
-    APPROX_BOARD_COLOR = [0.95, 0.75, 0.47, 1]  # for drawing on top of / hiding what's under it
-    BOARD_COLOR_TINT = [1, 1, 1, 1]  # multiplied by texture
+    # --- board theme ---
+    APPROX_BOARD_COLOR = [0.95, 0.75, 0.47, 1]
+    BOARD_COLOR_TINT = [1, 1, 1, 1]
 
     HINT_TEXT_COLOR = BLACK
 
@@ -112,27 +154,23 @@ class Theme:
 
     NEXT_MOVE_DASH_CONTRAST_COLORS = {"B": LIGHTER_GREY, "W": GREY}
     OUTLINE_COLORS = {"B": [0.3, 0.3, 0.3, 0.5], "W": [0.7, 0.7, 0.7, 0.5]}
-    PV_TEXT_COLORS = {"W": BLACK, "B": WHITE}  # numbers in PV
+    PV_TEXT_COLORS = {"W": BLACK, "B": WHITE}
 
-    # board
     LINE_COLOR = [0, 0, 0, 1]
     STARPOINT_SIZE = 0.1
     BOARD_COLOR = [0.85, 0.68, 0.40, 1]
-    STONE_SIZE = 0.505  # texture edge is transparent
+    STONE_SIZE = 0.505
 
     GHOST_ALPHA = 0.6
     POLICY_ALPHA = 0.5
     OWNERSHIP_COLORS = {"B": [0.0, 0.0, 0.10, 0.75], "W": [0.92, 0.92, 1.0, 0.800]}
     OWNERSHIP_GAMMA = 1.33
-    STONE_MIN_ALPHA = 0.85  # the minimal alpha for dead/weak stones
+    STONE_MIN_ALPHA = 0.85
 
-    TERRITORY_DISPLAY = "blended"  # other possibilities are "marks", "blocks" or "shaded"
-    BLOCKS_THRESHOLD = 0.3  # in "blocks" mode, territory which is this likely to be
-    #                          a certain player's gets his color
-    STONE_MARKS = "weak"  # all: always display marks on stones
-    #                       none: no marks on stones, indicate ownership by transparency only (if STONE_MIN_ALPHA < 1.0)
-    #                       weak: draw marks only on stones likely (>50%) to be captured
-    MARK_SIZE = 0.42  # stone mark size as fraction of stone size
+    TERRITORY_DISPLAY = "blended"
+    BLOCKS_THRESHOLD = 0.3
+    STONE_MARKS = "weak"
+    MARK_SIZE = 0.42
 
     HINTS_LO_ALPHA = 0.6
     HINTS_ALPHA = 0.8
@@ -145,25 +183,25 @@ class Theme:
     ENGINE_DOWN_COLOR = EVAL_COLORS["theme:normal"][1]
     ENGINE_BUSY_COLOR = EVAL_COLORS["theme:normal"][2]
     ENGINE_READY_COLOR = EVAL_COLORS["theme:normal"][-1]
-    ENGINE_PONDERING_COLOR = YELLOW
+    ENGINE_PONDERING_COLOR = [0.90, 0.78, 0.30, 1]
 
     # info PV link
-    INFO_PV_COLOR = to_hexcol(YELLOW)
+    INFO_PV_COLOR = to_hexcol([0.40, 0.72, 0.90, 1])
 
     # graph
-    GRAPH_DOT_COLOR = [0.85, 0.3, 0.3, 1]
-    WINRATE_MARKER_COLOR = [0.05, 0.7, 0.05, 1]
-    SCORE_MARKER_COLOR = [0.2, 0.6, 0.8, 1]
-    POINTLOSS_MARKER_COLOR = [0.7, 0.7, 0.05, 1]
+    GRAPH_DOT_COLOR = [0.75, 0.30, 0.30, 1]
+    WINRATE_MARKER_COLOR = [0.30, 0.70, 0.40, 1]
+    SCORE_MARKER_COLOR = [0.35, 0.65, 0.85, 1]
+    POINTLOSS_MARKER_COLOR = [0.80, 0.72, 0.20, 1]
 
     # move tree
-    MOVE_TREE_LINE = LIGHT_GREY
-    MOVE_TREE_CURRENT = YELLOW
-    MOVE_TREE_SELECTED = RED
-    MOVE_TREE_COLLAPSED = LIGHT_GREY
+    MOVE_TREE_LINE = [0.55, 0.55, 0.55, 1]
+    MOVE_TREE_CURRENT = [0.40, 0.72, 0.90, 1]
+    MOVE_TREE_SELECTED = [0.85, 0.40, 0.35, 1]
+    MOVE_TREE_COLLAPSED = [0.55, 0.55, 0.55, 1]
     MOVE_TREE_STONE_OUTLINE_COLORS = {"W": BLACK, "B": WHITE}
 
-    # keyboard shortcuts
+    # --- keyboard shortcuts ---
     KEY_AI_MOVE = ["enter", "numpadenter"]
     KEY_PASS = "p"
 

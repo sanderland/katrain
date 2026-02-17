@@ -358,8 +358,8 @@ class NewGamePopup(PopupContent):
         super().__init__(**kwargs)
         self.katrain = katrain
         self.orientation = "vertical"
-        self.spacing = dp(Theme.CP_SPACING)
-        self.padding = [dp(Theme.CP_PADDING)] * 4
+        self.spacing = dp(Theme.SPACING_SM)
+        self.padding = [dp(Theme.SPACING_MD)] * 4
 
         # Player setup block is already a reusable Python widget.
         from katrain.gui.kivyutils import PlayerSetupBlock
@@ -370,7 +370,9 @@ class NewGamePopup(PopupContent):
         self._komi = KtNumberField(number_type="float", multiline=False)
         self._handicap = KtNumberField(number_type="int", multiline=False)
         self._rules = I18NSpinner(size_hint_y=None, height=dp(44))
-        self._clear_cache = CheckBox(active=bool(self.katrain.config("game/clear_cache", False)), size_hint=(None, None))
+        self._clear_cache = CheckBox(
+            active=bool(self.katrain.config("game/clear_cache", False)), size_hint=(None, None)
+        )
         self._clear_cache.size = (dp(32), dp(32))
 
         self._rules.value_refs = [name for _abbr, name in katrain.engine.RULESETS_ABBR]
@@ -452,8 +454,8 @@ class ConfigTeacherPopup(QuickConfigGui):
         super().__init__(katrain)
         self.clear_widgets()
         self.orientation = "vertical"
-        self.spacing = dp(Theme.CP_SPACING)
-        self.padding = [dp(Theme.CP_PADDING)] * 4
+        self.spacing = dp(Theme.SPACING_SM)
+        self.padding = [dp(Theme.SPACING_MD)] * 4
 
         body_scroll = ScrollView(do_scroll_x=False)
         body = KtColumn(size_hint_y=None, padding=[0, 0, 0, 0])
@@ -461,7 +463,7 @@ class ConfigTeacherPopup(QuickConfigGui):
 
         # Main trainer toggles.
         self._trainer_rows = KtCard()
-        self._themes_spinner = I18NSpinner(size_hint_y=None, height=dp(44))
+        self._themes_spinner = I18NSpinner(size_hint_y=None, height=dp(40))
         self._themes_spinner.bind(text=lambda *_: self._on_theme_changed())
 
         self._low_visits = LabelledIntInput(input_property="trainer/low_visits")
@@ -481,9 +483,9 @@ class ConfigTeacherPopup(QuickConfigGui):
         self.options_grid = GridLayout(
             cols=4,
             size_hint_y=None,
-            spacing=dp(Theme.CP_SMALL_SPACING),
+            spacing=dp(Theme.SPACING_XS),
             row_force_default=True,
-            row_default_height=dp(40),
+            row_default_height=dp(38),
         )
         self.options_grid.bind(minimum_height=self.options_grid.setter("height"))
         table = KtCard()
@@ -497,7 +499,9 @@ class ConfigTeacherPopup(QuickConfigGui):
 
         buttons = KtRow(padding=[0, 0, 0, 0], size_hint_y=None, height=dp(48))
         buttons.add_widget(KtButton(text="Cancel", on_click=lambda: self.popup.dismiss() if self.popup else None))
-        buttons.add_widget(KtButton(text_key="update teacher", variant="primary", on_click=lambda: self.update_config(True)))
+        buttons.add_widget(
+            KtButton(text_key="update teacher", variant="primary", on_click=lambda: self.update_config(True))
+        )
         self.add_widget(buttons)
 
         Clock.schedule_once(lambda _dt: self.build_and_set_properties(), 0)
@@ -565,8 +569,8 @@ class ConfigAIPopup(PopupContent):
         super().__init__(**kwargs)
         self.katrain = katrain
         self.orientation = "vertical"
-        self.spacing = dp(Theme.CP_SPACING)
-        self.padding = [dp(Theme.CP_PADDING)] * 4
+        self.spacing = dp(Theme.SPACING_SM)
+        self.padding = [dp(Theme.SPACING_MD)] * 4
 
         self._strategy_select = I18NSpinner(size_hint_y=None, height=dp(44))
         self._strategy_select.value_refs = AI_STRATEGIES_RECOMMENDED_ORDER
@@ -580,7 +584,13 @@ class ConfigAIPopup(PopupContent):
         top.bind(minimum_height=top.setter("height"))
         top.add_widget(self._row("ai settings", self._strategy_select))
 
-        self._estimated = Label(text="?", color=Theme.TEXT_COLOR, size_hint_y=None, height=dp(30))
+        self._estimated = Label(
+            text="?",
+            color=Theme.TEXT_SECONDARY_COLOR,
+            font_size=sp(Theme.FONT_SIZE_SM),
+            size_hint_y=None,
+            height=dp(28),
+        )
         top.add_widget(self._estimated)
 
         self.add_widget(top)
@@ -626,9 +636,9 @@ class ConfigAIPopup(PopupContent):
 
         self._hint = Label(
             text="",
-            color=Theme.TEXT_COLOR,
+            color=Theme.TEXT_SECONDARY_COLOR,
             font_name=i18n.font_name,
-            font_size=sp(Theme.DESC_FONT_SIZE),
+            font_size=sp(Theme.FONT_SIZE_SM),
             halign="left",
             valign="top",
             text_size=(None, None),
@@ -828,7 +838,7 @@ class BaseConfigPopup(QuickConfigGui):
         "linux": {
             "OpenCL v1.16.0": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-opencl-linux-x64.zip",
             "Eigen AVX2 (Modern CPUs) v1.16.0": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-eigenavx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.16.0": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-eigen-linux-x64.zip",            
+            "Eigen (CPU, Non-optimized) v1.16.0": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-eigen-linux-x64.zip",
             "OpenCL v1.16.0 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-opencl-linux-x64+bs50.zip",
         },
         "just-descriptions": {},
@@ -836,7 +846,12 @@ class BaseConfigPopup(QuickConfigGui):
 
     def __init__(self, katrain):
         super().__init__(katrain)
-        self.paths = [self.katrain.config("engine/model"), self.katrain.config("engine/humanlike_model"), "katrain/models", DATA_FOLDER]
+        self.paths = [
+            self.katrain.config("engine/model"),
+            self.katrain.config("engine/humanlike_model"),
+            "katrain/models",
+            DATA_FOLDER,
+        ]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
         self.last_clicked_download_models = 0
 
@@ -900,7 +915,9 @@ class BaseConfigPopup(QuickConfigGui):
             key=lambda descpath: ("Recommended" not in descpath[0], "  -  " not in descpath[0], descpath[0]),
         )
         humanlike_models_available_msg = i18n._("models available").format(num=len(humanlike_model_files))
-        self.humanlike_model_files.values = [humanlike_models_available_msg] + [desc for desc, path in humanlike_model_files]
+        self.humanlike_model_files.values = [humanlike_models_available_msg] + [
+            desc for desc, path in humanlike_model_files
+        ]
         self.humanlike_model_files.value_keys = [""] + [path for desc, path in humanlike_model_files]
         self.humanlike_model_files.text = humanlike_models_available_msg
 
@@ -989,7 +1006,9 @@ class BaseConfigPopup(QuickConfigGui):
 
         for name, url in {**self.MODELS, **dist_models}.items():
             filename = os.path.split(url)[1]
-            if not any(os.path.split(f)[1] == filename for f in self.model_files.values + self.humanlike_model_files.values):
+            if not any(
+                os.path.split(f)[1] == filename for f in self.model_files.values + self.humanlike_model_files.values
+            ):
                 savepath = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 savepath_tmp = savepath + ".part"
                 self.katrain.log(f"Downloading {name} from {url} to {savepath_tmp}", OUTPUT_INFO)
@@ -1104,8 +1123,8 @@ class ConfigPopup(PopupContent):
         super().__init__(**kwargs)
         self.katrain = katrain
         self.orientation = "vertical"
-        self.spacing = dp(Theme.CP_SPACING)
-        self.padding = [dp(Theme.CP_PADDING)] * 4
+        self.spacing = dp(Theme.SPACING_SM)
+        self.padding = [dp(Theme.SPACING_MD)] * 4
 
         self._engine_model = KtTextField(multiline=False)
         self._engine_human_model = KtTextField(multiline=False)
@@ -1117,7 +1136,9 @@ class ConfigPopup(PopupContent):
         self._engine_max_time = KtNumberField(number_type="float", multiline=False)
         self._engine_wide_root_noise = KtNumberField(number_type="float", multiline=False)
 
-        self._ui_restore_size = CheckBox(active=bool(self.katrain.config("ui_state/restoresize", True)), size_hint=(None, None))
+        self._ui_restore_size = CheckBox(
+            active=bool(self.katrain.config("ui_state/restoresize", True)), size_hint=(None, None)
+        )
         self._ui_restore_size.size = (dp(32), dp(32))
 
         self._general_anim_pv_time = KtNumberField(number_type="float", multiline=False)
@@ -1192,7 +1213,9 @@ class ConfigPopup(PopupContent):
         _set_config_path(self.katrain._config, "engine/max_visits", int(self._engine_max_visits.value or "0"))
         _set_config_path(self.katrain._config, "engine/fast_visits", int(self._engine_fast_visits.value or "0"))
         _set_config_path(self.katrain._config, "engine/max_time", float(self._engine_max_time.value or "0"))
-        _set_config_path(self.katrain._config, "engine/wide_root_noise", float(self._engine_wide_root_noise.value or "0"))
+        _set_config_path(
+            self.katrain._config, "engine/wide_root_noise", float(self._engine_wide_root_noise.value or "0")
+        )
 
         _set_config_path(self.katrain._config, "general/anim_pv_time", float(self._general_anim_pv_time.value or "0"))
         _set_config_path(self.katrain._config, "general/debug_level", int(self._general_debug_level.value or "0"))

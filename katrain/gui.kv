@@ -49,20 +49,25 @@
 
 # style checkboxes for dark theme
 <CheckBox>:
-    # Kivy's default checkbox textures are very low-contrast when tinted on a dark UI.
-    # Hide the built-in image and draw our own outline/checkmark for visibility.
     color: 0, 0, 0, 0
     canvas.after:
         Color:
-            rgba: (0.6, 0.6, 0.6, 0.6) if self.disabled else (Theme.CHECKBOX_COLOR if self.active else (0.85, 0.85, 0.85, 1))
-        Line:
-            rectangle: (self.x + dp(2), self.y + dp(2), self.width - dp(4), self.height - dp(4))
-            width: dp(1.2)
+            rgba: (0.35, 0.35, 0.38, 0.6) if self.disabled else (Theme.CHECKBOX_COLOR if self.active else (0.55, 0.55, 0.58, 1))
+        RoundedRectangle:
+            pos: self.x + dp(2), self.y + dp(2)
+            size: self.width - dp(4), self.height - dp(4)
+            radius: [dp(3)]
         Color:
-            rgba: (0, 0, 0, 0) if (self.disabled or (not self.active)) else Theme.CHECKBOX_COLOR
+            rgba: Theme.BACKGROUND_COLOR if self.active and not self.disabled else [0, 0, 0, 0]
+        RoundedRectangle:
+            pos: self.x + dp(3), self.y + dp(3)
+            size: self.width - dp(6), self.height - dp(6)
+            radius: [dp(2)]
+        Color:
+            rgba: (0, 0, 0, 0) if (self.disabled or (not self.active)) else [1, 1, 1, 1]
         Line:
-            points: [self.x + self.width * 0.22, self.y + self.height * 0.55, self.x + self.width * 0.42, self.y + self.height * 0.30, self.x + self.width * 0.78, self.y + self.height * 0.75]
-            width: dp(2)
+            points: [self.x + self.width * 0.24, self.y + self.height * 0.52, self.x + self.width * 0.42, self.y + self.height * 0.32, self.x + self.width * 0.76, self.y + self.height * 0.72]
+            width: dp(1.8)
             cap: 'round'
             joint: 'round'
 
@@ -117,6 +122,7 @@
 <SizedButton>:
     text_color: Theme.TEXT_COLOR
     background_color: Theme.BOX_BACKGROUND_COLOR
+    background_radius: dp(Theme.RADIUS_SM)
     label: label
     Label:
         id: label
@@ -139,31 +145,35 @@
     outline_color: self.active_outline_color if self.state=='down' else self.inactive_outline_color
 
 <SizedRectangleButton>:
-    outline_color: Theme.BUTTON_BORDER_COLOR
-    text_color: self.outline_color
+    outline_color: Theme.BORDER_COLOR
+    text_color: Theme.TEXT_COLOR
+    background_radius: dp(Theme.RADIUS_SM)
 
 <AutoSizedRectangleButton>:
-    outline_color: Theme.BUTTON_BORDER_COLOR
-    text_color: self.outline_color
+    outline_color: Theme.BORDER_COLOR
+    text_color: Theme.TEXT_COLOR
+    background_radius: dp(Theme.RADIUS_SM)
 
 <SizedRectangleToggleButton>:
-    inactive_outline_color: Theme.BUTTON_INACTIVE_COLOR
-    active_outline_color: Theme.BUTTON_BORDER_COLOR
-    text_color: self.outline_color
+    inactive_outline_color: [0,0,0,0]
+    active_outline_color: Theme.PLAY_ANALYZE_TAB_COLOR
+    text_color: Theme.TEXT_COLOR if self.state=='down' else Theme.TEXT_SECONDARY_COLOR
+    background_radius: dp(Theme.RADIUS_SM)
 
 <AutoSizedRectangleToggleButton>:
-    inactive_outline_color: Theme.BUTTON_INACTIVE_COLOR
-    active_outline_color: Theme.BUTTON_BORDER_COLOR
-    text_color: self.outline_color
+    inactive_outline_color: [0,0,0,0]
+    active_outline_color: Theme.PLAY_ANALYZE_TAB_COLOR
+    text_color: Theme.TEXT_COLOR if self.state=='down' else Theme.TEXT_SECONDARY_COLOR
+    background_radius: dp(Theme.RADIUS_SM)
 
 <SizedRoundedRectangleButton@SizedRectangleButton>:
-    background_radius: self.height/3.5
+    background_radius: dp(Theme.RADIUS_MD)
 
 <AutoSizedRoundedRectangleButton@AutoSizedRectangleButton>:
-    background_radius: self.height/3.5
+    background_radius: dp(Theme.RADIUS_MD)
 
 <BGBoxLayout>:
-    background_color: Theme.BOX_BACKGROUND_COLOR
+    background_color: Theme.BACKGROUND_COLOR
 
 <TransparentIconButton>:
     background_normal: ''
@@ -185,14 +195,14 @@
     color: Theme.INPUT_FONT_COLOR
     canvas.after:
         Color:
-            rgba: LIGHT_GREY
+            rgba: Theme.BORDER_COLOR
         Line
             points: self.x,self.y,self.x+self.width,self.y
             width: 1
 
 <Spinner>:
-    -font_size: self.height * 0.5
-    background_color: [*[c*255/88 for c in Theme.BACKGROUND_COLOR[:3]], 1] # compensate for texture
+    -font_size: self.height * 0.45
+    background_color: Theme.LIGHTER_BACKGROUND_COLOR
     option_cls: 'I18NSpinnerOption'
 
 <Button>:
@@ -231,8 +241,8 @@
 
 
 <NavIconButton@TransparentIconButton>:
-    size_hint: 0.06, 0.4
-    icon_size: [min(self.size[0],self.height),min(self.size[0],self.height)]
+    size_hint: 0.055, 0.5
+    icon_size: [min(self.size[0],self.height)*0.85, min(self.size[0],self.height)*0.85]
     pos_hint: {'center_y': 0.5}
 
 <BadukPanControls>:
@@ -240,18 +250,23 @@
     circles: [black_circle,white_circle]
     mid_circles_container: mid_circles_container
     pass_btn: pass_btn
+    canvas.before:
+        Color:
+            rgba: Theme.BORDER_COLOR
+        Line:
+            points: self.x, self.y + self.height, self.x + self.width, self.y + self.height
+            width: 1
     AutoSizedRoundedRectangleButton:
         id: pass_btn
         text: i18n._('pass-button-text')
-        size_hint: None, 0.5
-        pos_hint: {'center_x': 0.15,'center_y':0.5}
+        size_hint: None, 0.55
+        pos_hint: {'center_x': 0.08,'center_y':0.5}
+        background_color: Theme.LIGHTER_BACKGROUND_COLOR
         on_left_release: root.katrain("play",None)
     BoxLayout:
         size_hint: None, 1
-        width: 8 * self.height
-        pos_hint: {'center_x': 0.5,'center_y':0.5}
-        Label:
-            size_hint: 0.075, 0.5
+        width: 9 * self.height
+        pos_hint: {'center_x': 0.48,'center_y':0.5}
         NavIconButton:
             icon: 'Previous-Mistake.png'
             color: Theme.MISTAKE_BUTTON_COLOR
@@ -266,17 +281,17 @@
             icon: 'Previous.png'
             on_press: root.katrain('undo')
         FloatLayout:
-            size_hint: 0.05, 1
+            size_hint: 0.06, 1
             id: mid_circles_container
             CircleWithText:
-                size_hint: 5/8, 1
-                pos_hint: {'center_x': 0.5-3/16}
+                size_hint: 5/8, 0.85
+                pos_hint: {'center_x': 0.5-3/16, 'center_y': 0.5}
                 id: black_circle
                 player: 'B'
                 text: ''
             CircleWithText:
-                size_hint: 5/8, 1
-                pos_hint: {'center_x': 0.5+3/16}
+                size_hint: 5/8, 0.85
+                pos_hint: {'center_x': 0.5+3/16, 'center_y': 0.5}
                 id: white_circle
                 player: 'W'
                 text: ''
@@ -294,37 +309,25 @@
             color: Theme.MISTAKE_BUTTON_COLOR
             on_press: root.katrain('find-mistake','redo')
     ClickableLabel:
-        pos_hint: {'center_x': 0.85,'center_y':0.5}
-        size_hint: None, 1
+        pos_hint: {'center_x': 0.92,'center_y':0.5}
+        size_hint: None, 0.6
         width: self.height
         canvas.before:
             Color:
-                rgba: Theme.ENGINE_PONDERING_COLOR
-            Ellipse:
-                pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
-                size: self.width/3, self.width/3
-            Color:
                 rgba: root.engine_status_col
             Ellipse:
-                angle_start: 0 if root.engine_status_pondering==-1 else root.engine_status_pondering % 360
-                angle_end: 360 if root.engine_status_pondering==-1 else (root.engine_status_pondering  % 360 + 180)
-                pos: self.pos[0] + self.width/2 - self.width/6, self.pos[1]  + self.height/2  - self.width/6
-                size: self.width/3, self.width/3
-            Color:
-                rgba: BLACK
-            Line:
-                circle: self.pos[0] + self.width/2, self.pos[1] + self.height/2, self.width/6
-                width: 1
+                pos: self.pos[0] + self.width/2 - self.width/5, self.pos[1]  + self.height/2  - self.width/5
+                size: self.width*0.4, self.width*0.4
         text: str(root.queries_remaining) if root.queries_remaining >= 3 else ''
-        color: BLACK
-        font_size: 0.5 * self.width / max(2,len(self.text))
+        color: Theme.BACKGROUND_COLOR
+        font_size: 0.4 * self.width / max(2,len(self.text))
         on_press: app.gui.controls.set_status(i18n._('ai-ponder'),STATUS_INFO)
 
 
 <HamburgerButton@TransparentIconButton>:
     icon: 'hamburger.png'
-    width: self.height
-    icon_size: [self.height * 0.5, self.height * 0.5]
+    width: dp(40)
+    icon_size: [dp(20), dp(20)]
 
 # ---------- components of right pane -------
 
@@ -334,40 +337,46 @@
     player_type: 'player:human'
     player_subtype: 'game:normal'
     background_color: Theme.BOX_BACKGROUND_COLOR if self.active else Theme.BACKGROUND_COLOR
-    outline_color: Theme.BOX_BACKGROUND_COLOR
-    outline_width: 2
-    padding: [2*CP_PADDING,CP_PADDING,CP_PADDING,CP_PADDING]
+    outline_color: [0,0,0,0]
+    outline_width: 0
+    background_radius: dp(Theme.RADIUS_SM)
+    padding: [dp(Theme.SPACING_SM), dp(Theme.SPACING_XS)]
     subtype_label: subtype_label
+    canvas.after:
+        Color:
+            rgba: Theme.PLAY_ANALYZE_TAB_COLOR if self.active else [0,0,0,0]
+        Rectangle:
+            pos: self.x, self.y
+            size: dp(3), self.height
     CircleWithText:
-        size_hint_x: 0.32 if root.alignment=='right' else EPSILON
+        size_hint_x: 0.22 if root.alignment=='right' else EPSILON
         opacity: 1 if root.alignment=='right' else 0
         player: root.player
         text: str(root.captures)
     BoxLayout:
-        size_hint: 0.75, 1
-        pos_hint: {'x':0,'y':0}
         size_hint: 1,1
         orientation: 'vertical'
         Label:
-            size_hint: 1,0.6
+            size_hint: 1, 0.55
             text: i18n._(root.player_type)
-            font_size: 0.8 * self.height
-            size: self.texture_size
+            font_size: sp(Theme.FONT_SIZE_LG)
+            color: Theme.TEXT_COLOR
             max_lines: 1
             halign: 'center'
             valign: 'middle'
-        Label: # todo: proper scaling/shortening label instead of this jank
+        Label:
             id: subtype_label
             text: i18n._(root.player_subtype)
-            size_hint: 1,0.4
-            font_size: self.height * 0.7 if root.player_type==PLAYER_HUMAN else self.height * 0.7 * min(1,18/len(self.text))
-            text_size: self.size if root.player_type==PLAYER_HUMAN else (None,self.height)
+            size_hint: 1, 0.45
+            font_size: sp(Theme.FONT_SIZE_SM)
+            color: Theme.TEXT_SECONDARY_COLOR
+            text_size: self.size
             halign: 'center'
             valign: 'middle'
-            shorten: root.player_type==PLAYER_HUMAN # overflow/cut rank off AI names
+            shorten: True
             max_lines: 1
     CircleWithText:
-        size_hint_x: EPSILON if root.alignment=='right' else 0.32
+        size_hint_x: EPSILON if root.alignment=='right' else 0.22
         opacity: 0 if root.alignment=='right' else 1
         player: root.player
         text: str(root.captures)
@@ -384,19 +393,20 @@
     size_hint_y: EPSILON if root.hidden else 1
     opacity: 0 if root.hidden else 1
     Label:
-        size_hint: 0.6,1
+        size_hint: 0.55, 1
         id: desc
-        font_size: self.height * 0.7
+        font_size: sp(Theme.FONT_SIZE_SM)
         font_name: root.font_name
+        color: Theme.TEXT_SECONDARY_COLOR
         text_size: self.size
         valign: 'middle'
-        halign: 'center'
+        halign: 'right'
         text: root.label
         max_lines: 1
     Label:
-        size_hint: 0.4,1
+        size_hint: 0.45, 1
         color: root.color
-        font_size: desc.font_size
+        font_size: sp(Theme.FONT_SIZE_SM)
         font_name: root.font_name
         text_size: self.size
         valign: 'middle'
@@ -408,6 +418,7 @@
 <StatsBox>
     orientation: 'vertical'
     background_color: Theme.BOX_BACKGROUND_COLOR
+    background_radius: dp(Theme.RADIUS_SM)
     labels: {'score':score_label,'winrate':winrate_label,'points':pointloss_label}
     StatsLabel:
         id: winrate_label
@@ -429,20 +440,14 @@
     background_color: Theme.BOX_BACKGROUND_COLOR
     do_scroll_x: False
     scroll_type: ['bars']
-    bar_width: 5
+    bar_width: 4
     bar_color: Theme.SCROLLBAR_COLOR
     label: label
-    canvas.before:
-        Color:
-            rgba: root.outline_color
-        Line:
-            rectangle:  (*self.pos,*self.size)
-            width: 1
     Label:
         id: label
         lang_change_tracking: i18n._('')
         markup: root.markup
-        padding: 5, 5
+        padding: dp(Theme.SPACING_SM), dp(Theme.SPACING_XS)
         font_size: sp(Theme.NOTES_FONT_SIZE)
         line_height: root.line_height
         color: Theme.TEXT_COLOR
@@ -463,7 +468,7 @@
 <CollapsablePanelHeader>:
     canvas.after:
         Color:
-            rgba: Theme.BOX_BACKGROUND_COLOR
+            rgba: Theme.BORDER_COLOR
         Line:
             width: 1
             points: (self.x,self.y+1,self.x+self.width,self.y+1)
@@ -480,17 +485,24 @@
     note: note
     status: status
     move_tree: move_tree
-    padding: CP_PADDING,CP_PADDING,CP_PADDING,0
-    spacing: CP_SPACING
-    tab_option_height: max(15,root.height / 30)
-    available_height: root.height - (3 * self.tab_option_height + 2*CP_PADDING - 4*CP_SPACING) # minus tabs fixed, spacing etc
-    player_box_height: max(50, 0.08 * root.available_height)
-    timer_box_height:  max(50, 0.11 * root.available_height)
-    graph_height:  max(75, 0.17 * root.height)
-    stat_height: max(20, 0.035 * root.height)
+    padding: dp(Theme.SPACING_SM), dp(Theme.SPACING_SM), dp(Theme.SPACING_SM), 0
+    spacing: dp(Theme.SPACING_XS)
+    canvas.before:
+        Color:
+            rgba: Theme.BORDER_COLOR
+        Line:
+            points: self.x, self.y, self.x, self.y + self.height
+            width: 1
+    tab_option_height: max(15,root.height / 32)
+    available_height: root.height - (3 * self.tab_option_height + 2*dp(Theme.SPACING_SM) - 4*dp(Theme.SPACING_XS))
+    player_box_height: max(48, 0.07 * root.available_height)
+    timer_box_height:  max(48, 0.10 * root.available_height)
+    graph_height:  max(65, 0.15 * root.height)
+    stat_height: max(18, 0.030 * root.height)
     BoxLayout: # -- Players
         size_hint_y: None
         height: root.player_box_height
+        spacing: dp(Theme.SPACING_XS)
         PlayerInfo:
             id: B_player
             player: 'B'
@@ -500,7 +512,6 @@
     BoxLayout:
         size_hint_y: None
         height: root.timer_box_height
-        spacing: CP_SPACING
         MoveTree:
             id: move_tree
             min_height: root.timer_box_height
@@ -557,7 +568,7 @@
                 error: False
                 size_hint: 1, None
                 height: min(self.parent.height*0.66,self.label.texture_size[1])
-                outline_color: Theme.ERROR_BORDER_COLOR if self.error else Theme.INFO_TAB_FONT_COLOR
+                outline_color: Theme.ERROR_BORDER_COLOR if self.error else [0,0,0,0]
                 background_color: Theme.LIGHTER_BACKGROUND_COLOR
             ScrollableLabel:
                 id: info
@@ -580,7 +591,7 @@
                     size_hint: 1, 1
                     canvas.before:
                         Color:
-                            rgba: LIGHTER_GREY
+                            rgba: Theme.BORDER_COLOR
                         Line:
                             points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
                             width: 1
@@ -589,10 +600,11 @@
 
 
 <MenuItem>
-    font_size: self.height * 0.5
+    font_size: sp(Theme.FONT_SIZE_MD)
     size_hint_y: None
-    height: dp(50)
+    height: dp(48)
     background_color: Theme.BOX_BACKGROUND_COLOR
+    background_radius: dp(Theme.RADIUS_SM)
     width_margin: 1.33
     content_width: icon.width + label.texture_size[0] * self.width_margin
     FloatLayout:
@@ -630,8 +642,8 @@
 <AnalysisToggle>:
     size_hint_x: None
     width: self.minimum_width
-    spacing: CP_SPACING
-    size_hint_y: 0.7
+    spacing: 2
+    size_hint_y: 0.8
     pos_hint: {'center_y':0.5}
     checkbox: checkbox
     label: label
@@ -639,16 +651,16 @@
         id: label
         text: root.text
         halign: 'center'
-        font_size: root.height / 3
+        font_size: sp(Theme.FONT_SIZE_SM)
         font_name: root.font_name
-        color: [0.5, 0.5, 0.5, 1] if root.disabled else ([1, 1, 1, 1] if checkbox.active else [0.7, 0.7, 0.7, 1])
+        color: [0.38, 0.38, 0.40, 1] if root.disabled else (Theme.PLAY_ANALYZE_TAB_COLOR if checkbox.active else Theme.TEXT_SECONDARY_COLOR)
         size_hint_x: None
-        width: self.texture_size[0] + 4
+        width: self.texture_size[0] + dp(8)
         on_left_press: checkbox.trigger_action()
     CheckBox:
         id: checkbox
         disabled: root.disabled
-        size_hint: None,0.5
+        size_hint: None, 0.45
         pos_hint: {'center_y': 0.5}
         width: self.height
         active: root.default_active
@@ -657,15 +669,11 @@
 
 <AnalysisMenuItem@MenuItem>:
     on_close: app.gui.analysis_controls.close_dropdown()
-    background_color: Theme.LIGHTER_BACKGROUND_COLOR
-    height: dp(45)
+    background_color: Theme.BOX_BACKGROUND_COLOR
+    height: dp(42)
     canvas.before:
         Color:
-            rgba: Theme.MENU_ITEM_FONT_COLOR
-        Line:
-            points: self.x,self.y, self.x,self.y+self.height
-        Color:
-            rgba: Theme.MENU_ITEM_SHORTCUT_COLOR
+            rgba: Theme.BORDER_COLOR
         Line
             points: self.x,self.y,self.x+self.width,self.y
             width: 1
@@ -694,7 +702,8 @@
 <AnalysisControls>:
     katrain: app.gui
     orientation: 'horizontal'
-    spacing: CP_SPACING
+    spacing: dp(Theme.SPACING_SM)
+    padding: [dp(Theme.SPACING_SM), 0]
     show_children: show_children
     eval: eval
     policy: policy
@@ -702,63 +711,76 @@
     ownership: ownership
     analysis_button: analysis_button
     hamburger: hamburger
+    canvas.before:
+        Color:
+            rgba: Theme.BACKGROUND_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: Theme.BORDER_COLOR
+        Line:
+            points: self.x, self.y, self.x + self.width, self.y
+            width: 1
     HamburgerButton:
         id: hamburger
         size_hint: None, 1
+        width: dp(40)
         on_press: app.gui.nav_drawer.set_state("open")
-    AnchorLayout:
-        BoxLayout:
-            size_hint_x: None
-            width: self.minimum_width
-            spacing: root.height/4
-            AnalysisToggle:
-                id: show_children
-                text: i18n._("analysis:nextmoves")
-                default_active: True
-            AnalysisToggle:
-                id: eval
-                text: i18n._("analysis:dots")
-                tri_state: True
-            AnalysisToggle:
-                id: hints
-                text: i18n._("analysis:topmoves")
-                disabled: policy.checkbox.active
-            AnalysisToggle:
-                id: policy
-                text: i18n._("analysis:policy")
-            AnalysisToggle:
-                id: ownership
-                text: i18n._('analysis:territory')
-                padding: 0,0,show_children.width/8,0 # space button a bit more
-            FloatLayout:
-                width: analysis_button.width
-                size_hint: None, 1
-                AutoSizedRectangleButton:
-                    background_color: Theme.BOX_BACKGROUND_COLOR
-                    size_hint_y: 0.55
-                    pos_hint: {'center_y': 0.5, 'x': 0}
-                    id: analysis_button
-                    on_release: root.toggle_dropdown()
-                    text: '   ' + i18n._("btn:Analyze")
-                Image:
-                    pos_hint: {'center_y': 0.5}
-                    x: self.parent.x + 2
-                    size_hint: None, 0.4
-                    width: self.height/2
-                    source: 'menu.png'
-                    mipmap: True
+    BoxLayout:
+        size_hint_x: None
+        width: self.minimum_width
+        spacing: dp(Theme.SPACING_LG)
+        AnalysisToggle:
+            id: show_children
+            text: i18n._("analysis:nextmoves")
+            default_active: True
+        AnalysisToggle:
+            id: eval
+            text: i18n._("analysis:dots")
+            tri_state: True
+        AnalysisToggle:
+            id: hints
+            text: i18n._("analysis:topmoves")
+            disabled: policy.checkbox.active
+        AnalysisToggle:
+            id: policy
+            text: i18n._("analysis:policy")
+        AnalysisToggle:
+            id: ownership
+            text: i18n._('analysis:territory')
+    Widget:
+    FloatLayout:
+        width: analysis_button.width
+        size_hint: None, 1
+        AutoSizedRectangleButton:
+            background_color: Theme.BOX_BACKGROUND_COLOR
+            size_hint_y: 0.6
+            pos_hint: {'center_y': 0.5, 'x': 0}
+            id: analysis_button
+            on_release: root.toggle_dropdown()
+            text: '  ' + i18n._("btn:Analyze")
+            background_radius: dp(Theme.RADIUS_SM)
+        Image:
+            pos_hint: {'center_y': 0.5}
+            x: self.parent.x + dp(4)
+            size_hint: None, 0.35
+            width: self.height/2
+            source: 'menu.png'
+            mipmap: True
 
 
 
 <MainMenuItem@MenuItem>
     on_close: app.gui.nav_drawer.set_state("close")
-    height: (getattr(self.parent, "item_height", 50) if self.parent else 50) or 50
+    height: dp(44)
 
 
 <MenuLabel@BackgroundMixin+Label>:
-    background_color: Theme.BACKGROUND_COLOR
-    font_size: self.height * 0.5
-    height: (getattr(self.parent, "item_height", 50) if self.parent else 50) or 50
+    background_color: Theme.BOX_BACKGROUND_COLOR
+    font_size: sp(Theme.FONT_SIZE_SM)
+    color: Theme.TEXT_SECONDARY_COLOR
+    height: dp(44)
     size_hint: 1,None
 
 <MenuLink@ButtonBehavior+MenuLabel>:
@@ -768,13 +790,13 @@
 
 <PlayerSetup>:
     orientation: 'horizontal'
-    spacing: CP_SPACING
-    padding: 0, CP_PADDING
+    spacing: dp(Theme.SPACING_SM)
+    padding: 0, dp(Theme.SPACING_SM)
     player_type: player_type
     player_subtype_human: player_subtype_human
     player_subtype_ai: player_subtype_ai
     BoxLayout:
-        size_hint: 0.25, 1
+        size_hint: 0.2, 1
         ClickableCircle:
             size_hint: 0.8, 0.8
             pos_hint: {'center_x':0.5,'center_y':0.5}
@@ -784,10 +806,11 @@
     BoxLayout:
         size_hint: 0.5, 1
         orientation: 'vertical'
-        spacing: CP_SPACING
+        spacing: dp(Theme.SPACING_XS)
         Label:
             text: i18n._('player:type')
-            font_size: self.height * 0.5            
+            font_size: sp(Theme.FONT_SIZE_SM)
+            color: Theme.TEXT_SECONDARY_COLOR
         I18NSpinner:
             id: player_type
             value_refs: PLAYER_TYPES
@@ -796,12 +819,13 @@
         size_hint: 0.5, 1
         BoxLayout:
             orientation: 'vertical'
-            spacing: CP_SPACING
+            spacing: dp(Theme.SPACING_XS)
             size_hint_x: 1 if root.mode != PLAYER_AI else EPSILON
             opacity:1 if root.mode != PLAYER_AI else 0
             Label:
                 text:  i18n._("gametype")
-                font_size: self.height * 0.5
+                font_size: sp(Theme.FONT_SIZE_SM)
+                color: Theme.TEXT_SECONDARY_COLOR
             BoxLayout:
                 I18NSpinner:
                     id: player_subtype_human
@@ -809,12 +833,13 @@
                     on_select: if root.mode==PLAYER_HUMAN: root.update_global_player_info()
         BoxLayout:
             orientation: 'vertical'
-            spacing: CP_SPACING
+            spacing: dp(Theme.SPACING_XS)
             size_hint_x: 1 if root.mode == PLAYER_AI else EPSILON
             opacity: 1 if root.mode == PLAYER_AI else 0
             Label:
                 text: i18n._("aistrategy")
-                font_size: self.height * 0.5
+                font_size: sp(Theme.FONT_SIZE_SM)
+                color: Theme.TEXT_SECONDARY_COLOR
             BoxLayout:
                 I18NSpinner:
                     id: player_subtype_ai
@@ -826,8 +851,8 @@
 <PlayerSetupBlock>:
     orientation: 'vertical'
     size_hint_y: None
-    spacing: 3*CP_SPACING
-    padding: CP_PADDING
+    spacing: dp(Theme.SPACING_SM)
+    padding: dp(Theme.SPACING_SM)
     height: ((getattr(self.parent, "item_height", 50) if self.parent else 50) or 50) * 5
 
 
@@ -837,14 +862,31 @@
     katrain: app.gui
     background_color: Theme.BOX_BACKGROUND_COLOR
     orientation: 'vertical'
-    padding: CP_PADDING
-    spacing: CP_SPACING
+    padding: dp(Theme.SPACING_MD)
+    spacing: 0
+    canvas.before:
+        Color:
+            rgba: [0, 0, 0, 0.5]
+        Rectangle:
+            pos: self.right, self.y
+            size: 2000, self.height
     ScrollView:
         do_scroll_x: False
         BoxLayout:
             orientation: 'vertical'
             size_hint_y: None
             height: self.minimum_height
+            spacing: dp(2)
+            # -- Game section --
+            MenuLabel:
+                text: 'Game'
+                font_size: sp(Theme.FONT_SIZE_SM)
+                color: Theme.TEXT_TERTIARY_COLOR
+                height: dp(28)
+                halign: 'left'
+                padding: [dp(Theme.SPACING_SM), 0]
+                text_size: self.size
+                valign: 'middle'
             MainMenuItem:
                 text: i18n._('menu:newgame')
                 icon: 'New-Game.png'
@@ -865,6 +907,16 @@
                 icon: 'Save-Game-As.png'
                 shortcut: 'Ctrl-D'
                 on_action: root.katrain("save-game-as-popup")
+            # -- Settings section --
+            MenuLabel:
+                text: 'Settings'
+                font_size: sp(Theme.FONT_SIZE_SM)
+                color: Theme.TEXT_TERTIARY_COLOR
+                height: dp(32)
+                halign: 'left'
+                padding: [dp(Theme.SPACING_SM), 0]
+                text_size: self.size
+                valign: 'bottom'
             MainMenuItem:
                 text: i18n._('menu:teachsettings')
                 icon: 'Teaching-Settings.png'
@@ -880,6 +932,16 @@
                 icon: 'General-Settings.png'
                 shortcut: 'F8'
                 on_action: root.katrain('config-popup')
+            # -- Help section --
+            MenuLabel:
+                text: 'Help'
+                font_size: sp(Theme.FONT_SIZE_SM)
+                color: Theme.TEXT_TERTIARY_COLOR
+                height: dp(32)
+                halign: 'left'
+                padding: [dp(Theme.SPACING_SM), 0]
+                text_size: self.size
+                valign: 'bottom'
             MainMenuItem:
                 text: i18n._('menu:manual')
                 icon: 'analysis.png'
@@ -894,21 +956,36 @@
 
 
 <PlayAnalyzeButton@SizedToggleButton>:
-    inactive_background_color: Theme.BOX_BACKGROUND_COLOR
+    inactive_background_color: Theme.LIGHTER_BACKGROUND_COLOR
     active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
-    text_color: self.inactive_background_color if self.state=='down' else self.active_background_color
+    text_color: Theme.BACKGROUND_COLOR if self.state=='down' else Theme.TEXT_SECONDARY_COLOR
     size_hint: 0.5,1
-    _font_size: self.height * 0.5
+    _font_size: sp(Theme.FONT_SIZE_SM)
     group: 'play_analyze'
     allow_no_selection: False
+    background_radius: dp(Theme.RADIUS_SM)
 
 <PlayAnalyzeSelect>:
     katrain: app.gui
     play: play
     analyze: analyze
+    canvas.before:
+        Color:
+            rgba: Theme.BACKGROUND_COLOR
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: Theme.BORDER_COLOR
+        Line:
+            points: self.x, self.y, self.x + self.width, self.y
+            width: 1
     OutlineBox:
-        size_hint: 0.7,0.7
-        pos_hint: {'center_x':0.5,'center_y':0.45}
+        size_hint: 0.9, 0.65
+        pos_hint: {'center_x':0.5,'center_y':0.5}
+        background_radius: dp(Theme.RADIUS_SM)
+        background_color: Theme.LIGHTER_BACKGROUND_COLOR
+        outline_color: [0,0,0,0]
         PlayAnalyzeButton:
             text: i18n._('btn:Play')
             id: play

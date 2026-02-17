@@ -161,35 +161,41 @@ class KaTrainGui(Screen, KaTrainBase):
         self.bind(size=lambda *_: self._sync_layout_metrics())
 
     def _build_main_layout(self):
-        # Equivalent to the former `<KaTrainGui>` rule in `gui.kv`, but Python-built.
         root = FloatLayout()
 
         bg = BGBoxLayout(background_color=Theme.BACKGROUND_COLOR)
-        bg.bind(pos=lambda *_: None, size=lambda *_: None)  # keep Kivy happy; BGBoxLayout uses canvas via KV.
         bg.pos = self.pos
         bg.size = self.size
         self.bind(pos=lambda *_: setattr(bg, "pos", self.pos), size=lambda *_: setattr(bg, "size", self.size))
 
+        outer = BoxLayout(orientation="vertical")
+
+        # unified top toolbar spanning full width
+        toolbar = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(44))
+        self.analysis_controls = AnalysisControls()
+        self.play_mode = PlayAnalyzeSelect()
+        toolbar.add_widget(self.analysis_controls)
+        toolbar.add_widget(self.play_mode)
+        outer.add_widget(toolbar)
+
+        # main content: board (left) + sidebar (right)
         content = BoxLayout(orientation="horizontal")
 
         left = BoxLayout(orientation="vertical")
-        self.analysis_controls = AnalysisControls()
         self.board_gui = BadukPanWidget()
         self.board_controls = BadukPanControls()
-        left.add_widget(self.analysis_controls)
         left.add_widget(self.board_gui)
         left.add_widget(self.board_controls)
 
         right = BoxLayout(orientation="vertical", size_hint_x=None)
-        self.play_mode = PlayAnalyzeSelect()
         self.controls = ControlsPanel()
-        right.add_widget(self.play_mode)
         right.add_widget(self.controls)
 
         content.add_widget(left)
         content.add_widget(right)
+        outer.add_widget(content)
 
-        bg.add_widget(content)
+        bg.add_widget(outer)
         root.add_widget(bg)
 
         self.nav_drawer = MyNavigationDrawer(
@@ -212,32 +218,36 @@ class KaTrainGui(Screen, KaTrainBase):
         if not self.analysis_controls or not self.board_controls:
             return
 
-        controls_h = max(
-            sp(Theme.CONTROLS_PANEL_MIN_HEIGHT),
-            min(sp(Theme.CONTROLS_PANEL_MAX_HEIGHT), self.width / Theme.CONTROLS_PANEL_ASPECT_RATIO),
-        )
+        toolbar_h = dp(44)
 
-        self.analysis_controls.height = controls_h
-        self.analysis_controls.size_hint_y = None
-        self.analysis_controls.opacity = 1
-
-        self.board_controls.height = controls_h
+        # board navigation bar
+        nav_h = max(dp(36), min(dp(44), self.width / 20))
+        self.board_controls.height = nav_h
         self.board_controls.size_hint_y = None
         self.board_controls.opacity = 1
 
+        # analysis controls fill the toolbar (minus play/analyze width)
+        self.analysis_controls.size_hint_x = 1
+        self.analysis_controls.height = toolbar_h
+        self.analysis_controls.size_hint_y = None
+        self.analysis_controls.opacity = 1
+
         if self.play_mode and self.controls:
-            right = self.play_mode.parent
+            # play/analyze segmented control
+            self.play_mode.size_hint_x = None
+            self.play_mode.width = dp(180)
+            self.play_mode.size_hint_y = None
+            self.play_mode.height = toolbar_h
+
+            right = self.controls.parent
             if right:
                 right.width = self.height * Theme.RIGHT_PANEL_ASPECT_RATIO
                 right.opacity = 1
 
-            self.play_mode.size_hint_y = None
-            self.play_mode.height = self.analysis_controls.height
-
         if self.nav_drawer:
-            available_h = self.height - self.analysis_controls.height
+            available_h = self.height - toolbar_h
             self.nav_drawer.height = available_h
-            self.nav_drawer.width = available_h * 0.5
+            self.nav_drawer.width = available_h * 0.45
             if self.nav_drawer.state == "close":
                 self.nav_drawer.x = -self.nav_drawer.width
 
@@ -1000,14 +1010,19 @@ class KaTrainApp(App):
     def is_valid_window_position(self, left, top, width, height):
         try:
             from screeninfo import get_monitors
+
             monitors = get_monitors()
             for monitor in monitors:
-                if (left >= monitor.x and left + width <= monitor.x + monitor.width and
-                    top >= monitor.y and top + height <= monitor.y + monitor.height):
+                if (
+                    left >= monitor.x
+                    and left + width <= monitor.x + monitor.width
+                    and top >= monitor.y
+                    and top + height <= monitor.y + monitor.height
+                ):
                     return True
             return False
         except Exception as e:
-            return True # yolo
+            return True  # yolo
 
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
@@ -1057,7 +1072,11 @@ class KaTrainApp(App):
             win_size = [1300 * window_scale_fac, 1000 * window_scale_fac]
         self.gui.log(f"Setting window size to {win_size} and position to {[win_left, win_top]}", OUTPUT_DEBUG)
         Window.size = (win_size[0], win_size[1])
-        if win_left is not None and win_top is not None and self.is_valid_window_position(win_left, win_top, win_size[0], win_size[1]):
+        if (
+            win_left is not None
+            and win_top is not None
+            and self.is_valid_window_position(win_left, win_top, win_size[0], win_size[1])
+        ):
             Window.left = win_left
             Window.top = win_top
 

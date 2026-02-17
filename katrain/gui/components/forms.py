@@ -98,16 +98,16 @@ class KtFormRow(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.orientation = "horizontal"
-        self.spacing = dp(Theme.CP_SPACING)
+        self.spacing = dp(Theme.SPACING_SM)
         self.size_hint_y = None
-        self.height = dp(48)
+        self.height = dp(44)
 
         self._label = Label(
             text="",
             size_hint_x=0.45,
-            color=Theme.TEXT_COLOR,
+            color=Theme.TEXT_SECONDARY_COLOR,
             font_name=i18n.font_name,
-            font_size=sp(Theme.DESC_FONT_SIZE),
+            font_size=sp(Theme.FONT_SIZE_SM),
             halign="right",
             valign="middle",
         )
@@ -130,7 +130,7 @@ class KtFormRow(BoxLayout):
         if self.field is not None:
             field_h = getattr(self.field, "height", 0) or 0
         # Keep default spacing and don't let single-line rows shrink.
-        self.height = max(dp(48), label_h + dp(16), field_h + dp(12))
+        self.height = max(dp(44), label_h + dp(12), field_h + dp(8))
 
     def _sync_label(self, *_args):
         self._label.text = i18n._(self.label_key) if self.label_key else ""
@@ -217,4 +217,3 @@ class KtSelectField(KeyValueSpinner):
 
     def _sync_value_key(self, *_args):
         self.value_key = self.selected[1]
-

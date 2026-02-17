@@ -245,11 +245,7 @@ Builder.load_string(
 <MoveTreeDropdownItem@MenuItem>:
     canvas.before:
         Color:
-            rgba: WHITE
-        Line:
-            points: self.x, self.y, self.x, self.y+self.height
-        Color:
-            rgba: LIGHT_GREY
+            rgba: Theme.BORDER_COLOR
         Line
             points: self.x,self.y,self.x+self.width,self.y
             width: 1
@@ -261,23 +257,23 @@ Builder.load_string(
         icon: 'delete.png'
         shortcut: 'Ctr+Del'
         on_action: root.katrain.controls.move_tree.delete_selected_node()
-        -background_color: Theme.LIGHTER_BACKGROUND_COLOR
-        -height: dp(45)
+        -background_color: Theme.BOX_BACKGROUND_COLOR
+        -height: dp(42)
         -width_margin: 1.6
     MoveTreeDropdownItem:
         text: i18n._("Make Main Branch")
         icon: 'Branch.png'
         shortcut: 'PgUp'
         on_action: root.katrain.controls.move_tree.make_selected_node_main_branch()
-        -background_color: Theme.LIGHTER_BACKGROUND_COLOR
-        -height: dp(45)
+        -background_color: Theme.BOX_BACKGROUND_COLOR
+        -height: dp(42)
         -width_margin: 1.6
     MoveTreeDropdownItem:
         text: i18n._("Prune Branch")
         icon: 'Prune.png'
         on_action: root.katrain.controls.move_tree.prune_branch()
-        -background_color: Theme.LIGHTER_BACKGROUND_COLOR
-        -height: dp(45)
+        -background_color: Theme.BOX_BACKGROUND_COLOR
+        -height: dp(42)
         -width_margin: 1.6        
 """
 )
