@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import glob
 import json
 import os
@@ -5,13 +7,13 @@ import re
 import stat
 import threading
 import time
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 from zipfile import ZipFile
 
 import urllib3
 from kivy.clock import Clock
 from kivy.metrics import dp, sp
-from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
+from kivy.properties import BooleanProperty, ListProperty, ObjectProperty, StringProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
@@ -38,7 +40,6 @@ from katrain.core.constants import (
     SGF_INTERNAL_COMMENTS_MARKER,
     STATUS_INFO,
     PLAYER_HUMAN,
-    ADDITIONAL_MOVE_ORDER,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
@@ -128,6 +129,15 @@ class PopupContent(BoxLayout):
     """Popup content base with a back-reference to its Popup wrapper."""
 
     popup = ObjectProperty(None)
+
+    def _dismiss(self):
+        if self.popup:
+            self.popup.dismiss()
+
+    def _row(self, label_key: str, field_widget):
+        row = KtFormRow(label_key=label_key)
+        row.set_field(field_widget)
+        return row
 
 
 class LabelledTextInput(KaTrainTextInput):
@@ -284,11 +294,11 @@ class QuickConfigGui(BoxLayout):
     def register_input_widget(self, widget: Any) -> None:
         self.form.register(widget)
 
-    def collect_properties(self, _widget=None) -> Dict:
+    def collect_properties(self, _widget=None) -> dict:
         # No widget-tree traversal: values come from explicit registration.
         return self.form.values()
 
-    def get_setting(self, key) -> Union[Tuple[Any, Dict, str], Tuple[Any, List, int]]:
+    def get_setting(self, key) -> tuple[Any, dict | list, str | int]:
         keys = key.split("/")
         config = self.katrain._config
         for k in keys[:-1]:
@@ -400,15 +410,6 @@ class NewGamePopup(PopupContent):
         self.add_widget(buttons)
 
         Clock.schedule_once(lambda _dt: self.update_from_current_game(), 0)
-
-    def _dismiss(self):
-        if self.popup:
-            self.popup.dismiss()
-
-    def _row(self, label_key: str, field_widget):
-        row = KtFormRow(label_key=label_key)
-        row.set_field(field_widget)
-        return row
 
     def update_from_current_game(self, *_args):
         # Initialize fields from current config/game.
@@ -647,15 +648,6 @@ class ConfigAIPopup(PopupContent):
         )
 
         self._rebuild_options()
-
-    def _dismiss(self):
-        if self.popup:
-            self.popup.dismiss()
-
-    def _row(self, label_key: str, field_widget):
-        row = KtFormRow(label_key=label_key)
-        row.set_field(field_widget)
-        return row
 
     def _on_human_profile_changed(self, *_args) -> None:
         if self._suspend_callbacks:
@@ -1192,15 +1184,6 @@ class ConfigPopup(PopupContent):
         buttons.add_widget(KtButton(text="Cancel", on_click=self._dismiss))
         buttons.add_widget(KtButton(text="Apply", variant="primary", on_click=self.apply))
         self.add_widget(buttons)
-
-    def _dismiss(self):
-        if self.popup:
-            self.popup.dismiss()
-
-    def _row(self, label_key: str, field_widget):
-        row = KtFormRow(label_key=label_key)
-        row.set_field(field_widget)
-        return row
 
     def apply(self):
         before_engine = dict(self.katrain._config.get("engine", {}))

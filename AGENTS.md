@@ -2,25 +2,48 @@
 
 Practical guidance for AI agents (and humans) working in this KaTrain repository.
 
-This repo is a Kivy/KivyMD desktop app for Go/Baduk analysis that talks to a KataGo engine subprocess.
+This repo is a Kivy desktop app for Go/Baduk/Weiqi analysis that talks to a KataGo engine subprocess.
 
 ## Quick Commands
 
 Use `uv` for Python commands in this repo:
 
 ```bash
-uv run pytest tests
-uv run pytest tests/test_board.py -k "some_test_name"
-uv run black .
-uv run python -m katrain
+uv run python -m katrain            # Run the app
+uv run pytest tests                  # Run all tests
+uv run pytest tests/test_board.py -k "some_test_name"  # Single test
+uv run black .                       # Format (line-length=120)
+uv run python i18n.py -todo          # Check missing translations (CI check)
 ```
 
-## Codebase Map (Where Things Live)
+## Architecture
 
-- `katrain/core/`: game logic, SGF tree, engine protocol, AI strategies
-- `katrain/gui/`: Kivy/KivyMD UI, KV files, widgets, popups
-- `katrain/__main__.py`: app entry point and UI <-> engine message queue
-- `tests/`: pytest suite
+**Entry point**: `katrain/__main__.py` — `KaTrainApp(App)` creates `KaTrainGui(Screen, KaTrainBase)`.
+
+**Core layer** (`katrain/core/`):
+- `engine.py` — `KataGoEngine`: subprocess management, GTP analysis protocol, priority query queue
+- `game.py` / `game_node.py` — game tree with `GameNode` nodes holding immutable `BoardState`s; SGF load/save
+- `sgf_parser.py` — pure SGF parsing (`SGF`, `SGFNode`, `Move` classes)
+- `ai.py` — strategy registry via `@register_strategy(name)` decorator; strategies: `AI_DEFAULT` (full KataGo), `AI_HUMAN` (HumanSL network)
+- `base_katrain.py` — `KaTrainBase`: config loading (JSON via Kivy `JsonStore`), player management. Subclassed by both GUI and test mocks
+- `constants.py` — all constants, AI strategy names, player/mode types
+
+**GUI layer** (`katrain/gui/`):
+- `badukpan.py` — go board rendering with raw Kivy canvas instructions
+- `gui.kv` / `popups.kv` — Kivy layout definitions loaded via `Builder.load_file()`
+- `theme.py` — `Theme` class with all colors/fonts/sizes (overridable via `~/.katrain/theme*.json`)
+- `components/` — `forms.py` (`FieldSpec`, `FormModel`), buttons, layout helpers, popup manager
+- `widgets/` — move tree, score graph, file browser, sliders
+
+**Message queue pattern**: `KaTrainGui.__call__(message, ...)` pushes to `self.message_queue`. A background thread consumes messages, calling `_do_{message}()` methods then `_do_update_state()`.
+
+**Configuration**: package default at `katrain/config.json`, user override at `~/.katrain/config.json`. Sections: `engine`, `general`, `trainer`, `ai`, `ui_state`.
+
+## Testing
+
+Tests use `MockKaTrain(KaTrainBase)` and `MockEngine` to avoid needing a KataGo binary. Tests that require katago auto-skip when binary is absent or `CI=true`. Custom pytest marker `humansl` for tests needing the HumanSL model.
+
+CI: GitHub Actions runs pytest on Python 3.9/3.12/3.13, i18n check, PyInstaller builds for Windows/macOS.
 
 ## Local Conventions (Keep Noise Down)
 

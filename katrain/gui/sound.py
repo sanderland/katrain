@@ -29,9 +29,3 @@ def play_sound(file, volume=1, cache=True):
         if sound is not None:
             sound.volume = volume
             Clock.schedule_once(lambda _dt: _play(sound), 0)
-
-
-def stop_sound(file):
-    sound = cached_sounds.get(file)
-    if sound:
-        sound.stop()

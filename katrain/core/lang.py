@@ -14,10 +14,6 @@ class Lang:
     def _(self, text: str) -> str:
         return STRINGS_EN.get(text, text)
 
-    def switch_lang(self, _lang: str) -> None:
-        # Language switching removed in v2.
-        self.lang = DEFAULT_LANGUAGE
-
 
 i18n = Lang(DEFAULT_LANGUAGE)
 

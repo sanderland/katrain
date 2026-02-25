@@ -24,7 +24,6 @@ from kivy.uix.widget import Widget
 from kivy.animation import Animation
 from kivy.app import App
 from kivy.uix.checkbox import CheckBox
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 
 from katrain.core.constants import (
@@ -183,23 +182,6 @@ class TransparentIconButton(Button):
     disabled = BooleanProperty(False)
 
 
-class PauseButton(LeftButtonBehavior, Widget):
-    active = BooleanProperty(True)
-    active_line_color = ListProperty([0.5, 0.5, 0.8, 1])
-    inactive_line_color = ListProperty([1, 1, 1, 1])
-    active_fill_color = ListProperty([0.5, 0.5, 0.5, 1])
-    inactive_fill_color = ListProperty([1, 1, 1, 0])
-    line_width = NumericProperty(5)
-    fill_color = ListProperty([0.5, 0.5, 0.5, 1])
-    line_color = ListProperty([0.5, 0.5, 0.5, 1])
-    min_size = NumericProperty(100)
-
-
-# -- basic styles
-class LightLabel(Label):
-    pass
-
-
 class StatsLabel(BoxLayout):
     text = StringProperty("")
     label = StringProperty("")
@@ -283,45 +265,6 @@ class KaTrainTextInput(TextInput):
             self.cursor_color = Theme.TEXT_COLOR
         if not getattr(self, "padding", None):
             self.padding = [dp(10), dp(10), dp(10), dp(10)]
-
-
-class IMETextField(KaTrainTextInput):
-    _imo_composition = StringProperty("")
-    _imo_cursor = ListProperty(None, allownone=True)
-
-    def _bind_keyboard(self):
-        super()._bind_keyboard()
-        Window.bind(on_textedit=self.window_on_textedit)
-
-    def _unbind_keyboard(self):
-        super()._unbind_keyboard()
-        Window.unbind(on_textedit=self.window_on_textedit)
-
-    def do_backspace(self, from_undo=False, mode="bkspc"):
-        if self._imo_composition == "":  # IMO handles sub-character backspaces
-            return super().do_backspace(from_undo, mode)
-
-    def window_on_textedit(self, window, imo_input):
-        text_lines = self._lines
-        if self._imo_composition:
-            pcc, pcr = self._imo_cursor
-            text = text_lines[pcr]
-            if text[pcc - len(self._imo_composition) : pcc] == self._imo_composition:  # should always be true
-                remove_old_imo_text = text[: pcc - len(self._imo_composition)] + text[pcc:]
-                ci = self.cursor_index()
-                self._refresh_text_from_property("insert", *self._get_line_from_cursor(pcr, remove_old_imo_text))
-                self.cursor = self.get_cursor_from_index(ci - len(self._imo_composition))
-
-        if imo_input:
-            if self._selection:
-                self.delete_selection()
-            cc, cr = self.cursor
-            text = text_lines[cr]
-            new_text = text[:cc] + imo_input + text[cc:]
-            self._refresh_text_from_property("insert", *self._get_line_from_cursor(cr, new_text))
-            self.cursor = self.get_cursor_from_index(self.cursor_index() + len(imo_input))
-        self._imo_composition = imo_input
-        self._imo_cursor = self.cursor
 
 
 class KeyValueSpinner(Spinner):

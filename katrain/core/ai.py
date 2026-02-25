@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 import time
-from typing import Optional
 
 from katrain.core.constants import (
     AI_DEFAULT,
@@ -24,7 +25,7 @@ def register_strategy(strategy_name: str):
     return decorator
 
 
-def ai_rank_estimation(strategy: str, settings: dict) -> Optional[float]:
+def ai_rank_estimation(strategy: str, settings: dict) -> float | None:
     """Estimate playing strength for UI display.
 
     Returns a 'dan rank' number where:
@@ -73,7 +74,7 @@ class AIStrategy(ABC):
             time.sleep(0.01)
             self.game.engines[self.cn.next_player].check_alive(exception_if_dead=True)
 
-    def request_analysis(self, extra_settings: dict, *, include_policy: bool) -> Optional[dict]:
+    def request_analysis(self, extra_settings: dict, *, include_policy: bool) -> dict | None:
         error = None
         analysis = None
 

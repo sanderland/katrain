@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import copy
 import chardet
 import math
 import re
 from collections import defaultdict
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 class ParseError(Exception):
@@ -39,7 +41,7 @@ class Move:
             player=player,
         )
 
-    def __init__(self, coords: Optional[Tuple[int, int]] = None, player: str = "B"):
+    def __init__(self, coords: tuple[int, int] | None = None, player: str = "B"):
         """Initialize a move from zero-based coordinates and player"""
         self.player = player
         self.coords = coords
@@ -101,7 +103,7 @@ class SGFNode:
     def __repr__(self):
         return f"SGFNode({dict(self.properties)})"
 
-    def sgf_properties(self, **xargs) -> Dict:
+    def sgf_properties(self, **xargs) -> dict:
         """For hooking into in a subclass and overriding/formatting any additional properties to be output."""
         return copy.deepcopy(self.properties)
 
@@ -148,7 +150,7 @@ class SGFNode:
                     stack += sum([[")", c, "("] for c in item.ordered_children[::-1]], [])
         return sgf_str
 
-    def add_list_property(self, property: str, values: List):
+    def add_list_property(self, property: str, values: list):
         """Add some values to the property list."""
         # SiZe[19] ==> SZ[19] etc. for old SGF
         normalized_property = re.sub("[a-z]", "", property)
@@ -175,7 +177,7 @@ class SGFNode:
         return self.properties.pop(property, None)
 
     @property
-    def parent(self) -> Optional["SGFNode"]:
+    def parent(self) -> "SGFNode | None":
         """Returns the parent node"""
         return self._parent
 
@@ -204,7 +206,7 @@ class SGFNode:
         return self._depth
 
     @property
-    def board_size(self) -> Tuple[int, int]:
+    def board_size(self) -> tuple[int, int]:
         """Retrieves the root's SZ property, or 19 if missing. Parses it, and returns board size as a tuple x,y"""
         size = str(self.root.get_property("SZ", "19"))
         if ":" in size:
@@ -237,7 +239,7 @@ class SGFNode:
         return self.root.get_property("RU", "japanese")
 
     @property
-    def moves(self) -> List[Move]:
+    def moves(self) -> list[Move]:
         """Returns all moves in the node - typically 'move' will be better."""
         if self.moves_cache is None:
             self.moves_cache = [
@@ -271,22 +273,22 @@ class SGFNode:
             return [Move.from_sgf(sgf_coord, player=player, board_size=board_size) for sgf_coord in placements]
 
     @property
-    def placements(self) -> List[Move]:
+    def placements(self) -> list[Move]:
         """Returns all placements (AB/AW) in the node."""
         return [coord for pl in Move.PLAYERS for coord in self._expanded_placements(pl)]
 
     @property
-    def clear_placements(self) -> List[Move]:
+    def clear_placements(self) -> list[Move]:
         """Returns all AE clear square commends in the node."""
         return self._expanded_placements(None)
 
     @property
-    def move_with_placements(self) -> List[Move]:
+    def move_with_placements(self) -> list[Move]:
         """Returns all moves (B/W) and placements (AB/AW) in the node."""
         return self.placements + self.moves
 
     @property
-    def move(self) -> Optional[Move]:
+    def move(self) -> Move | None:
         """Returns the single move for the node if one exists, or None if no moves (or multiple ones) exist."""
         moves = self.moves
         if len(moves) == 1:
@@ -308,7 +310,7 @@ class SGFNode:
         return not self.children and not self.properties
 
     @property
-    def nodes_in_tree(self) -> List:
+    def nodes_in_tree(self) -> list:
         """Returns all nodes in the tree rooted at this node"""
         stack = [self]
         nodes = []
@@ -319,7 +321,7 @@ class SGFNode:
         return nodes
 
     @property
-    def nodes_from_root(self) -> List:
+    def nodes_from_root(self) -> list:
         """Returns all nodes from the root up to this node, i.e. the moves played in the current branch of the game"""
         nodes = [self]
         n = self

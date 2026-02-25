@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 import math
 import os
 import re
 import threading
 from datetime import datetime
-from typing import Dict, List, Optional, Union
 
 from kivy.clock import Clock
 
@@ -43,7 +44,7 @@ class BaseGame:
         self,
         katrain,
         move_tree: GameNode = None,
-        game_properties: Optional[Dict] = None,
+        game_properties: dict | None = None,
         sgf_filename=None,
         bypass_config=False,  # TODO: refactor?
     ):
@@ -134,7 +135,7 @@ class BaseGame:
         return played_node
 
     # Insert a list of moves from root, often just adding one.
-    def sync_branch(self, moves: List[Move]):
+    def sync_branch(self, moves: list[Move]):
         node = self.root
         with self._lock:
             for move in moves:
@@ -220,7 +221,7 @@ class BaseGame:
     @property
     def prisoner_count(
         self,
-    ) -> Dict:  # returns prisoners that are of a certain colour as {B: black stones captures, W: white stones captures}
+    ) -> dict:  # returns prisoners that are of a certain colour as {B: black stones captures, W: white stones captures}
         return self.current_node.prisoner_count
 
     @property
@@ -312,7 +313,7 @@ class BaseGame:
         base_game_name = f"{PROGRAM_NAME}_{player_names['B']} vs {player_names['W']}"
         return f"{base_game_name} {self.game_id}.sgf"
 
-    def write_sgf(self, filename: str, trainer_config: Optional[Dict] = None):
+    def write_sgf(self, filename: str, trainer_config: dict | None = None):
         if trainer_config is None:
             trainer_config = self.katrain.config("trainer", {})
         self.update_root_properties()
@@ -331,16 +332,16 @@ class Game(BaseGame):
     def __init__(
         self,
         katrain,
-        engine: Union[Dict, KataGoEngine],
+        engine: dict | KataGoEngine,
         move_tree: GameNode = None,
         analyze_fast=False,
-        game_properties: Optional[Dict] = None,
+        game_properties: dict | None = None,
         sgf_filename=None,
     ):
         super().__init__(
             katrain=katrain, move_tree=move_tree, game_properties=game_properties, sgf_filename=sgf_filename
         )
-        if not isinstance(engine, Dict):
+        if not isinstance(engine, dict):
             engine = {"B": engine, "W": engine}
         self.engines = engine
 

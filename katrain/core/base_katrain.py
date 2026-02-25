@@ -79,8 +79,6 @@ class KaTrainBase:
         if self.debug_level >= OUTPUT_DEBUG:
             Config.set("kivy", "log_enable", 1)
             Config.set("kivy", "log_level", "debug")
-        #        if self.debug_level >= OUTPUT_EXTRA_DEBUG:
-        #            Config.set("kivy", "log_level", "trace")
         self.players_info = {"B": Player("B"), "W": Player("W")}
         self.reset_players()
 

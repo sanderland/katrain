@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable
+from collections.abc import Callable
 
 from kivy.metrics import dp
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
 
 from katrain.gui.popups import I18NPopup
@@ -45,9 +45,7 @@ class PopupManager:
             popup.open()
             return popup
 
-        # Clamp size via I18NPopup's own logic.
         popup = I18NPopup(title_key=spec.title_key, size=[dp(spec.size[0]), dp(spec.size[1])], content=content)
-        # KaTrain historically used `I18NPopup(...).__self__` in some places; normalize.
         if hasattr(popup, "__self__"):
             popup = popup.__self__
         content.popup = popup
@@ -59,8 +57,6 @@ class PopupManager:
             popup.bind(on_dismiss=lambda *_: self._on_popup_dismissed())
 
         popup.open()
-        # Not all legacy popup contents implement `on_opened()`. Keep the new hook for
-        # `KtPopupContent` instances, but don't crash for older BoxLayout-based popups.
         if hasattr(content, "on_opened"):
             content.on_opened()
         return popup
@@ -71,14 +67,4 @@ class PopupManager:
 
     def clear_cache(self) -> None:
         self._cache.clear()
-
-
-class ConfirmPopupContent(KtPopupContent):
-    text = StringProperty("")
-    on_confirm = ObjectProperty(None, allownone=True)
-    on_cancel = ObjectProperty(None, allownone=True)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.orientation = "vertical"
 

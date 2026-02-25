@@ -39,7 +39,6 @@ AI_HUMAN = "ai:human"
 
 AI_CONFIG_DEFAULT = AI_DEFAULT
 
-AI_STRATEGIES = [AI_DEFAULT, AI_HUMAN]
 AI_STRATEGIES_RECOMMENDED_ORDER = [AI_DEFAULT, AI_HUMAN]
 
 # Used by the AI config UI to float the most important keys to the top.
@@ -56,11 +55,6 @@ TOP_MOVE_SCORE = "top_move_score"
 TOP_MOVE_DELTA_WINRATE = "top_move_delta_winrate"
 TOP_MOVE_WINRATE = "top_move_winrate"
 TOP_MOVE_VISITS = "top_move_visits"
-# TOP_MOVE_UTILITY = "top_move_utility"
-# TOP_MOVE_UTILITYLCB = "top_move_utiltiy_lcb"
-# TOP_MOVE_SCORE_STDDEV = "top_move_score_stddev"
-TOP_MOVE_NOTHING = "top_move_nothing"
-
 
 TOP_MOVE_OPTIONS = [
     TOP_MOVE_SCORE,
@@ -68,13 +62,20 @@ TOP_MOVE_OPTIONS = [
     TOP_MOVE_WINRATE,
     TOP_MOVE_DELTA_WINRATE,
     TOP_MOVE_VISITS,
-    TOP_MOVE_NOTHING,
-    # TOP_MOVE_SCORE_STDDEV,
-    # TOP_MOVE_UTILITY,
-    # TOP_MOVE_UTILITYLCB
 ]
 REPORT_DT = 1
 PONDERING_REPORT_DT = 0.25
 
 SGF_INTERNAL_COMMENTS_MARKER = "\u3164\u200b"
 SGF_SEPARATOR_MARKER = "\u3164\u3164"
+
+RULESETS_ABBR = [
+    ("jp", "japanese"),
+    ("cn", "chinese"),
+    ("ko", "korean"),
+    ("aga", "aga"),
+    ("tt", "tromp-taylor"),
+    ("nz", "new zealand"),
+    ("stone_scoring", "stone_scoring"),
+]
+RULESETS = {fromkey: name for abbr, name in RULESETS_ABBR for fromkey in [abbr, name]}

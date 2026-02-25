@@ -4,7 +4,8 @@ from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Line, Rectangle
 from kivy.lang import Builder
 from kivy.metrics import dp
-from kivy.properties import BooleanProperty, Clock, NumericProperty, ObjectProperty
+from kivy.clock import Clock
+from kivy.properties import BooleanProperty, NumericProperty, ObjectProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.widget import Widget

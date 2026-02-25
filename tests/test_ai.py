@@ -5,14 +5,10 @@ import pytest
 
 from katrain.core.ai import ai_rank_estimation, generate_ai_move
 from katrain.core.base_katrain import KaTrainBase
-from katrain.core.constants import AI_DEFAULT, AI_HUMAN, AI_STRATEGIES, AI_STRATEGIES_RECOMMENDED_ORDER
+from katrain.core.constants import AI_DEFAULT, AI_HUMAN
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game, KaTrainSGF
 from katrain.core.utils import find_package_resource
-
-
-def test_ai_strategy_order():
-    assert AI_STRATEGIES_RECOMMENDED_ORDER == AI_STRATEGIES
 
 
 def test_sgf_roundtrip_preserves_moves():

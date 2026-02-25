@@ -3,8 +3,8 @@ import threading
 
 from kivy.lang import Builder
 from kivy.metrics import dp
-from kivy.properties import BooleanProperty, Clock, ListProperty, NumericProperty, StringProperty
-from kivy.properties import ObjectProperty
+from kivy.clock import Clock
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty, StringProperty
 from kivy.uix.widget import Widget
 
 from katrain.gui.theme import Theme

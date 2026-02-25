@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import json
 import os
@@ -8,7 +10,7 @@ import subprocess
 import threading
 import time
 import traceback
-from typing import Callable, Dict, List, Optional
+from collections.abc import Callable
 
 from kivy.utils import platform as kivy_platform
 
@@ -20,6 +22,8 @@ from katrain.core.constants import (
     DATA_FOLDER,
     KATAGO_EXCEPTION,
     PONDERING_REPORT_DT,
+    RULESETS,
+    RULESETS_ABBR,
 )
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
@@ -29,16 +33,8 @@ from katrain.core.utils import find_package_resource, json_truncate_arrays
 
 class BaseEngine:  # some common elements between analysis and contribute engine
 
-    RULESETS_ABBR = [
-        ("jp", "japanese"),
-        ("cn", "chinese"),
-        ("ko", "korean"),
-        ("aga", "aga"),
-        ("tt", "tromp-taylor"),
-        ("nz", "new zealand"),
-        ("stone_scoring", "stone_scoring"),
-    ]
-    RULESETS = {fromkey: name for abbr, name in RULESETS_ABBR for fromkey in [abbr, name]}
+    RULESETS_ABBR = RULESETS_ABBR
+    RULESETS = RULESETS
 
     def __init__(self, katrain, config):
         self.katrain = katrain
@@ -400,18 +396,18 @@ class KataGoEngine(BaseEngine):
         self,
         analysis_node: GameNode,
         callback: Callable,
-        error_callback: Optional[Callable] = None,
+        error_callback: Callable | None = None,
         visits: int = None,
         analyze_fast: bool = False,
         time_limit=True,
         find_alternatives: bool = False,
         priority: int = 0,
         ponder=False,  # infinite visits, cancellable
-        ownership: Optional[bool] = None,
-        next_move: Optional[GameNode] = None,
-        extra_settings: Optional[Dict] = None,
+        ownership: bool | None = None,
+        next_move: GameNode | None = None,
+        extra_settings: dict | None = None,
         include_policy=True,
-        report_every: Optional[float] = None,
+        report_every: float | None = None,
     ):
         nodes = analysis_node.nodes_from_root
         moves = [m for node in nodes for m in node.moves]

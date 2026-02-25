@@ -95,12 +95,6 @@ class Theme:
 
     # --- gui spacing ---
     RIGHT_PANEL_ASPECT_RATIO = 0.32
-    CONTROLS_PANEL_ASPECT_RATIO = 16
-    CONTROLS_PANEL_MIN_HEIGHT = 42
-    CONTROLS_PANEL_MAX_HEIGHT = 48
-    CP_SPACING = 6
-    CP_SMALL_SPACING = 3
-    CP_PADDING = 8
 
     # --- textures ---
     STONE_TEXTURE = {"B": "B_stone.png", "W": "W_stone.png"}
@@ -113,9 +107,6 @@ class Theme:
     # --- sounds ---
     STONE_SOUNDS = [f"stone{i}.wav" for i in [1, 2, 3, 4, 5]]
     CAPTURING_SOUND = "capturing.wav"
-    COUNTDOWN_SOUND = "countdownbeep.wav"
-    MINIMUM_TIME_PASSED_SOUND = "boing.wav"
-    MISTAKE_SOUNDS = []
 
     # --- eval dots ---
     EVAL_COLORS = {

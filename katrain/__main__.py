@@ -1,4 +1,5 @@
 """isort:skip_file"""
+from __future__ import annotations
 
 # first, logging level lower
 import os
@@ -46,7 +47,6 @@ import threading
 import traceback
 from zipfile import ZipFile
 from queue import Queue
-from typing import Optional
 import urllib3
 import webbrowser
 import time
@@ -68,7 +68,7 @@ from kivy.uix.label import Label
 from kivy.resources import resource_find
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
-from kivy.metrics import dp, sp
+from kivy.metrics import dp
 from kivy.factory import Factory
 from katrain.core.ai import generate_ai_move
 
@@ -104,7 +104,6 @@ from katrain.core.game import Game, IllegalMoveException, KaTrainSGF
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
 from katrain.gui.theme import Theme
-from kivy.app import App
 
 # used in kv
 from katrain.gui.kivyutils import *
@@ -142,13 +141,6 @@ class KaTrainGui(Screen, KaTrainBase):
         self.popup_manager = PopupManager()
 
         self._build_main_layout()
-
-        self.new_game_popup = None
-        self.fileselect_popup = None
-        self.config_popup = None
-        self.ai_settings_popup = None
-        self.teacher_settings_popup = None
-        self.timer_settings_popup = None
 
         self.pondering = False
         self.show_move_num = False
@@ -311,7 +303,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self._config.setdefault("engine", {})["config"] = desired_cfg_setting
             self.save_config("engine")
 
-    def _resolve_executable_setting(self, exe_setting: str) -> Optional[str]:
+    def _resolve_executable_setting(self, exe_setting: str) -> str | None:
         """Resolve a config value to a concrete executable path, if it exists."""
 
         exe_setting = (exe_setting or "").strip()
@@ -332,7 +324,7 @@ class KaTrainGui(Screen, KaTrainBase):
         resolved = shutil.which(exe_setting)
         return resolved if resolved and os.path.isfile(resolved) else None
 
-    def _resolve_katago_executable(self) -> Optional[str]:
+    def _resolve_katago_executable(self) -> str | None:
         exe_setting = (self.config("engine/katago", "") or "").strip()
         resolved = self._resolve_executable_setting(exe_setting)
         if resolved:
@@ -402,7 +394,7 @@ class KaTrainGui(Screen, KaTrainBase):
     HUMAN_MODEL_URL = "https://github.com/lightvector/KataGo/releases/download/v1.15.0/b18c384nbt-humanv0.bin.gz"
     HUMAN_MODEL_FILENAME = "b18c384nbt-humanv0.bin.gz"
 
-    def _resolve_model(self, config_key: str) -> Optional[str]:
+    def _resolve_model(self, config_key: str) -> str | None:
         """Return resolved path if the configured model exists, else None."""
         setting = (self.config(config_key, "") or "").strip()
         if not setting:
@@ -410,7 +402,7 @@ class KaTrainGui(Screen, KaTrainBase):
         resolved = find_package_resource(setting)
         return resolved if os.path.isfile(resolved) else None
 
-    def _find_model_in_dir(self, models_dir: str, pattern: str) -> Optional[str]:
+    def _find_model_in_dir(self, models_dir: str, pattern: str) -> str | None:
         """Find first model file matching pattern in models_dir."""
         if not os.path.isdir(models_dir):
             return None
@@ -648,14 +640,6 @@ class KaTrainGui(Screen, KaTrainBase):
         cn = self.game.current_node
         last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
         if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
-            points_lost = cn.points_lost
-            if (
-                last_player.human
-                and cn.analysis_complete
-                and points_lost is not None
-                and points_lost > self.config("trainer/eval_thresholds")[-4]
-            ):
-                self.play_mistake_sound(cn)
             teaching_undo = cn.player and last_player.being_taught and cn.parent
             if (
                 teaching_undo
@@ -838,11 +822,6 @@ class KaTrainGui(Screen, KaTrainBase):
             PopupSpec(title_key="engine recovery", size=[600, 380]),
             EngineRecoveryPopup(self, error_message=error_message, code=code),
         )
-
-    def play_mistake_sound(self, node):
-        if self.config("general/sound", True) and node.played_mistake_sound is None and Theme.MISTAKE_SOUNDS:
-            node.played_mistake_sound = True
-            play_sound(random.choice(Theme.MISTAKE_SOUNDS))
 
     def load_sgf_file(self, file, fast=False, rewind=True):
         try:

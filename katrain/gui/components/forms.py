@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Callable
-
 from kivy.clock import Clock
 from kivy.metrics import dp, sp
 from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
@@ -11,79 +8,12 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 
 from katrain.core.lang import i18n
-from katrain.gui.kivyutils import KaTrainTextInput, KeyValueSpinner
+from katrain.gui.kivyutils import KaTrainTextInput
 from katrain.gui.theme import Theme
 
 
 class FormValidationError(ValueError):
     pass
-
-
-def _get_nested(config: dict[str, Any], path: str) -> Any:
-    cur: Any = config
-    for key in path.split("/"):
-        cur = cur[key]
-    return cur
-
-
-def _set_nested(config: dict[str, Any], path: str, value: Any) -> None:
-    keys = path.split("/")
-    cur: Any = config
-    for key in keys[:-1]:
-        nxt = cur.get(key)
-        if nxt is None:
-            nxt = {}
-            cur[key] = nxt
-        cur = nxt
-    cur[keys[-1]] = value
-
-
-@dataclass
-class FieldSpec:
-    key: str
-    label_key: str
-    default: Any = None
-    parser: Callable[[Any], Any] | None = None
-
-    def parse(self, raw: Any) -> Any:
-        if self.parser is None:
-            return raw
-        return self.parser(raw)
-
-
-class FormModel:
-    """Explicit form model keyed by config paths like `engine/model`."""
-
-    def __init__(self):
-        self._specs: dict[str, FieldSpec] = {}
-        self._values: dict[str, Any] = {}
-
-    def add(self, spec: FieldSpec) -> None:
-        if spec.key in self._specs:
-            raise KeyError(f"Duplicate field key: {spec.key}")
-        self._specs[spec.key] = spec
-        self._values[spec.key] = spec.default
-
-    def set(self, key: str, value: Any) -> None:
-        spec = self._specs[key]
-        self._values[key] = spec.parse(value)
-
-    def get(self, key: str) -> Any:
-        return self._values[key]
-
-    def load_from_config(self, config: dict[str, Any]) -> None:
-        for key, spec in self._specs.items():
-            try:
-                self._values[key] = _get_nested(config, key)
-            except KeyError:
-                self._values[key] = spec.default
-
-    def apply_to_config(self, config: dict[str, Any]) -> None:
-        for key in self._specs:
-            _set_nested(config, key, self._values[key])
-
-    def as_dict(self) -> dict[str, Any]:
-        return dict(self._values)
 
 
 class KtFormRow(BoxLayout):
@@ -203,17 +133,3 @@ class KtNumberField(KtTextField):
         return float(self.value or "0.0")
 
 
-class KtSelectField(KeyValueSpinner):
-    """Select field using KeyValueSpinner; exposes `value_key`."""
-
-    value_key = StringProperty("")
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.font_size = kwargs.get("font_size", sp(Theme.INPUT_FONT_SIZE))
-        self.font_name = kwargs.get("font_name", i18n.font_name)
-        self.bind(selected_index=self._sync_value_key)
-        self._sync_value_key()
-
-    def _sync_value_key(self, *_args):
-        self.value_key = self.selected[1]

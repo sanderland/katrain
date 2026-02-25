@@ -1,12 +1,12 @@
+from __future__ import annotations
+
 import math
 import time
-from typing import List, Optional
-import copy
 
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics.texture import Texture
-from kivy.graphics.context_instructions import Color, Rotate, Translate, PushMatrix, PopMatrix
+from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty
@@ -42,7 +42,6 @@ class BadukPanWidget(Widget):
         self.gridpos = None
         self.initial_gridpos_x = []
         self.initial_gridpos_y = []
-        self.rotation_degree = 0
         self.grid_size = 0
         self.stone_size = 0
         self.draw_coords_enabled = True
@@ -58,16 +57,9 @@ class BadukPanWidget(Widget):
         self.bind(size=self.redraw_trigger, pos=self.redraw_trigger)
         Clock.schedule_interval(self.animate_pv, 0.1)
 
-    def reset_rotation(self):
-        while self.rotation_degree:
-            self.rotate_gridpos()
-
     def toggle_coordinates(self):
         self.draw_coords_enabled = not self.draw_coords_enabled
         self.redraw_trigger()
-        return self.draw_coords_enabled
-
-    def get_enable_coordinates(self):
         return self.draw_coords_enabled
 
     # stone placement functions
@@ -270,7 +262,7 @@ class BadukPanWidget(Widget):
             Color(*Theme.NUMBER_COLOR)
             draw_text(pos=self.gridpos[y][x], text=text, font_size=self.stone_size * 0.9, font_name="Roboto")
 
-    def eval_color(self, points_lost, show_dots_for_class: List[bool] = None) -> Optional[List[float]]:
+    def eval_color(self, points_lost, show_dots_for_class: list[bool] = None) -> list[float] | None:
         i = evaluation_class(points_lost, self.trainer_config["eval_thresholds"])
         colors = Theme.EVAL_COLORS[self.trainer_config["theme"]]
         if show_dots_for_class is None or show_dots_for_class[i]:
@@ -319,20 +311,10 @@ class BadukPanWidget(Widget):
                     extra_px_margin_y,
                     self.grid_size,
                 )
-                if self.rotation_degree == 0:
-                    self.initialize_gridpos()
+                self.initialize_gridpos()
 
-            if (self.rotation_degree == 90 or self.rotation_degree == 270) and board_size_x != board_size_y:
-                # Note that we use the board_size_y, board_size_x order for this rotation.
-                x_grid_spaces, y_grid_spaces = self.calculate_grid_spaces(
-                    board_size_y, board_size_x, grid_spaces_margin_x, grid_spaces_margin_y
-                )
-                self.grid_size = self.calculate_grid_size(w, h, x_grid_spaces, y_grid_spaces)
-                self.stone_size = self.calculate_stone_size(self.grid_size)
-                current_gridpos_x, current_gridpos_y = self.calculate_rotated_gridpos()
-            else:
-                current_gridpos_x = self.initial_gridpos_x[:]
-                current_gridpos_y = self.initial_gridpos_y[:]
+            current_gridpos_x = self.initial_gridpos_x[:]
+            current_gridpos_y = self.initial_gridpos_y[:]
 
             # if window size got changed
             if (
@@ -421,36 +403,7 @@ class BadukPanWidget(Widget):
 
         return gridpos_x, gridpos_y
 
-    def calculate_rotated_gridpos(self):
-        board_size_y, board_size_x = self.katrain.game.board_size
-        grid_spaces_margin_x, grid_spaces_margin_y = self.get_grid_spaces_margins()
-        h = round(self.height, 4)
-        w = round(self.width, 4)
-
-        x_grid_spaces, y_grid_spaces = self.calculate_grid_spaces(
-            board_size_x, board_size_y, grid_spaces_margin_x, grid_spaces_margin_y
-        )
-        grid_size = self.calculate_grid_size(w, h, x_grid_spaces, y_grid_spaces)
-        board_width_with_margins, board_height_with_margins = self.calculate_board_margins(
-            x_grid_spaces, y_grid_spaces, grid_size
-        )
-        extra_px_margin_x, extra_px_margin_y = self.calculate_extra_px_margins(
-            w, h, board_width_with_margins, board_height_with_margins
-        )
-
-        return self.initialize_gridpos_x_y(
-            board_size_x,
-            board_size_y,
-            grid_spaces_margin_x,
-            grid_spaces_margin_y,
-            extra_px_margin_x,
-            extra_px_margin_y,
-            grid_size,
-        )
-
     def resize_board(self):
-        rotated_gridpos_x, rotated_gridpos_y = self.calculate_rotated_gridpos()
-
         current_gridpos_x = []
         current_gridpos_y = []
 
@@ -458,19 +411,14 @@ class BadukPanWidget(Widget):
             for xi in range(len(self.gridpos[0])):
                 current_gridpos_x.append(self.gridpos[yi][xi][0])
                 current_gridpos_y.append(self.gridpos[yi][xi][1])
-        sorted_current_gridpos_x = list(set(current_gridpos_x))
-        sorted_current_gridpos_x.sort()
-        sorted_current_gridpos_y = list(set(current_gridpos_y))
-        sorted_current_gridpos_y.sort()
+        sorted_current_gridpos_x = sorted(set(current_gridpos_x))
+        sorted_current_gridpos_y = sorted(set(current_gridpos_y))
 
         for yi in range(len(self.gridpos)):
             for xi in range(len(self.gridpos[0])):
                 index_x = sorted_current_gridpos_x.index(self.gridpos[yi][xi][0])
                 index_y = sorted_current_gridpos_y.index(self.gridpos[yi][xi][1])
-                if self.rotation_degree == 90 or self.rotation_degree == 270:
-                    self.gridpos[yi][xi] = [rotated_gridpos_x[index_x], rotated_gridpos_y[index_y]]
-                else:
-                    self.gridpos[yi][xi] = [self.initial_gridpos_x[index_x], self.initial_gridpos_y[index_y]]
+                self.gridpos[yi][xi] = [self.initial_gridpos_x[index_x], self.initial_gridpos_y[index_y]]
 
     def draw_board_background(
         self, katrain, gridpos_x, gridpos_y, x_grid_spaces, y_grid_spaces, grid_spaces_margin_x, grid_spaces_margin_y
@@ -510,44 +458,20 @@ class BadukPanWidget(Widget):
             Color(0.25, 0.25, 0.25)
             coord_offset = round(self.grid_size * 1.5 / 2, 12)
 
-            if (self.rotation_degree == 90 or self.rotation_degree == 270) and board_size_x != board_size_y:
-                board_size_y, board_size_x = self.katrain.game.board_size
-
             for i in range(board_size_x):
                 draw_text(
                     pos=(gridpos_x[i], gridpos_y[0] - coord_offset),
-                    text=self.get_x_coordinate_text(i, board_size_x),
+                    text=Move.GTP_COORD[i],
                     font_size=self.grid_size / 1.5,
                     font_name="Roboto",
                 )
             for i in range(board_size_y):
                 draw_text(
                     pos=(gridpos_x[0] - coord_offset, gridpos_y[i]),
-                    text=self.get_y_coordinate_text(i, board_size_y),
+                    text=str(i + 1),
                     font_size=self.grid_size / 1.5,
                     font_name="Roboto",
                 )
-
-    def get_x_coordinate_text(self, i, board_size_x):
-        x_text = Move.GTP_COORD[i]
-        if self.rotation_degree == 90:
-            x_text = str(i + 1)
-        elif self.rotation_degree == 180:
-            x_text = Move.GTP_COORD[board_size_x - i - 1]
-        elif self.rotation_degree == 270:
-            x_text = str(board_size_x - i)
-        return x_text
-
-    def get_y_coordinate_text(self, i, board_size_y):
-        y_text = str(i + 1)
-        if self.rotation_degree == 90:
-            y_text = Move.GTP_COORD[board_size_y - i - 1]
-        elif self.rotation_degree == 180:
-
-            y_text = str(board_size_y - i)
-        elif self.rotation_degree == 270:
-            y_text = Move.GTP_COORD[i]
-        return y_text
 
     def draw_board_contents(self, *_args):
         if not (self.katrain and self.katrain.game):
@@ -802,21 +726,11 @@ class BadukPanWidget(Widget):
         left = left - self.grid_size * 3 / 2
         bottom = bottom - self.grid_size * 3 / 2
 
-        PushMatrix()
-
-        Rotate(origin=(bottom, left), axis=(0, 0, 1), angle=-self.rotation_degree)
-        if self.rotation_degree in (90, 180):
-            Translate(-self.grid_size * (board_size_x + 2), 0, 0)
-        if self.rotation_degree in (180, 270):
-            Translate(0, -self.grid_size * (board_size_y + 2), 0)
-
         Rectangle(
             pos=(bottom, left),
             size=(self.grid_size * (board_size_x + 2), self.grid_size * (board_size_y + 2)),
             texture=texture,
         )
-
-        PopMatrix()
 
     def format_loss(self, x: float) -> str:
         if self.trainer_config.get("extra_precision"):
@@ -1084,48 +998,6 @@ class BadukPanWidget(Widget):
                 return 0
 
         return self.animating_pv_index
-
-    def rotate_gridpos(self):
-        board_size_x, board_size_y = self.katrain.game.board_size
-        if board_size_x != board_size_y:
-            if self.rotation_degree == 90 or self.rotation_degree == 270:
-                rotated_gridpos_x, rotated_gridpos_y = self.calculate_rotated_gridpos()
-                diff = round(abs(rotated_gridpos_x[0] - rotated_gridpos_y[0]), 4)
-                x0 = rotated_gridpos_x[0]
-                y0 = rotated_gridpos_y[0]
-            else:
-                diff = round(abs(self.initial_gridpos_x[0] - self.initial_gridpos_y[0]), 4)
-                x0 = self.initial_gridpos_x[0]
-                y0 = self.initial_gridpos_y[0]
-
-            pos = copy.deepcopy(self.gridpos)
-            for yi in range(len(self.gridpos)):
-                for xi in range(len(self.gridpos[0])):
-                    if self.rotation_degree == 90 or self.rotation_degree == 270:
-                        gridpos_x = pos[len(self.gridpos) - 1 - yi][:]
-                    else:
-                        gridpos_x = pos[yi][:]
-                        gridpos_x.reverse()
-                    x = pos[yi][xi][1]
-                    y = gridpos_x[xi][0]
-                    if x0 > y0:
-                        x = round(x + diff, 4)
-                        y = round(y - diff, 4)
-                    elif y0 > x0:
-                        x = round(x - diff, 4)
-                        y = round(y + diff, 4)
-                    self.gridpos[yi][xi] = [x, y]
-        else:
-            # This is a rot90 for list of lists. Based on the code found in
-            # stackoverflow.com/questions/8421337/rotating-a-two-dimensional-array-in-python
-            self.gridpos = list(list(x) for x in zip(*reversed(self.gridpos)))
-
-        self.rotation_degree += 90
-        if self.rotation_degree == 360:
-            self.rotation_degree = 0
-        if board_size_x != board_size_y:
-            self.resize_board()
-        Clock.schedule_once(self.redraw)
 
     def show_pv_from_comments(self, pv_str):
         self.set_animating_pv(pv_str[1:].split(" "), self.katrain.controls.active_comment_node.parent)
