@@ -37,6 +37,16 @@ modules:
         url: https://github.com/nih-at/libzip/releases/download/v1.10.1/libzip-1.10.1.tar.xz
         sha256: dc3c8d5b4c8bbd09626864f6bcf93de701540f761d76b85d7c7d710f4bd90318
 
+  - name: katago
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 katago /app/bin/katago
+    sources:
+      - type: archive
+        url: https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-eigenavx2-linux-x86_64.zip
+        sha256: 0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5
+        strip-components: 0
+
   - name: katrain
     buildsystem: simple
     build-options:
@@ -47,6 +57,10 @@ modules:
           kivy kivymd==0.104.1 ffpyplayer "screeninfo>=0.8.1,<0.9"
           "chardet>=5.2.0,<6" docutils "urllib3>=2.2.2"
       - pip3 install --prefix=/app --no-deps .
+      - |
+        KATRAIN_PKG=$(python3 -c "import katrain; import os; print(os.path.dirname(katrain.__file__))")
+        cp /app/bin/katago "$KATRAIN_PKG/KataGo/katago"
+        chmod +x "$KATRAIN_PKG/KataGo/katago"
       - |
         cat > /app/bin/katrain-wrapper << 'EOF'
         #!/bin/bash
