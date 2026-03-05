@@ -21,8 +21,8 @@ modules:
       - --disable-static
     sources:
       - type: archive
-        url: https://gitlab.freedesktop.org/libevdev/mtdev/-/archive/v1.1.7/mtdev-v1.1.7.tar.gz
-        sha256: 701d1f94307deb73f6b4d900e16a62b3ece4b67e867320baf2586fbc21b35f26
+        url: https://bitmath.org/code/mtdev/mtdev-1.1.7.tar.bz2
+        sha256: a107adad2101fecac54ac7f9f0e0a0dd155d954193da55c2340c97f2ff1d814e
 
   - name: libzip
     buildsystem: cmake-ninja
