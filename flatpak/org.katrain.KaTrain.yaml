@@ -20,9 +20,9 @@ modules:
     config-opts:
       - --disable-static
     sources:
-      - type: git
-        url: https://gitlab.freedesktop.org/libevdev/mtdev.git
-        tag: v1.1.7
+      - type: archive
+        url: https://gitlab.freedesktop.org/libevdev/mtdev/-/archive/v1.1.7/mtdev-v1.1.7.tar.gz
+        sha256: 50f6ed402789219e75ccfe72ab5aa52d21512e376406105566cc693fcd1114dc
 
   - name: libzip
     buildsystem: cmake-ninja
@@ -33,9 +33,9 @@ modules:
       - -DBUILD_EXAMPLES=OFF
       - -DBUILD_DOC=OFF
     sources:
-      - type: git
-        url: https://github.com/nih-at/libzip.git
-        tag: v1.10.1
+      - type: archive
+        url: https://github.com/nih-at/libzip/releases/download/v1.10.1/libzip-1.10.1.tar.xz
+        sha256: dc3c8d5b4c8bbd09626864f6bcf93de701540f761d76b85d7c7d710f4bd90318
 
   - name: katrain
     buildsystem: simple
