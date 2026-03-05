@@ -65,7 +65,13 @@
             "profile": "rank",
             "human_kyu_rank": 8,
             "modern_style": false,
-            "pro_year": 1914
+            "pro_year": 1914,
+            "human_top_k": 50,
+            "human_top_p": 1.0,
+            "human_min_p": 0.05,
+            "target_human_kyu_rank": 1,
+            "target_gate_min_points": 1.0,
+            "target_gate_max_like": 0.2
         }
     },
     "ui_state": {

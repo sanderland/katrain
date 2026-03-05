@@ -596,11 +596,9 @@ class ConfigAIPopup(PopupContent):
 
         self.add_widget(top)
 
-        self._options_scroll = ScrollView(do_scroll_x=False)
-        self._options_box = KtColumn(size_hint_y=None)
-        self._options_box.bind(minimum_height=self._options_box.setter("height"))
-        self._options_scroll.add_widget(self._options_box)
-        self.add_widget(self._options_scroll)
+        # Curated v2 AI settings are intentionally short; avoid inner scrolling jitter.
+        self._options_box = KtColumn(size_hint_y=1)
+        self.add_widget(self._options_box)
 
         self.add_widget(KtDivider())
 
@@ -707,7 +705,13 @@ class ConfigAIPopup(PopupContent):
         self._options_box.clear_widgets()
         # Widgets can remain parented to a row that we just removed from `_options_box`.
         # Detach before re-adding to avoid "already has a parent" WidgetException.
-        for w in (self._human_profile, self._human_rank, self._human_modern_style, self._human_pro_year, self._hint):
+        for w in (
+            self._human_profile,
+            self._human_rank,
+            self._human_modern_style,
+            self._human_pro_year,
+            self._hint,
+        ):
             if w.parent:
                 w.parent.remove_widget(w)
 
@@ -748,6 +752,7 @@ class ConfigAIPopup(PopupContent):
             else:
                 self._options_box.add_widget(self._row("Year", self._human_pro_year))
                 self._hint.text = "Pro-year profile ignores rank and plays like historical pro games around that year."
+            self._hint.text += " Advanced sampling and target-gate thresholds are configurable in config.json."
 
             if self._hint.text:
                 self._hint.height = dp(40)

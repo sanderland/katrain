@@ -469,16 +469,24 @@ class AnalysisToggle(BoxLayout):
     font_name = StringProperty(Theme.DEFAULT_FONT)
     disabled = BooleanProperty(False)
     tri_state = BooleanProperty(False)
+    toggle = ObjectProperty(None)
+    checkbox = ObjectProperty(None)  # legacy alias, kept for compatibility
 
     def trigger_action(self, *args, **kwargs):
-        return self.checkbox._do_press()
+        widget = self.toggle or self.checkbox
+        if widget:
+            return widget._do_press()
+        return None
 
     def activate(self, *_args):
-        self.checkbox.active = True
+        widget = self.toggle or self.checkbox
+        if widget is not None:
+            widget.state = "down"
 
     @property
     def active(self):
-        return self.checkbox.active
+        widget = self.toggle or self.checkbox
+        return bool(widget and widget.state == "down")
 
 
 class MenuItem(LeftButtonBehavior, BoxLayout, BackgroundMixin):

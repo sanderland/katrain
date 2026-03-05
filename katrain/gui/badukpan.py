@@ -1016,10 +1016,13 @@ class AnalysisControls(BoxLayout):
         self.build_dropdown()
 
     def on_is_open(self, instance, value):
+        if not self.dropdown:
+            return
         if value:
             max_content_width = max(option.content_width for option in self.dropdown.container.children)
             self.dropdown.width = max_content_width
-            self.dropdown.open(self.analysis_button)
+            if getattr(self, "analysis_button", None):
+                self.dropdown.open(self.analysis_button)
         elif self.dropdown.attach_to:
             self.dropdown.dismiss()
 

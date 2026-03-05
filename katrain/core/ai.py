@@ -56,6 +56,31 @@ def ai_rank_estimation(strategy: str, settings: dict) -> float | None:
     raise ValueError(f"Unknown AI strategy: {strategy!r}")
 
 
+def human_profile_string(settings: dict) -> str:
+    """Build KataGo HumanSL profile string from AI settings."""
+    try:
+        profile = settings["profile"]
+    except KeyError:
+        profile = "proyear" if "pro_year" in settings else "rank"
+
+    if profile == "rank":
+        human_kyu_rank = round(settings["human_kyu_rank"])
+        human_style = "rank" if settings["modern_style"] else "preaz"
+
+        if human_kyu_rank <= 0:  # dan ranks
+            rank_text = f"{1 - human_kyu_rank}d"
+        else:  # kyu ranks
+            rank_text = f"{human_kyu_rank}k"
+
+        return f"{human_style}_{rank_text}"
+
+    if profile == "proyear":
+        pro_year = round(settings["pro_year"])
+        return f"proyear_{pro_year}"
+
+    raise ValueError(f"Unknown HumanSL profile mode: {profile!r}")
+
+
 class AIStrategy(ABC):
     """Base strategy class for AI move generation."""
 
@@ -131,34 +156,10 @@ class HumanStyleStrategy(AIStrategy):
     - pro-year profiles
     """
 
-    def _profile_string(self) -> str:
-        # New config shape uses an explicit selector; keep fallback inference for older configs.
-        try:
-            profile = self.settings["profile"]
-        except KeyError:
-            profile = "proyear" if "pro_year" in self.settings else "rank"
-
-        if profile == "rank":
-            human_kyu_rank = round(self.settings["human_kyu_rank"])
-            human_style = "rank" if self.settings["modern_style"] else "preaz"
-
-            if human_kyu_rank <= 0:  # dan ranks
-                rank_text = f"{1 - human_kyu_rank}d"
-            else:  # kyu ranks
-                rank_text = f"{human_kyu_rank}k"
-
-            return f"{human_style}_{rank_text}"
-
-        if profile == "proyear":
-            pro_year = round(self.settings["pro_year"])
-            return f"proyear_{pro_year}"
-
-        raise ValueError(f"Unknown HumanSL profile mode: {profile!r}")
-
     def generate_move(self) -> tuple[Move, str]:
         self.game.katrain.log("[HumanStyleStrategy] Generating HumanSL move", OUTPUT_DEBUG)
 
-        profile = self._profile_string()
+        profile = human_profile_string(self.settings)
         analysis = self.request_analysis(
             {
                 "humanSLProfile": profile,
@@ -195,8 +196,35 @@ class HumanStyleStrategy(AIStrategy):
             self.game.katrain.log("[HumanStyleStrategy] No moves from human policy. Falling back to default.", OUTPUT_ERROR)
             return DefaultStrategy(self.game, {}).generate_move()
 
-        move, prob = weighted_selection_without_replacement(moves, 1)[0]
-        return move, f"HumanSL({profile}): played {move.gtp()} ({prob:.1%})."
+        # Optional SHAPE-like sampling controls to bound randomness:
+        # - human_top_k: consider only first K policy moves
+        # - human_top_p: keep smallest set with cumulative probability >= P
+        # - human_min_p: keep moves with prob >= min_p * best_prob
+        top_k = int(self.settings.get("human_top_k", 10_000))
+        top_p = float(self.settings.get("human_top_p", 1e9))
+        min_p = float(self.settings.get("human_min_p", 0.0))
+
+        ranked_moves = sorted(moves, key=lambda mv: mv[1], reverse=True)
+        filtered: list[tuple[Move, float]] = []
+        total_prob = 0.0
+        best_prob = ranked_moves[0][1]
+        stop_reason = "all"
+        for i, (move, prob) in enumerate(ranked_moves, start=1):
+            if prob < min_p * best_prob:
+                stop_reason = "min_p"
+                break
+            filtered.append((move, prob))
+            total_prob += prob
+            if i >= top_k:
+                stop_reason = "top_k"
+                break
+            if total_prob >= top_p:
+                stop_reason = "top_p"
+                break
+
+        sampling_pool = filtered or ranked_moves
+        move, prob = weighted_selection_without_replacement(sampling_pool, 1)[0]
+        return move, f"HumanSL({profile},{stop_reason}): played {move.gtp()} ({prob:.1%})."
 
 
 def generate_ai_move(game: Game, ai_mode: str, ai_settings: dict) -> tuple[Move, GameNode]:
@@ -216,4 +244,3 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: dict) -> tuple[Move,
     played_node = game.play(move)
     played_node.ai_thoughts = ai_thoughts
     return move, played_node
-

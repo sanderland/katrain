@@ -70,7 +70,7 @@ from kivy.properties import NumericProperty, ObjectProperty, StringProperty
 from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.factory import Factory
-from katrain.core.ai import generate_ai_move
+from katrain.core.ai import generate_ai_move, human_profile_string
 
 from katrain.core.lang import i18n
 from katrain.core.constants import (
@@ -90,6 +90,8 @@ from katrain.core.constants import (
     MODE_PLAY,
     DATA_FOLDER,
     AI_DEFAULT,
+    AI_HUMAN,
+    PRIORITY_EXTRA_AI_QUERY,
 )
 from katrain.gui.popups import (
     ConfigTeacherPopup,
@@ -144,6 +146,10 @@ class KaTrainGui(Screen, KaTrainBase):
 
         self.pondering = False
         self.show_move_num = False
+        self.human_review_cache = {}
+        self.human_review_pending = set()
+        self.human_policy_cache = {}
+        self.human_policy_pending = set()
 
         self.message_queue = Queue()
 
@@ -160,87 +166,68 @@ class KaTrainGui(Screen, KaTrainBase):
         bg.size = self.size
         self.bind(pos=lambda *_: setattr(bg, "pos", self.pos), size=lambda *_: setattr(bg, "size", self.size))
 
-        outer = BoxLayout(orientation="vertical")
+        # Split app into full-height left/right columns.
+        outer = BoxLayout(orientation="horizontal")
 
-        # top toolbar: analysis controls only (full width)
-        toolbar = BoxLayout(orientation="horizontal", size_hint_y=None, height=dp(44))
-        self.analysis_controls = AnalysisControls()
-        toolbar.add_widget(self.analysis_controls)
-        outer.add_widget(toolbar)
-
-        # main content: board (left) + sidebar (right)
-        content = BoxLayout(orientation="horizontal")
-
+        # Left column: board + board controls.
         left = BoxLayout(orientation="vertical")
         self.board_gui = BadukPanWidget()
         self.board_controls = BadukPanControls()
         left.add_widget(self.board_gui)
         left.add_widget(self.board_controls)
 
+        # Right column: mode switch + controls, full app height.
         right = BoxLayout(orientation="vertical", size_hint_x=None)
         self.play_mode = PlayAnalyzeSelect()
         self.controls = ControlsPanel()
         right.add_widget(self.play_mode)
         right.add_widget(self.controls)
+        self.analysis_controls = self.controls.ids.get("review_controls")
+        if self.analysis_controls is None:
+            self.analysis_controls = AnalysisControls()
 
-        content.add_widget(left)
-        content.add_widget(right)
-        outer.add_widget(content)
+        outer.add_widget(left)
+        outer.add_widget(right)
 
         bg.add_widget(outer)
         root.add_widget(bg)
 
-        self.nav_drawer = MyNavigationDrawer(
-            size_hint=(None, None),
-            swipe_edge_width=0,
-            close_on_click=True,
-        )
-        self.nav_drawer.x = -self.nav_drawer.width
-        self.nav_drawer.y = 0
-        self.nav_drawer.bind(state=lambda _inst, state: self.update_state() if state == "close" else None)
-
-        self.nav_drawer_contents = Factory.HamburgerMenuContents()
-        self.nav_drawer.add_widget(self.nav_drawer_contents)
-        root.add_widget(self.nav_drawer)
+        self.nav_drawer = None
+        self.nav_drawer_contents = None
 
         self.add_widget(root)
         Clock.schedule_once(lambda _dt: self._sync_layout_metrics(), 0)
 
     def _sync_layout_metrics(self):
-        if not self.analysis_controls or not self.board_controls:
+        if not self.board_controls:
             return
 
-        toolbar_h = dp(44)
-
         # board navigation bar
-        nav_h = max(dp(36), min(dp(44), self.width / 20))
+        nav_h = max(dp(Theme.BOARD_CONTROLS_MIN_HEIGHT), min(dp(Theme.BOARD_CONTROLS_MAX_HEIGHT), self.width / 20))
         self.board_controls.height = nav_h
         self.board_controls.size_hint_y = None
         self.board_controls.opacity = 1
-
-        # analysis controls fill the full toolbar width
-        self.analysis_controls.size_hint_x = 1
-        self.analysis_controls.height = toolbar_h
-        self.analysis_controls.size_hint_y = None
-        self.analysis_controls.opacity = 1
 
         if self.play_mode and self.controls:
             # play/analyze at top of sidebar, full width
             self.play_mode.size_hint_x = 1
             self.play_mode.size_hint_y = None
-            self.play_mode.height = dp(48)
+            self.play_mode.height = dp(Theme.PLAY_ANALYZE_HEIGHT)
 
             right = self.controls.parent
             if right:
-                right.width = self.height * Theme.RIGHT_PANEL_ASPECT_RATIO
+                target = max(
+                    dp(Theme.RIGHT_PANEL_MIN_WIDTH),
+                    min(
+                        dp(Theme.RIGHT_PANEL_MAX_WIDTH),
+                        self.width * Theme.RIGHT_PANEL_WIDTH_FRACTION,
+                        self.height * Theme.RIGHT_PANEL_ASPECT_RATIO,
+                    ),
+                )
+                right.width = min(target, self.width * Theme.RIGHT_PANEL_MAX_FRACTION)
                 right.opacity = 1
 
-        if self.nav_drawer:
-            available_h = self.height - toolbar_h
-            self.nav_drawer.height = available_h
-            self.nav_drawer.width = available_h * 0.45
-            if self.nav_drawer.state == "close":
-                self.nav_drawer.x = -self.nav_drawer.width
+        # v2: no side drawer/hamburger menu.
 
     def log(self, message, level=OUTPUT_INFO):
         super().log(message, level)
@@ -281,6 +268,194 @@ class KaTrainGui(Screen, KaTrainBase):
     def toggle_move_num(self):
         self.show_move_num = not self.show_move_num
         self.update_state()
+
+    @staticmethod
+    def _human_policy_top_moves(node, human_policy: list[float], limit: int = 5) -> list[tuple[str, float]]:
+        board_x, board_y = node.board_size
+        ranked: list[tuple[str, float]] = []
+        board = node.board_state.board
+        for x in range(board_x):
+            for y in range(board_y):
+                if board[y][x] != -1:  # occupied
+                    continue
+                idx = (board_y - y - 1) * board_x + x
+                if idx < len(human_policy):
+                    prob = human_policy[idx]
+                    if prob > 0:
+                        ranked.append((Move((x, y), player=node.next_player).gtp(), prob))
+
+        pass_idx = board_x * board_y
+        if pass_idx < len(human_policy) and human_policy[pass_idx] > 0:
+            ranked.append(("pass", human_policy[pass_idx]))
+
+        ranked.sort(key=lambda mv: mv[1], reverse=True)
+        return ranked[:limit]
+
+    @staticmethod
+    def _policy_prob_for_move(node, policy: list[float], move: Move) -> float:
+        if move is None:
+            return 0.0
+        board_x, board_y = node.board_size
+        if move.is_pass:
+            idx = board_x * board_y
+        else:
+            if move.coords is None:
+                return 0.0
+            x, y = move.coords
+            idx = (board_y - y - 1) * board_x + x
+        return float(policy[idx]) if 0 <= idx < len(policy) else 0.0
+
+    def request_human_policy(self, node, profile: str):
+        if not node or not self.engine or not profile:
+            return
+        cache_key = (id(node), profile)
+        if cache_key in self.human_policy_cache or cache_key in self.human_policy_pending:
+            return
+        self.human_policy_pending.add(cache_key)
+
+        def _on_result(result, partial_result):
+            if partial_result:
+                return
+            policy = result.get("humanPolicy")
+            if policy:
+                self.human_policy_cache[cache_key] = {"policy": policy}
+            else:
+                self.human_policy_cache[cache_key] = {"error": "Human model response unavailable."}
+            self.human_policy_pending.discard(cache_key)
+            Clock.schedule_once(lambda _dt: self.controls.update_evaluation(), 0)
+
+        def _on_error(error):
+            self.human_policy_cache[cache_key] = {"error": str(error)}
+            self.human_policy_pending.discard(cache_key)
+            Clock.schedule_once(lambda _dt: self.controls.update_evaluation(), 0)
+
+        self.engine.request_analysis(
+            node,
+            callback=_on_result,
+            error_callback=_on_error,
+            priority=PRIORITY_EXTRA_AI_QUERY + 100,
+            ownership=False,
+            include_policy=True,
+            extra_settings={
+                "humanSLProfile": profile,
+                "ignorePreRootHistory": False,
+            },
+        )
+
+    def request_human_review(self, node):
+        if not node or not self.engine:
+            return
+        node_key = id(node)
+        if node_key in self.human_review_cache or node_key in self.human_review_pending:
+            return
+
+        settings = dict(self.config(f"ai/{AI_HUMAN}") or {})
+        try:
+            profile = human_profile_string(settings)
+        except Exception as exc:
+            self.human_review_cache[node_key] = {"error": f"Invalid HumanSL settings: {exc}"}
+            return
+
+        self.human_review_pending.add(node_key)
+        self.request_human_policy(node, profile)
+
+        def _on_result(result, partial_result):
+            if partial_result:
+                return
+            policy = result.get("humanPolicy")
+            if policy:
+                self.human_review_cache[node_key] = {
+                    "profile": profile,
+                    "moves": self._human_policy_top_moves(node, policy),
+                }
+            else:
+                self.human_review_cache[node_key] = {"error": "Human model response unavailable."}
+            self.human_review_pending.discard(node_key)
+            Clock.schedule_once(lambda _dt: self.controls.update_evaluation(), 0)
+
+        def _on_error(error):
+            self.human_review_cache[node_key] = {"error": str(error)}
+            self.human_review_pending.discard(node_key)
+            Clock.schedule_once(lambda _dt: self.controls.update_evaluation(), 0)
+
+        self.engine.request_analysis(
+            node,
+            callback=_on_result,
+            error_callback=_on_error,
+            priority=PRIORITY_EXTRA_AI_QUERY + 100,
+            ownership=False,
+            include_policy=True,
+            extra_settings={
+                "humanSLProfile": profile,
+                "ignorePreRootHistory": False,
+            },
+        )
+
+    def human_review_summary(self, node) -> str:
+        if not node:
+            return ""
+        toggle = getattr(self.analysis_controls, "human_review", None)
+        if not (self.play_analyze_mode == MODE_ANALYZE and toggle and toggle.active):
+            return ""
+
+        node_key = id(node)
+        cached = self.human_review_cache.get(node_key)
+        if cached is None:
+            self.request_human_review(node)
+            return "Human review: loading..."
+
+        if "error" in cached:
+            return f"Human review unavailable: {cached['error']}"
+
+        moves = cached.get("moves") or []
+        if not moves:
+            return "Human review unavailable: no candidate moves."
+
+        profile = cached.get("profile", "human")
+        move_text = ", ".join(f"{move} {prob:.1%}" for move, prob in moves)
+        summary = f"Human review ({profile}): {move_text}"
+
+        # Target-rank gate: only meaningful on non-root moves with parent analysis.
+        if node.move and node.parent and node.parent.analysis_exists and profile.startswith(("rank_", "preaz_")):
+            settings = dict(self.config(f"ai/{AI_HUMAN}") or {})
+            target_rank = int(round(settings.get("target_human_kyu_rank", 1)))
+            target_settings = dict(settings)
+            target_settings["profile"] = "rank"
+            target_settings["human_kyu_rank"] = target_rank
+            try:
+                target_profile = human_profile_string(target_settings)
+            except Exception:
+                target_profile = "rank_1k"
+
+            current_key = (id(node.parent), profile)
+            target_key = (id(node.parent), target_profile)
+            current_cached = self.human_policy_cache.get(current_key)
+            target_cached = self.human_policy_cache.get(target_key)
+            if current_cached is None:
+                self.request_human_policy(node.parent, profile)
+            if target_cached is None:
+                self.request_human_policy(node.parent, target_profile)
+            if current_cached and target_cached and "policy" in current_cached and "policy" in target_cached:
+                current_prob = self._policy_prob_for_move(node.parent, current_cached["policy"], node.move)
+                target_prob = self._policy_prob_for_move(node.parent, target_cached["policy"], node.move)
+                move_like_target = target_prob / max(current_prob + target_prob, 1e-10)
+                mistake_size = max(0.0, node.points_lost or 0.0)
+                min_points = float(settings.get("target_gate_min_points", 1.0))
+                max_like = float(settings.get("target_gate_max_like", 0.2))
+                triggered = mistake_size > min_points and move_like_target < max_like
+                gate_text = (
+                    f"Target gate: {'TRIGGERED' if triggered else 'ok'} "
+                    f"(loss {mistake_size:.2f}, Ptarget {move_like_target:.1%})"
+                )
+                summary += "\n" + gate_text
+            elif current_cached and "error" in current_cached:
+                summary += f"\nTarget gate unavailable: {current_cached['error']}"
+            elif target_cached and "error" in target_cached:
+                summary += f"\nTarget gate unavailable: {target_cached['error']}"
+            else:
+                summary += "\nTarget gate: loading..."
+
+        return summary
 
     def _ensure_analysis_config_file(self) -> None:
         """Ensure `~/.katrain/analysis_config.cfg` exists and config points to it if missing.
@@ -610,6 +785,7 @@ class KaTrainGui(Screen, KaTrainBase):
 
         self.controls.players["W"].captures = prisoners["W"]
         self.controls.players["B"].captures = prisoners["B"]
+        self.controls.set_mode(self.play_analyze_mode)
 
         # update engine status dot
         if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
@@ -639,7 +815,7 @@ class KaTrainGui(Screen, KaTrainBase):
             return
         cn = self.game.current_node
         last_player, next_player = self.players_info[cn.player], self.players_info[cn.next_player]
-        if self.play_analyze_mode == MODE_PLAY and self.nav_drawer.state != "open" and self.popup_open is None:
+        if self.play_analyze_mode == MODE_PLAY and self.popup_open is None:
             teaching_undo = cn.player and last_player.being_taught and cn.parent
             if (
                 teaching_undo
@@ -709,6 +885,10 @@ class KaTrainGui(Screen, KaTrainBase):
 
     def _do_new_game(self, move_tree=None, analyze_fast=False, sgf_filename=None):
         self.pondering = False
+        self.human_review_cache.clear()
+        self.human_review_pending.clear()
+        self.human_policy_cache.clear()
+        self.human_policy_pending.clear()
         mode = self.play_analyze_mode
         if (move_tree is not None and mode == MODE_PLAY) or (move_tree is None and mode == MODE_ANALYZE):
             self.play_mode.switch_ui_mode()  # for new game, go to play, for loaded, analyze
@@ -943,6 +1123,8 @@ class KaTrainGui(Screen, KaTrainBase):
 
     @property
     def shortcuts(self):
+        if not self.analysis_controls:
+            return {}
         return {
             k: v
             for ks, v in [
@@ -1066,7 +1248,7 @@ class KaTrainGui(Screen, KaTrainBase):
         ):
             return
         if keycode[1] == "alt":
-            self.nav_drawer.set_state("toggle")
+            return
         elif keycode[1] == "tab":
             self.play_mode.switch_ui_mode()
 

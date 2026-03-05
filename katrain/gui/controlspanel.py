@@ -1,5 +1,5 @@
 from kivy.clock import Clock
-from kivy.properties import ObjectProperty, OptionProperty
+from kivy.properties import BooleanProperty, ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 
@@ -11,7 +11,7 @@ from katrain.core.constants import (
     STATUS_ERROR,
 )
 from katrain.core.lang import rank_label
-from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
+from katrain.gui.kivyutils import AnalysisToggle
 
 
 class PlayAnalyzeSelect(FloatLayout):
@@ -30,11 +30,6 @@ class PlayAnalyzeSelect(FloatLayout):
                 for id, toggle in self.katrain.analysis_controls.ids.items()
                 if isinstance(toggle, AnalysisToggle)
             },
-            "panels": {
-                id: (panel.state, panel.option_state)
-                for id, panel in self.katrain.controls.ids.items()
-                if isinstance(panel, CollapsablePanel)
-            },
         }
         self.katrain.save_config("ui_state")
 
@@ -42,16 +37,10 @@ class PlayAnalyzeSelect(FloatLayout):
         state = self.katrain.config(f"ui_state/{self.mode}", {})
         for id, active in state.get("analysis_controls", {}).items():
             if id in self.katrain.analysis_controls.ids:
-                cb = self.katrain.analysis_controls.ids[id].checkbox
-                cb.active = bool(active)
-        for id, value in state.get("panels", {}).items():
-            if id not in self.katrain.controls.ids:
-                continue
-            if not isinstance(value, (list, tuple)) or len(value) != 2:
-                continue
-            panel_state, button_state = value
-            self.katrain.controls.ids[id].set_option_state(button_state)
-            self.katrain.controls.ids[id].state = panel_state
+                toggle = self.katrain.analysis_controls.ids[id]
+                target = toggle.toggle or toggle.checkbox
+                if target:
+                    target.state = "down" if bool(active) else "normal"
 
     def select_mode(self, new_mode):  # actual switch state handler
         if self.mode == new_mode:
@@ -73,11 +62,15 @@ class PlayAnalyzeSelect(FloatLayout):
 class ControlsPanel(BoxLayout):
     katrain = ObjectProperty(None)
     button_controls = ObjectProperty(None)
+    show_analysis = BooleanProperty(True)
 
     def __init__(self, **kwargs):
         super(ControlsPanel, self).__init__(**kwargs)
         self.status_state = (None, -1e9, None)
         self.active_comment_node = None
+
+    def set_mode(self, mode):
+        self.show_analysis = mode == MODE_ANALYZE
 
     def update_players(self, *_args):
         for bw, player_info in self.katrain.players_info.items():
@@ -139,6 +132,9 @@ class ControlsPanel(BoxLayout):
             info += self.active_comment_node.comment(
                 teach=katrain.players_info[self.active_comment_node.player].being_taught, details=details
             )
+            human_review = katrain.human_review_summary(self.active_comment_node)
+            if human_review:
+                info += ("\n\n" if info else "") + human_review
 
         if self.active_comment_node.analysis_exists:
             self.stats.score = self.active_comment_node.format_score() or ""

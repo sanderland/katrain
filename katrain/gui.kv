@@ -48,13 +48,13 @@
     color: 0, 0, 0, 0
     canvas.after:
         Color:
-            rgba: (0.78, 0.78, 0.80, 0.6) if self.disabled else (Theme.CHECKBOX_COLOR if self.active else (0.72, 0.72, 0.75, 1))
+            rgba: (0.84, 0.84, 0.86, 0.7) if self.disabled else (Theme.CHECKBOX_COLOR if self.active else (0.76, 0.76, 0.79, 1))
         RoundedRectangle:
             pos: self.x + dp(2), self.y + dp(2)
             size: self.width - dp(4), self.height - dp(4)
             radius: [dp(4)]
         Color:
-            rgba: [1, 1, 1, 1] if self.active and not self.disabled else [0, 0, 0, 0]
+            rgba: [1, 1, 1, 1] if not self.disabled else [0.96, 0.96, 0.97, 1]
         RoundedRectangle:
             pos: self.x + dp(3), self.y + dp(3)
             size: self.width - dp(6), self.height - dp(6)
@@ -63,7 +63,7 @@
             rgba: (0, 0, 0, 0) if (self.disabled or (not self.active)) else Theme.CHECKBOX_COLOR
         Line:
             points: [self.x + self.width * 0.24, self.y + self.height * 0.52, self.x + self.width * 0.42, self.y + self.height * 0.32, self.x + self.width * 0.76, self.y + self.height * 0.72]
-            width: dp(1.8)
+            width: dp(2.2)
             cap: 'round'
             joint: 'round'
 
@@ -251,6 +251,12 @@
     pos_hint: {'center_y': 0.5}
     color: Theme.TEXT_COLOR
 
+<FooterIconButton@TransparentIconButton>:
+    size_hint: None, 1
+    width: dp(38)
+    icon_size: [dp(20), dp(20)]
+    color: Theme.TEXT_SECONDARY_COLOR
+
 <BadukPanControls>:
     katrain: app.gui
     circles: [black_circle,white_circle]
@@ -258,7 +264,7 @@
     pass_btn: pass_btn
     canvas.before:
         Color:
-            rgba: Theme.BACKGROUND_COLOR
+            rgba: Theme.BOX_BACKGROUND_COLOR
         Rectangle:
             pos: self.pos
             size: self.size
@@ -499,8 +505,8 @@
     note: note
     status: status
     move_tree: move_tree
-    padding: dp(Theme.SPACING_SM), dp(Theme.SPACING_SM), dp(Theme.SPACING_SM), 0
-    spacing: dp(Theme.SPACING_XS)
+    padding: dp(Theme.SPACING_SM), dp(Theme.SPACING_SM), dp(Theme.SPACING_SM), dp(Theme.SPACING_XS)
+    spacing: dp(Theme.SPACING_SM)
     canvas.before:
         Color:
             rgba: Theme.BACKGROUND_COLOR
@@ -508,7 +514,7 @@
             pos: self.pos
             size: self.size
         Color:
-            rgba: [0, 0, 0, 0.06]
+            rgba: Theme.BORDER_COLOR
         Line:
             points: self.x, self.y, self.x, self.y + self.height
             width: 1
@@ -534,90 +540,113 @@
         MoveTree:
             id: move_tree
             min_height: root.timer_box_height
-    CollapsablePanel:
-        id: graph_panel
-        content_height: graph.height
-        options_height: root.tab_option_height
-        closed_label: 'closedlabel:scoregraph'
-        options: ['score','winrate','points']
-        option_colors: [Theme.SCORE_COLOR,Theme.WINRATE_COLOR,Theme.POINTLOSS_COLOR]
-        option_active: [True,False,False]
-        on_option_state:
-            graph.show_graphs(args[1])
-            graph.hidden = not (args[1]['score'] or args[1]['winrate'] or args[1]['points'])
+    AnalysisControls:
+        id: review_controls
+        size_hint_y: None
+        height: dp(44) if root.show_analysis else 0
+        opacity: int(root.show_analysis)
+    BGBoxLayout:
+        id: review_section
+        orientation: 'vertical'
+        background_color: Theme.BOX_BACKGROUND_COLOR
+        padding: dp(Theme.SPACING_XS)
+        spacing: dp(Theme.SPACING_XS)
+        size_hint_y: None
+        height: (root.graph_height + (3 * root.stat_height) + root.tab_option_height + dp(Theme.SPACING_LG)) if root.show_analysis else 0
+        opacity: int(root.show_analysis)
+        BoxLayout:
+            size_hint_y: None
+            height: root.tab_option_height
+            spacing: dp(Theme.SPACING_XS)
+            Label:
+                text: i18n._('stats:score')
+                color: Theme.SCORE_COLOR
+                font_size: sp(Theme.FONT_SIZE_SM)
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.size
+            Label:
+                text: i18n._('stats:winrate')
+                color: Theme.WINRATE_COLOR
+                font_size: sp(Theme.FONT_SIZE_SM)
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.size
+            Label:
+                text: i18n._('stats:pointslost')
+                color: Theme.POINTLOSS_COLOR
+                font_size: sp(Theme.FONT_SIZE_SM)
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.size
         ScoreGraph:
             id: graph
-            opacity: 0 if self.hidden else 1
             size_hint_y: None
             height: root.graph_height
-    CollapsablePanel:
-        id: stats_panel
-        num_active: 3
-        content_height: self.num_active * root.stat_height + EPSILON
-        options_height: root.tab_option_height
-        closed_label: 'closedlabel:movestats'
-        options: ['score','winrate','points']
-        option_colors: [Theme.SCORE_COLOR,Theme.WINRATE_COLOR,Theme.POINTLOSS_COLOR]
-        option_active: [True,True,True]
-        on_option_state:
-            for k, v in args[1].items(): stats.labels[k].hidden = not v
-            self.num_active = sum(args[1].values(),0)
+            on_parent: self.show_graphs({'score': True, 'winrate': True, 'points': True})
         StatsBox:
             id: stats
-    CollapsablePanel:
+            size_hint_y: None
+            height: 3 * root.stat_height + dp(Theme.SPACING_XS)
+    BGBoxLayout:
         id: notes_panel
-        size_hint_y_open: 1
-        closed_label: 'closedlabel:info&notes'
-        options: ['info','info-details','notes']
-        option_colors: [Theme.INFO_TAB_FONT_COLOR,Theme.INFO_TAB_FONT_COLOR,Theme.NOTES_TAB_FONT_COLOR]
-        option_active: [True,False,False]
-        on_option_state:
-            info.detailed = args[1]['info-details']
-            info.size_hint_y = int(args[1]['info'] or info.detailed)+EPSILON
-            info.opacity =  int(args[1]['info'] or info.detailed)
-            notebox.size_hint_y = int(args[1]['notes'])*0.66+EPSILON
-            notebox.opacity = int(args[1]['notes'])
-            app.gui.update_state()
-        options_height: root.tab_option_height
-        BGBoxLayout:
-            background_color: Theme.BOX_BACKGROUND_COLOR
-            orientation: 'vertical'
-            ScrollableLabel:
-                id: status
-                error: False
-                size_hint: 1, None
-                height: min(self.parent.height*0.66,self.label.texture_size[1])
-                outline_color: Theme.ERROR_BORDER_COLOR if self.error else [0,0,0,0]
-                background_color: Theme.LIGHTER_BACKGROUND_COLOR
-            ScrollableLabel:
-                id: info
-                detailed: False
-                line_height: 1.25
-                markup: True
-                on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
+        background_color: Theme.BOX_BACKGROUND_COLOR
+        orientation: 'vertical'
+        size_hint_y: 1
+        ScrollableLabel:
+            id: status
+            error: False
+            size_hint: 1, None
+            height: min(self.parent.height*0.45,self.label.texture_size[1]) if root.show_analysis else min(self.parent.height*0.25,self.label.texture_size[1])
+            outline_color: Theme.ERROR_BORDER_COLOR if self.error else [0,0,0,0]
+            background_color: Theme.LIGHTER_BACKGROUND_COLOR
+        ScrollableLabel:
+            id: info
+            detailed: False
+            line_height: 1.25
+            markup: True
+            on_ref_press: root.katrain.board_gui.show_pv_from_comments(args[1])
+            size_hint: 1, 1 if root.show_analysis else EPSILON
+            opacity: int(root.show_analysis)
+        AnchorLayout:
+            padding: 0
+            id: notebox
+            size_hint: 1, 0.66 if root.show_analysis else 1
+            LabelledTextInput:
+                id: note
+                font_size: sp(Theme.NOTES_FONT_SIZE)
+                multiline: True
+                on_text: root.katrain.set_note(self.text)
+                hint_text: i18n._('SGF Notes Hint')
                 size_hint: 1, 1
-                height: self.parent.height - status.height - note.height - 1
-            AnchorLayout:
-                padding: 0
-                id: notebox
-                size_hint: 1,0
-                LabelledTextInput:
-                    id: note
-                    font_size: sp(Theme.NOTES_FONT_SIZE)
-                    multiline: True
-                    on_text: root.katrain.set_note(self.text)
-                    hint_text: i18n._('SGF Notes Hint')
-                    size_hint: 1, 1
-                    canvas.before:
-                        Color:
-                            rgba: Theme.BORDER_COLOR
-                        Line:
-                            points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
-                            width: 1
-    Label:
-        size_hint_y: EPSILON # takes up remaining space if info is closed
-
-
+                canvas.before:
+                    Color:
+                        rgba: Theme.BORDER_COLOR
+                    Line:
+                        points: self.x, self.y+self.height, self.x+self.width, self.y+self.height
+                        width: 1
+    BGBoxLayout:
+        size_hint_y: None
+        height: dp(40)
+        background_color: Theme.LIGHTER_BACKGROUND_COLOR
+        padding: [dp(Theme.SPACING_XS), 0]
+        spacing: dp(Theme.SPACING_XS)
+        FooterIconButton:
+            icon: 'New-Game.png'
+            on_press: root.katrain('new-game-popup')
+        FooterIconButton:
+            icon: 'Load-Game.png'
+            on_press: root.katrain('analyze-sgf-popup')
+        FooterIconButton:
+            icon: 'Save-Game.png'
+            on_press: root.katrain('save-game')
+        Widget:
+        FooterIconButton:
+            icon: 'AI-Settings.png'
+            on_press: root.katrain('ai-popup')
+        FooterIconButton:
+            icon: 'General-Settings.png'
+            on_press: root.katrain('config-popup')
 <MenuItem>
     font_size: sp(Theme.FONT_SIZE_MD)
     size_hint_y: None
@@ -661,30 +690,42 @@
 
 <AnalysisToggle>:
     size_hint_x: None
-    width: self.minimum_width
-    spacing: 2
+    width: self.minimum_width + dp(8)
+    spacing: dp(Theme.SPACING_XS)
     size_hint_y: 0.8
     pos_hint: {'center_y':0.5}
-    checkbox: checkbox
-    label: label
-    ClickableLabel:
+    toggle: toggle
+    ToggleButton:
+        id: toggle
+        disabled: root.disabled
+        size_hint: None, 0.75
+        pos_hint: {'center_y': 0.5}
+        width: self.texture_size[0] + dp(26)
+        state: 'down' if root.default_active else 'normal'
+        text: root.text
+        font_size: sp(Theme.FONT_SIZE_MD)
+        font_name: root.font_name
+        background_normal: ''
+        background_down: ''
+        border: [0, 0, 0, 0]
+        background_color: [0.86, 0.92, 0.98, 1] if self.state=='down' else Theme.BOX_BACKGROUND_COLOR
+        text_color: Theme.TEXT_COLOR if self.state=='down' else Theme.TEXT_SECONDARY_COLOR
+        color: Theme.TEXT_COLOR if self.state=='down' else Theme.TEXT_SECONDARY_COLOR
+        on_state: if app.gui: app.gui.update_state()
+        canvas.after:
+            Color:
+                rgba: Theme.PLAY_ANALYZE_TAB_COLOR if self.state=='down' else Theme.BORDER_COLOR
+            Line:
+                rounded_rectangle: self.x, self.y, self.width, self.height, dp(Theme.RADIUS_SM)
+                width: 1
+    Label:
         id: label
         text: root.text
-        halign: 'center'
-        font_size: sp(Theme.FONT_SIZE_SM)
+        font_size: sp(Theme.FONT_SIZE_MD)
         font_name: root.font_name
-        color: [0.72, 0.72, 0.75, 1] if root.disabled else (Theme.PLAY_ANALYZE_TAB_COLOR if checkbox.active else Theme.TEXT_SECONDARY_COLOR)
-        size_hint_x: None
-        width: self.texture_size[0] + dp(8)
-        on_left_press: checkbox.trigger_action()
-    CheckBox:
-        id: checkbox
-        disabled: root.disabled
-        size_hint: None, 0.45
-        pos_hint: {'center_y': 0.5}
-        width: self.height
-        active: root.default_active
-        on_active: if app.gui: app.gui.update_state()
+        size_hint: None, 0
+        width: 0
+        opacity: 0
 
 
 <AnalysisMenuItem@MenuItem>:
@@ -723,14 +764,15 @@
     katrain: app.gui
     orientation: 'horizontal'
     spacing: dp(Theme.SPACING_SM)
-    padding: [dp(Theme.SPACING_SM), 0]
+    padding: [dp(Theme.SPACING_XS), dp(Theme.SPACING_XS)]
+    size_hint_y: None
+    height: dp(44)
     show_children: show_children
     eval: eval
     policy: policy
     hints: hints
     ownership: ownership
-    analysis_button: analysis_button
-    hamburger: hamburger
+    human_review: human_review
     canvas.before:
         Color:
             rgba: Theme.BOX_BACKGROUND_COLOR
@@ -740,17 +782,11 @@
         Color:
             rgba: Theme.BORDER_COLOR
         Line:
-            points: self.x, self.y, self.x + self.width, self.y
+            rounded_rectangle: self.x, self.y, self.width, self.height, dp(Theme.RADIUS_SM)
             width: 1
-    HamburgerButton:
-        id: hamburger
-        size_hint: None, 1
-        width: dp(40)
-        on_press: app.gui.nav_drawer.set_state("open")
     BoxLayout:
-        size_hint_x: None
-        width: self.minimum_width
-        spacing: dp(Theme.SPACING_LG)
+        size_hint_x: 1
+        spacing: dp(Theme.SPACING_XS)
         AnalysisToggle:
             id: show_children
             text: i18n._("analysis:nextmoves")
@@ -762,35 +798,16 @@
         AnalysisToggle:
             id: hints
             text: i18n._("analysis:topmoves")
-            disabled: policy.checkbox.active
+            disabled: policy.active
         AnalysisToggle:
             id: policy
             text: i18n._("analysis:policy")
         AnalysisToggle:
             id: ownership
             text: i18n._('analysis:territory')
-    Widget:
-    FloatLayout:
-        width: analysis_button.width
-        size_hint: None, 1
-        AutoSizedRectangleButton:
-            background_color: Theme.BOX_BACKGROUND_COLOR
-            size_hint_y: 0.6
-            pos_hint: {'center_y': 0.5, 'x': 0}
-            id: analysis_button
-            on_release: root.toggle_dropdown()
-            text: '  ' + i18n._("btn:Analyze")
-            text_color: Theme.TEXT_COLOR
-            background_radius: dp(Theme.RADIUS_SM)
-            outline_color: Theme.BORDER_COLOR
-        Image:
-            pos_hint: {'center_y': 0.5}
-            x: self.parent.x + dp(4)
-            size_hint: None, 0.35
-            width: self.height/2
-            source: 'menu.png'
-            color: Theme.TEXT_COLOR
-            mipmap: True
+        AnalysisToggle:
+            id: human_review
+            text: 'Human Review'
 
 
 
@@ -972,7 +989,7 @@
 <PlayAnalyzeButton@SizedToggleButton>:
     inactive_background_color: [0, 0, 0, 0]
     active_background_color: Theme.PLAY_ANALYZE_TAB_COLOR
-    text_color: [1, 1, 1, 1] if self.state=='down' else Theme.TEXT_SECONDARY_COLOR
+    text_color: [1, 1, 1, 1] if self.state=='down' else Theme.TEXT_COLOR
     size_hint: 0.5, 1
     _font_size: sp(Theme.FONT_SIZE_MD)
     group: 'play_analyze'
@@ -985,7 +1002,7 @@
     analyze: analyze
     canvas.before:
         Color:
-            rgba: Theme.LIGHTER_BACKGROUND_COLOR
+            rgba: Theme.BACKGROUND_COLOR
         Rectangle:
             pos: self.pos
             size: self.size
@@ -997,9 +1014,9 @@
     OutlineBox:
         size_hint: 1, 1
         pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-        background_radius: 0
+        background_radius: dp(Theme.RADIUS_SM)
         background_color: Theme.LIGHTER_BACKGROUND_COLOR
-        outline_color: [0,0,0,0]
+        outline_color: Theme.BORDER_COLOR
         PlayAnalyzeButton:
             text: i18n._('btn:Play')
             id: play

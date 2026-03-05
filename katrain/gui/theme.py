@@ -40,6 +40,11 @@ class Theme:
     RADIUS_MD = 10
     RADIUS_LG = 14
 
+    # legacy control panel spacing aliases used in older KV files
+    CP_SPACING = SPACING_MD
+    CP_SMALL_SPACING = SPACING_SM
+    CP_PADDING = SPACING_LG
+
     # --- color palette (modern light) ---
     BACKGROUND_COLOR = [0.945, 0.945, 0.955, 1]  # warm off-white
     BOX_BACKGROUND_COLOR = [1.0, 1.0, 1.0, 1]  # pure white cards
@@ -95,6 +100,19 @@ class Theme:
 
     # --- gui spacing ---
     RIGHT_PANEL_ASPECT_RATIO = 0.32
+    RIGHT_PANEL_MIN_WIDTH = 400
+    RIGHT_PANEL_MAX_WIDTH = 620
+    RIGHT_PANEL_WIDTH_FRACTION = 0.42
+    RIGHT_PANEL_MAX_FRACTION = 0.54
+
+    TOOLBAR_HEIGHT = 50
+    PLAY_ANALYZE_HEIGHT = 50
+    BOARD_CONTROLS_MIN_HEIGHT = 36
+    BOARD_CONTROLS_MAX_HEIGHT = 44
+
+    NAV_DRAWER_WIDTH_FRACTION = 0.34
+    NAV_DRAWER_MIN_WIDTH = 280
+    NAV_DRAWER_MAX_WIDTH = 440
 
     # --- textures ---
     STONE_TEXTURE = {"B": "B_stone.png", "W": "W_stone.png"}
