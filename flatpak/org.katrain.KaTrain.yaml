@@ -43,8 +43,8 @@ modules:
       - install -Dm755 katago /app/bin/katago
     sources:
       - type: archive
-        url: https://github.com/lightvector/KataGo/releases/download/v1.16.0/katago-v1.16.0-eigenavx2-linux-x86_64.zip
-        sha256: 0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5
+        url: https://github.com/lightvector/KataGo/releases/download/v1.16.4/katago-v1.16.4-opencl-linux-x64.zip
+        sha256: da37d3c76011aee34731cded644084351c6d17f9e60284e13f84449e3726a0a9
         strip-components: 0
 
   - name: katrain
