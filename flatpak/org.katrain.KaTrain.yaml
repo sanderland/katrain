@@ -2,7 +2,7 @@ app-id: org.katrain.KaTrain
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
-command: katrain
+command: katrain-wrapper
 
 finish-args:
   - --share=ipc
@@ -16,6 +16,27 @@ finish-args:
   - --persist=.katrain
 
 modules:
+  - name: mtdev
+    config-opts:
+      - --disable-static
+    sources:
+      - type: git
+        url: https://gitlab.freedesktop.org/libevdev/mtdev.git
+        tag: v1.1.7
+
+  - name: libzip
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DBUILD_SHARED_LIBS=ON
+      - -DBUILD_TOOLS=OFF
+      - -DBUILD_REGRESS=OFF
+      - -DBUILD_EXAMPLES=OFF
+      - -DBUILD_DOC=OFF
+    sources:
+      - type: git
+        url: https://github.com/nih-at/libzip.git
+        tag: v1.10.1
+
   - name: katrain
     buildsystem: simple
     build-options:
@@ -26,6 +47,14 @@ modules:
           kivy kivymd==0.104.1 ffpyplayer "screeninfo>=0.8.1,<0.9"
           "chardet>=5.2.0,<6" docutils "urllib3>=2.2.2"
       - pip3 install --prefix=/app --no-deps .
+      - |
+        cat > /app/bin/katrain-wrapper << 'EOF'
+        #!/bin/bash
+        # Use sdl2 clipboard backend since xclip/xsel are not available in the sandbox
+        export KIVY_CLIPBOARD=sdl2
+        exec katrain "$@"
+        EOF
+        chmod +x /app/bin/katrain-wrapper
       - install -Dm644 flatpak/org.katrain.KaTrain.desktop
           /app/share/applications/org.katrain.KaTrain.desktop
       - install -Dm644 flatpak/org.katrain.KaTrain.png
