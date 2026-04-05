@@ -116,7 +116,7 @@ function makeGameState(
  * (fraction of π — 0.05 = bird's eye, 0.38 = most tilted).
  */
 function computeCamera(
-  polarAngle: number = 0.18,
+  polarAngle: number = 0.15,
 ): { position: [number, number, number]; target: [number, number, number]; polarAngle: number } {
   const target: [number, number, number] = [0, 1.2, 0];
 
@@ -226,8 +226,8 @@ export default function VideoRecorderPage() {
   }, [startPlayback]);
 
   const camera = timeline
-    ? computeCamera(timeline.polar_angle ?? 0.18)
-    : computeCamera(0.18);
+    ? computeCamera(timeline.polar_angle ?? 0.15)
+    : computeCamera(0.15);
 
   const noop = useCallback(() => {}, []);
   const analysisToggles = { coords: true, stoneDropEffect: true, numbers: true };

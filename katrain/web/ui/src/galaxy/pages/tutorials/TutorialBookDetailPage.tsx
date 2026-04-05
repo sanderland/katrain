@@ -94,27 +94,29 @@ export default function TutorialBookDetailPage() {
                 <ListItemButton
                   key={sec.id}
                   onClick={() => navigate(`/galaxy/tutorials/section/${sec.id}`)}
-                  sx={{ pr: 6 }}
+                  sx={{ pl: 1 }}
                 >
+                  {/* Play button — fixed width for alignment, visible only when video exists */}
+                  <Box sx={{ width: 36, minWidth: 36, mr: 0.5, display: 'flex', justifyContent: 'center' }}>
+                    {sectionVideos[sec.id] ? (
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setVideoDialogUrl(
+                            TutorialAPI.assetUrl(`tutorial_assets/${book.slug}/video/section_${sec.id}.mp4`)
+                          );
+                        }}
+                        title="播放视频"
+                      >
+                        <PlayCircleOutlineIcon />
+                      </IconButton>
+                    ) : null}
+                  </Box>
                   <ListItemText
                     primary={`${sec.section_number}. ${sec.title}`}
                     secondary={`${sec.figure_count} 个变化图`}
                   />
-                  {sectionVideos[sec.id] && (
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setVideoDialogUrl(
-                          TutorialAPI.assetUrl(`tutorial_assets/${book.slug}/video/section_${sec.id}.mp4`)
-                        );
-                      }}
-                      sx={{ position: 'absolute', right: 8 }}
-                      title="播放视频"
-                    >
-                      <PlayCircleOutlineIcon />
-                    </IconButton>
-                  )}
                 </ListItemButton>
               ))}
             </List>

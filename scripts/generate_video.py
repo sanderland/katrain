@@ -235,7 +235,7 @@ def build_timeline(
     move_refs: list[dict],
     bp: dict,
     port: int = 8001,
-    polar_angle: float = 0.18,
+    polar_angle: float = 0.15,
 ) -> dict:
     """Build the complete timeline JSON for video recording.
 
@@ -474,7 +474,7 @@ async def process_figure(
     voice: str = "zh-CN-XiaoxiaoNeural",
     dry_run: bool = False,
     force: bool = False,
-    polar_angle: float = 0.18,
+    polar_angle: float = 0.15,
 ):
     """Process a single figure: build timeline, capture video, compose MP4."""
     db = SessionLocal()
@@ -550,8 +550,8 @@ async def process_figure(
         db.close()
 
 
-async def process_section(section_id: int, **kwargs):
-    """Process all figures in a section."""
+async def process_section(section_id: int, concurrency: int = 1, **kwargs):
+    """Process all figures in a section, optionally in parallel."""
     db = SessionLocal()
     try:
         figures = (
@@ -561,13 +561,22 @@ async def process_section(section_id: int, **kwargs):
             .all()
         )
         figure_ids = [f.id for f in figures if f.narration and f.audio_asset]
-        print(f"Section {section_id}: {len(figure_ids)} figures with narration")
+        print(f"Section {section_id}: {len(figure_ids)} figures with narration (concurrency={concurrency})")
     finally:
         db.close()
 
-    for fid in figure_ids:
-        await process_figure(fid, **kwargs)
-        print()
+    if concurrency <= 1:
+        for fid in figure_ids:
+            await process_figure(fid, **kwargs)
+            print()
+    else:
+        sem = asyncio.Semaphore(concurrency)
+
+        async def process_one(fid):
+            async with sem:
+                await process_figure(fid, **kwargs)
+
+        await asyncio.gather(*[process_one(fid) for fid in figure_ids])
 
 
 # ---------------------------------------------------------------------------
@@ -684,8 +693,15 @@ def concat_section_video(section_id: int, force: bool = False):
     print(f"Section {section_id}: {section.title} — concatenating {total} figure videos")
 
     with tempfile.TemporaryDirectory(prefix="katrain_section_") as tmpdir:
-        # Build list of segments: [title_card, figure_video, title_card, figure_video, ...]
+        # Build list of segments: [section_title, fig_title, fig_video, fig_title, fig_video, ...]
         segments = []
+
+        # Section title card at the very beginning
+        section_title = f"{section.section_number}. {section.title}"
+        section_title_path = os.path.join(tmpdir, "section_title.mp4")
+        print(f"  Generating section title card: {section_title}")
+        generate_title_card(section_title, section_title_path, duration=3.0)
+        segments.append(section_title_path)
 
         for idx, (fig, fig_path) in enumerate(fig_videos):
             # Generate title card for this figure
@@ -758,8 +774,12 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Preview timeline only")
     parser.add_argument("--force", action="store_true", help="Regenerate even if video exists")
     parser.add_argument(
-        "--polar-angle", type=float, default=0.33,
-        help="Camera tilt as fraction of pi (0.05=bird's eye, 0.38=most tilted, default: 0.18)"
+        "--polar-angle", type=float, default=0.15,
+        help="Camera tilt as fraction of pi (0.05=bird's eye, 0.38=most tilted, default: 0.15)"
+    )
+    parser.add_argument(
+        "--concurrency", type=int, default=1,
+        help="Parallel figure processing for --section-id (default: 1)"
     )
 
     args = parser.parse_args()
@@ -781,6 +801,7 @@ def main():
     else:
         asyncio.run(process_section(
             section_id=args.section_id,
+            concurrency=args.concurrency,
             port=args.port,
             voice=args.voice,
             dry_run=args.dry_run,
