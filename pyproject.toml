@@ -25,6 +25,9 @@ dependencies = [
     "kivymd==0.104.1",
     "passlib>=1.7.4",
     "sqlalchemy>=2.0.46",
+    "onnx>=1.12.0,<2.0.0",
+    "onnxslim>=0.1.90",
+    "onnxruntime>=1.24.4",
     "anthropic>=0.86.0",
 ]
 
