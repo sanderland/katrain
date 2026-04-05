@@ -36,7 +36,7 @@ import subprocess
 import sys
 import tempfile
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from datetime import datetime, timezone
 from math import ceil
 from pathlib import Path
@@ -90,6 +90,64 @@ class FigureResult:
     calibration_confidence: float = 0.0
 
 
+@dataclass
+class CVParams:
+    """Per-book CV parameters for the recognition pipeline.
+
+    Defaults match the 布局 books (good scan quality). For books with lighter
+    grid lines or different scan characteristics, create a cv_params.json in
+    data/tutorial_assets/{slug}/ with overridden values.
+    """
+    # S0: bbox detection
+    bbox_binary_threshold: int = 160
+    # S2: grid detection
+    grid_binary_threshold: int = 160
+    grid_min_line_len_ratio: float = 0.125       # min(h,w) * ratio
+    grid_peak_threshold_ratio: float = 0.3       # of max projection value
+    # S3: occupied detection
+    occupied_dark_pixel_threshold: int = 100
+    occupied_anomaly_sigma: float = 2.0
+    # S3b: pre-classification
+    preclass_black_dark_ratio: float = 0.55
+    preclass_black_mean_max: float = 80.0
+    preclass_white_mean_min: float = 180.0
+    preclass_white_dark_ratio_max: float = 0.05
+    # Deskew
+    deskew_binary_threshold: int = 160
+
+    @classmethod
+    def from_file(cls, path):
+        """Load from JSON file. Unknown keys are ignored, missing keys use defaults."""
+        path = Path(path)
+        if not path.exists():
+            return cls()
+        data = json.loads(path.read_text(encoding="utf-8"))
+        valid_names = {f.name for f in fields(cls)}
+        return cls(**{k: v for k, v in data.items() if k in valid_names})
+
+    def to_file(self, path):
+        """Save to JSON file with a description header."""
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        data = {"_description": "Per-book CV parameters. Edit to tune recognition for this book's scan quality."}
+        for f in fields(self):
+            data[f.name] = getattr(self, f.name)
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def load_cv_params(book_slug):
+    """Load per-book CV params, auto-creating defaults if missing."""
+    cv_path = ASSET_BASE / "tutorial_assets" / book_slug / "cv_params.json"
+    if cv_path.exists():
+        params = CVParams.from_file(cv_path)
+        log.info("Loaded CV params from %s", cv_path)
+    else:
+        params = CVParams()
+        params.to_file(cv_path)
+        log.info("Created default CV params at %s", cv_path)
+    return params
+
+
 def print_summary_report(results):
     """Print a summary report of figure processing results."""
     log.info("\n═══ Processing Summary ═══")
@@ -123,10 +181,10 @@ def parse_classification(label, cls_str, local_col, local_row, source="vllm"):
         base_type = "white"
         if "+" in cls_str:
             text = cls_str.split("+", 1)[1]
-    elif cls_str in ("triangle", "square", "circle"):
+    elif cls_str in ("triangle", "square", "circle", "cross"):
         shape = cls_str
         base_type = "empty"  # bare shape on empty intersection
-    elif cls_str.startswith(("triangle_", "square_", "circle_")):
+    elif cls_str.startswith(("triangle_", "square_", "circle_", "cross_")):
         parts = cls_str.split("_", 1)
         shape = parts[0]
         base_type = parts[1] if len(parts) > 1 else "empty"
@@ -463,18 +521,20 @@ def _refine_positions(line_image, positions, axis, window=15):
     return np.array(refined)
 
 
-def cv_detect_grid(gray):
+def cv_detect_grid(gray, cv_params=None):
     """Detect grid line positions from a grayscale board image.
 
     Returns (h_positions, v_positions, spacing) where positions are pixel
     coordinates of each horizontal/vertical grid line.
     """
+    if cv_params is None:
+        cv_params = CVParams()
     h_img, w_img = gray.shape
 
-    _, binary = cv2.threshold(gray, 160, 255, cv2.THRESH_BINARY_INV)
+    _, binary = cv2.threshold(gray, cv_params.grid_binary_threshold, 255, cv2.THRESH_BINARY_INV)
 
     # Morphological isolation of horizontal and vertical lines
-    min_line_len = min(h_img, w_img) // 8
+    min_line_len = int(min(h_img, w_img) * cv_params.grid_min_line_len_ratio)
     h_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (min_line_len, 1))
     h_lines = cv2.morphologyEx(binary, cv2.MORPH_OPEN, h_kernel)
     v_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, min_line_len))
@@ -484,11 +544,10 @@ def cv_detect_grid(gray):
     h_proj = np.sum(h_lines, axis=1) // 255
     v_proj = np.sum(v_lines, axis=0) // 255
 
-    h_thresh = max(10, int(np.max(h_proj) * 0.3))
-    v_thresh = max(10, int(np.max(v_proj) * 0.3))
+    h_thresh = max(10, int(np.max(h_proj) * cv_params.grid_peak_threshold_ratio))
+    v_thresh = max(10, int(np.max(v_proj) * cv_params.grid_peak_threshold_ratio))
 
     # Estimate minimum distance between lines (~60% of expected spacing)
-    # For a 19-line board in 700px image, spacing ≈ 700/18 ≈ 39px
     est_spacing = min(h_img, w_img) / 20
     min_dist = max(10, int(est_spacing * 0.6))
 
@@ -529,12 +588,14 @@ def cv_detect_grid(gray):
 
 # ── Step 3a: OpenCV occupied intersection detection ──────────────────────────
 
-def cv_detect_occupied(gray, h_positions, v_positions, spacing):
+def cv_detect_occupied(gray, h_positions, v_positions, spacing, cv_params=None):
     """Detect all non-empty intersections using multi-feature anomaly detection.
 
     Returns list of (col_idx, row_idx, patch) where patch is the cropped grayscale image.
     Does NOT classify color — that's VLLM's job.
     """
+    if cv_params is None:
+        cv_params = CVParams()
     h_img, w_img = gray.shape
     r = int(spacing * 0.5)  # slightly larger for better patch quality
     if r < 3:
@@ -551,7 +612,7 @@ def cv_detect_occupied(gray, h_positions, v_positions, spacing):
                 continue
 
             # Multi-dimensional features
-            dark_ratio = float(np.sum(roi < 100) / roi.size)
+            dark_ratio = float(np.sum(roi < cv_params.occupied_dark_pixel_threshold) / roi.size)
             edges = cv2.Canny(roi, 50, 150)
             edge_ratio = float(np.sum(edges > 0) / edges.size)
             std_val = float(np.std(roi.astype(float)))
@@ -583,9 +644,9 @@ def cv_detect_occupied(gray, h_positions, v_positions, spacing):
     occupied_set = set()
     for ci, ri, vx, hy, dark, edge, std_v, circ, roi in features:
         is_occupied = (
-            dark > dark_med + 2.0 * dark_std
-            or edge > edge_med + 2.0 * edge_std
-            or std_v > std_med + 2.0 * std_std
+            dark > dark_med + cv_params.occupied_anomaly_sigma * dark_std
+            or edge > edge_med + cv_params.occupied_anomaly_sigma * edge_std
+            or std_v > std_med + cv_params.occupied_anomaly_sigma * std_std
             or circ < -15  # white stone signature (light center)
             or dark > 0.28  # absolute threshold for numbered stones
         )
@@ -627,25 +688,27 @@ def cv_detect_occupied(gray, h_positions, v_positions, spacing):
     return occupied
 
 
-def cv_preclass_confident(occupied_patches, spacing):
+def cv_preclass_confident(occupied_patches, spacing, cv_params=None):
     """Pre-classify high-confidence patches using simple CV heuristics.
 
     Returns (confident, ambiguous) where:
       confident: list of (col_idx, row_idx, patch, base_type) for obvious B/W
       ambiguous: list of (col_idx, row_idx, patch) needing VLLM classification
     """
+    if cv_params is None:
+        cv_params = CVParams()
     confident = []
     ambiguous = []
 
     for ci, ri, patch in occupied_patches:
-        dark_ratio = float(np.sum(patch < 100) / patch.size)
+        dark_ratio = float(np.sum(patch < cv_params.occupied_dark_pixel_threshold) / patch.size)
         mean_val = float(np.mean(patch))
 
         # Very dark → almost certainly black stone
-        if dark_ratio > 0.55 and mean_val < 80:
+        if dark_ratio > cv_params.preclass_black_dark_ratio and mean_val < cv_params.preclass_black_mean_max:
             confident.append((ci, ri, patch, "black"))
         # Very light center → almost certainly white stone (no number)
-        elif mean_val > 180 and dark_ratio < 0.05:
+        elif mean_val > cv_params.preclass_white_mean_min and dark_ratio < cv_params.preclass_white_dark_ratio_max:
             confident.append((ci, ri, patch, "white"))
         else:
             ambiguous.append((ci, ri, patch))
@@ -777,6 +840,9 @@ Classify what is at this intersection. Use EXACTLY one of these formats:
 - triangle_black — a triangle mark (△) on a BLACK stone
 - triangle_white — a triangle mark (△) on a WHITE stone
 - triangle — a triangle mark (△) on an empty intersection (no stone)
+- cross_black — a cross mark (✕) on a BLACK stone
+- cross_white — a cross mark (✕) on a WHITE stone
+- cross — a cross mark (✕) on an empty intersection (no stone)
 - empty    — just thin grid lines crossing, nothing else
 
 IMPORTANT distinctions:
@@ -963,6 +1029,7 @@ def gemini_classify_patch(patch_image_path, max_retries=3):
     return text.lower()
 
 
+
 def _coarse_to_compound(coarse: str, patch: np.ndarray, ocr) -> str:
     """Convert EfficientNet coarse class + OCR into pipeline compound format.
 
@@ -1006,16 +1073,18 @@ def local_classify_patch(patch_image_path, max_retries=3):
     return _coarse_to_compound(coarse, patch, ocr)
 
 
-def cv_detect_bboxes(page_image_path):
+def cv_detect_bboxes(page_image_path, cv_params=None):
     """Step 0: Detect bounding boxes for each board diagram on the page using OpenCV.
 
     Uses morphological line detection to find regions with dense grid patterns.
     Returns list of (x1, y1, x2, y2) tuples sorted top-to-bottom, left-to-right.
     """
+    if cv_params is None:
+        cv_params = CVParams()
     gray = cv2.imread(str(page_image_path), cv2.IMREAD_GRAYSCALE)
     h, w = gray.shape
 
-    _, binary = cv2.threshold(gray, 160, 255, cv2.THRESH_BINARY_INV)
+    _, binary = cv2.threshold(gray, cv_params.bbox_binary_threshold, 255, cv2.THRESH_BINARY_INV)
 
     # Detect horizontal and vertical lines
     min_line_len = min(h, w) // 10
@@ -1089,7 +1158,7 @@ def build_payload(stones, labels_data, col_start, row_start):
 
 # ── Deskew: straighten tilted scanned board images ───────────────────────────
 
-def deskew_board(gray, debug=False):
+def deskew_board(gray, debug=False, cv_params=None):
     """Detect and correct rotation in a scanned Go board diagram.
 
     Uses HoughLinesP to detect grid lines, computes median angle, and rotates
@@ -1098,10 +1167,12 @@ def deskew_board(gray, debug=False):
     Returns (corrected_gray, angle_degrees). If no correction needed, returns
     the original image with angle=0.
     """
+    if cv_params is None:
+        cv_params = CVParams()
     h_img, w_img = gray.shape
 
     # Detect lines using probabilistic Hough transform
-    _, binary = cv2.threshold(gray, 160, 255, cv2.THRESH_BINARY_INV)
+    _, binary = cv2.threshold(gray, cv_params.deskew_binary_threshold, 255, cv2.THRESH_BINARY_INV)
     min_line_len = min(h_img, w_img) // 3  # only long lines for reliable angle
     lines = cv2.HoughLinesP(binary, 1, np.pi / 1800, threshold=100,
                             minLineLength=min_line_len, maxLineGap=10)
@@ -1221,11 +1292,13 @@ def crop_diagram(page_img, page_gray, y_start, y_end, padding=15):
 
 # ── Full pipeline ─────────────────────────────────────────────────────────────
 
-def process_page(page_image_path, figure_ids, dry_run=False, db=None, force=False, vllm="haiku"):
+def process_page(page_image_path, figure_ids, dry_run=False, db=None, force=False, vllm="haiku",
+                  db_bboxes=None, cv_params=None):
     """Process all diagrams on a single page.
 
     figure_ids: list of (figure_label, figure_db_id) e.g. [("图1", 1), ("图2", 2)]
     vllm: VLLM backend for S4 — "haiku" (Claude) or "qwen" (DashScope).
+    db_bboxes: optional dict mapping figure_label → DB bbox dict (relative coords from book.json).
     Returns list of FigureResult for per-figure status tracking.
     """
     results = []
@@ -1236,16 +1309,36 @@ def process_page(page_image_path, figure_ids, dry_run=False, db=None, force=Fals
             results.append(FigureResult(label, fig_id, "failed_cv", "cannot read page image"))
         return results
     page_gray = cv2.cvtColor(page_img, cv2.COLOR_BGR2GRAY)
+    h_img, w_img = page_gray.shape[:2]
 
     # Step 0: detect diagram bounding boxes (pure CV — fast and accurate)
-    log.info("Step 0: detecting diagram bboxes on %s", page_image_path.name)
-    cv_boxes = cv_detect_bboxes(page_image_path)
+    log.info("[Step 0      ] detecting diagram bboxes on %s", page_image_path.name)
+    if cv_params is None:
+        cv_params = CVParams()
+    cv_boxes = cv_detect_bboxes(page_image_path, cv_params)
     log.info("  CV detected %d diagram regions", len(cv_boxes))
 
-    # Map CV regions to figure labels by order
+    # Build bboxes: prefer DB bboxes (from book.json) when available, fall back to CV
     bboxes = {}
+    if db_bboxes:
+        for label, _ in figure_ids:
+            db_bb = db_bboxes.get(label)
+            if not db_bb:
+                continue
+            # Convert relative {x_min, y_min, x_max, y_max} (0-1) to pixel coords
+            if isinstance(db_bb, dict) and "x_min" in db_bb:
+                x1 = int(db_bb["x_min"] * w_img)
+                y1 = int(db_bb["y_min"] * h_img)
+                x2 = int(db_bb["x_max"] * w_img)
+                y2 = int(db_bb["y_max"] * h_img)
+                bboxes[label] = [x1, y1, x2, y2]
+                log.info("  %s: using DB bbox (%.2f,%.2f)-(%.2f,%.2f) → [%d,%d,%d,%d]",
+                         label, db_bb["x_min"], db_bb["y_min"], db_bb["x_max"], db_bb["y_max"],
+                         x1, y1, x2, y2)
+
+    # Fall back to CV-detected bboxes for figures without DB bbox
     for i, (label, _) in enumerate(figure_ids):
-        if i < len(cv_boxes):
+        if label not in bboxes and i < len(cv_boxes):
             x1, y1, x2, y2 = cv_boxes[i]
             bboxes[label] = [x1, y1, x2, y2]
 
@@ -1270,7 +1363,7 @@ def process_page(page_image_path, figure_ids, dry_run=False, db=None, force=Fals
 
         # Deskew: straighten tilted scans before grid detection
         original_crop = crop.copy()  # keep pre-deskew copy for debug overlay
-        crop_gray, deskew_angle = deskew_board(crop_gray, debug=True)
+        crop_gray, deskew_angle = deskew_board(crop_gray, debug=True, cv_params=cv_params)
         if abs(deskew_angle) >= 0.1:
             crop = deskew_board_color(crop, crop_gray, deskew_angle)
 
@@ -1280,7 +1373,7 @@ def process_page(page_image_path, figure_ids, dry_run=False, db=None, force=Fals
         log.info("  Cropped: %dx%d → %s", crop.shape[1], crop.shape[0], crop_path.name)
 
         # Step 2: CV grid detection
-        h_pos, v_pos, spacing = cv_detect_grid(crop_gray)
+        h_pos, v_pos, spacing = cv_detect_grid(crop_gray, cv_params)
         log.info("  Step 2: %d rows × %d cols, spacing=%.1fpx", len(h_pos), len(v_pos), spacing)
 
         # Generate grid debug image: deskewed crop with detected grid lines overlay
@@ -1299,8 +1392,8 @@ def process_page(page_image_path, figure_ids, dry_run=False, db=None, force=Fals
             continue
 
         # Step 3: CV occupied intersection detection
-        occupied = cv_detect_occupied(crop_gray, h_pos, v_pos, spacing)
-        confident, ambiguous = cv_preclass_confident(occupied, spacing)
+        occupied = cv_detect_occupied(crop_gray, h_pos, v_pos, spacing, cv_params)
+        confident, ambiguous = cv_preclass_confident(occupied, spacing, cv_params)
         log.info("  Step 3: %d occupied (%d confident, %d ambiguous)",
                  len(occupied), len(confident), len(ambiguous))
 
@@ -1522,7 +1615,7 @@ def process_page(page_image_path, figure_ids, dry_run=False, db=None, force=Fals
 
 # ── Test CV pipeline ──────────────────────────────────────────────────────────
 
-def test_cv(page_image_path):
+def test_cv(page_image_path, cv_params=None):
     """Test the CV pipeline (Steps 2-3 only) on a page image."""
     page_img = cv2.imread(str(page_image_path))
     page_gray = cv2.cvtColor(page_img, cv2.COLOR_BGR2GRAY)
@@ -1536,11 +1629,11 @@ def test_cv(page_image_path):
             continue
         crop_gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
 
-        h_pos, v_pos, spacing = cv_detect_grid(crop_gray)
+        h_pos, v_pos, spacing = cv_detect_grid(crop_gray, cv_params)
 
         # New: occupied detection (no color classification)
-        occupied = cv_detect_occupied(crop_gray, h_pos, v_pos, spacing)
-        confident, ambiguous = cv_preclass_confident(occupied, spacing)
+        occupied = cv_detect_occupied(crop_gray, h_pos, v_pos, spacing, cv_params)
+        confident, ambiguous = cv_preclass_confident(occupied, spacing, cv_params)
         log.info("Diagram %d: %d×%d grid, spacing=%.1fpx, %d occupied (%d confident, %d ambiguous)",
                  i + 1, len(v_pos), len(h_pos), spacing, len(occupied),
                  len(confident), len(ambiguous))
@@ -1691,7 +1784,7 @@ def apply_classifications_from_file(db, section_id, json_path, force=False):
              success, failed, skipped, len(results))
 
 
-def save_sheets_for_section(db, section_id, output_dir):
+def save_sheets_for_section(db, section_id, output_dir, cv_params=None):
     """Generate and save contact sheets for all figures in a section.
 
     Runs CV pipeline only (Steps 0-3), builds contact sheets, saves to output_dir.
@@ -1758,19 +1851,19 @@ def save_sheets_for_section(db, section_id, output_dir):
 
             # Deskew: straighten tilted scans before grid detection
             original_crop = crop.copy()
-            crop_gray, deskew_angle = deskew_board(crop_gray, debug=True)
+            crop_gray, deskew_angle = deskew_board(crop_gray, debug=True, cv_params=cv_params)
             if abs(deskew_angle) >= 0.1:
                 crop = deskew_board_color(crop, crop_gray, deskew_angle)
 
             # Step 2: grid detection
-            h_pos, v_pos, spacing = cv_detect_grid(crop_gray)
+            h_pos, v_pos, spacing = cv_detect_grid(crop_gray, cv_params)
             if len(h_pos) < 3 or len(v_pos) < 3:
                 log.warning("  %s: too few grid lines — skipping", label)
                 continue
 
             # Step 3: occupied detection
-            occupied = cv_detect_occupied(crop_gray, h_pos, v_pos, spacing)
-            confident, ambiguous = cv_preclass_confident(occupied, spacing)
+            occupied = cv_detect_occupied(crop_gray, h_pos, v_pos, spacing, cv_params)
+            confident, ambiguous = cv_preclass_confident(occupied, spacing, cv_params)
             log.info("  %s: %d×%d grid, %d occupied (%d confident, %d ambiguous)",
                      label, len(v_pos), len(h_pos), len(occupied),
                      len(confident), len(ambiguous))
@@ -1941,7 +2034,9 @@ def main():
     try:
         # Mode: save contact sheets (CV only, no VLLM, no DB write)
         if args.save_sheets:
-            save_sheets_for_section(db, args.section_id, args.save_sheets)
+            section = db_queries.get_section(db, args.section_id)
+            cv_params = load_cv_params(section.chapter.book.slug) if section else CVParams()
+            save_sheets_for_section(db, args.section_id, args.save_sheets, cv_params=cv_params)
             return
 
         # Mode: apply VLLM classifications from JSON file
@@ -1955,12 +2050,19 @@ def main():
             log.error("Section %d not found", args.section_id)
             return
 
+        # Load per-book CV parameters
+        book_slug = section.chapter.book.slug
+        cv_params = load_cv_params(book_slug)
+
         log.info("Section %d: %s (%d figures)", section.id, section.title, len(section.figures))
 
-        # Group figures by page
+        # Group figures by page, collect DB bboxes for fallback
         pages = defaultdict(list)
+        fig_bboxes = {}
         for fig in section.figures:
             pages[fig.page].append((fig.figure_label, fig.id))
+            if fig.bbox:
+                fig_bboxes[fig.figure_label] = fig.bbox
 
         all_results = []
         for page_num in sorted(pages.keys()):
@@ -1976,8 +2078,12 @@ def main():
                 log.warning("Page %d: image not found at %s — skipping", page_num, image_path)
                 continue
 
+            # Collect DB bboxes for figures on this page
+            page_db_bboxes = {label: fig_bboxes[label] for label, _ in figure_ids if label in fig_bboxes}
+
             log.info("\n── Page %d (%s) ── %d figure(s)", page_num, image_path.name, len(figure_ids))
-            page_results = process_page(image_path, figure_ids, dry_run=args.dry_run, db=db, force=args.force, vllm=args.vllm)
+            page_results = process_page(image_path, figure_ids, dry_run=args.dry_run, db=db, force=args.force,
+                                        vllm=args.vllm, db_bboxes=page_db_bboxes, cv_params=cv_params)
             if page_results:
                 all_results.extend(page_results)
 

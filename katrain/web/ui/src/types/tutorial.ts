@@ -123,4 +123,4 @@ export interface RecognitionDebug {
 
 export type StoneEditMode = 'black' | 'white' | 'alternate';
 export type EditTool = 'stone' | 'letter' | 'shape' | 'eraser' | null;
-export type ShapeType = 'triangle' | 'square' | 'circle';
+export type ShapeType = 'triangle' | 'square' | 'circle' | 'cross';

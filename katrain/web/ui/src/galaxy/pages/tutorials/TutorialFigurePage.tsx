@@ -12,6 +12,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import RuleIcon from '@mui/icons-material/Rule';
 import { TutorialAPI } from '../../api/tutorialApi';
 import SGFBoard from '../../components/tutorials/SGFBoard';
 import BoardEditToolbar from '../../components/tutorials/BoardEditToolbar';
@@ -92,6 +93,97 @@ export default function TutorialFigurePage() {
   }, [currentFigureIndex, maxMoveNumber]);
 
   const isVerified = currentFigure?.recognition_debug?.human_verified === true;
+
+  const handleLogicCheck = useCallback(() => {
+    if (!displayPayload) return;
+    const { labels, stones } = displayPayload;
+    if (!labels || Object.keys(labels).length === 0) {
+      alert('没有编号数据');
+      return;
+    }
+
+    // Build set of B/W coords for quick lookup
+    const blackSet = new Set(stones.B.map(([c, r]) => `${c},${r}`));
+    const whiteSet = new Set(stones.W.map(([c, r]) => `${c},${r}`));
+
+    // Collect numeric labels with their color
+    const moves: { num: number; color: 'B' | 'W' | null; coord: string }[] = [];
+    for (const [coord, val] of Object.entries(labels)) {
+      const n = parseInt(val, 10);
+      if (isNaN(n)) continue;
+      const color = blackSet.has(coord) ? 'B' as const : whiteSet.has(coord) ? 'W' as const : null;
+      moves.push({ num: n, color, coord });
+    }
+
+    if (moves.length === 0) {
+      alert('没有数字编号');
+      return;
+    }
+
+    const errors: string[] = [];
+
+    // Check duplicates
+    const numCounts = new Map<number, number>();
+    for (const m of moves) {
+      numCounts.set(m.num, (numCounts.get(m.num) ?? 0) + 1);
+    }
+    const duplicates = [...numCounts.entries()].filter(([, c]) => c > 1).map(([n]) => n);
+    if (duplicates.length > 0) {
+      errors.push(`重复编号: ${duplicates.join(', ')}`);
+    }
+
+    // Sort by number
+    moves.sort((a, b) => a.num - b.num);
+
+    // Check consecutive
+    const minNum = moves[0].num;
+    const gaps: number[] = [];
+    for (let i = 0; i < moves.length; i++) {
+      if (moves[i].num !== minNum + i) {
+        // Find actual gap
+        const expected = minNum + i;
+        if (!moves.some(m => m.num === expected)) {
+          gaps.push(expected);
+        }
+      }
+    }
+    // More robust: check full range
+    const maxNum = moves[moves.length - 1].num;
+    const existingNums = new Set(moves.map(m => m.num));
+    const missingNums: number[] = [];
+    for (let n = minNum; n <= maxNum; n++) {
+      if (!existingNums.has(n)) missingNums.push(n);
+    }
+    if (missingNums.length > 0) {
+      errors.push(`缺少编号: ${missingNums.join(', ')}`);
+    }
+
+    // Check color exists for each numbered stone
+    const noColor = moves.filter(m => m.color === null);
+    if (noColor.length > 0) {
+      errors.push(`编号 ${noColor.map(m => m.num).join(', ')} 没有对应棋子`);
+    }
+
+    // Check alternating colors (only for stones that have color)
+    const colored = moves.filter(m => m.color !== null);
+    if (colored.length >= 2) {
+      const badPairs: string[] = [];
+      for (let i = 1; i < colored.length; i++) {
+        if (colored[i].color === colored[i - 1].color) {
+          badPairs.push(`${colored[i - 1].num}(${colored[i - 1].color === 'B' ? '黑' : '白'})→${colored[i].num}(${colored[i].color === 'B' ? '黑' : '白'})`);
+        }
+      }
+      if (badPairs.length > 0) {
+        errors.push(`颜色未交替: ${badPairs.join(', ')}`);
+      }
+    }
+
+    if (errors.length === 0) {
+      alert(`✓ 逻辑检查通过 (${moves.length}手, ${minNum}-${maxNum})`);
+    } else {
+      alert(`✗ 逻辑检查发现问题:\n\n${errors.join('\n')}`);
+    }
+  }, [displayPayload]);
 
   const handleVerify = useCallback(async () => {
     if (!currentFigure) return;
@@ -222,6 +314,9 @@ export default function TutorialFigurePage() {
                   <Button size="small" variant="outlined" startIcon={<EditIcon />} onClick={editor.enterEdit} aria-label="编辑">
                     编辑
                   </Button>
+                  <Button size="small" variant="outlined" startIcon={<RuleIcon />} onClick={handleLogicCheck} aria-label="逻辑检查">
+                    逻辑检查
+                  </Button>
                   <Button
                     size="small"
                     variant={isVerified ? "contained" : "outlined"}
@@ -273,6 +368,22 @@ export default function TutorialFigurePage() {
               <AudioPlayer
                 src={currentFigure.audio_asset ? TutorialAPI.assetUrl(currentFigure.audio_asset) : null}
               />
+              {currentFigure.audio_asset && (() => {
+                const videoUrl = TutorialAPI.assetUrl(
+                  currentFigure.audio_asset!.replace('/audio/', '/video/').replace('.mp3', '.mp4')
+                );
+                return (
+                  <Box sx={{ mt: 2 }}>
+                    <video
+                      controls
+                      width="100%"
+                      style={{ borderRadius: 8, maxHeight: 400 }}
+                      src={videoUrl}
+                      onError={(e) => { (e.target as HTMLVideoElement).style.display = 'none'; }}
+                    />
+                  </Box>
+                );
+              })()}
             </>
           ) : (
             <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>

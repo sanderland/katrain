@@ -1,5 +1,6 @@
-import { useState, useCallback, useRef, memo } from 'react';
-import { Canvas, useFrame, type RootState } from '@react-three/fiber';
+import { useState, useCallback, useRef, useEffect, memo } from 'react';
+import { Canvas, useFrame, useThree, type RootState } from '@react-three/fiber';
+import * as THREE from 'three';
 import { ACESFilmicToneMapping, PCFShadowMap } from 'three';
 import Lights from './Lights';
 import BoardMesh from './BoardMesh';
@@ -15,6 +16,17 @@ import PolicyMap from './Overlays/PolicyMap';
 import MoveNumbers from './Overlays/MoveNumbers';
 import type { BoardProps } from '../Board';
 
+/** Static camera for recording mode — sets position + lookAt once, no interaction */
+const StaticCamera = ({ position, target }: { position: [number, number, number]; target: [number, number, number] }) => {
+  const { camera } = useThree();
+  useEffect(() => {
+    camera.position.set(...position);
+    camera.lookAt(new THREE.Vector3(...target));
+    camera.updateProjectionMatrix();
+  }, [camera, position, target]);
+  return null;
+};
+
 /** Syncs OrbitControls polar angle → external state callback each frame */
 const PolarSync = ({ orbitRef, onPolarChange }: { orbitRef: React.RefObject<any>; onPolarChange: (angle: number) => void }) => {
   useFrame(() => {
@@ -26,7 +38,15 @@ const PolarSync = ({ orbitRef, onPolarChange }: { orbitRef: React.RefObject<any>
   return null;
 };
 
-const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor }: BoardProps) => {
+interface Board3DProps extends BoardProps {
+  cameraPosition?: [number, number, number];
+  cameraTarget?: [number, number, number];
+  disableControls?: boolean;
+  /** Lock polar angle for non-interactive mode (fraction of π, e.g., 0.33) */
+  fixedPolarAngle?: number;
+}
+
+const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor, cameraPosition, cameraTarget, disableControls, fixedPolarAngle }: Board3DProps) => {
   const boardSize = gameState.board_size[0];
   const orbitRef = useRef<any>(null);
   const [polarAngle, setPolarAngle] = useState(Math.PI * 0.2); // initial approx
@@ -86,7 +106,7 @@ const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor }
     <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Canvas
         shadows={{ type: PCFShadowMap }}
-        camera={{ position: [0, 22, 26], fov: 40, near: 0.1, far: 100 }}
+        camera={{ position: cameraPosition || [0, 22, 26], fov: 40, near: 0.1, far: 100 }}
         gl={{ antialias: true, toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
         style={{ borderRadius: '4px', cursor: 'pointer' }}
         onCreated={handleCreated}
@@ -94,8 +114,14 @@ const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor }
         <color attach="background" args={['#0f0f0f']} />
         <fog attach="fog" args={['#0f0f0f', 30, 60]} />
         <Lights />
-        <CameraController ref={orbitRef} />
-        <PolarSync orbitRef={orbitRef} onPolarChange={handlePolarChange} />
+        {disableControls && cameraPosition && cameraTarget ? (
+          <StaticCamera position={cameraPosition} target={cameraTarget} />
+        ) : (
+          <>
+            <CameraController ref={orbitRef} target={cameraTarget} interactive={!disableControls} fixedPolarAngle={fixedPolarAngle} />
+            <PolarSync orbitRef={orbitRef} onPolarChange={handlePolarChange} />
+          </>
+        )}
         <BoardMesh boardSize={boardSize} showCoordinates={!!analysisToggles.coords} />
         <StoneGroup gameState={gameState} enableDropEffect={!!analysisToggles.stoneDropEffect} />
         <RaycastClick
@@ -121,7 +147,7 @@ const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor }
       </Canvas>
 
       {/* Tilt & Zoom Controls Overlay */}
-      <div style={{
+      {!disableControls && <div style={{
         position: 'absolute',
         bottom: 16,
         right: 16,
@@ -187,7 +213,7 @@ const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor }
             margin: '2px 0',
           }}
         />
-      </div>
+      </div>}
 
       {/* End-game result overlay (HTML layer on top of Canvas) */}
       {gameState.end_result && (

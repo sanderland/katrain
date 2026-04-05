@@ -206,6 +206,7 @@ export default function BoardEditToolbar({
         <MenuItem selected={selectedShape === 'triangle'} onClick={() => { onShapeChange('triangle'); setShapeAnchor(null); }}>△ 三角形</MenuItem>
         <MenuItem selected={selectedShape === 'square'} onClick={() => { onShapeChange('square'); setShapeAnchor(null); }}>□ 正方形</MenuItem>
         <MenuItem selected={selectedShape === 'circle'} onClick={() => { onShapeChange('circle'); setShapeAnchor(null); }}>○ 圆形</MenuItem>
+        <MenuItem selected={selectedShape === 'cross'} onClick={() => { onShapeChange('cross'); setShapeAnchor(null); }}>✕ 叉形</MenuItem>
       </Menu>
 
       <Box sx={{ flexGrow: 1 }} />

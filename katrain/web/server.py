@@ -1291,6 +1291,11 @@ def create_app(enable_engine=True, session_timeout=None, max_sessions=None):
     async def serve_kiosk_app(full_path: str = None):
         return str(static_root / "index.html")
 
+    # SPA Routing for Video Recorder
+    @app.get("/record", response_class=FileResponse)
+    async def serve_record_app():
+        return str(static_root / "index.html")
+
     # Catch-all for other static files (like vite.svg and JS/CSS in assets/)
     app.mount("/", StaticFiles(directory=static_root, html=True), name="root")
 

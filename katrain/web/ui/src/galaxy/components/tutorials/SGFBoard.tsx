@@ -158,6 +158,14 @@ export default function SGFBoard({ payload, maxMoveStep, showFullBoard, onClick 
     } else if (shape === 'circle') {
       shapeEls.push(<circle key={`shape-${coordStr}`} cx={x} cy={y} r={r}
         fill="none" stroke="#1565c0" strokeWidth={2} />);
+    } else if (shape === 'cross') {
+      const d = r * 0.7;
+      shapeEls.push(
+        <g key={`shape-${coordStr}`}>
+          <line x1={x - d} y1={y - d} x2={x + d} y2={y + d} stroke="#1565c0" strokeWidth={2} />
+          <line x1={x - d} y1={y + d} x2={x + d} y2={y - d} stroke="#1565c0" strokeWidth={2} />
+        </g>
+      );
     }
   }
 

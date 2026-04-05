@@ -57,10 +57,12 @@ const GalaxySidebar = () => {
   ];
 
   return (
-    <Box sx={{ 
-      width: 240, 
-      height: '100vh', 
-      bgcolor: 'background.paper', 
+    <Box sx={{
+      width: 240,
+      minWidth: 240,
+      flexShrink: 0,
+      height: '100vh',
+      bgcolor: 'background.paper',
       borderRight: '1px solid rgba(255,255,255,0.05)',
       display: 'flex',
       flexDirection: 'column'
