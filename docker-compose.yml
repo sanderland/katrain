@@ -19,6 +19,8 @@ services:
       context: .
       dockerfile: Dockerfile.web
     container_name: katrain-web
+    volumes:
+      - ./data/tutorial_assets:/app/data/tutorial_assets:ro
     restart: unless-stopped
     ports:
       - "8001:8001"
