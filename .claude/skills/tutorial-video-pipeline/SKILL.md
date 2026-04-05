@@ -7,60 +7,97 @@ description: Use when generating tutorial lecture videos from figure data, creat
 
 Generate Go tutorial lecture videos by composing 3D board animation, synchronized subtitles, and voice narration into MP4 files.
 
-## Prerequisites
+## Execution Workflow
 
-- Web UI server running: `python -m katrain --ui web --port 8001`
-- Figures must have `narration` and `audio_asset` (run `generate_voice.py` first)
-- System deps: `ffmpeg`, `playwright install chromium`, `Pillow`
+When the user asks to generate videos for a section (e.g., "为 Section 1 生成视频"), follow this exact sequence:
 
-## Pipeline Execution Order
-
-| Order | Skill | Script | Prerequisite |
-|-------|-------|--------|-------------|
-| 0 | `tutorial-book-import` | `import_book.py` | book.json + pages |
-| 1 | `tutorial-recognition-pipeline` | `recognize_boards_v2.py` | Figures with page_image_path |
-| 2 | `tutorial-voice-pipeline` | `generate_voice.py` | Figures with book_text |
-| **3** | **`tutorial-video-pipeline`** | **`generate_video.py`** | **Figures with narration + audio_asset** |
-
-## Quick Reference
-
-### Per-Figure Video
+### Step 1: Verify prerequisites
 
 ```bash
-# Preview timeline (no video generation)
-python scripts/generate_video.py --figure-id 1 --dry-run
-
-# Generate single figure video
-python scripts/generate_video.py --figure-id 1
-
-# Generate all figure videos in a section (sequential)
-python scripts/generate_video.py --section-id 1
-
-# Force regenerate + custom camera angle
-python scripts/generate_video.py --figure-id 1 --force --polar-angle 0.15
+# Check web server is running
+curl -s -o /dev/null -w "%{http_code}" http://localhost:8001/health
 ```
 
-### Section Video (concatenates figure videos)
-
+If not 200, start it:
 ```bash
-# Concatenate existing figure videos into section video
-python scripts/generate_video.py --section-video 1
-
-# Force regenerate
-python scripts/generate_video.py --section-video 1 --force
-```
-
-### Full Workflow for a Section
-
-```bash
-# 1. Ensure server is running
 python -m katrain --ui web --port 8001 &
+sleep 20  # Wait for build + startup
+```
 
-# 2. Generate all figure videos (with concurrency)
-python scripts/generate_video.py --section-id 1 --concurrency 3
+Also verify figures have narration:
+```python
+python3 -c "
+import sys; sys.path.insert(0, '.')
+from katrain.web.core.db import SessionLocal
+from katrain.web.core.models_db import TutorialFigure
+db = SessionLocal()
+figs = db.query(TutorialFigure).filter_by(section_id=SECTION_ID).all()
+ready = sum(1 for f in figs if f.narration and f.audio_asset)
+print(f'{ready}/{len(figs)} figures ready')
+db.close()
+"
+```
 
-# 3. Concatenate into section video
-python scripts/generate_video.py --section-video 1 --force
+If not all ready, run `tutorial-voice-pipeline` first.
+
+### Step 2: Generate all figure videos (with concurrency)
+
+Choose concurrency based on machine:
+- Macbook: `--concurrency 2`
+- Server (192 cores): `--concurrency 20`
+
+```bash
+PYTHONUNBUFFERED=1 python scripts/generate_video.py \
+  --section-id SECTION_ID \
+  --concurrency N \
+  --force \
+  > /tmp/video_section_SECTION_ID.log 2>&1
+```
+
+**Monitor progress** by tailing the log:
+```bash
+tail -f /tmp/video_section_SECTION_ID.log
+```
+
+**Verify completion**: check all figure videos exist:
+```bash
+ls -la data/tutorial_assets/*/video/fig_*.mp4 | wc -l
+```
+
+### Step 3: Generate section video
+
+After ALL figure videos are complete:
+
+```bash
+python scripts/generate_video.py --section-video SECTION_ID --force
+```
+
+This creates: `data/tutorial_assets/{slug}/video/section_{SECTION_ID}.mp4`
+
+Structure: Section title card (3s) → 图1 title (2s) → 图1 video → 图2 title (2s) → 图2 video → ...
+
+### Step 4: Verify
+
+```bash
+# Check output files
+ls -lh data/tutorial_assets/*/video/section_SECTION_ID.mp4
+
+# Check duration
+ffprobe -v quiet -show_entries format=duration \
+  -of default=noprint_wrappers=1:nokey=1 \
+  data/tutorial_assets/*/video/section_SECTION_ID.mp4
+```
+
+### Processing multiple sections
+
+For multiple sections, process them sequentially (each section = steps 2-3):
+
+```bash
+for sid in 1 2 3; do
+  echo "=== Section $sid ==="
+  python scripts/generate_video.py --section-id $sid --concurrency 2 --force
+  python scripts/generate_video.py --section-video $sid --force
+done
 ```
 
 ## CLI Parameters
@@ -77,35 +114,35 @@ python scripts/generate_video.py --section-video 1 --force
 | `--dry-run` | false | Preview timeline JSON only |
 | `--concurrency N` | 1 | Parallel figure processing (for --section-id) |
 
+## Pipeline Execution Order
+
+This skill is step 3 in the tutorial digitization pipeline:
+
+| Order | Skill | Script | Prerequisite |
+|-------|-------|--------|-------------|
+| 0 | `tutorial-book-import` | `import_book.py` | book.json + pages |
+| 1 | `tutorial-recognition-pipeline` | `recognize_boards_v2.py` | Figures with page_image_path |
+| 2 | `tutorial-voice-pipeline` | `generate_voice.py` | Figures with book_text |
+| **3** | **`tutorial-video-pipeline`** | **`generate_video.py`** | **Figures with narration + audio_asset** |
+
 ## Architecture
 
 ```
-generate_video.py
-│
-├─ Per-figure pipeline:
-│   1. Load figure from DB (board_payload, narration, audio_asset)
-│   2. Generate audio with word-level timestamps (edge-tts SubMaker)
-│   3. Parse move references from narration (regex: 黑1, 白2位, 第N手)
-│   4. Build timeline JSON (moves, subtitles split at Chinese punctuation)
-│   5. Capture frames via Playwright (deterministic __setFrame API)
-│   6. Mix audio: narration + stone sounds (ffmpeg adelay + amix)
-│   7. Compose: raw frames video + mixed audio → MP4
-│
-├─ Section video pipeline:
-│   1. Section title card (Pillow → ffmpeg)
-│   2. For each figure: title card "图N (i/total)" + figure video
-│   3. Normalize all segments (uniform resolution/fps/encoding)
-│   4. ffmpeg concat → section_{id}.mp4
-│
-└─ Output: data/tutorial_assets/{slug}/video/fig_{id}.mp4
-           data/tutorial_assets/{slug}/video/section_{id}.mp4
+Per-figure pipeline:
+  1. Load figure from DB (board_payload, narration, audio_asset)
+  2. Generate audio with word-level timestamps (edge-tts SubMaker, boundary=WordBoundary)
+  3. Parse move references from narration (regex: 黑1, 白2位, 第N手)
+  4. Build timeline JSON (moves + subtitles split at Chinese punctuation)
+  5. Capture frames via Playwright (deterministic __setFrame API, 5fps)
+  6. Mix audio: narration + stone sounds (ffmpeg adelay + amix)
+  7. Compose: raw frames + mixed audio → fig_{id}.mp4
+
+Section video pipeline:
+  1. Section title card "N. 标题" (Pillow + ffmpeg, 3s)
+  2. For each figure: title card "图N (i/total)" (2s) + figure video
+  3. Normalize all segments (uniform 2560x1440, 5fps, H.264, AAC)
+  4. ffmpeg concat → section_{id}.mp4
 ```
-
-## Frame Capture Details
-
-The recording page (`/record`) renders Board3D with a deterministic `__setFrame(time_ms)` API. Playwright calls this for each frame at 5fps, takes a screenshot, then ffmpeg stitches frames into video. This avoids Playwright's `recordVideo` which cannot reliably capture WebGL canvas in headless mode.
-
-**Camera control:** `StaticCamera` component sets camera position/lookAt directly (no OrbitControls). The `--polar-angle` parameter controls tilt: smaller = more bird's-eye (upright board), larger = flatter side view.
 
 ## Output Files
 
@@ -123,14 +160,9 @@ The recording page (`/record`) renders Board3D with a deterministic `__setFrame(
 
 | Issue | Fix |
 |-------|-----|
-| Board not rendering | Increase warmup time in VideoRecorderPage (default 5s) |
-| Camera angle wrong | Use `StaticCamera` (not OrbitControls) for recording mode |
+| Board not rendering | Increase warmup (default 5s) or check `--use-gl=angle` flag |
+| Camera angle wrong | StaticCamera is used for recording; adjust `--polar-angle` |
 | Stones not appearing | Ensure 300ms+ wait after `__setFrame()` for React re-render |
-| ffmpeg drawtext missing | Use Pillow for title cards (drawtext needs ffmpeg built with libfreetype) |
-| Audio out of sync | Regenerate audio with timing (edge-tts SubMaker); don't reuse old audio |
-
-## Relationship with Other Skills
-
-- **tutorial-voice-pipeline**: Must run first to generate narration + audio
-- **tutorial-recognition-pipeline**: Must run first to generate board_payload
-- **tutorial-data-sync**: Sync generated videos to remote server after generation
+| ffmpeg drawtext missing | Uses Pillow for title cards (no drawtext dependency) |
+| Audio out of sync | Audio is regenerated with timing each run; don't skip step 2 |
+| Generation too slow | Increase `--concurrency`; use server with more CPU cores |
