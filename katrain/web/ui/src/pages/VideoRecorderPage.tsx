@@ -5,11 +5,17 @@
  * The Python script (generate_video.py) injects timeline data via
  * window.__RECORDING_DATA and triggers playback via a "startRecording" event.
  *
+ * Move numbers and letters are HTML overlays with perspective-correct sizing
+ * (projected stone radius determines font size per stone). This avoids troika
+ * CDN dependency issues in headless environments while looking natural.
+ *
  * Route: /record (outside Galaxy layout, no sidebar)
  */
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import { Vector3 } from 'three';
 import type { RootState } from '@react-three/fiber';
 import type { GameState, PlayerInfo } from '../api';
+import { gridToWorld, gridToSurface, STONE_RADIUS } from '../components/Board3D/constants';
 
 // Lazy-load Board3D (same pattern as GamePage)
 const Board3D = lazy(() => import('../components/Board3D'));
@@ -17,6 +23,11 @@ const Board3D = lazy(() => import('../components/Board3D'));
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+
+interface TimelineInitialStone {
+  color: 'B' | 'W';
+  pos: [number, number];
+}
 
 interface TimelineMove {
   number: number;
@@ -31,6 +42,12 @@ interface TimelineSubtitle {
   text: string;
 }
 
+interface TimelineLetter {
+  letter: string;
+  pos: [number, number];
+  trigger_ms: number;
+}
+
 interface Timeline {
   figure_id: number;
   figure_label: string;
@@ -41,14 +58,30 @@ interface Timeline {
     cols?: number;
     rows?: number;
   } | null;
+  initial_stones: TimelineInitialStone[];
   moves: TimelineMove[];
+  letters?: TimelineLetter[];
   subtitles: TimelineSubtitle[];
   total_duration_ms: number;
   audio_url: string;
-  polar_angle?: number; // Camera tilt as fraction of π (e.g., 0.33 = 0.33π)
+  polar_angle?: number;
 }
 
-// Extend Window for Playwright communication
+interface MoveNumberOverlay {
+  x: number;
+  y: number;
+  number: number;
+  isBlack: boolean;
+  fontSize: number;
+}
+
+interface LetterOverlay {
+  x: number;
+  y: number;
+  letter: string;
+  fontSize: number;
+}
+
 declare global {
   interface Window {
     __RECORDING_DATA?: Timeline;
@@ -111,28 +144,43 @@ function makeGameState(
   };
 }
 
-/**
- * Compute camera position and target for video recording.
- * Always centers on the full board. polarAngle controls tilt
- * (fraction of π — 0.05 = bird's eye, 0.38 = most tilted).
- */
 function computeCamera(
   polarAngle: number = 0.15,
 ): { position: [number, number, number]; target: [number, number, number]; polarAngle: number } {
   const target: [number, number, number] = [0, 1.2, 0];
-
-  // Camera distance from target (same as default ~33 units)
   const distance = 33.3;
   const theta = polarAngle * Math.PI;
-
   const y = distance * Math.cos(theta) + target[1];
   const z = distance * Math.sin(theta) + target[2];
+  return { position: [0, y, z], target, polarAngle };
+}
 
+/** Project 3D world position to 2D screen coordinates. */
+function projectToScreen(
+  worldPos: [number, number, number],
+  camera: RootState['camera'],
+  canvasW: number,
+  canvasH: number,
+): { x: number; y: number } {
+  const v = new Vector3(...worldPos);
+  v.project(camera);
   return {
-    position: [0, y, z],
-    target,
-    polarAngle,
+    x: (v.x * 0.5 + 0.5) * canvasW,
+    y: (-v.y * 0.5 + 0.5) * canvasH,
   };
+}
+
+/** Compute apparent stone radius in pixels by projecting stone center + edge. */
+function computeApparentRadius(
+  worldPos: [number, number, number],
+  camera: RootState['camera'],
+  canvasW: number,
+  canvasH: number,
+): number {
+  const center = projectToScreen(worldPos, camera, canvasW, canvasH);
+  const edgePos: [number, number, number] = [worldPos[0] + STONE_RADIUS, worldPos[1], worldPos[2]];
+  const edge = projectToScreen(edgePos, camera, canvasW, canvasH);
+  return Math.abs(edge.x - center.x);
 }
 
 // ---------------------------------------------------------------------------
@@ -143,6 +191,8 @@ export default function VideoRecorderPage() {
   const [timeline, setTimeline] = useState<Timeline | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [subtitle, setSubtitle] = useState('');
+  const [moveNumberOverlays, setMoveNumberOverlays] = useState<MoveNumberOverlay[]>([]);
+  const [letterOverlays, setLetterOverlays] = useState<LetterOverlay[]>([]);
   const [status, setStatus] = useState('Waiting for recording data...');
 
   const placedMovesRef = useRef<number>(0);
@@ -156,52 +206,90 @@ export default function VideoRecorderPage() {
     console.log('Canvas ready, R3F state captured for direct rendering');
   }, []);
 
-  // Clean up timers on unmount
   useEffect(() => {
-    return () => {
-      timersRef.current.forEach(clearTimeout);
-    };
+    return () => { timersRef.current.forEach(clearTimeout); };
   }, []);
 
   const startPlayback = useCallback((tl: Timeline) => {
     const bs = tl.board_size;
+    const flipRow = (pos: [number, number]): [number, number] => [pos[0], bs - 1 - pos[1]];
 
-    // Initialize empty board so Three.js starts loading
-    stonesRef.current = [];
+    const initialStones: [string, [number, number] | null, number | null, number | null][] =
+      (tl.initial_stones || []).map((s) => [s.color, flipRow(s.pos), null, null]);
+
+    stonesRef.current = initialStones;
     placedMovesRef.current = 0;
-    setGameState(makeGameState(bs, [], null, 0));
+    setGameState(makeGameState(bs, initialStones, null, 0));
     setSubtitle('');
+    setMoveNumberOverlays([]);
+    setLetterOverlays([]);
     setStatus('Ready');
 
-    // Expose deterministic frame-setting API for Playwright
-    // Python calls window.__setFrame(time_ms) for each frame
     (window as any).__setFrame = (time_ms: number) => {
-      // Determine which stones should be visible at this time
       const visibleMoves = tl.moves.filter((m) => m.trigger_ms <= time_ms);
-      const stones: [string, [number, number] | null, number | null, number | null][] =
-        visibleMoves.map((m) => [m.color, m.pos, null, m.number]);
+      const moveStones: [string, [number, number] | null, number | null, number | null][] =
+        visibleMoves.map((m) => [m.color, flipRow(m.pos), null, m.number]);
 
-      // Find the last placed move (for last_move indicator + drop animation trigger)
+      const stones = [...initialStones, ...moveStones];
       const lastMove = visibleMoves.length > 0
-        ? visibleMoves[visibleMoves.length - 1].pos as [number, number]
+        ? flipRow(visibleMoves[visibleMoves.length - 1].pos)
         : null;
 
       stonesRef.current = stones;
       placedMovesRef.current = visibleMoves.length;
       setGameState(makeGameState(bs, stones, lastMove, visibleMoves.length));
 
-      // Find active subtitle at this time
+      // Compute perspective-correct overlay positions and sizes
+      const state = r3fStateRef.current;
+      if (state) {
+        const { camera, gl } = state;
+        const canvasW = gl.domElement.clientWidth;
+        const canvasH = gl.domElement.clientHeight;
+
+        // Move numbers (on stones) — size scales with perspective
+        if (visibleMoves.length > 0) {
+          setMoveNumberOverlays(visibleMoves.map((m) => {
+            const [col, row] = flipRow(m.pos);
+            const worldPos = gridToWorld(col, row, bs);
+            const screen = projectToScreen(worldPos, camera, canvasW, canvasH);
+            const apparentR = computeApparentRadius(worldPos, camera, canvasW, canvasH);
+            const digits = String(m.number).length;
+            const fontSize = apparentR * (digits === 1 ? 1.1 : 0.85);
+            return { x: screen.x, y: screen.y, number: m.number, isBlack: m.color === 'B', fontSize };
+          }));
+        } else {
+          setMoveNumberOverlays([]);
+        }
+
+        // Letter annotations (on board surface) — same perspective scaling
+        const visibleLetters = (tl.letters || []).filter((lt) => lt.trigger_ms <= time_ms);
+        if (visibleLetters.length > 0) {
+          setLetterOverlays(visibleLetters.map((lt) => {
+            const [col, row] = flipRow(lt.pos);
+            const worldPos = gridToSurface(col, row, bs);
+            const screen = projectToScreen(worldPos, camera, canvasW, canvasH);
+            const apparentR = computeApparentRadius(
+              gridToWorld(col, row, bs), camera, canvasW, canvasH,
+            );
+            return { x: screen.x, y: screen.y, letter: lt.letter, fontSize: apparentR * 1.2 };
+          }));
+        } else {
+          setLetterOverlays([]);
+        }
+      } else {
+        setMoveNumberOverlays([]);
+        setLetterOverlays([]);
+      }
+
       const activeSub = tl.subtitles.find(
-        (s) => time_ms >= s.start_ms && time_ms < s.end_ms
+        (s) => time_ms >= s.start_ms && time_ms < s.end_ms,
       );
       setSubtitle(activeSub?.text ?? '');
     };
 
-    // Signal readiness
     window.__RECORDING_DONE = false;
     (window as any).__RECORDING_READY = true;
 
-    // Force synchronous render (headless mode throttles rAF, so invalidate() alone won't work)
     (window as any).__forceRender = () => {
       const state = r3fStateRef.current;
       if (state) {
@@ -213,27 +301,20 @@ export default function VideoRecorderPage() {
     console.log('Recording page ready for frame capture');
   }, []);
 
-  // Listen for startRecording event (triggered by Playwright after injecting data)
   useEffect(() => {
     const handler = () => {
       const data = window.__RECORDING_DATA;
-      if (data) {
-        setTimeline(data);
-        startPlayback(data);
-      } else {
-        console.error('startRecording fired but no __RECORDING_DATA found');
-      }
+      if (data) { setTimeline(data); startPlayback(data); }
+      else { console.error('startRecording fired but no __RECORDING_DATA found'); }
     };
     window.addEventListener('startRecording', handler);
     return () => window.removeEventListener('startRecording', handler);
   }, [startPlayback]);
 
-  // Also check on mount if data is already present (for manual testing)
   useEffect(() => {
     if (window.__RECORDING_DATA) {
-      const data = window.__RECORDING_DATA;
-      setTimeline(data);
-      startPlayback(data);
+      setTimeline(window.__RECORDING_DATA);
+      startPlayback(window.__RECORDING_DATA);
     }
   }, [startPlayback]);
 
@@ -242,9 +323,8 @@ export default function VideoRecorderPage() {
     : computeCamera(0.15);
 
   const noop = useCallback(() => {}, []);
-  // Disable coords/numbers: drei <Text> (troika) requires CDN font data that
-  // may be unreachable in headless/offline recording environments.
-  // Subtitles are rendered as HTML and are unaffected.
+  // Numbers rendered as perspective-scaled HTML overlays (troika doesn't work in headless).
+  // Drop effect enabled with adaptive 24fps capture during drops.
   const analysisToggles = { coords: false, stoneDropEffect: true, numbers: false };
 
   return (
@@ -291,6 +371,52 @@ export default function VideoRecorderPage() {
             {status}
           </div>
         )}
+
+        {/* Move numbers — perspective-scaled to match stone size */}
+        {moveNumberOverlays.map(({ x, y, number, isBlack, fontSize }) => (
+          <div
+            key={`mn-${number}`}
+            style={{
+              position: 'absolute',
+              left: x,
+              top: y,
+              transform: 'translate(-50%, -50%)',
+              color: isBlack ? '#fff' : '#000',
+              fontSize,
+              fontWeight: 'bold',
+              fontFamily: '"Noto Sans SC", "Noto Sans", sans-serif',
+              lineHeight: 1,
+              pointerEvents: 'none',
+              textShadow: isBlack
+                ? '0 0 3px rgba(0,0,0,0.9), 0 0 1px rgba(0,0,0,1)'
+                : '0 0 3px rgba(255,255,255,0.9), 0 0 1px rgba(255,255,255,1)',
+            }}
+          >
+            {number}
+          </div>
+        ))}
+
+        {/* Letter annotations — perspective-scaled, red */}
+        {letterOverlays.map(({ x, y, letter, fontSize }) => (
+          <div
+            key={`lt-${letter}`}
+            style={{
+              position: 'absolute',
+              left: x,
+              top: y,
+              transform: 'translate(-50%, -50%)',
+              color: '#d32f2f',
+              fontSize,
+              fontWeight: 'bold',
+              fontFamily: '"Noto Sans SC", "Noto Sans", sans-serif',
+              lineHeight: 1,
+              pointerEvents: 'none',
+              textShadow: '0 0 4px rgba(0,0,0,0.8), 0 0 2px rgba(0,0,0,0.9)',
+            }}
+          >
+            {letter}
+          </div>
+        ))}
       </div>
 
       {/* Subtitle bar */}

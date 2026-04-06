@@ -66,6 +66,28 @@ def find_move_references(text: str) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
+# Letter reference parser (e.g., "A方向", "A位", "A点", "A处", standalone "A")
+# ---------------------------------------------------------------------------
+
+LETTER_REF_PATTERN = re.compile(r"([A-Z])(?:这个)?(?:方向|位|点|处)?")
+
+
+def find_letter_references(text: str) -> list[dict]:
+    """Extract letter references from narration text (A, B, C, etc.).
+
+    Returns list of {start_char, end_char, letter} sorted by position.
+    """
+    refs = []
+    for m in LETTER_REF_PATTERN.finditer(text):
+        refs.append({
+            "start_char": m.start(),
+            "end_char": m.end(),
+            "letter": m.group(1),
+        })
+    return refs
+
+
+# ---------------------------------------------------------------------------
 # Subtitle segmenter
 # ---------------------------------------------------------------------------
 
@@ -228,6 +250,49 @@ def build_moves_list(bp: dict) -> list[dict]:
     return moves
 
 
+def build_initial_stones(bp: dict) -> list[dict]:
+    """Extract stones without numeric labels (initial/setup stones).
+
+    These are pre-placed on the board before any animated moves.
+    Returns [{"color": "B"|"W", "pos": [col, row]}, ...]
+    """
+    labels = bp.get("labels", {})
+    stones_b = bp.get("stones", {}).get("B", [])
+    stones_w = bp.get("stones", {}).get("W", [])
+
+    # Coordinates that have numeric labels are animated moves, not initial stones
+    numeric_coords = set()
+    for coord_key, label_val in labels.items():
+        try:
+            int(label_val)
+            numeric_coords.add(coord_key)
+        except (ValueError, TypeError):
+            pass
+
+    initial = []
+    for pos in stones_b:
+        if f"{pos[0]},{pos[1]}" not in numeric_coords:
+            initial.append({"color": "B", "pos": pos})
+    for pos in stones_w:
+        if f"{pos[0]},{pos[1]}" not in numeric_coords:
+            initial.append({"color": "W", "pos": pos})
+
+    return initial
+
+
+def build_letters(bp: dict) -> list[dict]:
+    """Extract letter annotations from board_payload (on empty intersections).
+
+    Returns [{"letter": "A", "pos": [col, row]}, ...]
+    """
+    letters = bp.get("letters", {})
+    result = []
+    for coord_key, letter in letters.items():
+        col, row = map(int, coord_key.split(","))
+        result.append({"letter": letter, "pos": [col, row]})
+    return result
+
+
 def build_timeline(
     figure,
     word_timings: list[dict],
@@ -242,6 +307,7 @@ def build_timeline(
     Matches move references to word timings to determine when each stone should drop.
     """
     moves = build_moves_list(bp)
+    initial_stones = build_initial_stones(bp)
     narration = figure.narration
 
     # Map move number → trigger time from narration
@@ -267,21 +333,46 @@ def build_timeline(
     else:
         audio_end_ms = 5000
 
-    # Assign trigger times to moves
-    unmatched_moves = []
-    for move in moves:
+    # Assign trigger times to moves — enforcing sequential order.
+    # Moves must always play in ascending number order with at least 1s gap.
+    # When narration mentions move N, all moves up to N play in sequence.
+    MOVE_INTERVAL_MS = 1000
+    prev_trigger = 0
+    for move in moves:  # already sorted by number
         if move["number"] in move_trigger_map:
-            move["trigger_ms"] = move_trigger_map[move["number"]]
+            # Narration-matched: use narration time, but never before prev + interval
+            move["trigger_ms"] = max(move_trigger_map[move["number"]], prev_trigger + MOVE_INTERVAL_MS)
         else:
-            unmatched_moves.append(move)
-
-    # Place unmatched moves at 1-second intervals after narration ends
-    for i, move in enumerate(unmatched_moves):
-        move["trigger_ms"] = audio_end_ms + 1000 * (i + 1)
+            # Unmatched: play 1s after previous move
+            move["trigger_ms"] = prev_trigger + MOVE_INTERVAL_MS
+        prev_trigger = move["trigger_ms"]
 
     # Calculate total duration: max of audio end and last move trigger + buffer
     last_move_time = max((m["trigger_ms"] for m in moves), default=0)
     total_duration_ms = max(audio_end_ms, last_move_time + 1000) + 2000  # 2s buffer at end
+
+    # Build letter annotations with trigger times
+    letters = build_letters(bp)
+    if letters:
+        letter_refs = find_letter_references(narration)
+        for letter_entry in letters:
+            # Find matching reference in narration
+            matched = False
+            for ref in letter_refs:
+                if ref["letter"] == letter_entry["letter"]:
+                    mid_char = (ref["start_char"] + ref["end_char"]) // 2
+                    if mid_char in char_to_timing:
+                        wt = char_to_timing[mid_char]
+                        letter_entry["trigger_ms"] = round(wt["offset_ms"], 1)
+                        matched = True
+                        break
+            if not matched:
+                # Show unmatched letters after all moves are placed
+                letter_entry["trigger_ms"] = last_move_time + 1000
+
+    # Calculate total duration: max of audio end and last move/letter trigger + buffer
+    last_letter_time = max((lt["trigger_ms"] for lt in letters), default=0) if letters else 0
+    total_duration_ms = max(audio_end_ms, last_move_time + 1000, last_letter_time + 1000) + 2000
 
     # Build audio URL for the recording page to play
     audio_asset = figure.audio_asset or ""
@@ -292,7 +383,9 @@ def build_timeline(
         "figure_label": figure.figure_label,
         "board_size": bp.get("size", 19),
         "viewport": bp.get("viewport"),
+        "initial_stones": initial_stones,
         "moves": moves,
+        "letters": letters,
         "subtitles": subtitles,
         "total_duration_ms": round(total_duration_ms),
         "audio_url": audio_url,
@@ -305,16 +398,71 @@ def build_timeline(
 # ---------------------------------------------------------------------------
 
 
-async def capture_video(timeline: dict, port: int, output_dir: str, fps: int = 5) -> str:
-    """Capture 3D board animation as deterministic frame-by-frame screenshots.
+def build_frame_schedule(timeline: dict, base_fps: int = 5, drop_fps: int = 24) -> list[float]:
+    """Build adaptive frame schedule: base_fps normally, drop_fps during stone drops.
 
-    Uses a setFrame(time_ms) API on the recording page for exact timing control,
-    then stitches frames into video with ffmpeg.
+    Returns sorted list of frame times (ms) with higher density around move triggers
+    for smooth drop animations.
+    """
+    duration_ms = timeline["total_duration_ms"]
+    base_interval = 1000.0 / base_fps
+    drop_interval = 1000.0 / drop_fps
+    drop_window_ms = 700  # capture at high fps for 700ms after each drop
+
+    # Collect high-fps windows around each move trigger
+    drop_windows = []  # [(start_ms, end_ms), ...]
+    for move in timeline.get("moves", []):
+        t = move["trigger_ms"]
+        drop_windows.append((t, t + drop_window_ms))
+
+    # Merge overlapping windows
+    drop_windows.sort()
+    merged = []
+    for start, end in drop_windows:
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+
+    def in_drop_window(t: float) -> bool:
+        for start, end in merged:
+            if start <= t <= end:
+                return True
+        return False
+
+    # Build frame times
+    frames = set()
+    t = 0.0
+    while t <= duration_ms:
+        frames.add(round(t, 1))
+        if in_drop_window(t):
+            t += drop_interval
+        else:
+            t += base_interval
+
+    # Ensure all drop window boundaries are included
+    for start, end in merged:
+        t = start
+        while t <= end:
+            frames.add(round(t, 1))
+            t += drop_interval
+
+    return sorted(frames)
+
+
+async def capture_video(timeline: dict, port: int, output_dir: str, fps: int = 5) -> str:
+    """Capture 3D board animation with adaptive framerate.
+
+    Uses base_fps (5) for static periods and 24fps during stone drop animations
+    for smooth visual effect. Stitches with ffmpeg concat demuxer for variable
+    frame durations.
     """
     from playwright.async_api import async_playwright
 
     frames_dir = Path(output_dir) / "frames"
     frames_dir.mkdir(parents=True, exist_ok=True)
+
+    frame_schedule = build_frame_schedule(timeline, base_fps=fps, drop_fps=24)
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(
@@ -328,19 +476,19 @@ async def capture_video(timeline: dict, port: int, output_dir: str, fps: int = 5
         context = await browser.new_context(
             viewport={"width": 2560, "height": 1440},
         )
-        # Intercept external CDN requests at the context level (catches Web Worker fetches).
-        # troika-three-text (used by drei <Text>) spawns a Web Worker that fetches font
-        # resolver data from cdn.jsdelivr.net.  In offline environments the fetch fails
-        # and crashes the R3F scene tree.  We return valid stub responses instead.
+        # Intercept external CDN requests (troika font resolver stubs)
         async def _stub_external(route):
             url = route.request.url
-            if "codepoint-index" in url or "font-files" in url:
-                # troika unicode-font-resolver expects JSON arrays
+            if "codepoint-index" in url:
+                await route.fulfill(status=200, body="[1, {}]", content_type="application/json")
+            elif "font-meta" in url:
                 await route.fulfill(
                     status=200,
-                    body='[1,{".*":{"sans-serif":"noto-sans","latin":"noto-sans"}}]',
+                    body='{"id":"noto-sans","typeforms":{"sans-serif":{"normal":{"400":true}}}}',
                     content_type="application/json",
                 )
+            elif "font-files" in url:
+                await route.fulfill(status=404, body="", content_type="application/octet-stream")
             elif "fonts.googleapis.com" in url:
                 await route.fulfill(status=200, body="/* stub */", content_type="text/css")
             else:
@@ -351,6 +499,9 @@ async def capture_video(timeline: dict, port: int, output_dir: str, fps: int = 5
         await context.route("**/*fonts.gstatic.com/**", _stub_external)
 
         page = await context.new_page()
+
+        # Capture console errors for debugging
+        page.on("console", lambda msg: print(f"    [browser {msg.type}] {msg.text}") if msg.type in ("error", "warning") else None)
 
         await page.goto(f"http://localhost:{port}/record", wait_until="networkidle")
 
@@ -363,20 +514,26 @@ async def capture_video(timeline: dict, port: int, output_dir: str, fps: int = 5
         await page.wait_for_timeout(5000)
         await page.wait_for_function("window.__RECORDING_READY === true", timeout=10000)
 
-        # Capture frames deterministically
-        duration_ms = timeline["total_duration_ms"]
-        frame_interval_ms = 1000 / fps
-        total_frames = int(duration_ms / frame_interval_ms) + 1
-        print(f"  Capturing {total_frames} frames at {fps}fps ({duration_ms/1000:.1f}s)...")
+        # Preload troika font: show all moves briefly to trigger font loading + SDF generation,
+        # then reset. Without this, the async font load wouldn't complete within frame windows.
+        print("  Preloading 3D text font...")
+        await page.evaluate(f"window.__setFrame({timeline['total_duration_ms']})")
+        await page.evaluate("window.__forceRender && window.__forceRender()")
+        await page.wait_for_timeout(3000)
+        # Reset to frame 0 (initial stones only)
+        await page.evaluate("window.__setFrame(0)")
+        await page.evaluate("window.__forceRender && window.__forceRender()")
+        await page.wait_for_timeout(500)
 
-        for i in range(total_frames):
-            t_ms = i * frame_interval_ms
-            # Set the exact playback state for this time
+        # Capture frames with adaptive framerate
+        total_frames = len(frame_schedule)
+        duration_ms = timeline["total_duration_ms"]
+        print(f"  Capturing {total_frames} frames ({duration_ms/1000:.1f}s, adaptive {fps}/24fps)...")
+
+        for i, t_ms in enumerate(frame_schedule):
             await page.evaluate(f"window.__setFrame({t_ms})")
-            # Force canvas repaint and wait for React + Three.js update
             await page.evaluate("window.__forceRender && window.__forceRender()")
             await page.wait_for_timeout(200)
-            # Capture screenshot
             frame_path = frames_dir / f"frame_{i:05d}.png"
             await page.screenshot(path=str(frame_path))
 
@@ -386,14 +543,29 @@ async def capture_video(timeline: dict, port: int, output_dir: str, fps: int = 5
         await context.close()
         await browser.close()
 
-    # Stitch frames into video using ffmpeg
+    # Build ffmpeg concat file with per-frame duration
+    concat_file = str(Path(output_dir) / "frames.txt")
+    with open(concat_file, "w") as f:
+        for i in range(len(frame_schedule)):
+            frame_path = str(frames_dir / f"frame_{i:05d}.png")
+            if i + 1 < len(frame_schedule):
+                duration = (frame_schedule[i + 1] - frame_schedule[i]) / 1000.0
+            else:
+                duration = 1.0 / fps  # last frame: use base interval
+            f.write(f"file '{frame_path}'\n")
+            f.write(f"duration {duration:.6f}\n")
+        # ffmpeg concat requires last file repeated without duration
+        f.write(f"file '{frames_dir / f'frame_{len(frame_schedule)-1:05d}.png'}'\n")
+
+    # Stitch frames into video
     video_path = str(Path(output_dir) / "raw_video.mp4")
     cmd = [
         "ffmpeg", "-y",
-        "-framerate", str(fps),
-        "-i", str(frames_dir / "frame_%05d.png"),
+        "-f", "concat", "-safe", "0",
+        "-i", concat_file,
         "-c:v", "libx264", "-preset", "medium", "-crf", "18",
         "-pix_fmt", "yuv420p",
+        "-vsync", "vfr",
         video_path,
     ]
     result = subprocess.run(cmd, capture_output=True, text=True)
@@ -515,7 +687,9 @@ async def process_figure(
 
         print(f"Figure {figure_id} ({figure.figure_label})")
         print(f"  Narration: {figure.narration[:60]}...")
-        print(f"  Stones: B={bp['stones'].get('B', [])}, W={bp['stones'].get('W', [])}")
+        print(f"  Stones: B={len(bp['stones'].get('B', []))}, W={len(bp['stones'].get('W', []))}")
+        initial = build_initial_stones(bp)
+        print(f"  Initial (setup) stones: {len(initial)}, Labeled moves: {len(build_moves_list(bp))}")
 
         # Check if video already exists
         video_dir = REPO_ROOT / "data" / "tutorial_assets" / book_slug / "video"
