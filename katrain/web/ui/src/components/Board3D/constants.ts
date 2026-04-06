@@ -81,6 +81,9 @@ export function gridToSurface(col: number, row: number, boardSize: number): [num
   ];
 }
 
+// ===== Font for drei <Text> — local file to avoid CDN dependency =====
+export const TEXT_FONT = '/assets/fonts/NotoSans-Regular.ttf';
+
 // ===== Eval Colors (matches Board.tsx EVAL_COLORS) =====
 
 export const EVAL_COLORS = [

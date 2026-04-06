@@ -8,6 +8,7 @@
  * Route: /record (outside Galaxy layout, no sidebar)
  */
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import type { RootState } from '@react-three/fiber';
 import type { GameState, PlayerInfo } from '../api';
 
 // Lazy-load Board3D (same pattern as GamePage)
@@ -147,6 +148,13 @@ export default function VideoRecorderPage() {
   const placedMovesRef = useRef<number>(0);
   const stonesRef = useRef<[string, [number, number] | null, number | null, number | null][]>([]);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const r3fStateRef = useRef<RootState | null>(null);
+
+  const handleCanvasReady = useCallback((state: RootState) => {
+    r3fStateRef.current = state;
+    (window as any).__r3fState = state;
+    console.log('Canvas ready, R3F state captured for direct rendering');
+  }, []);
 
   // Clean up timers on unmount
   useEffect(() => {
@@ -193,9 +201,13 @@ export default function VideoRecorderPage() {
     window.__RECORDING_DONE = false;
     (window as any).__RECORDING_READY = true;
 
-    // Force canvas repaint after each frame set (headless mode may throttle rAF)
+    // Force synchronous render (headless mode throttles rAF, so invalidate() alone won't work)
     (window as any).__forceRender = () => {
-      window.dispatchEvent(new Event('resize'));
+      const state = r3fStateRef.current;
+      if (state) {
+        const { gl, scene, camera } = state;
+        gl.render(scene, camera);
+      }
     };
 
     console.log('Recording page ready for frame capture');
@@ -230,7 +242,10 @@ export default function VideoRecorderPage() {
     : computeCamera(0.15);
 
   const noop = useCallback(() => {}, []);
-  const analysisToggles = { coords: true, stoneDropEffect: true, numbers: true };
+  // Disable coords/numbers: drei <Text> (troika) requires CDN font data that
+  // may be unreachable in headless/offline recording environments.
+  // Subtitles are rendered as HTML and are unaffected.
+  const analysisToggles = { coords: false, stoneDropEffect: true, numbers: false };
 
   return (
     <div
@@ -256,6 +271,8 @@ export default function VideoRecorderPage() {
               cameraTarget={camera.target}
               disableControls
               fixedPolarAngle={camera.polarAngle}
+              frameloop="always"
+              onCanvasReady={handleCanvasReady}
             />
           </Suspense>
         ) : (

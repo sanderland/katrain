@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, memo } from 'react';
+import { useState, useCallback, useRef, useEffect, memo, Suspense, lazy } from 'react';
 import { Canvas, useFrame, useThree, type RootState } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ACESFilmicToneMapping, PCFShadowMap } from 'three';
@@ -11,10 +11,15 @@ import GhostStone from './GhostStone';
 import Territory from './Overlays/Territory';
 import LastMove from './Overlays/LastMove';
 import EvalDots from './Overlays/EvalDots';
-import BestMoves from './Overlays/BestMoves';
-import PolicyMap from './Overlays/PolicyMap';
-import MoveNumbers from './Overlays/MoveNumbers';
 import type { BoardProps } from '../Board';
+
+// Lazy-load overlays that use drei <Text> (which pulls in troika-three-text).
+// troika spawns a Web Worker that fetches font data from cdn.jsdelivr.net;
+// keeping these lazy prevents the CDN fetch in headless/offline environments
+// where coordinates and text overlays are disabled.
+const BestMoves = lazy(() => import('./Overlays/BestMoves'));
+const PolicyMap = lazy(() => import('./Overlays/PolicyMap'));
+const MoveNumbers = lazy(() => import('./Overlays/MoveNumbers'));
 
 /** Static camera for recording mode — sets position + lookAt once, no interaction */
 const StaticCamera = ({ position, target }: { position: [number, number, number]; target: [number, number, number] }) => {
@@ -44,9 +49,13 @@ interface Board3DProps extends BoardProps {
   disableControls?: boolean;
   /** Lock polar angle for non-interactive mode (fraction of π, e.g., 0.33) */
   fixedPolarAngle?: number;
+  /** Canvas render loop mode — use 'demand' for headless recording */
+  frameloop?: 'always' | 'demand';
+  /** Called once after Canvas is created, receives the full R3F state for manual render control */
+  onCanvasReady?: (state: RootState) => void;
 }
 
-const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor, cameraPosition, cameraTarget, disableControls, fixedPolarAngle }: Board3DProps) => {
+const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor, cameraPosition, cameraTarget, disableControls, fixedPolarAngle, frameloop = 'always', onCanvasReady }: Board3DProps) => {
   const boardSize = gameState.board_size[0];
   const orbitRef = useRef<any>(null);
   const [polarAngle, setPolarAngle] = useState(Math.PI * 0.2); // initial approx
@@ -70,7 +79,8 @@ const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor, 
     const { gl, invalidate } = state;
     gl.setSize(gl.domElement.clientWidth, gl.domElement.clientHeight);
     invalidate();
-  }, []);
+    onCanvasReady?.(state);
+  }, [onCanvasReady]);
 
   const handleTiltChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const controls = orbitRef.current;
@@ -107,7 +117,8 @@ const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor, 
       <Canvas
         shadows={{ type: PCFShadowMap }}
         camera={{ position: cameraPosition || [0, 22, 26], fov: 40, near: 0.1, far: 100 }}
-        gl={{ antialias: true, toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
+        gl={{ antialias: true, toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1.2, preserveDrawingBuffer: true }}
+        frameloop={frameloop}
         style={{ borderRadius: '4px', cursor: 'pointer' }}
         onCreated={handleCreated}
       >
@@ -133,17 +144,19 @@ const Board3D = ({ gameState, onMove, onNavigate, analysisToggles, playerColor, 
         />
         <GhostStone gameState={gameState} hoverPos={hoverPos} showChildren={!!analysisToggles.children} playerColor={playerColor} />
 
-        {/* Analysis Overlays */}
+        {/* Analysis Overlays (some use <Text>, wrapped in Suspense) */}
         <LastMove gameState={gameState} />
-        {analysisToggles.numbers && <MoveNumbers gameState={gameState} />}
+        <Suspense fallback={null}>
+          {analysisToggles.numbers && <MoveNumbers gameState={gameState} />}
+          {analysisToggles.hints && <BestMoves gameState={gameState} />}
+          {analysisToggles.policy && gameState.analysis?.policy && (
+            <PolicyMap gameState={gameState} />
+          )}
+        </Suspense>
         {analysisToggles.ownership && gameState.analysis?.ownership && (
           <Territory gameState={gameState} />
         )}
         {analysisToggles.eval && <EvalDots gameState={gameState} />}
-        {analysisToggles.hints && <BestMoves gameState={gameState} />}
-        {analysisToggles.policy && gameState.analysis?.policy && (
-          <PolicyMap gameState={gameState} />
-        )}
       </Canvas>
 
       {/* Tilt & Zoom Controls Overlay */}

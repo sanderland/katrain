@@ -1,6 +1,6 @@
 import { useMemo, memo } from 'react';
 import { Billboard, Text } from '@react-three/drei';
-import { gridToSurface, EVAL_COLORS, BOARD_SURFACE_Y, STONE_HEIGHT } from '../constants';
+import { gridToSurface, EVAL_COLORS, BOARD_SURFACE_Y, STONE_HEIGHT, TEXT_FONT } from '../constants';
 import type { GameState } from '../../../api';
 
 interface PolicyMapProps {
@@ -41,6 +41,7 @@ const PolicyMap = ({ gameState }: PolicyMapProps) => {
           {cell.prob > 0.01 && (
             <Billboard position={[cell.pos[0], BOARD_SURFACE_Y + STONE_HEIGHT * 0.5, cell.pos[2]]}>
               <Text
+                font={TEXT_FONT}
                 fontSize={0.2}
                 color="#ffffff"
                 anchorX="center"

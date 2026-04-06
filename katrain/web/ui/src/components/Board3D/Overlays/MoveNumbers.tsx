@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Billboard, Text } from '@react-three/drei';
-import { gridToWorld, STONE_HEIGHT } from '../constants';
+import { gridToWorld, STONE_HEIGHT, TEXT_FONT } from '../constants';
 import type { GameState } from '../../../api';
 
 interface MoveNumbersProps {
@@ -22,6 +22,7 @@ const MoveNumbers = ({ gameState }: MoveNumbersProps) => {
         return (
           <Billboard key={`mn-${x}-${y}`} position={[pos[0], pos[1] + STONE_HEIGHT + 0.20, pos[2]]}>
             <Text
+              font={TEXT_FONT}
               fontSize={0.28}
               color={textColor}
               anchorX="center"

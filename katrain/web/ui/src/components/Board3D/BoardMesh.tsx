@@ -1,6 +1,5 @@
-import { useMemo, useEffect, useRef, memo } from 'react';
+import { useMemo, useEffect, useRef, memo, Suspense, lazy } from 'react';
 import * as THREE from 'three';
-import { Text } from '@react-three/drei';
 import {
   getBoardDimensions,
   getStarPoints,
@@ -9,6 +8,11 @@ import {
   BOARD_SURFACE_Y,
   SURFACE_EPSILON,
 } from './constants';
+
+// Lazy-load coordinate labels so troika-three-text (used by drei <Text>) is only
+// fetched when coordinates are actually displayed.  This prevents troika's Web Worker
+// from firing CDN requests in headless/offline recording environments.
+const CoordinateLabels = lazy(() => import('./CoordinateLabels'));
 
 interface BoardMeshProps {
   boardSize: number;
@@ -193,21 +197,12 @@ const BoardMesh = ({ boardSize, showCoordinates }: BoardMeshProps) => {
         );
       })}
 
-      {/* Coordinate labels — drei <Text> with default font */}
-      {coordLabels.map((label, i) => (
-        <Text
-          key={`coord-${i}`}
-          position={label.position}
-          rotation={[-Math.PI / 2, 0, 0]}
-          fontSize={0.38}
-          color="#2a1a0a"
-          fillOpacity={0.8}
-          anchorX="center"
-          anchorY="middle"
-        >
-          {label.text}
-        </Text>
-      ))}
+      {/* Coordinate labels — lazy-loaded to avoid troika CDN dependency in headless mode */}
+      {showCoordinates && (
+        <Suspense fallback={null}>
+          <CoordinateLabels labels={coordLabels} />
+        </Suspense>
+      )}
     </group>
   );
 };

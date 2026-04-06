@@ -328,6 +328,28 @@ async def capture_video(timeline: dict, port: int, output_dir: str, fps: int = 5
         context = await browser.new_context(
             viewport={"width": 2560, "height": 1440},
         )
+        # Intercept external CDN requests at the context level (catches Web Worker fetches).
+        # troika-three-text (used by drei <Text>) spawns a Web Worker that fetches font
+        # resolver data from cdn.jsdelivr.net.  In offline environments the fetch fails
+        # and crashes the R3F scene tree.  We return valid stub responses instead.
+        async def _stub_external(route):
+            url = route.request.url
+            if "codepoint-index" in url or "font-files" in url:
+                # troika unicode-font-resolver expects JSON arrays
+                await route.fulfill(
+                    status=200,
+                    body='[1,{".*":{"sans-serif":"noto-sans","latin":"noto-sans"}}]',
+                    content_type="application/json",
+                )
+            elif "fonts.googleapis.com" in url:
+                await route.fulfill(status=200, body="/* stub */", content_type="text/css")
+            else:
+                await route.fulfill(status=200, body="{}", content_type="application/json")
+
+        await context.route("**/*fonts.googleapis.com/**", _stub_external)
+        await context.route("**/*cdn.jsdelivr.net/**", _stub_external)
+        await context.route("**/*fonts.gstatic.com/**", _stub_external)
+
         page = await context.new_page()
 
         await page.goto(f"http://localhost:{port}/record", wait_until="networkidle")
