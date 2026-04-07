@@ -133,6 +133,10 @@ class _VisionWorkerLoop:
             mean_confidence = 0.0
 
             if frame is not None:
+                # Send raw camera preview immediately (before any heavy processing)
+                # This ensures minimal latency for the video feed
+                warped_for_preview = None
+
                 # Motion filter
                 if self._motion_filter.is_stable(frame):
                     # Board detection + perspective transform
@@ -141,9 +145,13 @@ class _VisionWorkerLoop:
                     )
                     if found and warped is not None:
                         board_detected = True
+                        warped_for_preview = warped
                         h, w = warped.shape[:2]
 
-                        # Inference
+                        # Send warped preview BEFORE inference (inference can take 600ms+)
+                        self._maybe_send_preview(frame, warped)
+
+                        # Inference (heavy — 600ms+ on SBC CPU)
                         detections = self._detector.detect(warped)
 
                         # Board state
@@ -160,10 +168,7 @@ class _VisionWorkerLoop:
                                 row, col, color = move_result
                                 self._event_queue.put(ConfirmedMove(col=col, row=row, color=color))
 
-                        # Preview frame generation (warped board view)
-                        self._maybe_send_preview(frame, warped)
-
-                # Send raw camera preview even when board is not detected
+                # Send raw camera preview when board is not detected
                 if not board_detected:
                     self._maybe_send_preview(frame, None)
 
