@@ -218,8 +218,25 @@ export LOCAL_KATAGO_URL="http://127.0.0.1:8000"
 python -m katrain --ui web
 
 # With camera vision (auto-detect physical board moves)
-python -m katrain --ui web --vision-model katrain/vision/models/yolo11n/best.onnx --vision-camera 0
+python -m katrain --ui web --vision-model katrain/vision/models/yolo11n/best.onnx --vision-camera 73
+
+# With 2K camera resolution (better board detection, more CPU)
+python -m katrain --ui web --vision-model katrain/vision/models/yolo11n/best.onnx --vision-camera 73 --vision-resolution 2560x1440
+
+# With 640x480 (lowest CPU usage)
+python -m katrain --ui web --vision-model katrain/vision/models/yolo11n/best.onnx --vision-camera 73 --vision-resolution 640x480
 ```
+
+**Vision CLI options:**
+
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `--vision-model` | *(none)* | Path to ONNX model. Providing this enables the vision service |
+| `--vision-camera` | `0` | Camera device ID (int) or path (e.g. `/dev/video73`) |
+| `--vision-resolution` | `1280x720` | Camera resolution `WxH` (e.g. `640x480`, `1280x720`, `2560x1440`) |
+| `--vision-backend` | `onnx` | Inference backend: `onnx`, `rknn`, or `ultralytics` |
+
+> **Note:** On Rockchip SBCs with many ISP/media devices, the USB camera may have a high device number (e.g. `/dev/video73`). Run `v4l2-ctl --list-devices` to find the correct one.
 
 **Vision model options** (`--vision-model`):
 
@@ -230,7 +247,7 @@ python -m katrain --ui web --vision-model katrain/vision/models/yolo11n/best.onn
 | yolo11m | `katrain/vision/models/yolo11m/best.onnx` | 77 MB | 0.9749 | ~3-4s |
 | yolo11x | `katrain/vision/models/yolo11x/best.onnx` | 217 MB | 0.9414 | ~10s+ |
 
-> **Recommendation:** Use `yolo11n` on SBC (best speed/accuracy tradeoff). Use `yolo11s` if memory allows. Vision args: `--vision-backend onnx|rknn|ultralytics`, `--vision-camera <device-id>`.
+> **Recommendation:** Use `yolo11n` on SBC (best speed/accuracy tradeoff). Use `yolo11s` if memory allows.
 
 > **Important:**
 > - Board mode (`KATRAIN_MODE=board`) automatically uses local SQLite (`db.sqlite3`), ignoring any PostgreSQL URL in `config.json`. To use a custom SQLite path, set `KATRAIN_DATABASE_URL` explicitly (e.g. `sqlite:///./board.db`).
