@@ -48,6 +48,11 @@ interface TimelineLetter {
   trigger_ms: number;
 }
 
+interface TimelineShape {
+  shape: 'triangle' | 'square' | 'circle' | 'cross';
+  pos: [number, number];
+}
+
 interface Timeline {
   figure_id: number;
   figure_label: string;
@@ -61,6 +66,7 @@ interface Timeline {
   initial_stones: TimelineInitialStone[];
   moves: TimelineMove[];
   letters?: TimelineLetter[];
+  shapes?: TimelineShape[];
   subtitles: TimelineSubtitle[];
   total_duration_ms: number;
   audio_url: string;
@@ -80,6 +86,13 @@ interface LetterOverlay {
   y: number;
   letter: string;
   fontSize: number;
+}
+
+interface ShapeOverlay {
+  x: number;
+  y: number;
+  shape: string;
+  size: number;
 }
 
 declare global {
@@ -193,6 +206,7 @@ export default function VideoRecorderPage() {
   const [subtitle, setSubtitle] = useState('');
   const [moveNumberOverlays, setMoveNumberOverlays] = useState<MoveNumberOverlay[]>([]);
   const [letterOverlays, setLetterOverlays] = useState<LetterOverlay[]>([]);
+  const [shapeOverlays, setShapeOverlays] = useState<ShapeOverlay[]>([]);
   const [status, setStatus] = useState('Waiting for recording data...');
 
   const placedMovesRef = useRef<number>(0);
@@ -276,9 +290,23 @@ export default function VideoRecorderPage() {
         } else {
           setLetterOverlays([]);
         }
+        // Shape annotations (on stones) — always visible, perspective-scaled
+        const timelineShapes = tl.shapes || [];
+        if (timelineShapes.length > 0) {
+          setShapeOverlays(timelineShapes.map((sh) => {
+            const [col, row] = flipRow(sh.pos);
+            const worldPos = gridToWorld(col, row, bs);
+            const screen = projectToScreen(worldPos, camera, canvasW, canvasH);
+            const apparentR = computeApparentRadius(worldPos, camera, canvasW, canvasH);
+            return { x: screen.x, y: screen.y, shape: sh.shape, size: apparentR * 0.6 };
+          }));
+        } else {
+          setShapeOverlays([]);
+        }
       } else {
         setMoveNumberOverlays([]);
         setLetterOverlays([]);
+        setShapeOverlays([]);
       }
 
       const activeSub = tl.subtitles.find(
@@ -417,6 +445,53 @@ export default function VideoRecorderPage() {
             {letter}
           </div>
         ))}
+
+        {/* Shape markers (triangle, square, circle, cross) — on stones, blue stroke */}
+        {shapeOverlays.map(({ x, y, shape, size }, i) => {
+          const s = size;
+          const sw = 3; // stroke width
+          return (
+            <svg
+              key={`sh-${i}`}
+              style={{
+                position: 'absolute',
+                left: x - s,
+                top: y - s,
+                width: s * 2,
+                height: s * 2,
+                pointerEvents: 'none',
+                overflow: 'visible',
+                filter: 'drop-shadow(0 0 2px rgba(0,0,0,0.6))',
+              }}
+              viewBox={`${-s} ${-s} ${s * 2} ${s * 2}`}
+            >
+              {shape === 'triangle' && (
+                <polygon
+                  points={`0,${-s} ${-s * 0.866},${s * 0.5} ${s * 0.866},${s * 0.5}`}
+                  fill="none" stroke="#1565c0" strokeWidth={sw}
+                />
+              )}
+              {shape === 'square' && (
+                <rect
+                  x={-s * 0.7} y={-s * 0.7} width={s * 1.4} height={s * 1.4}
+                  fill="none" stroke="#1565c0" strokeWidth={sw}
+                />
+              )}
+              {shape === 'circle' && (
+                <circle
+                  cx={0} cy={0} r={s * 0.7}
+                  fill="none" stroke="#1565c0" strokeWidth={sw}
+                />
+              )}
+              {shape === 'cross' && (
+                <>
+                  <line x1={-s * 0.6} y1={-s * 0.6} x2={s * 0.6} y2={s * 0.6} stroke="#1565c0" strokeWidth={sw} />
+                  <line x1={s * 0.6} y1={-s * 0.6} x2={-s * 0.6} y2={s * 0.6} stroke="#1565c0" strokeWidth={sw} />
+                </>
+              )}
+            </svg>
+          );
+        })}
       </div>
 
       {/* Subtitle bar */}

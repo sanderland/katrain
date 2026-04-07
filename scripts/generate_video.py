@@ -293,6 +293,20 @@ def build_letters(bp: dict) -> list[dict]:
     return result
 
 
+def build_shapes(bp: dict) -> list[dict]:
+    """Extract shape annotations (triangle, square, circle, cross).
+
+    Returns [{"shape": "triangle", "pos": [col, row]}, ...]
+    Shapes are always visible from the start (static markers on the board).
+    """
+    shapes = bp.get("shapes", {})
+    result = []
+    for coord_key, shape in shapes.items():
+        col, row = map(int, coord_key.split(","))
+        result.append({"shape": shape, "pos": [col, row]})
+    return result
+
+
 def build_timeline(
     figure,
     word_timings: list[dict],
@@ -319,12 +333,15 @@ def build_timeline(
             char_to_timing[running_char + i] = wt
         running_char += len(wt["text"])
 
-    move_trigger_map = {}
+    move_trigger_map: dict[int, float] = {}
     for ref in move_refs:
         mid_char = (ref["start_char"] + ref["end_char"]) // 2
         if mid_char in char_to_timing:
             wt = char_to_timing[mid_char]
-            move_trigger_map[ref["move_number"]] = round(wt["offset_ms"], 1)
+            t = round(wt["offset_ms"], 1)
+            # Use the EARLIEST mention of each move number
+            if ref["move_number"] not in move_trigger_map or t < move_trigger_map[ref["move_number"]]:
+                move_trigger_map[ref["move_number"]] = t
 
     # Get total audio duration from last word timing
     if word_timings:
@@ -333,18 +350,32 @@ def build_timeline(
     else:
         audio_end_ms = 5000
 
-    # Assign trigger times to moves — enforcing sequential order.
-    # Moves must always play in ascending number order with at least 1s gap.
-    # When narration mentions move N, all moves up to N play in sequence.
+    # Assign trigger times to moves — cascade-backwards from narration anchors.
+    # When narration mentions move N, all preceding moves cascade backwards
+    # from N's timestamp so they appear just before the narration reaches N.
+    # Each move's time = min(own anchor, cascade-back from ANY future anchor).
     MOVE_INTERVAL_MS = 1000
-    prev_trigger = 0
-    for move in moves:  # already sorted by number
+
+    for i, move in enumerate(moves):  # already sorted by number
+        candidates = []
+        # Own narration anchor
         if move["number"] in move_trigger_map:
-            # Narration-matched: use narration time, but never before prev + interval
-            move["trigger_ms"] = max(move_trigger_map[move["number"]], prev_trigger + MOVE_INTERVAL_MS)
+            candidates.append(move_trigger_map[move["number"]])
+        # Cascade back from ALL future anchors (pick the one giving earliest time)
+        for j in range(i + 1, len(moves)):
+            if moves[j]["number"] in move_trigger_map:
+                steps_before = j - i
+                candidates.append(move_trigger_map[moves[j]["number"]] - steps_before * MOVE_INTERVAL_MS)
+        if candidates:
+            move["trigger_ms"] = min(candidates)
         else:
-            # Unmatched: play 1s after previous move
-            move["trigger_ms"] = prev_trigger + MOVE_INTERVAL_MS
+            # No anchors at all — place after previous move
+            move["trigger_ms"] = (moves[i - 1]["trigger_ms"] + MOVE_INTERVAL_MS) if i > 0 else MOVE_INTERVAL_MS
+
+    # Enforce monotonic increasing with minimum gap and floor at MOVE_INTERVAL_MS
+    prev_trigger = 0
+    for move in moves:
+        move["trigger_ms"] = max(move["trigger_ms"], prev_trigger + MOVE_INTERVAL_MS, MOVE_INTERVAL_MS)
         prev_trigger = move["trigger_ms"]
 
     # Calculate total duration: max of audio end and last move trigger + buffer
@@ -374,6 +405,9 @@ def build_timeline(
     last_letter_time = max((lt["trigger_ms"] for lt in letters), default=0) if letters else 0
     total_duration_ms = max(audio_end_ms, last_move_time + 1000, last_letter_time + 1000) + 2000
 
+    # Build shape annotations (always visible from start)
+    shapes = build_shapes(bp)
+
     # Build audio URL for the recording page to play
     audio_asset = figure.audio_asset or ""
     audio_url = f"/api/v1/tutorials/assets/{audio_asset}" if audio_asset else ""
@@ -386,6 +420,7 @@ def build_timeline(
         "initial_stones": initial_stones,
         "moves": moves,
         "letters": letters,
+        "shapes": shapes,
         "subtitles": subtitles,
         "total_duration_ms": round(total_duration_ms),
         "audio_url": audio_url,
