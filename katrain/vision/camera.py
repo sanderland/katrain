@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import sys
+import threading
 import time
 
 import cv2
@@ -27,7 +28,13 @@ def _device_to_capture_arg(device_id: int | str) -> str | int:
 
 
 class CameraManager:
-    """Manages a single camera with hot-plug robustness and auto-reconnect."""
+    """Manages a single camera with a background reader thread.
+
+    A dedicated thread continuously reads frames from the camera, ensuring
+    that ``read_frame()`` always returns the **latest** frame rather than a
+    stale buffered one.  This is critical on SBCs where heavy processing
+    (YOLO inference ~600ms) causes OpenCV's internal buffer to fill up.
+    """
 
     RECONNECT_COOLDOWN = 5.0  # seconds between reconnect attempts
 
@@ -40,6 +47,11 @@ class CameraManager:
         self._cap: cv2.VideoCapture | None = None
         self._connected = False
         self._last_reconnect_attempt = 0.0
+        # Background reader thread state
+        self._reader_thread: threading.Thread | None = None
+        self._latest_frame: np.ndarray | None = None
+        self._frame_lock = threading.Lock()
+        self._stop_event = threading.Event()
 
     @property
     def is_connected(self) -> bool:
@@ -47,13 +59,7 @@ class CameraManager:
         return self._connected and self._cap is not None and self._cap.isOpened()
 
     def open(self) -> bool:
-        """Open the camera device. Returns True on success.
-
-        Applies latency-reduction settings:
-        - MJPEG format (less USB bandwidth than raw YUYV)
-        - 640x480 resolution (sufficient for stone detection)
-        - Minimal buffer (1 frame) to avoid stale-frame latency
-        """
+        """Open the camera device and start the background reader thread."""
         self.close()
         cap = cv2.VideoCapture(self._capture_arg)
         if cap.isOpened():
@@ -61,7 +67,6 @@ class CameraManager:
             cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
             cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._width)
             cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._height)
-            # Minimize internal buffer to reduce latency (only keep latest frame)
             cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
             actual_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -69,47 +74,71 @@ class CameraManager:
             fourcc_raw = int(cap.get(cv2.CAP_PROP_FOURCC))
             fourcc_str = "".join(chr((fourcc_raw >> (8 * i)) & 0xFF) for i in range(4))
             logger.info(
-                "Camera %d opened: %dx%d format=%s", self._device_id, actual_w, actual_h, fourcc_str
+                "Camera %s opened: %dx%d format=%s (threaded reader)",
+                self._device_id, actual_w, actual_h, fourcc_str,
             )
 
             self._cap = cap
             self._connected = True
+
+            # Start background reader thread
+            self._stop_event.clear()
+            self._reader_thread = threading.Thread(
+                target=self._reader_loop, daemon=True, name="cam-reader"
+            )
+            self._reader_thread.start()
             return True
         cap.release()
-        logger.warning("Failed to open camera %d", self._device_id)
+        logger.warning("Failed to open camera %s", self._device_id)
         return False
 
     def close(self) -> None:
-        """Release the camera device."""
+        """Stop the reader thread and release the camera device."""
+        self._stop_event.set()
+        if self._reader_thread is not None:
+            self._reader_thread.join(timeout=2)
+            self._reader_thread = None
         if self._cap is not None:
             self._cap.release()
             self._cap = None
             self._connected = False
-            logger.info("Camera %d closed", self._device_id)
+            with self._frame_lock:
+                self._latest_frame = None
+            logger.info("Camera %s closed", self._device_id)
 
     def read_frame(self) -> np.ndarray | None:
-        """Read a single frame. Returns None if camera is disconnected.
+        """Return the latest frame captured by the background thread.
 
-        Hot-plug robustness: catches cv2 exceptions on device disconnect.
-        When disconnected, attempts auto-reconnect every 5 seconds.
-        Does NOT crash -- emits a log warning and returns None.
+        Always returns the freshest available frame, never a stale buffered
+        one.  Returns None if the camera is disconnected.
         """
         if not self._connected:
             return self._try_reconnect()
 
-        try:
-            ret, frame = self._cap.read()  # type: ignore[union-attr]
-        except cv2.error as exc:
-            logger.warning("Camera %d read error: %s", self._device_id, exc)
-            self._mark_disconnected()
-            return None
+        with self._frame_lock:
+            return self._latest_frame.copy() if self._latest_frame is not None else None
 
-        if not ret or frame is None:
-            logger.warning("Camera %d returned empty frame -- device may be disconnected", self._device_id)
-            self._mark_disconnected()
-            return None
+    # ------------------------------------------------------------------
+    # Background reader
+    # ------------------------------------------------------------------
 
-        return frame
+    def _reader_loop(self) -> None:
+        """Continuously read frames in background, keeping only the latest."""
+        while not self._stop_event.is_set():
+            try:
+                ret, frame = self._cap.read()  # type: ignore[union-attr]
+            except cv2.error as exc:
+                logger.warning("Camera %s read error: %s", self._device_id, exc)
+                self._mark_disconnected()
+                return
+
+            if not ret or frame is None:
+                logger.warning("Camera %s returned empty frame", self._device_id)
+                self._mark_disconnected()
+                return
+
+            with self._frame_lock:
+                self._latest_frame = frame
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -117,7 +146,7 @@ class CameraManager:
 
     def _mark_disconnected(self) -> None:
         self._connected = False
-        logger.warning("Camera %d marked as disconnected", self._device_id)
+        logger.warning("Camera %s marked as disconnected", self._device_id)
 
     def _try_reconnect(self) -> np.ndarray | None:
         """Attempt reconnect after cooldown. Returns a frame on success, else None."""
@@ -126,13 +155,13 @@ class CameraManager:
             return None
 
         self._last_reconnect_attempt = now
-        logger.info("Attempting to reconnect camera %d ...", self._device_id)
+        logger.info("Attempting to reconnect camera %s ...", self._device_id)
 
         if self.open():
-            logger.info("Camera %d reconnected", self._device_id)
+            logger.info("Camera %s reconnected", self._device_id)
             return self.read_frame()
 
-        logger.warning("Camera %d reconnect failed, will retry in %.0fs", self._device_id, self.RECONNECT_COOLDOWN)
+        logger.warning("Camera %s reconnect failed, will retry in %.0fs", self._device_id, self.RECONNECT_COOLDOWN)
         return None
 
     # ------------------------------------------------------------------
