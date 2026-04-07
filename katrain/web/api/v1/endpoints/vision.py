@@ -70,7 +70,7 @@ async def vision_stream(request: Request):
                         + jpeg
                         + b"\r\n"
                     )
-                await asyncio.sleep(0.3)  # ~3 fps polling
+                await asyncio.sleep(0.05)  # ~20 fps polling
         finally:
             vision.set_viewer_active(False)
 

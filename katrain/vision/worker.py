@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 # Preview frame settings
 PREVIEW_SIZE = 480
-PREVIEW_FPS = 3
+PREVIEW_FPS = 15
 JPEG_QUALITY = 60
 
 

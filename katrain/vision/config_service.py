@@ -21,7 +21,7 @@ class VisionServiceConfig:
     use_clahe: bool = False
     intrinsics_file: str | None = None  # persistent camera calibration .npz
     process_mode: str = "worker"  # "worker" (subprocess) | "inprocess" (dev)
-    capture_fps: int = 8
+    capture_fps: int = 15
 
     def to_worker_config(self) -> dict:
         """Convert to dict for passing to worker process."""
