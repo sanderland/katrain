@@ -3,14 +3,23 @@
 On SBC this runs as a separate process to isolate vision memory from
 FastAPI/Chromium. On dev machines an in-process adapter is used instead
 (see worker_inprocess.py).
+
+Architecture:
+  - CameraManager: background thread continuously reads camera, holds latest frame
+  - Preview thread: reads latest frame at high FPS, encodes JPEG → preview_queue
+  - Processing thread (main loop): reads latest frame, runs board finder + YOLO,
+    sends sync events — completely independent of preview
 """
 
 from __future__ import annotations
 
+import copy
 import logging
 import multiprocessing as mp
 import queue
+import threading
 import time
+from dataclasses import dataclass, field
 from multiprocessing import Queue
 from typing import Any
 
@@ -31,6 +40,17 @@ logger = logging.getLogger(__name__)
 PREVIEW_SIZE = 480
 PREVIEW_FPS = 15
 JPEG_QUALITY = 60
+
+
+@dataclass
+class ProcessingOverlay:
+    """Shared state between processing thread and preview thread."""
+
+    board_corners: list[tuple[int, int]] | None = None  # 4 corners in raw frame coords
+    detections: list | None = None  # YOLO Detection results
+    warped_size: tuple[int, int] | None = None  # (w, h) of warped board
+    transform_matrix: np.ndarray | None = None  # perspective transform M
+    timing: dict[str, float] = field(default_factory=dict)  # ms timings
 
 
 def _run_worker(
@@ -85,7 +105,6 @@ class _VisionWorkerLoop:
         self._detector = None
         self._board_finder = None
 
-        self._last_preview_time = 0.0
         self._last_status_time = 0.0
 
     def _init_inference(self) -> None:
@@ -103,7 +122,7 @@ class _VisionWorkerLoop:
         logger.info("Inference backend ready")
 
     def run(self) -> None:
-        """Main loop: capture → infer → sync → publish events."""
+        """Start preview thread + processing loop, then clean up."""
         self._running = True
 
         # Open camera
@@ -118,59 +137,71 @@ class _VisionWorkerLoop:
             self._running = False
             return
 
-        target_frame_interval = 1.0 / self._config.get("capture_fps", 8)
+        # Shared overlay state (lock-protected)
+        self._overlay = ProcessingOverlay()
+        self._overlay_lock = threading.Lock()
 
+        # Start independent preview thread
+        preview_thread = threading.Thread(target=self._preview_loop, daemon=True, name="preview")
+        preview_thread.start()
+
+        # Main thread runs the processing loop (board detection + YOLO)
+        self._processing_loop()
+
+        self._camera.close()
+        logger.info("Worker process exiting")
+
+    def _processing_loop(self) -> None:
+        """Processing loop: board detection + YOLO inference.
+        Results written to shared overlay state for preview thread to consume."""
         while self._running:
-            loop_start = time.monotonic()
-
-            # Process commands
             self._process_commands()
 
-            # Camera frame
             frame = self._camera.read_frame()
             board_detected = False
             observed_board = None
             mean_confidence = 0.0
 
-            if frame is not None:
-                # Send raw camera preview immediately (before any heavy processing)
-                # This ensures minimal latency for the video feed
-                warped_for_preview = None
+            if frame is not None and self._motion_filter.is_stable(frame):
+                # Board detection + perspective transform
+                t0 = time.monotonic()
+                warped, found = self._board_finder.find_focus(
+                    frame, min_threshold=20, use_clahe=self._config.get("use_clahe", False)
+                )
+                board_finder_ms = (time.monotonic() - t0) * 1000
 
-                # Motion filter
-                if self._motion_filter.is_stable(frame):
-                    # Board detection + perspective transform
-                    warped, found = self._board_finder.find_focus(
-                        frame, min_threshold=20, use_clahe=self._config.get("use_clahe", False)
-                    )
-                    if found and warped is not None:
-                        board_detected = True
-                        warped_for_preview = warped
-                        h, w = warped.shape[:2]
+                if found and warped is not None:
+                    board_detected = True
+                    h, w = warped.shape[:2]
 
-                        # Send warped preview BEFORE inference (inference can take 600ms+)
-                        self._maybe_send_preview(frame, warped)
+                    # YOLO inference (heavy — 600ms+ on SBC CPU)
+                    t1 = time.monotonic()
+                    detections = self._detector.detect(warped)
+                    yolo_ms = (time.monotonic() - t1) * 1000
 
-                        # Inference (heavy — 600ms+ on SBC CPU)
-                        detections = self._detector.detect(warped)
+                    total_ms = board_finder_ms + yolo_ms
 
-                        # Board state
-                        observed_board = self._state_extractor.detections_to_board(detections, img_w=w, img_h=h)
+                    # Update shared overlay state for preview thread
+                    with self._overlay_lock:
+                        self._overlay.board_corners = list(self._board_finder.pre_corner_point)
+                        self._overlay.detections = detections
+                        self._overlay.warped_size = (w, h)
+                        self._overlay.transform_matrix = self._board_finder.last_transform_matrix
+                        self._overlay.timing = {
+                            "board_finder_ms": round(board_finder_ms, 1),
+                            "yolo_ms": round(yolo_ms, 1),
+                            "total_ms": round(total_ms, 1),
+                        }
 
-                        # Mean confidence
-                        if detections:
-                            mean_confidence = sum(d.confidence for d in detections) / len(detections)
-
-                        # Move detection
-                        if self._bound:
-                            move_result = self._move_detector.detect_new_move(observed_board)
-                            if move_result is not None:
-                                row, col, color = move_result
-                                self._event_queue.put(ConfirmedMove(col=col, row=row, color=color))
-
-                # Send raw camera preview when board is not detected
-                if not board_detected:
-                    self._maybe_send_preview(frame, None)
+                    # Board state + move detection
+                    observed_board = self._state_extractor.detections_to_board(detections, img_w=w, img_h=h)
+                    if detections:
+                        mean_confidence = sum(d.confidence for d in detections) / len(detections)
+                    if self._bound:
+                        move_result = self._move_detector.detect_new_move(observed_board)
+                        if move_result is not None:
+                            row, col, color = move_result
+                            self._event_queue.put(ConfirmedMove(col=col, row=row, color=color))
 
             # Sync state machine update
             if self._bound:
@@ -182,17 +213,8 @@ class _VisionWorkerLoop:
                 for evt in events:
                     self._event_queue.put({"type": evt.type.value, "data": evt.data})
 
-            # Publish status periodically
             self._maybe_publish_status()
-
-            # Throttle to target FPS
-            elapsed = time.monotonic() - loop_start
-            sleep_time = target_frame_interval - elapsed
-            if sleep_time > 0:
-                time.sleep(sleep_time)
-
-        self._camera.close()
-        logger.info("Worker process exiting")
+            # No throttle — processing runs as fast as inference allows
 
     def _process_commands(self) -> None:
         """Drain the command queue (non-blocking)."""
@@ -224,37 +246,90 @@ class _VisionWorkerLoop:
             elif cmd.action == CommandType.SET_VIEWER_ACTIVE:
                 self._viewer_active = cmd.data.get("active", False)
 
-    def _maybe_send_preview(self, raw_frame: np.ndarray, warped: np.ndarray | None) -> None:
-        """Encode and send a preview JPEG if a viewer is active and enough time has passed."""
-        if not self._viewer_active:
-            return
+    def _draw_overlays(self, frame: np.ndarray, overlay: ProcessingOverlay) -> None:
+        """Draw detection results and timing info on the raw camera frame."""
+        h, w = frame.shape[:2]
 
-        now = time.monotonic()
-        if now - self._last_preview_time < 1.0 / PREVIEW_FPS:
-            return
+        # 1. Board boundary (green quadrilateral)
+        if overlay.board_corners:
+            corners = np.array(overlay.board_corners, dtype=np.int32)
+            cv2.polylines(frame, [corners.reshape((-1, 1, 2))], True, (0, 255, 0), 2)
 
-        # Use warped board view when available, otherwise show raw camera feed
-        source = warped if warped is not None else raw_frame
-        h, w = source.shape[:2]
-        # Resize to square preview, preserving aspect ratio with padding for raw frames
-        if warped is not None:
-            preview = cv2.resize(source, (PREVIEW_SIZE, PREVIEW_SIZE), interpolation=cv2.INTER_LINEAR)
-        else:
-            scale = PREVIEW_SIZE / max(h, w)
-            new_w, new_h = int(w * scale), int(h * scale)
-            resized = cv2.resize(source, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
-            preview = np.zeros((PREVIEW_SIZE, PREVIEW_SIZE, 3), dtype=np.uint8)
-            y_off, x_off = (PREVIEW_SIZE - new_h) // 2, (PREVIEW_SIZE - new_w) // 2
-            preview[y_off : y_off + new_h, x_off : x_off + new_w] = resized
-        _, jpeg = cv2.imencode(".jpg", preview, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
+        # 2. Stones back-projected from warped coords to raw frame
+        if overlay.detections and overlay.transform_matrix is not None and overlay.warped_size:
+            try:
+                M_inv = np.linalg.inv(overlay.transform_matrix)
+            except np.linalg.LinAlgError:
+                M_inv = None
+            if M_inv is not None:
+                for det in overlay.detections:
+                    pt = np.float32([[det.x_center, det.y_center]]).reshape(-1, 1, 2)
+                    orig_pt = cv2.perspectiveTransform(pt, M_inv)
+                    ox, oy = int(orig_pt[0, 0, 0]), int(orig_pt[0, 0, 1])
+                    color = (0, 0, 0) if det.class_id == 0 else (255, 255, 255)
+                    cv2.circle(frame, (ox, oy), 8, color, -1)
+                    cv2.circle(frame, (ox, oy), 8, (0, 255, 0), 1)
 
-        # Overwrite semantics: drain old frame, put new one
-        try:
-            self._preview_queue.get_nowait()
-        except queue.Empty:
-            pass
-        self._preview_queue.put(jpeg.tobytes())
-        self._last_preview_time = now
+        # 3. Timing info (bottom-left with black background)
+        if overlay.timing:
+            lines = [
+                f"Board: {overlay.timing.get('board_finder_ms', 0):.0f}ms",
+                f"YOLO:  {overlay.timing.get('yolo_ms', 0):.0f}ms",
+                f"Total: {overlay.timing.get('total_ms', 0):.0f}ms",
+            ]
+            y_base = h - 20
+            for line in reversed(lines):
+                (tw, th), _ = cv2.getTextSize(line, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                cv2.rectangle(frame, (5, y_base - th - 4), (15 + tw, y_base + 4), (0, 0, 0), -1)
+                cv2.putText(frame, line, (10, y_base), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+                y_base -= th + 10
+
+    @staticmethod
+    def _resize_for_preview(frame: np.ndarray) -> np.ndarray:
+        """Resize frame to PREVIEW_SIZE, preserving aspect ratio with letterboxing."""
+        h, w = frame.shape[:2]
+        scale = PREVIEW_SIZE / max(h, w)
+        new_w, new_h = int(w * scale), int(h * scale)
+        resized = cv2.resize(frame, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+        preview = np.zeros((PREVIEW_SIZE, PREVIEW_SIZE, 3), dtype=np.uint8)
+        y_off, x_off = (PREVIEW_SIZE - new_h) // 2, (PREVIEW_SIZE - new_w) // 2
+        preview[y_off : y_off + new_h, x_off : x_off + new_w] = resized
+        return preview
+
+    def _preview_loop(self) -> None:
+        """Independent preview thread: reads latest camera frame, overlays
+        detection results, encodes JPEG at high FPS."""
+        interval = 1.0 / PREVIEW_FPS
+        while self._running:
+            if not self._viewer_active:
+                time.sleep(0.1)
+                continue
+
+            frame = self._camera.read_frame()
+            if frame is None:
+                time.sleep(0.05)
+                continue
+
+            # Read overlay data (non-blocking snapshot)
+            with self._overlay_lock:
+                overlay = copy.copy(self._overlay)
+
+            # Draw overlays on a copy of the raw frame
+            display = frame.copy()
+            self._draw_overlays(display, overlay)
+
+            # Resize and encode
+            preview = self._resize_for_preview(display)
+            _, jpeg = cv2.imencode(".jpg", preview, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
+
+            # Overwrite semantics: drain old frame, put new one
+            try:
+                self._preview_queue.get_nowait()
+            except queue.Empty:
+                pass
+            self._preview_queue.put(jpeg.tobytes())
+
+            time.sleep(interval)
 
     def _maybe_publish_status(self) -> None:
         """Publish status to main process every ~1 second."""
