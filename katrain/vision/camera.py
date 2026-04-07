@@ -33,13 +33,34 @@ class CameraManager:
         return self._connected and self._cap is not None and self._cap.isOpened()
 
     def open(self) -> bool:
-        """Open the camera device. Returns True on success."""
+        """Open the camera device. Returns True on success.
+
+        Applies latency-reduction settings:
+        - MJPEG format (less USB bandwidth than raw YUYV)
+        - 640x480 resolution (sufficient for stone detection)
+        - Minimal buffer (1 frame) to avoid stale-frame latency
+        """
         self.close()
         cap = cv2.VideoCapture(self._device_id, _BACKEND)
         if cap.isOpened():
+            # Use MJPEG to reduce USB bandwidth (critical for USB cameras on SBC)
+            cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+            # 640x480 is sufficient for board detection; 2K is wasteful on SBC
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+            # Minimize internal buffer to reduce latency (only keep latest frame)
+            cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
+            actual_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            actual_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            fourcc_raw = int(cap.get(cv2.CAP_PROP_FOURCC))
+            fourcc_str = "".join(chr((fourcc_raw >> (8 * i)) & 0xFF) for i in range(4))
+            logger.info(
+                "Camera %d opened: %dx%d format=%s", self._device_id, actual_w, actual_h, fourcc_str
+            )
+
             self._cap = cap
             self._connected = True
-            logger.info("Camera %d opened successfully", self._device_id)
             return True
         cap.release()
         logger.warning("Failed to open camera %d", self._device_id)
