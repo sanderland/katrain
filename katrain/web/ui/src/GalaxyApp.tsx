@@ -15,6 +15,10 @@ import TsumegoCategoriesPage from './galaxy/pages/TsumegoCategoriesPage';
 import TsumegoListPage from './galaxy/pages/TsumegoListPage';
 import TsumegoUnitsPage from './galaxy/pages/TsumegoUnitsPage';
 import TsumegoProblemPage from './galaxy/pages/TsumegoProblemPage';
+import TutorialLandingPage from './galaxy/pages/tutorials/TutorialLandingPage';
+import TutorialBooksPage from './galaxy/pages/tutorials/TutorialBooksPage';
+import TutorialBookDetailPage from './galaxy/pages/tutorials/TutorialBookDetailPage';
+import TutorialFigurePage from './galaxy/pages/tutorials/TutorialFigurePage';
 
 const GalaxyApp = () => {
   console.log("GalaxyApp rendering");
@@ -36,6 +40,10 @@ const GalaxyApp = () => {
         <Route path="tsumego/:level/:category" element={<TsumegoUnitsPage />} />
         <Route path="tsumego/:level/:category/:unit" element={<TsumegoListPage />} />
         <Route path="tsumego/problem/:problemId" element={<TsumegoProblemPage />} />
+        <Route path="tutorials" element={<TutorialLandingPage />} />
+        <Route path="tutorials/:category" element={<TutorialBooksPage />} />
+        <Route path="tutorials/book/:bookId" element={<TutorialBookDetailPage />} />
+        <Route path="tutorials/section/:sectionId" element={<TutorialFigurePage />} />
         <Route path="*" element={<Navigate to="/galaxy" replace />} />
       </Route>
     </Routes>

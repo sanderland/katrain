@@ -64,3 +64,7 @@ sys.modules["kivy.storage.jsonstore"].JsonStore = MockJsonStore
 # Mock Config
 sys.modules["kivy"].Config = MagicMock()
 sys.modules["kivy.config"].Config = MagicMock()
+
+# Mock katrain.web.interface to prevent kivy/lang import chain triggered
+# by katrain/web/__init__.py → katrain/web/interface.py → katrain.core...
+sys.modules["katrain.web.interface"] = MagicMock()

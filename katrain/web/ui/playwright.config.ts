@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'line',
   use: {
-    baseURL: 'http://127.0.0.1:8001',
+    baseURL: 'http://127.0.0.1:8002',
     trace: 'on-first-retry',
   },
   projects: [
@@ -18,8 +18,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'cd ../../.. && python3 -m katrain --ui=web --port 8001',
-    url: 'http://127.0.0.1:8001/health',
+    command: 'cd ../../.. && python3 -m katrain --ui=web --port 8002',
+    url: 'http://127.0.0.1:8002/health',
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',
     stderr: 'pipe',

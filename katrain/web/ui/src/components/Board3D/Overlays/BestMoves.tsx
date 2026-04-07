@@ -1,6 +1,6 @@
 import { useMemo, memo } from 'react';
 import { Billboard, Text } from '@react-three/drei';
-import { gridToSurface, getEvalColor, EVAL_THRESHOLDS, BOARD_SURFACE_Y, STONE_HEIGHT, SURFACE_EPSILON } from '../constants';
+import { gridToSurface, getEvalColor, EVAL_THRESHOLDS, BOARD_SURFACE_Y, STONE_HEIGHT, SURFACE_EPSILON, TEXT_FONT } from '../constants';
 import type { GameState } from '../../../api';
 
 interface BestMovesProps {
@@ -54,10 +54,10 @@ const BestMoves = ({ gameState }: BestMovesProps) => {
 
             {/* Billboard text (always faces camera) */}
             <Billboard position={[surfacePos[0], BOARD_SURFACE_Y + STONE_HEIGHT + 0.3, surfacePos[2]]}>
-              <Text fontSize={0.22} color={textColor} anchorX="center" anchorY="bottom" outlineWidth={0.02} outlineColor={outlineColor}>
+              <Text font={TEXT_FONT} fontSize={0.22} color={textColor} anchorX="center" anchorY="bottom" outlineWidth={0.02} outlineColor={outlineColor}>
                 {winrateText}
               </Text>
-              <Text fontSize={0.18} color={textColor} anchorX="center" anchorY="top" position={[0, -0.04, 0]} outlineWidth={0.02} outlineColor={outlineColor}>
+              <Text font={TEXT_FONT} fontSize={0.18} color={textColor} anchorX="center" anchorY="top" position={[0, -0.04, 0]} outlineWidth={0.02} outlineColor={outlineColor}>
                 {visitsText}
               </Text>
             </Billboard>

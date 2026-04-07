@@ -25,6 +25,10 @@ dependencies = [
     "kivymd==0.104.1",
     "passlib>=1.7.4",
     "sqlalchemy>=2.0.46",
+    "onnx>=1.12.0,<2.0.0",
+    "onnxslim>=0.1.90",
+    "onnxruntime>=1.24.4",
+    "anthropic>=0.86.0",
 ]
 
 [project.optional-dependencies]
@@ -59,6 +63,14 @@ vision-rknn = [
     "opencv-python>=4.8.0",
     "numpy>=1.24.0",
 ]
+classifier = [
+    "torch>=2.0",
+    "torchvision>=0.15",
+    "pytesseract>=0.3.10",
+    "opencv-python>=4.8.0",
+    "numpy>=1.24.0",
+    "easyocr>=1.7.2",
+]
 
 [project.urls]
 Homepage = "https://github.com/sanderland/katrain"
@@ -69,6 +81,8 @@ katrain = "katrain.__main__:run_app"
 [dependency-groups]
 dev = [
     "black>=24.8.0,<25",
+    "edge-tts>=7.2.7",
+    "pillow>=11.2.1",
     "polib>=1.2.0,<2",
     "pyinstaller>=6.14.1",
     "pytest>=8.3.2,<9",

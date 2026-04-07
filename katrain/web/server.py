@@ -146,6 +146,9 @@ async def _lifespan_server(app: FastAPI, log):
     except Exception as e:
         log.warning(f"Failed to start live service: {e}")
 
+    # ── Tutorial Module (V2 — database-backed) ─────────────────────────────
+    log.info("Tutorial V2: using database-backed tutorials")
+
 
 async def _lifespan_board(app: FastAPI, log):
     """Board mode initialization — design.md Section 4.9."""
@@ -1345,6 +1348,11 @@ def create_app(enable_engine=True, session_timeout=None, max_sessions=None):
     @app.get("/kiosk", response_class=FileResponse)
     @app.get("/kiosk/{full_path:path}", response_class=FileResponse)
     async def serve_kiosk_app(full_path: str = None):
+        return str(static_root / "index.html")
+
+    # SPA Routing for Video Recorder
+    @app.get("/record", response_class=FileResponse)
+    async def serve_record_app():
         return str(static_root / "index.html")
 
     # Catch-all for other static files (like vite.svg and JS/CSS in assets/)

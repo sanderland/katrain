@@ -16,11 +16,17 @@ if settings.DATABASE_URL.startswith("sqlite"):
 else:
     logger.info(f"Database: Using PostgreSQL/External DB at {settings.DATABASE_URL.split('@')[-1]}") # Log safe part of URL
 
+_pool_kwargs = {}
+if not settings.DATABASE_URL.startswith("sqlite"):
+    _pool_kwargs["pool_size"] = 20
+    _pool_kwargs["max_overflow"] = 40
+
 engine = create_engine(
-    settings.DATABASE_URL, 
+    settings.DATABASE_URL,
     connect_args=connect_args,
     pool_pre_ping=True, # Auto-reconnect if connection is lost
-    echo=False # Set to True to see raw SQL queries
+    echo=False, # Set to True to see raw SQL queries
+    **_pool_kwargs,
 )
 
 # 2. Create SessionLocal Class
