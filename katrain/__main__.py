@@ -29,6 +29,11 @@ else:
 Config.set("kivy", "window_icon", ICON)
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
+# Preload sounds before Window import creates the SDL2 window,
+# as SoundLoader.load() deadlocks once the SDL2 window exists.
+from katrain.gui.sound import preload_sounds
+preload_sounds(PATHS["PACKAGE"] + "/sounds")
+
 # next, certificates on package builds https://github.com/sanderland/katrain/issues/414
 if getattr(sys, "frozen", False):
     import ssl
