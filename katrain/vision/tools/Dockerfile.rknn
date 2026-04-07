@@ -1,0 +1,29 @@
+FROM python:3.10-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install torch CPU-only first (separate step to use PyTorch index).
+RUN pip install --no-cache-dir \
+    torch --index-url https://download.pytorch.org/whl/cpu
+
+# Install remaining deps compatible with rknn-toolkit2 2.3.2, then
+# rknn-toolkit2 itself with --no-deps to avoid CUDA onnxruntime pull-in.
+RUN pip install --no-cache-dir \
+    "numpy<=1.26.4" \
+    "protobuf<=4.25.4,>=4.21.6" \
+    opencv-python-headless \
+    onnxruntime \
+    "onnx>=1.16.1,<1.17" \
+    "psutil>=5.9.0" \
+    "scipy>=1.9.3" \
+    "tqdm>=4.64.1" \
+    ruamel.yaml \
+    fast-histogram \
+    && pip install --no-cache-dir --no-deps rknn-toolkit2
+
+WORKDIR /work
+ENV PYTHONPATH=/work
+
+ENTRYPOINT ["python", "-m", "katrain.vision.tools.export_rknn"]
