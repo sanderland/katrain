@@ -202,6 +202,16 @@ class _VisionWorkerLoop:
                         if move_result is not None:
                             row, col, color = move_result
                             self._event_queue.put(ConfirmedMove(col=col, row=row, color=color))
+                else:
+                    # Board not found — show board_finder timing, clear stale overlays
+                    with self._overlay_lock:
+                        self._overlay.board_corners = None
+                        self._overlay.detections = None
+                        self._overlay.warped_size = None
+                        self._overlay.transform_matrix = None
+                        self._overlay.timing = {
+                            "board_finder_ms": round(board_finder_ms, 1),
+                        }
 
             # Sync state machine update
             if self._bound:
