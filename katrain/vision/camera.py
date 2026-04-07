@@ -31,10 +31,12 @@ class CameraManager:
 
     RECONNECT_COOLDOWN = 5.0  # seconds between reconnect attempts
 
-    def __init__(self, device_id: int | str = 0) -> None:
+    def __init__(self, device_id: int | str = 0, width: int = 1280, height: int = 720) -> None:
         """Initialize with device ID (int) or path (e.g. "/dev/video73")."""
         self._device_id = device_id
         self._capture_arg = _device_to_capture_arg(device_id)
+        self._width = width
+        self._height = height
         self._cap: cv2.VideoCapture | None = None
         self._connected = False
         self._last_reconnect_attempt = 0.0
@@ -57,9 +59,8 @@ class CameraManager:
         if cap.isOpened():
             # Use MJPEG to reduce USB bandwidth (critical for USB cameras on SBC)
             cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
-            # 640x480 is sufficient for board detection; 2K is wasteful on SBC
-            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._width)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._height)
             # Minimize internal buffer to reduce latency (only keep latest frame)
             cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 

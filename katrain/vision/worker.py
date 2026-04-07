@@ -71,7 +71,11 @@ class _VisionWorkerLoop:
         board_config = BoardConfig()
         camera_config = CameraConfig()
 
-        self._camera = CameraManager(device_id=config.get("camera_device", 0))
+        self._camera = CameraManager(
+            device_id=config.get("camera_device", 0),
+            width=config.get("camera_width", 1280),
+            height=config.get("camera_height", 720),
+        )
         self._motion_filter = MotionFilter()
         self._state_extractor = BoardStateExtractor(board_config)
         self._move_detector = MoveDetector()

@@ -12,7 +12,9 @@ class VisionServiceConfig:
     enabled: bool = False
     backend: str = "onnx"  # "onnx" | "rknn" | "ultralytics"
     model_path: str = ""
-    camera_device: int = 0
+    camera_device: int | str = 0
+    camera_width: int = 1280
+    camera_height: int = 720
     board_size: int = 19
     confidence_threshold: float = 0.5
     imgsz: int = 960
@@ -27,6 +29,8 @@ class VisionServiceConfig:
             "backend": self.backend,
             "model_path": self.model_path,
             "camera_device": self.camera_device,
+            "camera_width": self.camera_width,
+            "camera_height": self.camera_height,
             "confidence_threshold": self.confidence_threshold,
             "use_clahe": self.use_clahe,
             "capture_fps": self.capture_fps,

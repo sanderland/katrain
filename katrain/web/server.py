@@ -1463,6 +1463,7 @@ def run_web():
     parser.add_argument("--vision-backend", default="onnx", choices=["onnx", "rknn", "ultralytics"], help="Vision inference backend")
     parser.add_argument("--vision-model", default=None, help="Path to vision model file. Providing this enables the vision service.")
     parser.add_argument("--vision-camera", default="0", help="Camera device ID (int) or path (e.g. /dev/video73)")
+    parser.add_argument("--vision-resolution", default="1280x720", help="Camera resolution WxH (e.g. 640x480, 1280x720, 2560x1440)")
     args, _unknown = parser.parse_known_args()
 
     # Configure vision service if model path provided
@@ -1470,11 +1471,14 @@ def run_web():
         from katrain.vision.config_service import VisionServiceConfig
 
         camera_dev = int(args.vision_camera) if args.vision_camera.isdigit() else args.vision_camera
+        res_w, res_h = (int(x) for x in args.vision_resolution.split("x"))
         settings._vision_config = VisionServiceConfig(
             enabled=True,
             backend=args.vision_backend,
             model_path=args.vision_model,
             camera_device=camera_dev,
+            camera_width=res_w,
+            camera_height=res_h,
             process_mode="worker" if settings.KATRAIN_MODE == "board" else "inprocess",
         )
 
