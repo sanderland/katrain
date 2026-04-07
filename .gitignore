@@ -187,3 +187,4 @@ go_dataset_diff_sam/
 runs/
 data.zip
 .superpowers/
+.gstack/

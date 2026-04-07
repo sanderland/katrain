@@ -156,8 +156,12 @@ class _VisionWorkerLoop:
                                 row, col, color = move_result
                                 self._event_queue.put(ConfirmedMove(col=col, row=row, color=color))
 
-                        # Preview frame generation
+                        # Preview frame generation (warped board view)
                         self._maybe_send_preview(frame, warped)
+
+                # Send raw camera preview even when board is not detected
+                if not board_detected:
+                    self._maybe_send_preview(frame, None)
 
             # Sync state machine update
             if self._bound:
@@ -211,7 +215,7 @@ class _VisionWorkerLoop:
             elif cmd.action == CommandType.SET_VIEWER_ACTIVE:
                 self._viewer_active = cmd.data.get("active", False)
 
-    def _maybe_send_preview(self, raw_frame: np.ndarray, warped: np.ndarray) -> None:
+    def _maybe_send_preview(self, raw_frame: np.ndarray, warped: np.ndarray | None) -> None:
         """Encode and send a preview JPEG if a viewer is active and enough time has passed."""
         if not self._viewer_active:
             return
@@ -220,8 +224,19 @@ class _VisionWorkerLoop:
         if now - self._last_preview_time < 1.0 / PREVIEW_FPS:
             return
 
-        # Resize warped board image to 480x480 before encoding
-        preview = cv2.resize(warped, (PREVIEW_SIZE, PREVIEW_SIZE), interpolation=cv2.INTER_LINEAR)
+        # Use warped board view when available, otherwise show raw camera feed
+        source = warped if warped is not None else raw_frame
+        h, w = source.shape[:2]
+        # Resize to square preview, preserving aspect ratio with padding for raw frames
+        if warped is not None:
+            preview = cv2.resize(source, (PREVIEW_SIZE, PREVIEW_SIZE), interpolation=cv2.INTER_LINEAR)
+        else:
+            scale = PREVIEW_SIZE / max(h, w)
+            new_w, new_h = int(w * scale), int(h * scale)
+            resized = cv2.resize(source, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+            preview = np.zeros((PREVIEW_SIZE, PREVIEW_SIZE, 3), dtype=np.uint8)
+            y_off, x_off = (PREVIEW_SIZE - new_h) // 2, (PREVIEW_SIZE - new_w) // 2
+            preview[y_off : y_off + new_h, x_off : x_off + new_w] = resized
         _, jpeg = cv2.imencode(".jpg", preview, [cv2.IMWRITE_JPEG_QUALITY, JPEG_QUALITY])
 
         # Overwrite semantics: drain old frame, put new one

@@ -207,15 +207,30 @@ export LOCAL_KATAGO_URL="http://127.0.0.1:8000"
 python -m katrain --ui web
 ```
 
-**katrain-board** (RK3588 smart board):
+**katrain-board** (RK3588/RK3576 smart board):
 ```bash
 export KATRAIN_MODE=board
 export KATRAIN_REMOTE_URL="https://go.sailorvoyage.top"
 export KATRAIN_DEVICE_ID="rk3588-001"
 export LOCAL_KATAGO_URL="http://127.0.0.1:8000"
 
+# Basic startup (no camera)
 python -m katrain --ui web
+
+# With camera vision (auto-detect physical board moves)
+python -m katrain --ui web --vision-model katrain/vision/models/yolo11n/best.onnx --vision-camera 0
 ```
+
+**Vision model options** (`--vision-model`):
+
+| Model | ONNX Path | Size | mAP50-95 | SBC Latency (est.) |
+|-------|-----------|------|----------|---------------------|
+| yolo11n | `katrain/vision/models/yolo11n/best.onnx` | 10 MB | 0.9364 | ~400-600ms |
+| yolo11s | `katrain/vision/models/yolo11s/best.onnx` | 36 MB | 0.9593 | ~1.0-1.5s |
+| yolo11m | `katrain/vision/models/yolo11m/best.onnx` | 77 MB | 0.9749 | ~3-4s |
+| yolo11x | `katrain/vision/models/yolo11x/best.onnx` | 217 MB | 0.9414 | ~10s+ |
+
+> **Recommendation:** Use `yolo11n` on SBC (best speed/accuracy tradeoff). Use `yolo11s` if memory allows. Vision args: `--vision-backend onnx|rknn|ultralytics`, `--vision-camera <device-id>`.
 
 > **Important:**
 > - Board mode (`KATRAIN_MODE=board`) automatically uses local SQLite (`db.sqlite3`), ignoring any PostgreSQL URL in `config.json`. To use a custom SQLite path, set `KATRAIN_DATABASE_URL` explicitly (e.g. `sqlite:///./board.db`).
