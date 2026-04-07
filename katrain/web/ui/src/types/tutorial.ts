@@ -35,6 +35,7 @@ export interface TutorialSection {
   title: string;
   order: number;
   figure_count: number;
+  has_video: boolean;
 }
 
 export interface TutorialFigure {

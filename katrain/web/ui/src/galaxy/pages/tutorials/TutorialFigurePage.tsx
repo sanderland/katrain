@@ -373,6 +373,7 @@ export default function TutorialFigurePage() {
                   <video
                     controls
                     preload="none"
+                    poster={TutorialAPI.assetUrl(currentFigure.video_asset.replace('.mp4', '.jpg'))}
                     width="100%"
                     style={{ borderRadius: 8, maxHeight: 400 }}
                     src={TutorialAPI.assetUrl(currentFigure.video_asset)}

@@ -102,10 +102,19 @@ async def get_chapters(book_id: int, db: Session = Depends(get_db)):
 @router.get("/chapters/{chapter_id}/sections", response_model=List[TutorialSectionOut])
 async def get_sections(chapter_id: int, db: Session = Depends(get_db)):
     sections = db_queries.get_sections_by_chapter(db, chapter_id)
+    # Resolve book slug once for section video file checks
+    book_slug = None
+    if sections:
+        chapter = sections[0].chapter
+        if chapter and chapter.book:
+            book_slug = chapter.book.slug
     result = []
     for sec in sections:
         out = TutorialSectionOut.model_validate(sec)
         out.figure_count = len(sec.figures) if sec.figures else 0
+        if book_slug:
+            video_path = ASSET_BASE / "tutorial_assets" / book_slug / "video" / f"section_{sec.id}.mp4"
+            out.has_video = video_path.exists()
         result.append(out)
     return result
 

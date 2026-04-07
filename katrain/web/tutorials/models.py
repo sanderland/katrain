@@ -49,6 +49,7 @@ class TutorialSectionOut(BaseModel):
     title: str
     order: int
     figure_count: int = 0
+    has_video: bool = False
 
 
 class TutorialFigureOut(BaseModel):

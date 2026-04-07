@@ -780,6 +780,20 @@ async def process_figure(
             print("  Step 7: Composing final MP4...")
             compose_final_video(webm_path, mixed_audio_path, str(video_path))
 
+        # Step 8: Generate poster thumbnail (frame at ~5s or last frame if shorter)
+        poster_path = video_path.with_suffix(".jpg")
+        seek_sec = min(5, timeline["total_duration_ms"] / 1000 - 0.5)
+        poster_cmd = [
+            "ffmpeg", "-y", "-ss", str(max(0, seek_sec)),
+            "-i", str(video_path), "-vframes", "1", "-q:v", "2",
+            str(poster_path),
+        ]
+        poster_result = subprocess.run(poster_cmd, capture_output=True, text=True)
+        if poster_result.returncode == 0:
+            print(f"  Poster thumbnail: {poster_path}")
+        else:
+            print(f"  Warning: poster generation failed: {poster_result.stderr[-200:]}")
+
         # Write video metadata to DB
         figure.video_asset = f"tutorial_assets/{book_slug}/video/fig_{figure_id}.mp4"
         figure.video_duration_ms = timeline["total_duration_ms"]
@@ -999,6 +1013,17 @@ def concat_section_video(section_id: int, force: bool = False):
         if result.returncode != 0:
             print(f"  ffmpeg concat stderr: {result.stderr[-500:]}")
             raise RuntimeError(f"ffmpeg concat failed (rc={result.returncode})")
+
+    # Generate poster thumbnail for section video (frame at ~5s)
+    poster_path = output_path.with_suffix(".jpg")
+    poster_cmd = [
+        "ffmpeg", "-y", "-ss", "5",
+        "-i", str(output_path), "-vframes", "1", "-q:v", "2",
+        str(poster_path),
+    ]
+    poster_result = subprocess.run(poster_cmd, capture_output=True, text=True)
+    if poster_result.returncode == 0:
+        print(f"  Poster thumbnail: {poster_path}")
 
     file_size = output_path.stat().st_size / 1024 / 1024
     print(f"  Done! Section video: {output_path} ({file_size:.1f} MB)")

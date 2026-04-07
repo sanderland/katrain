@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -28,18 +28,6 @@ export default function TutorialBookDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [videoDialogUrl, setVideoDialogUrl] = useState<string | null>(null);
-  const [sectionVideos, setSectionVideos] = useState<Record<number, boolean>>({});
-
-  const checkSectionVideo = useCallback(async (sectionId: number, slug: string) => {
-    const url = TutorialAPI.assetUrl(`tutorial_assets/${slug}/video/section_${sectionId}.mp4`);
-    try {
-      // Use range request to avoid downloading the full file (HEAD not supported by asset endpoint)
-      const resp = await fetch(url, { method: 'GET', headers: { Range: 'bytes=0-0' } });
-      return resp.ok || resp.status === 206;
-    } catch {
-      return false;
-    }
-  }, []);
 
   const load = () => {
     if (!bookId) return;
@@ -57,12 +45,6 @@ export default function TutorialBookDetailPage() {
           })
         );
         setSections(sectionMap);
-        // Check which sections have videos
-        const allSections = Object.values(sectionMap).flat();
-        const videoChecks = await Promise.all(
-          allSections.map(async (sec) => [sec.id, await checkSectionVideo(sec.id, b.slug)] as const)
-        );
-        setSectionVideos(Object.fromEntries(videoChecks));
       })
       .catch(e => setError(e instanceof Error ? e.message : '加载失败'))
       .finally(() => setLoading(false));
@@ -98,7 +80,7 @@ export default function TutorialBookDetailPage() {
                 >
                   {/* Play button — fixed width for alignment, visible only when video exists */}
                   <Box sx={{ width: 36, minWidth: 36, mr: 0.5, display: 'flex', justifyContent: 'center' }}>
-                    {sectionVideos[sec.id] ? (
+                    {sec.has_video ? (
                       <IconButton
                         size="small"
                         onClick={(e) => {
@@ -144,6 +126,7 @@ export default function TutorialBookDetailPage() {
               controls
               autoPlay
               preload="none"
+              poster={videoDialogUrl.replace('.mp4', '.jpg')}
               style={{ maxWidth: '100%', maxHeight: '100%' }}
               src={videoDialogUrl}
             />
