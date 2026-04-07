@@ -1462,18 +1462,19 @@ def run_web():
     parser.add_argument("--ui", default=None, help="Interface mode to use. web (default) starts the FastAPI server, while desktop launches the Kivy GUI.")
     parser.add_argument("--vision-backend", default="onnx", choices=["onnx", "rknn", "ultralytics"], help="Vision inference backend")
     parser.add_argument("--vision-model", default=None, help="Path to vision model file. Providing this enables the vision service.")
-    parser.add_argument("--vision-camera", type=int, default=0, help="Camera device ID")
+    parser.add_argument("--vision-camera", default="0", help="Camera device ID (int) or path (e.g. /dev/video73)")
     args, _unknown = parser.parse_known_args()
 
     # Configure vision service if model path provided
     if args.vision_model:
         from katrain.vision.config_service import VisionServiceConfig
 
+        camera_dev = int(args.vision_camera) if args.vision_camera.isdigit() else args.vision_camera
         settings._vision_config = VisionServiceConfig(
             enabled=True,
             backend=args.vision_backend,
             model_path=args.vision_model,
-            camera_device=args.vision_camera,
+            camera_device=camera_dev,
             process_mode="worker" if settings.KATRAIN_MODE == "board" else "inprocess",
         )
 

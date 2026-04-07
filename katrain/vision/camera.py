@@ -11,18 +11,30 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# Use V4L2 backend on Linux (typical for SBC like RK3588), default elsewhere.
-_BACKEND = cv2.CAP_V4L2 if sys.platform == "linux" else cv2.CAP_ANY
+
+def _device_to_capture_arg(device_id: int | str) -> str | int:
+    """Convert device ID to the argument for cv2.VideoCapture.
+
+    On Linux with high device numbers (e.g. /dev/video73 for USB cameras on
+    Rockchip SBCs), OpenCV's V4L2 backend can't open by integer index.
+    Using the path string with CAP_ANY (auto backend selection) works reliably.
+    """
+    if isinstance(device_id, str):
+        return device_id  # Already a path like "/dev/video73"
+    if sys.platform == "linux" and device_id > 9:
+        return f"/dev/video{device_id}"
+    return device_id
 
 
 class CameraManager:
-    """Manages a single V4L2 camera with hot-plug robustness and auto-reconnect."""
+    """Manages a single camera with hot-plug robustness and auto-reconnect."""
 
     RECONNECT_COOLDOWN = 5.0  # seconds between reconnect attempts
 
-    def __init__(self, device_id: int = 0) -> None:
-        """Initialize with V4L2 device ID (e.g., 0 for /dev/video0)."""
+    def __init__(self, device_id: int | str = 0) -> None:
+        """Initialize with device ID (int) or path (e.g. "/dev/video73")."""
         self._device_id = device_id
+        self._capture_arg = _device_to_capture_arg(device_id)
         self._cap: cv2.VideoCapture | None = None
         self._connected = False
         self._last_reconnect_attempt = 0.0
@@ -41,7 +53,7 @@ class CameraManager:
         - Minimal buffer (1 frame) to avoid stale-frame latency
         """
         self.close()
-        cap = cv2.VideoCapture(self._device_id, _BACKEND)
+        cap = cv2.VideoCapture(self._capture_arg)
         if cap.isOpened():
             # Use MJPEG to reduce USB bandwidth (critical for USB cameras on SBC)
             cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
@@ -131,7 +143,7 @@ class CameraManager:
         """Probe /dev/video0..max_id to find available cameras."""
         available: list[int] = []
         for dev_id in range(max_id + 1):
-            cap = cv2.VideoCapture(dev_id, _BACKEND)
+            cap = cv2.VideoCapture(_device_to_capture_arg(dev_id))
             if cap.isOpened():
                 available.append(dev_id)
             cap.release()
