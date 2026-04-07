@@ -368,22 +368,24 @@ export default function TutorialFigurePage() {
               <AudioPlayer
                 src={currentFigure.audio_asset ? TutorialAPI.assetUrl(currentFigure.audio_asset) : null}
               />
-              {currentFigure.audio_asset && (() => {
-                const videoUrl = TutorialAPI.assetUrl(
-                  currentFigure.audio_asset!.replace('/audio/', '/video/').replace('.mp3', '.mp4')
-                );
-                return (
-                  <Box sx={{ mt: 2 }}>
-                    <video
-                      controls
-                      width="100%"
-                      style={{ borderRadius: 8, maxHeight: 400 }}
-                      src={videoUrl}
-                      onError={(e) => { (e.target as HTMLVideoElement).style.display = 'none'; }}
-                    />
-                  </Box>
-                );
-              })()}
+              {currentFigure.video_asset && (
+                <Box sx={{ mt: 2 }}>
+                  <video
+                    controls
+                    preload="none"
+                    width="100%"
+                    style={{ borderRadius: 8, maxHeight: 400 }}
+                    src={TutorialAPI.assetUrl(currentFigure.video_asset)}
+                    onError={(e) => { (e.target as HTMLVideoElement).style.display = 'none'; }}
+                  />
+                  {currentFigure.video_duration_ms && (
+                    <Typography variant="caption" color="text.secondary">
+                      {Math.floor(currentFigure.video_duration_ms / 60000)}:
+                      {String(Math.floor((currentFigure.video_duration_ms % 60000) / 1000)).padStart(2, '0')}
+                    </Typography>
+                  )}
+                </Box>
+              )}
             </>
           ) : (
             <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>

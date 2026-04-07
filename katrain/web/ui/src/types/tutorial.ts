@@ -50,6 +50,9 @@ export interface TutorialFigure {
   recognition_debug: RecognitionDebug | null;
   narration: string | null;
   audio_asset: string | null;
+  video_asset: string | null;
+  video_duration_ms: number | null;
+  video_size_bytes: number | null;
   order: number;
   updated_at: string | null;
 }

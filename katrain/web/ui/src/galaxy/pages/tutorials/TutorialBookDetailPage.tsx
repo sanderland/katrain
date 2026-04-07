@@ -143,6 +143,7 @@ export default function TutorialBookDetailPage() {
             <video
               controls
               autoPlay
+              preload="none"
               style={{ maxWidth: '100%', maxHeight: '100%' }}
               src={videoDialogUrl}
             />

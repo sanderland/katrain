@@ -730,7 +730,14 @@ async def process_figure(
         video_dir = REPO_ROOT / "data" / "tutorial_assets" / book_slug / "video"
         video_path = video_dir / f"fig_{figure_id}.mp4"
         if video_path.exists() and not force:
-            print(f"  Video already exists: {video_path}")
+            # Backfill DB if video_asset is empty
+            if not figure.video_asset:
+                figure.video_asset = f"tutorial_assets/{book_slug}/video/fig_{figure_id}.mp4"
+                figure.video_size_bytes = video_path.stat().st_size
+                db.commit()
+                print(f"  DB backfilled: video_asset={figure.video_asset}")
+            else:
+                print(f"  Video already exists: {video_path}")
             return
 
         # Step 1: Generate audio with timing
@@ -773,9 +780,16 @@ async def process_figure(
             print("  Step 7: Composing final MP4...")
             compose_final_video(webm_path, mixed_audio_path, str(video_path))
 
+        # Write video metadata to DB
+        figure.video_asset = f"tutorial_assets/{book_slug}/video/fig_{figure_id}.mp4"
+        figure.video_duration_ms = timeline["total_duration_ms"]
+        figure.video_size_bytes = video_path.stat().st_size
+        db.commit()
+
         print(f"  Done! Video saved to: {video_path}")
         file_size = video_path.stat().st_size / 1024 / 1024
         print(f"  File size: {file_size:.1f} MB")
+        print(f"  DB updated: video_asset={figure.video_asset}")
 
     finally:
         db.close()

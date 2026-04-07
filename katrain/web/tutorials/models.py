@@ -66,6 +66,9 @@ class TutorialFigureOut(BaseModel):
     recognition_debug: Optional[Any] = None
     narration: Optional[str] = None
     audio_asset: Optional[str] = None
+    video_asset: Optional[str] = None
+    video_duration_ms: Optional[int] = None
+    video_size_bytes: Optional[int] = None
     order: int
     updated_at: Optional[datetime] = None
 
@@ -142,3 +145,6 @@ class NarrationUpdate(BaseModel):
     """Request body for updating a figure's narration text and audio asset."""
     narration: str
     audio_asset: Optional[str] = None
+    video_asset: Optional[str] = None
+    video_duration_ms: Optional[int] = None
+    video_size_bytes: Optional[int] = None
