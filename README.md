@@ -266,6 +266,24 @@ python -m katrain --ui web --vision-model katrain/vision/models/yolo11n/best.onn
 > - `KATRAIN_DEVICE_ID` should be a stable identifier for this board. If omitted, a random UUID is generated on each startup.
 > - Board mode connects to the remote server for auth, tsumego, kifu, and user game sync, while using local KataGo for gameplay. When offline, games are saved locally and synced automatically on reconnection.
 
+**Upgrading RKNN runtime (RK3576/RK3588):**
+
+The RKNN model and runtime versions must match. If you see a warning like `RKNN Model version: 2.3.2 not match with rknn runtime version: 2.0.0`, upgrade both the Python package and the native library:
+
+```bash
+# 1. Upgrade Python package
+pip install rknn-toolkit-lite2==2.3.2
+
+# 2. Upgrade native runtime library (librknnrt.so)
+git clone --depth 1 --branch v2.3.2 https://github.com/airockchip/rknn-toolkit2.git /tmp/rknn-toolkit2
+sudo cp /tmp/rknn-toolkit2/rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so /usr/lib/librknnrt.so
+rm -rf /tmp/rknn-toolkit2
+
+# 3. Verify
+strings /usr/lib/librknnrt.so | grep "librknnrt version"
+# Expected: librknnrt version: 2.3.2
+```
+
 **Touchscreen virtual keyboard (SBC kiosk mode):**
 
 On ARM SBCs with a touchscreen (e.g. RK3588/RK3576), install an on-screen keyboard so users can tap input fields to type:
