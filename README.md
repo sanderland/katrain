@@ -217,8 +217,11 @@ export LOCAL_KATAGO_URL="http://127.0.0.1:8000"
 # Basic startup (no camera)
 python -m katrain --ui web
 
-# With camera vision (auto-detect physical board moves)
+# With camera vision — ONNX backend (CPU inference, default)
 python -m katrain --ui web --vision-model katrain/vision/models/yolo11n/best.onnx --vision-camera 73
+
+# With camera vision — RKNN backend (NPU acceleration, recommended on RK3576/RK3588)
+python -m katrain --ui web --vision-backend rknn --vision-model katrain/vision/models/yolo11n/best_rk3576.rknn --vision-camera 73
 
 # With 2K camera resolution (better board detection, more CPU)
 python -m katrain --ui web --vision-model katrain/vision/models/yolo11n/best.onnx --vision-camera 73 --vision-resolution 2560x1440
@@ -231,12 +234,20 @@ python -m katrain --ui web --vision-model katrain/vision/models/yolo11n/best.onn
 
 | Argument | Default | Description |
 |----------|---------|-------------|
-| `--vision-model` | *(none)* | Path to ONNX model. Providing this enables the vision service |
+| `--vision-model` | *(none)* | Path to model file (`.onnx`, `.rknn`, or `.pt`). Providing this enables the vision service |
 | `--vision-camera` | `0` | Camera device ID (int) or path (e.g. `/dev/video73`) |
 | `--vision-resolution` | `1280x720` | Camera resolution `WxH` (e.g. `640x480`, `1280x720`, `2560x1440`) |
 | `--vision-backend` | `onnx` | Inference backend: `onnx`, `rknn`, or `ultralytics` |
 
 > **Note:** On Rockchip SBCs with many ISP/media devices, the USB camera may have a high device number (e.g. `/dev/video73`). Run `v4l2-ctl --list-devices` to find the correct one.
+
+**Vision inference backends** (`--vision-backend`):
+
+| Backend | Model Format | Hardware | Dependency | Use Case |
+|---------|-------------|----------|------------|----------|
+| `onnx` | `.onnx` | CPU | `onnxruntime` | Default for SBC deployment |
+| `rknn` | `.rknn` | Rockchip NPU | `rknn-toolkit2-lite` | RK3576/RK3588 NPU acceleration (recommended) |
+| `ultralytics` | `.pt` | CPU/GPU | `ultralytics` + PyTorch | Development and training |
 
 **Vision model options** (`--vision-model`):
 
