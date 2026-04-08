@@ -327,9 +327,13 @@ class BoardFinder:
 
     def _calc_size(self, corners):
         # corners = [TL, TR, BR, BL]
-        h = max(corners[3][1] - corners[0][1], corners[2][1] - corners[1][1]) * self.scale
-        w = max(corners[1][0] - corners[0][0], corners[2][0] - corners[3][0]) * self.scale
-        return h, w
+        # Use average of opposite edge lengths for balanced perspective output.
+        # max() produced extreme aspect ratios at steep viewing angles (e.g. 517x233),
+        # making YOLO's square-resize distort stones beyond recognition.
+        tl, tr, br, bl = [np.array(c, dtype=np.float64) for c in corners]
+        avg_w = (np.linalg.norm(tr - tl) + np.linalg.norm(br - bl)) / 2 * self.scale
+        avg_h = (np.linalg.norm(bl - tl) + np.linalg.norm(br - tr)) / 2 * self.scale
+        return avg_h, avg_w
 
     def _sort_corner(self, pts):
         # Sort by y to split top/bottom, then by x within each pair.
