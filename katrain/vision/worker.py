@@ -109,6 +109,7 @@ class _VisionWorkerLoop:
         self._last_status_time = 0.0
         self._last_detected_board: list[list[int]] | None = None
         self._board_locked = False  # When True, reuse locked transform instead of re-detecting
+        self._consecutive_failures = 0  # Track detection failures for auto-unlock
         self._prev_observed_board: np.ndarray | None = None  # For temporal smoothing
         self._last_stable_board: np.ndarray | None = None
 
@@ -172,7 +173,8 @@ class _VisionWorkerLoop:
                 t0 = time.monotonic()
 
                 if self._board_locked and self._board_finder.last_transform_matrix is not None:
-                    # Locked mode: reuse frozen transform, skip re-detection
+                    # Locked mode: reuse frozen transform, skip re-detection.
+                    # Auto-unlock if detection fails repeatedly (board/camera moved).
                     M = self._board_finder.last_transform_matrix
                     warp_w, warp_h = self._board_finder.last_warp_size
                     warped = cv2.warpPerspective(frame, M, (warp_w, warp_h))
@@ -185,6 +187,7 @@ class _VisionWorkerLoop:
 
                 if found and warped is not None:
                     board_detected = True
+                    self._consecutive_failures = 0
                     h, w = warped.shape[:2]
 
                     # YOLO inference
@@ -230,7 +233,17 @@ class _VisionWorkerLoop:
                             row, col, color = move_result
                             self._event_queue.put(ConfirmedMove(col=col, row=row, color=color))
                 else:
-                    # Board not found — show board_finder timing, clear stale overlays
+                    # Board not found
+                    self._consecutive_failures += 1
+
+                    # Auto-unlock if locked but detection fails 10+ times
+                    # (camera or board moved out of locked position)
+                    if self._board_locked and self._consecutive_failures >= 10:
+                        logger.info("Auto-unlocking board (detection failed %d times)", self._consecutive_failures)
+                        self._board_locked = False
+                        self._board_finder.is_first = True
+                        self._consecutive_failures = 0
+
                     with self._overlay_lock:
                         self._overlay.board_corners = None
                         self._overlay.detections = None

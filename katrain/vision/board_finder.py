@@ -97,7 +97,10 @@ class BoardFinder:
             self.pre_corner_point = sort_corner
             self.is_first = False
         elif np.max(abs(np.array(sort_corner) - np.array(self.pre_corner_point))) > self.allowed_moving_length:
-            # Don't update baseline on rejection — keep old baseline
+            # Update baseline even on rejection (Fe-Fool pattern) so the system
+            # recovers after camera/board movement: next frame's corners will be
+            # close to the updated baseline and get accepted.
+            self.pre_corner_point = sort_corner
             return None, False
 
         # Accepted — update baseline

@@ -63,6 +63,16 @@ const VisionSetupPage = () => {
     navigate(-1);
   }, [navigate]);
 
+  const handleRedetect = useCallback(async () => {
+    try {
+      await fetch('/api/v1/vision/sync/reset', { method: 'POST' });
+      setDetectedBoard(null);
+      await refreshStatus();
+    } catch (err) {
+      console.error('Re-detection failed', err);
+    }
+  }, [refreshStatus]);
+
   const statusText = visionStatus.poseLocked ? '棋盘已识别' : '正在检测棋盘...';
   const statusColor = visionStatus.poseLocked ? 'success.main' : 'warning.main';
 
@@ -199,7 +209,7 @@ const VisionSetupPage = () => {
         </Box>
 
         {/* Action buttons */}
-        <Box sx={{ display: 'flex', gap: 2, width: '100%', maxWidth: 400 }}>
+        <Box sx={{ display: 'flex', gap: 2, width: '100%', maxWidth: 500 }}>
           <Button
             variant="outlined"
             size="large"
@@ -208,6 +218,16 @@ const VisionSetupPage = () => {
             sx={{ flex: 1, minHeight: 48 }}
           >
             返回
+          </Button>
+          <Button
+            variant="outlined"
+            size="large"
+            color="warning"
+            startIcon={<Refresh />}
+            onClick={handleRedetect}
+            sx={{ flex: 1, minHeight: 48 }}
+          >
+            重新检测
           </Button>
           <Button
             variant="contained"
