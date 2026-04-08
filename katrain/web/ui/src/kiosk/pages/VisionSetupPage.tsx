@@ -1,11 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Box, Button, Typography, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { Videocam, VideocamOff, ArrowBack, Check, Refresh } from '@mui/icons-material';
 import { useVision } from '../context/VisionContext';
 import { API } from '../../api';
+import VisionBoard from '../components/vision/VisionBoard';
 
 const STREAM_URL = '/api/v1/vision/stream';
+const BOARD_POLL_MS = 500;
 
 const VisionSetupPage = () => {
   const navigate = useNavigate();
@@ -14,6 +16,26 @@ const VisionSetupPage = () => {
   const [streamError, setStreamError] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [streamKey, setStreamKey] = useState(0);
+  const [detectedBoard, setDetectedBoard] = useState<number[][] | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Poll detected board state
+  useEffect(() => {
+    const poll = async () => {
+      try {
+        const resp = await fetch('/api/v1/vision/detected-board');
+        const data = await resp.json();
+        setDetectedBoard(data.board);
+      } catch {
+        // ignore fetch errors
+      }
+    };
+    poll(); // immediate first fetch
+    pollRef.current = setInterval(poll, BOARD_POLL_MS);
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
 
   const handleStreamError = useCallback(() => {
     setStreamError(true);
@@ -55,24 +77,27 @@ const VisionSetupPage = () => {
         bgcolor: 'background.default',
       }}
     >
-      {/* Stream viewport */}
+      {/* Stream + Board side by side */}
       <Box
         sx={{
           flex: 1,
           display: 'flex',
+          flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
+          gap: 2,
           px: 2,
           pt: 2,
           pb: 1,
           overflow: 'hidden',
         }}
       >
+        {/* Camera stream */}
         <Paper
           elevation={2}
           sx={{
-            width: '100%',
-            maxWidth: 640,
+            flex: 1,
+            maxWidth: 480,
             aspectRatio: '4 / 3',
             overflow: 'hidden',
             borderRadius: 2,
@@ -119,6 +144,24 @@ const VisionSetupPage = () => {
               }}
             />
           )}
+        </Paper>
+
+        {/* Detected electronic board */}
+        <Paper
+          elevation={2}
+          sx={{
+            flex: 1,
+            maxWidth: 480,
+            aspectRatio: '1 / 1',
+            overflow: 'hidden',
+            borderRadius: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            bgcolor: 'grey.900',
+          }}
+        >
+          <VisionBoard board={detectedBoard} />
         </Paper>
       </Box>
 

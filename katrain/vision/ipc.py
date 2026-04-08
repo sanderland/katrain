@@ -41,6 +41,7 @@ class WorkerStatus:
     pose_lock_status: str = "unlocked"  # "unlocked" | "locked"
     sync_state: str = "unbound"  # SyncState value
     mean_confidence: float = 0.0
+    detected_board: list[list[int]] | None = None  # 19x19 grid (0=empty, 1=black, 2=white)
 
 
 @dataclass

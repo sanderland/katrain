@@ -107,6 +107,7 @@ class _VisionWorkerLoop:
         self._board_finder = None
 
         self._last_status_time = 0.0
+        self._last_detected_board: list[list[int]] | None = None
 
     def _init_inference(self) -> None:
         """Load inference backend and board finder (heavy imports)."""
@@ -196,6 +197,7 @@ class _VisionWorkerLoop:
 
                     # Board state + move detection
                     observed_board = self._state_extractor.detections_to_board(detections, img_w=w, img_h=h)
+                    self._last_detected_board = observed_board.tolist()
                     if detections:
                         mean_confidence = sum(d.confidence for d in detections) / len(detections)
                     if self._bound:
@@ -352,6 +354,7 @@ class _VisionWorkerLoop:
             camera_status="connected" if self._camera.is_connected else "disconnected",
             pose_lock_status="locked" if self._sync.state not in (SyncState.UNBOUND, SyncState.CALIBRATING) else "unlocked",
             sync_state=self._sync.state.value,
+            detected_board=self._last_detected_board,
         )
 
         # Overwrite: drain old, put new

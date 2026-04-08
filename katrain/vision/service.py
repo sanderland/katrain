@@ -137,6 +137,10 @@ class VisionService:
 
     # -- data retrieval ------------------------------------------------------
 
+    def get_detected_board(self) -> list[list[int]] | None:
+        """Return the latest detected board state (19x19 grid)."""
+        return self._latest_status.detected_board
+
     def get_preview_jpeg(self) -> bytes | None:
         """Get latest JPEG preview frame from worker."""
         if self._worker:

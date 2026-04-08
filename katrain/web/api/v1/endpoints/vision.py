@@ -77,6 +77,15 @@ async def vision_stream(request: Request):
     return StreamingResponse(generate(), media_type="multipart/x-mixed-replace;boundary=frame")
 
 
+@router.get("/detected-board")
+async def get_detected_board(request: Request):
+    """Return the latest detected board state as a 19x19 matrix."""
+    vision = _get_vision(request)
+    vision.refresh_status()
+    board = vision.get_detected_board()
+    return {"board": board}
+
+
 @router.post("/pose-lock/confirm")
 async def confirm_pose_lock(request: Request):
     """Confirm board pose lock after calibration."""
