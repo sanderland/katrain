@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
+import cv2
 import numpy as np
 
 from katrain.vision.stone_detector import Detection
@@ -54,3 +55,20 @@ def create_backend(backend: str) -> InferenceBackend:
         return UltralyticsBackend()
     else:
         raise ValueError(f"Unknown inference backend: {backend!r}. Choose from: onnx, rknn, ultralytics")
+
+
+def letterbox_preprocess(image: np.ndarray, target_size: int) -> tuple[np.ndarray, float, int, int]:
+    """Resize image preserving aspect ratio, pad with gray (114) to square.
+
+    Returns:
+        (padded_image, scale, x_offset, y_offset)
+    """
+    h, w = image.shape[:2]
+    scale = target_size / max(h, w)
+    new_w, new_h = int(w * scale), int(h * scale)
+    resized = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+    canvas = np.full((target_size, target_size, 3), 114, dtype=np.uint8)
+    y_off = (target_size - new_h) // 2
+    x_off = (target_size - new_w) // 2
+    canvas[y_off : y_off + new_h, x_off : x_off + new_w] = resized
+    return canvas, scale, x_off, y_off

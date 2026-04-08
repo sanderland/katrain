@@ -95,6 +95,7 @@ class _VisionWorkerLoop:
             device_id=config.get("camera_device", 0),
             width=config.get("camera_width", 1280),
             height=config.get("camera_height", 720),
+            warmup_seconds=config.get("camera_warmup_seconds", 2.0),
         )
         self._motion_filter = MotionFilter()
         self._state_extractor = BoardStateExtractor(board_config)

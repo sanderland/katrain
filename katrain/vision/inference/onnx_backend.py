@@ -10,6 +10,7 @@ from typing import Any
 import cv2
 import numpy as np
 
+from katrain.vision.inference.base import letterbox_preprocess
 from katrain.vision.stone_detector import Detection
 
 logger = logging.getLogger(__name__)
@@ -27,6 +28,9 @@ class OnnxBackend:
     def __init__(self) -> None:
         self._session = None  # ort.InferenceSession once loaded
         self._meta: dict[str, Any] = {}
+        self._last_scale: float = 1.0
+        self._last_x_off: int = 0
+        self._last_y_off: int = 0
 
     # ------------------------------------------------------------------
     # Protocol implementation
@@ -121,9 +125,12 @@ class OnnxBackend:
         return int(self._meta.get("imgsz", 640))
 
     def _preprocess(self, image: np.ndarray) -> np.ndarray:
-        """Resize, normalise, and convert a BGR image to an NCHW float32 tensor."""
+        """Letterbox-resize, normalise, and convert a BGR image to an NCHW float32 tensor."""
         size = self.imgsz
-        resized = cv2.resize(image, (size, size), interpolation=cv2.INTER_LINEAR)
+        resized, scale, x_off, y_off = letterbox_preprocess(image, size)
+        self._last_scale = scale
+        self._last_x_off = x_off
+        self._last_y_off = y_off
 
         # BGR -> RGB when required by the model
         if self._meta.get("input_channel_order", "RGB") == "RGB":
@@ -194,18 +201,14 @@ class OnnxBackend:
         # Flatten indices (OpenCV may return column vector or flat list)
         indices = np.asarray(indices).flatten()
 
-        # Scale factors from imgsz back to original image dimensions
-        sx = orig_w / self.imgsz
-        sy = orig_h / self.imgsz
-
         detections: list[Detection] = []
         for idx in indices:
             cx, cy, w, h = boxes_xywh[idx]
-            # Scale to original image coordinates
-            cx_orig = float(cx * sx)
-            cy_orig = float(cy * sy)
-            w_orig = float(w * sx)
-            h_orig = float(h * sy)
+            # Map from model space -> original image space via letterbox
+            cx_orig = float((cx - self._last_x_off) / self._last_scale)
+            cy_orig = float((cy - self._last_y_off) / self._last_scale)
+            w_orig = float(w / self._last_scale)
+            h_orig = float(h / self._last_scale)
 
             x1 = cx_orig - w_orig / 2
             y1 = cy_orig - h_orig / 2

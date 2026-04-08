@@ -82,12 +82,13 @@ class CameraManager:
 
     RECONNECT_COOLDOWN = 5.0  # seconds between reconnect attempts
 
-    def __init__(self, device_id: int | str = 0, width: int = 1280, height: int = 720) -> None:
+    def __init__(self, device_id: int | str = 0, width: int = 1280, height: int = 720, warmup_seconds: float = 2.0) -> None:
         """Initialize with device ID (int) or path (e.g. "/dev/video73")."""
         self._device_id = device_id
         self._capture_arg = _device_to_capture_arg(device_id)
         self._width = width
         self._height = height
+        self._warmup_seconds = warmup_seconds
         self._cap: cv2.VideoCapture | None = None
         self._connected = False
         self._last_reconnect_attempt = 0.0
@@ -128,6 +129,16 @@ class CameraManager:
                 self._camera_name = _get_camera_name(self._device_id)
                 if self._camera_name:
                     logger.info("Camera identity recorded: %r", self._camera_name)
+
+            # Enable auto-focus if supported
+            cap.set(cv2.CAP_PROP_AUTOFOCUS, 1)
+
+            # Drain frames to let auto-focus and auto-exposure settle
+            if self._warmup_seconds > 0:
+                deadline = time.monotonic() + self._warmup_seconds
+                while time.monotonic() < deadline:
+                    cap.read()
+                logger.info("Camera %s focus stabilized (%.1fs warmup)", self._device_id, self._warmup_seconds)
 
             self._cap = cap
             self._connected = True
