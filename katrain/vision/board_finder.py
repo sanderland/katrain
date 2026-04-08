@@ -1,19 +1,12 @@
 """
 Board detection and perspective correction.
 
-Hybrid detection: ArUco markers (primary, reliable) + improved Canny (fallback).
-
-ArUco mode: Place 4 printed ArUco markers at the board corners.
-Canny mode: Detects the board outline via edge detection (original approach, improved).
+Detection priority:
+1. ArUco markers (most reliable, when configured)
+2. HSV color segmentation (robust — isolates warm wood tones)
+3. Canny edge detection (legacy fallback)
 
 Ported from Fe-Fool/code/robot/image_find_focus.py (FocusFinder class).
-Enhanced with:
-- ArUco marker detection (primary method when configured)
-- Improved Canny pipeline with aspect ratio / convexity / area filters
-- Fixed stability filter (no baseline reset on rejection)
-- CLAHE preprocessing for low-contrast wood boards
-- cv2.undistort when camera calibration is available
-- Fallback to last known transform matrix on detection failure
 """
 
 import logging
@@ -83,12 +76,14 @@ class BoardFinder:
 
         gray = cv2.cvtColor(processed, cv2.COLOR_BGR2GRAY)
 
-        # Try ArUco detection first
+        # Detection priority: ArUco → color segmentation → Canny
         corners = None
         if self.marker_ids is not None:
             corners = self._detect_aruco(gray)
 
-        # Canny fallback
+        if corners is None:
+            corners = self._detect_by_color(processed)
+
         if corners is None:
             corners = self._detect_canny(processed, gray, min_threshold, max_threshold)
 
@@ -168,6 +163,51 @@ class BoardFinder:
             result.append((int(round(x)), int(round(y))))
 
         return result
+
+    def _detect_by_color(self, image_bgr: np.ndarray) -> list[tuple[int, int]] | None:
+        """Detect board via HSV color segmentation of warm wood tones.
+
+        Go boards have a distinctive warm yellow-brown color (HSV hue 10-40)
+        that separates cleanly from white paper, dark furniture, and other
+        background surfaces.  Morphological open breaks thin bridges to
+        adjacent wood-colored objects; close fills grid lines and stone gaps.
+        """
+        hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
+        frame_area = image_bgr.shape[0] * image_bgr.shape[1]
+
+        # Warm wood: hue 10-40, moderate saturation, bright (V>=140 excludes
+        # dark furniture that may share the same hue).
+        mask = cv2.inRange(hsv, np.array([10, 30, 140]), np.array([40, 180, 255]))
+
+        # Open to disconnect adjacent wood-colored objects (furniture edges)
+        k_open = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, k_open)
+
+        # Close to fill internal gaps from grid lines and stones
+        k_close = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (25, 25))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, k_close)
+
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = sorted(contours, key=cv2.contourArea, reverse=True)
+
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            area_ratio = area / frame_area
+            if area_ratio < 0.10:
+                break  # too small
+            if area_ratio > 0.80:
+                continue  # too large (background)
+
+            hull = cv2.convexHull(contour)
+            for eps_f in (0.02, 0.04, 0.06, 0.08):
+                approx = cv2.approxPolyDP(hull, eps_f * cv2.arcLength(hull, True), True)
+                if len(approx) == 4:
+                    points = [(int(p[0][0]), int(p[0][1])) for p in approx]
+                    logger.debug("Color detection found board: area=%.1f%% eps=%.2f", area_ratio * 100, eps_f)
+                    return points
+
+        logger.debug("Color detection: no valid quadrilateral found")
+        return None
 
     def _detect_canny(
         self, processed: np.ndarray, gray: np.ndarray, min_threshold: int, max_threshold: int
