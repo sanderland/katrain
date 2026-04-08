@@ -232,9 +232,8 @@ class BoardFinder:
             if aspect < 0.7 or aspect > 1.4:
                 continue
 
-            # Color validation: interior must be predominantly wood-colored,
-            # not white paper or dark background.
-            if not self._is_wood_colored(image_bgr, approx):
+            # Color validation: reject white paper / plastic surfaces
+            if not self._is_board_surface(image_bgr, approx):
                 continue
 
             # Use the 4 points directly
@@ -244,24 +243,27 @@ class BoardFinder:
         return None
 
     @staticmethod
-    def _is_wood_colored(image_bgr: np.ndarray, approx: np.ndarray) -> bool:
-        """Check if the interior of a quadrilateral is predominantly wood-colored.
+    def _is_board_surface(image_bgr: np.ndarray, approx: np.ndarray) -> bool:
+        """Reject regions that are predominantly white/gray (paper surfaces).
 
-        Go boards are typically warm-toned wood (yellow/orange/brown in HSV).
-        White paper or dark backgrounds will fail this check.
+        Rather than matching specific wood colors (fragile under varying
+        lighting and when stones cover the board), we reject regions where
+        the majority of pixels are near-white — the distinctive signature
+        of paper/plastic surfaces that typically surround Go boards.
         """
         mask = np.zeros(image_bgr.shape[:2], dtype=np.uint8)
         cv2.fillPoly(mask, [approx], 255)
 
         hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
-        # Wood color: hue 10-40 (yellow-orange-brown), moderate saturation, medium-high value
-        wood_mask = cv2.inRange(hsv, np.array([10, 20, 80]), np.array([40, 200, 255]))
+        # Near-white: any hue, very low saturation, high brightness
+        white_mask = cv2.inRange(hsv, np.array([0, 0, 160]), np.array([180, 30, 255]))
 
         interior_pixels = cv2.countNonZero(mask)
         if interior_pixels == 0:
             return False
-        wood_pixels = cv2.countNonZero(cv2.bitwise_and(wood_mask, mask))
-        return (wood_pixels / interior_pixels) > 0.25
+        white_ratio = cv2.countNonZero(cv2.bitwise_and(white_mask, mask)) / interior_pixels
+        # Paper is typically >60% white; boards (even with white stones) are <50%
+        return white_ratio < 0.5
 
     def _calc_size(self, corners):
         # corners = [TL, TR, BR, BL]
