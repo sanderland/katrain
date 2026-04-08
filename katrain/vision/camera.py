@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import glob
 import logging
+import os
 import sys
 import threading
 import time
@@ -27,6 +29,48 @@ def _device_to_capture_arg(device_id: int | str) -> str | int:
     return device_id
 
 
+def _get_camera_name(device_id: int | str) -> str | None:
+    """Read the V4L2 device name from sysfs (Linux only).
+
+    Returns e.g. "USB Camera: USB Camera" or a model-specific string.
+    This name is stable across reconnections for the same physical device.
+    """
+    if sys.platform != "linux":
+        return None
+    if isinstance(device_id, str):
+        dev_num = device_id.replace("/dev/video", "")
+    else:
+        dev_num = str(device_id)
+    try:
+        with open(f"/sys/class/video4linux/video{dev_num}/name") as f:
+            return f.read().strip()
+    except OSError:
+        return None
+
+
+def _find_device_by_name(name: str, original_id: int | str) -> int | None:
+    """Scan all /dev/video* devices to find one matching *name*.
+
+    Skips the original device ID (already known to be gone).
+    Returns the device number, or None if not found.
+    """
+    if sys.platform != "linux":
+        return None
+    orig_num = str(original_id).replace("/dev/video", "")
+    for entry in sorted(glob.glob("/sys/class/video4linux/video*")):
+        dev_num = entry.rsplit("video", 1)[-1]
+        if dev_num == orig_num:
+            continue
+        try:
+            with open(os.path.join(entry, "name")) as f:
+                dev_name = f.read().strip()
+            if dev_name == name and os.path.exists(f"/dev/video{dev_num}"):
+                return int(dev_num)
+        except (OSError, ValueError):
+            continue
+    return None
+
+
 class CameraManager:
     """Manages a single camera with a background reader thread.
 
@@ -47,6 +91,7 @@ class CameraManager:
         self._cap: cv2.VideoCapture | None = None
         self._connected = False
         self._last_reconnect_attempt = 0.0
+        self._camera_name: str | None = None  # V4L2 device name for reconnection
         # Background reader thread state
         self._reader_thread: threading.Thread | None = None
         self._latest_frame: np.ndarray | None = None
@@ -77,6 +122,12 @@ class CameraManager:
                 "Camera %s opened: %dx%d format=%s (threaded reader)",
                 self._device_id, actual_w, actual_h, fourcc_str,
             )
+
+            # Record V4L2 device name for reconnection after device renumbering
+            if self._camera_name is None:
+                self._camera_name = _get_camera_name(self._device_id)
+                if self._camera_name:
+                    logger.info("Camera identity recorded: %r", self._camera_name)
 
             self._cap = cap
             self._connected = True
@@ -149,7 +200,12 @@ class CameraManager:
         logger.warning("Camera %s marked as disconnected", self._device_id)
 
     def _try_reconnect(self) -> np.ndarray | None:
-        """Attempt reconnect after cooldown. Returns a frame on success, else None."""
+        """Attempt reconnect after cooldown. Returns a frame on success, else None.
+
+        If the original device path no longer exists (USB renumbering after
+        physical disconnect/reconnect), scans all video devices by the V4L2
+        device name recorded on first connection.
+        """
         now = time.monotonic()
         if now - self._last_reconnect_attempt < self.RECONNECT_COOLDOWN:
             return None
@@ -157,9 +213,24 @@ class CameraManager:
         self._last_reconnect_attempt = now
         logger.info("Attempting to reconnect camera %s ...", self._device_id)
 
+        # Try the original device path first
         if self.open():
             logger.info("Camera %s reconnected", self._device_id)
             return self.read_frame()
+
+        # Original path failed — scan by device name (handles USB renumbering)
+        if self._camera_name:
+            new_id = _find_device_by_name(self._camera_name, self._device_id)
+            if new_id is not None:
+                logger.info(
+                    "Camera %r found at new device /dev/video%d (was %s)",
+                    self._camera_name, new_id, self._device_id,
+                )
+                self._device_id = new_id
+                self._capture_arg = _device_to_capture_arg(new_id)
+                if self.open():
+                    logger.info("Camera reconnected at /dev/video%d", new_id)
+                    return self.read_frame()
 
         logger.warning("Camera %s reconnect failed, will retry in %.0fs", self._device_id, self.RECONNECT_COOLDOWN)
         return None
