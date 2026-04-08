@@ -15,7 +15,7 @@ def make_board_image(width=640, height=480, board_rect=(100, 50, 440, 380)):
     img = np.zeros((height, width, 3), dtype=np.uint8)
     img[:] = (200, 200, 200)
     x1, y1, x2, y2 = board_rect
-    cv2.rectangle(img, (x1, y1), (x2, y2), (139, 119, 101), -1)
+    cv2.rectangle(img, (x1, y1), (x2, y2), (80, 155, 200), -1)  # warm wood tone (HSV H≈19)
     cv2.rectangle(img, (x1, y1), (x2, y2), (50, 50, 50), 3)
     return img
 

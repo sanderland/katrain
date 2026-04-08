@@ -191,13 +191,15 @@ class BoardFinder:
         # Progressive epsilon: try tighter first, relax if needed.
         # Real-world boards (grid lines, oblique angles) often need 0.04–0.06.
         for eps_factor in (0.02, 0.04, 0.06):
-            result = self._try_canny_with_epsilon(contours, frame_area, eps_factor)
+            result = self._try_canny_with_epsilon(contours, frame_area, eps_factor, processed)
             if result is not None:
                 return result
 
         return None
 
-    def _try_canny_with_epsilon(self, contours, frame_area: int, eps_factor: float) -> list[tuple[int, int]] | None:
+    def _try_canny_with_epsilon(
+        self, contours, frame_area: int, eps_factor: float, image_bgr: np.ndarray
+    ) -> list[tuple[int, int]] | None:
         """Try to find a valid board quadrilateral at a given epsilon factor."""
         for contour in contours:
             perimeter = cv2.arcLength(contour, True)
@@ -230,11 +232,36 @@ class BoardFinder:
             if aspect < 0.7 or aspect > 1.4:
                 continue
 
+            # Color validation: interior must be predominantly wood-colored,
+            # not white paper or dark background.
+            if not self._is_wood_colored(image_bgr, approx):
+                continue
+
             # Use the 4 points directly
             points = [(int(p[0][0]), int(p[0][1])) for p in approx]
             return points
 
         return None
+
+    @staticmethod
+    def _is_wood_colored(image_bgr: np.ndarray, approx: np.ndarray) -> bool:
+        """Check if the interior of a quadrilateral is predominantly wood-colored.
+
+        Go boards are typically warm-toned wood (yellow/orange/brown in HSV).
+        White paper or dark backgrounds will fail this check.
+        """
+        mask = np.zeros(image_bgr.shape[:2], dtype=np.uint8)
+        cv2.fillPoly(mask, [approx], 255)
+
+        hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
+        # Wood color: hue 10-40 (yellow-orange-brown), moderate saturation, medium-high value
+        wood_mask = cv2.inRange(hsv, np.array([10, 20, 80]), np.array([40, 200, 255]))
+
+        interior_pixels = cv2.countNonZero(mask)
+        if interior_pixels == 0:
+            return False
+        wood_pixels = cv2.countNonZero(cv2.bitwise_and(wood_mask, mask))
+        return (wood_pixels / interior_pixels) > 0.25
 
     def _calc_size(self, corners):
         # corners = [TL, TR, BR, BL]
