@@ -16,8 +16,12 @@ Enhanced with:
 - Fallback to last known transform matrix on detection failure
 """
 
+import logging
+
 import cv2
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 from katrain.vision.config import CameraConfig
 
@@ -171,14 +175,13 @@ class BoardFinder:
         """
         Detect board via Canny edge detection with improved filtering.
 
-        Improvements over original:
-        - Progressive approxPolyDP epsilon (0.02 → 0.04 → 0.06)
-        - Aspect ratio filter (0.7–1.4)
-        - Convexity check
-        - Area filter (10%–80% of frame to reject background surfaces)
-        - Direct use of approxPolyDP 4-point result
+        Pipeline:
+        1. Blur + Canny + morphological close → edge map
+        2. Find external contours, sorted by area
+        3. For each contour: convex hull → approxPolyDP with progressive epsilon
+        4. Filters: area (10-80%), aspect ratio (0.7-1.4), not white surface
         """
-        blurred = cv2.GaussianBlur(processed, (5, 5), 0, 0)
+        blurred = cv2.GaussianBlur(processed, (7, 7), 0, 0)
         canny = cv2.Canny(blurred, min_threshold, max_threshold)
         k = np.ones((3, 3), np.uint8)
         canny = cv2.morphologyEx(canny, cv2.MORPH_CLOSE, k)
@@ -188,9 +191,12 @@ class BoardFinder:
 
         frame_area = gray.shape[0] * gray.shape[1]
 
+        if logger.isEnabledFor(logging.DEBUG):
+            top_areas = [f"{cv2.contourArea(c)/frame_area:.1%}" for c in contours[:5]]
+            logger.debug("Canny found %d contours, top areas: %s", len(contours), top_areas)
+
         # Progressive epsilon: try tighter first, relax if needed.
-        # Real-world boards (grid lines, oblique angles) often need 0.04–0.06.
-        for eps_factor in (0.02, 0.04, 0.06):
+        for eps_factor in (0.02, 0.04, 0.06, 0.08):
             result = self._try_canny_with_epsilon(contours, frame_area, eps_factor, processed)
             if result is not None:
                 return result
@@ -200,27 +206,37 @@ class BoardFinder:
     def _try_canny_with_epsilon(
         self, contours, frame_area: int, eps_factor: float, image_bgr: np.ndarray
     ) -> list[tuple[int, int]] | None:
-        """Try to find a valid board quadrilateral at a given epsilon factor."""
+        """Try to find a valid board quadrilateral at a given epsilon factor.
+
+        Uses convex hull before polygon approximation to handle complex
+        contours caused by grid lines and stones on the board edge.
+        """
         for contour in contours:
             perimeter = cv2.arcLength(contour, True)
             if perimeter < self.min_perimeter:
                 break  # sorted by area, so remaining are smaller
 
-            epsilon = eps_factor * perimeter
-            approx = cv2.approxPolyDP(contour, epsilon, True)
+            # Convex hull first — removes concavities from grid lines / stones
+            # that prevent approxPolyDP from finding 4 clean corners.
+            hull = cv2.convexHull(contour)
+            hull_perimeter = cv2.arcLength(hull, True)
+            epsilon = eps_factor * hull_perimeter
+            approx = cv2.approxPolyDP(hull, epsilon, True)
 
             if len(approx) != 4:
-                continue
-
-            # Convexity check
-            if not cv2.isContourConvex(approx):
+                if logger.isEnabledFor(logging.DEBUG):
+                    area_pct = cv2.contourArea(contour) / frame_area
+                    logger.debug(
+                        "eps=%.2f contour area=%.1f%% hull→approx gave %d pts (need 4)",
+                        eps_factor, area_pct * 100, len(approx),
+                    )
                 continue
 
             # Area filter: must fill 10%–80% of frame
-            # Upper bound rejects background surfaces (table/paper) that are
-            # larger than the board itself.
             area = cv2.contourArea(approx)
             if area < 0.10 * frame_area or area > 0.80 * frame_area:
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("eps=%.2f rejected: area=%.1f%% outside 10-80%%", eps_factor, area / frame_area * 100)
                 continue
 
             # Aspect ratio filter
@@ -230,10 +246,14 @@ class BoardFinder:
                 continue
             aspect = rw / rh
             if aspect < 0.7 or aspect > 1.4:
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("eps=%.2f rejected: aspect=%.2f outside 0.7-1.4", eps_factor, aspect)
                 continue
 
             # Color validation: reject white paper / plastic surfaces
             if not self._is_board_surface(image_bgr, approx):
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("eps=%.2f rejected: white surface", eps_factor)
                 continue
 
             # Use the 4 points directly
