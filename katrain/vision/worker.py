@@ -108,6 +108,9 @@ class _VisionWorkerLoop:
 
         self._last_status_time = 0.0
         self._last_detected_board: list[list[int]] | None = None
+        self._board_locked = False  # When True, reuse locked transform instead of re-detecting
+        self._prev_observed_board: np.ndarray | None = None  # For temporal smoothing
+        self._last_stable_board: np.ndarray | None = None
 
     def _init_inference(self) -> None:
         """Load inference backend and board finder (heavy imports)."""
@@ -167,16 +170,24 @@ class _VisionWorkerLoop:
             if frame is not None and self._motion_filter.is_stable(frame):
                 # Board detection + perspective transform
                 t0 = time.monotonic()
-                warped, found = self._board_finder.find_focus(
-                    frame, min_threshold=20, use_clahe=self._config.get("use_clahe", False)
-                )
+
+                if self._board_locked and self._board_finder.last_transform_matrix is not None:
+                    # Locked mode: reuse frozen transform, skip re-detection
+                    M = self._board_finder.last_transform_matrix
+                    warp_w, warp_h = self._board_finder.last_warp_size
+                    warped = cv2.warpPerspective(frame, M, (warp_w, warp_h))
+                    found = True
+                else:
+                    warped, found = self._board_finder.find_focus(
+                        frame, min_threshold=20, use_clahe=self._config.get("use_clahe", False)
+                    )
                 board_finder_ms = (time.monotonic() - t0) * 1000
 
                 if found and warped is not None:
                     board_detected = True
                     h, w = warped.shape[:2]
 
-                    # YOLO inference (heavy — 600ms+ on SBC CPU)
+                    # YOLO inference
                     t1 = time.monotonic()
                     detections = self._detector.detect(warped)
                     yolo_ms = (time.monotonic() - t1) * 1000
@@ -197,11 +208,24 @@ class _VisionWorkerLoop:
 
                     # Board state + move detection
                     observed_board = self._state_extractor.detections_to_board(detections, img_w=w, img_h=h)
-                    self._last_detected_board = observed_board.tolist()
+
+                    # Temporal smoothing: require 2-frame agreement per grid position
+                    if self._prev_observed_board is not None and self._last_stable_board is not None:
+                        stable_board = np.where(
+                            observed_board == self._prev_observed_board,
+                            observed_board,
+                            self._last_stable_board,
+                        )
+                        self._last_stable_board = stable_board
+                    else:
+                        self._last_stable_board = observed_board
+                    self._prev_observed_board = observed_board
+                    self._last_detected_board = self._last_stable_board.tolist()
+
                     if detections:
                         mean_confidence = sum(d.confidence for d in detections) / len(detections)
                     if self._bound:
-                        move_result = self._move_detector.detect_new_move(observed_board)
+                        move_result = self._move_detector.detect_new_move(self._last_stable_board)
                         if move_result is not None:
                             row, col, color = move_result
                             self._event_queue.put(ConfirmedMove(col=col, row=row, color=color))
@@ -246,6 +270,8 @@ class _VisionWorkerLoop:
                 self._bound = False
                 self._sync = SyncStateMachine()  # Reset
             elif cmd.action == CommandType.CONFIRM_POSE_LOCK:
+                self._board_locked = True
+                logger.info("Board pose locked — reusing transform for subsequent frames")
                 self._sync.confirm_pose_lock()
             elif cmd.action == CommandType.SET_EXPECTED_BOARD:
                 board = np.array(cmd.data["board"], dtype=int)
@@ -255,6 +281,8 @@ class _VisionWorkerLoop:
                 target = np.array(cmd.data["target_board"], dtype=int)
                 self._sync.enter_setup_mode(target)
             elif cmd.action == CommandType.RESET_SYNC:
+                self._board_locked = False
+                self._board_finder.is_first = True  # Reset corner baseline
                 self._sync.reset()
             elif cmd.action == CommandType.SET_VIEWER_ACTIVE:
                 self._viewer_active = cmd.data.get("active", False)

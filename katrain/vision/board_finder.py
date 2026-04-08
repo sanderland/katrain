@@ -24,7 +24,7 @@ class BoardFinder:
         self,
         scale: float = 1.0,
         marker_ids: list[int] | None = None,
-        allowed_moving_length: int = 50,
+        allowed_moving_length: int = 10,
         min_perimeter: int = 600,
         camera_config: CameraConfig | None = None,
     ):

@@ -49,7 +49,7 @@ def make_aruco_image(marker_ids=(0, 1, 2, 3), width=800, height=800, marker_size
 class TestBoardFinderInit:
     def test_init_defaults(self):
         finder = BoardFinder()
-        assert finder.allowed_moving_length == 50
+        assert finder.allowed_moving_length == 10
         assert finder.marker_ids is None
         assert finder.aruco_dict is None
         assert finder.aruco_params is None
