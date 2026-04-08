@@ -175,10 +175,10 @@ class BoardFinder:
         - Progressive approxPolyDP epsilon (0.02 → 0.04 → 0.06)
         - Aspect ratio filter (0.7–1.4)
         - Convexity check
-        - Area filter (>10% of frame)
+        - Area filter (10%–80% of frame to reject background surfaces)
         - Direct use of approxPolyDP 4-point result
         """
-        blurred = cv2.GaussianBlur(processed, (3, 3), 0, 0)
+        blurred = cv2.GaussianBlur(processed, (5, 5), 0, 0)
         canny = cv2.Canny(blurred, min_threshold, max_threshold)
         k = np.ones((3, 3), np.uint8)
         canny = cv2.morphologyEx(canny, cv2.MORPH_CLOSE, k)
@@ -214,9 +214,11 @@ class BoardFinder:
             if not cv2.isContourConvex(approx):
                 continue
 
-            # Area filter: must fill at least 10% of frame
+            # Area filter: must fill 10%–80% of frame
+            # Upper bound rejects background surfaces (table/paper) that are
+            # larger than the board itself.
             area = cv2.contourArea(approx)
-            if area < 0.10 * frame_area:
+            if area < 0.10 * frame_area or area > 0.80 * frame_area:
                 continue
 
             # Aspect ratio filter
@@ -235,12 +237,15 @@ class BoardFinder:
         return None
 
     def _calc_size(self, corners):
-        h = max(corners[2][1] - corners[1][1], corners[3][1] - corners[0][1]) * self.scale
-        w = max(corners[0][0] - corners[1][0], corners[3][0] - corners[2][0]) * self.scale
+        # corners = [TL, TR, BR, BL]
+        h = max(corners[3][1] - corners[0][1], corners[2][1] - corners[1][1]) * self.scale
+        w = max(corners[1][0] - corners[0][0], corners[2][0] - corners[3][0]) * self.scale
         return h, w
 
     def _sort_corner(self, pts):
+        # Sort by y to split top/bottom, then by x within each pair.
+        # Returns [TL, TR, BR, BL] matching dst [[0,0], [w,0], [w,h], [0,h]].
         pts = sorted(pts, key=lambda p: p[1])
-        top = sorted(pts[:2], key=lambda p: p[0], reverse=True)
-        bot = sorted(pts[2:], key=lambda p: p[0])
-        return [top[0], top[1], bot[0], bot[1]]
+        top = sorted(pts[:2], key=lambda p: p[0])  # ascending x: [left, right]
+        bot = sorted(pts[2:], key=lambda p: p[0])  # ascending x: [left, right]
+        return [top[0], top[1], bot[1], bot[0]]  # [TL, TR, BR, BL]

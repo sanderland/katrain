@@ -105,7 +105,7 @@ def draw_detection_overlay(
 
     Args:
         frame: original BGR image
-        corners: detected corners from _sort_corner [TR, TL, BL, BR]
+        corners: detected corners from _sort_corner [TL, TR, BR, BL]
         transform_matrix: perspective transform M (warped = M * raw)
         warp_size: (width, height) of the warped image
         config: BoardConfig
@@ -117,7 +117,7 @@ def draw_detection_overlay(
     cv2.polylines(display, [pts], isClosed=True, color=(255, 255, 0), thickness=2)
 
     # Label corners
-    labels = ["TR", "TL", "BL", "BR"]
+    labels = ["TL", "TR", "BR", "BL"]
     for i, (cx, cy) in enumerate(corners):
         cv2.putText(display, labels[i], (cx + 10, cy - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
