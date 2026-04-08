@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KaTrain Cross-Platform Lobby — UI Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #4a6b5c;
+    --primary-light: #5d8270;
+    --primary-dark: #2f4539;
+    --bg-primary: #0f0f0f;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #252525;
+    --bg-surface: #2a2a2a;
+    --bg-surface-hover: #323232;
+    --text-primary: #f5f3f0;
+    --text-secondary: #b8b5b0;
+    --text-tertiary: #7a7772;
+    --text-disabled: #4a4845;
+    --success: #30a06e;
+    --warning: #e89639;
+    --error: #e16b5c;
+    --info: #5b9bd5;
+    --border-subtle: rgba(255,255,255,0.05);
+    --border-default: rgba(255,255,255,0.1);
+    --border-strong: rgba(255,255,255,0.2);
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --font-sans: 'Manrope', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  /* ===== Mockup Navigation ===== */
+  .mockup-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(15,15,15,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-default);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    height: 48px;
+    gap: 8px;
+  }
+  .mockup-nav .label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-right: 12px;
+    font-family: var(--font-mono);
+  }
+  .mockup-nav button {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+  .mockup-nav button:hover { background: var(--bg-surface); color: var(--text-primary); }
+  .mockup-nav button.active {
+    background: var(--primary-dark);
+    border-color: var(--primary);
+    color: var(--text-primary);
+  }
+
+  .page { display: none; padding-top: 48px; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ===== Page 1: Platform Connection ===== */
+  .connect-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 32px 32px;
+  }
+  .connect-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .connect-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .connect-header p {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1160px;
+  }
+
+  .platform-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: all 200ms ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .platform-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--text-disabled);
+    transition: background 200ms ease;
+  }
+  .platform-card:hover {
+    border-color: var(--border-default);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .platform-card.connected::before { background: var(--success); }
+  .platform-card.connecting::before { background: var(--warning); animation: pulse 2s infinite; }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .card-top .platform-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .icon-ogs { background: linear-gradient(135deg, #2196F3, #1565C0); }
+  .icon-fox { background: linear-gradient(135deg, #FF6B00, #E65100); }
+  .icon-golaxy { background: linear-gradient(135deg, #7C4DFF, #512DA8); }
+  .icon-kgs { background: linear-gradient(135deg, #43A047, #2E7D32); }
+  .icon-tygem { background: linear-gradient(135deg, #FF5252, #C62828); }
+
+  .status-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+  .status-badge.offline { background: rgba(255,255,255,0.06); color: var(--text-tertiary); }
+  .status-badge.online { background: rgba(48,160,110,0.15); color: var(--success); }
+  .status-badge.connecting { background: rgba(232,150,57,0.15); color: var(--warning); }
+
+  .card-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .card-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius-md);
+  }
+  .card-stat {
+    flex: 1;
+    text-align: center;
+  }
+  .card-stat .value {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+  }
+  .card-stat .label {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+
+  .card-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: rgba(74,107,92,0.1);
+    border: 1px solid rgba(74,107,92,0.2);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+  }
+  .card-user .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .card-user .user-info { flex: 1; }
+  .card-user .user-name { font-size: 13px; font-weight: 600; }
+  .card-user .user-rank { font-size: 11px; color: var(--primary-light); font-family: var(--font-mono); }
+
+  .card-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 150ms ease;
+    border: none;
+    touch-action: manipulation;
+  }
+  .card-btn.login {
+    background: var(--primary);
+    color: #fff;
+  }
+  .card-btn.login:hover { background: var(--primary-light); }
+  .card-btn.enter {
+    background: rgba(48,160,110,0.15);
+    color: var(--success);
+    border: 1px solid rgba(48,160,110,0.3);
+  }
+  .card-btn.enter:hover { background: rgba(48,160,110,0.25); }
+  .card-btn.disconnect {
+    background: transparent;
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-default);
+    font-size: 12px;
+    padding: 8px;
+    margin-top: 8px;
+  }
+
+  /* ===== Login Modal ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.visible { display: flex; }
+
+  .modal {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    width: 400px;
+    max-width: 90vw;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  }
+  .modal h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .modal .subtitle {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-bottom: 24px;
+  }
+  .modal .field {
+    margin-bottom: 16px;
+  }
+  .modal .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .modal .field input {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 150ms ease;
+  }
+  .modal .field input:focus { border-color: var(--primary-light); }
+  .modal .field input::placeholder { color: var(--text-disabled); }
+  .modal .field .hint {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 150ms ease;
+    border: none;
+  }
+  .modal-actions .cancel {
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+  }
+  .modal-actions .confirm {
+    background: var(--primary);
+    color: #fff;
+  }
+  .modal-actions .confirm:hover { background: var(--primary-light); }
+
+  /* ===== Page 2: Platform Lobby ===== */
+  .lobby-page {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 48px);
+  }
+
+  .lobby-tabs {
+    display: flex;
+    padding: 12px 24px 0;
+    gap: 4px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-secondary);
+  }
+  .lobby-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 150ms ease;
+    position: relative;
+  }
+  .lobby-tab:hover { color: var(--text-secondary); }
+  .lobby-tab.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--primary-light);
+  }
+  .lobby-tab .tab-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .lobby-tab .user-count {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-tertiary);
+  }
+  .lobby-tab.active .user-count {
+    background: rgba(74,107,92,0.2);
+    color: var(--primary-light);
+  }
+
+  .lobby-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* User list */
+  .user-list-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .list-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 0 12px;
+  }
+  .search-box .icon { color: var(--text-tertiary); font-size: 14px; }
+  .search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 10px 0;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    outline: none;
+  }
+  .search-box input::placeholder { color: var(--text-disabled); }
+
+  .filter-btn {
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .filter-btn:hover { background: var(--bg-surface); }
+  .filter-btn.active { border-color: var(--primary); color: var(--primary-light); }
+
+  .automatch-btn {
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 150ms ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .automatch-btn:hover { background: var(--primary-light); }
+  .automatch-btn .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    animation: pulse 2s infinite;
+  }
+
+  .user-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 16px;
+  }
+  .user-list::-webkit-scrollbar { width: 4px; }
+  .user-list::-webkit-scrollbar-track { background: transparent; }
+  .user-list::-webkit-scrollbar-thumb { background: var(--bg-surface); border-radius: 2px; }
+
+  .user-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    transition: background 100ms ease;
+    cursor: pointer;
+  }
+  .user-row:hover { background: var(--bg-surface); }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .user-avatar .status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-primary);
+  }
+  .status-dot.idle { background: var(--success); }
+  .status-dot.playing { background: var(--warning); }
+  .status-dot.away { background: var(--text-disabled); }
+
+  .user-info { flex: 1; min-width: 0; }
+  .user-info .name {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .user-info .meta {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .user-rank-badge {
+    font-size: 12px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.06);
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .user-rank-badge.dan { background: rgba(74,107,92,0.2); color: var(--primary-light); }
+  .user-rank-badge.pro { background: rgba(232,150,57,0.2); color: var(--warning); }
+
+  .challenge-btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--primary);
+    background: transparent;
+    color: var(--primary-light);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 150ms ease;
+    flex-shrink: 0;
+    touch-action: manipulation;
+  }
+  .challenge-btn:hover { background: rgba(74,107,92,0.15); }
+  .challenge-btn:disabled {
+    border-color: var(--text-disabled);
+    color: var(--text-disabled);
+    cursor: not-allowed;
+  }
+
+  /* Right sidebar - challenges & activity */
+  .lobby-sidebar {
+    width: 320px;
+    border-left: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+  }
+
+  .sidebar-section {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .sidebar-section h3 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+
+  .challenge-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    margin-bottom: 8px;
+    animation: slideUp 250ms ease;
+  }
+  .challenge-card .from {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .challenge-card .from-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .challenge-card .from-name { font-size: 13px; font-weight: 600; }
+  .challenge-card .from-rank { font-size: 11px; color: var(--primary-light); font-family: var(--font-mono); }
+  .challenge-card .details {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .challenge-card .details span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .challenge-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .challenge-actions button {
+    flex: 1;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 100ms ease;
+  }
+  .challenge-actions .accept { background: var(--primary); color: #fff; }
+  .challenge-actions .accept:hover { background: var(--primary-light); }
+  .challenge-actions .decline { background: var(--bg-surface); color: var(--text-secondary); }
+
+  /* Open challenges list */
+  .open-challenge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    transition: background 100ms ease;
+    cursor: pointer;
+  }
+  .open-challenge:hover { background: var(--bg-surface); }
+  .open-challenge .oc-name { font-size: 12px; font-weight: 500; flex: 1; }
+  .open-challenge .oc-rank {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--primary-light);
+  }
+  .open-challenge .oc-info {
+    font-size: 10px;
+    color: var(--text-tertiary);
+  }
+
+  /* ===== Page 3: In-Game Overlay ===== */
+  .game-page {
+    display: flex;
+    height: calc(100vh - 48px);
+    background: var(--bg-primary);
+  }
+
+  .game-board-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+  }
+
+  /* Simulated board */
+  .board-container {
+    width: 520px;
+    height: 520px;
+    background: #d4a574;
+    border-radius: var(--radius-md);
+    position: relative;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  .board-grid {
+    position: absolute;
+    inset: 26px;
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    grid-template-rows: repeat(18, 1fr);
+  }
+  .board-grid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(to right, #8b6f47 0px, #8b6f47 1px, transparent 1px, transparent calc(100% / 18))
+      ,repeating-linear-gradient(to bottom, #8b6f47 0px, #8b6f47 1px, transparent 1px, transparent calc(100% / 18));
+    pointer-events: none;
+  }
+
+  /* Stones on board */
+  .stone {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .stone.black {
+    background: radial-gradient(circle at 35% 35%, #3a3a3a, #0a0a0a);
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.4);
+  }
+  .stone.white {
+    background: radial-gradient(circle at 35% 35%, #fff, #e8e6e3);
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.2);
+  }
+
+  /* Last move indicator */
+  .last-move-indicator {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2.5px solid var(--warning);
+    transform: translate(-50%, -50%);
+    animation: lastMovePulse 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes lastMovePulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(232,150,57,0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(232,150,57,0); }
+  }
+
+  /* Opponent move flash */
+  .opponent-move-flash {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(232,150,57,0.2);
+    transform: translate(-50%, -50%);
+    animation: flashIn 1.5s ease-out;
+    pointer-events: none;
+  }
+  @keyframes flashIn {
+    0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+  }
+
+  /* Platform badge */
+  .platform-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(15,15,15,0.85);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+  }
+  .platform-badge .badge-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .platform-badge .badge-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .platform-badge .conn-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+  }
+
+  /* Game info panel (right side) */
+  .game-info-panel {
+    width: 340px;
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  /* Player cards with timer */
+  .player-card {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    transition: border-color 200ms ease;
+  }
+  .player-card.active-turn {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px rgba(74,107,92,0.3);
+  }
+
+  .player-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .player-stone {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .player-stone.black {
+    background: radial-gradient(circle at 35% 35%, #3a3a3a, #0a0a0a);
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+  }
+  .player-stone.white {
+    background: radial-gradient(circle at 35% 35%, #fff, #e8e6e3);
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.15);
+  }
+
+  .player-details { flex: 1; }
+  .player-details .pname {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .player-details .prank {
+    font-size: 12px;
+    color: var(--primary-light);
+    font-family: var(--font-mono);
+  }
+  .player-captures {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+  }
+
+  /* Timer display */
+  .timer-display {
+    background: rgba(0,0,0,0.3);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .timer-main {
+    flex: 1;
+  }
+  .timer-main .time {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .timer-main .time.urgent { color: var(--error); }
+  .timer-main .time.warning { color: var(--warning); }
+
+  .timer-periods {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .timer-periods .period {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+  }
+  .timer-periods .period.used { background: var(--text-disabled); }
+
+  .timer-label {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+  .timer-byoyomi-label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+  }
+
+  /* Move history / controls */
+  .game-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+  }
+  .game-controls button {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 150ms ease;
+    touch-action: manipulation;
+  }
+  .game-controls button:hover { background: var(--bg-surface-hover); color: var(--text-primary); }
+  .game-controls .resign-btn {
+    border-color: rgba(225,107,92,0.3);
+    color: var(--error);
+  }
+  .game-controls .resign-btn:hover { background: rgba(225,107,92,0.1); }
+
+  /* Move number indicator on board */
+  .move-number {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(15,15,15,0.85);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    padding: 6px 12px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+  }
+  .move-number .num {
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* ===== Incoming challenge toast ===== */
+  .challenge-toast {
+    position: fixed;
+    top: 60px;
+    right: 24px;
+    width: 340px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    z-index: 3000;
+    animation: slideInRight 300ms ease;
+  }
+  @keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  .toast-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .toast-header .bell { font-size: 16px; }
+  .toast-header .title { font-size: 13px; font-weight: 600; color: var(--primary-light); }
+  .toast-header .close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+  }
+  .toast-body {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .toast-body .t-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+  .toast-body .t-info .t-name { font-size: 14px; font-weight: 600; }
+  .toast-body .t-info .t-rank { font-size: 12px; color: var(--primary-light); font-family: var(--font-mono); }
+  .toast-body .t-info .t-details { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+  .toast-actions { display: flex; gap: 8px; }
+  .toast-actions button {
+    flex: 1;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 100ms ease;
+  }
+  .toast-actions .t-accept { background: var(--primary); color: #fff; }
+  .toast-actions .t-accept:hover { background: var(--primary-light); }
+  .toast-actions .t-decline { background: var(--bg-surface); color: var(--text-secondary); }
+
+  /* ===== Animations ===== */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(12px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Mockup Navigation -->
+<nav class="mockup-nav">
+  <span class="label">Mockup</span>
+  <button class="active" onclick="showPage('connect')">平台连接</button>
+  <button onclick="showPage('lobby')">对战大厅</button>
+  <button onclick="showPage('game')">对弈界面</button>
+</nav>
+
+<!-- ===== PAGE 1: Platform Connection ===== -->
+<div id="page-connect" class="page active">
+  <div class="connect-page">
+    <div class="connect-header">
+      <h1>跨平台对弈</h1>
+      <p>连接您的围棋平台账号，在实体棋盘上与全球棋友对弈</p>
+    </div>
+
+    <div class="platform-grid">
+      <!-- OGS - Connected -->
+      <div class="platform-card connected">
+        <div class="card-top">
+          <div class="platform-icon icon-ogs">OGS</div>
+          <span class="status-badge online">已连接</span>
+        </div>
+        <div class="card-name">OGS</div>
+        <div class="card-desc">Online-Go.com — 全球最大的开放围棋平台</div>
+        <div class="card-stats">
+          <div class="card-stat">
+            <div class="value">2,847</div>
+            <div class="label">在线</div>
+          </div>
+          <div class="card-stat">
+            <div class="value">156</div>
+            <div class="label">对局中</div>
+          </div>
+        </div>
+        <div class="card-user">
+          <div class="avatar">F</div>
+          <div class="user-info">
+            <div class="user-name">FanGo</div>
+            <div class="user-rank">3d · ELO 1842</div>
+          </div>
+        </div>
+        <button class="card-btn enter" onclick="showPage('lobby')">进入大厅 →</button>
+        <button class="card-btn disconnect">断开连接</button>
+      </div>
+
+      <!-- 野狐 - Not connected -->
+      <div class="platform-card" onclick="showModal('fox')">
+        <div class="card-top">
+          <div class="platform-icon icon-fox">狐</div>
+          <span class="status-badge offline">未连接</span>
+        </div>
+        <div class="card-name">野狐围棋</div>
+        <div class="card-desc">腾讯旗下 — 国内最大围棋对弈平台，职业棋手云集</div>
+        <div class="card-stats">
+          <div class="card-stat">
+            <div class="value">—</div>
+            <div class="label">在线</div>
+          </div>
+          <div class="card-stat">
+            <div class="value">—</div>
+            <div class="label">对局中</div>
+          </div>
+        </div>
+        <button class="card-btn login">登录账号</button>
+      </div>
+
+      <!-- 星阵 - Connecting -->
+      <div class="platform-card connecting">
+        <div class="card-top">
+          <div class="platform-icon icon-golaxy">星</div>
+          <span class="status-badge connecting">连接中...</span>
+        </div>
+        <div class="card-name">星阵围棋</div>
+        <div class="card-desc">19x19.com — 世界冠军AI，百万棋友社区</div>
+        <div class="card-stats">
+          <div class="card-stat">
+            <div class="value">—</div>
+            <div class="label">在线</div>
+          </div>
+          <div class="card-stat">
+            <div class="value">—</div>
+            <div class="label">对局中</div>
+          </div>
+        </div>
+        <button class="card-btn login" style="opacity:0.5; cursor:wait;">正在连接...</button>
+      </div>
+
+      <!-- KGS -->
+      <div class="platform-card" onclick="showModal('kgs')">
+        <div class="card-top">
+          <div class="platform-icon icon-kgs">KGS</div>
+          <span class="status-badge offline">未连接</span>
+        </div>
+        <div class="card-name">KGS</div>
+        <div class="card-desc">经典欧美围棋服务器，国际棋友聚集地</div>
+        <div class="card-stats">
+          <div class="card-stat">
+            <div class="value">—</div>
+            <div class="label">在线</div>
+          </div>
+          <div class="card-stat">
+            <div class="value">—</div>
+            <div class="label">对局中</div>
+          </div>
+        </div>
+        <button class="card-btn login">登录账号</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal (Fox example) -->
+<div id="modal-fox" class="modal-overlay" onclick="if(event.target===this)hideModal('fox')">
+  <div class="modal">
+    <h2>登录野狐围棋</h2>
+    <p class="subtitle">请输入您的野狐围棋账号信息</p>
+    <div class="field">
+      <label>用户名</label>
+      <input type="text" placeholder="野狐围棋用户名">
+    </div>
+    <div class="field">
+      <label>密码</label>
+      <input type="password" placeholder="请输入密码">
+      <div class="hint">您的密码仅在本地加密存储，不会上传至其他服务器</div>
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="hideModal('fox')">取消</button>
+      <button class="confirm">登录</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal (KGS) -->
+<div id="modal-kgs" class="modal-overlay" onclick="if(event.target===this)hideModal('kgs')">
+  <div class="modal">
+    <h2>登录 KGS</h2>
+    <p class="subtitle">请输入您的 KGS Go Server 账号信息</p>
+    <div class="field">
+      <label>用户名</label>
+      <input type="text" placeholder="KGS username">
+    </div>
+    <div class="field">
+      <label>密码</label>
+      <input type="password" placeholder="Password">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="hideModal('kgs')">取消</button>
+      <button class="confirm">登录</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE 2: Platform Lobby ===== -->
+<div id="page-lobby" class="page">
+  <div class="lobby-page">
+    <!-- Platform tabs -->
+    <div class="lobby-tabs">
+      <button class="lobby-tab active">
+        <span class="tab-icon icon-ogs" style="font-size:9px;">OGS</span>
+        OGS
+        <span class="user-count">2,847</span>
+      </button>
+      <button class="lobby-tab">
+        <span class="tab-icon icon-golaxy" style="font-size:9px;">星</span>
+        星阵围棋
+        <span class="user-count">1,203</span>
+      </button>
+      <button class="lobby-tab" style="opacity:0.4; cursor:not-allowed;">
+        <span class="tab-icon icon-fox" style="font-size:9px;">狐</span>
+        野狐围棋
+        <span class="user-count" style="font-size:10px;">未登录</span>
+      </button>
+    </div>
+
+    <div class="lobby-content">
+      <!-- User list -->
+      <div class="user-list-panel">
+        <div class="list-toolbar">
+          <div class="search-box">
+            <span class="icon">🔍</span>
+            <input type="text" placeholder="搜索棋友...">
+          </div>
+          <button class="filter-btn active">空闲</button>
+          <button class="filter-btn">全部</button>
+          <button class="filter-btn">段位 ▾</button>
+          <button class="automatch-btn">
+            <span class="dot"></span>
+            自动匹配
+          </button>
+        </div>
+
+        <div class="user-list">
+          <!-- User rows -->
+          <div class="user-row">
+            <div class="user-avatar">
+              K
+              <span class="status-dot idle"></span>
+            </div>
+            <div class="user-info">
+              <div class="name">KataKid</div>
+              <div class="meta">
+                <span>🇺🇸 United States</span>
+              </div>
+            </div>
+            <span class="user-rank-badge dan">5d</span>
+            <button class="challenge-btn">挑战</button>
+          </div>
+
+          <div class="user-row">
+            <div class="user-avatar">
+              雪
+              <span class="status-dot idle"></span>
+            </div>
+            <div class="user-info">
+              <div class="name">雪山飞狐</div>
+              <div class="meta">
+                <span>🇨🇳 China</span>
+              </div>
+            </div>
+            <span class="user-rank-badge dan">3d</span>
+            <button class="challenge-btn">挑战</button>
+          </div>
+
+          <div class="user-row">
+            <div class="user-avatar">
+              S
+              <span class="status-dot idle"></span>
+            </div>
+            <div class="user-info">
+              <div class="name">SenteSeeker</div>
+              <div class="meta">
+                <span>🇯🇵 Japan</span>
+              </div>
+            </div>
+            <span class="user-rank-badge dan">2d</span>
+            <button class="challenge-btn">挑战</button>
+          </div>
+
+          <div class="user-row">
+            <div class="user-avatar">
+              B
+              <span class="status-dot playing"></span>
+            </div>
+            <div class="user-info">
+              <div class="name">BadukMaster99</div>
+              <div class="meta">
+                <span>🇰🇷 Korea</span>
+                <span style="color:var(--warning);">对局中</span>
+              </div>
+            </div>
+            <span class="user-rank-badge dan">4d</span>
+            <button class="challenge-btn" disabled>对局中</button>
+          </div>
+
+          <div class="user-row">
+            <div class="user-avatar">
+              棋
+              <span class="status-dot idle"></span>
+            </div>
+            <div class="user-info">
+              <div class="name">棋道求索</div>
+              <div class="meta">
+                <span>🇨🇳 China</span>
+              </div>
+            </div>
+            <span class="user-rank-badge">1k</span>
+            <button class="challenge-btn">挑战</button>
+          </div>
+
+          <div class="user-row">
+            <div class="user-avatar">
+              M
+              <span class="status-dot idle"></span>
+            </div>
+            <div class="user-info">
+              <div class="name">MoyoBuilder</div>
+              <div class="meta">
+                <span>🇬🇧 UK</span>
+              </div>
+            </div>
+            <span class="user-rank-badge">3k</span>
+            <button class="challenge-btn">挑战</button>
+          </div>
+
+          <div class="user-row">
+            <div class="user-avatar">
+              天
+              <span class="status-dot idle"></span>
+            </div>
+            <div class="user-info">
+              <div class="name">天元一手</div>
+              <div class="meta">
+                <span>🇹🇼 Taiwan</span>
+              </div>
+            </div>
+            <span class="user-rank-badge dan">1d</span>
+            <button class="challenge-btn">挑战</button>
+          </div>
+
+          <div class="user-row">
+            <div class="user-avatar">
+              A
+              <span class="status-dot away"></span>
+            </div>
+            <div class="user-info">
+              <div class="name">AlphaFan</div>
+              <div class="meta">
+                <span>🇩🇪 Germany</span>
+                <span style="color:var(--text-disabled);">离开</span>
+              </div>
+            </div>
+            <span class="user-rank-badge">5k</span>
+            <button class="challenge-btn" disabled>离开</button>
+          </div>
+
+          <div class="user-row">
+            <div class="user-avatar">
+              围
+              <span class="status-dot idle"></span>
+            </div>
+            <div class="user-info">
+              <div class="name">围棋少年</div>
+              <div class="meta">
+                <span>🇨🇳 China</span>
+              </div>
+            </div>
+            <span class="user-rank-badge pro">7p</span>
+            <button class="challenge-btn">挑战</button>
+          </div>
+
+          <div class="user-row">
+            <div class="user-avatar">
+              T
+              <span class="status-dot idle"></span>
+            </div>
+            <div class="user-info">
+              <div class="name">TsumegoLover</div>
+              <div class="meta">
+                <span>🇫🇷 France</span>
+              </div>
+            </div>
+            <span class="user-rank-badge">2k</span>
+            <button class="challenge-btn">挑战</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right sidebar -->
+      <div class="lobby-sidebar">
+        <div class="sidebar-section">
+          <h3>📩 收到的挑战</h3>
+          <div class="challenge-card">
+            <div class="from">
+              <div class="from-avatar">雪</div>
+              <div>
+                <div class="from-name">雪山飞狐</div>
+                <div class="from-rank">3d</div>
+              </div>
+            </div>
+            <div class="details">
+              <span>19×19</span>
+              <span>读秒 10分+30秒×5</span>
+              <span>有等级分</span>
+            </div>
+            <div class="challenge-actions">
+              <button class="accept">接受</button>
+              <button class="decline">拒绝</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h3>🏁 公开挑战</h3>
+          <div class="open-challenge">
+            <div class="oc-name">GoExplorer</div>
+            <div class="oc-rank">2d</div>
+            <div class="oc-info">19×19 · 读秒</div>
+          </div>
+          <div class="open-challenge">
+            <div class="oc-name">棋圣之路</div>
+            <div class="oc-rank">1k</div>
+            <div class="oc-info">19×19 · 包干</div>
+          </div>
+          <div class="open-challenge">
+            <div class="oc-name">NinjaTesuji</div>
+            <div class="oc-rank">4d</div>
+            <div class="oc-info">13×13 · 快棋</div>
+          </div>
+          <div class="open-challenge">
+            <div class="oc-name">点目高手</div>
+            <div class="oc-rank">3k</div>
+            <div class="oc-info">19×19 · 读秒</div>
+          </div>
+          <div class="open-challenge">
+            <div class="oc-name">StarPoint</div>
+            <div class="oc-rank">5k</div>
+            <div class="oc-info">9×9 · 快棋</div>
+          </div>
+        </div>
+
+        <div class="sidebar-section" style="flex:1; overflow-y:auto;">
+          <h3>📊 我的战绩 (OGS)</h3>
+          <div style="display:flex; gap:12px; margin-bottom:12px;">
+            <div class="card-stat" style="text-align:left;">
+              <div class="value" style="font-size:16px;">42</div>
+              <div class="label">总对局</div>
+            </div>
+            <div class="card-stat" style="text-align:left;">
+              <div class="value" style="font-size:16px; color:var(--success);">28</div>
+              <div class="label">胜</div>
+            </div>
+            <div class="card-stat" style="text-align:left;">
+              <div class="value" style="font-size:16px; color:var(--error);">14</div>
+              <div class="label">负</div>
+            </div>
+            <div class="card-stat" style="text-align:left;">
+              <div class="value" style="font-size:16px;">66.7%</div>
+              <div class="label">胜率</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE 3: In-Game Overlay ===== -->
+<div id="page-game" class="page">
+  <div class="game-page">
+    <div class="game-board-area">
+      <!-- Platform badge -->
+      <div class="platform-badge">
+        <div class="badge-icon icon-ogs" style="font-size:8px;">OGS</div>
+        <span class="badge-text">OGS 有等级分对局</span>
+        <span class="conn-dot"></span>
+      </div>
+
+      <!-- Move counter -->
+      <div class="move-number">
+        手数 <span class="num">127</span>
+      </div>
+
+      <!-- Simulated board with stones -->
+      <div class="board-container">
+        <div class="board-grid"></div>
+
+        <!-- Sample stones (positioned roughly) -->
+        <div class="stone black" style="left:29%; top:15%;"></div>
+        <div class="stone white" style="left:15%; top:29%;"></div>
+        <div class="stone black" style="left:50%; top:50%;"></div>
+        <div class="stone white" style="left:71%; top:29%;"></div>
+        <div class="stone black" style="left:71%; top:50%;"></div>
+        <div class="stone white" style="left:50%; top:71%;"></div>
+        <div class="stone black" style="left:29%; top:71%;"></div>
+        <div class="stone white" style="left:85%; top:50%;"></div>
+        <div class="stone black" style="left:15%; top:50%;"></div>
+        <div class="stone white" style="left:50%; top:29%;"></div>
+        <div class="stone black" style="left:36%; top:36%;"></div>
+        <div class="stone white" style="left:64%; top:64%;"></div>
+
+        <!-- Last opponent move + indicator -->
+        <div class="stone white" style="left:36%; top:64%;"></div>
+        <div class="last-move-indicator" style="left:36%; top:64%;"></div>
+        <div class="opponent-move-flash" style="left:36%; top:64%;"></div>
+      </div>
+    </div>
+
+    <!-- Right panel: players + timer + controls -->
+    <div class="game-info-panel">
+      <!-- Opponent (top) -->
+      <div class="player-card">
+        <div class="player-header">
+          <div class="player-stone white"></div>
+          <div class="player-details">
+            <div class="pname">雪山飞狐</div>
+            <div class="prank">3d · OGS</div>
+          </div>
+          <div class="player-captures">提 3子</div>
+        </div>
+        <div class="timer-display">
+          <div class="timer-main">
+            <div class="time">08:42</div>
+            <div class="timer-periods">
+              <span class="period"></span>
+              <span class="period"></span>
+              <span class="period"></span>
+              <span class="period"></span>
+              <span class="period"></span>
+            </div>
+            <div class="timer-byoyomi-label">5 × 30秒读秒</div>
+          </div>
+          <div class="timer-label">主时</div>
+        </div>
+      </div>
+
+      <!-- VS divider -->
+      <div style="text-align:center; padding:4px 0;">
+        <span style="font-size:12px; font-weight:600; color:var(--text-disabled); letter-spacing:0.1em;">VS</span>
+      </div>
+
+      <!-- Me (bottom, active turn) -->
+      <div class="player-card active-turn">
+        <div class="player-header">
+          <div class="player-stone black"></div>
+          <div class="player-details">
+            <div class="pname">FanGo <span style="font-size:11px; color:var(--text-tertiary);">(我)</span></div>
+            <div class="prank">3d · OGS</div>
+          </div>
+          <div class="player-captures">提 5子</div>
+        </div>
+        <div class="timer-display">
+          <div class="timer-main">
+            <div class="time warning">02:15</div>
+            <div class="timer-periods">
+              <span class="period"></span>
+              <span class="period"></span>
+              <span class="period"></span>
+              <span class="period used"></span>
+              <span class="period used"></span>
+            </div>
+            <div class="timer-byoyomi-label">3 × 30秒读秒 (已用2)</div>
+          </div>
+          <div class="timer-label">主时</div>
+        </div>
+      </div>
+
+      <!-- Game status -->
+      <div style="text-align:center; padding:8px; background:rgba(74,107,92,0.1); border-radius:var(--radius-md); border:1px solid rgba(74,107,92,0.2);">
+        <div style="font-size:13px; font-weight:600; color:var(--primary-light);">轮到你落子</div>
+        <div style="font-size:11px; color:var(--text-tertiary); margin-top:2px;">请在棋盘上放置棋子</div>
+      </div>
+
+      <!-- Controls -->
+      <div class="game-controls">
+        <button>虚手</button>
+        <button>请求数子</button>
+        <button class="resign-btn">认输</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Incoming challenge toast (shown floating) -->
+  <div class="challenge-toast">
+    <div class="toast-header">
+      <span class="bell">🔔</span>
+      <span class="title">新的挑战</span>
+      <button class="close">✕</button>
+    </div>
+    <div class="toast-body">
+      <div class="t-avatar">棋</div>
+      <div class="t-info">
+        <div class="t-name">棋道求索</div>
+        <div class="t-rank">1k · OGS</div>
+        <div class="t-details">19×19 · 读秒 10分+30秒×5</div>
+      </div>
+    </div>
+    <div class="toast-actions">
+      <button class="t-decline">拒绝</button>
+      <button class="t-accept">接受挑战</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    document.querySelectorAll('.mockup-nav button:not(.label)').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  function showModal(platform) {
+    const modal = document.getElementById('modal-' + platform);
+    if (modal) modal.classList.add('visible');
+  }
+
+  function hideModal(platform) {
+    const modal = document.getElementById('modal-' + platform);
+    if (modal) modal.classList.remove('visible');
+  }
+</script>
+
+</body>
+</html>
