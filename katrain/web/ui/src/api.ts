@@ -76,6 +76,36 @@ export interface SessionResponse {
   state: GameState;
 }
 
+// --- Cross-platform play types ---
+
+export interface PlatformInfo {
+  platform: string;
+  connected: boolean;
+  supports_live_play: boolean;
+  supports_automatch: boolean;
+  supports_rooms: boolean;
+  supports_seek_graph: boolean;
+  saved_username?: string;
+}
+
+export interface PlatformStatusResponse {
+  platforms: PlatformInfo[];
+}
+
+export interface PlatformUser {
+  user_id: string;
+  username: string;
+  rank: string;
+  status: string;
+}
+
+export interface PlatformClockState {
+  black_time: Record<string, any>;
+  white_time: Record<string, any>;
+  current_player: "B" | "W";
+  paused?: boolean;
+}
+
 export interface VisionStatusResponse {
   enabled: boolean;
   camera_connected: boolean;
@@ -298,4 +328,55 @@ export const API = {
     }
     return response.ok ? response.json() : { status: "local_only" };
   },
+
+  // --- Cross-platform online play ---
+  platformLogin: (platform: string, credentials: { username: string; password: string }, token: string) =>
+    apiPost(`/api/v1/platforms/${platform}/login`, credentials, token),
+  platformLogout: async (platform: string, token: string) => {
+    const response = await fetch(`/api/v1/platforms/${platform}/logout`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error(`Logout failed: ${response.status}`);
+    return response.json();
+  },
+  platformStatus: async (token: string): Promise<PlatformStatusResponse> => {
+    const response = await fetch("/api/v1/platforms/status", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error("Failed to get platform status");
+    return response.json();
+  },
+  platformUsers: async (platform: string, token: string, query?: string): Promise<{ users: PlatformUser[] }> => {
+    const params = query ? `?q=${encodeURIComponent(query)}` : '';
+    const response = await fetch(`/api/v1/platforms/${platform}/users${params}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error("Failed to get users");
+    return response.json();
+  },
+  platformRooms: async (platform: string, token: string) => {
+    const response = await fetch(`/api/v1/platforms/${platform}/rooms`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error("Failed to get rooms");
+    return response.json();
+  },
+  platformChallenges: async (platform: string, token: string) => {
+    const response = await fetch(`/api/v1/platforms/${platform}/challenges`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error("Failed to get challenges");
+    return response.json();
+  },
+  platformSendChallenge: (platform: string, data: object, token: string) =>
+    apiPost(`/api/v1/platforms/${platform}/challenge`, data, token),
+  platformAcceptChallenge: (platform: string, challengeId: string, token: string) =>
+    apiPost(`/api/v1/platforms/${platform}/challenge/accept`, { challenge_id: challengeId }, token),
+  platformDeclineChallenge: (platform: string, challengeId: string, token: string) =>
+    apiPost(`/api/v1/platforms/${platform}/challenge/decline`, { challenge_id: challengeId }, token),
+  platformStartAutomatch: (platform: string, prefs: object, token: string) =>
+    apiPost(`/api/v1/platforms/${platform}/automatch/start`, prefs, token),
+  platformCancelAutomatch: (platform: string, token: string) =>
+    apiPost(`/api/v1/platforms/${platform}/automatch/cancel`, {}, token),
 };

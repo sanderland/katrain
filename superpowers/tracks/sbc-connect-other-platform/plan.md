@@ -3,9 +3,9 @@
 > **Revision 2** (2026-04-08) — Updated based on Codex and Gemini review feedback.
 > See `review-evaluation.md` for detailed evaluation of each review suggestion.
 
-**Goal:** Turn the KaTrain RK3588 smart board into a cross-platform Go hub that connects to OGS, 野狐围棋, 星阵围棋, KGS, and potentially 弈城围棋, enabling users to play against opponents on any platform through their physical board.
+**Goal:** Turn the KaTrain RK3588 smart board into a cross-platform Go hub that connects to OGS, 野狐围棋, 星阵围棋, and potentially 弈城围棋, enabling users to play against opponents on any platform through their physical board. ~~KGS removed from scope (2026-04-09).~~
 
-**Strategy:** OGS first (validate architecture with official API) → 野狐 (largest China user base) → 星阵 → KGS → others.
+**Strategy:** OGS first (validate architecture with official API) → 野狐 (largest China user base) → 星阵 → others. ~~KGS skipped (2026-04-09).~~
 
 **Target:** Board/kiosk mode first. Web version can reuse backend but will have different UI.
 
@@ -856,44 +856,11 @@ Dependencies: `websockets`
 
 ---
 
-## Phase 4: KGS Integration
+## ~~Phase 4: KGS Integration~~ — SKIPPED
 
-**Purpose:** International audience, well-documented JSON protocol.
-
-### Step 4.1: KGS Adapter (`katrain/web/platforms/kgs/adapter.py`)
-
-**Protocol:** HTTP GET (long-poll) + POST for commands.
-
-The KGS JSON API is accessible via a JSP webapp that translates the binary KGS protocol:
-- Download URL: `http://www.gokgs.com/help/protocol.html`
-- Deploy locally or use a public instance
-
-**Alternative: Direct JSON protocol implementation.**
-
-```python
-class KGSJsonClient:
-    """HTTP polling client for KGS JSON protocol."""
-
-    async def login(self, name: str, password: str) -> bool:
-        """POST LOGIN message, receive LOGIN_SUCCESS."""
-
-    async def poll(self) -> list[dict]:
-        """GET to receive queued messages from server."""
-
-    async def send(self, message: dict) -> None:
-        """POST a command message."""
-```
-
-**Message types for game flow:**
-- `JOIN_GAME_BY_ID` / `UNJOIN_GAME` — Join/leave a game
-- `GAME_MOVE_PLAYED` — Our move
-- `GAME_STATE` — Full board position update
-- `GAME_OVER` — Game result
-
-**Limitations:**
-- HTTP polling = higher latency than WebSocket (500ms-2s per poll)
-- JSON API docs last updated 2016 — may have diverged
-- Need to run the Java webapp proxy (or find a hosted instance)
+> **Decision (2026-04-09):** KGS registration is problematic and the platform's user base is declining.
+> Deprioritized indefinitely. The existing `katrain/web/platforms/kgs/` skeleton can be removed or left as-is.
+> If revisited later, the `PlatformAdapter` infrastructure supports adding it back.
 
 ---
 
@@ -901,14 +868,40 @@ class KGSJsonClient:
 
 **Purpose:** React components for platform selection, lobby browsing, and in-game overlay.
 
-### Step 5.1: Platform Connection Page (`PlatformConnectPage.tsx`)
+**Entry point:** 方案 A — "跨平台对弈" 作为 PlayPage "人人对弈" 分组下的第三张 ModeCard。
+
+### Step 5.0: PlayPage Card Layout Adjustment
+
+Current PlayPage has 4 ModeCards (AI×2 + PvP×2) that are too large — adding a 5th card
+would require scrolling on the 1024×600 / 1280×800 kiosk touchscreen.
+
+**Changes to `kiosk/pages/PlayPage.tsx`:**
+1. Reduce ModeCard sizes so all 5 cards (AI free, AI ranked, local PvP, online lobby, **cross-platform**) fit on one screen without scrolling
+2. Add "跨平台对弈" card under "人人对弈" section:
+   - Icon: globe/network icon
+   - Title: "跨平台对弈"
+   - Subtitle: "连接 OGS、野狐等平台"
+   - Route: `/kiosk/play/cross-platform`
+
+**Navigation flow:**
+```
+PlayPage "跨平台对弈" card
+  → /kiosk/play/cross-platform (PlatformConnectPage)
+    → 选择/登录平台
+      → /kiosk/play/cross-platform/lobby (PlatformLobbyPage)
+        → 挑战/接受对局
+          → /kiosk/play/pvp/room/:sessionId (reuse existing GamePage)
+```
+
+### Step 5.1: Platform Connection Page (`kiosk/pages/PlatformConnectPage.tsx`)
 
 - Grid of platform cards (OGS, 野狐, 星阵, KGS)
 - Each card shows: platform logo, connection status (connected/disconnected), username if connected
 - Click to login/manage credentials
 - Login modal per platform with platform-specific fields
+- Connected platforms have "进入大厅" button → navigates to lobby with that platform pre-selected
 
-### Step 5.2: Platform Lobby Page (`PlatformLobbyPage.tsx`)
+### Step 5.2: Platform Lobby Page (`kiosk/pages/PlatformLobbyPage.tsx`)
 
 - Tab bar: one tab per connected platform
 - Each tab shows that platform's online user list:
@@ -1097,7 +1090,7 @@ cryptography>=41.0                      # Credential encryption (mandatory, no f
 | **M3-spike** | Golaxy discovery spike | Protocol fact table: verified auth, REST endpoints, real-time transport and message format |
 | **M3a** | Golaxy auth + lobby | Can login, see users (if GO) |
 | **M3b** | Golaxy live play | Can play a complete game (if GO) |
-| **M4** | KGS integration | Full game flow |
+| ~~**M4**~~ | ~~KGS integration~~ | ~~SKIPPED — registration issues, declining user base~~ |
 | **M5** | UI polish | Platform selection, lobby tabs, timer, move indicators, touch targets ≥ 44px |
 
 ---

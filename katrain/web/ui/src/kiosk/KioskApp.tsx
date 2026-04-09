@@ -22,6 +22,8 @@ import LiveMatchPage from './pages/LiveMatchPage';
 import LobbyPage from './pages/LobbyPage';
 import SettingsPage from './pages/SettingsPage';
 import VisionSetupPage from './pages/VisionSetupPage';
+import PlatformConnectPage from './pages/PlatformConnectPage';
+import PlatformLobbyPage from './pages/PlatformLobbyPage';
 
 const KioskRoutes = () => {
   const { user } = useAuth();
@@ -45,6 +47,8 @@ const KioskRoutes = () => {
           <Route path="play/ai/setup/:mode" element={<AiSetupPage />} />
           <Route path="play/pvp/setup" element={<PlaceholderPage />} />
           <Route path="play/pvp/lobby" element={<LobbyPage />} />
+          <Route path="play/cross-platform" element={<PlatformConnectPage />} />
+          <Route path="play/cross-platform/lobby" element={<PlatformLobbyPage />} />
           <Route path="tsumego" element={<TsumegoPage />} />
           <Route path="tsumego/:levelId" element={<TsumegoLevelPage />} />
           <Route path="tsumego/problem/:problemId" element={<TsumegoProblemPage />} />

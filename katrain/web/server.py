@@ -149,6 +149,36 @@ async def _lifespan_server(app: FastAPI, log):
     # ── Tutorial Module (V2 — database-backed) ─────────────────────────────
     log.info("Tutorial V2: using database-backed tutorials")
 
+    # ── Platform Manager (cross-platform online play) ─────────────────────
+    _init_platform_manager(app, manager, log)
+
+
+def _init_platform_manager(app, session_manager, log):
+    """Initialize platform manager and adapters. Shared by both server and board modes."""
+    from katrain.web.platforms.manager import PlatformManager
+    from katrain.web.platforms.gateway import PlatformCommandGateway
+    from katrain.web.platforms.credentials import PlatformCredentialStore
+
+    platform_cred_store = PlatformCredentialStore()
+    platform_manager = PlatformManager(session_manager, credential_store=platform_cred_store)
+    app.state.platform_manager = platform_manager
+    app.state.platform_gateway = PlatformCommandGateway(platform_manager, session_manager)
+
+    for adapter_path, name in [
+        ("katrain.web.platforms.ogs.adapter", "OGS"),
+        ("katrain.web.platforms.fox.adapter", "Fox"),
+        ("katrain.web.platforms.golaxy.adapter", "Golaxy"),
+    ]:
+        try:
+            import importlib
+
+            mod = importlib.import_module(adapter_path)
+            adapter_cls = getattr(mod, f"{name}Adapter")
+            platform_manager.register_adapter(adapter_cls())
+            log.info(f"{name} platform adapter registered")
+        except Exception as e:
+            log.warning(f"Failed to register {name} adapter: {e}")
+
 
 async def _lifespan_board(app: FastAPI, log):
     """Board mode initialization — design.md Section 4.9."""
@@ -263,6 +293,9 @@ async def _lifespan_board(app: FastAPI, log):
     else:
         app.state.vision = None
 
+    # Platform manager for cross-platform online play (shared init)
+    _init_platform_manager(app, manager, log)
+
     log.info("Board mode initialization complete")
 
 def create_app(enable_engine=True, session_timeout=None, max_sessions=None):
@@ -332,7 +365,7 @@ def create_app(enable_engine=True, session_timeout=None, max_sessions=None):
         return {"session_id": session.session_id, "state": session.last_state or session.katrain.get_state()}
 
     @app.post("/api/move")
-    def play_move(request: MoveRequest, current_user: User = Depends(get_current_user_optional)):
+    async def play_move(request: MoveRequest, current_user: User = Depends(get_current_user_optional)):
         session = _get_session_or_404(manager, request.session_id)
 
         # Skip turn validation for research sessions
@@ -350,6 +383,24 @@ def create_app(enable_engine=True, session_timeout=None, max_sessions=None):
         coords = None if request.pass_move else request.coords
         if coords is None and not request.pass_move:
             raise HTTPException(status_code=400, detail="coords required unless pass_move is true")
+
+        # Route through platform gateway for cross-platform games
+        gateway = getattr(app.state, "platform_gateway", None)
+        if gateway and gateway.is_platform_game(request.session_id):
+            from katrain.web.platforms.gateway import PlatformMoveRejectedError
+
+            try:
+                user_id = current_user.id if current_user else 0
+                if request.pass_move:
+                    await gateway.pass_move(request.session_id, user_id)
+                else:
+                    await gateway.play_move(request.session_id, coords[0], coords[1], user_id)
+                state = session.katrain.get_state()
+                session.last_state = state
+                return {"session_id": session.session_id, "state": state}
+            except PlatformMoveRejectedError as e:
+                raise HTTPException(status_code=409, detail=str(e))
+
         with session.lock:
             session.katrain("play", None if coords is None else tuple(coords))
             state = session.katrain.get_state()
@@ -633,14 +684,29 @@ def create_app(enable_engine=True, session_timeout=None, max_sessions=None):
         return {"session_id": session.session_id, "state": state}
 
     @app.post("/api/resign")
-    def resign(request: ToggleAnalysisRequest, current_user: User = Depends(get_current_user_optional)):
+    async def resign(request: ToggleAnalysisRequest, current_user: User = Depends(get_current_user_optional)):
         session = _get_session_or_404(manager, request.session_id)
+
+        # Route through platform gateway for cross-platform games
+        gateway = getattr(app.state, "platform_gateway", None)
+        if gateway and gateway.is_platform_game(request.session_id):
+            from katrain.web.platforms.gateway import PlatformMoveRejectedError
+
+            try:
+                user_id = current_user.id if current_user else 0
+                await gateway.resign(request.session_id, user_id)
+            except PlatformMoveRejectedError as e:
+                raise HTTPException(status_code=409, detail=str(e))
 
         # For multiplayer games, record the result
         is_multiplayer = session.player_b_id is not None or session.player_w_id is not None
 
-        with session.lock:
-            session.katrain("resign")
+        if not (gateway and gateway.is_platform_game(request.session_id)):
+            with session.lock:
+                session.katrain("resign")
+                state = session.katrain.get_state()
+                session.last_state = state
+        else:
             state = session.katrain.get_state()
             session.last_state = state
 
@@ -1395,8 +1461,20 @@ async def _vision_move_poller(app: FastAPI):
                         move = vision_move_to_katrain(
                             move_data.col, move_data.row, move_data.color, board_size=19
                         )
-                        session.katrain("play", move.coords)
-                        log.info("Vision move submitted: col=%d row=%d color=%d", move_data.col, move_data.row, move_data.color)
+
+                        # Route through platform gateway for cross-platform games
+                        gateway = getattr(app.state, "platform_gateway", None)
+                        if gateway and gateway.is_platform_game(session_id):
+                            try:
+                                await gateway.play_move(session_id, move.coords[0], move.coords[1], user_id=0)
+                                log.info("Vision move submitted via platform gateway: col=%d row=%d", move_data.col, move_data.row)
+                            except Exception as gw_err:
+                                log.warning("Platform gateway rejected vision move: %s", gw_err)
+                                await asyncio.sleep(0.5)
+                                continue
+                        else:
+                            session.katrain("play", move.coords)
+                            log.info("Vision move submitted: col=%d row=%d color=%d", move_data.col, move_data.row, move_data.color)
 
                         # Update expected board from new game state
                         game_state = session.get_game_state()

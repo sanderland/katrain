@@ -546,3 +546,29 @@ class UpcomingMatchDB(Base):
     source_url = Column(String(512), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+# ============ Cross-Platform Play Models ============
+
+
+class PlatformGameDB(Base):
+    """Cross-platform game records — games played on external platforms (OGS, Fox, etc.) via KaTrain."""
+
+    __tablename__ = "platform_games"
+
+    id = Column(String(64), primary_key=True)  # KaTrain game UUID
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    platform = Column(String(20), nullable=False, index=True)  # "ogs", "fox", "golaxy", "kgs"
+    platform_game_id = Column(String(128), nullable=False)  # ID on the remote platform
+    opponent_name = Column(String(128), nullable=True)
+    opponent_rank = Column(String(16), nullable=True)
+    my_color = Column(String(1), nullable=True)  # "B" or "W"
+    result = Column(String(64), nullable=True)  # "B+5.5", "W+R", etc.
+    board_size = Column(Integer, default=19)
+    sgf_content = Column(Text, nullable=True)
+    played_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", backref="platform_games")
+
+    __table_args__ = (UniqueConstraint("platform", "platform_game_id", name="uq_platform_game"),)
