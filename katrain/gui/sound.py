@@ -24,31 +24,27 @@ def preload_sounds(sound_dir):
     import sys
     import subprocess
 
-    test_file = None
-    for fname in os.listdir(sound_dir):
-        if fname.endswith((".wav", ".ogg", ".mp3")):
-            test_file = os.path.join(sound_dir, fname)
-            break
-
-    if not test_file:
+    audio_files = [
+        os.path.join(sound_dir, fn) for fn in os.listdir(sound_dir)
+        if fn.endswith((".wav", ".ogg", ".mp3"))
+    ]
+    if not audio_files:
         return
 
     # Test if audio subsystem works by loading one sound in a subprocess
     try:
         subprocess.run(
             [sys.executable, "-c",
-             f"from kivy.core.audio import SoundLoader; SoundLoader.load({test_file!r})"],
+             f"from kivy.core.audio import SoundLoader; SoundLoader.load({audio_files[0]!r})"],
             timeout=3, capture_output=True,
         )
-    except (subprocess.TimeoutExpired, Exception) as e:
+    except subprocess.TimeoutExpired as e:
         print(f"Warning: Audio unavailable ({e}). Sounds disabled.", file=sys.stderr)
         return
 
     # Audio works, preload all sounds
-    for fname in os.listdir(sound_dir):
-        if fname.endswith((".wav", ".ogg", ".mp3")):
-            path = os.path.join(sound_dir, fname)
-            cached_sounds[fname] = SoundLoader.load(path)
+    for path in audio_files:
+        cached_sounds[os.path.basename(path)] = SoundLoader.load(path)
     _audio_available = True
 
 
