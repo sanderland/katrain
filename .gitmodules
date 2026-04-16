@@ -1,0 +1,6 @@
+[submodule "submodules/pysgf"]
+	path = submodules/pysgf
+	url = git@github.com:sanderland/pysgf.git
+[submodule "submodules/katago-client"]
+	path = submodules/katago-client
+	url = git@github.com:sanderland/katago-client.git

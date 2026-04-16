@@ -5,7 +5,7 @@ usage() {
   cat <<'EOF'
 Usage:
   scripts/run_and_screenshot.sh
-    # Runs KaTrain (default), writes screenshots/_katrain_last.png
+    # Runs KaTrain Qt (default), writes screenshots/_katrain_last.png
 
   scripts/run_and_screenshot.sh test_button.py
     # Runs "uv run python test_button.py"
@@ -63,7 +63,7 @@ while [ $# -gt 0 ]; do
 done
 
 if [ "$CMD_MODE" = "default" ]; then
-  CMD=("uv" "run" "python" "-m" "katrain")
+  CMD=("uv" "run" "katrain")
 fi
 
 mkdir -p "$(dirname "$OUT")"

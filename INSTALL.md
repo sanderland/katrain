@@ -79,8 +79,7 @@ It assumes you have a working Python 3.9+ installation.
   change directory using `cd katrain`
 * Run the command `pip3 install .` to install the package globally, or use `--user` to install locally.
 * Run the program by typing `katrain` in the terminal.
-    * If you prefer not to install, run without installing using `python3 -m katrain` after installing the 
-    dependencies from `poetry.lock` with `poetry install`.
+    * If you prefer not to install, run without installing using `uv sync` followed by `uv run katrain`.
 
 A binary for KataGo is included, but if you have compiled your own, press F8 to open general settings and change the 
  KataGo executable path to the relevant KataGo v1.4+ binary.
@@ -91,27 +90,19 @@ You can try to manually install dependencies to resolve some issues relating to 
  e.g. the binary 'wheel' is not provided, KataGo is not starting, or sounds are not working.
 You can also follow these instructions if you don't want to install KaTrain, and just run it locally.
 
-First install the following packages, which are either required for building Kivy, 
- or may help resolve missing dependencies for Kivy or KataGo.
+First install the following packages, which may help resolve missing dependencies for KataGo.
 ```bash
 sudo apt-get install python3-pip build-essential git python3 python3-dev ffmpeg libsdl2-dev libsdl2-image-dev\
     libsdl2-mixer-dev libsdl2-ttf-dev libportmidi-dev libswscale-dev libavformat-dev libavcodec-dev zlib1g-dev\
     libgstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good libpulse\
     pkg-config libgl-dev opencl-headers ocl-icd-opencl-dev libzip-dev
 ```
-Then, try installing python package dependencies using:
+Then, install Python dependencies using:
 ```bash
-pip3 install poetry
-poetry install
-pip3 install screeninfo # Skip on MacOS, not working
-```
-In case the sound is not working, or there is no available wheel for your OS or Python version, try building kivy locally using:
-```bash
-pip3 uninstall kivy
-pip3 install kivy --no-binary kivy
+uv sync
 ```
 
-You can now start KaTrain by running `python3 -m katrain`
+You can now start KaTrain by running `uv run katrain`
 
 In case KataGo does not start, an alternative is to go [here](https://github.com/lightvector/KataGo) and compile KataGo yourself.
 

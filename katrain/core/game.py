@@ -6,8 +6,6 @@ import re
 import threading
 from datetime import datetime
 
-from kivy.clock import Clock
-
 from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_EXTRA_DEBUG,
@@ -27,12 +25,12 @@ from katrain.core.constants import (
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import BoardState, GameNode, IllegalMoveException
 from katrain.core.lang import i18n, rank_label
-from katrain.core.sgf_parser import SGF, Move
+from katrain.core.sgf_parser import BaseGoGame, Move
 from katrain.core.utils import var_to_grid
 
 
-class KaTrainSGF(SGF):
-    _NODE_CLASS = GameNode
+class KaTrainSGF(BaseGoGame[GameNode]):
+    NODE_TYPE = GameNode
 
 
 class BaseGame:

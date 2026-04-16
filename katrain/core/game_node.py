@@ -18,7 +18,7 @@ from katrain.core.constants import (
     ADDITIONAL_MOVE_ORDER,
 )
 from katrain.core.lang import i18n
-from katrain.core.sgf_parser import Move, SGFNode
+from katrain.core.sgf_parser import BaseGoNode, Move
 from katrain.core.utils import evaluation_class, pack_floats, unpack_floats, var_to_grid
 from katrain.gui.theme import Theme
 
@@ -203,7 +203,7 @@ def analysis_dumps(analysis):
     ]
 
 
-class GameNode(SGFNode):
+class GameNode(BaseGoNode["GameNode"]):
     """Represents a single game node, with one or more moves and placements."""
 
     def __init__(self, parent=None, properties=None, move=None):

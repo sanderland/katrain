@@ -2,14 +2,14 @@
 
 Practical guidance for AI agents (and humans) working in this KaTrain repository.
 
-This repo is a Kivy desktop app for Go/Baduk/Weiqi analysis that talks to a KataGo engine subprocess.
+This repo is a PySide6 desktop app for Go/Baduk/Weiqi analysis that talks to a KataGo engine subprocess.
 
 ## Quick Commands
 
 Use `uv` for Python commands in this repo:
 
 ```bash
-uv run python -m katrain            # Run the app
+uv run katrain                      # Run the app
 uv run pytest tests                  # Run all tests
 uv run pytest tests/test_board.py -k "some_test_name"  # Single test
 uv run black .                       # Format (line-length=120)
@@ -18,24 +18,19 @@ uv run python i18n.py -todo          # Check missing translations (CI check)
 
 ## Architecture
 
-**Entry point**: `katrain/__main__.py` — `KaTrainApp(App)` creates `KaTrainGui(Screen, KaTrainBase)`.
+**Entry point**: `katrain/__main__.py` delegates to `katrain/qt/app.py`, which creates the Qt main window around the shared core.
 
 **Core layer** (`katrain/core/`):
 - `engine.py` — `KataGoEngine`: subprocess management, GTP analysis protocol, priority query queue
 - `game.py` / `game_node.py` — game tree with `GameNode` nodes holding immutable `BoardState`s; SGF load/save
 - `sgf_parser.py` — pure SGF parsing (`SGF`, `SGFNode`, `Move` classes)
 - `ai.py` — strategy registry via `@register_strategy(name)` decorator; strategies: `AI_DEFAULT` (full KataGo), `AI_HUMAN` (HumanSL network)
-- `base_katrain.py` — `KaTrainBase`: config loading (JSON via Kivy `JsonStore`), player management. Subclassed by both GUI and test mocks
+- `base_katrain.py` — `KaTrainBase`: config loading, logging, and player management. Subclassed by both GUI and test mocks
 - `constants.py` — all constants, AI strategy names, player/mode types
 
-**GUI layer** (`katrain/gui/`):
-- `badukpan.py` — go board rendering with raw Kivy canvas instructions
-- `gui.kv` / `popups.kv` — Kivy layout definitions loaded via `Builder.load_file()`
-- `theme.py` — `Theme` class with all colors/fonts/sizes (overridable via `~/.katrain/theme*.json`)
-- `components/` — `forms.py` (`FieldSpec`, `FormModel`), buttons, layout helpers, popup manager
-- `widgets/` — move tree, score graph, file browser, sliders
-
-**Message queue pattern**: `KaTrainGui.__call__(message, ...)` pushes to `self.message_queue`. A background thread consumes messages, calling `_do_{message}()` methods then `_do_update_state()`.
+**Qt layer** (`katrain/qt/`):
+- `app.py` — Qt main window, board widget, move tree, analysis table, settings dialog
+- `README.md` — current scope of the Qt port
 
 **Configuration**: package default at `katrain/config.json`, user override at `~/.katrain/config.json`. Sections: `engine`, `general`, `trainer`, `ai`, `ui_state`.
 
@@ -76,7 +71,7 @@ scripts/run_and_screenshot.sh
 scripts/run_and_screenshot.sh test_button.py
 
 # Or run an arbitrary command (everything after --):
-scripts/run_and_screenshot.sh --out screenshots/foo.png -- uv run python -m katrain
+scripts/run_and_screenshot.sh --out screenshots/foo.png -- uv run katrain
 ```
 
 The script writes logs to:
@@ -99,4 +94,3 @@ The error usually looks like `could not create image from window`.
 - Keep the output path constant (e.g. `screenshots/_katrain_last.png`) so you can re-open the same tab.
 - If you need to capture multiple states, add a short `sleep` and take 2-3 screenshots with different names.
 - If you're iterating on a single widget/layout, make a tiny harness app (like `test_button.py`) to avoid click-through and engine startup time.
-

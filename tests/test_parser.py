@@ -3,12 +3,12 @@ from unittest.mock import MagicMock
 
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.game import Game, KaTrainSGF
-from katrain.core.sgf_parser import SGF, SGFNode
+from katrain.core.sgf_parser import GoGame, GoNode
 
 
 def test_simple():
     input_sgf = "(;GM[1]FF[4]SZ[19]DT[2020-04-12]AB[dd][dj];B[dp];W[pp];B[pj])"
-    root = SGF.parse_sgf(input_sgf)
+    root = GoGame.parse_sgf(input_sgf)
     assert "4" == root.get_property("FF")
     assert root.get_property("XYZ") is None
     assert "dp" == root.children[0].get_property("B")
@@ -17,13 +17,13 @@ def test_simple():
 
 def test_branch():
     input_sgf = "(;GM[1]FF[4]CA[UTF-8]AP[Sabaki:0.43.3]KM[6.5]SZ[19]DT[2020-04-12]AB[dd][dj](;B[dp];W[pp](;B[pj])(;PL[B]AW[jp]C[sdfdsfdsf]))(;B[pd]))"
-    root = SGF.parse_sgf(input_sgf)
+    root = GoGame.parse_sgf(input_sgf)
     assert input_sgf == root.sgf()
 
 
 def test_dragon_weirdness():  # dragon go server has weird line breaks
     input_sgf = "\n(\n\n;\nGM[1]\nFF[4]\nCA[UTF-8]AP[Sabaki:0.43.3]KM[6.5]SZ[19]DT[2020-04-12]AB[dd]\n[dj]\n(\n;\nB[dp]\n;\nW[pp]\n(\n;\nB[pj]\n)\n(\n;\nPL[B]\nAW[jp]\nC[sdfdsfdsf]\n)\n)\n(\n;\nB[pd]\n)\n)\n"
-    root = SGF.parse_sgf(input_sgf)
+    root = GoGame.parse_sgf(input_sgf)
     assert input_sgf.replace("\n", "") == root.sgf()
 
 
@@ -32,32 +32,32 @@ def test_weird_escape():
 [
 or \\]
 ])"""
-    root = SGF.parse_sgf(input_sgf)
+    root = GoGame.parse_sgf(input_sgf)
     assert input_sgf == root.sgf()
 
 
 def test_backslash_escape():
     nasty_string = "[]]\\"
     nasty_strings = ["[\\]\\]\\\\", "[", "]", "\\", "\\[", "\\]", "\\\\[", "\\\\]", "]]]\\]]\\]]["]
-    assert "[\\]\\]\\\\" == SGFNode._escape_value(nasty_string)
+    assert "[\\]\\]\\\\" == GoNode._escape_value(nasty_string)
     for x in nasty_strings:
-        assert x == SGFNode._unescape_value(SGFNode._escape_value(x))
+        assert x == GoNode._unescape_value(GoNode._escape_value(x))
 
     c2 = ["]", "\\"]
-    node = SGFNode(properties={"C1": nasty_string})
+    node = GoNode(properties={"C1": nasty_string})
     node.set_property("C2", c2)
     assert "(;C1[[\\]\\]\\\\]C2[\\]][\\\\])" == node.sgf()
-    assert {"C1": [nasty_string], "C2": c2} == SGF.parse_sgf(node.sgf()).properties
+    assert {"C1": [nasty_string], "C2": c2} == GoGame.parse_sgf(node.sgf()).properties
 
 
 def test_alphago():
     file = os.path.join(os.path.dirname(__file__), "data/LS vs AG - G4 - English.sgf")
-    SGF.parse_file(file)
+    GoGame.parse_file(file)
 
 
 def test_pandanet():
     file = os.path.join(os.path.dirname(__file__), "data/panda1.sgf")
-    root = SGF.parse_file(file)
+    root = GoGame.parse_file(file)
     root_props = {
         "GM",
         "EV",
@@ -96,12 +96,12 @@ def test_pandanet():
 
 def test_old_long_properties():
     file = os.path.join(os.path.dirname(__file__), "data/xmgt97.sgf")
-    SGF.parse_file(file)
+    GoGame.parse_file(file)
 
 
 def test_old_server_style():
     input_sgf = "... 01:23:45 +0900 (JST) ... (;SZ[19];B[aa];W[ba];)"
-    SGF.parse_sgf(input_sgf)
+    GoGame.parse_sgf(input_sgf)
 
 
 def test_old_server_style_again():
@@ -111,18 +111,18 @@ SZ[19]TM[600]KM[0.500000]LT[]
 ;B[fp]BL[500];
 
 )"""
-    tree = SGF.parse_sgf(input_sgf)
+    tree = GoGame.parse_sgf(input_sgf)
     assert 2 == len(tree.nodes_in_tree)
 
 
 def test_ogs():
     file = os.path.join(os.path.dirname(__file__), "data/ogs.sgf")
-    SGF.parse_file(file)
+    GoGame.parse_file(file)
 
 
 def test_gibo():
     file = os.path.join(os.path.dirname(__file__), "data/test.gib")
-    root = SGF.parse_file(file)
+    root = GoGame.parse_file(file)
     assert {
         "PW": ["wildsim1"],
         "WR": ["2D"],
@@ -137,7 +137,7 @@ def test_gibo():
 
 def test_ngf():
     file = os.path.join(os.path.dirname(__file__), "data/handicap2.ngf")
-    root = SGF.parse_file(file)
+    root = GoGame.parse_file(file)
     root.properties["AB"].sort()
     assert {
         "AB": ["dp", "pd"],
@@ -167,31 +167,31 @@ def test_foxwq():
 
 def test_next_player():
     input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb])"
-    assert "B" == SGF.parse_sgf(input_sgf).next_player
-    assert "B" == SGF.parse_sgf(input_sgf).initial_player
+    assert "B" == GoGame.parse_sgf(input_sgf).next_player
+    assert "B" == GoGame.parse_sgf(input_sgf).initial_player
     input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb]PL[B])"
-    assert "B" == SGF.parse_sgf(input_sgf).next_player
-    assert "B" == SGF.parse_sgf(input_sgf).initial_player
+    assert "B" == GoGame.parse_sgf(input_sgf).next_player
+    assert "B" == GoGame.parse_sgf(input_sgf).initial_player
     input_sgf = "(;GM[1]FF[4]AB[aa]AW[bb]PL[W])"
-    assert "W" == SGF.parse_sgf(input_sgf).next_player
-    assert "W" == SGF.parse_sgf(input_sgf).initial_player
+    assert "W" == GoGame.parse_sgf(input_sgf).next_player
+    assert "W" == GoGame.parse_sgf(input_sgf).initial_player
     input_sgf = "(;GM[1]FF[4]AB[aa])"
-    assert "W" == SGF.parse_sgf(input_sgf).next_player
-    assert "W" == SGF.parse_sgf(input_sgf).initial_player
+    assert "W" == GoGame.parse_sgf(input_sgf).next_player
+    assert "W" == GoGame.parse_sgf(input_sgf).initial_player
     input_sgf = "(;GM[1]FF[4]AB[aa]PL[B])"
-    assert "B" == SGF.parse_sgf(input_sgf).next_player
-    assert "B" == SGF.parse_sgf(input_sgf).initial_player
+    assert "B" == GoGame.parse_sgf(input_sgf).next_player
+    assert "B" == GoGame.parse_sgf(input_sgf).initial_player
     input_sgf = "(;GM[1]FF[4]AB[aa];B[dd])"  # branch exists
-    assert "B" == SGF.parse_sgf(input_sgf).next_player
-    assert "B" == SGF.parse_sgf(input_sgf).initial_player
+    assert "B" == GoGame.parse_sgf(input_sgf).next_player
+    assert "B" == GoGame.parse_sgf(input_sgf).initial_player
     input_sgf = "(;GM[1]FF[4]AB[aa];W[dd])"  # branch exists
-    assert "W" == SGF.parse_sgf(input_sgf).next_player
-    assert "W" == SGF.parse_sgf(input_sgf).initial_player
+    assert "W" == GoGame.parse_sgf(input_sgf).next_player
+    assert "W" == GoGame.parse_sgf(input_sgf).initial_player
 
 
 def test_placements():
     input_sgf = "(;GM[1]FF[4]SZ[19]DT[2020-04-12]AB[dd][aa:ee]AW[ff:zz]AE[aa][bb][cc:dd])"
-    root = SGF.parse_sgf(input_sgf)
+    root = GoGame.parse_sgf(input_sgf)
     print(root.properties)
     assert 6 == len(root.clear_placements)
     assert 25 + 14 * 14 == len(root.placements)

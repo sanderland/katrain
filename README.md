@@ -6,7 +6,7 @@
 [![PyPI Downloads](http://pepy.tech/badge/katrain)](http://pepy.tech/project/katrain)
 [![Discord](http://img.shields.io/discord/417022162348802048?logo=discord)](http://discord.com/channels/417022162348802048/629446365688365067)
 
-KaTrain is a tool for analyzing games and playing go with AI feedback from KataGo:
+KaTrain is a Qt desktop app for analyzing games and playing go with AI feedback from KataGo:
 
 * Review your games to find the moves that were most costly in terms of points lost.
 * Play against AI and get immediate feedback on mistakes with option to retry.
@@ -67,6 +67,13 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
 * On macOS, you can also use `brew install katrain` to install the app.
 * [This page](https://github.com/sanderland/katrain/blob/master/INSTALL.md) has detailed instructions for Window, Linux and macOS,
   as well as troubleshooting and setting up KataGo to use multiple GPUs.
+
+From source in this repository:
+
+```bash
+uv sync
+uv run katrain
+```
 
 ## <a name="kata"></a>  Configuring KataGo
 
@@ -248,6 +255,5 @@ See [these instructions](THEMES.md) for how to modify the look of any graphics o
  * Ideas, feedback, and contributions to code or translations are all very welcome.
     * For suggestions and planned improvements, see [open issues](http://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
 * You can join the [Computer Go Community Discord (formerly Leela Zero & Friends)](http://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation. Please do not use github issues to ask for technical help, this is only for bugs, suggestions and discussing contributions.
-
 
 

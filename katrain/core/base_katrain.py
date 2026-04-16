@@ -2,10 +2,8 @@ import os
 import shutil
 import sys
 
-from kivy import Config
-from kivy.storage.jsonstore import JsonStore
-
 from katrain.core.ai import ai_rank_estimation
+from katrain.core.config_store import JsonConfigStore
 from katrain.core.constants import (
     PLAYER_HUMAN,
     PLAYER_AI,
@@ -75,12 +73,12 @@ class KaTrainBase:
         self.config_file = self._load_config(force_package_config=force_package_config)
         self.debug_level = self.config("general/debug_level", OUTPUT_INFO) if debug_level is None else debug_level
 
-        Config.set("kivy", "log_level", "warning")
-        if self.debug_level >= OUTPUT_DEBUG:
-            Config.set("kivy", "log_enable", 1)
-            Config.set("kivy", "log_level", "debug")
+        self._configure_runtime_logging()
         self.players_info = {"B": Player("B"), "W": Player("W")}
         self.reset_players()
+
+    def _configure_runtime_logging(self):
+        return None
 
     def log(self, message, level=OUTPUT_INFO):
         if level == OUTPUT_ERROR:
@@ -104,14 +102,17 @@ class KaTrainBase:
                         parent_dir = os.path.split(user_config_file)[0]
                         self.log(f"Creating parent directory if needed: {parent_dir}", OUTPUT_DEBUG)
                         os.makedirs(parent_dir, exist_ok=True)
-                        
-                        self.log(f"Copying package config {package_config_file} to user config {user_config_file}", OUTPUT_DEBUG)
+
+                        self.log(
+                            f"Copying package config {package_config_file} to user config {user_config_file}",
+                            OUTPUT_DEBUG,
+                        )
                         shutil.copyfile(package_config_file, user_config_file)
                         config_file = user_config_file
                         self.log(f"Copied package config to local file {config_file}", OUTPUT_INFO)
                     else:  # user file exists
                         try:
-                            version_str = JsonStore(user_config_file).get("general")["version"]
+                            version_str = JsonConfigStore(user_config_file).get("general")["version"]
                             version = parse_version(version_str)
                             self.log(f"Parsed version: {version}", OUTPUT_DEBUG)
                         except Exception as e:  # noqa E722 broken file etc
@@ -136,7 +137,7 @@ class KaTrainBase:
                         OUTPUT_INFO,
                     )
         try:
-            self._config_store = JsonStore(config_file, indent=4)
+            self._config_store = JsonConfigStore(config_file, indent=4)
         except Exception as e:
             self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
             sys.exit(1)

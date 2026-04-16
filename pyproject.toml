@@ -14,20 +14,19 @@ classifiers = [
     "Topic :: Games/Entertainment :: Board Games",
 ]
 dependencies = [
-    "pygame~=2.0 ; platform_system == 'Darwin'",
-    "screeninfo>=0.8.1,<0.9 ; platform_system != 'Darwin'",
     "chardet>=5.2.0,<6",
     "docutils>=0.21.2",
-    "ffpyplayer>=4.5.1",
+    "katago-client",
+    "PySide6>=6.8,<7",
+    "pysgf",
     "urllib3>=2.2.2",
-    "kivy>=2.3.1",
 ]
 
 [project.urls]
 Homepage = "https://github.com/sanderland/katrain"
 
 [project.scripts]
-katrain = "katrain.__main__:run_app"
+katrain = "katrain.qt.app:run_app"
 
 [dependency-groups]
 dev = [
@@ -42,6 +41,10 @@ dev = [
 default-groups = [
     "dev",
 ]
+
+[tool.uv.sources]
+pysgf = { path = "submodules/pysgf" }
+katago-client = { path = "submodules/katago-client" }
 
 [tool.black]
 line-length = 120
