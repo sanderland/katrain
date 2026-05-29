@@ -96,10 +96,17 @@ class KataGoEngine(BaseEngine):
 
     PONDER_KEY = "_kt_continuous"
 
+    _AUTO_RESTART_MAX = 3
+    _QUICK_DEATH_THRESHOLD_S = 300.0
+
     def __init__(self, katrain, config):
         super().__init__(katrain, config)
 
         self.allow_recovery = self.config.get("allow_recovery", True)  # if false, don't give popups
+        self._consecutive_quick_failures = 0
+        self._last_restart_at = 0.0
+        self._restart_in_progress = False
+        self._restart_lock = threading.Lock()
         self.queries = {}  # outstanding query id -> start time and callback
         self.ponder_query = None
         self.query_counter = 0
@@ -211,6 +218,42 @@ class KataGoEngine(BaseEngine):
         self.shutdown(finish=False)
         self.start()
 
+    def _try_auto_restart(self, died_msg):
+        with self._restart_lock:
+            if self._restart_in_progress:
+                return True
+            now = time.time()
+            if self._last_restart_at and (now - self._last_restart_at) <= self._QUICK_DEATH_THRESHOLD_S:
+                self._consecutive_quick_failures += 1
+            else:
+                self._consecutive_quick_failures = 1
+            self._last_restart_at = now
+            if self._consecutive_quick_failures > self._AUTO_RESTART_MAX:
+                self.katrain.log(
+                    f"Auto-restart abandoned after {self._consecutive_quick_failures - 1} "
+                    f"consecutive quick failures; surfacing recovery for: {died_msg}",
+                    OUTPUT_ERROR,
+                )
+                self._consecutive_quick_failures = 0
+                return False
+            self._restart_in_progress = True
+        self.katrain.log(
+            f"{died_msg} — auto-restarting "
+            f"(consecutive quick failures: {self._consecutive_quick_failures}/{self._AUTO_RESTART_MAX})",
+            OUTPUT_ERROR,
+        )
+        threading.Thread(target=self._do_auto_restart, daemon=True, name="kata-auto-restart").start()
+        return True
+
+    def _do_auto_restart(self):
+        try:
+            self.restart()
+        except Exception as e:
+            self.katrain.log(f"Auto-restart failed: {e}", OUTPUT_ERROR)
+        finally:
+            with self._restart_lock:
+                self._restart_in_progress = False
+
     def check_alive(self, os_error="", exception_if_dead=False, maybe_open_recovery=False):
         ok = self.katago_process and self.katago_process.poll() is None
         if not ok and exception_if_dead:
@@ -221,7 +264,8 @@ class KataGoEngine(BaseEngine):
                 else:
                     died_msg = i18n._("Engine died unexpectedly").format(error=f"{os_error} status {code}")
                 if code != 1:  # deliberate exit
-                    self.on_error(died_msg, code, allow_popup=maybe_open_recovery)
+                    if not self._try_auto_restart(died_msg):
+                        self.on_error(died_msg, code, allow_popup=maybe_open_recovery)
                 self.katago_process = None  # return from threads
             else:
                 self.katrain.log(i18n._("Engine died unexpectedly").format(error=os_error), OUTPUT_DEBUG)
