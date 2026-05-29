@@ -300,14 +300,17 @@ class KataGoEngine(BaseEngine):
                         )
                     continue
                 callback, error_callback, start_time, next_move, _ = self.queries[query_id]
+                if "warning" in analysis:
+                    self.katrain.log(
+                        f"Warning received from KataGo: {analysis.get('warning')}",
+                        OUTPUT_DEBUG,
+                    )
                 if "error" in analysis:
                     del self.queries[query_id]
                     if error_callback:
                         error_callback(analysis)
                     elif not (next_move and "Illegal move" in analysis["error"]):  # sweep
                         self.katrain.log(f"{analysis} received from KataGo", OUTPUT_ERROR)
-                elif "warning" in analysis:
-                    self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
                 elif "terminateId" in analysis:
                     self.katrain.log(f"{analysis} received from KataGo", OUTPUT_DEBUG)
                 else:
