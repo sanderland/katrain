@@ -19,6 +19,7 @@ import traceback
 
 import certifi
 from websocket import (  # provided by `websocket-client`
+    ABNF,
     WebSocket,
     WebSocketException,
     WebSocketTimeoutException,
@@ -257,7 +258,9 @@ class RemoteKataGoEngine(KataGoEngine):
         while self.ws is not None and not self._closing:
             ws = self.ws
             try:
-                raw = ws.recv()
+                # recv_data(control_frame=True) lets us inspect non-text frames
+                # (e.g. close, whose payload carries the status code + reason).
+                opcode, data = ws.recv_data(control_frame=True)
             except WebSocketTimeoutException:
                 continue
             except WebSocketException as e:
@@ -275,15 +278,28 @@ class RemoteKataGoEngine(KataGoEngine):
                 traceback.print_exc()
                 return
 
-            if not raw:
+            if opcode == ABNF.OPCODE_CLOSE:
                 if not self._closing:
+                    # RFC 6455 close payload: 2-byte status code + UTF-8 reason.
+                    reason = "closed by remote"
+                    if data and len(data) >= 2:
+                        reason = data[2:].decode("utf-8", errors="replace").strip() or reason
                     self.ws = None
                     self.check_alive(
-                        os_error="closed by remote",
+                        os_error=reason,
                         exception_if_dead=True,
                         maybe_open_recovery=True,
                     )
                 return
+
+            if opcode not in (ABNF.OPCODE_TEXT, ABNF.OPCODE_BINARY):
+                # ping/pong/continuation — nothing to dispatch.
+                continue
+
+            if not data:
+                continue
+
+            raw = data.decode("utf-8") if isinstance(data, bytes) else data
 
             # A frame may contain multiple newline-delimited JSON
             # objects (matches KataGo's stdio framing).
