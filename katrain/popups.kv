@@ -123,53 +123,54 @@
         spacing: dp(15)
         padding: dp(10)
 
-        # Model Section
-        ConfigSectionGridLayout:
-            cols: 2
-            DescriptionLabel:
-                text: i18n._("engine:model")
-                size_hint: (0.33, 1)
+        # Model Sections - side by side
+        MDBoxLayout:
+            orientation: 'horizontal'
+            spacing: dp(15)
 
-            AnchorLayout:
-                LabelledPathInput:
-                    id: model_path
-                    input_property: "engine/model"
-                    on_text: root.check_models()
+            # Model Section
+            ConfigSectionGridLayout:
+                cols: 2
+                DescriptionLabel:
+                    text: i18n._("engine:model")
+                    size_hint_x: 0.33
 
-            Label:
-                size_hint: (0.33, 1)
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    AnchorLayout:
+                        LabelledPathInput:
+                            id: model_path
+                            input_property: "engine/model"
+                            on_text: root.check_models()
+                    AnchorLayout:
+                        KeyValueSpinner:
+                            id: model_files
+                            text: ''
+                            text_autoupdate: True
+                            size_hint_y: 0.7
+                            on_select: if self.selected_index != 0: model_path.text = self.value_keys[self.selected_index]
 
-            AnchorLayout:
-                KeyValueSpinner:
-                    id: model_files
-                    text: ''
-                    text_autoupdate: True
-                    size_hint_y: 0.7
-                    on_select: if self.selected_index != 0: model_path.text = self.value_keys[self.selected_index]
+            # Humanlike Model Section
+            ConfigSectionGridLayout:
+                cols: 2
+                DescriptionLabel:
+                    text: i18n._("engine:humanlike_model")
+                    size_hint_x: 0.33
 
-        # Humanlike Model Section
-        ConfigSectionGridLayout:
-            cols: 2
-            DescriptionLabel:
-                text: i18n._("engine:humanlike_model")
-                size_hint: (0.33, 1)
-
-            AnchorLayout:
-                LabelledPathInput:
-                    id: humanlike_model_path
-                    input_property: "engine/humanlike_model"
-                    on_text: root.check_models()
-
-            Label:
-                size_hint: (0.33, 1)
-
-            AnchorLayout:
-                KeyValueSpinner:
-                    id: humanlike_model_files
-                    text: ''
-                    text_autoupdate: True
-                    size_hint_y: 0.7
-                    on_select: if self.selected_index != 0: humanlike_model_path.text = self.value_keys[self.selected_index]
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    AnchorLayout:
+                        LabelledPathInput:
+                            id: humanlike_model_path
+                            input_property: "engine/humanlike_model"
+                            on_text: root.check_models()
+                    AnchorLayout:
+                        KeyValueSpinner:
+                            id: humanlike_model_files
+                            text: ''
+                            text_autoupdate: True
+                            size_hint_y: 0.7
+                            on_select: if self.selected_index != 0: humanlike_model_path.text = self.value_keys[self.selected_index]
 
         # KataGo Engine Section
         ConfigSectionGridLayout:
@@ -197,8 +198,9 @@
                     on_select: if self.selected_index != 0: katago_path.text = self.value_keys[self.selected_index]
 
         ConfigSectionGridLayout:
-            rows: 2
+            rows: 3
             cols: 2
+            size_hint_y: 1.75
             DescriptionLabel:
                 text: i18n._("engine:config")
                 size_hint: 0.33, 1
@@ -213,6 +215,14 @@
                     check_path: False
                     input_property: "engine/altcommand"
                     hint_text: i18n._("engine:altcommand:hint")
+            DescriptionLabel:
+                text: i18n._("engine:remote_url")
+                size_hint: 0.33, 1
+            AnchorLayout:
+                LabelledPathInput:
+                    check_path: False
+                    input_property: "engine/remote_url"
+                    hint_text: i18n._("engine:remote_url:hint")
 
     # Settings Headers
     MDBoxLayout:

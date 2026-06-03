@@ -653,6 +653,24 @@ msgstr ""
 "Full command used to start the engine. All other model options will be "
 "ignored."
 
+msgid "engine:remote_url"
+msgstr "KataGo WebSocket URL"
+
+msgid "engine:remote_url:hint"
+msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+
+msgid "Remote KataGo URL is empty"
+msgstr "Remote KataGo URL is empty"
+
+msgid "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Remote KataGo URL must start with ws:// or wss://"
+
+msgid "Connecting to remote KataGo failed"
+msgstr "Connecting to remote KataGo at {url} failed: {error}"
+
+msgid "Remote KataGo engine disconnected"
+msgstr "Remote KataGo engine disconnected: {error}"
+
 msgid "engine:max_visits"
 msgstr "Maximum number of visits in analysis"
 

@@ -22,6 +22,8 @@ dependencies = [
     "urllib3>=2.2.2",
     "kivy>=2.3.1",
     "kivymd==0.104.1",
+    "websocket-client>=1.9.0",
+    "certifi>=2026.2.25",
 ]
 
 [project.urls]

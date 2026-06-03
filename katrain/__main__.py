@@ -32,6 +32,7 @@ Config.set("input", "mouse", "mouse,multitouch_on_demand")
 # Preload sounds before Window import creates the SDL2 window,
 # as SoundLoader.load() deadlocks once the SDL2 window exists.
 from katrain.gui.sound import preload_sounds
+
 preload_sounds(PATHS["PACKAGE"] + "/sounds")
 
 # next, certificates on package builds https://github.com/sanderland/katrain/issues/414
@@ -98,7 +99,7 @@ from katrain.gui.popups import (
 )
 from katrain.gui.sound import play_sound
 from katrain.core.base_katrain import KaTrainBase
-from katrain.core.engine import KataGoEngine
+from katrain.core.remote_engine import make_engine
 from katrain.core.contribute_engine import KataGoContributeEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
 from katrain.core.sgf_parser import Move, ParseError
@@ -192,7 +193,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if self.engine:
             return
         self.board_gui.trainer_config = self.config("trainer")
-        self.engine = KataGoEngine(self, self.config("engine"))
+        self.engine = make_engine(self, self.config("engine"))
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
         sgf_args = [
             f
@@ -231,7 +232,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.players["B"].captures = prisoners["B"]
 
         # update engine status dot
-        if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
+        if not self.engine or not self.engine.check_alive():
             self.board_controls.engine_status_col = Theme.ENGINE_DOWN_COLOR
         elif self.engine.is_idle():
             self.board_controls.engine_status_col = Theme.ENGINE_READY_COLOR
@@ -850,14 +851,19 @@ class KaTrainApp(MDApp):
     def is_valid_window_position(self, left, top, width, height):
         try:
             from screeninfo import get_monitors
+
             monitors = get_monitors()
             for monitor in monitors:
-                if (left >= monitor.x and left + width <= monitor.x + monitor.width and
-                    top >= monitor.y and top + height <= monitor.y + monitor.height):
+                if (
+                    left >= monitor.x
+                    and left + width <= monitor.x + monitor.width
+                    and top >= monitor.y
+                    and top + height <= monitor.y + monitor.height
+                ):
                     return True
             return False
         except Exception as e:
-            return True # yolo
+            return True  # yolo
 
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
@@ -910,7 +916,11 @@ class KaTrainApp(MDApp):
             win_size = [1300 * window_scale_fac, 1000 * window_scale_fac]
         self.gui.log(f"Setting window size to {win_size} and position to {[win_left, win_top]}", OUTPUT_DEBUG)
         Window.size = (win_size[0], win_size[1])
-        if win_left is not None and win_top is not None and self.is_valid_window_position(win_left, win_top, win_size[0], win_size[1]):
+        if (
+            win_left is not None
+            and win_top is not None
+            and self.is_valid_window_position(win_left, win_top, win_size[0], win_size[1])
+        ):
             Window.left = win_left
             Window.top = win_top
 

@@ -39,8 +39,8 @@ from katrain.core.constants import (
     PLAYER_HUMAN,
     ADDITIONAL_MOVE_ORDER,
 )
-from katrain.core.engine import KataGoEngine
 from katrain.core.lang import i18n, rank_label
+from katrain.core.remote_engine import make_engine
 from katrain.core.sgf_parser import Move
 from katrain.core.utils import PATHS, find_package_resource, evaluation_class
 from katrain.gui.kivyutils import (
@@ -497,7 +497,12 @@ class BaseConfigPopup(QuickConfigGui):
 
     def __init__(self, katrain):
         super().__init__(katrain)
-        self.paths = [self.katrain.config("engine/model"), self.katrain.config("engine/humanlike_model"), "katrain/models", DATA_FOLDER]
+        self.paths = [
+            self.katrain.config("engine/model"),
+            self.katrain.config("engine/humanlike_model"),
+            "katrain/models",
+            DATA_FOLDER,
+        ]
         self.katago_paths = [self.katrain.config("engine/katago"), DATA_FOLDER]
         self.last_clicked_download_models = 0
 
@@ -561,7 +566,9 @@ class BaseConfigPopup(QuickConfigGui):
             key=lambda descpath: ("Recommended" not in descpath[0], "  -  " not in descpath[0], descpath[0]),
         )
         humanlike_models_available_msg = i18n._("models available").format(num=len(humanlike_model_files))
-        self.humanlike_model_files.values = [humanlike_models_available_msg] + [desc for desc, path in humanlike_model_files]
+        self.humanlike_model_files.values = [humanlike_models_available_msg] + [
+            desc for desc, path in humanlike_model_files
+        ]
         self.humanlike_model_files.value_keys = [""] + [path for desc, path in humanlike_model_files]
         self.humanlike_model_files.text = humanlike_models_available_msg
 
@@ -650,7 +657,9 @@ class BaseConfigPopup(QuickConfigGui):
 
         for name, url in {**self.MODELS, **dist_models}.items():
             filename = os.path.split(url)[1]
-            if not any(os.path.split(f)[1] == filename for f in self.model_files.values + self.humanlike_model_files.values):
+            if not any(
+                os.path.split(f)[1] == filename for f in self.model_files.values + self.humanlike_model_files.values
+            ):
                 savepath = os.path.expanduser(os.path.join(DATA_FOLDER, filename))
                 savepath_tmp = savepath + ".part"
                 self.katrain.log(f"Downloading {name} from {url} to {savepath_tmp}", OUTPUT_INFO)
@@ -778,11 +787,9 @@ class ConfigPopup(BaseConfigPopup):
                 self.katrain.log(f"Restarting Engine after {detected_restart} settings change")
                 self.katrain.controls.set_status(i18n._("restarting engine"), STATUS_INFO)
 
-                old_engine = self.katrain.engine  # type: KataGoEngine
-                old_proc = old_engine.katago_process
-                if old_proc:
-                    old_engine.shutdown(finish=False)
-                new_engine = KataGoEngine(self.katrain, self.katrain.config("engine"))
+                old_engine = self.katrain.engine
+                old_engine.shutdown(finish=False)
+                new_engine = make_engine(self.katrain, self.katrain.config("engine"))
                 self.katrain.engine = new_engine
                 self.katrain.game.engines = {"B": new_engine, "W": new_engine}
                 self.katrain.game.analyze_all_nodes(

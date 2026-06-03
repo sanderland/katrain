@@ -752,18 +752,18 @@ msgstr "Cache analysis in SGF"
 msgid "menu:save-as"
 msgstr "Save Game As..."
 
-#. TODO
 # sgf load button
+#. TODO
 msgid "Load File"
 msgstr "Load File"
 
-#. TODO
 # sgf save popup
+#. TODO
 msgid "save sgf title"
 msgstr "Save SGF File"
 
-#. TODO
 # sgf save as button
+#. TODO
 msgid "Save File"
 msgstr "Save File"
 
@@ -1029,3 +1029,27 @@ msgstr "Ko allowed?"
 #. TODO - Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
 msgstr "Tsumego Frame"
+
+#. TODO
+msgid "engine:remote_url"
+msgstr "KataGo WebSocket URL"
+
+#. TODO
+msgid "engine:remote_url:hint"
+msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+
+#. TODO
+msgid "Remote KataGo URL is empty"
+msgstr "Remote KataGo URL is empty"
+
+#. TODO
+msgid "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Remote KataGo URL must start with ws:// or wss://"
+
+#. TODO
+msgid "Connecting to remote KataGo failed"
+msgstr "Connecting to remote KataGo at {url} failed: {error}"
+
+#. TODO
+msgid "Remote KataGo engine disconnected"
+msgstr "Remote KataGo engine disconnected: {error}"
