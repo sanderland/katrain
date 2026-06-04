@@ -3,9 +3,11 @@
 #:import expanduser os.path.expanduser
 #:import abspath os.path.abspath
 #:import kivy_version kivy.__version__
+#:import NoTransition kivy.uix.screenmanager.NoTransition
 
 #:import Theme katrain.gui.theme.Theme
 #:import LIGHT_GREY katrain.gui.theme.LIGHT_GREY
+#:import ORANGE katrain.gui.theme.ORANGE
 
 #:set CP_SPACING Theme.CP_SPACING
 #:set CP_SMALL_SPACING Theme.CP_SMALL_SPACING
@@ -92,131 +94,216 @@
     katago_files: katago_files
     download_progress_box: download_progress_box
     katago_download_progress_box: katago_download_progress_box
+    engine_sm: engine_sm
+    local_tab_button: local_tab_button
+    remote_tab_button: remote_tab_button
+    custom_tab_button: custom_tab_button
 
-    # Top Section - KataGo Controls
+    # Top Section - Engine source header
     BoxLayout:
         orientation: 'horizontal'
         size_hint_y: None
-        height: dp(50)
-        spacing: dp(20)
-        padding: dp(10)
+        height: dp(36)
+        padding: dp(10), 0
 
         DescriptionLabel:
             text: i18n._('katago settings')
             font_size: sp(Theme.DESC_FONT_SIZE) * 1.5
-            size_hint_x: 0.4
+            halign: 'left'
 
-        AutoSizedRoundedRectangleButton:
-            text: i18n._("download katago button")
-            on_press: root.download_katas()
-            size_hint: (0.3, 0.8)
-
-        AutoSizedRoundedRectangleButton:
-            text: i18n._("download models button")
-            on_press: root.download_models()
-            size_hint: (0.3, 0.8)
-
-    # Main Content Area
+    # Engine backend tabs, with the "tab is authoritative" note to their right
     MDBoxLayout:
-        orientation: 'vertical'
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: dp(40)
+        spacing: dp(6)
+        padding: dp(8), 0
+
+        SizedRectangleToggleButton:
+            id: local_tab_button
+            size_hint: 0.22, 1
+            group: 'engine_backend'
+            allow_no_selection: False
+            text: i18n._('engine:tab:local')
+            on_release: engine_sm.current = 'local'
+
+        SizedRectangleToggleButton:
+            id: remote_tab_button
+            size_hint: 0.22, 1
+            group: 'engine_backend'
+            allow_no_selection: False
+            text: i18n._('engine:tab:remote')
+            on_release: engine_sm.current = 'remote'
+
+        SizedRectangleToggleButton:
+            id: custom_tab_button
+            size_hint: 0.22, 1
+            group: 'engine_backend'
+            allow_no_selection: False
+            text: i18n._('engine:tab:custom')
+            on_release: engine_sm.current = 'custom'
+
+        DescriptionLabel:
+            size_hint_x: 0.4
+            text: i18n._('engine:backend:note')
+            color: ORANGE
+            halign: 'left'
+            valign: 'center'
+            padding: dp(10), 0
+
+    # Engine backend content - one screen per tab
+    ScreenManager:
+        id: engine_sm
         size_hint: (1, 6)
-        spacing: dp(15)
-        padding: dp(10)
+        transition: NoTransition()
 
-        # Model Section
-        ConfigSectionGridLayout:
-            cols: 2
-            DescriptionLabel:
-                text: i18n._("engine:model")
-                size_hint: (0.33, 1)
+        Screen:
+            name: 'local'
+            MDBoxLayout:
+                orientation: 'vertical'
+                spacing: dp(12)
+                padding: dp(10)
 
-            AnchorLayout:
-                LabelledPathInput:
-                    id: model_path
-                    input_property: "engine/model"
-                    on_text: root.check_models()
+                # KataGo executable - download button sits under its label
+                ConfigSectionGridLayout:
+                    cols: 2
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        size_hint_x: 0.33
+                        spacing: dp(6)
+                        DescriptionLabel:
+                            text: i18n._("engine:katago")
+                        AnchorLayout:
+                            size_hint_y: None
+                            height: dp(34)
+                            AutoSizedRoundedRectangleButton:
+                                text: i18n._("download katago button")
+                                on_press: root.download_katas()
+                                size_hint: None, None
+                                height: dp(32)
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        AnchorLayout:
+                            LabelledPathInput:
+                                id: katago_path
+                                input_property: "engine/katago"
+                                hint_text: i18n._("engine:katago:hint")
+                                on_text: root.check_katas()
+                        AnchorLayout:
+                            KeyValueSpinner:
+                                id: katago_files
+                                text: ''
+                                text_autoupdate: True
+                                size_hint_y: 0.7
+                                on_select: if self.selected_index != 0: katago_path.text = self.value_keys[self.selected_index]
 
-            Label:
-                size_hint: (0.33, 1)
+                # Model - download button sits under its label
+                ConfigSectionGridLayout:
+                    cols: 2
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        size_hint_x: 0.33
+                        spacing: dp(6)
+                        DescriptionLabel:
+                            text: i18n._("engine:model")
+                        AnchorLayout:
+                            size_hint_y: None
+                            height: dp(34)
+                            AutoSizedRoundedRectangleButton:
+                                text: i18n._("download models button")
+                                on_press: root.download_models()
+                                size_hint: None, None
+                                height: dp(32)
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        AnchorLayout:
+                            LabelledPathInput:
+                                id: model_path
+                                input_property: "engine/model"
+                                on_text: root.check_models()
+                        AnchorLayout:
+                            KeyValueSpinner:
+                                id: model_files
+                                text: ''
+                                text_autoupdate: True
+                                size_hint_y: 0.7
+                                on_select: if self.selected_index != 0: model_path.text = self.value_keys[self.selected_index]
 
-            AnchorLayout:
-                KeyValueSpinner:
-                    id: model_files
-                    text: ''
-                    text_autoupdate: True
-                    size_hint_y: 0.7
-                    on_select: if self.selected_index != 0: model_path.text = self.value_keys[self.selected_index]
+                # Human-like model
+                ConfigSectionGridLayout:
+                    cols: 2
+                    DescriptionLabel:
+                        text: i18n._("engine:humanlike_model")
+                        size_hint_x: 0.33
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        AnchorLayout:
+                            LabelledPathInput:
+                                id: humanlike_model_path
+                                input_property: "engine/humanlike_model"
+                                on_text: root.check_models()
+                        AnchorLayout:
+                            KeyValueSpinner:
+                                id: humanlike_model_files
+                                text: ''
+                                text_autoupdate: True
+                                size_hint_y: 0.7
+                                on_select: if self.selected_index != 0: humanlike_model_path.text = self.value_keys[self.selected_index]
 
-        # Humanlike Model Section
-        ConfigSectionGridLayout:
-            cols: 2
-            DescriptionLabel:
-                text: i18n._("engine:humanlike_model")
-                size_hint: (0.33, 1)
+                # KataGo config file
+                ConfigSectionGridLayout:
+                    cols: 2
+                    DescriptionLabel:
+                        text: i18n._("engine:config")
+                        size_hint_x: 0.33
+                    AnchorLayout:
+                        LabelledPathInput:
+                            input_property: "engine/config"
 
-            AnchorLayout:
-                LabelledPathInput:
-                    id: humanlike_model_path
-                    input_property: "engine/humanlike_model"
-                    on_text: root.check_models()
+        Screen:
+            name: 'remote'
+            MDBoxLayout:
+                orientation: 'vertical'
+                spacing: dp(12)
+                padding: dp(10)
+                ConfigSectionGridLayout:
+                    cols: 2
+                    size_hint_y: None
+                    height: dp(70)
+                    DescriptionLabel:
+                        text: i18n._("engine:remote_url")
+                        size_hint_x: 0.33
+                    AnchorLayout:
+                        LabelledPathInput:
+                            check_path: False
+                            input_property: "engine/remote_url"
+                            hint_text: i18n._("engine:remote_url:hint")
+                Widget:
 
-            Label:
-                size_hint: (0.33, 1)
-
-            AnchorLayout:
-                KeyValueSpinner:
-                    id: humanlike_model_files
-                    text: ''
-                    text_autoupdate: True
-                    size_hint_y: 0.7
-                    on_select: if self.selected_index != 0: humanlike_model_path.text = self.value_keys[self.selected_index]
-
-        # KataGo Engine Section
-        ConfigSectionGridLayout:
-            cols: 2
-            DescriptionLabel:
-                text: i18n._("engine:katago")
-                size_hint: (0.33, 1)
-
-            AnchorLayout:
-                LabelledPathInput:
-                    id: katago_path
-                    input_property: "engine/katago"
-                    hint_text: i18n._("engine:katago:hint")
-                    on_text: root.check_katas()
-
-            Label:
-                size_hint: (0.33, 1)
-
-            AnchorLayout:
-                KeyValueSpinner:
-                    id: katago_files
-                    text: ''
-                    text_autoupdate: True
-                    size_hint_y: 0.7
-                    on_select: if self.selected_index != 0: katago_path.text = self.value_keys[self.selected_index]
-
-        ConfigSectionGridLayout:
-            rows: 2
-            cols: 2
-            DescriptionLabel:
-                text: i18n._("engine:config")
-                size_hint: 0.33, 1
-            AnchorLayout:
-                LabelledPathInput:
-                    input_property: "engine/config"
-            DescriptionLabel:
-                text: i18n._("engine:altcommand")
-                size_hint: 0.33, 1
-            AnchorLayout:
-                LabelledPathInput:
-                    check_path: False
-                    input_property: "engine/altcommand"
-                    hint_text: i18n._("engine:altcommand:hint")
+        Screen:
+            name: 'custom'
+            MDBoxLayout:
+                orientation: 'vertical'
+                spacing: dp(12)
+                padding: dp(10)
+                ConfigSectionGridLayout:
+                    cols: 2
+                    size_hint_y: None
+                    height: dp(70)
+                    DescriptionLabel:
+                        text: i18n._("engine:altcommand")
+                        size_hint_x: 0.33
+                    AnchorLayout:
+                        LabelledPathInput:
+                            check_path: False
+                            input_property: "engine/altcommand"
+                            hint_text: i18n._("engine:altcommand:hint")
+                Widget:
 
     # Settings Headers
     MDBoxLayout:
-        size_hint_y: 0.5
+        size_hint_y: None
+        height: dp(34)
         orientation: 'horizontal'
         padding: dp(10)
         spacing: dp(20)
@@ -874,14 +961,23 @@
             on_press: root.update_config(True)
 
 <EngineRecoveryPopup>:
+    orientation: 'vertical'
     Label:
+        size_hint: 1, 0.85
         padding: CP_PADDING, CP_PADDING*3
-        text: i18n._("engine died popup opening message").format(code=root.code,error_message=root.error_message) + "\n\n" +  i18n._("change engine suggestion").format(link="[color=#CCCC11][u][ref=engine_settings]"+i18n._('menu:settings')+"[/ref][/u][/color]") + "\n\n" +  i18n._("go to engine help page").format(link="[color=#CCCC11][u][ref=engine_help]"+i18n._('link_here')+"[/ref][/u][/color]")
+        text: root.recovery_message
         text_size: self.size
         font_size: sp(Theme.DESC_FONT_SIZE)
         markup: True
         valign: 'top'
         on_ref_press:  app.webbrowser('engine:help') if args[1]=='engine_help' else  app.gui('config-popup')
+    AnchorLayout:
+        size_hint: 1, 0.15
+        AutoSizedRoundedRectangleButton:
+            padding_x: 15
+            size_hint: None, 0.66
+            text: i18n._("engine recovery: retry")
+            on_release: root.retry()
 
 
 
