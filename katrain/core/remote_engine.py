@@ -33,7 +33,7 @@ from katrain.core.constants import (
     OUTPUT_INFO,
     STATUS_INFO,
 )
-from katrain.core.engine import BaseEngine, KataGoEngine
+from katrain.core.engine import BaseEngine, KataGoEngine, resolve_engine_backend
 from katrain.core.lang import i18n
 from katrain.core.utils import json_truncate_arrays
 
@@ -576,8 +576,9 @@ class RemoteKataGoEngine(KataGoEngine):
 
 
 def make_engine(katrain, config):
-    """Return RemoteKataGoEngine if `engine.remote_url` is set,
-    otherwise the normal local-subprocess KataGoEngine."""
-    if (config.get("remote_url") or "").strip():
+    """Return the engine matching the selected backend (see resolve_engine_backend):
+    a RemoteKataGoEngine for the remote backend, otherwise a local-subprocess
+    KataGoEngine (which itself handles the local vs custom-command distinction)."""
+    if resolve_engine_backend(config) == "remote":
         return RemoteKataGoEngine(katrain, config)
     return KataGoEngine(katrain, config)

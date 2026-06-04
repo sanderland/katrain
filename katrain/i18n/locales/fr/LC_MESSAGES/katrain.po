@@ -1082,3 +1082,15 @@ msgstr ""
 "Si le moteur distant a déjà fonctionné, appuyez sur Réessayer pour vous "
 "reconnecter une fois qu'il est de nouveau disponible. Sinon, vérifiez l'URL "
 "du moteur distant dans {link} ."
+
+msgid "engine:tab:local"
+msgstr "Moteur local"
+
+msgid "engine:tab:remote"
+msgstr "Moteur distant"
+
+msgid "engine:tab:custom"
+msgstr "Commande personnalisée"
+
+msgid "engine:backend:note"
+msgstr "L'onglet sélectionné détermine le moteur utilisé."

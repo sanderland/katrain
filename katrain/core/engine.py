@@ -26,6 +26,25 @@ from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move
 from katrain.core.utils import find_package_resource, json_truncate_arrays
 
+ENGINE_BACKENDS = ("local", "remote", "custom")
+
+
+def resolve_engine_backend(config) -> str:
+    """Which engine backend to use: 'local', 'remote' or 'custom'.
+
+    Uses the explicit `engine/backend` setting when present (set by the engine
+    settings tabs). Falls back to deriving it from the legacy fields so older
+    configs keep working: a remote_url means remote, an altcommand means custom.
+    """
+    backend = (config.get("backend") or "").strip().lower()
+    if backend in ENGINE_BACKENDS:
+        return backend
+    if (config.get("remote_url") or "").strip():
+        return "remote"
+    if (config.get("altcommand") or "").strip():
+        return "custom"
+    return "local"
+
 
 class BaseEngine:  # some common elements between analysis and contribute engine
 
@@ -113,10 +132,10 @@ class KataGoEngine(BaseEngine):
         self.shell = False
         self.write_queue = queue.Queue()
         self.thread_lock = threading.Lock()
-        if config.get("altcommand", ""):
+        if resolve_engine_backend(config) == "custom":
             self.command = config["altcommand"]
             self.shell = True
-        else:    
+        else:
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
             exe = self.get_engine_path(config.get("katago", "").strip())

@@ -1148,3 +1148,15 @@ msgstr ""
 "Uzak motor daha önce çalıştıysa, tekrar erişilebilir olduğunda yeniden "
 "bağlanmak için Yeniden Dene'ye basın. Aksi takdirde, {link} içindeki uzak "
 "motor URL'sini tekrar kontrol edin."
+
+msgid "engine:tab:local"
+msgstr "Yerel motor"
+
+msgid "engine:tab:remote"
+msgstr "Uzak motor"
+
+msgid "engine:tab:custom"
+msgstr "Özel komut"
+
+msgid "engine:backend:note"
+msgstr "Seçilen sekme, kullanılacak motoru belirler."

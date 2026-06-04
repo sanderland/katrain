@@ -1085,3 +1085,15 @@ msgid "remote engine check url suggestion"
 msgstr ""
 "リモートエンジンが以前は動作していた場合は、復旧後に「再試行」を押して再接続してください。そうでない場合は、{link} でリモートエンジンの URL "
 "を再確認してください。"
+
+msgid "engine:tab:local"
+msgstr "ローカルエンジン"
+
+msgid "engine:tab:remote"
+msgstr "リモートエンジン"
+
+msgid "engine:tab:custom"
+msgstr "カスタムコマンド"
+
+msgid "engine:backend:note"
+msgstr "選択したタブが使用するエンジンを決定します。"

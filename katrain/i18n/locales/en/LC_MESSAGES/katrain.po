@@ -1111,3 +1111,15 @@ msgstr "Distance of wall"
 #. tsumego: ko is good enough?
 msgid "tsumego:ko"
 msgstr "Ko allowed?"
+
+msgid "engine:tab:local"
+msgstr "Local engine"
+
+msgid "engine:tab:remote"
+msgstr "Remote engine"
+
+msgid "engine:tab:custom"
+msgstr "Custom command"
+
+msgid "engine:backend:note"
+msgstr "The selected tab determines the engine used."

@@ -1113,3 +1113,15 @@ msgstr ""
 "Wenn die entfernte Engine zuvor funktioniert hat, drücken Sie auf Erneut "
 "versuchen, um die Verbindung wiederherzustellen, sobald sie wieder verfügbar"
 " ist. Andernfalls überprüfen Sie die URL der entfernten Engine in {link} ."
+
+msgid "engine:tab:local"
+msgstr "Lokale Engine"
+
+msgid "engine:tab:remote"
+msgstr "Remote-Engine"
+
+msgid "engine:tab:custom"
+msgstr "Eigener Befehl"
+
+msgid "engine:backend:note"
+msgstr "Der ausgewählte Reiter bestimmt die genutzte Engine."

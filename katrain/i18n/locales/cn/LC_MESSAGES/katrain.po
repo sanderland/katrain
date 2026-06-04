@@ -1040,3 +1040,15 @@ msgstr "重试"
 #. Link in tags should not be touched. Shown for remote engines.
 msgid "remote engine check url suggestion"
 msgstr "如果远程引擎之前能正常工作，请在其恢复后点击「重试」以重新连接。否则，请在 {link} 中再次检查远程引擎的网址。"
+
+msgid "engine:tab:local"
+msgstr "本地引擎"
+
+msgid "engine:tab:remote"
+msgstr "远程引擎"
+
+msgid "engine:tab:custom"
+msgstr "自定义命令"
+
+msgid "engine:backend:note"
+msgstr "所选标签页决定使用的引擎。"

@@ -24,6 +24,7 @@ from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
 from katrain.core.ai import ai_rank_estimation, game_report
+from katrain.core.engine import resolve_engine_backend
 from katrain.core.constants import (
     AI_CONFIG_DEFAULT,
     AI_DEFAULT,
@@ -792,14 +793,28 @@ class BaseConfigPopup(QuickConfigGui):
 
 
 class ConfigPopup(BaseConfigPopup):
+    ENGINE_TAB_BUTTONS = {"local": "local_tab_button", "remote": "remote_tab_button", "custom": "custom_tab_button"}
+
     def __init__(self, katrain):
         super().__init__(katrain)
         Clock.schedule_once(self.check_katas)
+        Clock.schedule_once(self.select_engine_tab)
         MDApp.get_running_app().bind(language=self.check_models)
         MDApp.get_running_app().bind(language=self.check_katas)
 
+    def select_engine_tab(self, *_args):
+        # The active tab is authoritative for which engine is used; pick it based on the current config.
+        backend = resolve_engine_backend(self.katrain.config("engine"))
+        self.engine_sm.current = backend
+        getattr(self, self.ENGINE_TAB_BUTTONS[backend]).state = "down"
+
     def update_config(self, save_to_file=True, close_popup=True):
+        old_backend = self.katrain.config("engine/backend", "")
+        backend = self.engine_sm.current
+        self.katrain._config["engine"]["backend"] = backend
         updated = super().update_config(save_to_file=save_to_file, close_popup=close_popup)
+        if backend != old_backend:
+            updated.add("engine/backend")
         self.katrain.debug_level = self.katrain.config("general/debug_level", OUTPUT_INFO)
 
         ignore = {"max_visits", "fast_visits", "max_time", "enable_ownership", "wide_root_noise"}

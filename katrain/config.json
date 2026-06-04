@@ -1,5 +1,6 @@
 {
     "engine": {
+        "backend": "",
         "katago": "",
         "altcommand": "",
         "remote_url": "",

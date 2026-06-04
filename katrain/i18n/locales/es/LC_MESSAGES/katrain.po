@@ -1053,3 +1053,15 @@ msgstr "Connecting to remote KataGo at {url} failed: {error}"
 #. TODO
 msgid "Remote KataGo engine disconnected"
 msgstr "Remote KataGo engine disconnected: {error}"
+
+msgid "engine:tab:local"
+msgstr "Motor local"
+
+msgid "engine:tab:remote"
+msgstr "Motor remoto"
+
+msgid "engine:tab:custom"
+msgstr "Comando personalizado"
+
+msgid "engine:backend:note"
+msgstr "La pestaña seleccionada determina el motor usado."

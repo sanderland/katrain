@@ -1012,3 +1012,15 @@ msgid "remote engine check url suggestion"
 msgstr ""
 "원격 엔진이 이전에 작동한 적이 있다면, 다시 사용 가능해졌을 때 다시 시도를 눌러 재연결하세요. 그렇지 않으면 {link} 에서 원격 "
 "엔진 URL을 다시 확인하세요."
+
+msgid "engine:tab:local"
+msgstr "로컬 엔진"
+
+msgid "engine:tab:remote"
+msgstr "원격 엔진"
+
+msgid "engine:tab:custom"
+msgstr "사용자 지정 명령"
+
+msgid "engine:backend:note"
+msgstr "선택한 탭이 사용할 엔진을 결정합니다."
