@@ -95,6 +95,7 @@ class KataGoEngine(BaseEngine):
     """Starts and communicates with the KataGO analysis engine"""
 
     PONDER_KEY = "_kt_continuous"
+    ENGINE_TYPE = "local"  # passed to the recovery popup so it can tailor its advice
 
     def __init__(self, katrain, config):
         super().__init__(katrain, config)
@@ -146,7 +147,7 @@ class KataGoEngine(BaseEngine):
     def on_error(self, message, code=None, allow_popup=True):
         self.katrain.log(message, OUTPUT_ERROR)
         if self.allow_recovery and allow_popup:
-            self.katrain("engine_recovery_popup", message, code)
+            self.katrain("engine_recovery_popup", message, code, self.ENGINE_TYPE)
 
     def start(self):
         with self.thread_lock:

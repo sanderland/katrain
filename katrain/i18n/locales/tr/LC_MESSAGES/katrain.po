@@ -733,8 +733,9 @@ msgstr ""
 #. Link in tags should not be touched.
 msgid "change engine suggestion"
 msgstr ""
-"İlk önce, KataGo sürümlerini indirmeyi deneyin ve {link} bağlantısındaki "
-"farklı yürütme dosyalarını kullanmayı deneyin."
+"Önce motoru yeniden başlatmak için Yeniden Dene'ye basın. Bu işe yaramazsa, "
+"{link} içinde KataGo sürümlerini indirip farklı bir yürütülebilir dosyaya "
+"geçmeyi deneyin."
 
 #. Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
@@ -1126,3 +1127,24 @@ msgstr "Connecting to remote KataGo at {url} failed: {error}"
 #. TODO
 msgid "Remote KataGo engine disconnected"
 msgstr "Remote KataGo engine disconnected: {error}"
+
+#. Shown instead of "engine died popup opening message" for remote
+#. engines.
+msgid "remote engine disconnected popup opening message"
+msgstr ""
+"Uzak KataGo motoruyla bağlantı kesildi ve otomatik olarak yeniden kurulamadı.\n"
+"\n"
+"Hata: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Hata kodu: [color=#CC2222]{code}[/color]."
+
+#. Button to reconnect/restart the engine from the recovery popup.
+msgid "engine recovery: retry"
+msgstr "Yeniden Dene"
+
+#. Link in tags should not be touched. Shown for remote engines.
+msgid "remote engine check url suggestion"
+msgstr ""
+"Uzak motor daha önce çalıştıysa, tekrar erişilebilir olduğunda yeniden "
+"bağlanmak için Yeniden Dene'ye basın. Aksi takdirde, {link} içindeki uzak "
+"motor URL'sini tekrar kontrol edin."

@@ -40,7 +40,6 @@ from katrain.core.constants import (
     ADDITIONAL_MOVE_ORDER,
 )
 from katrain.core.lang import i18n, rank_label
-from katrain.core.remote_engine import make_engine
 from katrain.core.sgf_parser import Move
 from katrain.core.utils import PATHS, find_package_resource, evaluation_class
 from katrain.gui.kivyutils import (
@@ -455,11 +454,36 @@ class ConfigAIPopup(QuickConfigGui):
 class EngineRecoveryPopup(QuickConfigGui):
     error_message = StringProperty("")
     code = ObjectProperty(None)
+    engine_type = StringProperty("local")
+    recovery_message = StringProperty("")
 
-    def __init__(self, katrain, error_message, code):
+    def __init__(self, katrain, error_message, code, engine_type="local"):
         super().__init__(katrain)
         self.error_message = str(error_message)
         self.code = code
+        self.engine_type = engine_type or "local"
+        self.recovery_message = self._build_message()
+
+    def _build_message(self):
+        settings_link = "[color=#CCCC11][u][ref=engine_settings]" + i18n._("menu:settings") + "[/ref][/u][/color]"
+        help_link = "[color=#CCCC11][u][ref=engine_help]" + i18n._("link_here") + "[/ref][/u][/color]"
+        if self.engine_type == "remote":
+            opening_key = "remote engine disconnected popup opening message"
+            suggestion = i18n._("remote engine check url suggestion").format(link=settings_link)
+        else:
+            opening_key = "engine died popup opening message"
+            suggestion = i18n._("change engine suggestion").format(link=settings_link)
+        opening = i18n._(opening_key).format(code=self.code, error_message=self.error_message)
+        help_text = i18n._("go to engine help page").format(link=help_link)
+        return opening + "\n\n" + suggestion + "\n\n" + help_text
+
+    def retry(self):
+        """Rebuild the engine from current config and re-analyze. For a
+        remote engine this reconnects; for a local one it respawns the
+        subprocess. Recovers a transient failure without changing settings."""
+        if self.popup:
+            self.popup.dismiss()
+        Clock.schedule_once(lambda _dt: self.katrain.restart_engine(), 0)
 
 
 class BaseConfigPopup(QuickConfigGui):
@@ -783,19 +807,8 @@ class ConfigPopup(BaseConfigPopup):
         if detected_restart:
 
             def restart_engine(_dt):
-                self.katrain.controls.set_status("", STATUS_INFO)
                 self.katrain.log(f"Restarting Engine after {detected_restart} settings change")
-                self.katrain.controls.set_status(i18n._("restarting engine"), STATUS_INFO)
-
-                old_engine = self.katrain.engine
-                old_engine.shutdown(finish=False)
-                new_engine = make_engine(self.katrain, self.katrain.config("engine"))
-                self.katrain.engine = new_engine
-                self.katrain.game.engines = {"B": new_engine, "W": new_engine}
-                self.katrain.game.analyze_all_nodes(
-                    analyze_fast=True
-                )  # old engine was possibly broken, so make sure we redo any failures
-                self.katrain.update_state()
+                self.katrain.restart_engine()
 
             Clock.schedule_once(restart_engine, 0)
 

@@ -929,8 +929,9 @@ msgstr ""
 
 msgid "change engine suggestion"
 msgstr ""
-"L'exécutable et le modèle KataGo utilisés doivent être compatibles. Vous "
-"pouvez en télécharger et/ou en sélectionner d'autres dans les {link}. "
+"Commencez par appuyer sur Réessayer pour redémarrer le moteur. Si cela ne "
+"suffit pas, essayez de télécharger des versions de KataGo et de changer "
+"d'exécutable dans {link} ."
 
 msgid "link_here"
 msgstr "ce lien"
@@ -1060,3 +1061,24 @@ msgstr "Connecting to remote KataGo at {url} failed: {error}"
 #. TODO
 msgid "Remote KataGo engine disconnected"
 msgstr "Remote KataGo engine disconnected: {error}"
+
+#. Shown instead of "engine died popup opening message" for remote
+#. engines.
+msgid "remote engine disconnected popup opening message"
+msgstr ""
+"La connexion au moteur KataGo distant a été perdue et n'a pas pu être rétablie automatiquement.\n"
+"\n"
+"L'erreur était : [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Le code d'erreur était : [color=#CC2222]{code}[/color]."
+
+#. Button to reconnect/restart the engine from the recovery popup.
+msgid "engine recovery: retry"
+msgstr "Réessayer"
+
+#. Link in tags should not be touched. Shown for remote engines.
+msgid "remote engine check url suggestion"
+msgstr ""
+"Si le moteur distant a déjà fonctionné, appuyez sur Réessayer pour vous "
+"reconnecter une fois qu'il est de nouveau disponible. Sinon, vérifiez l'URL "
+"du moteur distant dans {link} ."

@@ -213,6 +213,20 @@ class KaTrainGui(Screen, KaTrainBase):
 
         MDApp.get_running_app().root_window.bind(focus=set_focus_event)
 
+    def restart_engine(self):
+        """Rebuild the analysis engine from current config and re-analyze.
+        Shared by the engine-settings save and the recovery popup's Retry."""
+        self.log("Restarting engine", OUTPUT_INFO)
+        self.controls.set_status(i18n._("restarting engine"), STATUS_INFO)
+        old_engine = self.engine
+        old_engine.shutdown(finish=False)
+        new_engine = make_engine(self, self.config("engine"))
+        self.engine = new_engine
+        self.game.engines = {"B": new_engine, "W": new_engine}
+        # old engine was possibly broken, so make sure we redo any failures
+        self.game.analyze_all_nodes(analyze_fast=True)
+        self.update_state()
+
     def update_gui(self, cn, redraw_board=False):
         # Handle prisoners and next player display
         prisoners = self.game.prisoner_count
@@ -518,7 +532,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
-    def _do_engine_recovery_popup(self, error_message, code):
+    def _do_engine_recovery_popup(self, error_message, code, engine_type="local"):
         current_open = self.popup_open
         if current_open and isinstance(current_open.content, EngineRecoveryPopup):
             self.log(f"Not opening engine recovery popup with {error_message} as one is already open", OUTPUT_DEBUG)
@@ -526,7 +540,7 @@ class KaTrainGui(Screen, KaTrainBase):
         popup = I18NPopup(
             title_key="engine recovery",
             size=[dp(600), dp(700)],
-            content=EngineRecoveryPopup(self, error_message=error_message, code=code),
+            content=EngineRecoveryPopup(self, error_message=error_message, code=code, engine_type=engine_type),
         ).__self__
         popup.content.popup = popup
         popup.open()

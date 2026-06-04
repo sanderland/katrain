@@ -898,7 +898,7 @@ msgstr "如果你還有任何困難，請參考疑難排解頁面 {link}"
 
 #. Link in tags should not be touched.
 msgid "change engine suggestion"
-msgstr "首先，在 {link} 中，嘗試下載且更換為不同版本的KataGo執行檔是否能解決問題。"
+msgstr "請先按「重試」以重新啟動引擎。如果沒有幫助，請嘗試在 {link} 中下載 KataGo 版本並改用其他執行檔。"
 
 #. as in "click here" to go to this page,
 msgid "link_here"
@@ -1045,3 +1045,21 @@ msgstr "Connecting to remote KataGo at {url} failed: {error}"
 #. TODO
 msgid "Remote KataGo engine disconnected"
 msgstr "Remote KataGo engine disconnected: {error}"
+
+#. Shown instead of "engine died popup opening message" for remote
+#. engines.
+msgid "remote engine disconnected popup opening message"
+msgstr ""
+"與遠端 KataGo 引擎的連線中斷，且無法自動重新建立。\n"
+"\n"
+"錯誤為：[color=#CC2222]{error_message}[/color]\n"
+"\n"
+"錯誤代碼為：[color=#CC2222]{code}[/color]。"
+
+#. Button to reconnect/restart the engine from the recovery popup.
+msgid "engine recovery: retry"
+msgstr "重試"
+
+#. Link in tags should not be touched. Shown for remote engines.
+msgid "remote engine check url suggestion"
+msgstr "如果遠端引擎先前曾正常運作，請在它恢復後按「重試」以重新連線。否則，請在 {link} 中再次確認遠端引擎的網址。"

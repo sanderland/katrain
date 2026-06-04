@@ -771,8 +771,28 @@ msgstr ""
 #. Link in tags should not be touched.
 msgid "change engine suggestion"
 msgstr ""
-"First, try downloading KataGo versions and try if changing to a different "
-"executable helps in {link} ."
+"First, press Retry to restart the engine. If that does not help, try "
+"downloading KataGo versions and changing to a different executable in {link}"
+" ."
+
+#. Shown instead of "engine died popup opening message" for remote engines.
+msgid "remote engine disconnected popup opening message"
+msgstr ""
+"The connection to the remote KataGo engine was lost and could not be re-established automatically.\n"
+"\n"
+"The error was: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"The error code was: [color=#CC2222]{code}[/color]."
+
+#. Link in tags should not be touched. Shown for remote engines.
+msgid "remote engine check url suggestion"
+msgstr ""
+"If the remote engine has worked before, press Retry to reconnect once it is "
+"back. Otherwise, double-check the remote engine URL in {link} ."
+
+#. Button to reconnect/restart the engine from the recovery popup.
+msgid "engine recovery: retry"
+msgstr "Retry"
 
 #. Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
