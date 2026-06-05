@@ -916,7 +916,9 @@ msgstr "それでもだめなら、{link}して最新のトラブルシューテ
 
 #. Link in tags should not be touched.
 msgid "change engine suggestion"
-msgstr "まずは、{link}から別バージョンのKataGoをダウンロードしてうまくいくか試してください。"
+msgstr ""
+"まず「再試行」を押してエンジンを再起動してください。解決しない場合は、{link} で KataGo "
+"のバージョンをダウンロードし、別の実行ファイルに変更してみてください。"
 
 #. as in "click here" to go to this page,
 msgid "link_here"
@@ -1039,3 +1041,59 @@ msgstr ""
 #. TODO
 msgid "engine:humanlike_model"
 msgstr "Path to human-like model"
+
+#. TODO
+msgid "engine:remote_url"
+msgstr "KataGo WebSocket URL"
+
+#. TODO
+msgid "engine:remote_url:hint"
+msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+
+#. TODO
+msgid "Remote KataGo URL is empty"
+msgstr "Remote KataGo URL is empty"
+
+#. TODO
+msgid "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Remote KataGo URL must start with ws:// or wss://"
+
+#. TODO
+msgid "Connecting to remote KataGo failed"
+msgstr "Connecting to remote KataGo at {url} failed: {error}"
+
+#. TODO
+msgid "Remote KataGo engine disconnected"
+msgstr "Remote KataGo engine disconnected: {error}"
+
+#. Shown instead of "engine died popup opening message" for remote
+#. engines.
+msgid "remote engine disconnected popup opening message"
+msgstr ""
+"リモート KataGo エンジンへの接続が失われ、自動的に再接続できませんでした。\n"
+"\n"
+"エラー: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"エラーコード: [color=#CC2222]{code}[/color]。"
+
+#. Button to reconnect/restart the engine from the recovery popup.
+msgid "engine recovery: retry"
+msgstr "再試行"
+
+#. Link in tags should not be touched. Shown for remote engines.
+msgid "remote engine check url suggestion"
+msgstr ""
+"リモートエンジンが以前は動作していた場合は、復旧後に「再試行」を押して再接続してください。そうでない場合は、{link} でリモートエンジンの URL "
+"を再確認してください。"
+
+msgid "engine:tab:local"
+msgstr "ローカルエンジン"
+
+msgid "engine:tab:remote"
+msgstr "リモートエンジン"
+
+msgid "engine:tab:custom"
+msgstr "カスタムコマンド"
+
+msgid "engine:backend:note"
+msgstr "選択したタブが使用するエンジンを決定します。"

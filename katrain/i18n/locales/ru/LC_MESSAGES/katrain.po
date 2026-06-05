@@ -1002,3 +1002,63 @@ msgstr ""
 #. TODO
 msgid "engine:humanlike_model"
 msgstr "Path to human-like model"
+
+#. TODO
+msgid "engine:remote_url"
+msgstr "KataGo WebSocket URL"
+
+#. TODO
+msgid "engine:remote_url:hint"
+msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+
+#. TODO
+msgid "Remote KataGo URL is empty"
+msgstr "Remote KataGo URL is empty"
+
+#. TODO
+msgid "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Remote KataGo URL must start with ws:// or wss://"
+
+#. TODO
+msgid "Connecting to remote KataGo failed"
+msgstr "Connecting to remote KataGo at {url} failed: {error}"
+
+#. TODO
+msgid "Remote KataGo engine disconnected"
+msgstr "Remote KataGo engine disconnected: {error}"
+
+#. TODO - Shown instead of "engine died popup opening message" for remote
+#. engines.
+msgid "remote engine disconnected popup opening message"
+msgstr ""
+"The connection to the remote KataGo engine was lost and could not be re-established automatically.\n"
+"\n"
+"The error was: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"The error code was: [color=#CC2222]{code}[/color]."
+
+#. TODO - Button to reconnect/restart the engine from the recovery popup.
+msgid "engine recovery: retry"
+msgstr "Retry"
+
+#. TODO - Link in tags should not be touched. Shown for remote engines.
+msgid "remote engine check url suggestion"
+msgstr ""
+"If the remote engine has worked before, press Retry to reconnect once it is "
+"back. Otherwise, double-check the remote engine URL in {link} ."
+
+#. TODO
+msgid "engine:tab:custom"
+msgstr "Custom command"
+
+#. TODO
+msgid "engine:backend:note"
+msgstr "The selected tab determines the engine used."
+
+#. TODO
+msgid "engine:tab:remote"
+msgstr "Remote engine"
+
+#. TODO
+msgid "engine:tab:local"
+msgstr "Local engine"

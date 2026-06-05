@@ -940,8 +940,9 @@ msgstr ""
 #.  - Link in tags should not be touched.
 msgid "change engine suggestion"
 msgstr ""
-"Versuchen sie erstmal KataGo Versionen runterzuladen und ob eine andere "
-"ausführbare Datei in {link} hilft. "
+"Drücken Sie zuerst auf Erneut versuchen, um die Engine neu zu starten. Falls"
+" das nicht hilft, laden Sie KataGo-Versionen herunter und wechseln Sie in "
+"{link} zu einer anderen ausführbaren Datei."
 
 #.  - as in "click here" to go to this page,
 msgid "link_here"
@@ -1067,3 +1068,60 @@ msgstr ""
 #. TODO
 msgid "engine:humanlike_model"
 msgstr "Path to human-like model"
+
+#. TODO
+msgid "engine:remote_url"
+msgstr "KataGo WebSocket URL"
+
+#. TODO
+msgid "engine:remote_url:hint"
+msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+
+#. TODO
+msgid "Remote KataGo URL is empty"
+msgstr "Remote KataGo URL is empty"
+
+#. TODO
+msgid "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Remote KataGo URL must start with ws:// or wss://"
+
+#. TODO
+msgid "Connecting to remote KataGo failed"
+msgstr "Connecting to remote KataGo at {url} failed: {error}"
+
+#. TODO
+msgid "Remote KataGo engine disconnected"
+msgstr "Remote KataGo engine disconnected: {error}"
+
+#. Shown instead of "engine died popup opening message" for remote
+#. engines.
+msgid "remote engine disconnected popup opening message"
+msgstr ""
+"Die Verbindung zur entfernten KataGo-Engine ging verloren und konnte nicht automatisch wiederhergestellt werden.\n"
+"\n"
+"Der Fehler war: [color=#CC2222]{error_message}[/color]\n"
+"\n"
+"Der Fehlercode war: [color=#CC2222]{code}[/color]."
+
+#. Button to reconnect/restart the engine from the recovery popup.
+msgid "engine recovery: retry"
+msgstr "Erneut versuchen"
+
+#. Link in tags should not be touched. Shown for remote engines.
+msgid "remote engine check url suggestion"
+msgstr ""
+"Wenn die entfernte Engine zuvor funktioniert hat, drücken Sie auf Erneut "
+"versuchen, um die Verbindung wiederherzustellen, sobald sie wieder verfügbar"
+" ist. Andernfalls überprüfen Sie die URL der entfernten Engine in {link} ."
+
+msgid "engine:tab:local"
+msgstr "Lokale Engine"
+
+msgid "engine:tab:remote"
+msgstr "Remote-Engine"
+
+msgid "engine:tab:custom"
+msgstr "Eigener Befehl"
+
+msgid "engine:backend:note"
+msgstr "Der ausgewählte Reiter bestimmt die genutzte Engine."

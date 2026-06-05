@@ -29,6 +29,12 @@ else:
 Config.set("kivy", "window_icon", ICON)
 Config.set("input", "mouse", "mouse,multitouch_on_demand")
 
+# Preload sounds before Window import creates the SDL2 window,
+# as SoundLoader.load() deadlocks once the SDL2 window exists.
+from katrain.gui.sound import preload_sounds
+
+preload_sounds(PATHS["PACKAGE"] + "/sounds")
+
 # next, certificates on package builds https://github.com/sanderland/katrain/issues/414
 if getattr(sys, "frozen", False):
     import ssl
@@ -93,7 +99,7 @@ from katrain.gui.popups import (
 )
 from katrain.gui.sound import play_sound
 from katrain.core.base_katrain import KaTrainBase
-from katrain.core.engine import KataGoEngine
+from katrain.core.remote_engine import make_engine
 from katrain.core.contribute_engine import KataGoContributeEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
 from katrain.core.sgf_parser import Move, ParseError
@@ -187,7 +193,7 @@ class KaTrainGui(Screen, KaTrainBase):
         if self.engine:
             return
         self.board_gui.trainer_config = self.config("trainer")
-        self.engine = KataGoEngine(self, self.config("engine"))
+        self.engine = make_engine(self, self.config("engine"))
         threading.Thread(target=self._message_loop_thread, daemon=True).start()
         sgf_args = [
             f
@@ -206,6 +212,20 @@ class KaTrainGui(Screen, KaTrainBase):
             self.last_focus_event = time.time()
 
         MDApp.get_running_app().root_window.bind(focus=set_focus_event)
+
+    def restart_engine(self):
+        """Rebuild the analysis engine from current config and re-analyze.
+        Shared by the engine-settings save and the recovery popup's Retry."""
+        self.log("Restarting engine", OUTPUT_INFO)
+        self.controls.set_status(i18n._("restarting engine"), STATUS_INFO)
+        old_engine = self.engine
+        old_engine.shutdown(finish=False)
+        new_engine = make_engine(self, self.config("engine"))
+        self.engine = new_engine
+        self.game.engines = {"B": new_engine, "W": new_engine}
+        # old engine was possibly broken, so make sure we redo any failures
+        self.game.analyze_all_nodes(analyze_fast=True)
+        self.update_state()
 
     def update_gui(self, cn, redraw_board=False):
         # Handle prisoners and next player display
@@ -226,7 +246,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.controls.players["B"].captures = prisoners["B"]
 
         # update engine status dot
-        if not self.engine or not self.engine.katago_process or self.engine.katago_process.poll() is not None:
+        if not self.engine or not self.engine.check_alive():
             self.board_controls.engine_status_col = Theme.ENGINE_DOWN_COLOR
         elif self.engine.is_idle():
             self.board_controls.engine_status_col = Theme.ENGINE_READY_COLOR
@@ -512,7 +532,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.ai_settings_popup.content.popup = self.ai_settings_popup
         self.ai_settings_popup.open()
 
-    def _do_engine_recovery_popup(self, error_message, code):
+    def _do_engine_recovery_popup(self, error_message, code, engine_type="local"):
         current_open = self.popup_open
         if current_open and isinstance(current_open.content, EngineRecoveryPopup):
             self.log(f"Not opening engine recovery popup with {error_message} as one is already open", OUTPUT_DEBUG)
@@ -520,7 +540,7 @@ class KaTrainGui(Screen, KaTrainBase):
         popup = I18NPopup(
             title_key="engine recovery",
             size=[dp(600), dp(700)],
-            content=EngineRecoveryPopup(self, error_message=error_message, code=code),
+            content=EngineRecoveryPopup(self, error_message=error_message, code=code, engine_type=engine_type),
         ).__self__
         popup.content.popup = popup
         popup.open()
@@ -845,14 +865,19 @@ class KaTrainApp(MDApp):
     def is_valid_window_position(self, left, top, width, height):
         try:
             from screeninfo import get_monitors
+
             monitors = get_monitors()
             for monitor in monitors:
-                if (left >= monitor.x and left + width <= monitor.x + monitor.width and
-                    top >= monitor.y and top + height <= monitor.y + monitor.height):
+                if (
+                    left >= monitor.x
+                    and left + width <= monitor.x + monitor.width
+                    and top >= monitor.y
+                    and top + height <= monitor.y + monitor.height
+                ):
                     return True
             return False
         except Exception as e:
-            return True # yolo
+            return True  # yolo
 
     def build(self):
         self.icon = ICON  # how you're supposed to set an icon
@@ -905,7 +930,11 @@ class KaTrainApp(MDApp):
             win_size = [1300 * window_scale_fac, 1000 * window_scale_fac]
         self.gui.log(f"Setting window size to {win_size} and position to {[win_left, win_top]}", OUTPUT_DEBUG)
         Window.size = (win_size[0], win_size[1])
-        if win_left is not None and win_top is not None and self.is_valid_window_position(win_left, win_top, win_size[0], win_size[1]):
+        if (
+            win_left is not None
+            and win_top is not None
+            and self.is_valid_window_position(win_left, win_top, win_size[0], win_size[1])
+        ):
             Window.left = win_left
             Window.top = win_top
 
