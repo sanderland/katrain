@@ -59,7 +59,7 @@ Simply download and run, everything is included.
 ### <a name="WindowsSources"></a>Installation from sources
 
 * Download the repository by clicking the green *Clone or download* on this page and *Download zip*. Extract the contents.
-* Make sure you have a python installation, I will assume Anaconda (Python 3.9 or later), available [here](https://www.anaconda.com/products/individual#download-section).
+* Make sure you have a python installation, I will assume Anaconda (Python 3.10 or later), available [here](https://www.anaconda.com/products/individual#download-section).
 * Open 'Anaconda prompt' from the start menu and navigate to where you extracted the zip file using the `cd <folder>` command.
 * Execute the command `pip3 install .`
 * Start the app by running `katrain` in the command prompt. 
@@ -68,7 +68,7 @@ Simply download and run, everything is included.
 
 ### <a name="LinuxQuick"></a>Quick install guide
 
-If you have a working Python 3.9 or later available, you should be able to simply:
+If you have a working Python 3.10 or later available, you should be able to simply:
 
 * Run `pip3 install -U katrain` to install or upgrade.
 * Run the program by executing `katrain` in a terminal.
@@ -77,7 +77,7 @@ If you have a working Python 3.9 or later available, you should be able to simpl
 
 This section describes how to install KaTrain from sources,
  in case you want to run it in a local directory or have more control over the process. 
-It assumes you have a working Python 3.9+ installation.
+It assumes you have a working Python 3.10+ installation.
 
 * Open a terminal.
 * Run the command `git clone https://github.com/sanderland/katrain.git` to download the repository and 
