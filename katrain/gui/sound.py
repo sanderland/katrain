@@ -31,16 +31,23 @@ def preload_sounds(sound_dir):
     if not audio_files:
         return
 
-    # Test if audio subsystem works by loading one sound in a subprocess
-    try:
-        subprocess.run(
-            [sys.executable, "-c",
-             f"from kivy.core.audio import SoundLoader; SoundLoader.load({audio_files[0]!r})"],
-            timeout=3, capture_output=True,
-        )
-    except subprocess.TimeoutExpired as e:
-        print(f"Warning: Audio unavailable ({e}). Sounds disabled.", file=sys.stderr)
-        return
+    # SoundLoader.load() deadlocks when no audio output device is available, so
+    # on macOS/Linux we first probe in a subprocess. We skip the probe when:
+    #  - on Windows, where the deadlock does not occur, and
+    #  - in frozen builds, where sys.executable is the katrain app (not python),
+    #    so "-c <snippet>" relaunches katrain instead of running the snippet;
+    #    Kivy then misparses it as a "section:key:value" config arg and crashes.
+    # See https://github.com/sanderland/katrain/issues/824
+    if platform != "win" and not getattr(sys, "frozen", False):
+        try:
+            subprocess.run(
+                [sys.executable, "-c",
+                 f"from kivy.core.audio import SoundLoader; SoundLoader.load({audio_files[0]!r})"],
+                timeout=3, capture_output=True,
+            )
+        except subprocess.TimeoutExpired as e:
+            print(f"Warning: Audio unavailable ({e}). Sounds disabled.", file=sys.stderr)
+            return
 
     # Audio works, preload all sounds
     for path in audio_files:
