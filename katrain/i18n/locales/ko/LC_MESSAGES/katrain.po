@@ -967,7 +967,6 @@ msgid "engine:remote_url"
 msgstr "KataGo 웹소켓 URL"
 
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
 msgstr "로컬 KataGo 엔진을 사용할 때는 비워두십시오. ws:// 또는 wss:// 를 사용하십시오."
 
 msgid "Remote KataGo URL is empty"
