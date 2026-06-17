@@ -470,7 +470,7 @@ msgstr ""
 "별도의 설정은 없습니다."
 
 msgid "ai:jigo"
-msgstr "KataJigo"
+msgstr "조금만 이기기"
 
 msgid "aihelp:jigo"
 msgstr "다른 제한 없이 지정한 집 수만큼(기본값 0.5) 이기고자 합니다."
@@ -943,55 +943,44 @@ msgstr "수를 제한"
 msgid "contribute:passwordwarning"
 msgstr "(평문으로 저장하니, 다른 곳에서 재사용하지 마십시오)"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "사람 흉내"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "역대 프로 기사"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+"사람처럼 흉내내는 KataGo 모델에 따라 둡니다. "
+"정확히 말하면, pro_year에서 지정한 연도쯤에 프로 기사와 연구생이 두었던 역대 기보를 흉내냅니다."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"사람처럼 흉내내는 KataGo 모델에 따라 둡니다. "
+"human_kyu_rank에서 흉내낼 기력을 설정하십시오. "
+"modern_style을 체크하면, 2016년 이후 알파제로의 포석 스타일에 따라 둡니다. "
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "사람 흉내 모델의 경로"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "KataGo 웹소켓 URL"
 
-#. TODO
 msgid "engine:remote_url:hint"
 msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr "로컬 KataGo 엔진을 사용할 때는 비워두십시오. ws:// 또는 wss:// 를 사용하십시오."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "원격 KataGo URL 이 비어 있습니다."
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "원격 KataGo URL 은 반드시 ws:// 또는 wss:// 로 시작해야 합니다."
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr "{url}에 있는 원격 KataGo에 접속하지 못했습니다: {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "원격 KataGo 엔진 연결이 끊어졌습니다: {error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
