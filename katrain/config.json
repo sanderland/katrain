@@ -4,7 +4,7 @@
         "katago": "",
         "altcommand": "",
         "remote_url": "",
-        "model": "katrain/models/kata1-b18c384nbt-s9996604416-d4316597426.bin.gz",
+        "model": "katrain/models/b10c384h6nbttflrs.bin.gz",
         "humanlike_model": "",
         "config": "katrain/KataGo/analysis_config.cfg",
         "max_visits": 500,

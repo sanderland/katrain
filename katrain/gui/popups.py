@@ -497,6 +497,10 @@ class BaseConfigPopup(QuickConfigGui):
         "Human-like model": "https://github.com/lightvector/KataGo/releases/download/v1.15.0/b18c384nbt-humanv0.bin.gz",
     }
     MODEL_DESC = {
+        # Transformer models, require KataGo v1.17.0 or later
+        "Small transformer model (b10c384)": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/b10c384h6nbttflrs.bin.gz",
+        "Medium transformer model (b10c512)": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/b10c512h8nbt3tflrs-fson-silu-rsnh.bin.gz",
+        "Large transformer model (b11c768)": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/b11c768h12nbt3tflrs-fson-silu.bin.gz",
         "Fat 40 block model": "https://d3dndmfyhecmj0.cloudfront.net/g170/neuralnets/g170e-b40c384x2-s2348692992-d1229892979.zip",
         "Recommended 18b model": "https://media.katagotraining.org/uploaded/networks/models/kata1/kata1-b18c384nbt-s9996604416-d4316597426.bin.gz",
         "old 20 block model": "https://github.com/lightvector/KataGo/releases/download/v1.4.5/g170e-b20c256x2-s5303129600-d1228401921.bin.gz",
@@ -506,16 +510,16 @@ class BaseConfigPopup(QuickConfigGui):
 
     KATAGOS = {
         "win": {
-            "OpenCL v1.16.5": "https://github.com/lightvector/KataGo/releases/download/v1.16.5/katago-v1.16.5-opencl-windows-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.16.5": "https://github.com/lightvector/KataGo/releases/download/v1.16.5/katago-v1.16.5-eigenavx2-windows-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.16.5": "https://github.com/lightvector/KataGo/releases/download/v1.16.5/katago-v1.16.5-eigen-windows-x64.zip",
-            "OpenCL v1.16.5 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.16.5/katago-v1.16.5-opencl-windows-x64+bs50.zip",
+            "OpenCL v1.17.1": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/katago-v1.17.1-opencl-windows-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.17.1": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/katago-v1.17.1-eigenavx2-windows-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.17.1": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/katago-v1.17.1-eigen-windows-x64.zip",
+            "OpenCL v1.17.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/katago-v1.17.1-opencl-windows-x64+bs50.zip",
         },
         "linux": {
-            "OpenCL v1.16.5": "https://github.com/lightvector/KataGo/releases/download/v1.16.5/katago-v1.16.5-opencl-linux-x64.zip",
-            "Eigen AVX2 (Modern CPUs) v1.16.5": "https://github.com/lightvector/KataGo/releases/download/v1.16.5/katago-v1.16.5-eigenavx2-linux-x64.zip",
-            "Eigen (CPU, Non-optimized) v1.16.5": "https://github.com/lightvector/KataGo/releases/download/v1.16.5/katago-v1.16.5-eigen-linux-x64.zip",
-            "OpenCL v1.16.5 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.16.5/katago-v1.16.5-opencl-linux-x64+bs50.zip",
+            "OpenCL v1.17.1": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/katago-v1.17.1-opencl-linux-x64.zip",
+            "Eigen AVX2 (Modern CPUs) v1.17.1": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/katago-v1.17.1-eigenavx2-linux-x64.zip",
+            "Eigen (CPU, Non-optimized) v1.17.1": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/katago-v1.17.1-eigen-linux-x64.zip",
+            "OpenCL v1.17.1 (bigger boards)": "https://github.com/lightvector/KataGo/releases/download/v1.17.1/katago-v1.17.1-opencl-linux-x64+bs50.zip",
         },
         "just-descriptions": {},
     }

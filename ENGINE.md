@@ -35,6 +35,10 @@ KataGo models have changed over time, and selecting an older executable with a n
 Of the provided binaries, this is typically the case for the 1.6.1 'bigger boards' binary, which should
  only be used with the standard 15/20/30/40 block models, and not the newer distributed training models.
 
+The transformer models, including the `b10c384h6nbt` model included with KaTrain, require KataGo v1.17.0 or later.
+If you have selected an older KataGo binary of your own, either upgrade it or select an older model, such as one of
+ the distributed training models available under 'Download models'.
+
 
 ## <a name="Mac"></a><img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg" alt="macOs" height="35"/> For macOS users
 
