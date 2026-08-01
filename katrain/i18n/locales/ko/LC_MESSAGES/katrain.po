@@ -951,14 +951,13 @@ msgstr "역대 프로 기사"
 
 msgid "aihelp:pro"
 msgstr ""
-"사람처럼 흉내내는 KataGo 모델에 따라 둡니다. "
-"정확히 말하면, pro_year에서 지정한 연도쯤에 프로 기사와 연구생이 두었던 역대 기보를 흉내냅니다."
+"사람처럼 흉내내는 KataGo 모델에 따라 둡니다. 정확히 말하면, pro_year에서 지정한 연도쯤에 프로 기사와 연구생이 두었던 역대"
+" 기보를 흉내냅니다."
 
 msgid "aihelp:human"
 msgstr ""
-"사람처럼 흉내내는 KataGo 모델에 따라 둡니다. "
-"human_kyu_rank에서 흉내낼 기력을 설정하십시오. "
-"modern_style을 체크하면, 2016년 이후 알파제로의 포석 스타일에 따라 둡니다. "
+"사람처럼 흉내내는 KataGo 모델에 따라 둡니다. human_kyu_rank에서 흉내낼 기력을 설정하십시오. modern_style을 "
+"체크하면, 2016년 이후 알파제로의 포석 스타일에 따라 둡니다. "
 
 msgid "engine:humanlike_model"
 msgstr "사람 흉내 모델의 경로"
