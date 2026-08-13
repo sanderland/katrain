@@ -104,6 +104,7 @@ from katrain.core.contribute_engine import KataGoContributeEngine
 from katrain.core.game import Game, IllegalMoveException, KaTrainSGF, BaseGame
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.popups import ConfigPopup, LoadSGFPopup, NewGamePopup, ConfigAIPopup
+from katrain.gui import nativefiledialog
 from katrain.gui.theme import Theme
 from kivymd.app import MDApp
 
@@ -588,28 +589,55 @@ class KaTrainGui(Screen, KaTrainBase):
             self.game.redo(999)
 
     def _do_analyze_sgf_popup(self):
-        if not self.fileselect_popup:
-            popup_contents = LoadSGFPopup(self)
-            popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
-            self.fileselect_popup = I18NPopup(
-                title_key="load sgf title", size=[dp(1200), dp(800)], content=popup_contents
-            ).__self__
+        def open_kivy_popup():
+            if not self.fileselect_popup:
+                popup_contents = LoadSGFPopup(self)
+                popup_contents.filesel.path = os.path.abspath(os.path.expanduser(self.config("general/sgf_load", ".")))
+                self.fileselect_popup = I18NPopup(
+                    title_key="load sgf title", size=[dp(1200), dp(800)], content=popup_contents
+                ).__self__
 
-            def readfile(*_args):
-                filename = popup_contents.filesel.filename
-                self.fileselect_popup.dismiss()
-                path, file = os.path.split(filename)
-                if path != self.config("general/sgf_load"):
-                    self.log(f"Updating sgf load path default to {path}", OUTPUT_DEBUG)
-                    self._config["general"]["sgf_load"] = path
-                popup_contents.update_config(False)
+                def readfile(*_args):
+                    filename = popup_contents.filesel.filename
+                    self.fileselect_popup.dismiss()
+                    path, file = os.path.split(filename)
+                    if path != self.config("general/sgf_load"):
+                        self.log(f"Updating sgf load path default to {path}", OUTPUT_DEBUG)
+                        self._config["general"]["sgf_load"] = path
+                    popup_contents.update_config(False)
+                    self.save_config("general")
+                    self.load_sgf_file(filename, popup_contents.fast.active, popup_contents.rewind.active)
+
+                popup_contents.filesel.on_success = readfile
+                popup_contents.filesel.on_submit = readfile
+            self.fileselect_popup.open()
+            self.fileselect_popup.content.filesel.ids.list_view._trigger_update()
+
+        if not nativefiledialog.available():
+            open_kivy_popup()
+            return
+
+        def on_load_file(filename):
+            if not filename:
+                return
+            path, _file = os.path.split(filename)
+            if path != self.config("general/sgf_load"):
+                self.log(f"Updating sgf load path default to {path}", OUTPUT_DEBUG)
+                self._config["general"]["sgf_load"] = path
                 self.save_config("general")
-                self.load_sgf_file(filename, popup_contents.fast.active, popup_contents.rewind.active)
+            self.load_sgf_file(
+                filename,
+                fast=self.config("general/load_fast_analysis", False),
+                rewind=self.config("general/load_sgf_rewind", True),
+            )
 
-            popup_contents.filesel.on_success = readfile
-            popup_contents.filesel.on_submit = readfile
-        self.fileselect_popup.open()
-        self.fileselect_popup.content.filesel.ids.list_view._trigger_update()
+        nativefiledialog.open_file(
+            on_load_file,
+            error_callback=open_kivy_popup,
+            prompt=i18n._("load sgf title"),
+            initial_dir=self.config("general/sgf_load", "."),
+            extensions=["sgf", "gib", "ngf"],
+        )
 
     def _do_save_game(self, filename=None):
         filename = filename or self.game.sgf_filename
@@ -623,28 +651,54 @@ class KaTrainGui(Screen, KaTrainBase):
             self.log(f"Failed to save SGF to {filename}: {e}", OUTPUT_ERROR)
 
     def _do_save_game_as_popup(self):
-        popup_contents = SaveSGFPopup(suggested_filename=self.game.generate_filename())
-        save_game_popup = I18NPopup(
-            title_key="save sgf title", size=[dp(1200), dp(800)], content=popup_contents
-        ).__self__
+        def open_kivy_popup():
+            popup_contents = SaveSGFPopup(suggested_filename=self.game.generate_filename())
+            save_game_popup = I18NPopup(
+                title_key="save sgf title", size=[dp(1200), dp(800)], content=popup_contents
+            ).__self__
 
-        def readfile(*_args):
-            filename = popup_contents.filesel.filename
+            def readfile(*_args):
+                filename = popup_contents.filesel.filename
+                if not filename.lower().endswith(".sgf"):
+                    filename += ".sgf"
+                save_game_popup.dismiss()
+                path, file = os.path.split(filename.strip())
+                if not path:
+                    path = popup_contents.filesel.path  # whatever dir is shown
+                if path != self.config("general/sgf_save"):
+                    self.log(f"Updating sgf save path default to {path}", OUTPUT_DEBUG)
+                    self._config["general"]["sgf_save"] = path
+                    self.save_config("general")
+                self._do_save_game(os.path.join(path, file))
+
+            popup_contents.filesel.on_success = readfile
+            popup_contents.filesel.on_submit = readfile
+            save_game_popup.open()
+
+        if not nativefiledialog.available():
+            open_kivy_popup()
+            return
+
+        def on_save_file(filename):
+            if not filename:
+                return
             if not filename.lower().endswith(".sgf"):
                 filename += ".sgf"
-            save_game_popup.dismiss()
             path, file = os.path.split(filename.strip())
-            if not path:
-                path = popup_contents.filesel.path  # whatever dir is shown
             if path != self.config("general/sgf_save"):
                 self.log(f"Updating sgf save path default to {path}", OUTPUT_DEBUG)
                 self._config["general"]["sgf_save"] = path
                 self.save_config("general")
             self._do_save_game(os.path.join(path, file))
 
-        popup_contents.filesel.on_success = readfile
-        popup_contents.filesel.on_submit = readfile
-        save_game_popup.open()
+        nativefiledialog.save_file(
+            on_save_file,
+            error_callback=open_kivy_popup,
+            prompt=i18n._("save sgf title"),
+            initial_dir=self.config("general/sgf_save", "."),
+            suggested_name=self.game.generate_filename(),
+            extensions=["sgf"],
+        )
 
     def load_sgf_from_clipboard(self):
         clipboard = Clipboard.paste()

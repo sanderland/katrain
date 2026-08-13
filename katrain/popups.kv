@@ -352,6 +352,20 @@
                     input_property: "ui_state/restoresize"
 
             DescriptionLabel:
+                text: i18n._("load sgf fast analysis")
+                size_hint_x: 1.5
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "general/load_fast_analysis"
+
+            DescriptionLabel:
+                text: i18n._("load sgf rewind")
+                size_hint_x: 1.5
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "general/load_sgf_rewind"
+
+            DescriptionLabel:
                 text: i18n._("general:debug_level")
                 size_hint_x: 1.5
             AnchorLayout:
