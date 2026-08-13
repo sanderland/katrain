@@ -857,7 +857,7 @@
     HamburgerButton:
         id: hamburger
         size_hint: None, 1
-        on_press: app.gui.nav_drawer.set_state("open")
+        on_release: app.gui.nav_drawer.set_state("open")
     AnchorLayout:
         MDBoxLayout:
             adaptive_width: True
