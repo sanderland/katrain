@@ -1,6 +1,6 @@
 [project]
 name = "KaTrain"
-version = "1.19.0"
+version = "1.19.1"
 description = "Go/Baduk/Weiqi playing and teaching app with a variety of AIs"
 authors = [{ name = "Sander Land" }]
 # Cap tracks binary-wheel availability of kivy + ffpyplayer (no cp314 wheels yet).
