@@ -3,7 +3,6 @@ import json
 import os
 import platform
 import queue
-import shlex
 import subprocess
 import threading
 import time
@@ -106,8 +105,10 @@ class BaseEngine:  # some common elements between analysis and contribute engine
             exe = exe_with_paths[0]
         return exe
 
-    def on_error(self, message, code, allow_popup):
-        print("ERROR", message, code)
+    def on_error(self, message, code=None, allow_popup=True):
+        # Defaults must match the KataGoEngine override: get_engine_path and other shared
+        # code call this with just (message, code), including from subclasses that do not override it.
+        self.katrain.log(message, OUTPUT_ERROR)
 
 
 class KataGoEngine(BaseEngine):
@@ -131,7 +132,10 @@ class KataGoEngine(BaseEngine):
         self.write_stdin_thread = None
         self.shell = False
         self.write_queue = queue.Queue()
-        self.thread_lock = threading.Lock()
+        # Reentrant: terminate_queries -> terminate_query, and _write_stdin_thread calls
+        # stop_pondering while already holding the lock. Guards queries, ponder_query,
+        # katago_process and query_counter -- every access to those goes through it.
+        self.thread_lock = threading.RLock()
         if resolve_engine_backend(config) == "custom":
             self.command = config["altcommand"]
             self.shell = True
@@ -139,28 +143,26 @@ class KataGoEngine(BaseEngine):
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
             exe = self.get_engine_path(config.get("katago", "").strip())
-            
+
             if not exe:
                 return
-                
-            # Add human model to command if provided
-            if config.get("humanlike_model", ""):
-                human_model_path = find_package_resource(config.get("humanlike_model",""))
+
+            # Built as a list, so paths containing spaces or quotes survive as-is instead of
+            # being quoted into a string and re-parsed by shlex.
+            self.command = [exe, "analysis", "-model", model]
+            humanlike_model = config.get("humanlike_model", "")
+            if humanlike_model:
+                human_model_path = find_package_resource(humanlike_model)
                 if os.path.isfile(human_model_path):
-                    self.command = shlex.split(
-                        f'"{exe}" analysis -model "{model}" -human-model "{human_model_path}" -config "{cfg}" -override-config "homeDataDir={os.path.expanduser(DATA_FOLDER)}"'
-                    )
+                    self.command += ["-human-model", human_model_path]
                 else:
-                    self.katrain.log(f"Human model not found at {human_model_path}", -1)
-                    # Fall back to regular command without human model
-                    self.command = shlex.split(
-                        f'"{exe}" analysis -model "{model}" -config "{cfg}" -override-config "homeDataDir={os.path.expanduser(DATA_FOLDER)}"'
-                    )
-            else:
-                # Regular command without human model
-                self.command = shlex.split(
-                    f'"{exe}" analysis -model "{model}" -config "{cfg}" -override-config "homeDataDir={os.path.expanduser(DATA_FOLDER)}"'
-                )
+                    self.katrain.log(f"Human model not found at {human_model_path}", OUTPUT_ERROR)
+            self.command += [
+                "-config",
+                cfg,
+                "-override-config",
+                f"homeDataDir={os.path.expanduser(DATA_FOLDER)}",
+            ]
         self.start()
 
     def on_error(self, message, code=None, allow_popup=True):
@@ -170,7 +172,7 @@ class KataGoEngine(BaseEngine):
 
     def start(self):
         with self.thread_lock:
-            self.write_queue = queue.Queue()
+            self._drain_write_queue()
             try:
                 self.katrain.log(f"Starting KataGo with {self.command}", OUTPUT_DEBUG)
                 startupinfo = None
@@ -195,28 +197,36 @@ class KataGoEngine(BaseEngine):
             self.stderr_thread.start()
             self.write_stdin_thread.start()
 
+    def _drain_write_queue(self):
+        """Drop everything still queued for stdin. Never rebind write_queue: the writer
+        thread and is_idle() would otherwise be looking at different objects."""
+        while True:
+            try:
+                self.write_queue.get_nowait()
+            except queue.Empty:
+                return
+
     def on_new_game(self):
         self.base_priority += 1
         if not self.is_idle():
             with self.thread_lock:
-                self.write_queue = queue.Queue()
-                self.terminate_queries(only_for_node=None, lock=False)
+                self._drain_write_queue()
+                self.terminate_queries(only_for_node=None)
                 self.ponder_query = None
-                self.queries = {}
+                self.queries.clear()
 
-    def terminate_queries(self, only_for_node=None, lock=True):
-        if lock:
-            with self.thread_lock:
-                return self.terminate_queries(only_for_node=only_for_node, lock=False)
-        for query_id, (_, _, _, _, node) in list(self.queries.items()):
-            if only_for_node is None or only_for_node is node:
-                self.terminate_query(query_id)
+    def terminate_queries(self, only_for_node=None):
+        with self.thread_lock:
+            for query_id, (_, _, _, _, node) in list(self.queries.items()):
+                if only_for_node is None or only_for_node is node:
+                    self.terminate_query(query_id)
 
     def stop_pondering(self):
-        pq = self.ponder_query
+        with self.thread_lock:
+            pq = self.ponder_query
+            self.ponder_query = None
         if pq:
             self.terminate_query(pq["id"], ignore_further_results=False)
-        self.ponder_query = None
 
     def terminate_query(self, query_id, ignore_further_results=True):
         self.katrain.log(f"Terminating query {query_id}", OUTPUT_DEBUG)
@@ -224,31 +234,42 @@ class KataGoEngine(BaseEngine):
         if query_id is not None:
             self.send_query({"action": "terminate", "terminateId": query_id}, None, None)
             if ignore_further_results:
-                self.queries.pop(query_id, None)
+                with self.thread_lock:
+                    self.queries.pop(query_id, None)
 
     def restart(self):
-        self.queries = {}
+        with self.thread_lock:
+            self.queries.clear()
         self.shutdown(finish=False)
         self.start()
 
     def check_alive(self, os_error="", exception_if_dead=False, maybe_open_recovery=False):
-        ok = self.katago_process and self.katago_process.poll() is None
+        process = self.katago_process  # snapshot: another thread may clear it
+        ok = process is not None and process.poll() is None
         if not ok and exception_if_dead:
-            if self.katago_process:
-                code = self.katago_process and self.katago_process.poll()
+            if process:
+                code = process.poll()
                 if code == 3221225781:
                     died_msg = i18n._("Engine missing DLL")
                 else:
                     died_msg = i18n._("Engine died unexpectedly").format(error=f"{os_error} status {code}")
                 if code != 1:  # deliberate exit
                     self.on_error(died_msg, code, allow_popup=maybe_open_recovery)
-                self.katago_process = None  # return from threads
+                with self.thread_lock:
+                    if self.katago_process is process:
+                        self.katago_process = None  # return from threads
             else:
                 self.katrain.log(i18n._("Engine died unexpectedly").format(error=os_error), OUTPUT_DEBUG)
         return ok
 
     def wait_to_finish(self):
-        while self.queries and self.katago_process and self.katago_process.poll() is None:
+        while True:
+            with self.thread_lock:
+                process = self.katago_process
+                if not self.queries:
+                    return
+            if process is None or process.poll() is not None:
+                return
             time.sleep(0.1)
 
     def shutdown(self, finish=False):
@@ -256,7 +277,9 @@ class KataGoEngine(BaseEngine):
         if finish and process:
             self.wait_to_finish()
         if process:
-            self.katago_process = None
+            with self.thread_lock:
+                if self.katago_process is process:
+                    self.katago_process = None
             self.katrain.log("Terminating KataGo process", OUTPUT_DEBUG)
             process.terminate()
             self.katrain.log("Terminated KataGo process", OUTPUT_DEBUG)
@@ -266,15 +289,20 @@ class KataGoEngine(BaseEngine):
                     t.join()
 
     def is_idle(self):
-        return not self.queries and self.write_queue.empty()
+        with self.thread_lock:
+            return not self.queries and self.write_queue.empty()
 
     def queries_remaining(self):
-        return len(self.queries) + int(not self.write_queue.empty())
+        with self.thread_lock:
+            return len(self.queries) + int(not self.write_queue.empty())
 
     def _read_stderr_thread(self):
-        while self.katago_process is not None:
+        while True:
+            process = self.katago_process  # snapshot: check_alive may clear it from another thread
+            if process is None:
+                return
             try:
-                line = self.katago_process.stderr.readline()
+                line = process.stderr.readline()
                 if line:
                     if b"Uncaught exception" in line or b"what()" in line:  # linux=what
                         msg = f"KataGo Engine Failed: {line.decode(errors='ignore')[9:].strip()}"
@@ -291,10 +319,13 @@ class KataGoEngine(BaseEngine):
                 return
 
     def _analysis_read_thread(self):
-        while self.katago_process is not None:
+        while True:
+            process = self.katago_process  # snapshot: check_alive may clear it from another thread
+            if process is None:
+                return
             try:
-                line = self.katago_process.stdout.readline().strip()
-                if self.katago_process and not line:
+                line = process.stdout.readline().strip()
+                if not line:
                     if not self.check_alive(exception_if_dead=True, maybe_open_recovery=True):
                         return
             except OSError as e:
@@ -313,15 +344,18 @@ class KataGoEngine(BaseEngine):
                     self.katrain.log(f"Error without ID {analysis} received from KataGo", OUTPUT_ERROR)
                     continue
                 query_id = analysis["id"]
-                if query_id not in self.queries:
+                with self.thread_lock:
+                    query = self.queries.get(query_id)
+                if query is None:
                     if analysis.get("action") != "terminate":
                         self.katrain.log(
                             f"Query result {query_id} discarded -- recent new game or node reset?", OUTPUT_DEBUG
                         )
                     continue
-                callback, error_callback, start_time, next_move, _ = self.queries[query_id]
+                callback, error_callback, start_time, next_move, _ = query
                 if "error" in analysis:
-                    del self.queries[query_id]
+                    with self.thread_lock:
+                        self.queries.pop(query_id, None)
                     if error_callback:
                         error_callback(analysis)
                     elif not (next_move and "Illegal move" in analysis["error"]):  # sweep
@@ -333,7 +367,8 @@ class KataGoEngine(BaseEngine):
                 else:
                     partial_result = analysis.get("isDuringSearch", False)
                     if not partial_result:
-                        del self.queries[query_id]
+                        with self.thread_lock:
+                            self.queries.pop(query_id, None)
                     time_taken = time.time() - start_time
                     results_exist = not analysis.get("noResults", False)
                     self.katrain.log(
@@ -354,12 +389,15 @@ class KataGoEngine(BaseEngine):
                 traceback.print_exc()
 
     def _write_stdin_thread(self):  # flush only in a thread since it returns only when the other program reads
-        while self.katago_process is not None:
+        while True:
+            process = self.katago_process  # snapshot: check_alive may clear it from another thread
+            if process is None:
+                return
             try:
                 query, callback, error_callback, next_move, node = self.write_queue.get(block=True, timeout=0.1)
             except queue.Empty:
                 continue
-            with self.thread_lock:
+            with self.thread_lock:  # bookkeeping only -- the blocking write happens outside the lock
                 if "id" not in query:
                     self.query_counter += 1
                     query["id"] = f"QUERY:{str(self.query_counter)}"
@@ -386,13 +424,17 @@ class KataGoEngine(BaseEngine):
                 if not terminate:
                     self.queries[query["id"]] = (callback, error_callback, time.time(), next_move, node)
                 tag = "ponder " if ponder else ("terminate " if terminate else "")
-                self.katrain.log(f"Sending {tag}query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
-                try:
-                    self.katago_process.stdin.write((json.dumps(query) + "\n").encode())
-                    self.katago_process.stdin.flush()
-                except OSError as e:
-                    self.katrain.log(f"Exception in writing to katago: {e}", OUTPUT_DEBUG)
-                    return  # some other thread will take care of this
+                payload = (json.dumps(query) + "\n").encode()
+            # Outside the lock: stdin.flush() only returns once KataGo reads, and KataGo only
+            # keeps reading while we drain its stdout -- holding the lock here would deadlock
+            # the analysis thread against a full pipe. This is the only writer, so order holds.
+            self.katrain.log(f"Sending {tag}query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
+            try:
+                process.stdin.write(payload)
+                process.stdin.flush()
+            except OSError as e:
+                self.katrain.log(f"Exception in writing to katago: {e}", OUTPUT_DEBUG)
+                return  # some other thread will take care of this
 
     def send_query(self, query, callback, error_callback, next_move=None, node=None):
         self.write_queue.put((query, callback, error_callback, next_move, node))

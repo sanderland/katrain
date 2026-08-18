@@ -617,7 +617,7 @@ class SGF:
             try:
                 grlt = int(re.search(grlt_regex, line).group(1))
                 zipsu = int(re.search(zipsu_regex, line).group(1))
-            except:  # noqa E722
+            except (AttributeError, ValueError):
                 return ""
             return gib_make_result(grlt, zipsu)
 
@@ -651,7 +651,7 @@ class SGF:
                         komi = int(re.search(r"GONGJE:(\d+),", line).group(1)) / 10
                         if komi:
                             root.set_property("KM", komi)
-                    except:  # noqa E722
+                    except (AttributeError, ValueError):
                         pass
 
             if line.startswith("\\[GAMETAG="):
@@ -660,7 +660,7 @@ class SGF:
                         match = re.search(r"C(\d\d\d\d):(\d\d):(\d\d)", line)
                         date = "{}-{}-{}".format(match.group(1), match.group(2), match.group(3))
                         root.set_property("DT", date)
-                    except:  # noqa E722
+                    except (AttributeError, ValueError):
                         pass
 
                 if "RE" not in root.properties:
@@ -673,7 +673,7 @@ class SGF:
                         komi = int(re.search(r",G(\d+),", line).group(1)) / 10
                         if komi:
                             root.set_property("KM", komi)
-                    except:  # noqa E722
+                    except (AttributeError, ValueError):
                         pass
 
             if line[0:3] == "INI":
@@ -682,7 +682,7 @@ class SGF:
                 setup = line.split()
                 try:
                     handicap = int(setup[3])
-                except ParseError:
+                except (ValueError, IndexError):  # truncated or malformed INI line
                     continue
 
                 if handicap < 0 or handicap > 9:

@@ -48,8 +48,14 @@ class KataGoContributeEngine(BaseEngine):
         self.save_sgf = self.config.get("savesgf", False)
         self.save_path = self.config.get("savepath", "./dist_sgf/")
         self.move_speed = self.config.get("movespeed", 2.0)
+        self.max_simultaneous_games = self.config.get("maxgames") or self.DEFAULT_MAX_GAMES
+        self.max_buffer_games = 2 * self.max_simultaneous_games
+        self.command = None
 
         exe = self.get_engine_path(self.config.get("katago"))
+        if not exe:  # get_engine_path already reported the error, leave katago_process as None
+            return
+
         cacert_path = os.path.join(os.path.split(exe)[0], "cacert.pem")
         if not os.path.isfile(cacert_path):
             try:
@@ -64,12 +70,11 @@ class KataGoContributeEngine(BaseEngine):
         settings_dict = {
             "username": self.config.get("username"),
             "password": self.config.get("password"),
-            "maxSimultaneousGames": self.config.get("maxgames") or self.DEFAULT_MAX_GAMES,
+            "maxSimultaneousGames": self.max_simultaneous_games,
             "includeOwnership": self.config.get("ownership") or False,
             "logGamesAsJson": True,
             "homeDataDir": os.path.expanduser(DATA_FOLDER),
         }
-        self.max_buffer_games = 2 * settings_dict["maxSimultaneousGames"]
         settings = {f"{k}={v}" for k, v in settings_dict.items()}
         self.command = shlex.split(
             f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}" -override-config {shlex.quote(",".join(settings))}'
