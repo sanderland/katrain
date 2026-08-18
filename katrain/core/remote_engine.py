@@ -72,7 +72,9 @@ class RemoteKataGoEngine(KataGoEngine):
         self.base_priority = 0
         self.override_settings = {"reportAnalysisWinratesAs": "BLACK"}
         self.write_queue = queue.Queue()
-        self.thread_lock = threading.Lock()
+        # Reentrant: _write_stdin_thread calls stop_pondering / _handle_disconnect while
+        # already holding the lock, and inherited helpers take it themselves.
+        self.thread_lock = threading.RLock()
         self.shell = False
         self.command = "<remote websocket>"
 
@@ -286,7 +288,8 @@ class RemoteKataGoEngine(KataGoEngine):
         # Parent clears self.queries; drop the payloads too so a later
         # reconnect doesn't resurrect a previous game's analyses.
         super().on_new_game()
-        self.sent_payloads = {}
+        with self.thread_lock:
+            self.sent_payloads.clear()
 
     def shutdown(self, finish=False):
         self._closing = True
@@ -294,7 +297,8 @@ class RemoteKataGoEngine(KataGoEngine):
         if finish and ws is not None:
             self.wait_to_finish()
         self.ws = None
-        self.sent_payloads = {}
+        with self.thread_lock:
+            self.sent_payloads.clear()
         if ws is not None:
             try:
                 ws.close()
@@ -306,7 +310,10 @@ class RemoteKataGoEngine(KataGoEngine):
                     t.join(timeout=2.0)
 
     def wait_to_finish(self):
-        while self.queries and self.ws is not None:
+        while self.ws is not None:
+            with self.thread_lock:
+                if not self.queries:
+                    return
             time.sleep(0.1)
 
     def _report_dead(self, os_error, allow_popup):
@@ -502,7 +509,9 @@ class RemoteKataGoEngine(KataGoEngine):
                 return
 
             query_id = analysis["id"]
-            if query_id not in self.queries:
+            with self.thread_lock:
+                query = self.queries.get(query_id)
+            if query is None:
                 if analysis.get("action") != "terminate":
                     self.katrain.log(
                         f"Query result {query_id} discarded -- recent new game or node reset?",
@@ -510,7 +519,7 @@ class RemoteKataGoEngine(KataGoEngine):
                     )
                 return
 
-            callback, error_callback, start_time, next_move, _ = self.queries[query_id]
+            callback, error_callback, start_time, next_move, _ = query
 
             # Handled BEFORE the dispatch chain so analysis data
             # alongside a warning still reaches the callback.
@@ -526,8 +535,9 @@ class RemoteKataGoEngine(KataGoEngine):
                     pass
 
             if "error" in analysis:
-                del self.queries[query_id]
-                self.sent_payloads.pop(query_id, None)
+                with self.thread_lock:
+                    self.queries.pop(query_id, None)
+                    self.sent_payloads.pop(query_id, None)
                 if error_callback:
                     error_callback(analysis)
                 elif not (next_move and "Illegal move" in analysis["error"]):
@@ -543,8 +553,9 @@ class RemoteKataGoEngine(KataGoEngine):
             else:
                 partial_result = analysis.get("isDuringSearch", False)
                 if not partial_result:
-                    del self.queries[query_id]
-                    self.sent_payloads.pop(query_id, None)
+                    with self.thread_lock:
+                        self.queries.pop(query_id, None)
+                        self.sent_payloads.pop(query_id, None)
                 time_taken = time.time() - start_time
                 results_exist = not analysis.get("noResults", False)
                 self.katrain.log(

@@ -227,7 +227,7 @@ class QuickConfigGui(MDBoxLayout):
                 selected = 0
                 try:
                     selected = widget.value_refs.index(value)
-                except:  # noqa: E722
+                except ValueError:  # value not among the options, fall back to the first
                     pass
                 widget.text = widget.values[selected]
             else:
@@ -738,7 +738,7 @@ class BaseConfigPopup(QuickConfigGui):
                                 try:
                                     with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:
                                         fout.write(zipObj.read(f))
-                                except:  # noqa: E722 -- already there? no problem
+                                except OSError:  # already there? no problem
                                     pass
                     os.remove(tmp_path)
                 else:
