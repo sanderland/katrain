@@ -96,12 +96,12 @@ AI_STRENGTH = {  # dan ranks, backup if model is missing. TODO: remove some?
     AI_SIMPLE_OWNERSHIP: 2,
     AI_SETTLE_STONES: 2,
     AI_HUMAN: float("nan"),
-    AI_PRO: float("nan")
+    AI_PRO: float("nan"),
 }
 
 AI_OPTION_VALUES = {
     "kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(15, 0, -1)]
-    + [(k, f"{1-k}[strength:dan]") for k in range(0, -3, -1)],
+    + [(k, f"{1 - k}[strength:dan]") for k in range(0, -3, -1)],
     "strength": [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 1],
     "opening_moves": range(0, 51),
     "pick_override": [0, 0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 0.99, 1],
@@ -114,17 +114,17 @@ AI_OPTION_VALUES = {
     "line_weight": range(0, 11),
     "threshold": [2, 2.5, 3, 3.5, 4, 4.5],
     "automatic": "bool",
-    "pda": [(x / 10, f"{'W' if x<0 else 'B'}+{abs(x/10):.1f}") for x in range(-30, 31)],
+    "pda": [(x / 10, f"{'W' if x < 0 else 'B'}+{abs(x / 10):.1f}") for x in range(-30, 31)],
     "max_points_lost": [x / 10 for x in range(51)],
     "settled_weight": [x / 4 for x in range(0, 17)],
     "opponent_fac": [x / 10 for x in range(-20, 11)],
     "min_visits": range(1, 10),
     "attach_penalty": [x / 10 for x in range(-10, 51)],
     "tenuki_penalty": [x / 10 for x in range(-10, 51)],
-    "human_kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(20, 0, -1)] +
-                  [(k, f"{1-k}[strength:dan]") for k in range(0, -9,-1)],
+    "human_kyu_rank": [(k, f"{k}[strength:kyu]") for k in range(20, 0, -1)]
+    + [(k, f"{1 - k}[strength:dan]") for k in range(0, -9, -1)],
     "modern_style": "bool",
-    "pro_year": range(1800,2024),
+    "pro_year": range(1800, 2024),
 }
 
 AI_KEY_PROPERTIES = {

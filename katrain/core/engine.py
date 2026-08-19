@@ -13,12 +13,12 @@ from typing import Callable, Dict, List, Optional
 from kivy.utils import platform as kivy_platform
 
 from katrain.core.constants import (
+    DATA_FOLDER,
+    KATAGO_EXCEPTION,
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_EXTRA_DEBUG,
     OUTPUT_KATAGO_STDERR,
-    DATA_FOLDER,
-    KATAGO_EXCEPTION,
     PONDERING_REPORT_DT,
 )
 from katrain.core.game_node import GameNode
@@ -47,7 +47,6 @@ def resolve_engine_backend(config) -> str:
 
 
 class BaseEngine:  # some common elements between analysis and contribute engine
-
     RULESETS_ABBR = [
         ("jp", "japanese"),
         ("cn", "chinese"),
@@ -139,13 +138,13 @@ class KataGoEngine(BaseEngine):
             model = find_package_resource(config["model"])
             cfg = find_package_resource(config["config"])
             exe = self.get_engine_path(config.get("katago", "").strip())
-            
+
             if not exe:
                 return
-                
+
             # Add human model to command if provided
             if config.get("humanlike_model", ""):
-                human_model_path = find_package_resource(config.get("humanlike_model",""))
+                human_model_path = find_package_resource(config.get("humanlike_model", ""))
                 if os.path.isfile(human_model_path):
                     self.command = shlex.split(
                         f'"{exe}" analysis -model "{model}" -human-model "{human_model_path}" -config "{cfg}" -override-config "homeDataDir={os.path.expanduser(DATA_FOLDER)}"'
@@ -337,7 +336,7 @@ class KataGoEngine(BaseEngine):
                     time_taken = time.time() - start_time
                     results_exist = not analysis.get("noResults", False)
                     self.katrain.log(
-                        f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo analysis received: {len(analysis.get('moveInfos',[]))} candidate moves, {analysis['rootInfo']['visits'] if results_exist else 'n/a'} visits",
+                        f"[{time_taken:.1f}][{query_id}][{'....' if partial_result else 'done'}] KataGo analysis received: {len(analysis.get('moveInfos', []))} candidate moves, {analysis['rootInfo']['visits'] if results_exist else 'n/a'} visits",
                         OUTPUT_DEBUG,
                     )
                     self.katrain.log(json_truncate_arrays(analysis), OUTPUT_EXTRA_DEBUG)

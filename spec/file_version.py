@@ -1,12 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.win32 import versioninfo as ver
 import os
+
+from PyInstaller.utils.win32 import versioninfo as ver
 
 # only create VSVersionInfo object on Windows
 versionInfo = None
 
 if os.name == "nt":
-
     # load constants.py to get version number and program name
     import katrain.core.constants as constants
 

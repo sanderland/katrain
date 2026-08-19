@@ -1,16 +1,14 @@
 import json
 import os
-import random
 import shlex
 import shutil
-import signal
 import subprocess
 import threading
 import time
 import traceback
 from collections import defaultdict
 
-from katrain.core.constants import OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_KATAGO_STDERR, DATA_FOLDER
+from katrain.core.constants import DATA_FOLDER, OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_KATAGO_STDERR
 from katrain.core.engine import BaseEngine
 from katrain.core.game import BaseGame
 from katrain.core.lang import i18n
@@ -129,7 +127,7 @@ class KataGoContributeEngine(BaseEngine):
                 self.katrain("update-state", redraw_board=True)
 
     def status(self):
-        return f"Contributing to distributed training\nGames: {self.uploaded_games_count} uploaded, {len(self.active_games)} in buffer, {len(self.finished_games)} shown\n{self.move_count} moves played ({60*self.move_count/(time.time()-self.start_time):.1f}/min, {self.visits_count / (time.time() - self.start_time):.1f} visits/s)\n"
+        return f"Contributing to distributed training\nGames: {self.uploaded_games_count} uploaded, {len(self.active_games)} in buffer, {len(self.finished_games)} shown\n{self.move_count} moves played ({60 * self.move_count / (time.time() - self.start_time):.1f}/min, {self.visits_count / (time.time() - self.start_time):.1f} visits/s)\n"
 
     def is_idle(self):
         return False
@@ -284,7 +282,7 @@ class KataGoContributeEngine(BaseEngine):
                                 self.last_move_for_game[game_id] = time.time()
                                 dt = self.last_move_for_game[game_id] - last_move if last_move else 0
                                 self.katrain.log(
-                                    f"[{time.time()-self.start_time:.1f}] Game {game_id} Move {analysis['turnNumber']}: {' '.join(analysis['move'])} Visits {analysis['rootInfo']['visits']} Time {dt:.1f}s\t Moves/min {60*self.move_count/(time.time()-self.start_time):.1f} Visits/s {self.visits_count/(time.time()-self.start_time):.1f}",
+                                    f"[{time.time() - self.start_time:.1f}] Game {game_id} Move {analysis['turnNumber']}: {' '.join(analysis['move'])} Visits {analysis['rootInfo']['visits']} Time {dt:.1f}s\t Moves/min {60 * self.move_count / (time.time() - self.start_time):.1f} Visits/s {self.visits_count / (time.time() - self.start_time):.1f}",
                                     OUTPUT_DEBUG,
                                 )
                                 self.katrain("update-state")

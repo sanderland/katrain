@@ -1,12 +1,12 @@
+import copy
 import math
 import time
 from typing import List, Optional
-import copy
 
 from kivy.clock import Clock
 from kivy.core.window import Window
+from kivy.graphics.context_instructions import Color, PopMatrix, PushMatrix, Rotate, Translate
 from kivy.graphics.texture import Texture
-from kivy.graphics.context_instructions import Color, Rotate, Translate, PushMatrix, PopMatrix
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty
@@ -31,9 +31,9 @@ from katrain.core.constants import (
 )
 from katrain.core.game import Move
 from katrain.core.lang import i18n
-from katrain.core.utils import evaluation_class, format_visits, var_to_grid, json_truncate_arrays
-from katrain.gui.kivyutils import draw_circle, draw_text, cached_texture
-from katrain.gui.popups import I18NPopup, ReAnalyzeGamePopup, GameReportPopup, TsumegoFramePopup
+from katrain.core.utils import evaluation_class, format_visits, json_truncate_arrays, var_to_grid
+from katrain.gui.kivyutils import cached_texture, draw_circle, draw_text
+from katrain.gui.popups import GameReportPopup, I18NPopup, ReAnalyzeGamePopup, TsumegoFramePopup
 from katrain.gui.theme import Theme
 
 
@@ -204,14 +204,14 @@ class BadukPanWidget(Widget):
                     katrain.update_state()
                 else:  # load comments & pv
                     katrain.log(
-                        f"\nAnalysis:\n{json_truncate_arrays(nodes_here[-1].analysis,lim=5)}", OUTPUT_EXTRA_DEBUG
+                        f"\nAnalysis:\n{json_truncate_arrays(nodes_here[-1].analysis, lim=5)}", OUTPUT_EXTRA_DEBUG
                     )
                     katrain.log(
-                        f"\nParent Analysis:\n{json_truncate_arrays(nodes_here[-1].parent.analysis,lim=5)}",
+                        f"\nParent Analysis:\n{json_truncate_arrays(nodes_here[-1].parent.analysis, lim=5)}",
                         OUTPUT_EXTRA_DEBUG,
                     )
                     katrain.log(
-                        f"\nRoot Stats:\n{json_truncate_arrays(nodes_here[-1].analysis['root'],lim=5)}", OUTPUT_DEBUG
+                        f"\nRoot Stats:\n{json_truncate_arrays(nodes_here[-1].analysis['root'], lim=5)}", OUTPUT_DEBUG
                     )
                     katrain.controls.info.text = nodes_here[-1].comment(sgf=True)
                     katrain.controls.active_comment_node = nodes_here[-1]
@@ -589,7 +589,6 @@ class BadukPanWidget(Widget):
         if self.rotation_degree == 90:
             y_text = Move.GTP_COORD[board_size_y - i - 1]
         elif self.rotation_degree == 180:
-
             y_text = str(board_size_y - i)
         elif self.rotation_degree == 270:
             y_text = Move.GTP_COORD[i]
@@ -736,7 +735,7 @@ class BadukPanWidget(Widget):
                             Color(*Theme.HINT_TEXT_COLOR)
                             draw_text(
                                 pos=(self.gridpos[y][x][0], self.gridpos[y][x][1]),
-                                text=f"{100 * move_policy :.2f}"[:4] + "%",
+                                text=f"{100 * move_policy:.2f}"[:4] + "%",
                                 font_name="Roboto",
                                 font_size=self.grid_size / 4,
                                 halign="center",
@@ -943,7 +942,7 @@ class BadukPanWidget(Widget):
                         if (
                             move_dict["visits"] < low_visits_threshold
                             and not engine_best_move
-                            and not move_dict["move"] in child_moves
+                            and move_dict["move"] not in child_moves
                         ):
                             scale = Theme.UNCERTAIN_HINT_SCALE
                             text_on = False
@@ -997,7 +996,7 @@ class BadukPanWidget(Widget):
 
                             keys[TOP_MOVE_SCORE] = f"{player_sign * move_dict['scoreLead']:.1f}"
                             winrate = move_dict["winrate"] if player_sign == 1 else 1 - move_dict["winrate"]
-                            keys[TOP_MOVE_WINRATE] = f"{winrate*100:.1f}"
+                            keys[TOP_MOVE_WINRATE] = f"{winrate * 100:.1f}"
                             keys[TOP_MOVE_DELTA_WINRATE] = f"{-move_dict['winrateLost']:+.1%}"
                             keys[TOP_MOVE_VISITS] = format_visits(move_dict["visits"])
 

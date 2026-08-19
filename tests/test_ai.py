@@ -4,7 +4,7 @@ import pytest
 
 from katrain.core.ai import ai_rank_estimation, generate_ai_move
 from katrain.core.base_katrain import KaTrainBase
-from katrain.core.constants import AI_STRATEGIES, AI_STRATEGIES_RECOMMENDED_ORDER, AI_HUMAN, AI_PRO, OUTPUT_INFO
+from katrain.core.constants import AI_HUMAN, AI_PRO, AI_STRATEGIES, AI_STRATEGIES_RECOMMENDED_ORDER, OUTPUT_INFO
 from katrain.core.engine import KataGoEngine
 from katrain.core.game import Game
 

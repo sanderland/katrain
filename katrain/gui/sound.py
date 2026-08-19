@@ -1,4 +1,3 @@
-from kivy.clock import Clock
 from kivy.core.audio import SoundLoader
 from kivy.utils import platform
 
@@ -21,13 +20,10 @@ def preload_sounds(sound_dir):
     """
     global _audio_available
     import os
-    import sys
     import subprocess
+    import sys
 
-    audio_files = [
-        os.path.join(sound_dir, fn) for fn in os.listdir(sound_dir)
-        if fn.endswith((".wav", ".ogg", ".mp3"))
-    ]
+    audio_files = [os.path.join(sound_dir, fn) for fn in os.listdir(sound_dir) if fn.endswith((".wav", ".ogg", ".mp3"))]
     if not audio_files:
         return
 
@@ -41,9 +37,13 @@ def preload_sounds(sound_dir):
     if platform != "win" and not getattr(sys, "frozen", False):
         try:
             subprocess.run(
-                [sys.executable, "-c",
-                 f"from kivy.core.audio import SoundLoader; SoundLoader.load({audio_files[0]!r})"],
-                timeout=3, capture_output=True,
+                [
+                    sys.executable,
+                    "-c",
+                    f"from kivy.core.audio import SoundLoader; SoundLoader.load({audio_files[0]!r})",
+                ],
+                timeout=3,
+                capture_output=True,
             )
         except subprocess.TimeoutExpired as e:
             print(f"Warning: Audio unavailable ({e}). Sounds disabled.", file=sys.stderr)
@@ -63,6 +63,7 @@ def play_sound(file, volume=1, cache=True):
     # is no sound device, it deadlocks. We delay the import until we know audio
     # is available
     from kivymd.app import MDApp
+
     app = MDApp.get_running_app()
     if app and app.gui and app.gui.config("timer/sound"):
         sound = cached_sounds.get(file)

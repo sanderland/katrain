@@ -86,4 +86,4 @@ def rank_label(rank):
     if rank >= 0.5:
         return f"{rank:.0f}{i18n._('strength:dan')}"
     else:
-        return f"{1-rank:.0f}{i18n._('strength:kyu')}"
+        return f"{1 - rank:.0f}{i18n._('strength:kyu')}"

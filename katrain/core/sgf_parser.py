@@ -1,9 +1,10 @@
 import copy
-import chardet
 import math
 import re
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple
+
+import chardet
 
 
 class ParseError(Exception):
@@ -492,7 +493,7 @@ class SGF:
                 values = re.split(r"\]\s*\[", value)
                 current_move.add_list_property(property, [SGFNode._unescape_value(v) for v in values])
         if self.ix < len(self.contents):
-            raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix:self.ix+25]}")
+            raise ParseError(f"Parse Error: unexpected character at {self.contents[self.ix : self.ix + 25]}")
         raise ParseError("Parse Error: expected ')' at end of input.")
 
     # NGF parser adapted from https://github.com/fohristiwhirl/gofish/
@@ -571,7 +572,6 @@ class SGF:
             if len(line) >= 7:
                 if line[0:2] == "PM":
                     if line[4] in ["B", "W"]:
-
                         # move format is similar to SGF, but uppercase and out-by-1
 
                         key = line[4]
@@ -617,7 +617,7 @@ class SGF:
             try:
                 grlt = int(re.search(grlt_regex, line).group(1))
                 zipsu = int(re.search(zipsu_regex, line).group(1))
-            except:  # noqa E722
+            except:  # noqa: E722
                 return ""
             return gib_make_result(grlt, zipsu)
 
@@ -651,7 +651,7 @@ class SGF:
                         komi = int(re.search(r"GONGJE:(\d+),", line).group(1)) / 10
                         if komi:
                             root.set_property("KM", komi)
-                    except:  # noqa E722
+                    except:  # noqa: E722
                         pass
 
             if line.startswith("\\[GAMETAG="):
@@ -660,7 +660,7 @@ class SGF:
                         match = re.search(r"C(\d\d\d\d):(\d\d):(\d\d)", line)
                         date = "{}-{}-{}".format(match.group(1), match.group(2), match.group(3))
                         root.set_property("DT", date)
-                    except:  # noqa E722
+                    except:  # noqa: E722
                         pass
 
                 if "RE" not in root.properties:
@@ -673,7 +673,7 @@ class SGF:
                         komi = int(re.search(r",G(\d+),", line).group(1)) / 10
                         if komi:
                             root.set_property("KM", komi)
-                    except:  # noqa E722
+                    except:  # noqa: E722
                         pass
 
             if line[0:3] == "INI":

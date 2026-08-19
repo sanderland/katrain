@@ -6,14 +6,14 @@ import random
 from typing import Dict, List, Optional, Tuple
 
 from katrain.core.constants import (
+    ADDITIONAL_MOVE_ORDER,
     ANALYSIS_FORMAT_VERSION,
+    PRIORITY_DEFAULT,
     PROGRAM_NAME,
     REPORT_DT,
     SGF_INTERNAL_COMMENTS_MARKER,
     SGF_SEPARATOR_MARKER,
     VERSION,
-    PRIORITY_DEFAULT,
-    ADDITIONAL_MOVE_ORDER,
 )
 from katrain.core.lang import i18n
 from katrain.core.sgf_parser import Move, SGFNode
@@ -292,7 +292,7 @@ class GameNode(SGFNode):
     def format_score(self, score=None):
         score = score or self.score
         if score is not None:
-            leading_player = 'B' if score >= 0 else 'W'
+            leading_player = "B" if score >= 0 else "W"
             leading_player_color = i18n._(f"short color {leading_player}")
             return f"{leading_player_color}+{abs(score):.1f}"
 
@@ -304,9 +304,9 @@ class GameNode(SGFNode):
     def format_winrate(self, win_rate=None):
         win_rate = win_rate or self.winrate
         if win_rate is not None:
-            leading_player = 'B' if win_rate > 0.5 else 'W'
+            leading_player = "B" if win_rate > 0.5 else "W"
             leading_player_color = i18n._(f"short color {leading_player}")
-            return f"{leading_player_color} {max(win_rate,1-win_rate):.1%}"
+            return f"{leading_player_color} {max(win_rate, 1 - win_rate):.1%}"
 
     def move_policy_stats(self) -> Tuple[Optional[int], float, List]:
         single_move = self.move

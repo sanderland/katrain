@@ -122,13 +122,9 @@ class ScoreGraph(Graph):
             # Point loss: both players' losses go upward from zero
             # (avoids oscillation that would occur if one player went up and other went down)
             pointloss_values = [
-                max(0, n.points_lost) if n and n.move and n.points_lost is not None else math.nan
-                for n in nodes
+                max(0, n.points_lost) if n and n.move and n.points_lost is not None else math.nan for n in nodes
             ]
-            pointloss_nn_values = [
-                max(0, n.points_lost)
-                for n in nodes if n and n.move and n.points_lost is not None
-            ]
+            pointloss_nn_values = [max(0, n.points_lost) for n in nodes if n and n.move and n.points_lost is not None]
             pointloss_values_range = 0, max(pointloss_nn_values or [0])
 
             score_granularity = 5
@@ -143,9 +139,9 @@ class ScoreGraph(Graph):
             )
             # Point loss scale: based on max loss, minimum of 5
             pointloss_granularity = 5
-            self.pointloss_scale = max(
-                math.ceil(pointloss_values_range[1] / pointloss_granularity), 1
-            ) * pointloss_granularity
+            self.pointloss_scale = (
+                max(math.ceil(pointloss_values_range[1] / pointloss_granularity), 1) * pointloss_granularity
+            )
 
             xscale = self.width / max(len(score_values) - 1, 15)
             available_height = self.height
@@ -159,7 +155,10 @@ class ScoreGraph(Graph):
             ]
             # Point loss: line from bottom going up (0 at bottom, max at top)
             pointloss_line_points = [
-                [self.x + i * xscale, self.y + available_height * (val / self.pointloss_scale) if not math.isnan(val) else math.nan]
+                [
+                    self.x + i * xscale,
+                    self.y + available_height * (val / self.pointloss_scale) if not math.isnan(val) else math.nan,
+                ]
                 for i, val in enumerate(pointloss_values)
             ]
             self.score_points = sum(score_line_points, [])
@@ -187,8 +186,8 @@ class ScoreGraph(Graph):
                 self.winrate_dot_pos = winrate_dot_point
                 if math.isnan(pointloss_dot_point[1]):
                     # Fall back to last known value, positioned from bottom
-                    pointloss_dot_point[1] = (
-                        self.y + available_height * ((pointloss_nn_values or [0])[-1] / self.pointloss_scale)
+                    pointloss_dot_point[1] = self.y + available_height * (
+                        (pointloss_nn_values or [0])[-1] / self.pointloss_scale
                     )
                 self.pointloss_dot_pos = pointloss_dot_point
 

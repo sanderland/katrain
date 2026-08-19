@@ -37,6 +37,7 @@ a shortcut to the Documents directory added to the favorites bar::
 .. image:: _static/filebrowser.png
     :align: right
 """
+
 import string
 from functools import partial
 from os import walk
@@ -54,7 +55,7 @@ from kivy.utils import platform
 from katrain.gui.theme import Theme
 
 if platform == "win":
-    from ctypes import windll, create_unicode_buffer
+    from ctypes import create_unicode_buffer, windll
 
 
 def last_modified_first(files, filesystem):

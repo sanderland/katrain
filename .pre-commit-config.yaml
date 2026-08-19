@@ -1,0 +1,8 @@
+# Run `uv run pre-commit install` once to enable. CI enforces the same checks.
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.8
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format

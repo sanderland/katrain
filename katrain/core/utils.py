@@ -1,13 +1,11 @@
 import heapq
+import importlib.resources as pkg_resources
 import math
-from pathlib import Path
 import random
 import struct
 import sys
+from pathlib import Path
 from typing import List, Tuple, TypeVar
-
-import importlib.resources as pkg_resources
-
 
 T = TypeVar("T")
 
@@ -72,10 +70,10 @@ def format_visits(n):
     if n < 1000:
         return str(n)
     if n < 1e5:
-        return f"{n/1000:.1f}k"
+        return f"{n / 1000:.1f}k"
     if n < 1e6:
-        return f"{n/1000:.0f}k"
-    return f"{n/1e6:.0f}M"
+        return f"{n / 1000:.0f}k"
+    return f"{n / 1e6:.0f}M"
 
 
 def json_truncate_arrays(data, lim=20):

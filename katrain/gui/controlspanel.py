@@ -6,18 +6,18 @@ from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.floatlayout import MDFloatLayout
 
 from katrain.core.constants import (
+    AI_DEFAULT,
     MODE_ANALYZE,
     MODE_PLAY,
+    PLAYER_AI,
     PLAYER_HUMAN,
     STATUS_ANALYSIS,
     STATUS_ERROR,
-    AI_DEFAULT,
-    PLAYER_AI,
 )
 from katrain.core.lang import rank_label
 from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
-from katrain.gui.theme import Theme
 from katrain.gui.sound import play_sound, stop_sound
+from katrain.gui.theme import Theme
 
 
 class PlayAnalyzeSelect(MDFloatLayout):

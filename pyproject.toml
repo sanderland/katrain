@@ -38,10 +38,10 @@ katrain = "katrain.__main__:run_app"
 
 [dependency-groups]
 dev = [
-    "black>=26.3.1",
     "polib>=1.2.0,<2",
     "pyinstaller>=6.14.1",
     "pytest>=8.3.2",
+    "ruff>=0.15.8",
     "tomli>=1.2.0 ; python_version < '3.11'",
 ]
 
@@ -50,8 +50,19 @@ default-groups = [
     "dev",
 ]
 
-[tool.black]
+[tool.ruff]
 line-length = 120
+# Pinned to the minimum supported version so the CI matrix (3.10/3.12/3.13) is consistent.
+target-version = "py310"
+
+[tool.ruff.lint]
+# Carries over the policy the (previously unenforced) .flake8 described: pyflakes plus
+# the pycodestyle error subsets, with E501 left to the formatter. Adds import sorting,
+# and RUF100 so a stale or malformed `# noqa` cannot silently blanket-suppress a line.
+select = ["E4", "E7", "E9", "F", "I", "RUF100"]
+# Kivy's config has to be set before kivy submodules are imported, so module-level
+# imports legitimately appear after code in the GUI entry points.
+ignore = ["E402"]
 
 [tool.hatch.build.targets.sdist]
 include = ["katrain"]

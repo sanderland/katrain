@@ -24,7 +24,6 @@ from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
 from katrain.core.ai import ai_rank_estimation, game_report
-from katrain.core.engine import resolve_engine_backend
 from katrain.core.constants import (
     AI_CONFIG_DEFAULT,
     AI_DEFAULT,
@@ -35,24 +34,19 @@ from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_ERROR,
     OUTPUT_INFO,
-    SGF_INTERNAL_COMMENTS_MARKER,
-    STATUS_INFO,
     PLAYER_HUMAN,
-    ADDITIONAL_MOVE_ORDER,
+    SGF_INTERNAL_COMMENTS_MARKER,
 )
+from katrain.core.engine import resolve_engine_backend
 from katrain.core.lang import i18n, rank_label
 from katrain.core.sgf_parser import Move
-from katrain.core.utils import PATHS, find_package_resource, evaluation_class
+from katrain.core.utils import PATHS, find_package_resource
 from katrain.gui.kivyutils import (
     BackgroundMixin,
     I18NSpinner,
-    BackgroundLabel,
-    TableHeaderLabel,
     TableCellLabel,
+    TableHeaderLabel,
     TableStatLabel,
-    PlayerInfo,
-    SizedRectangleButton,
-    AutoSizedRectangleButton,
 )
 from katrain.gui.theme import Theme
 from katrain.gui.widgets.progress_loader import ProgressLoader
@@ -429,7 +423,7 @@ class ConfigAIPopup(QuickConfigGui):
                     widget.bind(active=self.estimate_rank_from_options)
                 else:
                     if isinstance(values[0], Tuple):  # with descriptions, possibly language-specific
-                        fixed_values = [(v, re.sub(r"\[(.*?)]", lambda m: i18n._(m[1]), l)) for v, l in values]
+                        fixed_values = [(v, re.sub(r"\[(.*?)]", lambda m: i18n._(m[1]), text)) for v, text in values]
                     else:  # just numbers
                         fixed_values = [(v, str(v)) for v in values]
                     widget = LabelledSelectionSlider(
@@ -744,7 +738,7 @@ class BaseConfigPopup(QuickConfigGui):
                                 try:
                                     with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:
                                         fout.write(zipObj.read(f))
-                                except:  # already there? no problem
+                                except:  # noqa: E722 -- already there? no problem
                                     pass
                     os.remove(tmp_path)
                 else:
@@ -948,7 +942,7 @@ class GameReportPopup(BoxLayout):
         table.add_widget(TableHeaderLabel(text=i18n._("header:keystats"), background_color=Theme.BACKGROUND_COLOR))
         table.add_widget(TableHeaderLabel(text="", background_color=Theme.BACKGROUND_COLOR))
 
-        for i, (label, fmt, stat, scale, more_is_better) in enumerate(
+        for i, (label, fmt, stat_key, scale, more_is_better) in enumerate(
             [
                 ("accuracy", "{:.1f}", "accuracy", 100, True),
                 ("meanpointloss", "{:.2f}", "mean_ptloss", 5, False),
@@ -958,13 +952,13 @@ class GameReportPopup(BoxLayout):
         ):
             statcell = {
                 bw: TableStatLabel(
-                    text=fmt.format(sum_stats[bw][stat]) if stat in sum_stats[bw] else "",
+                    text=fmt.format(sum_stats[bw][stat_key]) if stat_key in sum_stats[bw] else "",
                     side=side,
-                    value=sum_stats[bw].get(stat, 0),
+                    value=sum_stats[bw].get(stat_key, 0),
                     scale=scale,
                     bar_color=(
                         Theme.STAT_BETTER_COLOR
-                        if (sum_stats[bw].get(stat, 0) < sum_stats[Move.opponent_player(bw)].get(stat, 0))
+                        if (sum_stats[bw].get(stat_key, 0) < sum_stats[Move.opponent_player(bw)].get(stat_key, 0))
                         ^ more_is_better
                         else Theme.STAT_WORSE_COLOR
                     ),

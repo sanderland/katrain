@@ -25,7 +25,6 @@ from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavi
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import BaseFlatButton, BasePressedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer
-from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import (

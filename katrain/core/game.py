@@ -6,26 +6,24 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 
-from kivy.clock import Clock
-
 from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_EXTRA_DEBUG,
     OUTPUT_INFO,
     PLAYER_AI,
     PLAYER_HUMAN,
+    PRIORITY_ALTERNATIVES,
+    PRIORITY_DEFAULT,
+    PRIORITY_EQUALIZE,
+    PRIORITY_EXTRA_ANALYSIS,
+    PRIORITY_GAME_ANALYSIS,
+    PRIORITY_SWEEP,
     PROGRAM_NAME,
     SGF_INTERNAL_COMMENTS_MARKER,
     STATUS_ANALYSIS,
     STATUS_ERROR,
     STATUS_INFO,
     STATUS_TEACHING,
-    PRIORITY_GAME_ANALYSIS,
-    PRIORITY_EXTRA_ANALYSIS,
-    PRIORITY_SWEEP,
-    PRIORITY_ALTERNATIVES,
-    PRIORITY_EQUALIZE,
-    PRIORITY_DEFAULT,
 )
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
@@ -119,9 +117,7 @@ class BaseGame:
     # -- move tree functions --
     def _init_state(self):
         board_size_x, board_size_y = self.board_size
-        self.board = [
-            [-1 for _x in range(board_size_x)] for _y in range(board_size_y)
-        ]  # type: List[List[int]]  #  board pos -> chain id
+        self.board = [[-1 for _x in range(board_size_x)] for _y in range(board_size_y)]  # type: List[List[int]]  #  board pos -> chain id
         self.chains = []  # type: List[List[Move]]  #   chain id -> chain
         self.prisoners = []  # type: List[Move]
         self.last_capture = []  # type: List[Move]
@@ -615,7 +611,7 @@ class Game(BaseGame):
                 max_point_loss = max(c.points_lost or 0 for c in [node] + node.children)
                 if only_mistakes and max_point_loss <= threshold:
                     continue
-                if move_range and (not node.depth - 1 in range(move_range[0], move_range[1] + 1)):
+                if move_range and (node.depth - 1 not in range(move_range[0], move_range[1] + 1)):
                     continue
                 node.analyze(engine, visits=visits, priority=-1_000_000, time_limit=False, report_every=None)
             if not move_range:
@@ -738,7 +734,7 @@ class Game(BaseGame):
                 else:  # we're a bit lost, far away from target, just push it closer
                     move_info = min(candidates, key=lambda move: abs(move["scoreLead"] - target_score))
                     self.katrain.log(
-                        f"* Played {move_info['move']} {move_info['scoreLead']} because score deviation between current score {node.score} and target score {target_score} > {3*stddev}",
+                        f"* Played {move_info['move']} {move_info['scoreLead']} because score deviation between current score {node.score} and target score {target_score} > {3 * stddev}",
                         OUTPUT_EXTRA_DEBUG,
                     )
                     ai_thoughts += f"Move played to close difference between score {node.score:.1f} and target {target_score:.1f} quickly."

@@ -7,16 +7,16 @@ from kivy.storage.jsonstore import JsonStore
 
 from katrain.core.ai import ai_rank_estimation
 from katrain.core.constants import (
-    PLAYER_HUMAN,
-    PLAYER_AI,
-    PLAYING_NORMAL,
-    PLAYING_TEACHING,
-    OUTPUT_INFO,
-    OUTPUT_ERROR,
-    OUTPUT_DEBUG,
     AI_DEFAULT,
     CONFIG_MIN_VERSION,
     DATA_FOLDER,
+    OUTPUT_DEBUG,
+    OUTPUT_ERROR,
+    OUTPUT_INFO,
+    PLAYER_AI,
+    PLAYER_HUMAN,
+    PLAYING_NORMAL,
+    PLAYING_TEACHING,
 )
 from katrain.core.utils import find_package_resource
 
@@ -106,8 +106,11 @@ class KaTrainBase:
                         parent_dir = os.path.split(user_config_file)[0]
                         self.log(f"Creating parent directory if needed: {parent_dir}", OUTPUT_DEBUG)
                         os.makedirs(parent_dir, exist_ok=True)
-                        
-                        self.log(f"Copying package config {package_config_file} to user config {user_config_file}", OUTPUT_DEBUG)
+
+                        self.log(
+                            f"Copying package config {package_config_file} to user config {user_config_file}",
+                            OUTPUT_DEBUG,
+                        )
                         shutil.copyfile(package_config_file, user_config_file)
                         config_file = user_config_file
                         self.log(f"Copied package config to local file {config_file}", OUTPUT_INFO)
@@ -116,7 +119,7 @@ class KaTrainBase:
                             version_str = JsonStore(user_config_file).get("general")["version"]
                             version = parse_version(version_str)
                             self.log(f"Parsed version: {version}", OUTPUT_DEBUG)
-                        except Exception as e:  # noqa E722 broken file etc
+                        except Exception as e:  # broken file etc
                             self.log(f"Failed to read version from user config: {e}", OUTPUT_DEBUG)
                             version_str = "0.0.0"
                             version = [0, 0, 0]
