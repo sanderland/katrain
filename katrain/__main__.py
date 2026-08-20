@@ -141,7 +141,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.contribute_popup = None
 
         self.pondering = False
-        self.show_move_num = self.config("trainer/show_move_numbers", False)
+        self.show_move_num = self.config("trainer/show_move_numbers")
 
         self.animate_contributing = False
         self.message_queue = Queue()
@@ -801,7 +801,7 @@ class KaTrainGui(Screen, KaTrainBase):
         elif keycode[1] == Theme.KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE and not ctrl_pressed:
             self.controls.move_tree.toggle_selected_node_collapse()
         elif keycode[1] == Theme.KEY_RESET_ANALYSIS and "ctrl" in modifiers:
-            # literal ctrl, not ctrl_pressed: cmd-h is the macOS hide-application shortcut
+            # Do not treat macOS Cmd-H as Ctrl-H.
             self("reset-analysis")
         elif keycode[1] == Theme.KEY_NEW_GAME and ctrl_pressed:
             self("new-game-popup")

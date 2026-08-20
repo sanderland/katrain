@@ -1000,12 +1000,14 @@ msgstr "詰碁用の外枠"
 msgid "from move"
 msgstr "開始手数"
 
+#. status message
 msgid "move range analysis"
 msgstr "{start_move}手目から{end_move}手目までを再分析中（各{visits}手）"
 
 msgid "to move"
 msgstr "終了手数"
 
+#. Restrict analysis to move range
 msgid "limit to moves"
 msgstr "手数を制限"
 

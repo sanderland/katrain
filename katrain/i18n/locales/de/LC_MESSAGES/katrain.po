@@ -744,6 +744,7 @@ msgstr "Punktänderung"
 msgid "show stats if"
 msgstr "Zeige Bewertung wenn mehr als ... Visits"
 
+#. point loss precision options
 msgid "show two digits for point loss near zero"
 msgstr "Zeige zwei Nachkommastellen für Punktverluste nahe null"
 
@@ -1006,30 +1007,37 @@ msgstr "Gesamtes Spiel"
 msgid "ai:antimirror"
 msgstr "KataAntiMirror"
 
+#. on move tree editing, deletes all other branches splitting off from the
+#. path UP TO this node
 msgid "Prune Branch"
 msgstr "Andere Zweige entfernen"
 
 msgid "aihelp:antimirror"
 msgstr "Anti-Spiegel-Go-Modus von KataGo."
 
+#. distance of wall to existing stones
 msgid "tsumego:walldistance"
 msgstr "Abstand zur Mauer"
 
+#. tsumego: ko is good enough?
 msgid "tsumego:ko"
 msgstr "Ko erlaubt?"
 
+#. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
 msgstr "Tsumego-Rahmen"
 
 msgid "from move"
 msgstr "von Zug"
 
+#. status message
 msgid "move range analysis"
 msgstr "Neuanalyse der Züge {start_move} bis {end_move} mit {visits} Visits"
 
 msgid "to move"
 msgstr "bis Zug"
 
+#. Restrict analysis to move range
 msgid "limit to moves"
 msgstr "Auf Zugbereich begrenzen"
 

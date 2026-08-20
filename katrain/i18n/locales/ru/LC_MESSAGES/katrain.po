@@ -940,8 +940,7 @@ msgstr "Полная игра"
 msgid "ai:antimirror"
 msgstr "Противозеркальная"
 
-#. on move tree editing, deletes all other branches splitting off from
-#. the
+#. on move tree editing, deletes all other branches splitting off from the
 #. path UP TO this node
 msgid "Prune Branch"
 msgstr "Удалить ответвления"
@@ -968,6 +967,7 @@ msgstr "от хода"
 msgid "to move"
 msgstr "до хода"
 
+#. Restrict analysis to move range
 msgid "limit to moves"
 msgstr "Только для ходов"
 

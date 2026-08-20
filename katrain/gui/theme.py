@@ -196,7 +196,7 @@ class Theme:
     KEY_ANALYZE_EXTRA_SWEEP = "d"
     KEY_ANALYZE_EXTRA_ALTERNATIVE = "f"
     KEY_SELECT_BOX = "g"
-    KEY_RESET_ANALYSIS = "h"  # with ctrl: discards analysis, so not a bare key like its neighbours
+    KEY_RESET_ANALYSIS = "h"
     KEY_INSERT_MODE = "i"
     KEY_SELFPLAY_TO_END = "l"
     KEY_STOP_ANALYSIS = "escape"

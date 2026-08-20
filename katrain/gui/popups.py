@@ -227,7 +227,7 @@ class QuickConfigGui(MDBoxLayout):
                 selected = 0
                 try:
                     selected = widget.value_refs.index(value)
-                except ValueError:  # value not among the options, fall back to the first
+                except ValueError:
                     pass
                 widget.text = widget.values[selected]
             else:
@@ -377,8 +377,7 @@ class ConfigTeacherPopup(QuickConfigGui):
 
     def update_config(self, save_to_file=True, close_popup=True):
         super().update_config(save_to_file=save_to_file, close_popup=close_popup)
-        # 'm' toggles move numbers live, so the setting is a starting point rather than
-        # the source of truth -- re-sync it here or the checkbox appears to do nothing.
+        # The keyboard shortcut can change this without changing the config.
         self.katrain.show_move_num = self.katrain.config("trainer/show_move_numbers")
         self.build_and_set_properties()
 
@@ -741,7 +740,7 @@ class BaseConfigPopup(QuickConfigGui):
                                 try:
                                     with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:
                                         fout.write(zipObj.read(f))
-                                except OSError:  # already there? no problem
+                                except OSError:
                                     pass
                     os.remove(tmp_path)
                 else:

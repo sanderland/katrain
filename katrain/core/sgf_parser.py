@@ -682,7 +682,7 @@ class SGF:
                 setup = line.split()
                 try:
                     handicap = int(setup[3])
-                except (ValueError, IndexError):  # truncated or malformed INI line
+                except (ValueError, IndexError):
                     continue
 
                 if handicap < 0 or handicap > 9:

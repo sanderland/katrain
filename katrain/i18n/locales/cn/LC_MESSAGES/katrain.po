@@ -324,6 +324,7 @@ msgstr "显示最后几手棋的选点"
 msgid "show ai dots"
 msgstr "显示AI棋手的选点/SGF注释"
 
+#. point loss precision options
 msgid "show two digits for point loss near zero"
 msgstr "损失目数接近零时显示两位小数"
 
@@ -929,30 +930,37 @@ msgstr "全局"
 msgid "ai:antimirror"
 msgstr "KataAntiMirror"
 
+#. on move tree editing, deletes all other branches splitting off from the
+#. path UP TO this node
 msgid "Prune Branch"
 msgstr "删除其他分支"
 
 msgid "aihelp:antimirror"
 msgstr "KataGo的破解模仿棋模式。"
 
+#. distance of wall to existing stones
 msgid "tsumego:walldistance"
 msgstr "边界距离"
 
+#. tsumego: ko is good enough?
 msgid "tsumego:ko"
 msgstr "允许打劫？"
 
+#. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
 msgstr "死活题外框"
 
 msgid "from move"
 msgstr "起始手数"
 
+#. status message
 msgid "move range analysis"
 msgstr "使用 {visits} 计算深度重新分析第 {start_move} 到 {end_move} 手"
 
 msgid "to move"
 msgstr "结束手数"
 
+#. Restrict analysis to move range
 msgid "limit to moves"
 msgstr "限定手数范围"
 

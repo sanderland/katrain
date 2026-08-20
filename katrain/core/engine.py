@@ -104,8 +104,6 @@ class BaseEngine:  # some common elements between analysis and contribute engine
         return exe
 
     def on_error(self, message, code=None, allow_popup=True):
-        # Defaults must match the KataGoEngine override: get_engine_path and other shared
-        # code call this with just (message, code), including from subclasses that do not override it.
         self.katrain.log(message, OUTPUT_ERROR)
 
 
@@ -124,15 +122,14 @@ class KataGoEngine(BaseEngine):
         self.query_counter = 0
         self.katago_process = None
         self.base_priority = 0
+        self.query_generation = 0
         self.override_settings = {"reportAnalysisWinratesAs": "BLACK"}  # force these settings
         self.analysis_thread = None
         self.stderr_thread = None
         self.write_stdin_thread = None
         self.shell = False
         self.write_queue = queue.Queue()
-        # Reentrant: terminate_queries -> terminate_query, and _write_stdin_thread calls
-        # stop_pondering while already holding the lock. Guards queries, ponder_query,
-        # katago_process and query_counter -- every access to those goes through it.
+        # Reentrant because cancellation and pondering helpers reacquire it.
         self.thread_lock = threading.RLock()
         if resolve_engine_backend(config) == "custom":
             self.command = config["altcommand"]
@@ -145,8 +142,7 @@ class KataGoEngine(BaseEngine):
             if not exe:
                 return
 
-            # Built as a list, so paths containing spaces or quotes survive as-is instead of
-            # being quoted into a string and re-parsed by shlex.
+            # Pass argv directly so paths are not quoted and parsed twice.
             self.command = [exe, "analysis", "-model", model]
             humanlike_model = config.get("humanlike_model", "")
             if humanlike_model:
@@ -196,8 +192,7 @@ class KataGoEngine(BaseEngine):
             self.write_stdin_thread.start()
 
     def _drain_write_queue(self):
-        """Drop everything still queued for stdin. Never rebind write_queue: the writer
-        thread and is_idle() would otherwise be looking at different objects."""
+        """Discard queries that the writer has not dequeued."""
         while True:
             try:
                 self.write_queue.get_nowait()
@@ -205,13 +200,13 @@ class KataGoEngine(BaseEngine):
                 return
 
     def on_new_game(self):
-        self.base_priority += 1
-        if not self.is_idle():
-            with self.thread_lock:
-                self._drain_write_queue()
-                self.terminate_queries(only_for_node=None)
-                self.ponder_query = None
-                self.queries.clear()
+        with self.thread_lock:
+            self.base_priority += 1
+            self.query_generation += 1
+            self._drain_write_queue()
+            self.terminate_queries(only_for_node=None)
+            self.ponder_query = None
+            self.queries.clear()
 
     def terminate_queries(self, only_for_node=None):
         with self.thread_lock:
@@ -237,6 +232,8 @@ class KataGoEngine(BaseEngine):
 
     def restart(self):
         with self.thread_lock:
+            self.query_generation += 1
+            self._drain_write_queue()
             self.queries.clear()
         self.shutdown(finish=False)
         self.start()
@@ -392,19 +389,22 @@ class KataGoEngine(BaseEngine):
             if process is None:
                 return
             try:
-                query, callback, error_callback, next_move, node = self.write_queue.get(block=True, timeout=0.1)
+                query, callback, error_callback, next_move, node, generation = self.write_queue.get(
+                    block=True, timeout=0.1
+                )
             except queue.Empty:
                 continue
             with self.thread_lock:  # bookkeeping only -- the blocking write happens outside the lock
+                if generation != self.query_generation:
+                    continue
                 if "id" not in query:
                     self.query_counter += 1
                     query["id"] = f"QUERY:{str(self.query_counter)}"
 
                 ponder = query.pop(self.PONDER_KEY, False)
-                if ponder:  # handle pondering in here to be in lock and such
+                if ponder:
                     pq = self.ponder_query or {}
-                    # basically we handle pondering by just asking for these queries a lot and ignoring duplicates
-                    # when a different ponder query comes in, e.g. due to selecting a roi or different node, switch
+                    # Replace the active pondering query only when its position or settings change.
                     differences = {
                         k: (pq.get(k), query.get(k))
                         for k in (query.keys() | pq.keys()) - {"id", "maxVisits", "reportDuringSearchEvery"}
@@ -423,19 +423,19 @@ class KataGoEngine(BaseEngine):
                     self.queries[query["id"]] = (callback, error_callback, time.time(), next_move, node)
                 tag = "ponder " if ponder else ("terminate " if terminate else "")
                 payload = (json.dumps(query) + "\n").encode()
-            # Outside the lock: stdin.flush() only returns once KataGo reads, and KataGo only
-            # keeps reading while we drain its stdout -- holding the lock here would deadlock
-            # the analysis thread against a full pipe. This is the only writer, so order holds.
+            # Holding the lock during flush can deadlock against a full stdout pipe.
             self.katrain.log(f"Sending {tag}query {query['id']}: {json.dumps(query)}", OUTPUT_DEBUG)
             try:
                 process.stdin.write(payload)
                 process.stdin.flush()
             except OSError as e:
                 self.katrain.log(f"Exception in writing to katago: {e}", OUTPUT_DEBUG)
-                return  # some other thread will take care of this
+                return
 
     def send_query(self, query, callback, error_callback, next_move=None, node=None):
-        self.write_queue.put((query, callback, error_callback, next_move, node))
+        with self.thread_lock:
+            generation = self.query_generation
+            self.write_queue.put((query, callback, error_callback, next_move, node, generation))
 
     def request_analysis(
         self,

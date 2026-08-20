@@ -1053,12 +1053,14 @@ msgstr "Ko'ya izin veriliyor mu?"
 msgid "analysis:tsumegoframe"
 msgstr "Tsumego Çerçevesi"
 
+#. point loss precision options
 msgid "show two digits for point loss near zero"
 msgstr "Sıfıra yakın puan kayıplarını iki ondalık basamakla göster"
 
 msgid "from move"
 msgstr "başlangıç hamlesi"
 
+#. status message
 msgid "move range analysis"
 msgstr ""
 "{start_move} ile {end_move} arasındaki hamleleri {visits} ziyaretle yeniden "
@@ -1067,6 +1069,7 @@ msgstr ""
 msgid "to move"
 msgstr "bitiş hamlesi"
 
+#. Restrict analysis to move range
 msgid "limit to moves"
 msgstr "Hamle aralığıyla sınırla"
 

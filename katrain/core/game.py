@@ -54,10 +54,7 @@ class BaseGame:
         bypass_config=False,  # TODO: refactor?
     ):
         self.katrain = katrain
-        # Reentrant: play() holds the lock across the whole move, and its illegal-move
-        # path re-enters _calculate_groups. Guards board, chains, prisoners, last_capture
-        # and current_node -- AI moves are generated on a worker thread while the UI
-        # thread navigates the tree.
+        # Reentrant because play and navigation rebuild board state while holding the lock.
         self._lock = threading.RLock()
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
         self.sgf_filename = sgf_filename
@@ -207,11 +204,13 @@ class BaseGame:
                 raise IllegalMoveException("Suicide")
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
-    def play(self, move: Move, ignore_ko: bool = False):
+    def play(self, move: Move, ignore_ko: bool = False, expected_node: Optional[GameNode] = None):
         board_size_x, board_size_y = self.board_size
         if not move.is_pass and not (0 <= move.coords[0] < board_size_x and 0 <= move.coords[1] < board_size_y):
             raise IllegalMoveException(f"Move {move} outside of board coordinates")
         with self._lock:  # board mutation and the node update must not be split
+            if expected_node is not None and self.current_node is not expected_node:
+                return None
             try:
                 self._validate_move_and_update_chains(move, ignore_ko)
             except IllegalMoveException:
@@ -546,8 +545,16 @@ class Game(BaseGame):
         self.katrain.update_state(redraw_board=True)
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
-    def play(self, move: Move, ignore_ko: bool = False, analyze=True):
-        played_node = super().play(move, ignore_ko)
+    def play(
+        self,
+        move: Move,
+        ignore_ko: bool = False,
+        analyze=True,
+        expected_node: Optional[GameNode] = None,
+    ):
+        played_node = super().play(move, ignore_ko=ignore_ko, expected_node=expected_node)
+        if played_node is None:
+            return None
         if analyze:
             if self.region_of_interest:
                 played_node.analyze(self.engines[played_node.next_player], analyze_fast=True)

@@ -1716,10 +1716,9 @@ class HumanStyleStrategy(AIStrategy):
         return move, ai_thoughts
 
 
-def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode]:
+def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, Optional[GameNode]]:
     """Generate a move using the selected AI strategy"""
-    # A config file can name a strategy that no longer exists, e.g. after a downgrade
-    # or a rename -- fall back rather than crashing the AI player's turn.
+    # Custom configs may refer to a removed strategy.
     strategy_class = STRATEGY_REGISTRY.get(ai_mode)
     if strategy_class is None:
         game.katrain.log(f"AI strategy '{ai_mode}' not found, falling back to '{AI_DEFAULT}'", OUTPUT_ERROR)
@@ -1729,7 +1728,10 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
     game.katrain.log(f"Generating move using {strategy.__class__.__name__} (mode {ai_mode})", OUTPUT_DEBUG)
     move, ai_thoughts = strategy.generate_move()
 
-    played_node = game.play(move)
+    played_node = game.play(move, expected_node=strategy.cn)
+    if played_node is None:
+        game.katrain.log(f"Discarding AI move {move.gtp()}: position changed", OUTPUT_DEBUG)
+        return move, None
     played_node.ai_thoughts = ai_thoughts
     game.katrain.log(f"Move generation complete: {move.gtp()} -- {ai_thoughts}", OUTPUT_DEBUG)
     return move, played_node

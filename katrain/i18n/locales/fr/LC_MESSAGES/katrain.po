@@ -763,6 +763,7 @@ msgstr "Variation du score"
 msgid "show stats if"
 msgstr "Nombre de visites minimum requis pour afficher les données :"
 
+#. point loss precision options
 msgid "show two digits for point loss near zero"
 msgstr "Afficher deux décimales pour les pertes de points proches de zéro"
 
@@ -974,6 +975,8 @@ msgstr "Partie entière"
 msgid "ai:antimirror"
 msgstr "Anti-symétrique"
 
+#. on move tree editing, deletes all other branches splitting off from the
+#. path UP TO this node
 msgid "Prune Branch"
 msgstr "Élaguer les autres branches"
 
@@ -982,12 +985,15 @@ msgstr ""
 "Mode dans lequel Katago cherche à déjouer la stratégie de Go symétrique \n"
 "(en d'autres termes, quand l'adversaire imite systématiquement ses coups)."
 
+#. distance of wall to existing stones
 msgid "tsumego:walldistance"
 msgstr "Distance du mur :"
 
+#. tsumego: ko is good enough?
 msgid "tsumego:ko"
 msgstr "Permettre les kos"
 
+#. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
 msgstr "Composer un problème"
 

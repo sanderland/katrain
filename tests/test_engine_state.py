@@ -7,7 +7,7 @@ import pytest
 
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import BaseEngine, KataGoEngine
-from katrain.core.game import Game, IllegalMoveException, Move
+from katrain.core.game import BaseGame, Game, IllegalMoveException, Move
 from katrain.core.game_node import GameNode
 
 
@@ -31,6 +31,7 @@ class StubEngine(KataGoEngine):
         self.query_counter = 0
         self.katago_process = None
         self.base_priority = 0
+        self.query_generation = 0
         self.write_queue = queue.Queue()
         self.thread_lock = threading.RLock()
         self.analysis_thread = self.stderr_thread = self.write_stdin_thread = None
@@ -43,10 +44,8 @@ def katrain():
 
 class TestEngineErrors:
     def test_base_on_error_accepts_shared_call_signature(self, katrain):
-        """get_engine_path calls on_error(message, code); subclasses that do not
-        override it (KataGoContributeEngine) must not hit a TypeError."""
         engine = BaseEngine(katrain, {})
-        engine.on_error("some message", "SOME-CODE")  # must not raise
+        engine.on_error("some message", "SOME-CODE")
 
     def test_missing_exe_reports_error_and_returns_none(self, katrain):
         engine = BaseEngine(katrain, {})
@@ -56,9 +55,6 @@ class TestEngineErrors:
         assert errors and errors[0][1] == "KATAGO-EXE"
 
     def test_bundled_macos_exe_used_on_apple_silicon(self, katrain, monkeypatch, tmp_path):
-        """Regression test for #843: a bundled katago-osx that exists on disk
-        must be used on Apple Silicon, not discarded in favor of PATH lookup
-        just because the kernel version string contains "arm64"."""
         bundled = tmp_path / "katago-osx"
         bundled.write_bytes(b"")
 
@@ -73,18 +69,16 @@ class TestEngineErrors:
 
 class TestEngineSharedState:
     def test_on_new_game_clears_queries_in_place(self, katrain):
-        """Threads hold a reference to these objects; rebinding orphans their view."""
         engine = StubEngine(katrain)
         engine.queries["QUERY:1"] = (None, None, 0.0, None, None)
         queries, write_queue = engine.queries, engine.write_queue
-        engine.write_queue.put(({"id": "PENDING"}, None, None, None, None))
+        engine.write_queue.put(({"id": "PENDING"}, None, None, None, None, engine.query_generation))
 
         engine.on_new_game()
 
         assert engine.queries is queries
         assert engine.write_queue is write_queue
         assert not engine.queries
-        # the pending analysis is dropped; only the terminate for QUERY:1 stays queued
         queued = []
         while not engine.write_queue.empty():
             queued.append(engine.write_queue.get_nowait()[0])
@@ -94,12 +88,11 @@ class TestEngineSharedState:
         engine = StubEngine(katrain)
         engine.queries["QUERY:1"] = (None, None, 0.0, None, None)
         queries = engine.queries
-        engine.start = lambda: None  # no subprocess
+        engine.start = lambda: None
         engine.restart()
         assert engine.queries is queries and not engine.queries
 
     def test_terminate_queries_is_reentrant(self, katrain):
-        """terminate_queries -> terminate_query both take thread_lock."""
         engine = StubEngine(katrain)
         node = object()
         engine.queries["QUERY:1"] = (None, None, 0.0, None, node)
@@ -110,7 +103,6 @@ class TestEngineSharedState:
         assert "QUERY:1" not in engine.queries
 
     def test_stop_pondering_is_reentrant_under_lock(self, katrain):
-        """_write_stdin_thread calls stop_pondering while already holding the lock."""
         engine = StubEngine(katrain)
         engine.ponder_query = {"id": "QUERY:7"}
 
@@ -134,7 +126,6 @@ class TestEngineSharedState:
 
 class TestGameLocking:
     def test_play_is_reentrant_on_illegal_move(self, katrain):
-        """play() holds the lock and re-enters _calculate_groups to roll back."""
         game = Game(katrain, MockEngine(), move_tree=GameNode(properties={"SZ": 19}))
         game.play(Move.from_gtp("D4", player="B"))
         with pytest.raises(IllegalMoveException):
@@ -143,7 +134,6 @@ class TestGameLocking:
         assert 1 == game.current_node.depth
 
     def test_concurrent_play_and_navigation_keeps_board_consistent(self, katrain):
-        """AI moves are generated off-thread while the UI thread navigates."""
         game = Game(katrain, MockEngine(), move_tree=GameNode(properties={"SZ": 19}))
         coords = [f"{c}{r}" for c in "ABCDEFGH" for r in range(1, 9)]
         errors = []
@@ -171,5 +161,6 @@ class TestGameLocking:
             t.join(timeout=30)
         assert not any(t.is_alive() for t in threads), "board operations deadlocked"
         assert not errors, errors
-        # every stone on the board is accounted for by exactly one chain
-        assert len(coords) == len(game.stones)
+        expected = BaseGame(katrain, move_tree=game.root)
+        expected.set_current_node(game.current_node)
+        assert set(expected.stones) == set(game.stones)

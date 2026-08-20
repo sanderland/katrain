@@ -1,13 +1,4 @@
-"""Remote KataGo Analysis Engine over WebSocket.
-
-When `engine.remote_url` is set in the config, KaTrain runs queries
-against a remote KataGo Analysis Engine instead of spawning a local
-subprocess. The server is expected to expose the KataGo Analysis
-Engine JSON protocol over a WebSocket.
-
-Generic transport — any KataGo-compatible server works. KaTrain has
-no awareness of who hosts the engine.
-"""
+"""KataGo Analysis Engine transport over WebSocket."""
 
 from __future__ import annotations
 
@@ -39,48 +30,37 @@ from katrain.core.utils import json_truncate_arrays
 
 
 class RemoteKataGoEngine(KataGoEngine):
-    """KataGo engine that talks to a remote Analysis Engine server
-    over a WebSocket instead of spawning a local subprocess.
+    """Use a remote KataGo Analysis Engine instead of a subprocess."""
 
-    Activated when `engine.remote_url` in the config is non-empty.
-    The URL must be `ws://...` or `wss://...`.
-    """
-
-    ENGINE_TYPE = "remote"  # recovery popup shows remote-specific advice (check URL, not executable)
+    ENGINE_TYPE = "remote"
 
     READ_TIMEOUT_S = 120
 
-    # A dropped WebSocket is recoverable (server restart, flaky network),
-    # unlike a crashed local subprocess. Reconnect transparently with
-    # linear backoff before falling back to the recovery popup.
+    # Reconnect before showing the recovery popup.
     RECONNECT_ATTEMPTS = 6
     RECONNECT_BACKOFF_S = 1.0
     RECONNECT_MAX_BACKOFF_S = 10.0
 
     def __init__(self, katrain, config):
-        # Bypass KataGoEngine.__init__'s subprocess setup; initialise
-        # only the bookkeeping the rest of KaTrain reads.
+        # Bypass KataGoEngine's subprocess setup.
         BaseEngine.__init__(self, katrain, config)
         self.allow_recovery = self.config.get("allow_recovery", True)
         self.queries = {}
-        # query id -> JSON payload, kept so outstanding analyses can be
-        # re-sent after a reconnect (the server loses them on disconnect).
+        # Query payloads are needed to resume work after reconnecting.
         self.sent_payloads = {}
         self.ponder_query = None
         self.query_counter = 0
         self.katago_process = None  # rest of the codebase checks this
         self.base_priority = 0
+        self.query_generation = 0
         self.override_settings = {"reportAnalysisWinratesAs": "BLACK"}
         self.write_queue = queue.Queue()
-        # Reentrant: _write_stdin_thread calls stop_pondering / _handle_disconnect while
-        # already holding the lock, and inherited helpers take it themselves.
+        # Reentrant because the writer calls helpers that reacquire it.
         self.thread_lock = threading.RLock()
         self.shell = False
         self.command = "<remote websocket>"
 
-        # Assigned before the URL checks below so the object is always
-        # internally consistent, even if those checks return early:
-        # check_alive (polled every GUI frame) reads these unconditionally.
+        # check_alive reads these even when URL validation returns early.
         self.ws: WebSocket | None = None
         self.ws_send_lock = threading.Lock()
         self.analysis_thread = None
@@ -89,9 +69,7 @@ class RemoteKataGoEngine(KataGoEngine):
         self._closing = False
         self._reported_dead = False
         self._reconnecting = False
-        # Bumped on each (re)connect. I/O threads capture the value they
-        # were started with so a stale thread blocked on a dead socket
-        # can't trigger a reconnect that would tear down a newer one.
+        # I/O threads exit when a newer connection supersedes them.
         self._conn_id = 0
 
         self.remote_url = (config.get("remote_url") or "").strip()
@@ -101,7 +79,7 @@ class RemoteKataGoEngine(KataGoEngine):
                 "REMOTE-URL-MISSING",
                 allow_popup=False,
             )
-            self._reported_dead = True  # already reported above; check_alive must not report again
+            self._reported_dead = True
             return
         if not self.remote_url.startswith(("ws://", "wss://")):
             self.on_error(
@@ -109,7 +87,7 @@ class RemoteKataGoEngine(KataGoEngine):
                 "REMOTE-URL-INVALID",
                 allow_popup=False,
             )
-            self._reported_dead = True  # already reported above; check_alive must not report again
+            self._reported_dead = True
             return
 
         self.start()
@@ -126,8 +104,7 @@ class RemoteKataGoEngine(KataGoEngine):
         )
 
     def _start_threads(self):
-        """Bump the connection generation and launch fresh I/O threads
-        bound to it. Must be called while holding thread_lock."""
+        """Launch I/O threads for a new connection. Requires thread_lock."""
         self._conn_id += 1
         conn_id = self._conn_id
         self.analysis_thread = threading.Thread(
@@ -140,8 +117,7 @@ class RemoteKataGoEngine(KataGoEngine):
             args=(conn_id,),
             daemon=True,
         )
-        # Dummy stderr thread so callers that join all three don't
-        # crash on None — remote engines have no stderr channel.
+        # Keep the inherited thread lifecycle uniform.
         self.stderr_thread = threading.Thread(
             target=lambda: None,
             daemon=True,
@@ -152,7 +128,6 @@ class RemoteKataGoEngine(KataGoEngine):
 
     def start(self):
         with self.thread_lock:
-            self.write_queue = queue.Queue()
             self._closing = False
             self._reported_dead = False
             self._reconnecting = False
@@ -176,14 +151,7 @@ class RemoteKataGoEngine(KataGoEngine):
             self._start_threads()
 
     def _handle_disconnect(self, os_error="", conn_id=None):
-        """Called by the read/write threads when the WebSocket drops.
-        Kicks off a single background reconnect attempt instead of
-        immediately surfacing the (local-engine-oriented) recovery popup.
-
-        `conn_id` is the generation the calling thread was started with;
-        a mismatch means a newer connection already exists and this is a
-        stale thread, so we ignore it.
-        """
+        """Start one reconnect loop for the current connection."""
         with self.thread_lock:
             if self._closing or self._reconnecting:
                 return
@@ -191,8 +159,7 @@ class RemoteKataGoEngine(KataGoEngine):
                 return
             self._reconnecting = True
             old_ws, self.ws = self.ws, None
-        # Closing the dead socket unblocks the sibling thread still
-        # parked in recv() so it exits promptly rather than hanging.
+        # Unblock the sibling I/O thread.
         if old_ws is not None:
             try:
                 old_ws.close()
@@ -205,10 +172,7 @@ class RemoteKataGoEngine(KataGoEngine):
         ).start()
 
     def _reconnect_thread(self, os_error=""):
-        """Try to re-establish the WebSocket with linear backoff. On
-        success, relaunch the I/O threads and re-send outstanding
-        queries. Only if every attempt fails do we report the engine as
-        dead (which opens the recovery popup)."""
+        """Reconnect with linear backoff and resume outstanding queries."""
         reconnected = False
         try:
             for attempt in range(1, self.RECONNECT_ATTEMPTS + 1):
@@ -246,42 +210,34 @@ class RemoteKataGoEngine(KataGoEngine):
                 reconnected = True
                 return
         finally:
-            # Keep _reconnecting set across the failure report below so
-            # external pollers (check_alive) stay quiet and can't latch
-            # _reported_dead in a way that suppresses the popup. Only clear
-            # it here on success/shutdown.
+            # Keep failed reconnects hidden from check_alive until they are reported below.
             if reconnected or self._closing:
                 self._reconnecting = False
 
-        # Every attempt failed and we are not shutting down: report dead and
-        # open the recovery popup. _report_dead is idempotent, so a later
-        # poll from check_alive won't double-report.
         if not self._closing:
             self._report_dead(os_error, allow_popup=True)
         self._reconnecting = False
 
     def _resend_outstanding(self):
-        """Re-send queries that were in flight when the connection
-        dropped. Keyed off self.queries so anything cleared by a new
-        game or an explicit terminate is not resurrected."""
+        """Resume queries that are still registered."""
         with self.thread_lock:
             payloads = [self.sent_payloads[qid] for qid in self.queries if qid in self.sent_payloads]
-        if not payloads:
-            return
-        self.katrain.log(
-            f"Re-sending {len(payloads)} outstanding queries after reconnect",
-            OUTPUT_INFO,
-        )
-        for query in payloads:
-            ws = self.ws
-            if ws is None:
+            if not payloads:
                 return
-            try:
-                with self.ws_send_lock:
-                    ws.send(json.dumps(query))
-            except Exception as e:
-                self.katrain.log(f"Failed to re-send query after reconnect: {e}", OUTPUT_ERROR)
-                return
+            self.katrain.log(
+                f"Re-sending {len(payloads)} outstanding queries after reconnect",
+                OUTPUT_INFO,
+            )
+            for query in payloads:
+                ws = self.ws
+                if ws is None:
+                    return
+                try:
+                    with self.ws_send_lock:
+                        ws.send(json.dumps(query))
+                except Exception as e:
+                    self.katrain.log(f"Failed to re-send query after reconnect: {e}", OUTPUT_ERROR)
+                    return
 
     def _set_status(self, message):
         try:
@@ -290,10 +246,8 @@ class RemoteKataGoEngine(KataGoEngine):
             pass
 
     def on_new_game(self):
-        # Parent clears self.queries; drop the payloads too so a later
-        # reconnect doesn't resurrect a previous game's analyses.
-        super().on_new_game()
         with self.thread_lock:
+            super().on_new_game()
             self.sent_payloads.clear()
 
     def shutdown(self, finish=False):
@@ -322,9 +276,7 @@ class RemoteKataGoEngine(KataGoEngine):
             time.sleep(0.1)
 
     def _report_dead(self, os_error, allow_popup):
-        """Report the engine as disconnected exactly once. Guarded by
-        thread_lock + _reported_dead so a poll from check_alive and the
-        reconnect thread's final failure report can't double-fire or race."""
+        """Report a disconnection once."""
         with self.thread_lock:
             if self._reported_dead:
                 return
@@ -337,11 +289,7 @@ class RemoteKataGoEngine(KataGoEngine):
         )
 
     def check_alive(self, os_error="", exception_if_dead=False, maybe_open_recovery=False):
-        # An in-progress auto-reconnect is recovery, not death. Callers that
-        # poll while the socket is briefly None (the AI move loops in ai.py
-        # spin on check_alive every 10ms) must not flag the engine dead.
-        # _reconnect_thread keeps _reconnecting set until it has reported a
-        # genuine failure, so the popup is never suppressed nor premature.
+        # A missing socket is expected while reconnecting.
         if self._reconnecting and not self._closing:
             return True
         ok = self.ws is not None and not self._closing
@@ -350,36 +298,26 @@ class RemoteKataGoEngine(KataGoEngine):
         return ok
 
     def _read_stderr_thread(self):
-        # Remote engines have no stderr channel; warnings come via the
-        # `warning` field on responses. Override prevents the parent's
-        # stderr thread from reading from a None process.
+        # Remote warnings arrive in response payloads.
         return
 
     def _write_stdin_thread(self, conn_id):
-        """Pop (query, callback, error_callback, next_move, node)
-        tuples off write_queue, register the callback in self.queries
-        so the read thread can match responses by id, then send the
-        JSON query over the WebSocket. Ponder dedupe lives inside the
-        lock so rapid Ponder presses don't queue duplicate analyses.
-
-        Bound to the connection generation `conn_id`: once a reconnect
-        supersedes it, this thread stops and a fresh one takes over.
-        """
+        """Register and send queued queries for one connection."""
         ws = self.ws
         while ws is not None and not self._closing and conn_id == self._conn_id:
             try:
-                query, callback, error_callback, next_move, node = self.write_queue.get(
+                query, callback, error_callback, next_move, node, generation = self.write_queue.get(
                     block=True,
                     timeout=0.1,
                 )
             except queue.Empty:
                 continue
-            if self._closing or conn_id != self._conn_id:
-                # Superseded mid-pop: hand the item back so the current
-                # generation's writer sends it after reconnecting.
-                self.write_queue.put((query, callback, error_callback, next_move, node))
-                return
             with self.thread_lock:
+                if self._closing or conn_id != self._conn_id:
+                    self.write_queue.put((query, callback, error_callback, next_move, node, generation))
+                    return
+                if generation != self.query_generation:
+                    continue
                 if "id" not in query:
                     self.query_counter += 1
                     query["id"] = f"QUERY:{self.query_counter}"
@@ -434,18 +372,10 @@ class RemoteKataGoEngine(KataGoEngine):
                     return
 
     def _analysis_read_thread(self, conn_id):
-        """Read JSON responses from the WebSocket and dispatch to the
-        matching callbacks in self.queries.
-
-        Bound to the connection generation `conn_id` and to the socket
-        captured at start, so a thread left over from a previous
-        connection never reads from (or tears down) a newer one.
-        """
+        """Read responses from one connection."""
         ws = self.ws
         while ws is not None and not self._closing and conn_id == self._conn_id:
             try:
-                # recv_data(control_frame=True) lets us inspect non-text frames
-                # (e.g. close, whose payload carries the status code + reason).
                 opcode, data = ws.recv_data(control_frame=True)
             except WebSocketTimeoutException:
                 continue
@@ -475,7 +405,6 @@ class RemoteKataGoEngine(KataGoEngine):
                 return
 
             if opcode not in (ABNF.OPCODE_TEXT, ABNF.OPCODE_BINARY):
-                # ping/pong/continuation — nothing to dispatch.
                 continue
 
             if not data:
@@ -483,8 +412,7 @@ class RemoteKataGoEngine(KataGoEngine):
 
             raw = data.decode("utf-8") if isinstance(data, bytes) else data
 
-            # A frame may contain multiple newline-delimited JSON
-            # objects (matches KataGo's stdio framing).
+            # A frame may contain multiple newline-delimited responses.
             for line in str(raw).splitlines():
                 line = line.strip()
                 if not line:
@@ -492,10 +420,7 @@ class RemoteKataGoEngine(KataGoEngine):
                 self._dispatch_response_line(line)
 
     def _dispatch_response_line(self, line: str) -> None:
-        """Parse one JSON response line and dispatch to the matching
-        query callback. Warning text is mirrored to the UI status
-        panel so users see notices like "visits capped" without
-        reading the log."""
+        """Dispatch one JSON response to its query callback."""
         try:
             analysis = json.loads(line)
         except json.JSONDecodeError as e:
@@ -526,8 +451,6 @@ class RemoteKataGoEngine(KataGoEngine):
 
             callback, error_callback, start_time, next_move, _ = query
 
-            # Handled BEFORE the dispatch chain so analysis data
-            # alongside a warning still reaches the callback.
             if "warning" in analysis:
                 warning_text = str(analysis.get("warning"))
                 self.katrain.log(

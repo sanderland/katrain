@@ -434,6 +434,7 @@ msgstr "顯示最後幾手棋的選點"
 msgid "show ai dots"
 msgstr "顯示AI的選點/SGF評論"
 
+#. point loss precision options
 msgid "show two digits for point loss near zero"
 msgstr "損失目數接近零時顯示兩位小數"
 
@@ -977,12 +978,14 @@ msgstr "死活題外框"
 msgid "from move"
 msgstr "起始手數"
 
+#. status message
 msgid "move range analysis"
 msgstr "使用 {visits} 步來重新分析第 {start_move} 到 {end_move} 手"
 
 msgid "to move"
 msgstr "結束手數"
 
+#. Restrict analysis to move range
 msgid "limit to moves"
 msgstr "限定手數範圍"
 

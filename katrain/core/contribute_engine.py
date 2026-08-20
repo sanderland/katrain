@@ -50,7 +50,7 @@ class KataGoContributeEngine(BaseEngine):
         self.command = None
 
         exe = self.get_engine_path(self.config.get("katago"))
-        if not exe:  # get_engine_path already reported the error, leave katago_process as None
+        if not exe:
             return
 
         cacert_path = os.path.join(os.path.split(exe)[0], "cacert.pem")
@@ -73,8 +73,7 @@ class KataGoContributeEngine(BaseEngine):
             "homeDataDir": os.path.expanduser(DATA_FOLDER),
         }
         settings = {f"{k}={v}" for k, v in settings_dict.items()}
-        # Built as a list, so paths containing spaces or quotes survive as-is instead of
-        # being quoted into a string and re-parsed by shlex.
+        # Pass argv directly so paths are not quoted and parsed twice.
         self.command = [
             exe,
             "contribute",
