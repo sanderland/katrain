@@ -146,7 +146,27 @@ class KaTrainBase:
             self.log(f"Failed to load config {config_file}: {e}", OUTPUT_ERROR)
             sys.exit(1)
         self._config = dict(self._config_store)
+        self._add_missing_config_defaults(find_package_resource(self.PACKAGE_CONFIG_FILE), config_file)
         return config_file
+
+    def _add_missing_config_defaults(self, package_config_file, config_file):
+        """Settings added since the user's config was written are absent from it, as configs
+        are kept rather than replaced while general.version >= CONFIG_MIN_VERSION. Without
+        this, the settings popups create such keys as "" the first time they are opened."""
+        if config_file == package_config_file:
+            return
+        package_config = dict(JsonStore(package_config_file))
+        added = []
+        for section, defaults in package_config.items():
+            if not isinstance(defaults, dict):
+                continue
+            section_config = self._config.setdefault(section, {})
+            for key, value in defaults.items():
+                if key not in section_config:
+                    section_config[key] = value
+                    added.append(f"{section}/{key}")
+        if added:
+            self.log(f"Added missing config defaults: {', '.join(added)}", OUTPUT_INFO)
 
     def save_config(self, key=None):
         if key is None:
