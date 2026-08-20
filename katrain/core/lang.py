@@ -23,9 +23,6 @@ class Lang(Observable):
 
     def set_widget_font(self, widget):
         widget.font_name = self.font_name
-        for sub_widget in [getattr(widget, "_hint_lbl", None), getattr(widget, "_msg_lbl", None)]:  # MDText
-            if sub_widget:
-                sub_widget.font_name = self.font_name
 
     def fbind(self, name, func, *args):
         if name == "_":

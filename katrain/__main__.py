@@ -68,7 +68,6 @@ from kivy.resources import resource_add_path, resource_find
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
-from kivymd.app import MDApp
 
 from katrain.core.ai import generate_ai_move
 from katrain.core.base_katrain import KaTrainBase
@@ -118,7 +117,10 @@ from katrain.gui.popups import (
 )
 from katrain.gui.sound import play_sound
 from katrain.gui.theme import Theme
-from katrain.gui.widgets import I18NFileBrowser, MoveTree, ScoreGraph, SelectionSlider  # noqa: F401
+from katrain.gui.widgets.filebrowser import I18NFileBrowser  # noqa: F401
+from katrain.gui.widgets.graph import ScoreGraph  # noqa: F401
+from katrain.gui.widgets.movetree import MoveTree  # noqa: F401
+from katrain.gui.widgets.selection_slider import SelectionSlider  # noqa: F401
 
 
 class KaTrainGui(Screen, KaTrainBase):
@@ -218,7 +220,7 @@ class KaTrainGui(Screen, KaTrainBase):
         def set_focus_event(*args):
             self.last_focus_event = time.time()
 
-        MDApp.get_running_app().root_window.bind(focus=set_focus_event)
+        App.get_running_app().root_window.bind(focus=set_focus_event)
 
     def restart_engine(self):
         """Rebuild the analysis engine from current config and re-analyze.
@@ -863,7 +865,7 @@ class KaTrainGui(Screen, KaTrainBase):
             self.play_mode.switch_ui_mode()
 
 
-class KaTrainApp(MDApp):
+class KaTrainApp(App):
     gui = ObjectProperty(None)
     language = StringProperty(DEFAULT_LANGUAGE)
 
@@ -891,9 +893,6 @@ class KaTrainApp(MDApp):
         self.icon = ICON  # how you're supposed to set an icon
 
         self.title = f"KaTrain v{VERSION}"
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Gray"
-        self.theme_cls.primary_hue = "200"
 
         kv_file = find_package_resource("katrain/gui.kv")
         popup_kv_file = find_package_resource("katrain/popups.kv")
@@ -1000,7 +999,7 @@ def run_app():
         def handle_exception(self, inst):
             ex_type, ex, tb = sys.exc_info()
             trace = "".join(traceback.format_tb(tb))
-            app = MDApp.get_running_app()
+            app = App.get_running_app()
 
             if app and app.gui:
                 app.gui.log(

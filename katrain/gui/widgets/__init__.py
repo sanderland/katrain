@@ -1,6 +1,6 @@
-from katrain.gui.widgets.filebrowser import I18NFileBrowser
-from katrain.gui.widgets.graph import ScoreGraph
-from katrain.gui.widgets.movetree import MoveTree
-from katrain.gui.widgets.selection_slider import SelectionSlider
+"""Widgets used from the .kv files.
 
-__all__ = ["ScoreGraph", "MoveTree", "I18NFileBrowser", "SelectionSlider"]
+Deliberately empty: importing widget modules here would create an import cycle,
+since several of them import from :mod:`katrain.gui.kivyutils`, which in turn
+uses :mod:`katrain.gui.widgets.material`. Import the submodules directly.
+"""

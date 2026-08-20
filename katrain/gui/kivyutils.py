@@ -1,3 +1,4 @@
+from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.image import Image
 from kivy.core.text import Label as CoreLabel
@@ -13,6 +14,7 @@ from kivy.properties import (
     StringProperty,
 )
 from kivy.resources import resource_find
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.behaviors import ButtonBehavior, ToggleButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -20,12 +22,6 @@ from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.spinner import Spinner
 from kivy.uix.widget import Widget
-from kivymd.app import MDApp
-from kivymd.uix.behaviors import CircularRippleBehavior, RectangularRippleBehavior
-from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import BaseFlatButton, BasePressedButton
-from kivymd.uix.navigationdrawer import MDNavigationDrawer
-from kivymd.uix.textfield import MDTextField
 
 from katrain.core.constants import (
     AI_STRATEGIES_RECOMMENDED_ORDER,
@@ -38,6 +34,13 @@ from katrain.core.constants import (
 )
 from katrain.core.lang import i18n
 from katrain.gui.theme import Theme
+from katrain.gui.widgets.material import (
+    CircularRippleBehavior,
+    MaterialTextField,
+    NavigationDrawer,  # noqa: F401 -- used from the .kv files
+    NavigationLayout,  # noqa: F401 -- used from the .kv files
+    RectangularRippleBehavior,
+)
 
 
 class BackgroundMixin(Widget):  # -- mixins
@@ -105,8 +108,8 @@ class LeftButtonBehavior(ButtonBehavior):  # stops buttons etc activating on rig
         pass
 
 
-# -- resizeable buttons / avoid baserectangular for sizing
-class SizedButton(LeftButtonBehavior, RectangularRippleBehavior, BasePressedButton, BaseFlatButton, BackgroundMixin):
+# -- buttons that size themselves from their layout (SizedButton) or their text (AutoSizedButton)
+class SizedButton(RectangularRippleBehavior, LeftButtonBehavior, AnchorLayout, BackgroundMixin):
     text = StringProperty("")
     text_color = ListProperty(Theme.BUTTON_TEXT_COLOR)
     text_size = ListProperty([100, 100])
@@ -177,23 +180,12 @@ class LightLabel(Label):
     pass
 
 
-class StatsLabel(MDBoxLayout):
+class StatsLabel(BoxLayout):
     text = StringProperty("")
     label = StringProperty("")
     color = ListProperty([1, 1, 1, 1])
     hidden = BooleanProperty(False)
     font_name = StringProperty(Theme.DEFAULT_FONT)
-
-
-class MyNavigationDrawer(MDNavigationDrawer):
-    def on_touch_down(self, touch):
-        return super().on_touch_down(touch)
-
-    def on_touch_up(self, touch):  # in PR - closes NavDrawer on any outside click
-        if self.status == "opened" and self.close_on_click and not self.collide_point(touch.ox, touch.oy):
-            self.set_state("close", animation=True)
-            return True
-        return super().on_touch_up(touch)
 
 
 class CircleWithText(Widget):
@@ -209,7 +201,7 @@ class BGBoxLayout(BoxLayout, BackgroundMixin):
 # --  gui elements
 
 
-class IMETextField(MDTextField):
+class IMETextField(MaterialTextField):
     _imo_composition = StringProperty("")
     _imo_cursor = ListProperty(None, allownone=True)
 
@@ -326,14 +318,14 @@ class I18NSpinner(KeyValueSpinner):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        MDApp.get_running_app().bind(language=self.build_values)
+        App.get_running_app().bind(language=self.build_values)
 
     def build_values(self, *_args):
         self.values = [i18n._(ref) for ref in self.value_refs]
         super().build_values()
 
 
-class PlayerSetup(MDBoxLayout):
+class PlayerSetup(BoxLayout):
     player = OptionProperty("B", options=["B", "W"])
     mode = StringProperty("")
 
@@ -368,12 +360,12 @@ class PlayerSetup(MDBoxLayout):
 
     def update_global_player_info(self):
         if self.parent and self.parent.update_global:
-            katrain = MDApp.get_running_app().gui
+            katrain = App.get_running_app().gui
             if katrain.game and katrain.game.current_node:
                 katrain.update_player(self.player, **self.player_type_dump)
 
 
-class PlayerSetupBlock(MDBoxLayout):
+class PlayerSetupBlock(BoxLayout):
     players = ObjectProperty(None)
     black = ObjectProperty(None)
     white = ObjectProperty(None)
@@ -406,7 +398,7 @@ class PlayerSetupBlock(MDBoxLayout):
         )
 
 
-class PlayerInfo(MDBoxLayout, BackgroundMixin):
+class PlayerInfo(BoxLayout, BackgroundMixin):
     captures = ObjectProperty(0)
     player = OptionProperty("B", options=["B", "W"])
     player_type = StringProperty("Player")
@@ -438,7 +430,7 @@ class PlayerInfo(MDBoxLayout, BackgroundMixin):
         self.subtype_label.text = text
 
 
-class TimerOrMoveTree(MDBoxLayout):
+class TimerOrMoveTree(BoxLayout):
     mode = StringProperty(MODE_PLAY)
 
 
@@ -447,7 +439,7 @@ class Timer(BGBoxLayout):
     timeout = BooleanProperty(False)
 
 
-class AnalysisToggle(MDBoxLayout):
+class AnalysisToggle(BoxLayout):
     text = StringProperty("")
     default_active = BooleanProperty(False)
     font_name = StringProperty(Theme.DEFAULT_FONT)
@@ -465,7 +457,7 @@ class AnalysisToggle(MDBoxLayout):
         return self.checkbox.active
 
 
-class MenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, BackgroundMixin):
+class MenuItem(RectangularRippleBehavior, LeftButtonBehavior, BoxLayout, BackgroundMixin):
     __events__ = ["on_action", "on_close"]
     icon = StringProperty("")
     text = StringProperty("")
@@ -485,7 +477,7 @@ class MenuItem(RectangularRippleBehavior, LeftButtonBehavior, MDBoxLayout, Backg
         pass
 
 
-class CollapsablePanelHeader(MDBoxLayout):
+class CollapsablePanelHeader(BoxLayout):
     pass
 
 
@@ -493,7 +485,7 @@ class CollapsablePanelTab(AutoSizedRectangleToggleButton):
     pass
 
 
-class CollapsablePanel(MDBoxLayout):
+class CollapsablePanel(BoxLayout):
     __events__ = ["on_option_state"]
 
     options = ListProperty([])
@@ -526,7 +518,7 @@ class CollapsablePanel(MDBoxLayout):
             options_spacing=self.build_options,
         )
         self.bind(state=self._on_state, content_height=self._on_size, options_height=self._on_size)
-        MDApp.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
+        App.get_running_app().bind(language=lambda *_: Clock.schedule_once(self.build_options, 0))
         self.build_options()
 
     def _on_state(self, *_args):
@@ -628,7 +620,7 @@ class CollapsablePanel(MDBoxLayout):
         pass
 
 
-class StatsBox(MDBoxLayout, BackgroundMixin):
+class StatsBox(BoxLayout, BackgroundMixin):
     winrate = StringProperty("...")
     score = StringProperty("...")
     points_lost = NumericProperty(None, allownone=True)

@@ -62,9 +62,9 @@ def play_sound(file, volume=1, cache=True):
     # the following import causes the creation of an SDL2 window, and if there
     # is no sound device, it deadlocks. We delay the import until we know audio
     # is available
-    from kivymd.app import MDApp
+    from kivy.app import App
 
-    app = MDApp.get_running_app()
+    app = App.get_running_app()
     if app and app.gui and app.gui.config("timer/sound"):
         sound = cached_sounds.get(file)
         if sound is not None:

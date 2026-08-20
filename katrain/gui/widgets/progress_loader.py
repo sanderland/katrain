@@ -1,4 +1,4 @@
-# From KivyMD which will remove it in their next version, with some fixes
+# Based on KivyMD's ProgressLoader, which they dropped in a later version, with some fixes
 from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.lang import Builder
@@ -6,22 +6,22 @@ from kivy.network.urlrequest import UrlRequest
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 
+from katrain.gui.widgets.material import LoadingSpinner  # noqa: F401 -- used from the kv below
+
 Builder.load_string(
     """
-#:import Window kivy.core.window.Window
-
-
 <ProgressLoader>
     opacity: 0
     spacing: 10
     size_hint_y: None
     height: dp(25)
-    MDSpinner
+    LoadingSpinner:
         id: spinner
-        size_hint: None, 0.8
+        size_hint: None, None
         size: dp(23), dp(23)
+        pos_hint: {'center_y': 0.5}
         color: 0.95,0.95,0.95,1
-    MDLabel:
+    Label:
         id: label_download
         max_lines: 2
         shorten: True
