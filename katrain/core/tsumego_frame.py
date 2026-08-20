@@ -1,5 +1,6 @@
+from pysgf import Move
+
 from katrain.core.game_node import GameNode
-from katrain.core.sgf_parser import Move
 
 # tsumego frame ported from lizgoban by kaorahi
 # note: coords = (j, i) in katrain

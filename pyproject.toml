@@ -7,7 +7,7 @@ authors = [{ name = "Sander Land" }]
 # Kivy 3.14 support is merged to master but unreleased (kivy/kivy#9225); ffpyplayer
 # 3.14 is still in progress (matham/ffpyplayer#185). Raise the cap once both ship
 # cp314 wheels. Note ffpyplayer is our direct dep (audio); kivy does not pull it.
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.11,<3.14"  # pysgf needs 3.11 (typing.Self)
 readme = "README.md"
 license = "MIT"
 classifiers = [
@@ -28,6 +28,8 @@ dependencies = [
     "kivymd==0.104.1",
     "websocket-client>=1.9.0",
     "certifi>=2026.2.25",
+    # TODO: point at a pysgf release once the v1 branch is published to PyPI
+    "pysgf @ git+https://github.com/sanderland/pysgf.git@claude/katrain-latest-fixes-port-0bt9kl",
 ]
 
 [project.urls]
@@ -52,8 +54,8 @@ default-groups = [
 
 [tool.ruff]
 line-length = 120
-# Pinned to the minimum supported version so the CI matrix (3.10/3.12/3.13) is consistent.
-target-version = "py310"
+# Pinned to the minimum supported version so the CI matrix (3.11/3.12/3.13) is consistent.
+target-version = "py311"
 
 [tool.ruff.lint]
 # Carries over the policy the (previously unenforced) .flake8 described: pyflakes plus
@@ -63,6 +65,9 @@ select = ["E4", "E7", "E9", "F", "I", "RUF100"]
 # Kivy's config has to be set before kivy submodules are imported, so module-level
 # imports legitimately appear after code in the GUI entry points.
 ignore = ["E402"]
+
+[tool.hatch.metadata]
+allow-direct-references = true  # for the pysgf git dependency, remove with the TODO above
 
 [tool.hatch.build.targets.sdist]
 include = ["katrain"]

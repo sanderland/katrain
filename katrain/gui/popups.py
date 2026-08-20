@@ -22,6 +22,7 @@ from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.textfield import MDTextField
+from pysgf import Move
 
 from katrain.core.ai import ai_rank_estimation, game_report
 from katrain.core.constants import (
@@ -39,7 +40,6 @@ from katrain.core.constants import (
 )
 from katrain.core.engine import resolve_engine_backend
 from katrain.core.lang import i18n, rank_label
-from katrain.core.sgf_parser import Move
 from katrain.core.utils import PATHS, find_package_resource
 from katrain.gui.kivyutils import (
     BackgroundMixin,

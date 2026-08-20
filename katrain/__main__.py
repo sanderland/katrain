@@ -69,6 +69,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
+from pysgf import Move, ParseError
 
 from katrain.core.ai import generate_ai_move
 from katrain.core.base_katrain import KaTrainBase
@@ -95,7 +96,6 @@ from katrain.core.contribute_engine import KataGoContributeEngine
 from katrain.core.game import BaseGame, Game, IllegalMoveException, KaTrainSGF
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
 from katrain.core.remote_engine import make_engine
-from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget  # noqa: F401
 from katrain.gui.controlspanel import ControlsPanel  # noqa: F401
 
