@@ -995,47 +995,36 @@ msgstr "劫でもOK"
 msgid "analysis:tsumegoframe"
 msgstr "詰碁用の外枠"
 
-#. TODO
 msgid "from move"
-msgstr "from move"
+msgstr "開始手数"
 
-#. TODO - status message
 msgid "move range analysis"
-msgstr ""
-"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+msgstr "{start_move}手目から{end_move}手目までを再分析中（各{visits}手）"
 
-#. TODO
 msgid "to move"
-msgstr "to move"
+msgstr "終了手数"
 
-#. TODO - Restrict analysis to move range
 msgid "limit to moves"
-msgstr "Limit to moves"
+msgstr "手数を制限"
 
 msgid "contribute:passwordwarning"
 msgstr "（平文で保存されます。このパスワードは他では使わないでください）"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "人間流"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "年代別プロ"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+"人間らしい手を選ぶKataGoモデル (Human SL) で打ちます. 指定した年とその前後の年代の棋譜にもとづいて, "
+"プロや強い院生の着手を再現します."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"人間らしい手を選ぶKataGoモデル (Human SL) で打ちます. modern_styleをオンにすると, "
+"2016年以降のAlphaZero流の布石スタイルで打ちます."
 
 msgid "engine:humanlike_model"
 msgstr "人間らしいモデルのパス"

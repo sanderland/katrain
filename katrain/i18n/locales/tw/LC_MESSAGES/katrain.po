@@ -434,9 +434,8 @@ msgstr "顯示最後幾手棋的選點"
 msgid "show ai dots"
 msgstr "顯示AI的選點/SGF評論"
 
-#. TODO - point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Show two digits for point loss near zero"
+msgstr "損失目數接近零時顯示兩位小數"
 
 #. analysis option
 msgid "cache analysis to sgf"
@@ -975,47 +974,32 @@ msgstr "允許打劫？"
 msgid "analysis:tsumegoframe"
 msgstr "詰碁框"
 
-#. TODO
 msgid "from move"
-msgstr "from move"
+msgstr "起始手數"
 
-#. TODO - status message
 msgid "move range analysis"
-msgstr ""
-"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+msgstr "使用 {visits} 步來重新分析第 {start_move} 到 {end_move} 手"
 
-#. TODO
 msgid "to move"
-msgstr "to move"
+msgstr "結束手數"
 
-#. TODO - Restrict analysis to move range
 msgid "limit to moves"
-msgstr "Limit to moves"
+msgstr "限定手數範圍"
 
 msgid "contribute:passwordwarning"
 msgstr "（以純文字儲存，請勿在其他地方重複使用此密碼）"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "人類棋風"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "歷史職業棋風"
 
-#. TODO
 msgid "aihelp:pro"
-msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+msgstr "根據擬人化的KataGo人類模型選點。具體而言，基於指定年份及其前後年份的歷史棋譜，模仿職業棋士與強院生的著手。"
 
-#. TODO
 msgid "aihelp:human"
-msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+msgstr "根據擬人化的KataGo人類模型選點。若勾選'modern_style'，模型將依照2016年後的AlphaZero佈局風格行棋。"
 
 msgid "engine:humanlike_model"
 msgstr "擬人模型路徑"

@@ -976,27 +976,23 @@ msgstr "Анализ ходов от {start_move} до {end_move} с {visits} п
 msgid "contribute:passwordwarning"
 msgstr "(Хранится в открытом виде, не используйте этот пароль где-либо ещё)"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "Человеческий стиль"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "Профи по годам"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+"Выбирает ходы с помощью модели KataGo, имитирующей человеческую игру. "
+"Имитирует ходы профессионалов и сильных инсэев на основе исторических партий"
+" указанного года и соседних лет."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"Выбирает ходы с помощью модели KataGo, имитирующей человеческую игру. Если "
+"отмечено 'modern_style', модель разыгрывает дебют в стиле AlphaZero (после "
+"2016 года)."
 
 msgid "engine:humanlike_model"
 msgstr "Путь к «человекоподобной» модели"
@@ -1021,41 +1017,34 @@ msgstr "Не удалось подключиться к удалённому Kat
 msgid "Remote KataGo engine disconnected"
 msgstr "Удалённый движок KataGo отключён: {error}"
 
-#. TODO - Shown instead of "engine died popup opening message" for remote
-#. engines.
 msgid "remote engine disconnected popup opening message"
 msgstr ""
-"The connection to the remote KataGo engine was lost and could not be re-established automatically.\n"
+"Соединение с удалённым движком KataGo было потеряно, и его не удалось восстановить автоматически.\n"
 "\n"
-"The error was: [color=#CC2222]{error_message}[/color]\n"
+"Ошибка: [color=#CC2222]{error_message}[/color]\n"
 "\n"
-"The error code was: [color=#CC2222]{code}[/color]."
+"Код ошибки: [color=#CC2222]{code}[/color]."
 
-#. TODO - Button to reconnect/restart the engine from the recovery popup.
 msgid "engine recovery: retry"
-msgstr "Retry"
+msgstr "Повторить"
 
-#. TODO - Link in tags should not be touched. Shown for remote engines.
 msgid "remote engine check url suggestion"
 msgstr ""
-"If the remote engine has worked before, press Retry to reconnect once it is "
-"back. Otherwise, double-check the remote engine URL in {link} ."
+"Если удалённый движок раньше работал, нажмите «Повторить», чтобы "
+"переподключиться, когда он снова заработает. В противном случае проверьте "
+"URL удалённого движка в {link} ."
 
-#. TODO
 msgid "engine:tab:custom"
-msgstr "Custom command"
+msgstr "Своя команда"
 
-#. TODO
 msgid "engine:backend:note"
-msgstr "The selected tab determines the engine used."
+msgstr "Выбранная вкладка определяет используемый движок."
 
-#. TODO
 msgid "engine:tab:remote"
-msgstr "Remote engine"
+msgstr "Удалённый движок"
 
-#. TODO
 msgid "engine:tab:local"
-msgstr "Local engine"
+msgstr "Локальный движок"
 
 msgid "show move numbers"
 msgstr "Показывать номера ходов на доске (переключение клавишей «m»)"

@@ -1065,9 +1065,8 @@ msgstr "Дозволити ко?"
 msgid "ai:human"
 msgstr "Humanlike Model"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "Профі за роками"
 
 msgid "aihelp:pro"
 msgstr ""

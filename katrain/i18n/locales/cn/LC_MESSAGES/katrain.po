@@ -324,9 +324,8 @@ msgstr "显示最后几手棋的选点"
 msgid "show ai dots"
 msgstr "AI的显示选点/SGF评价"
 
-#. TODO - point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Show two digits for point loss near zero"
+msgstr "损失目数接近零时显示两位小数"
 
 #. submit button
 msgid "update teacher"
@@ -929,69 +928,47 @@ msgstr "全局"
 msgid "ai:antimirror"
 msgstr "KataAntiMirror"
 
-#. TODO - on move tree editing, deletes all other branches splitting off from
-#. the
-#. path UP TO this node
 msgid "Prune Branch"
-msgstr "Prune Branch"
+msgstr "删除其他分支"
 
-#. TODO
 msgid "aihelp:antimirror"
-msgstr "Anti Mirror-go Mode of KataGo."
+msgstr "KataGo的破解模仿棋模式。"
 
-#. TODO - distance of wall to existing stones
 msgid "tsumego:walldistance"
-msgstr "Distance of wall"
+msgstr "边界距离"
 
-#. TODO - tsumego: ko is good enough?
 msgid "tsumego:ko"
-msgstr "Ko allowed?"
+msgstr "允许打劫？"
 
-#. TODO - Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
-msgstr "Tsumego Frame"
+msgstr "死活题外框"
 
-#. TODO
 msgid "from move"
-msgstr "from move"
+msgstr "起始手数"
 
-#. TODO - status message
 msgid "move range analysis"
-msgstr ""
-"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+msgstr "使用 {visits} 计算深度重新分析第 {start_move} 到 {end_move} 手"
 
-#. TODO
 msgid "to move"
-msgstr "to move"
+msgstr "结束手数"
 
-#. TODO - Restrict analysis to move range
 msgid "limit to moves"
-msgstr "Limit to moves"
+msgstr "限定手数范围"
 
 msgid "contribute:passwordwarning"
 msgstr "（以明文保存，请勿在其他地方重复使用此密码）"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "人类风格"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "历史职业棋风"
 
-#. TODO
 msgid "aihelp:pro"
-msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+msgstr "根据拟人化的KataGo人类模型选点。具体而言，基于指定年份及其前后年份的历史棋谱，模仿职业棋手和强院生的着法。"
 
-#. TODO
 msgid "aihelp:human"
-msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+msgstr "根据拟人化的KataGo人类模型选点。如果勾选'modern_style'，模型将按照2016年后的AlphaZero布局风格行棋。"
 
 msgid "engine:humanlike_model"
 msgstr "拟人模型路径"

@@ -1053,52 +1053,43 @@ msgstr "Ko'ya izin veriliyor mu?"
 msgid "analysis:tsumegoframe"
 msgstr "Tsumego Çerçevesi"
 
-#. TODO - point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Show two digits for point loss near zero"
+msgstr "Sıfıra yakın puan kayıplarını iki ondalık basamakla göster"
 
-#. TODO
 msgid "from move"
-msgstr "from move"
+msgstr "başlangıç hamlesi"
 
-#. TODO - status message
 msgid "move range analysis"
 msgstr ""
-"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+"{start_move} ile {end_move} arasındaki hamleleri {visits} ziyaretle yeniden "
+"analiz ediyor"
 
-#. TODO
 msgid "to move"
-msgstr "to move"
+msgstr "bitiş hamlesi"
 
-#. TODO - Restrict analysis to move range
 msgid "limit to moves"
-msgstr "Limit to moves"
+msgstr "Hamle aralığıyla sınırla"
 
 msgid "contribute:passwordwarning"
 msgstr ""
 "(Düz metin olarak saklanır, bu parolayı başka hiçbir yerde kullanmayın)"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "İnsansı"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "Dönem Profesyoneli"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+"İnsansı bir KataGo modeline göre hamle seçer. Belirtilen yıl ve çevresindeki"
+" yıllara ait tarihî oyun kayıtlarına dayanarak profesyonellerin ve güçlü "
+"insei öğrencilerinin hamlelerini taklit eder."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"İnsansı bir KataGo modeline göre hamle seçer. 'modern_style' işaretliyse "
+"model, 2016 sonrası AlphaZero açılış stilinde oynar."
 
 msgid "engine:humanlike_model"
 msgstr "İnsan benzeri model dosyasının yolu"

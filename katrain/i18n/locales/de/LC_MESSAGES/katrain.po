@@ -738,9 +738,8 @@ msgstr "Punktänderung"
 msgid "show stats if"
 msgstr "Zeige Bewertung wenn mehr als ... Visits"
 
-#. TODO - point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Show two digits for point loss near zero"
+msgstr "Zeige zwei Nachkommastellen für Punktverluste nahe null"
 
 #. analysis option
 msgid "cache analysis to sgf"
@@ -999,71 +998,54 @@ msgstr "Gesamtes Spiel"
 msgid "ai:antimirror"
 msgstr "KataAntiMirror"
 
-#. TODO - on move tree editing, deletes all other branches splitting off from
-#. the
-#. path UP TO this node
 msgid "Prune Branch"
-msgstr "Prune Branch"
+msgstr "Andere Zweige entfernen"
 
-#. TODO
 msgid "aihelp:antimirror"
-msgstr "Anti Mirror-go Mode of KataGo."
+msgstr "Anti-Spiegel-Go-Modus von KataGo."
 
-#. TODO - distance of wall to existing stones
 msgid "tsumego:walldistance"
-msgstr "Distance of wall"
+msgstr "Abstand zur Mauer"
 
-#. TODO - tsumego: ko is good enough?
 msgid "tsumego:ko"
-msgstr "Ko allowed?"
+msgstr "Ko erlaubt?"
 
-#. TODO - Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
-msgstr "Tsumego Frame"
+msgstr "Tsumego-Rahmen"
 
-#. TODO
 msgid "from move"
-msgstr "from move"
+msgstr "von Zug"
 
-#. TODO - status message
 msgid "move range analysis"
-msgstr ""
-"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+msgstr "Neuanalyse der Züge {start_move} bis {end_move} mit {visits} Visits"
 
-#. TODO
 msgid "to move"
-msgstr "to move"
+msgstr "bis Zug"
 
-#. TODO - Restrict analysis to move range
 msgid "limit to moves"
-msgstr "Limit to moves"
+msgstr "Auf Zugbereich begrenzen"
 
 msgid "contribute:passwordwarning"
 msgstr ""
 "(Wird im Klartext gespeichert, verwenden Sie dieses Passwort nirgendwo "
 "sonst)"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "Menschenähnlich"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "Profi nach Jahr"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+"Wählt Züge mit einem menschenähnlichen KataGo-Modell. Imitiert dabei Züge "
+"von Profis und starken Insei auf Basis historischer Partien aus dem "
+"angegebenen Jahr und den umliegenden Jahren."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"Wählt Züge mit einem menschenähnlichen KataGo-Modell. Ist 'modern_style' "
+"aktiviert, spielt das Modell die Eröffnung im AlphaZero-Stil nach 2016."
 
 msgid "engine:humanlike_model"
 msgstr "Pfad zum menschenähnlichen Modell"
