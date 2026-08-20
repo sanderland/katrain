@@ -926,7 +926,6 @@ msgstr "AI最佳选点重合度 %"
 msgid "Entire Game"
 msgstr "全局"
 
-#. TODO
 msgid "ai:antimirror"
 msgstr "KataAntiMirror"
 

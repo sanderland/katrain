@@ -996,7 +996,6 @@ msgstr "Bester KI Zug Übereinstimmung %"
 msgid "Entire Game"
 msgstr "Gesamtes Spiel"
 
-#. TODO
 msgid "ai:antimirror"
 msgstr "KataAntiMirror"
 
