@@ -2,7 +2,7 @@ from kivy.lang import Builder
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty
 from kivy.uix.widget import Widget
 
-from katrain.gui.kivyutils import BackgroundLabel  # noqa: F401 -- used from the kv below
+from katrain.gui.widgets.base import BackgroundLabel  # noqa: F401 -- used from the kv below
 
 
 class SelectionSlider(Widget):

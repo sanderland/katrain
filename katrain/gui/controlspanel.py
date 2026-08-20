@@ -15,9 +15,9 @@ from katrain.core.constants import (
     STATUS_ERROR,
 )
 from katrain.core.lang import rank_label
-from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
 from katrain.gui.sound import play_sound, stop_sound
 from katrain.gui.theme import Theme
+from katrain.gui.widgets.panels import AnalysisToggle, CollapsablePanel
 
 
 class PlayAnalyzeSelect(FloatLayout):

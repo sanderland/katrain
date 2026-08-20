@@ -32,9 +32,9 @@ from katrain.core.constants import (
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, json_truncate_arrays, var_to_grid
-from katrain.gui.kivyutils import cached_texture, draw_circle, draw_text
 from katrain.gui.popups import GameReportPopup, I18NPopup, ReAnalyzeGamePopup, TsumegoFramePopup
 from katrain.gui.theme import Theme
+from katrain.gui.widgets.drawing import cached_texture, draw_circle, draw_text
 
 
 class BadukPanWidget(Widget):

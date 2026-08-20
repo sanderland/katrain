@@ -69,6 +69,9 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
 
+# Importing the package registers every widget class with Kivy's Factory, which is
+# how the .kv files resolve them by name.
+import katrain.gui.widgets  # noqa: F401
 from katrain.core.ai import generate_ai_move
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.constants import (
@@ -97,12 +100,6 @@ from katrain.core.remote_engine import make_engine
 from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget  # noqa: F401
 from katrain.gui.controlspanel import ControlsPanel  # noqa: F401
-
-# used in kv
-# Star import kept deliberately: importing these classes registers them with Kivy's
-# Factory, which is how the .kv files resolve them by name.
-from katrain.gui.kivyutils import *  # noqa: F403
-from katrain.gui.kivyutils import PlayerSetupBlock
 from katrain.gui.popups import (
     ConfigAIPopup,
     ConfigPopup,
@@ -117,10 +114,7 @@ from katrain.gui.popups import (
 )
 from katrain.gui.sound import play_sound
 from katrain.gui.theme import Theme
-from katrain.gui.widgets.filebrowser import I18NFileBrowser  # noqa: F401
-from katrain.gui.widgets.graph import ScoreGraph  # noqa: F401
-from katrain.gui.widgets.movetree import MoveTree  # noqa: F401
-from katrain.gui.widgets.selection_slider import SelectionSlider  # noqa: F401
+from katrain.gui.widgets.panels import PlayerSetupBlock
 
 
 class KaTrainGui(Screen, KaTrainBase):

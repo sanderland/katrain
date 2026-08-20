@@ -10,8 +10,9 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.widget import Widget
 
-from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.theme import Theme
+from katrain.gui.widgets.base import BackgroundMixin
+from katrain.gui.widgets.drawing import draw_circle, draw_text
 
 
 class MoveTreeDropdown(DropDown):

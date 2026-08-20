@@ -38,14 +38,10 @@ from katrain.core.engine import resolve_engine_backend
 from katrain.core.lang import i18n, rank_label
 from katrain.core.sgf_parser import Move
 from katrain.core.utils import PATHS, find_package_resource
-from katrain.gui.kivyutils import (
-    BackgroundMixin,
-    I18NSpinner,
-    TableCellLabel,
-    TableHeaderLabel,
-    TableStatLabel,
-)
 from katrain.gui.theme import Theme
+from katrain.gui.widgets.base import BackgroundMixin
+from katrain.gui.widgets.inputs import I18NSpinner
+from katrain.gui.widgets.labels import TableCellLabel, TableHeaderLabel, TableStatLabel
 from katrain.gui.widgets.material import MaterialCheckBox, MaterialTextField
 from katrain.gui.widgets.progress_loader import ProgressLoader
 
