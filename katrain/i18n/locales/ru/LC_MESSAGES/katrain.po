@@ -420,7 +420,7 @@ msgid "general:anim_pv_time"
 msgstr "Задержка между ходами в анимации"
 
 msgid "general:debug_level"
-msgstr "Уровень отладочных сообщение в консоли"
+msgstr "Уровень отладочных сообщений в консоли"
 
 msgid "general:debug_level:hint"
 msgstr "Используйте 1 для печати только ошибок"
@@ -481,7 +481,7 @@ msgid "Starting Kata failed"
 msgstr "Запуск KataGo командой '{command}' завершился с ошибкой {error}."
 
 msgid "Engine died unexpectedly"
-msgstr "Движок неожиданно умер, вероятно из-за нехватки памяти: {error}"
+msgstr "Движок неожиданно завершился без вывода: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -524,7 +524,7 @@ msgstr ""
 "влияет на то, сколько начальных ходов будут более случайными."
 
 msgid "ai:p:weighted"
-msgstr "Слабая политика"
+msgstr "Взвешенная политика"
 
 msgid "aihelp:p:weighted"
 msgstr ""
@@ -578,7 +578,7 @@ msgstr "Территория"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"Выбирает ходы с оценкой выше 'threshold' и играет лучший из них. "
+"Выбирает ходы с оценкой ниже 'threshold' и играет лучший из них. "
 "Увеличивайте 'line_weight' для штрафования ходов, близких к центру доски. "
 "Прекращает такую стратегию после того, как 'endgame' часть доски была "
 "заполнена."
@@ -730,7 +730,7 @@ msgstr "Числа только если посещений больше чем"
 
 #. point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Показазывать две цифры после запятой для малой потери очков"
+msgstr "Показывать две цифры после запятой для малой потери очков"
 
 msgid "cache analysis to sgf"
 msgstr "Кэшировать анализ в SGF"
@@ -814,8 +814,8 @@ msgstr "Пароль"
 msgid "contribute:maxgames:hint"
 msgstr ""
 "Оптимальное значение numSearchThreads, около 8 для GPU среднего уровня. Для "
-"коротких сессий обучения лучше установить поменьше, т.к. наполовину "
-"сыгранные игры не представляют интереса."
+"коротких сессий обучения лучше установить поменьше, т.к. незаконченные игры "
+"не загружаются."
 
 msgid "contribute:ownership:hint"
 msgstr "Слегка замедляет тренировку, но позволяет визуализацию."
@@ -864,7 +864,7 @@ msgstr ""
 "Генерация позиции с помощью игры AI с самим собой: Ход {move}/{until_move}."
 
 msgid "editgame"
-msgstr "Редактировать игры"
+msgstr "Редактировать игру"
 
 msgid "new zealand"
 msgstr "Новозеландские"
@@ -890,7 +890,9 @@ msgstr ""
 
 msgid "change engine suggestion"
 msgstr ""
-"Во-первых, попробуйте скачать и выбрать другую версию движка KataGo {link}"
+"Сначала нажмите «Повторить», чтобы перезапустить движок. Если это не "
+"помогло, попробуйте скачать версии KataGo и выбрать другой исполняемый файл "
+"в {link} ."
 
 msgid "link_here"
 msgstr "Нажмите здесь"
@@ -920,7 +922,7 @@ msgid "Midgame"
 msgstr "Середина игры"
 
 msgid "stat:meanpointloss"
-msgstr "Главные потери очков"
+msgstr "Средняя потеря очков"
 
 msgid "stat:aitop5"
 msgstr ""
@@ -930,7 +932,7 @@ msgstr ""
 msgid "stat:aitopmove"
 msgstr ""
 "% совпадения с\n"
-"идеальными ходами ИИ"
+"лучшим ходом ИИ"
 
 msgid "Entire Game"
 msgstr "Полная игра"

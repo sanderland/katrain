@@ -907,8 +907,10 @@ msgstr "評価レポート"
 msgid "engine died popup opening message"
 msgstr ""
 "おおっと！KataGoエンジンが起動に失敗したか、クラッシュしました。\n"
-" エラー内容：{error_message}\n"
-"エラーコード {code}"
+"\n"
+"エラー内容：[color=#CC2222]{error_message}[/color]\n"
+"\n"
+"エラーコード：[color=#CC2222]{code}[/color]"
 
 #. Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"

@@ -200,8 +200,8 @@ msgstr "Gain"
 #. SGF and move comment messages
 msgid "SGF start message"
 msgstr ""
-"Les coup préférés de KataGo sont marqué d'un X. En comparaison, ceux perdant"
-" moins de 0.5 point sont marqués d'un carré"
+"Les coups préférés de KataGo sont marqués d'un X. En comparaison, ceux "
+"perdant moins de 0.5 point sont marqués d'un carré"
 
 msgid "Info:score"
 msgstr "Score : {score}"
@@ -482,7 +482,7 @@ msgstr ""
 "Contenu du presse-papier : {contents}…"
 
 msgid "Failed to load SGF"
-msgstr "Impossible de charger le SGF: {error}"
+msgstr "Impossible de charger le SGF : {error}"
 
 msgid "Kata model not found"
 msgstr ""
@@ -809,7 +809,7 @@ msgid "analysis:region"
 msgstr "Définir la zone d'intérêt"
 
 msgid "Toggle Collapse Branch"
-msgstr "Nouer/Dénouer la branche"
+msgstr "Replier/Déplier la branche"
 
 msgid "analysis:playtoend"
 msgstr "Simuler la fin de partie"
@@ -826,7 +826,7 @@ msgstr ""
 "Vous pouvez quitter ce mode en redémarrant KaTrain."
 
 msgid "menu:distributed"
-msgstr "Entraîner Katago"
+msgstr "Entraîner KataGo"
 
 msgid "contribute:register"
 msgstr "Créer le compte"
@@ -855,7 +855,7 @@ msgstr ""
 msgid "contribute:ownership:hint"
 msgstr ""
 "Cette option permet de visualiser les prévisions territoriales, mais "
-"ralentit légèrement l'entrainement."
+"ralentit légèrement l'entraînement."
 
 msgid "contribute:ownership"
 msgstr "Prévisions territoriales"

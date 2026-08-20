@@ -861,7 +861,7 @@ msgstr ""
 "\n"
 "오류: [color=#CC2222]{error_message}[/color]\n"
 "\n"
-"오류 코드:: [color=#CC2222]{code}[/color]."
+"오류 코드: [color=#CC2222]{code}[/color]."
 
 msgid "go to engine help page"
 msgstr "아직 문제를 겪고 있으시다면, {link}에서 최신 문제 해결법을 찾아보십시오."

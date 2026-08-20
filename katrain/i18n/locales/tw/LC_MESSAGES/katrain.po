@@ -38,10 +38,10 @@ msgid "menu:lang"
 msgstr "語言"
 
 msgid "menu:support"
-msgstr "幫助"
+msgstr "參與貢獻"
 
 msgid "menu:manual"
-msgstr "使用手册"
+msgstr "使用手冊"
 
 #. player options in the setup and on the right
 msgid "player:type"
@@ -83,13 +83,13 @@ msgstr ""
 
 msgid "analysis:policy"
 msgstr ""
-"自定義下\n"
-"最佳選點"
+"直覺\n"
+"選點"
 
 msgid "analysis:territory"
 msgstr ""
 "形勢\n"
-"判断"
+"判斷"
 
 #. analysis menu items
 msgid "analysis:extra"
@@ -469,7 +469,7 @@ msgid "engine:katago"
 msgstr "KataGo執行檔路徑"
 
 msgid "engine:katago:hint"
-msgstr "留白以使用其他執行檔案"
+msgstr "留空以使用內建執行檔"
 
 msgid "engine:model"
 msgstr "KataGo模型檔路徑"
@@ -541,7 +541,7 @@ msgstr "複製SGF到剪貼簿"
 msgid "Failed to import from clipboard"
 msgstr ""
 "從剪貼簿匯入對局失敗: {error}\n"
-"剪貼簿内容: {contents}..."
+"剪貼簿內容: {contents}..."
 
 msgid "Failed to load SGF"
 msgstr "載入SGF失敗: {error}"
@@ -564,7 +564,7 @@ msgid "Starting Kata failed"
 msgstr "使用指令 '{command}' 啟動KataGo發生錯誤 {error}。"
 
 msgid "Engine died unexpectedly"
-msgstr "引擎意外崩潰沒有輸出，可能為記憶體不足導致: {error}"
+msgstr "引擎意外終止且沒有任何輸出：{error}"
 
 msgid "Engine missing DLL"
 msgstr "遺失DLL因此無法啟動KataGo。請參考KataGo文件中的所需事項，或嘗試單獨啟動KataGo來取得詳細資訊。"
@@ -606,7 +606,7 @@ msgid "ai:jigo"
 msgstr "Kata控目"
 
 msgid "aihelp:jigo"
-msgstr "在沒有更多限制的情況下，嘗試按指定目數(預設0.5)赢棋。"
+msgstr "在沒有更多限制的情況下，嘗試按指定目數(預設0.5)贏棋。"
 
 msgid "ai:scoreloss"
 msgstr "目數損失"
@@ -712,7 +712,7 @@ msgstr "每步棋的計算深度"
 
 #. on move tree editing
 msgid "Delete Node"
-msgstr "刪除模式"
+msgstr "刪除節點"
 
 #. on move tree editing
 msgid "Toggle Collapse Branch"
@@ -791,7 +791,7 @@ msgstr "帳號"
 
 #. hint for ownership
 msgid "contribute:ownership:hint"
-msgstr "稍微降低訓練速度，但允許所有權可視化。"
+msgstr "稍微降低訓練速度，但可以顯示領地歸屬。"
 
 #. contribute settings popup
 msgid "contribute settings title"
@@ -816,14 +816,14 @@ msgstr "登入資訊 (katagotraining.org)"
 
 #. hint for max games
 msgid "contribute:maxgames:hint"
-msgstr "最好等於您的最佳化numSearchThreads，中階GPU約為8。可以稍微設的低一點，來縮短執行時間，因為未完成的對局將不會被上傳。"
+msgstr "最好等於您的最佳化numSearchThreads，中階GPU約為8。可以稍微設得低一點，來縮短執行時間，因為未完成的對局將不會被上傳。"
 
 #. description for input
 msgid "contribute:maxgames"
 msgstr "同時對局數"
 
 msgid "contribute:ownership"
-msgstr "啟用所有權"
+msgstr "啟用領地顯示"
 
 #. description
 msgid "contribute:movespeed"
@@ -887,9 +887,9 @@ msgid "engine died popup opening message"
 msgstr ""
 "KataGo引擎啟動失敗或崩潰。\n"
 "\n"
-"錯誤：{error_message}\n"
+"錯誤：[color=#CC2222]{error_message}[/color]\n"
 "\n"
-"錯誤碼：{code}."
+"錯誤代碼：[color=#CC2222]{code}[/color]。"
 
 #. Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
@@ -909,7 +909,7 @@ msgstr "KataGo設定指南"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "僅分析錯誤操作"
+msgstr "僅分析失誤"
 
 #. statistic in performance report
 msgid "stat:accuracy"
@@ -972,7 +972,7 @@ msgstr "允許打劫？"
 
 #. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
-msgstr "詰碁框"
+msgstr "死活題外框"
 
 msgid "from move"
 msgstr "起始手數"
