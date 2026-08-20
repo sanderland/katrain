@@ -141,7 +141,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.contribute_popup = None
 
         self.pondering = False
-        self.show_move_num = self.config("trainer/show_move_numbers")
+        self.show_move_num = self.config("trainer/show_move_numbers", False)
 
         self.animate_contributing = False
         self.message_queue = Queue()
