@@ -800,7 +800,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.move_tree.delete_selected_node()
         elif keycode[1] == Theme.KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE and not ctrl_pressed:
             self.controls.move_tree.toggle_selected_node_collapse()
-        elif keycode[1] == Theme.KEY_RESET_ANALYSIS and ctrl_pressed:
+        elif keycode[1] == Theme.KEY_RESET_ANALYSIS and "ctrl" in modifiers:
+            # literal ctrl, not ctrl_pressed: cmd-h is the macOS hide-application shortcut
             self("reset-analysis")
         elif keycode[1] == Theme.KEY_NEW_GAME and ctrl_pressed:
             self("new-game-popup")

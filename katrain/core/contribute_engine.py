@@ -1,6 +1,5 @@
 import json
 import os
-import shlex
 import shutil
 import subprocess
 import threading
@@ -74,9 +73,18 @@ class KataGoContributeEngine(BaseEngine):
             "homeDataDir": os.path.expanduser(DATA_FOLDER),
         }
         settings = {f"{k}={v}" for k, v in settings_dict.items()}
-        self.command = shlex.split(
-            f'"{exe}" contribute -config "{cfg}" -base-dir "{base_dir}" -override-config {shlex.quote(",".join(settings))}'
-        )
+        # Built as a list, so paths containing spaces or quotes survive as-is instead of
+        # being quoted into a string and re-parsed by shlex.
+        self.command = [
+            exe,
+            "contribute",
+            "-config",
+            cfg,
+            "-base-dir",
+            base_dir,
+            "-override-config",
+            ",".join(settings),
+        ]
         self.start()
 
     @staticmethod
