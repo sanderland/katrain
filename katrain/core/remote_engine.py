@@ -78,22 +78,9 @@ class RemoteKataGoEngine(KataGoEngine):
         self.shell = False
         self.command = "<remote websocket>"
 
-        self.remote_url = (config.get("remote_url") or "").strip()
-        if not self.remote_url:
-            self.on_error(
-                i18n._("Remote KataGo URL is empty"),
-                "REMOTE-URL-MISSING",
-                allow_popup=False,
-            )
-            return
-        if not self.remote_url.startswith(("ws://", "wss://")):
-            self.on_error(
-                i18n._("Remote KataGo URL must start with ws:// or wss://"),
-                "REMOTE-URL-INVALID",
-                allow_popup=False,
-            )
-            return
-
+        # Assigned before the URL checks below so the object is always
+        # internally consistent, even if those checks return early:
+        # check_alive (polled every GUI frame) reads these unconditionally.
         self.ws: WebSocket | None = None
         self.ws_send_lock = threading.Lock()
         self.analysis_thread = None
@@ -106,6 +93,24 @@ class RemoteKataGoEngine(KataGoEngine):
         # were started with so a stale thread blocked on a dead socket
         # can't trigger a reconnect that would tear down a newer one.
         self._conn_id = 0
+
+        self.remote_url = (config.get("remote_url") or "").strip()
+        if not self.remote_url:
+            self.on_error(
+                i18n._("Remote KataGo URL is empty"),
+                "REMOTE-URL-MISSING",
+                allow_popup=False,
+            )
+            self._reported_dead = True  # already reported above; check_alive must not report again
+            return
+        if not self.remote_url.startswith(("ws://", "wss://")):
+            self.on_error(
+                i18n._("Remote KataGo URL must start with ws:// or wss://"),
+                "REMOTE-URL-INVALID",
+                allow_popup=False,
+            )
+            self._reported_dead = True  # already reported above; check_alive must not report again
+            return
 
         self.start()
 

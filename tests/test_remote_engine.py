@@ -197,6 +197,25 @@ def test_check_alive_polling_during_reconnect_does_not_suppress_popup(monkeypatc
         engine.shutdown()
 
 
+@pytest.mark.parametrize(
+    "remote_url",
+    ["", "http://test"],
+    ids=["empty-url", "non-ws-url"],
+)
+def test_check_alive_on_invalid_url_returns_false_without_raising(remote_url):
+    # Regression test for #842: the two early returns in __init__ (empty
+    # remote_url, or a URL not starting with ws://wss://) used to leave the
+    # object half-initialized, so check_alive (polled every GUI frame) raised
+    # AttributeError instead of just reporting the engine as not alive.
+    katrain = FakeKatrain()
+    engine = RemoteKataGoEngine(katrain, {"remote_url": remote_url, "backend": "remote", "allow_recovery": True})
+    assert engine.check_alive() is False
+    # The config error was already reported via on_error; check_alive must
+    # not additionally fire the recovery popup.
+    assert engine.check_alive(exception_if_dead=True, maybe_open_recovery=True) is False
+    assert popup_codes(katrain) == []
+
+
 def test_new_game_clears_resend_backlog(monkeypatch, fast_backoff):
     created = []
 

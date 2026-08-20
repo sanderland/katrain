@@ -1,7 +1,6 @@
 import copy
 import json
 import os
-import platform
 import queue
 import subprocess
 import threading
@@ -86,7 +85,7 @@ class BaseEngine:  # some common elements between analysis and contribute engine
                 exe = "katrain/KataGo/katago"
             else:
                 exe = find_package_resource("katrain/KataGo/katago-osx")  # github actions built
-                if not os.path.isfile(exe) or "arm64" in platform.version().lower():
+                if not os.path.isfile(exe):
                     exe = "katago"  # e.g. MacOS after brewing
         if exe.startswith("katrain"):
             exe = find_package_resource(exe)

@@ -55,6 +55,21 @@ class TestEngineErrors:
         assert engine.get_engine_path("/nonexistent/dir/katago-does-not-exist") is None
         assert errors and errors[0][1] == "KATAGO-EXE"
 
+    def test_bundled_macos_exe_used_on_apple_silicon(self, katrain, monkeypatch, tmp_path):
+        """Regression test for #843: a bundled katago-osx that exists on disk
+        must be used on Apple Silicon, not discarded in favor of PATH lookup
+        just because the kernel version string contains "arm64"."""
+        bundled = tmp_path / "katago-osx"
+        bundled.write_bytes(b"")
+
+        import katrain.core.engine as engine_module
+
+        monkeypatch.setattr(engine_module, "kivy_platform", "macosx")
+        monkeypatch.setattr(engine_module, "find_package_resource", lambda path: str(bundled))
+
+        engine = BaseEngine(katrain, {})
+        assert engine.get_engine_path("") == str(bundled)
+
 
 class TestEngineSharedState:
     def test_on_new_game_clears_queries_in_place(self, katrain):
