@@ -1160,3 +1160,7 @@ msgstr "Özel komut"
 
 msgid "engine:backend:note"
 msgstr "Seçilen sekme, kullanılacak motoru belirler."
+
+#. TODO
+msgid "show move numbers"
+msgstr "Show move numbers on the board (toggle with 'm')"

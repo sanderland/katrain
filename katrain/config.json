@@ -89,6 +89,7 @@
         "save_marks": false,
         "low_visits": 25,
         "eval_on_show_last": 3,
+        "show_move_numbers": false,
         "top_moves_show": "top_move_delta_score",
         "top_moves_show_secondary": "top_move_visits",
         "eval_show_ai": true,

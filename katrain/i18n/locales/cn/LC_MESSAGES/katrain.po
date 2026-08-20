@@ -1052,3 +1052,7 @@ msgstr "自定义命令"
 
 msgid "engine:backend:note"
 msgstr "所选标签页决定使用的引擎。"
+
+#. TODO
+msgid "show move numbers"
+msgstr "Show move numbers on the board (toggle with 'm')"

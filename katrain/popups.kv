@@ -602,7 +602,7 @@
         size_hint: 1, 5
         GridLayout:
             cols: 2
-            rows: 7
+            rows: 8
             padding: 4
             size_hint: 0.95, 1
             DescriptionLabel:
@@ -646,6 +646,13 @@
             AnchorLayout:
                 LabelledIntInput:
                     input_property: "trainer/eval_on_show_last"
+            DescriptionLabel:
+                font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
+                text: i18n._("show move numbers")
+                line_height: 0.75
+            AnchorLayout:
+                LabelledCheckBox:
+                    input_property: "trainer/show_move_numbers"
             DescriptionLabel:
                 font_size: sp(Theme.DESC_FONT_SIZE) * 0.8
                 text: i18n._("show ai dots")

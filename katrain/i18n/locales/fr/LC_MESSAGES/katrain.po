@@ -1094,3 +1094,7 @@ msgstr "Commande personnalisée"
 
 msgid "engine:backend:note"
 msgstr "L'onglet sélectionné détermine le moteur utilisé."
+
+#. TODO
+msgid "show move numbers"
+msgstr "Show move numbers on the board (toggle with 'm')"

@@ -531,6 +531,9 @@ msgstr "Save in SGF"
 msgid "show last n dots"
 msgstr "Show dots for the last <this many> moves"
 
+msgid "show move numbers"
+msgstr "Show move numbers on the board (toggle with 'm')"
+
 msgid "show ai dots"
 msgstr "Show dots/SGF comments for AI players"
 
