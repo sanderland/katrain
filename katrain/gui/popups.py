@@ -377,6 +377,9 @@ class ConfigTeacherPopup(QuickConfigGui):
 
     def update_config(self, save_to_file=True, close_popup=True):
         super().update_config(save_to_file=save_to_file, close_popup=close_popup)
+        # 'm' toggles move numbers live, so the setting is a starting point rather than
+        # the source of truth -- re-sync it here or the checkbox appears to do nothing.
+        self.katrain.show_move_num = self.katrain.config("trainer/show_move_numbers")
         self.build_and_set_properties()
 
 

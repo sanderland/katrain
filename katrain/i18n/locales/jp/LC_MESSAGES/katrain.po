@@ -1097,3 +1097,7 @@ msgstr "カスタムコマンド"
 
 msgid "engine:backend:note"
 msgstr "選択したタブが使用するエンジンを決定します。"
+
+#. TODO
+msgid "show move numbers"
+msgstr "Show move numbers on the board (toggle with 'm')"

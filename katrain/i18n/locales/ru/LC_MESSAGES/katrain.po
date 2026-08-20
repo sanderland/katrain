@@ -1062,3 +1062,7 @@ msgstr "Remote engine"
 #. TODO
 msgid "engine:tab:local"
 msgstr "Local engine"
+
+#. TODO
+msgid "show move numbers"
+msgstr "Show move numbers on the board (toggle with 'm')"

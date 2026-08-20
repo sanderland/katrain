@@ -1144,3 +1144,7 @@ msgstr "Власна команда"
 
 msgid "engine:backend:note"
 msgstr "Вибрана вкладка визначає використовуваний рушій."
+
+#. TODO
+msgid "show move numbers"
+msgstr "Show move numbers on the board (toggle with 'm')"

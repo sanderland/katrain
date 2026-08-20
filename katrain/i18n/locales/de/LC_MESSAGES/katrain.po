@@ -1125,3 +1125,7 @@ msgstr "Eigener Befehl"
 
 msgid "engine:backend:note"
 msgstr "Der ausgewählte Reiter bestimmt die genutzte Engine."
+
+#. TODO
+msgid "show move numbers"
+msgstr "Show move numbers on the board (toggle with 'm')"
