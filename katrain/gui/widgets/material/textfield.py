@@ -72,8 +72,10 @@ Builder.load_string(
         Rectangle:
             pos: self._cursor_visual_pos
             size: self.cursor_width, -self._cursor_visual_height
-        Color:  # color the text itself is drawn in
-            rgba: self.disabled_foreground_color if self.disabled else self.foreground_color
+        Color:  # colour the text itself is drawn in
+            rgba:
+                (self.disabled_foreground_color if self.disabled
+                else (root.error_color if root.error else self.foreground_color))
 """
 )
 
