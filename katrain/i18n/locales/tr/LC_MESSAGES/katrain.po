@@ -1160,3 +1160,7 @@ msgstr "Özel komut"
 
 msgid "engine:backend:note"
 msgstr "Seçilen sekme, kullanılacak motoru belirler."
+
+#. TODO
+msgid "general:anim_pv_moves"
+msgstr "Moves to show when animating a sequence (0 to not animate)"

@@ -28,6 +28,7 @@
         "sgf_load": "~/Downloads",
         "sgf_save": "./sgfout",
         "anim_pv_time": 0.5,
+        "anim_pv_moves": 100,
         "debug_level": 0,
         "lang": "en",
         "version": "1.19.0",

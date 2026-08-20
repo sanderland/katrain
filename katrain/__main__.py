@@ -714,7 +714,6 @@ class KaTrainGui(Screen, KaTrainBase):
                 (Theme.KEY_ANALYZE_EXTRA_SWEEP, ("analyze-extra", "sweep")),
                 (Theme.KEY_ANALYZE_EXTRA_ALTERNATIVE, ("analyze-extra", "alternative")),
                 (Theme.KEY_SELECT_BOX, ("select-box",)),
-                (Theme.KEY_RESET_ANALYSIS, ("reset-analysis",)),
                 (Theme.KEY_INSERT_MODE, ("insert-mode",)),
                 (Theme.KEY_PASS, ("play", None)),
                 (Theme.KEY_SELFPLAY_TO_END, ("selfplay-setup", "end", None)),
@@ -801,6 +800,8 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.move_tree.delete_selected_node()
         elif keycode[1] == Theme.KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE and not ctrl_pressed:
             self.controls.move_tree.toggle_selected_node_collapse()
+        elif keycode[1] == Theme.KEY_RESET_ANALYSIS and ctrl_pressed:
+            self("reset-analysis")
         elif keycode[1] == Theme.KEY_NEW_GAME and ctrl_pressed:
             self("new-game-popup")
         elif keycode[1] == Theme.KEY_LOAD_GAME and ctrl_pressed:
