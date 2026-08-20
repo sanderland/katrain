@@ -1039,9 +1039,10 @@ msgstr "to move"
 msgid "limit to moves"
 msgstr "Limit to moves"
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr ""
+"(Wird im Klartext gespeichert, verwenden Sie dieses Passwort nirgendwo "
+"sonst)"
 
 #. TODO
 msgid "ai:human"
@@ -1065,33 +1066,30 @@ msgstr ""
 "ticked, the model will play according to a post-2016 AlphaZero opening "
 "style."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "Pfad zum menschenähnlichen Modell"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "KataGo-WebSocket-URL"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr ""
+"Leer lassen, um eine lokale KataGo-Engine zu verwenden. ws:// oder wss:// "
+"verwenden."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "Die URL der entfernten KataGo-Engine ist leer"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr ""
+"Die URL der entfernten KataGo-Engine muss mit ws:// oder wss:// beginnen"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr ""
+"Verbindung zur entfernten KataGo-Engine unter {url} fehlgeschlagen: {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "Verbindung zur entfernten KataGo-Engine getrennt: {error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1126,10 +1124,9 @@ msgstr "Eigener Befehl"
 msgid "engine:backend:note"
 msgstr "Der ausgewählte Reiter bestimmt die genutzte Engine."
 
-#. TODO
 msgid "show move numbers"
-msgstr "Show move numbers on the board (toggle with 'm')"
+msgstr "Zugnummern auf dem Brett anzeigen (mit 'm' umschalten)"
 
-#. TODO
 msgid "general:anim_pv_moves"
-msgstr "Moves to show when animating a sequence (0 to not animate)"
+msgstr ""
+"Anzahl der Züge bei der Animation einer Zugfolge (0 = keine Animation)"

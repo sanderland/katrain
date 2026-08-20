@@ -973,9 +973,8 @@ msgstr "Только для ходов"
 msgid "move range analysis"
 msgstr "Анализ ходов от {start_move} до {end_move} с {visits} посещениями"
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr "(Хранится в открытом виде, не используйте этот пароль где-либо ещё)"
 
 #. TODO
 msgid "ai:human"
@@ -999,33 +998,28 @@ msgstr ""
 "ticked, the model will play according to a post-2016 AlphaZero opening "
 "style."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "Путь к «человекоподобной» модели"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "WebSocket-адрес KataGo"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr ""
+"Оставьте пустым, чтобы использовать локальный движок KataGo. Используйте "
+"ws:// или wss://."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "Адрес удалённого KataGo не указан"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Адрес удалённого KataGo должен начинаться с ws:// или wss://"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr "Не удалось подключиться к удалённому KataGo по адресу {url}: {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "Удалённый движок KataGo отключён: {error}"
 
 #. TODO - Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1063,10 +1057,10 @@ msgstr "Remote engine"
 msgid "engine:tab:local"
 msgstr "Local engine"
 
-#. TODO
 msgid "show move numbers"
-msgstr "Show move numbers on the board (toggle with 'm')"
+msgstr "Показывать номера ходов на доске (переключение клавишей «m»)"
 
-#. TODO
 msgid "general:anim_pv_moves"
-msgstr "Moves to show when animating a sequence (0 to not animate)"
+msgstr ""
+"Сколько ходов показывать при анимации последовательности (0 — не "
+"анимировать)"

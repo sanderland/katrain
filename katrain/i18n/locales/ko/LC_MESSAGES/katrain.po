@@ -1012,10 +1012,8 @@ msgstr "사용자 지정 명령"
 msgid "engine:backend:note"
 msgstr "선택한 탭이 사용할 엔진을 결정합니다."
 
-#. TODO
 msgid "show move numbers"
-msgstr "Show move numbers on the board (toggle with 'm')"
+msgstr "바둑판에 수순 표시 ('m' 키로 전환)"
 
-#. TODO
 msgid "general:anim_pv_moves"
-msgstr "Moves to show when animating a sequence (0 to not animate)"
+msgstr "수순 애니메이션에 표시할 수 (0이면 표시하지 않음)"

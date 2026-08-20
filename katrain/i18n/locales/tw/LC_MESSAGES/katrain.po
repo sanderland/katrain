@@ -179,7 +179,7 @@ msgstr "悔棋"
 
 #. tabs and labels on the right panel
 msgid "tab:score"
-msgstr "分數"
+msgstr "目差"
 
 msgid "tab:winrate"
 msgstr "勝率"
@@ -201,7 +201,7 @@ msgid "tab:notes"
 msgstr "註記"
 
 msgid "closedlabel:scoregraph"
-msgstr "分數圖"
+msgstr "目差圖"
 
 #. on the graph
 msgid "Jigo"
@@ -242,7 +242,7 @@ msgid "stats:winrate"
 msgstr "勝率"
 
 msgid "stats:score"
-msgstr "預估分數"
+msgstr "預估目差"
 
 msgid "stats:pointslost"
 msgstr "目數損失"
@@ -256,7 +256,7 @@ msgid "SGF start message"
 msgstr " 'X' 是KataGo的最佳選點，正方形為損失少於0.5目的選點"
 
 msgid "Info:score"
-msgstr "分數: {score}"
+msgstr "目差: {score}"
 
 msgid "Info:winrate"
 msgstr "勝率: {winrate}"
@@ -610,7 +610,7 @@ msgid "aihelp:jigo"
 msgstr "在沒有更多限制的情況下，嘗試按指定目數(預設0.5)赢棋。"
 
 msgid "ai:scoreloss"
-msgstr "分數損失"
+msgstr "目數損失"
 
 msgid "aihelp:scoreloss"
 msgstr "傾向選擇低機率損失較多目數的落點。在較高計算深度次數下，棋力可能更不穩定/更弱。"
@@ -741,11 +741,11 @@ msgstr "最佳選點統計"
 
 #. Dropdown menu option
 msgid "top_move_delta_score"
-msgstr "分數波動"
+msgstr "目差變化"
 
 #. Dropdown menu option
 msgid "top_move_score"
-msgstr "分數"
+msgstr "目差"
 
 #. Dropdown menu option
 msgid "top_move_delta_winrate"
@@ -992,9 +992,8 @@ msgstr "to move"
 msgid "limit to moves"
 msgstr "Limit to moves"
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr "（以純文字儲存，請勿在其他地方重複使用此密碼）"
 
 #. TODO
 msgid "ai:human"
@@ -1018,33 +1017,26 @@ msgstr ""
 "ticked, the model will play according to a post-2016 AlphaZero opening "
 "style."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "擬人模型路徑"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "KataGo WebSocket 網址"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr "留空則使用本機 KataGo 引擎。請使用 ws:// 或 wss://。"
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "遠端 KataGo 網址為空"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "遠端 KataGo 網址必須以 ws:// 或 wss:// 開頭"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr "連線至遠端 KataGo {url} 失敗：{error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "遠端 KataGo 引擎已中斷連線：{error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1076,10 +1068,8 @@ msgstr "自訂命令"
 msgid "engine:backend:note"
 msgstr "所選分頁決定使用的引擎。"
 
-#. TODO
 msgid "show move numbers"
-msgstr "Show move numbers on the board (toggle with 'm')"
+msgstr "在棋盤上顯示手數（按 'm' 鍵切換）"
 
-#. TODO
 msgid "general:anim_pv_moves"
-msgstr "Moves to show when animating a sequence (0 to not animate)"
+msgstr "演示變化時顯示的手數（0 表示不演示）"

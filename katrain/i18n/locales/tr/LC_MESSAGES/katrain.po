@@ -1074,9 +1074,9 @@ msgstr "to move"
 msgid "limit to moves"
 msgstr "Limit to moves"
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr ""
+"(Düz metin olarak saklanır, bu parolayı başka hiçbir yerde kullanmayın)"
 
 #. TODO
 msgid "ai:human"
@@ -1100,33 +1100,28 @@ msgstr ""
 "ticked, the model will play according to a post-2016 AlphaZero opening "
 "style."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "İnsan benzeri model dosyasının yolu"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "KataGo WebSocket adresi"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr ""
+"Yerel bir KataGo motoru kullanmak için boş bırakın. ws:// veya wss:// "
+"kullanın."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "Uzak KataGo adresi boş"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Uzak KataGo adresi ws:// veya wss:// ile başlamalı"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr "{url} adresindeki uzak KataGo'ya bağlanılamadı: {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "Uzak KataGo motoruyla bağlantı kesildi: {error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1161,10 +1156,9 @@ msgstr "Özel komut"
 msgid "engine:backend:note"
 msgstr "Seçilen sekme, kullanılacak motoru belirler."
 
-#. TODO
 msgid "show move numbers"
-msgstr "Show move numbers on the board (toggle with 'm')"
+msgstr "Tahtada hamle numaralarını göster ('m' ile aç/kapat)"
 
-#. TODO
 msgid "general:anim_pv_moves"
-msgstr "Moves to show when animating a sequence (0 to not animate)"
+msgstr ""
+"Bir varyant canlandırılırken gösterilecek hamle sayısı (0: canlandırma yok)"

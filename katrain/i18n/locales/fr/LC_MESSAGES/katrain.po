@@ -1008,9 +1008,8 @@ msgstr ""
 "Analyse de partie approfondie du coup {start_move} au coup {end_move} "
 "({visits} visites/coup)."
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr "(Stocké en clair, ne réutilisez ce mot de passe nulle part ailleurs)"
 
 #. TODO
 msgid "ai:human"
@@ -1034,33 +1033,27 @@ msgstr ""
 "ticked, the model will play according to a post-2016 AlphaZero opening "
 "style."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "Chemin du modèle imitant le jeu humain"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "URL WebSocket de KataGo"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr ""
+"Laisser vide pour utiliser un moteur KataGo local. Utiliser ws:// ou wss://."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "L'URL du KataGo distant est vide"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "L'URL du KataGo distant doit commencer par ws:// ou wss://"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr "Échec de la connexion au KataGo distant à {url} : {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "Moteur KataGo distant déconnecté : {error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1095,10 +1088,10 @@ msgstr "Commande personnalisée"
 msgid "engine:backend:note"
 msgstr "L'onglet sélectionné détermine le moteur utilisé."
 
-#. TODO
 msgid "show move numbers"
-msgstr "Show move numbers on the board (toggle with 'm')"
+msgstr "Afficher les numéros de coups sur le goban (touche 'm')"
 
-#. TODO
 msgid "general:anim_pv_moves"
-msgstr "Moves to show when animating a sequence (0 to not animate)"
+msgstr ""
+"Nombre de coups affichés lors de l'animation d'une séquence (0 pour "
+"désactiver)"

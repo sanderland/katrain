@@ -1084,33 +1084,29 @@ msgstr ""
 "ticked, the model will play according to a post-2016 AlphaZero opening "
 "style."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "Шлях до «людиноподібної» моделі"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "WebSocket-адреса KataGo"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr ""
+"Залиште порожнім, щоб використовувати локальний рушій KataGo. Використовуйте"
+" ws:// або wss://."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "Адресу віддаленого KataGo не вказано"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Адреса віддаленого KataGo має починатися з ws:// або wss://"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr ""
+"Не вдалося підключитися до віддаленого KataGo за адресою {url}: {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "Віддалений рушій KataGo від'єднано: {error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1145,10 +1141,9 @@ msgstr "Власна команда"
 msgid "engine:backend:note"
 msgstr "Вибрана вкладка визначає використовуваний рушій."
 
-#. TODO
 msgid "show move numbers"
-msgstr "Show move numbers on the board (toggle with 'm')"
+msgstr "Показувати номери ходів на дошці (перемикання клавішею «m»)"
 
-#. TODO
 msgid "general:anim_pv_moves"
-msgstr "Moves to show when animating a sequence (0 to not animate)"
+msgstr ""
+"Скільки ходів показувати під час анімації послідовності (0 — не анімувати)"
