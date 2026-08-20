@@ -1129,3 +1129,7 @@ msgstr "Der ausgewählte Reiter bestimmt die genutzte Engine."
 #. TODO
 msgid "show move numbers"
 msgstr "Show move numbers on the board (toggle with 'm')"
+
+#. TODO
+msgid "general:anim_pv_moves"
+msgstr "Moves to show when animating a sequence (0 to not animate)"
