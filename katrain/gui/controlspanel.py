@@ -3,7 +3,7 @@ import time
 from kivy.clock import Clock
 from kivy.properties import ObjectProperty, OptionProperty
 from kivy.uix.boxlayout import BoxLayout
-from kivymd.uix.floatlayout import MDFloatLayout
+from kivy.uix.floatlayout import FloatLayout
 
 from katrain.core.constants import (
     AI_DEFAULT,
@@ -15,12 +15,12 @@ from katrain.core.constants import (
     STATUS_ERROR,
 )
 from katrain.core.lang import rank_label
-from katrain.gui.kivyutils import AnalysisToggle, CollapsablePanel
 from katrain.gui.sound import play_sound, stop_sound
 from katrain.gui.theme import Theme
+from katrain.gui.widgets.panels import AnalysisToggle, CollapsablePanel
 
 
-class PlayAnalyzeSelect(MDFloatLayout):
+class PlayAnalyzeSelect(FloatLayout):
     katrain = ObjectProperty(None)
     mode = OptionProperty(MODE_PLAY, options=[MODE_PLAY, MODE_ANALYZE])
 

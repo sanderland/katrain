@@ -46,6 +46,13 @@ class Theme:
     MENU_ITEM_SHORTCUT_COLOR = LIGHT_GREY
     PLAY_ANALYZE_TAB_COLOR = YELLOW
     INPUT_FONT_COLOR = WHITE
+    INPUT_LINE_COLOR = [1, 1, 1, 0.12]  # resting underline of a text field
+    INPUT_HINT_COLOR = [1, 1, 1, 0.5]  # hint and helper text of a text field
+    INPUT_ERROR_COLOR = [0.84, 0, 0, 1]
+    RIPPLE_COLOR = [0.74, 0.74, 0.74, 1]
+    CHECKBOX_SELECTED_COLOR = [0.93, 0.93, 0.93, 1]
+    CHECKBOX_UNSELECTED_COLOR = [1, 1, 1, 0.7]
+    CHECKBOX_DISABLED_COLOR = [1, 1, 1, 0.12]
     MISTAKE_BUTTON_COLOR = [0.79, 0.06, 0.06, 1]
     STAT_WORSE_COLOR = [0.8, 0.4, 0.2, 1]
     STAT_BETTER_COLOR = [0.2, 0.5, 0.1, 1]

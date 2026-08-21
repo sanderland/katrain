@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from kivy.app import App
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.vertex_instructions import Line, Rectangle
 from kivy.lang import Builder
@@ -8,10 +9,10 @@ from kivy.properties import BooleanProperty, Clock, NumericProperty, ObjectPrope
 from kivy.uix.dropdown import DropDown
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.widget import Widget
-from kivymd.app import MDApp
 
-from katrain.gui.kivyutils import BackgroundMixin, draw_circle, draw_text
 from katrain.gui.theme import Theme
+from katrain.gui.widgets.base import BackgroundMixin
+from katrain.gui.widgets.drawing import draw_circle, draw_text
 
 
 class MoveTreeDropdown(DropDown):
@@ -50,7 +51,7 @@ class MoveTreeCanvas(Widget):
         self.dropdown.bind(on_dismiss=self.close_dropdown)
 
     def set_game_node(self, node):
-        katrain = MDApp.get_running_app().gui
+        katrain = App.get_running_app().gui
         katrain.game.set_current_node(node)
         katrain.update_state()
 

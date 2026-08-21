@@ -3,6 +3,7 @@ import math
 import time
 from typing import List, Optional
 
+from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics.context_instructions import Color, PopMatrix, PushMatrix, Rotate, Translate
@@ -10,11 +11,10 @@ from kivy.graphics.texture import Texture
 from kivy.graphics.vertex_instructions import Ellipse, Line, Rectangle
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, ObjectProperty
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.dropdown import DropDown
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
-from kivymd.app import MDApp
-from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.floatlayout import MDFloatLayout
 
 from katrain.core.constants import (
     MODE_PLAY,
@@ -32,9 +32,9 @@ from katrain.core.constants import (
 from katrain.core.game import Move
 from katrain.core.lang import i18n
 from katrain.core.utils import evaluation_class, format_visits, json_truncate_arrays, var_to_grid
-from katrain.gui.kivyutils import cached_texture, draw_circle, draw_text
 from katrain.gui.popups import GameReportPopup, I18NPopup, ReAnalyzeGamePopup, TsumegoFramePopup
 from katrain.gui.theme import Theme
+from katrain.gui.widgets.drawing import cached_texture, draw_circle, draw_text
 
 
 class BadukPanWidget(Widget):
@@ -1213,7 +1213,7 @@ class BadukPanWidget(Widget):
 class AnalysisDropDown(DropDown):
     def open_game_analysis_popup(self, *_args):
         analysis_popup = I18NPopup(
-            title_key="analysis:game", size=[dp(500), dp(350)], content=ReAnalyzeGamePopup(MDApp.get_running_app().gui)
+            title_key="analysis:game", size=[dp(500), dp(350)], content=ReAnalyzeGamePopup(App.get_running_app().gui)
         )
         analysis_popup.content.popup = analysis_popup
         analysis_popup.open()
@@ -1222,7 +1222,7 @@ class AnalysisDropDown(DropDown):
         report_popup = I18NPopup(
             title_key="analysis:report",
             size=[dp(750), dp(750)],
-            content=GameReportPopup(katrain=MDApp.get_running_app().gui),
+            content=GameReportPopup(katrain=App.get_running_app().gui),
         )
         report_popup.content.popup = report_popup
         report_popup.open()
@@ -1232,11 +1232,11 @@ class AnalysisDropDown(DropDown):
             title_key="analysis:tsumegoframe", size=[dp(500), dp(350)], content=TsumegoFramePopup()
         )
         analysis_popup.content.popup = analysis_popup
-        analysis_popup.content.katrain = MDApp.get_running_app().gui
+        analysis_popup.content.katrain = App.get_running_app().gui
         analysis_popup.open()
 
 
-class AnalysisControls(MDBoxLayout):
+class AnalysisControls(BoxLayout):
     dropdown = ObjectProperty(None)
     is_open = BooleanProperty(False)
 
@@ -1263,7 +1263,7 @@ class AnalysisControls(MDBoxLayout):
         self.dropdown.bind(on_dismiss=self.close_dropdown)
 
 
-class BadukPanControls(MDFloatLayout):
+class BadukPanControls(FloatLayout):
     engine_status_col = ListProperty(Theme.ENGINE_DOWN_COLOR)
     engine_status_pondering = NumericProperty(-1)
     queries_remaining = NumericProperty(0)

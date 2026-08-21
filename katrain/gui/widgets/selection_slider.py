@@ -2,6 +2,8 @@ from kivy.lang import Builder
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty
 from kivy.uix.widget import Widget
 
+from katrain.gui.widgets.base import BackgroundLabel  # noqa: F401 -- used from the kv below
+
 
 class SelectionSlider(Widget):
     __events__ = ["on_select", "on_change"]
@@ -80,56 +82,38 @@ class SelectionSlider(Widget):
 
 KV = """
 #:import i18n katrain.core.lang.i18n
+
 <SelectionSlider>:
-    id: slider
     canvas:
         Clear
         Color:
-            rgba:
-                self.track_color
-        Rectangle:
-            size:
-                (self.width - self.padding*2, dp(4))
-            pos:
-                (self.x + self.padding, self.center_y - dp(4))
+            rgba: self.track_color
+        Rectangle:  # track
+            size: self.width - self.padding * 2, dp(4)
+            pos: self.x + self.padding, self.center_y - dp(4)
         Color:
-            rgba:
-                self.thumb_color
-        Rectangle:
-            size:
-                ((self.width-self.padding*2)*self.normalized_pos, sp(4))
+            rgba: self.thumb_color
+        Rectangle:  # filled part of the track
+            size: (self.width - self.padding * 2) * self.normalized_pos, dp(4)
+            pos: self.x + self.padding, self.center_y - dp(4)
+        Ellipse:  # thumb, which grows while being dragged
+            size: [dp(24) if self.active else dp(16)] * 2
             pos:
-                (self.x + self.padding, self.center_y - dp(4))
+                (self.px_pos - (dp(12) if self.active else dp(8)),
+                self.center_y - dp(2) - (dp(12) if self.active else dp(8)))
 
-    Thumb:
-        id: thumb
-        size_hint: None, None
-        size:
-            ((dp(24), dp(24))   if root.active else (dp(16), dp(16)))
-        pos:
-            (slider.px_pos - dp(8), slider.center_y - thumb.height/2 - dp(2))
-        color:
-            root.thumb_color
-        elevation:
-            4 if root.active else 2
-
-    MDCard:
+    BackgroundLabel:  # value hint above the thumb, only shown while dragging
         id: hint_box
         size_hint: None, None
-        md_bg_color: [1, 1, 1, 1] if root.active else [0, 0, 0, 0]
-        elevation: 4 if root.active else 0
-        size:
-            (max(dp(28), label.texture_size[0]+4) , dp(28))
-        pos:
-            (slider.px_pos - dp(9), slider.center_y - hint_box.height / 2 + dp(30))
-
-        Label:
-            id: label
-            text: slider.values[slider.index][1]
-            font_size: sp(12)
-            lang_change_tracking: i18n._('') # for font
-            halign: "center"
-            color: root.thumb_color if root.active else [0, 0, 0, 0]
+        size: max(dp(28), self.texture_size[0] + 4), dp(28)
+        pos: root.px_pos - dp(9), root.center_y - self.height / 2 + dp(30)
+        background_color: [1, 1, 1, 1] if root.active else [0, 0, 0, 0]
+        background_radius: dp(3)
+        text: root.values[root.index][1]
+        font_size: sp(12)
+        lang_change_tracking: i18n._('')  # for font
+        halign: "center"
+        color: root.thumb_color if root.active else [0, 0, 0, 0]
 """
 
 Builder.load_string(KV)
