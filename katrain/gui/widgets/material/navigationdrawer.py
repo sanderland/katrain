@@ -71,6 +71,7 @@ class NavigationDrawer(BoxLayout):
 
     def __init__(self, **kwargs):
         self._swiping = False  # True while the user is dragging the drawer open or shut
+        self._open_at_touch_down = False
         super().__init__(**kwargs)
         Window.bind(on_keyboard=self._on_keyboard)
 
@@ -97,7 +98,11 @@ class NavigationDrawer(BoxLayout):
             self.parent.set_scrim_opacity(getattr(AnimationTransition, self.scrim_transition)(progress))
 
     def on_touch_down(self, touch):
-        if self.state == "close":
+        # The click that opens the drawer necessarily lands outside it, and its release must
+        # not then count as a click-outside. Only a touch that *started* while we were already
+        # open can close us, so remember that here.
+        self._open_at_touch_down = self.state == "open"
+        if not self._open_at_touch_down:
             return False  # let the swipe detection in on_touch_move deal with it
         for child in self.children[:]:
             if child.dispatch("on_touch_down", touch):
@@ -118,7 +123,7 @@ class NavigationDrawer(BoxLayout):
             self._swiping = False
             self.set_state("open" if self.open_progress > 0.5 else "close")
             return True
-        if self.state == "close":
+        if not self._open_at_touch_down:
             return False
         if self.close_on_click and not self.collide_point(touch.ox, touch.oy):
             self.set_state("close")
