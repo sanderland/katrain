@@ -9,6 +9,7 @@ import traceback
 from typing import Callable, Dict, List, Optional
 
 from kivy.utils import platform as kivy_platform
+from pysgf import Move
 
 from katrain.core.constants import (
     DATA_FOLDER,
@@ -21,7 +22,6 @@ from katrain.core.constants import (
 )
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n
-from katrain.core.sgf_parser import Move
 from katrain.core.utils import find_package_resource, json_truncate_arrays
 
 ENGINE_BACKENDS = ("local", "remote", "custom")

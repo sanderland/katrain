@@ -7,11 +7,12 @@ import time
 import traceback
 from collections import defaultdict
 
+from pysgf import Move
+
 from katrain.core.constants import DATA_FOLDER, OUTPUT_DEBUG, OUTPUT_ERROR, OUTPUT_INFO, OUTPUT_KATAGO_STDERR
 from katrain.core.engine import BaseEngine
 from katrain.core.game import BaseGame
 from katrain.core.lang import i18n
-from katrain.core.sgf_parser import Move
 from katrain.core.utils import find_package_resource
 
 

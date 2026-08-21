@@ -6,6 +6,8 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 
+from pysgf import BaseGoGame, Move
+
 from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_EXTRA_DEBUG,
@@ -28,7 +30,6 @@ from katrain.core.constants import (
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n, rank_label
-from katrain.core.sgf_parser import SGF, Move
 from katrain.core.utils import var_to_grid, weighted_selection_without_replacement
 
 
@@ -36,8 +37,8 @@ class IllegalMoveException(Exception):
     pass
 
 
-class KaTrainSGF(SGF):
-    _NODE_CLASS = GameNode
+class KaTrainSGF(BaseGoGame[GameNode]):
+    NODE_TYPE = GameNode
 
 
 class BaseGame:
