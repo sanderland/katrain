@@ -197,6 +197,19 @@ def test_check_alive_polling_during_reconnect_does_not_suppress_popup(monkeypatc
         engine.shutdown()
 
 
+@pytest.mark.parametrize(
+    "remote_url",
+    ["", "http://test"],
+    ids=["empty-url", "non-ws-url"],
+)
+def test_check_alive_on_invalid_url_returns_false_without_raising(remote_url):
+    katrain = FakeKatrain()
+    engine = RemoteKataGoEngine(katrain, {"remote_url": remote_url, "backend": "remote", "allow_recovery": True})
+    assert engine.check_alive() is False
+    assert engine.check_alive(exception_if_dead=True, maybe_open_recovery=True) is False
+    assert popup_codes(katrain) == []
+
+
 def test_new_game_clears_resend_backlog(monkeypatch, fast_backoff):
     created = []
 

@@ -19,6 +19,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.utils import platform
+from pysgf import Move
 
 from katrain.core.ai import ai_rank_estimation, game_report
 from katrain.core.constants import (
@@ -36,7 +37,6 @@ from katrain.core.constants import (
 )
 from katrain.core.engine import resolve_engine_backend
 from katrain.core.lang import i18n, rank_label
-from katrain.core.sgf_parser import Move
 from katrain.core.utils import PATHS, find_package_resource
 from katrain.gui.theme import Theme
 from katrain.gui.widgets.base import BackgroundMixin
@@ -221,7 +221,7 @@ class QuickConfigGui(BoxLayout):
                 selected = 0
                 try:
                     selected = widget.value_refs.index(value)
-                except:  # noqa: E722
+                except ValueError:
                     pass
                 widget.text = widget.values[selected]
             else:
@@ -371,6 +371,8 @@ class ConfigTeacherPopup(QuickConfigGui):
 
     def update_config(self, save_to_file=True, close_popup=True):
         super().update_config(save_to_file=save_to_file, close_popup=close_popup)
+        # The keyboard shortcut can change this without changing the config.
+        self.katrain.show_move_num = self.katrain.config("trainer/show_move_numbers")
         self.build_and_set_properties()
 
 
@@ -734,7 +736,7 @@ class BaseConfigPopup(QuickConfigGui):
                                 try:
                                     with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:
                                         fout.write(zipObj.read(f))
-                                except:  # noqa: E722 -- already there? no problem
+                                except OSError:
                                     pass
                     os.remove(tmp_path)
                 else:

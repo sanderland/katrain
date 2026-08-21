@@ -1716,23 +1716,22 @@ class HumanStyleStrategy(AIStrategy):
         return move, ai_thoughts
 
 
-def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, GameNode]:
+def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, Optional[GameNode]]:
     """Generate a move using the selected AI strategy"""
-    game.katrain.log(f"Generate AI move called with mode: {ai_mode}", OUTPUT_DEBUG)
+    # Custom configs may refer to a removed strategy.
+    strategy_class = STRATEGY_REGISTRY.get(ai_mode)
+    if strategy_class is None:
+        game.katrain.log(f"AI strategy '{ai_mode}' not found, falling back to '{AI_DEFAULT}'", OUTPUT_ERROR)
+        strategy_class = STRATEGY_REGISTRY[AI_DEFAULT]
+    strategy = strategy_class(game, ai_settings)
 
-    # Create the appropriate strategy based on mode
-
-    strategy = STRATEGY_REGISTRY[ai_mode](game, ai_settings)
-
-    # Generate the move
-    game.katrain.log(f"Generating move using {strategy.__class__.__name__}", OUTPUT_DEBUG)
+    game.katrain.log(f"Generating move using {strategy.__class__.__name__} (mode {ai_mode})", OUTPUT_DEBUG)
     move, ai_thoughts = strategy.generate_move()
 
-    # Play the move and return
-    game.katrain.log(f"Playing move {move.gtp()} and creating game node", OUTPUT_DEBUG)
-    played_node = game.play(move)
-    game.katrain.log(f"AI thoughts: {ai_thoughts}", OUTPUT_DEBUG)
+    played_node = game.play(move, expected_node=strategy.cn)
+    if played_node is None:
+        game.katrain.log(f"Discarding AI move {move.gtp()}: position changed", OUTPUT_DEBUG)
+        return move, None
     played_node.ai_thoughts = ai_thoughts
-
-    game.katrain.log(f"Move generation complete: {move.gtp()}", OUTPUT_DEBUG)
+    game.katrain.log(f"Move generation complete: {move.gtp()} -- {ai_thoughts}", OUTPUT_DEBUG)
     return move, played_node

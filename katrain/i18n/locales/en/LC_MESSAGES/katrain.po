@@ -531,6 +531,9 @@ msgstr "Save in SGF"
 msgid "show last n dots"
 msgstr "Show dots for the last <this many> moves"
 
+msgid "show move numbers"
+msgstr "Show move numbers on the board (toggle with 'm')"
+
 msgid "show ai dots"
 msgstr "Show dots/SGF comments for AI players"
 
@@ -688,6 +691,9 @@ msgstr "Use 0.02-0.1"
 
 msgid "engine:time:hint"
 msgstr "Time in seconds"
+
+msgid "general:anim_pv_moves"
+msgstr "Moves to show when animating a sequence (0 to not animate)"
 
 msgid "general:anim_pv_time"
 msgstr "Time between moves when animating a sequence"

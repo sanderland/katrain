@@ -703,6 +703,7 @@ msgstr "집 변동"
 msgid "show stats if"
 msgstr "... visit 이상일 때만 정보 보이기"
 
+#. point loss precision options
 msgid "show two digits for point loss near zero"
 msgstr "0에 가까운 손해값일때 소수점 아래 두자리 표시"
 
@@ -861,7 +862,7 @@ msgstr ""
 "\n"
 "오류: [color=#CC2222]{error_message}[/color]\n"
 "\n"
-"오류 코드:: [color=#CC2222]{code}[/color]."
+"오류 코드: [color=#CC2222]{code}[/color]."
 
 msgid "go to engine help page"
 msgstr "아직 문제를 겪고 있으시다면, {link}에서 최신 문제 해결법을 찾아보십시오."
@@ -910,6 +911,8 @@ msgstr "인공지능 최선수 일치율(%)"
 msgid "Entire Game"
 msgstr "모두"
 
+#. on move tree editing, deletes all other branches splitting off from the
+#. path UP TO this node
 msgid "Prune Branch"
 msgstr "변화 잘라내기"
 
@@ -919,24 +922,29 @@ msgstr "흉내바둑 타파"
 msgid "aihelp:antimirror"
 msgstr "흉내바둑을 타파하는 KataGo 모드입니다."
 
+#. distance of wall to existing stones
 msgid "tsumego:walldistance"
 msgstr "벽까지의 거리"
 
+#. tsumego: ko is good enough?
 msgid "tsumego:ko"
 msgstr "패로 충분?"
 
+#. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
 msgstr "묘수풀이 틀"
 
 msgid "from move"
 msgstr "번째 수부터"
 
+#. status message
 msgid "move range analysis"
 msgstr "{start_move} 번째 수부터 {end_move} 번째 수까지 {visits} visit을 하며 재분석"
 
 msgid "to move"
 msgstr "번째 수까지"
 
+#. Restrict analysis to move range
 msgid "limit to moves"
 msgstr "수를 제한"
 
@@ -1011,3 +1019,9 @@ msgstr "사용자 지정 명령"
 
 msgid "engine:backend:note"
 msgstr "선택한 탭이 사용할 엔진을 결정합니다."
+
+msgid "show move numbers"
+msgstr "바둑판에 수순 표시 ('m' 키로 전환)"
+
+msgid "general:anim_pv_moves"
+msgstr "수순 애니메이션에서 표시할 수순 수 (0이면 애니메이션 안 함)"

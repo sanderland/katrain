@@ -38,10 +38,10 @@ msgid "menu:lang"
 msgstr "語言"
 
 msgid "menu:support"
-msgstr "幫助"
+msgstr "參與貢獻"
 
 msgid "menu:manual"
-msgstr "使用手册"
+msgstr "使用手冊"
 
 #. player options in the setup and on the right
 msgid "player:type"
@@ -83,13 +83,13 @@ msgstr ""
 
 msgid "analysis:policy"
 msgstr ""
-"自定義下\n"
-"最佳選點"
+"直覺\n"
+"選點"
 
 msgid "analysis:territory"
 msgstr ""
 "形勢\n"
-"判断"
+"判斷"
 
 #. analysis menu items
 msgid "analysis:extra"
@@ -179,7 +179,7 @@ msgstr "悔棋"
 
 #. tabs and labels on the right panel
 msgid "tab:score"
-msgstr "分數"
+msgstr "目差"
 
 msgid "tab:winrate"
 msgstr "勝率"
@@ -201,7 +201,7 @@ msgid "tab:notes"
 msgstr "註記"
 
 msgid "closedlabel:scoregraph"
-msgstr "分數圖"
+msgstr "目差圖"
 
 #. on the graph
 msgid "Jigo"
@@ -242,7 +242,7 @@ msgid "stats:winrate"
 msgstr "勝率"
 
 msgid "stats:score"
-msgstr "預估分數"
+msgstr "預估目差"
 
 msgid "stats:pointslost"
 msgstr "目數損失"
@@ -256,7 +256,7 @@ msgid "SGF start message"
 msgstr " 'X' 是KataGo的最佳選點，正方形為損失少於0.5目的選點"
 
 msgid "Info:score"
-msgstr "分數: {score}"
+msgstr "目差: {score}"
 
 msgid "Info:winrate"
 msgstr "勝率: {winrate}"
@@ -434,9 +434,9 @@ msgstr "顯示最後幾手棋的選點"
 msgid "show ai dots"
 msgstr "顯示AI的選點/SGF評論"
 
-#. TODO - point loss precision options
+#. point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Show two digits for point loss near zero"
+msgstr "損失目數接近零時顯示兩位小數"
 
 #. analysis option
 msgid "cache analysis to sgf"
@@ -470,7 +470,7 @@ msgid "engine:katago"
 msgstr "KataGo執行檔路徑"
 
 msgid "engine:katago:hint"
-msgstr "留白以使用其他執行檔案"
+msgstr "留空以使用內建執行檔"
 
 msgid "engine:model"
 msgstr "KataGo模型檔路徑"
@@ -542,7 +542,7 @@ msgstr "複製SGF到剪貼簿"
 msgid "Failed to import from clipboard"
 msgstr ""
 "從剪貼簿匯入對局失敗: {error}\n"
-"剪貼簿内容: {contents}..."
+"剪貼簿內容: {contents}..."
 
 msgid "Failed to load SGF"
 msgstr "載入SGF失敗: {error}"
@@ -565,7 +565,7 @@ msgid "Starting Kata failed"
 msgstr "使用指令 '{command}' 啟動KataGo發生錯誤 {error}。"
 
 msgid "Engine died unexpectedly"
-msgstr "引擎意外崩潰沒有輸出，可能為記憶體不足導致: {error}"
+msgstr "引擎意外終止且沒有任何輸出：{error}"
 
 msgid "Engine missing DLL"
 msgstr "遺失DLL因此無法啟動KataGo。請參考KataGo文件中的所需事項，或嘗試單獨啟動KataGo來取得詳細資訊。"
@@ -607,10 +607,10 @@ msgid "ai:jigo"
 msgstr "Kata控目"
 
 msgid "aihelp:jigo"
-msgstr "在沒有更多限制的情況下，嘗試按指定目數(預設0.5)赢棋。"
+msgstr "在沒有更多限制的情況下，嘗試按指定目數(預設0.5)贏棋。"
 
 msgid "ai:scoreloss"
-msgstr "分數損失"
+msgstr "目數損失"
 
 msgid "aihelp:scoreloss"
 msgstr "傾向選擇低機率損失較多目數的落點。在較高計算深度次數下，棋力可能更不穩定/更弱。"
@@ -713,7 +713,7 @@ msgstr "每步棋的計算深度"
 
 #. on move tree editing
 msgid "Delete Node"
-msgstr "刪除模式"
+msgstr "刪除節點"
 
 #. on move tree editing
 msgid "Toggle Collapse Branch"
@@ -741,11 +741,11 @@ msgstr "最佳選點統計"
 
 #. Dropdown menu option
 msgid "top_move_delta_score"
-msgstr "分數波動"
+msgstr "目差變化"
 
 #. Dropdown menu option
 msgid "top_move_score"
-msgstr "分數"
+msgstr "目差"
 
 #. Dropdown menu option
 msgid "top_move_delta_winrate"
@@ -792,7 +792,7 @@ msgstr "帳號"
 
 #. hint for ownership
 msgid "contribute:ownership:hint"
-msgstr "稍微降低訓練速度，但允許所有權可視化。"
+msgstr "稍微降低訓練速度，但可以顯示領地歸屬。"
 
 #. contribute settings popup
 msgid "contribute settings title"
@@ -817,14 +817,14 @@ msgstr "登入資訊 (katagotraining.org)"
 
 #. hint for max games
 msgid "contribute:maxgames:hint"
-msgstr "最好等於您的最佳化numSearchThreads，中階GPU約為8。可以稍微設的低一點，來縮短執行時間，因為未完成的對局將不會被上傳。"
+msgstr "最好等於您的最佳化numSearchThreads，中階GPU約為8。可以稍微設得低一點，來縮短執行時間，因為未完成的對局將不會被上傳。"
 
 #. description for input
 msgid "contribute:maxgames"
 msgstr "同時對局數"
 
 msgid "contribute:ownership"
-msgstr "啟用所有權"
+msgstr "啟用領地顯示"
 
 #. description
 msgid "contribute:movespeed"
@@ -888,9 +888,9 @@ msgid "engine died popup opening message"
 msgstr ""
 "KataGo引擎啟動失敗或崩潰。\n"
 "\n"
-"錯誤：{error_message}\n"
+"錯誤：[color=#CC2222]{error_message}[/color]\n"
 "\n"
-"錯誤碼：{code}."
+"錯誤代碼：[color=#CC2222]{code}[/color]。"
 
 #. Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
@@ -910,7 +910,7 @@ msgstr "KataGo設定指南"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "僅分析錯誤操作"
+msgstr "僅分析失誤"
 
 #. statistic in performance report
 msgid "stat:accuracy"
@@ -973,78 +973,57 @@ msgstr "允許打劫？"
 
 #. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
-msgstr "詰碁框"
+msgstr "死活題外框"
 
-#. TODO
 msgid "from move"
-msgstr "from move"
+msgstr "起始手數"
 
-#. TODO - status message
+#. status message
 msgid "move range analysis"
-msgstr ""
-"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+msgstr "使用 {visits} 步來重新分析第 {start_move} 到 {end_move} 手"
 
-#. TODO
 msgid "to move"
-msgstr "to move"
+msgstr "結束手數"
 
-#. TODO - Restrict analysis to move range
+#. Restrict analysis to move range
 msgid "limit to moves"
-msgstr "Limit to moves"
+msgstr "限定手數範圍"
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr "（以純文字儲存，請勿在其他地方重複使用此密碼）"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "人類棋風"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "歷史職業棋風"
 
-#. TODO
 msgid "aihelp:pro"
-msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+msgstr "根據擬人化的KataGo人類模型選點。具體而言，基於指定年份及其前後年份的歷史棋譜，模仿職業棋士與強院生的著手。"
 
-#. TODO
 msgid "aihelp:human"
-msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+msgstr "根據擬人化的KataGo人類模型選點。若勾選'modern_style'，模型將依照2016年後的AlphaZero佈局風格行棋。"
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "擬人模型路徑"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "KataGo WebSocket 網址"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr "留空則使用本機 KataGo 引擎。請使用 ws:// 或 wss://。"
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "遠端 KataGo 網址為空"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "遠端 KataGo 網址必須以 ws:// 或 wss:// 開頭"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr "連線至遠端 KataGo {url} 失敗：{error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "遠端 KataGo 引擎已中斷連線：{error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1075,3 +1054,9 @@ msgstr "自訂命令"
 
 msgid "engine:backend:note"
 msgstr "所選分頁決定使用的引擎。"
+
+msgid "show move numbers"
+msgstr "在棋盤上顯示手數（按 'm' 鍵切換）"
+
+msgid "general:anim_pv_moves"
+msgstr "演示變化時顯示的手數（0 表示不演示）"

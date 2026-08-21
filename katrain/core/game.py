@@ -6,6 +6,8 @@ import threading
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 
+from pysgf import BaseGoGame, Move
+
 from katrain.core.constants import (
     OUTPUT_DEBUG,
     OUTPUT_EXTRA_DEBUG,
@@ -28,7 +30,6 @@ from katrain.core.constants import (
 from katrain.core.engine import KataGoEngine
 from katrain.core.game_node import GameNode
 from katrain.core.lang import i18n, rank_label
-from katrain.core.sgf_parser import SGF, Move
 from katrain.core.utils import var_to_grid, weighted_selection_without_replacement
 
 
@@ -36,8 +37,8 @@ class IllegalMoveException(Exception):
     pass
 
 
-class KaTrainSGF(SGF):
-    _NODE_CLASS = GameNode
+class KaTrainSGF(BaseGoGame[GameNode]):
+    NODE_TYPE = GameNode
 
 
 class BaseGame:
@@ -54,7 +55,8 @@ class BaseGame:
         bypass_config=False,  # TODO: refactor?
     ):
         self.katrain = katrain
-        self._lock = threading.Lock()
+        # Reentrant because play and navigation rebuild board state while holding the lock.
+        self._lock = threading.RLock()
         self.game_id = datetime.strftime(datetime.now(), "%Y-%m-%d %H %M %S")
         self.sgf_filename = sgf_filename
 
@@ -203,16 +205,18 @@ class BaseGame:
                 raise IllegalMoveException("Suicide")
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
-    def play(self, move: Move, ignore_ko: bool = False):
+    def play(self, move: Move, ignore_ko: bool = False, expected_node: Optional[GameNode] = None):
         board_size_x, board_size_y = self.board_size
         if not move.is_pass and not (0 <= move.coords[0] < board_size_x and 0 <= move.coords[1] < board_size_y):
             raise IllegalMoveException(f"Move {move} outside of board coordinates")
-        try:
-            self._validate_move_and_update_chains(move, ignore_ko)
-        except IllegalMoveException:
-            self._calculate_groups()
-            raise
-        with self._lock:
+        with self._lock:  # board mutation and the node update must not be split
+            if expected_node is not None and self.current_node is not expected_node:
+                return None
+            try:
+                self._validate_move_and_update_chains(move, ignore_ko)
+            except IllegalMoveException:
+                self._calculate_groups()  # roll the half-applied move back off the board
+                raise
             played_node = self.current_node.play(move)
             self.current_node = played_node
         return played_node
@@ -226,8 +230,9 @@ class BaseGame:
         return node
 
     def set_current_node(self, node):
-        self.current_node = node
-        self._calculate_groups()
+        with self._lock:
+            self.current_node = node
+            self._calculate_groups()
 
     def undo(self, n_times=1, stop_on_mistake=None):
         break_on_branch = False
@@ -310,7 +315,8 @@ class BaseGame:
     def prisoner_count(
         self,
     ) -> Dict:  # returns prisoners that are of a certain colour as {B: black stones captures, W: white stones captures}
-        return {player: sum([m.player == player for m in self.prisoners]) for player in Move.PLAYERS}
+        with self._lock:
+            return {player: sum([m.player == player for m in self.prisoners]) for player in Move.PLAYERS}
 
     @property
     def rules(self):
@@ -471,9 +477,10 @@ class Game(BaseGame):
         if self.insert_mode:  # in insert mode, undo = delete
             cn = self.current_node  # avoid race conditions
             if n_times == 1 and cn not in self.insert_after.nodes_from_root:
-                cn.parent.children = [c for c in cn.parent.children if c != cn]
-                self.current_node = cn.parent
-                self._calculate_groups()
+                with self._lock:
+                    cn.parent.children = [c for c in cn.parent.children if c != cn]
+                    self.current_node = cn.parent
+                    self._calculate_groups()
             return
         super().undo(n_times=n_times, stop_on_mistake=stop_on_mistake)
 
@@ -511,22 +518,23 @@ class Game(BaseGame):
                 already_inserted_moves = [
                     n.move for n in copy_to_node.nodes_from_root if n not in above_insertion_root and n.move
                 ]
-                try:
-                    while True:
-                        for m in copy_from_node.move_with_placements:
-                            if m not in already_inserted_moves:
-                                self._validate_move_and_update_chains(m, True)
-                                # this inserts
-                                copy_to_node = GameNode(
-                                    parent=copy_to_node, properties=copy.deepcopy(copy_from_node.properties)
-                                )
-                                num_copied += 1
-                        if not copy_from_node.children:
-                            break
-                        copy_from_node = copy_from_node.ordered_children[0]
-                except IllegalMoveException:
-                    pass  # illegal move = stop
-                self._calculate_groups()  # recalculate groups
+                with self._lock:
+                    try:
+                        while True:
+                            for m in copy_from_node.move_with_placements:
+                                if m not in already_inserted_moves:
+                                    self._validate_move_and_update_chains(m, True)
+                                    # this inserts
+                                    copy_to_node = GameNode(
+                                        parent=copy_to_node, properties=copy.deepcopy(copy_from_node.properties)
+                                    )
+                                    num_copied += 1
+                            if not copy_from_node.children:
+                                break
+                            copy_from_node = copy_from_node.ordered_children[0]
+                    except IllegalMoveException:
+                        pass  # illegal move = stop
+                    self._calculate_groups()  # recalculate groups
                 self.katrain.controls.set_status(
                     i18n._("ending insert mode").format(num_copied=num_copied), STATUS_INFO
                 )
@@ -538,8 +546,16 @@ class Game(BaseGame):
         self.katrain.update_state(redraw_board=True)
 
     # Play a Move from the current position, raise IllegalMoveException if invalid.
-    def play(self, move: Move, ignore_ko: bool = False, analyze=True):
-        played_node = super().play(move, ignore_ko)
+    def play(
+        self,
+        move: Move,
+        ignore_ko: bool = False,
+        analyze=True,
+        expected_node: Optional[GameNode] = None,
+    ):
+        played_node = super().play(move, ignore_ko=ignore_ko, expected_node=expected_node)
+        if played_node is None:
+            return None
         if analyze:
             if self.region_of_interest:
                 played_node.analyze(self.engines[played_node.next_player], analyze_fast=True)

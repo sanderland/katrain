@@ -35,7 +35,7 @@ msgid "menu:lang"
 msgstr "Spracheinstellungen"
 
 msgid "menu:support"
-msgstr "Unterstützung"
+msgstr "Mitwirken"
 
 msgid "menu:manual"
 msgstr "Handbuch"
@@ -219,10 +219,10 @@ msgid "Info:teaching undo"
 msgstr "Zug wurde automatisch im Lehrmodus zurückgenommen."
 
 msgid "Info:undo predicted PV"
-msgstr "Fortsetzung vorhersagen: {pv}"
+msgstr "Vorhergesagte Fortsetzung: {pv}"
 
 msgid "Info:AI thoughts"
-msgstr "AI denkt nach: {thoughts}"
+msgstr "Gedankengang der AI: {thoughts}"
 
 msgid "No analysis available"
 msgstr "Keine Analyse vorhanden"
@@ -428,11 +428,11 @@ msgstr "SGF in Clipboard kopiert."
 
 msgid "Failed to import from clipboard"
 msgstr ""
-"Failed to import game from clipboard: {error}\n"
-"Clipboard contents: {contents}..."
+"Import der Partie aus der Zwischenablage fehlgeschlagen: {error}\n"
+"Inhalt der Zwischenablage: {contents}..."
 
 msgid "Failed to load SGF"
-msgstr "SGF konnte nicht geladen werde: {error}"
+msgstr "SGF konnte nicht geladen werden: {error}"
 
 msgid "Starting Kata failed"
 msgstr ""
@@ -614,8 +614,8 @@ msgid "aihelp:handicap"
 msgstr ""
 "Optimiertes KataGo für höhere Vorgabe-Spiele. Die Einstellung 'pda' "
 "entspricht 'playoutDoublingAdvantage' in KataGo, aus Sicht von Schwarz. Wenn"
-" 'automatic' eingestellt ist, wird KaTrain automatischeinen geeigneten Wert "
-"finden."
+" 'automatic' eingestellt ist, wird KaTrain automatisch einen geeigneten Wert"
+" finden."
 
 msgid "estimated strength"
 msgstr "Geschätzte Spielstärke"
@@ -692,10 +692,16 @@ msgstr "Hauptbedenkzeit (min)"
 
 msgid "aihelp:simple"
 msgstr ""
-"Spielt Züge, die dazu zu einer Vereinfachung des Brettzustandes führen. Von "
-"Zügen, die höchstens 'max_points_lost' Punkte verlieren und mit wenigstens "
-"'min_visits' Visits, bevorzuge die Züge, die weniger Punkte verlieren und "
-"eigenes Gebiet mehr sichern."
+"Spielt Züge, die zu einer Vereinfachung der Stellung führen. Von Zügen, die "
+"höchstens 'max_points_lost' Punkte verlieren und mindestens 'min_visits' "
+"Visits haben, bevorzugt sie Züge, die weniger Punkte verlieren, eigenes "
+"Gebiet mehr festigen (Gewichtung settled_weight), das Gebiet des Gegners "
+"mehr festigen (Gewichtung settled_weight * opponent_fac), Tenuki vermeiden "
+"(mehr als 5 Linien entfernt, Gewichtung tenuki_penalty) und Kontaktzüge "
+"vermeiden (Gewichtung attachment_penalty). Gewichte können negativ sein, um "
+"die Partie stattdessen zu verkomplizieren; wide root noise (in den "
+"allgemeinen Einstellungen) lässt sie auf Kosten der Spielstärke stärker im "
+"Stil spielen."
 
 msgid "ai:simple"
 msgstr "Einfacher Stil"
@@ -720,7 +726,7 @@ msgstr "Visits"
 
 #.  Dropdown menu option
 msgid "top_move_score"
-msgstr "Score"
+msgstr "Ergebnis"
 
 #. Dropdown menu option
 msgid "top_move_nothing"
@@ -738,9 +744,9 @@ msgstr "Punktänderung"
 msgid "show stats if"
 msgstr "Zeige Bewertung wenn mehr als ... Visits"
 
-#. TODO - point loss precision options
+#. point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Show two digits for point loss near zero"
+msgstr "Zeige zwei Nachkommastellen für Punktverluste nahe null"
 
 #. analysis option
 msgid "cache analysis to sgf"
@@ -817,8 +823,8 @@ msgstr "Name von Weiß"
 #. in self-play mode
 msgid "gui-locked"
 msgstr ""
-"Aktion {action} nicht erlaubt im verteilten Selbstspieltraining Modus. Neu "
-"starten, damit Katrain diesen Modus verlässt."
+"Aktion {action} ist im verteilten Selbstspiel-Trainingsmodus nicht erlaubt. "
+"Starte KaTrain neu, um diesen Modus zu verlassen."
 
 #. menu item
 msgid "menu:distributed"
@@ -828,11 +834,11 @@ msgid "contribute:register"
 msgstr "Registrieren"
 
 msgid "contribute:start"
-msgstr "Anfangen beizutragen!"
+msgstr "Beitragen starten!"
 
 #. contribute settings popup
 msgid "contribute settings title"
-msgstr "Zu KataGo's verteiltem Training beitragen"
+msgstr "Zu KataGos verteiltem Training beitragen"
 
 msgid "contribute:username"
 msgstr "Benutzername"
@@ -847,20 +853,22 @@ msgstr "Passwort"
 #. hint for max games
 msgid "contribute:maxgames:hint"
 msgstr ""
-"Am besten gleich zu eurem optimalen numSearchThreads, ungefähr 8 für "
-"mittlemäßige GPUs. setzt es leicht kleiner für kürzere Beiträge, da "
-"unbeendete Spiele nicht hochgeladen werden."
+"Am besten gleich deinem optimalen numSearchThreads, etwa 8 für Mittelklasse-"
+"GPUs. Für kürzere Sitzungen etwas niedriger einstellen, da unfertige Partien"
+" nicht hochgeladen werden."
 
 #. hint for ownership
 msgid "contribute:ownership:hint"
-msgstr "Macht Training leicht langsamer, aber erlaubt Eigentum visualisierung"
+msgstr ""
+"Verlangsamt das Training leicht, ermöglicht aber die Visualisierung der "
+"Gebietsverteilung."
 
 msgid "contribute:ownership"
-msgstr "Eigentum aktivieren"
+msgstr "Gebietsanzeige aktivieren"
 
 #. title
 msgid "contribute:login"
-msgstr "Anmeldung Information (katagotraining.org)"
+msgstr "Anmeldedaten für katagotraining.org"
 
 #. description
 msgid "contribute:movespeed"
@@ -868,7 +876,7 @@ msgstr "Zuggeschwindigkeit"
 
 #. hint for move speed
 msgid "contribute:movespeed:hint"
-msgstr "Zuggeschwindigkeit in Sekunden/Zug."
+msgstr "Verzögerung zwischen Zügen in Sekunden/Zug."
 
 #. description
 msgid "contribute:savesgf"
@@ -876,7 +884,7 @@ msgstr "SGFs speichern"
 
 #. hint for save
 msgid "contribute:savesgf:hint"
-msgstr "SGF Dateien von beendete Spiele in ./dist_sgf speichern"
+msgstr "SGF-Dateien fertig angezeigter Partien in ./dist_sgf speichern"
 
 #. title
 msgid "contribute:viewer settings"
@@ -884,7 +892,7 @@ msgstr "Beobachtereinstellungen"
 
 #. Clear all results and reset to normal query
 msgid "analysis:reset"
-msgstr "Analysis zurücksetzen"
+msgstr "Analyse zurücksetzen"
 
 #. Description for black target score
 msgid "setup position black score"
@@ -905,9 +913,9 @@ msgstr "Position aufsetzen"
 #. Popup for generating position: top explanation
 msgid "setup position explanation"
 msgstr ""
-"Dies generiert ein Teil eines Spieles, von dem ihr anfangen könnt, zu "
-"spielen. Zum Beispiel könnt ihr es benutzen um im Vorteil gegen stärkere KIs"
-" in verschiedene Mittel- oder Endspielsituationen zu Spielen."
+"Dies generiert eine angefangene Partie, ab der du weiterspielen kannst. Zum "
+"Beispiel kannst du damit mit einem Vorsprung aus verschiedenen Mittel- oder "
+"Endspielpositionen gegen stärkere AIs spielen."
 
 #. change komi etc in current game
 msgid "editgame"
@@ -925,7 +933,7 @@ msgstr "Leistungsbericht"
 
 msgid "engine died popup opening message"
 msgstr ""
-"Das KataGo Engine konnte nicht starten, oder ist abgestürzt.\n"
+"Die KataGo-Engine konnte nicht starten oder ist abgestürzt.\n"
 "\n"
 "Der Fehler war: [color=#CC2222]{error_message}[/color]\n"
 "\n"
@@ -934,19 +942,19 @@ msgstr ""
 #.  - Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
 msgstr ""
-"Wenn sie immer noch Schwierigkeiten haben, {link} für eine Hilfe-Seite auf "
-"dem neuesten Stand."
+"Wenn du weiterhin Schwierigkeiten hast, {link} für eine aktuelle Hilfe-"
+"Seite."
 
 #.  - Link in tags should not be touched.
 msgid "change engine suggestion"
 msgstr ""
-"Drücken Sie zuerst auf Erneut versuchen, um die Engine neu zu starten. Falls"
-" das nicht hilft, laden Sie KataGo-Versionen herunter und wechseln Sie in "
-"{link} zu einer anderen ausführbaren Datei."
+"Drücke zuerst auf Erneut versuchen, um die Engine neu zu starten. Falls das "
+"nicht hilft, lade KataGo-Versionen herunter und wechsle in {link} zu einer "
+"anderen ausführbaren Datei."
 
 #.  - as in "click here" to go to this page,
 msgid "link_here"
-msgstr "klicken sie hier"
+msgstr "klicke hier"
 
 #.  - popup title
 msgid "engine recovery"
@@ -954,7 +962,7 @@ msgstr "Hilfe für KataGo Konfiguration"
 
 #.  - label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
-msgstr "Analysis auf Fehler begrenzen"
+msgstr "Analyse auf Fehler begrenzen"
 
 #.  - statistic in performance report
 msgid "stat:accuracy"
@@ -996,102 +1004,88 @@ msgstr "Bester KI Zug Übereinstimmung %"
 msgid "Entire Game"
 msgstr "Gesamtes Spiel"
 
-#. TODO
 msgid "ai:antimirror"
 msgstr "KataAntiMirror"
 
-#. TODO - on move tree editing, deletes all other branches splitting off from
-#. the
+#. on move tree editing, deletes all other branches splitting off from the
 #. path UP TO this node
 msgid "Prune Branch"
-msgstr "Prune Branch"
+msgstr "Andere Zweige entfernen"
 
-#. TODO
 msgid "aihelp:antimirror"
-msgstr "Anti Mirror-go Mode of KataGo."
+msgstr "Anti-Spiegel-Go-Modus von KataGo."
 
-#. TODO - distance of wall to existing stones
+#. distance of wall to existing stones
 msgid "tsumego:walldistance"
-msgstr "Distance of wall"
+msgstr "Abstand zur Mauer"
 
-#. TODO - tsumego: ko is good enough?
+#. tsumego: ko is good enough?
 msgid "tsumego:ko"
-msgstr "Ko allowed?"
+msgstr "Ko erlaubt?"
 
-#. TODO - Menu option for tsumego frame around position
+#. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
-msgstr "Tsumego Frame"
+msgstr "Tsumego-Rahmen"
 
-#. TODO
 msgid "from move"
-msgstr "from move"
+msgstr "von Zug"
 
-#. TODO - status message
+#. status message
 msgid "move range analysis"
-msgstr ""
-"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+msgstr "Neuanalyse der Züge {start_move} bis {end_move} mit {visits} Visits"
 
-#. TODO
 msgid "to move"
-msgstr "to move"
+msgstr "bis Zug"
 
-#. TODO - Restrict analysis to move range
+#. Restrict analysis to move range
 msgid "limit to moves"
-msgstr "Limit to moves"
+msgstr "Auf Zugbereich begrenzen"
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr ""
+"(Wird im Klartext gespeichert, verwende dieses Passwort nirgendwo sonst)"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "Menschenähnlich"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "Profi nach Jahr"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+"Wählt Züge mit einem menschenähnlichen KataGo-Modell. Imitiert dabei Züge "
+"von Profis und starken Insei auf Basis historischer Partien aus dem "
+"angegebenen Jahr und den umliegenden Jahren."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"Wählt Züge mit einem menschenähnlichen KataGo-Modell. Ist 'modern_style' "
+"aktiviert, spielt das Modell die Eröffnung im AlphaZero-Stil nach 2016."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "Pfad zum menschenähnlichen Modell"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "KataGo-WebSocket-URL"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr ""
+"Leer lassen, um eine lokale KataGo-Engine zu verwenden. ws:// oder wss:// "
+"verwenden."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "Die URL der entfernten KataGo-Engine ist leer"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr ""
+"Die URL der entfernten KataGo-Engine muss mit ws:// oder wss:// beginnen"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr ""
+"Verbindung zur entfernten KataGo-Engine unter {url} fehlgeschlagen: {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "Verbindung zur entfernten KataGo-Engine getrennt: {error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1110,9 +1104,9 @@ msgstr "Erneut versuchen"
 #. Link in tags should not be touched. Shown for remote engines.
 msgid "remote engine check url suggestion"
 msgstr ""
-"Wenn die entfernte Engine zuvor funktioniert hat, drücken Sie auf Erneut "
+"Wenn die entfernte Engine zuvor funktioniert hat, drücke auf Erneut "
 "versuchen, um die Verbindung wiederherzustellen, sobald sie wieder verfügbar"
-" ist. Andernfalls überprüfen Sie die URL der entfernten Engine in {link} ."
+" ist. Andernfalls überprüfe die URL der entfernten Engine in {link} ."
 
 msgid "engine:tab:local"
 msgstr "Lokale Engine"
@@ -1125,3 +1119,10 @@ msgstr "Eigener Befehl"
 
 msgid "engine:backend:note"
 msgstr "Der ausgewählte Reiter bestimmt die genutzte Engine."
+
+msgid "show move numbers"
+msgstr "Zugnummern auf dem Brett anzeigen (mit 'm' umschalten)"
+
+msgid "general:anim_pv_moves"
+msgstr ""
+"Anzahl der Züge bei der Animation einer Zugfolge (0 = keine Animation)"

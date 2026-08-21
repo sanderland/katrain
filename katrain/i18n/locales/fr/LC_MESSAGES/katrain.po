@@ -200,8 +200,8 @@ msgstr "Gain"
 #. SGF and move comment messages
 msgid "SGF start message"
 msgstr ""
-"Les coup préférés de KataGo sont marqué d'un X. En comparaison, ceux perdant"
-" moins de 0.5 point sont marqués d'un carré"
+"Les coups préférés de KataGo sont marqués d'un X. En comparaison, ceux "
+"perdant moins de 0.5 point sont marqués d'un carré"
 
 msgid "Info:score"
 msgstr "Score : {score}"
@@ -482,7 +482,7 @@ msgstr ""
 "Contenu du presse-papier : {contents}…"
 
 msgid "Failed to load SGF"
-msgstr "Impossible de charger le SGF: {error}"
+msgstr "Impossible de charger le SGF : {error}"
 
 msgid "Kata model not found"
 msgstr ""
@@ -763,9 +763,9 @@ msgstr "Variation du score"
 msgid "show stats if"
 msgstr "Nombre de visites minimum requis pour afficher les données :"
 
-#. TODO - point loss precision options
+#. point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Show two digits for point loss near zero"
+msgstr "Afficher deux décimales pour les pertes de points proches de zéro"
 
 msgid "cache analysis to sgf"
 msgstr "Sauvegarder un cache SGF de l'analyse"
@@ -810,7 +810,7 @@ msgid "analysis:region"
 msgstr "Définir la zone d'intérêt"
 
 msgid "Toggle Collapse Branch"
-msgstr "Nouer/Dénouer la branche"
+msgstr "Replier/Déplier la branche"
 
 msgid "analysis:playtoend"
 msgstr "Simuler la fin de partie"
@@ -827,7 +827,7 @@ msgstr ""
 "Vous pouvez quitter ce mode en redémarrant KaTrain."
 
 msgid "menu:distributed"
-msgstr "Entraîner Katago"
+msgstr "Entraîner KataGo"
 
 msgid "contribute:register"
 msgstr "Créer le compte"
@@ -856,7 +856,7 @@ msgstr ""
 msgid "contribute:ownership:hint"
 msgstr ""
 "Cette option permet de visualiser les prévisions territoriales, mais "
-"ralentit légèrement l'entrainement."
+"ralentit légèrement l'entraînement."
 
 msgid "contribute:ownership"
 msgstr "Prévisions territoriales"
@@ -975,6 +975,8 @@ msgstr "Partie entière"
 msgid "ai:antimirror"
 msgstr "Anti-symétrique"
 
+#. on move tree editing, deletes all other branches splitting off from the
+#. path UP TO this node
 msgid "Prune Branch"
 msgstr "Élaguer les autres branches"
 
@@ -983,12 +985,15 @@ msgstr ""
 "Mode dans lequel Katago cherche à déjouer la stratégie de Go symétrique \n"
 "(en d'autres termes, quand l'adversaire imite systématiquement ses coups)."
 
+#. distance of wall to existing stones
 msgid "tsumego:walldistance"
 msgstr "Distance du mur :"
 
+#. tsumego: ko is good enough?
 msgid "tsumego:ko"
 msgstr "Permettre les kos"
 
+#. Menu option for tsumego frame around position
 msgid "analysis:tsumegoframe"
 msgstr "Composer un problème"
 
@@ -1008,59 +1013,48 @@ msgstr ""
 "Analyse de partie approfondie du coup {start_move} au coup {end_move} "
 "({visits} visites/coup)."
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr "(Stocké en clair, ne réutilisez ce mot de passe nulle part ailleurs)"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "Humain"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "Pro d'époque"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+"Choisit ses coups selon un modèle KataGo imitant le jeu humain. Il reproduit"
+" les coups de professionnels et de forts insei d'après des parties "
+"historiques de l'année choisie et des années voisines."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"Choisit ses coups selon un modèle KataGo imitant le jeu humain. Si « "
+"modern_style » est coché, le modèle joue les ouvertures dans le style "
+"AlphaZero postérieur à 2016."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "Chemin du modèle imitant le jeu humain"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "URL WebSocket de KataGo"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr ""
+"Laisser vide pour utiliser un moteur KataGo local. Utiliser ws:// ou wss://."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "L'URL du KataGo distant est vide"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "L'URL du KataGo distant doit commencer par ws:// ou wss://"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr "Échec de la connexion au KataGo distant à {url} : {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "Moteur KataGo distant déconnecté : {error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1094,3 +1088,11 @@ msgstr "Commande personnalisée"
 
 msgid "engine:backend:note"
 msgstr "L'onglet sélectionné détermine le moteur utilisé."
+
+msgid "show move numbers"
+msgstr "Afficher les numéros de coups sur le goban (touche 'm')"
+
+msgid "general:anim_pv_moves"
+msgstr ""
+"Nombre de coups affichés lors de l'animation d'une séquence (0 pour "
+"désactiver)"

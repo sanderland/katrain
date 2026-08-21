@@ -1137,6 +1137,8 @@ class BadukPanWidget(Widget):
             draw_text(pos=board_coords, text=str(i + 1), font_size=self.grid_size * sizefac / 1.45, font_name="Roboto")
 
     def set_animating_pv(self, pv, node):
+        if not self.katrain.config("general/anim_pv_moves"):
+            pv = None  # animating sequences on hover is switched off
         self.animating_pv_index = None
         if pv is None:
             self.animating_pv = None
@@ -1154,7 +1156,9 @@ class BadukPanWidget(Widget):
             if self.animating_pv:
                 pv, node, start_time, _ = self.animating_pv
                 delay = self.katrain.config("general/anim_pv_time", 0.5)
-                return min(len(pv), (time.time() - start_time) / max(delay, 0.1))
+                max_moves = self.katrain.config("general/anim_pv_moves")
+                # draw_pv treats this as an inclusive index, so subtract one to show max_moves moves
+                return min(len(pv), max_moves - 1, (time.time() - start_time) / max(delay, 0.1))
             else:
                 return 0
 

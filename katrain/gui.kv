@@ -801,7 +801,7 @@
     AnalysisMenuItem:
         text: i18n._("analysis:reset")
         icon: 'reset.png'
-        shortcut: 'h'
+        shortcut: 'ctrl-h'
         on_action: root.katrain("reset-analysis",)
     AnalysisMenuItem:
         text: i18n._("analysis:insert")
@@ -854,7 +854,7 @@
     HamburgerButton:
         id: hamburger
         size_hint: None, 1
-        on_press: app.gui.nav_drawer.set_state("open")
+        on_release: app.gui.nav_drawer.set_state("open")
     AnchorLayout:
         BoxLayout:
             size_hint_x: None

@@ -68,6 +68,7 @@ from kivy.resources import resource_add_path, resource_find
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.uix.widget import Widget
+from pysgf import Move, ParseError
 
 # Importing the package registers every widget class with Kivy's Factory, which is
 # how the .kv files resolve them by name.
@@ -97,7 +98,6 @@ from katrain.core.contribute_engine import KataGoContributeEngine
 from katrain.core.game import BaseGame, Game, IllegalMoveException, KaTrainSGF
 from katrain.core.lang import DEFAULT_LANGUAGE, i18n
 from katrain.core.remote_engine import make_engine
-from katrain.core.sgf_parser import Move, ParseError
 from katrain.gui.badukpan import AnalysisControls, BadukPanControls, BadukPanWidget  # noqa: F401
 from katrain.gui.controlspanel import ControlsPanel  # noqa: F401
 from katrain.gui.popups import (
@@ -137,7 +137,7 @@ class KaTrainGui(Screen, KaTrainBase):
         self.contribute_popup = None
 
         self.pondering = False
-        self.show_move_num = False
+        self.show_move_num = self.config("trainer/show_move_numbers")
 
         self.animate_contributing = False
         self.message_queue = Queue()
@@ -710,7 +710,6 @@ class KaTrainGui(Screen, KaTrainBase):
                 (Theme.KEY_ANALYZE_EXTRA_SWEEP, ("analyze-extra", "sweep")),
                 (Theme.KEY_ANALYZE_EXTRA_ALTERNATIVE, ("analyze-extra", "alternative")),
                 (Theme.KEY_SELECT_BOX, ("select-box",)),
-                (Theme.KEY_RESET_ANALYSIS, ("reset-analysis",)),
                 (Theme.KEY_INSERT_MODE, ("insert-mode",)),
                 (Theme.KEY_PASS, ("play", None)),
                 (Theme.KEY_SELFPLAY_TO_END, ("selfplay-setup", "end", None)),
@@ -797,6 +796,9 @@ class KaTrainGui(Screen, KaTrainBase):
             self.controls.move_tree.delete_selected_node()
         elif keycode[1] == Theme.KEY_MOVE_TREE_TOGGLE_SELECTED_NODE_COLLAPSE and not ctrl_pressed:
             self.controls.move_tree.toggle_selected_node_collapse()
+        elif keycode[1] == Theme.KEY_RESET_ANALYSIS and "ctrl" in modifiers:
+            # Do not treat macOS Cmd-H as Ctrl-H.
+            self("reset-analysis")
         elif keycode[1] == Theme.KEY_NEW_GAME and ctrl_pressed:
             self("new-game-popup")
         elif keycode[1] == Theme.KEY_LOAD_GAME and ctrl_pressed:

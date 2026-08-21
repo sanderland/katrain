@@ -907,8 +907,10 @@ msgstr "評価レポート"
 msgid "engine died popup opening message"
 msgstr ""
 "おおっと！KataGoエンジンが起動に失敗したか、クラッシュしました。\n"
-" エラー内容：{error_message}\n"
-"エラーコード {code}"
+"\n"
+"エラー内容：[color=#CC2222]{error_message}[/color]\n"
+"\n"
+"エラーコード：[color=#CC2222]{code}[/color]"
 
 #. Link in tags should not be touched (uses link_here msgid)
 msgid "go to engine help page"
@@ -995,76 +997,59 @@ msgstr "劫でもOK"
 msgid "analysis:tsumegoframe"
 msgstr "詰碁用の外枠"
 
-#. TODO
 msgid "from move"
-msgstr "from move"
+msgstr "開始手数"
 
-#. TODO - status message
+#. status message
 msgid "move range analysis"
-msgstr ""
-"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+msgstr "{start_move}手目から{end_move}手目までを再分析中（各{visits}手）"
 
-#. TODO
 msgid "to move"
-msgstr "to move"
+msgstr "終了手数"
 
-#. TODO - Restrict analysis to move range
+#. Restrict analysis to move range
 msgid "limit to moves"
-msgstr "Limit to moves"
+msgstr "手数を制限"
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr "（平文で保存されます。このパスワードは他では使わないでください）"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "人間流"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "年代別プロ"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+"人間らしい手を選ぶKataGoモデル (Human SL) で打ちます. 指定した年とその前後の年代の棋譜にもとづいて, "
+"プロや強い院生の着手を再現します."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"人間らしい手を選ぶKataGoモデル (Human SL) で打ちます. modern_styleをオンにすると, "
+"2016年以降のAlphaZero流の布石スタイルで打ちます."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "人間らしいモデルのパス"
 
-#. TODO
 msgid "engine:remote_url"
 msgstr "KataGo WebSocket URL"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr "ローカルの KataGo エンジンを使う場合は空欄にします。ws:// または wss:// を指定してください。"
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "リモート KataGo の URL が空です"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "リモート KataGo の URL は ws:// または wss:// で始まる必要があります"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr "リモート KataGo（{url}）への接続に失敗しました: {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "リモート KataGo エンジンとの接続が切断されました: {error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1097,3 +1082,9 @@ msgstr "カスタムコマンド"
 
 msgid "engine:backend:note"
 msgstr "選択したタブが使用するエンジンを決定します。"
+
+msgid "show move numbers"
+msgstr "盤上に手数を表示する（'m' キーで切り替え）"
+
+msgid "general:anim_pv_moves"
+msgstr "手順アニメーションで表示する手数（0 でアニメーションしない）"

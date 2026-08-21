@@ -218,10 +218,10 @@ msgstr "Terk Et"
 #. Shown when a move is undone in teaching mode.
 msgid "teaching undo message"
 msgstr ""
-"{points_lost:.1f} puan kaybettirdiğinden {move}. hamleyi geri alın. Lütfen "
-"tekrar deneyin. İpucu için karşı analizi görmek amacıyla fare imlecini hamle"
-" üzerine getirin veya puan kaybının beklendiği tahtabölgelerini görmek "
-"amacıyla tahmini bölgeyi (t) kontrol edin."
+"{move}. hamle {points_lost:.1f} puan kaybettirdiği için geri alındı. Lütfen "
+"tekrar deneyin. İpucu için beklenen karşı yanıtı görmek amacıyla fare "
+"imlecini hamlenin üzerine getirin veya puan kaybının beklendiği tahta "
+"bölgelerini görmek amacıyla tahmini bölgeyi (t) kontrol edin."
 
 msgid "ai-ponder"
 msgstr ""
@@ -517,7 +517,7 @@ msgstr "SGF’de önbellek analizi"
 
 #. submit button
 msgid "update teacher"
-msgstr "Geri Bildrm Ayarlrnı Güncelle"
+msgstr "Geri Bildirim Ayarlarını Güncelle"
 
 # main config settings
 msgid "restarting engine"
@@ -679,7 +679,7 @@ msgstr "SGF panoya kopyalandı."
 
 msgid "Failed to import from clipboard"
 msgstr ""
-"Oyun panodan içeri aktarılmadı: {error}\n"
+"Oyun panodan içeri aktarılamadı: {error}\n"
 "Pano içeriği: {contents}..."
 
 msgid "Failed to load SGF"
@@ -691,10 +691,9 @@ msgstr ""
 
 msgid "Kata exe not found in path"
 msgstr ""
-"KataGo ikili dosyası {exe}' YOLDA bulunamadı, ortam değişkenlerinizi kontrol"
-" edin veya bunun yerine genel ayarlardaki tam yolu kullanın. MacOS "
-"kullanıyorsanız, ilk önce katago’yu yüklemek için brew’in nasıl "
-"kullanıldığını görmek amacıyla kılavuza bakın"
+"KataGo ikili dosyası '{exe}' PATH içinde bulunamadı; ortam değişkenlerinizi "
+"kontrol edin veya genel ayarlarda tam yolu kullanın. MacOS kullanıyorsanız, "
+"önce katago'yu brew ile nasıl kuracağınızı görmek için kılavuza bakın"
 
 msgid "Kata model not found"
 msgstr ""
@@ -710,7 +709,9 @@ msgstr ""
 "'{command}' komutuyla KataGo’nun başlatılması {error} hatasıyla sonlandı."
 
 msgid "Engine died unexpectedly"
-msgstr "Motor şu çıktıyı göndererek beklenmedik bir şekilde sonlandı: {error}"
+msgstr ""
+"Motor herhangi bir çıktı göndermeden beklenmedik bir şekilde sonlandı: "
+"{error}"
 
 msgid "Engine missing DLL"
 msgstr ""
@@ -760,7 +761,7 @@ msgstr "KataGo"
 msgid "aihelp:default"
 msgstr ""
 "En üst seviye KataGo AI. Seviye, genel ayarlarda 'motor' bölümündeki 'maks "
-"ziyaret' ve 'model' değeriyle ve motor yapılandırma dosyasıyl belirlenir. "
+"ziyaret' ve 'model' değeriyle ve motor yapılandırma dosyasıyla belirlenir. "
 "Burada herhangi bir seçenek verilmez."
 
 #. ai which handles handicap games better
@@ -835,7 +836,7 @@ msgstr ""
 "sınır ilkesi değerini belirler."
 
 msgid "ai:p:pick"
-msgstr "Zayıf İlke"
+msgstr "Kör İlke"
 
 msgid "aihelp:p:pick"
 msgstr ""
@@ -849,21 +850,20 @@ msgstr "Yerel Stil"
 
 msgid "aihelp:p:local"
 msgstr ""
-"En son hamleye kadar ağırlıklandırılmış 'pick_n + pick_frac * <number of "
-"legal moves>' değeri kadar hamle seçer ve en iyi hamleyi oynar. Bariz "
-"hatalardan kaçınmak için ilke değeri 'pick_override' değerinin üzerindeyse "
-"en iyi hamleyi oynar."
+"Son hamleye yakın hamlelere ağırlık vererek 'pick_n + pick_frac * <number of"
+" legal moves>' kadar hamle seçer ve en iyisini oynar. Bariz hatalardan "
+"kaçınmak için ilke değeri 'pick_override' değerinin üzerindeyse en iyi "
+"hamleyi oynar."
 
 msgid "ai:p:tenuki"
 msgstr "Tenuki Stili"
 
 msgid "aihelp:p:tenuki"
 msgstr ""
-"En son hamle sonrasında ağırlıklandırılmış 'pick_n + pick_frac * <number of "
-"legal moves>' kadar hamle seçer ve en iyi hamleyi oynar. Bariz hatalardan "
+"Son hamleden uzak hamlelere ağırlık vererek 'pick_n + pick_frac * <number of"
+" legal moves>' kadar hamle seçer ve en iyisini oynar. Bariz hatalardan "
 "kaçınmak için ilke değeri 'pick_override' değerinin üzerindeyse en iyi "
-"hamleyi oynar. Daha yüksek 'stddev' değeri en son hamleden daha fazla "
-"sapmaya neden olur."
+"hamleyi oynar. Daha yüksek 'stddev' değeri daha uzağa oynamasına neden olur."
 
 msgid "ai:p:influence"
 msgstr "Yüksek Stil"
@@ -872,8 +872,8 @@ msgid "aihelp:p:influence"
 msgstr ""
 "'Eşik değeri' hattının üstünde kalan hamleleri seçer ve en iyi hamleyi "
 "oynar. Tahta kenarına daha yakın hamleleri geri plana almak için "
-"'line_weight' değerini arttırın. Tahtada 'oyun sonu’ bölümü tamamlandığından"
-" stratejiyi durdurur."
+"'line_weight' değerini arttırın. Tahtada 'oyun sonu' bölümü tamamlandığında "
+"stratejiyi durdurur."
 
 msgid "ai:p:territory"
 msgstr "Alçak Stil"
@@ -882,7 +882,7 @@ msgid "aihelp:p:territory"
 msgstr ""
 "'Eşik değeri' hattının altında kalan hamleleri seçer ve en iyi hamleyi "
 "oynar. Merkeze daha yakın hamleleri geri plana almak için 'line_weight' "
-"değerini arttırın. Tahtada 'oyun sonu’ bölümü tamamlandığından stratejiyi "
+"değerini arttırın. Tahtada 'oyun sonu' bölümü tamamlandığında stratejiyi "
 "durdurur."
 
 msgid "ai:p:rank"
@@ -924,7 +924,7 @@ msgstr "Mevcut tüm modeller zaten indirildi"
 
 #. error message on trying to download models when already done
 msgid "All binaries downloaded"
-msgstr "Mevcut tüm iki dosyalar önceden indirildi"
+msgstr "Mevcut tüm ikili dosyalar önceden indirildi"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
@@ -1002,8 +1002,8 @@ msgstr "Hamlelerin eklenmesi bitti, takip eden {num_copied} hamle kopyalandı."
 #. when a user tries to go to a different move/node while in insert mode
 msgid "finish inserting before navigating"
 msgstr ""
-"Ekleme modununda navigasyon devre dışı bırakıldı, 'i’ tuşuna basarak ekleme "
-"modunu sonlandırın."
+"Ekleme modunda navigasyon devre dışıdır, 'i' tuşuna basarak ekleme modunu "
+"sonlandırın."
 
 #. menu item
 msgid "menu:distributed"
@@ -1013,7 +1013,7 @@ msgstr "Dağıtılmış Öz Oyun Eğitimi"
 msgid "gui-locked"
 msgstr ""
 "Dağıtılmış kendi kendine oyun eğitimi modunda {action} eylemine izin "
-"verilmez.Bu moddan çıkmak için KaTrain’i yeniden başlatın."
+"verilmez. Bu moddan çıkmak için KaTrain'i yeniden başlatın."
 
 #. Progress message
 msgid "setup game status message"
@@ -1053,80 +1053,69 @@ msgstr "Ko'ya izin veriliyor mu?"
 msgid "analysis:tsumegoframe"
 msgstr "Tsumego Çerçevesi"
 
-#. TODO - point loss precision options
+#. point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Show two digits for point loss near zero"
+msgstr "Sıfıra yakın puan kayıplarını iki ondalık basamakla göster"
 
-#. TODO
 msgid "from move"
-msgstr "from move"
+msgstr "başlangıç hamlesi"
 
-#. TODO - status message
+#. status message
 msgid "move range analysis"
 msgstr ""
-"Re-analyzing moves from {start_move} to {end_move} using {visits} visits"
+"{start_move} ile {end_move} arasındaki hamleleri {visits} ziyaretle yeniden "
+"analiz ediyor"
 
-#. TODO
 msgid "to move"
-msgstr "to move"
+msgstr "bitiş hamlesi"
 
-#. TODO - Restrict analysis to move range
+#. Restrict analysis to move range
 msgid "limit to moves"
-msgstr "Limit to moves"
+msgstr "Hamle aralığıyla sınırla"
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr ""
+"(Düz metin olarak saklanır, bu parolayı başka hiçbir yerde kullanmayın)"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "İnsansı"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "Dönem Profesyoneli"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+"İnsansı bir KataGo modeline göre hamle seçer. Belirtilen yıl ve çevresindeki"
+" yıllara ait tarihî oyun kayıtlarına dayanarak profesyonellerin ve güçlü "
+"insei öğrencilerinin hamlelerini taklit eder."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"İnsansı bir KataGo modeline göre hamle seçer. 'modern_style' işaretliyse "
+"model, 2016 sonrası AlphaZero açılış stilinde oynar."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "İnsan benzeri model dosyasının yolu"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "KataGo WebSocket adresi"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr ""
+"Yerel bir KataGo motoru kullanmak için boş bırakın. ws:// veya wss:// "
+"kullanın."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "Uzak KataGo adresi boş"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Uzak KataGo adresi ws:// veya wss:// ile başlamalı"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr "{url} adresindeki uzak KataGo'ya bağlanılamadı: {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "Uzak KataGo motoruyla bağlantı kesildi: {error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1160,3 +1149,10 @@ msgstr "Özel komut"
 
 msgid "engine:backend:note"
 msgstr "Seçilen sekme, kullanılacak motoru belirler."
+
+msgid "show move numbers"
+msgstr "Tahtada hamle numaralarını göster ('m' ile aç/kapat)"
+
+msgid "general:anim_pv_moves"
+msgstr ""
+"Bir varyant canlandırılırken gösterilecek hamle sayısı (0: canlandırma yok)"

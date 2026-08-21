@@ -420,7 +420,7 @@ msgid "general:anim_pv_time"
 msgstr "Задержка между ходами в анимации"
 
 msgid "general:debug_level"
-msgstr "Уровень отладочных сообщение в консоли"
+msgstr "Уровень отладочных сообщений в консоли"
 
 msgid "general:debug_level:hint"
 msgstr "Используйте 1 для печати только ошибок"
@@ -481,7 +481,7 @@ msgid "Starting Kata failed"
 msgstr "Запуск KataGo командой '{command}' завершился с ошибкой {error}."
 
 msgid "Engine died unexpectedly"
-msgstr "Движок неожиданно умер, вероятно из-за нехватки памяти: {error}"
+msgstr "Движок неожиданно завершился без вывода: {error}"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -524,7 +524,7 @@ msgstr ""
 "влияет на то, сколько начальных ходов будут более случайными."
 
 msgid "ai:p:weighted"
-msgstr "Слабая политика"
+msgstr "Взвешенная политика"
 
 msgid "aihelp:p:weighted"
 msgstr ""
@@ -578,7 +578,7 @@ msgstr "Территория"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"Выбирает ходы с оценкой выше 'threshold' и играет лучший из них. "
+"Выбирает ходы с оценкой ниже 'threshold' и играет лучший из них. "
 "Увеличивайте 'line_weight' для штрафования ходов, близких к центру доски. "
 "Прекращает такую стратегию после того, как 'endgame' часть доски была "
 "заполнена."
@@ -730,7 +730,7 @@ msgstr "Числа только если посещений больше чем"
 
 #. point loss precision options
 msgid "show two digits for point loss near zero"
-msgstr "Показазывать две цифры после запятой для малой потери очков"
+msgstr "Показывать две цифры после запятой для малой потери очков"
 
 msgid "cache analysis to sgf"
 msgstr "Кэшировать анализ в SGF"
@@ -814,8 +814,8 @@ msgstr "Пароль"
 msgid "contribute:maxgames:hint"
 msgstr ""
 "Оптимальное значение numSearchThreads, около 8 для GPU среднего уровня. Для "
-"коротких сессий обучения лучше установить поменьше, т.к. наполовину "
-"сыгранные игры не представляют интереса."
+"коротких сессий обучения лучше установить поменьше, т.к. незаконченные игры "
+"не загружаются."
 
 msgid "contribute:ownership:hint"
 msgstr "Слегка замедляет тренировку, но позволяет визуализацию."
@@ -864,7 +864,7 @@ msgstr ""
 "Генерация позиции с помощью игры AI с самим собой: Ход {move}/{until_move}."
 
 msgid "editgame"
-msgstr "Редактировать игры"
+msgstr "Редактировать игру"
 
 msgid "new zealand"
 msgstr "Новозеландские"
@@ -890,7 +890,9 @@ msgstr ""
 
 msgid "change engine suggestion"
 msgstr ""
-"Во-первых, попробуйте скачать и выбрать другую версию движка KataGo {link}"
+"Сначала нажмите «Повторить», чтобы перезапустить движок. Если это не "
+"помогло, попробуйте скачать версии KataGo и выбрать другой исполняемый файл "
+"в {link} ."
 
 msgid "link_here"
 msgstr "Нажмите здесь"
@@ -920,7 +922,7 @@ msgid "Midgame"
 msgstr "Середина игры"
 
 msgid "stat:meanpointloss"
-msgstr "Главные потери очков"
+msgstr "Средняя потеря очков"
 
 msgid "stat:aitop5"
 msgstr ""
@@ -930,7 +932,7 @@ msgstr ""
 msgid "stat:aitopmove"
 msgstr ""
 "% совпадения с\n"
-"идеальными ходами ИИ"
+"лучшим ходом ИИ"
 
 msgid "Entire Game"
 msgstr "Полная игра"
@@ -938,8 +940,7 @@ msgstr "Полная игра"
 msgid "ai:antimirror"
 msgstr "Противозеркальная"
 
-#. on move tree editing, deletes all other branches splitting off from
-#. the
+#. on move tree editing, deletes all other branches splitting off from the
 #. path UP TO this node
 msgid "Prune Branch"
 msgstr "Удалить ответвления"
@@ -966,6 +967,7 @@ msgstr "от хода"
 msgid "to move"
 msgstr "до хода"
 
+#. Restrict analysis to move range
 msgid "limit to moves"
 msgstr "Только для ходов"
 
@@ -973,92 +975,83 @@ msgstr "Только для ходов"
 msgid "move range analysis"
 msgstr "Анализ ходов от {start_move} до {end_move} с {visits} посещениями"
 
-#. TODO
 msgid "contribute:passwordwarning"
-msgstr "(Stored as plain text, do not re-use this anywhere)"
+msgstr "(Хранится в открытом виде, не используйте этот пароль где-либо ещё)"
 
-#. TODO
 msgid "ai:human"
-msgstr "Human-like"
+msgstr "Человеческий стиль"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "Профи по годам"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a human-like KataGo model. Specifically, Imitate "
-"pro and strong insei moves based on historical game records from the "
-"specified year and surrounding years."
+"Выбирает ходы с помощью модели KataGo, имитирующей человеческую игру. "
+"Имитирует ходы профессионалов и сильных инсэев на основе исторических партий"
+" указанного года и соседних лет."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a human-like KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"Выбирает ходы с помощью модели KataGo, имитирующей человеческую игру. Если "
+"отмечено 'modern_style', модель разыгрывает дебют в стиле AlphaZero (после "
+"2016 года)."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "Путь к «человекоподобной» модели"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "WebSocket-адрес KataGo"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr ""
+"Оставьте пустым, чтобы использовать локальный движок KataGo. Используйте "
+"ws:// или wss://."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "Адрес удалённого KataGo не указан"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Адрес удалённого KataGo должен начинаться с ws:// или wss://"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr "Не удалось подключиться к удалённому KataGo по адресу {url}: {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "Удалённый движок KataGo отключён: {error}"
 
-#. TODO - Shown instead of "engine died popup opening message" for remote
-#. engines.
 msgid "remote engine disconnected popup opening message"
 msgstr ""
-"The connection to the remote KataGo engine was lost and could not be re-established automatically.\n"
+"Соединение с удалённым движком KataGo было потеряно, и его не удалось восстановить автоматически.\n"
 "\n"
-"The error was: [color=#CC2222]{error_message}[/color]\n"
+"Ошибка: [color=#CC2222]{error_message}[/color]\n"
 "\n"
-"The error code was: [color=#CC2222]{code}[/color]."
+"Код ошибки: [color=#CC2222]{code}[/color]."
 
-#. TODO - Button to reconnect/restart the engine from the recovery popup.
 msgid "engine recovery: retry"
-msgstr "Retry"
+msgstr "Повторить"
 
-#. TODO - Link in tags should not be touched. Shown for remote engines.
 msgid "remote engine check url suggestion"
 msgstr ""
-"If the remote engine has worked before, press Retry to reconnect once it is "
-"back. Otherwise, double-check the remote engine URL in {link} ."
+"Если удалённый движок раньше работал, нажмите «Повторить», чтобы "
+"переподключиться, когда он снова заработает. В противном случае проверьте "
+"URL удалённого движка в {link} ."
 
-#. TODO
 msgid "engine:tab:custom"
-msgstr "Custom command"
+msgstr "Своя команда"
 
-#. TODO
 msgid "engine:backend:note"
-msgstr "The selected tab determines the engine used."
+msgstr "Выбранная вкладка определяет используемый движок."
 
-#. TODO
 msgid "engine:tab:remote"
-msgstr "Remote engine"
+msgstr "Удалённый движок"
 
-#. TODO
 msgid "engine:tab:local"
-msgstr "Local engine"
+msgstr "Локальный движок"
+
+msgid "show move numbers"
+msgstr "Показывать номера ходов на доске (переключение клавишей «m»)"
+
+msgid "general:anim_pv_moves"
+msgstr ""
+"Сколько ходов показывать при анимации последовательности (0 — не "
+"анимировать)"

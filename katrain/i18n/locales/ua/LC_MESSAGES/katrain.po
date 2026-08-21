@@ -198,11 +198,11 @@ msgstr "Вставити ходи"
 
 #. status message
 msgid "extra analysis"
-msgstr "Виконується додатковий аналіз до {visits} визитів"
+msgstr "Виконується додатковий аналіз до {visits} візитів"
 
 #. status message
 msgid "sweep analysis"
-msgstr "Аналіз усієї дошки, {visits} перевірок на кожен хід"
+msgstr "Аналіз усієї дошки, {visits} візитів на кожен хід"
 
 #. status message
 msgid "alternative analysis"
@@ -214,7 +214,7 @@ msgstr "Пошук локальних відповідей"
 
 #. status message
 msgid "equalizing analysis"
-msgstr "Зрівнювання аналізу можливих ходів до {visits} перевірок"
+msgstr "Зрівнювання аналізу можливих ходів до {visits} візитів"
 
 #. status message
 msgid "game re-analysis"
@@ -243,8 +243,8 @@ msgstr ""
 
 msgid "ai-ponder"
 msgstr ""
-"Індикатор стану AI-енджину: зелений (очікування), оранжевий (обробка "
-"запитів). Стає червоним у випадку аварії або збою запуску AI-енджину."
+"Індикатор стану рушія: зелений (очікування), оранжевий (обробка запитів). "
+"Стає червоним у випадку аварії або збою запуску рушія."
 
 #. undo button on the right
 msgid "undo-button-text"
@@ -378,11 +378,11 @@ msgstr "Ваші нотатки SGF для цієї позиції тут."
 
 # sgf load popup
 msgid "load sgf title"
-msgstr "Загрузити SGF-файл для аналізу"
+msgstr "Завантажити SGF-файл для аналізу"
 
 # sgf load button
 msgid "Load File"
-msgstr "Загрузити файл"
+msgstr "Завантажити файл"
 
 # sgf save as button
 msgid "Save File"
@@ -526,7 +526,7 @@ msgid "show last n dots"
 msgstr "Відображати точки за останні <ця кількість> ходів"
 
 msgid "show ai dots"
-msgstr "Відображати точки та SGF комментарії для AI гравців"
+msgstr "Відображати точки та SGF-коментарі для AI гравців"
 
 #. point loss precision options
 msgid "show two digits for point loss near zero"
@@ -542,7 +542,7 @@ msgstr "Зберегти налаштування"
 
 # main config settings
 msgid "restarting engine"
-msgstr "Перезапуск AI-енджину після зміни конфігурації."
+msgstr "Перезапуск рушія після зміни конфігурації."
 
 #. contribute settings popup
 msgid "contribute settings title"
@@ -568,7 +568,7 @@ msgstr ""
 "оскільки неповні ігри не завантажуються."
 
 msgid "contribute:ownership"
-msgstr "Визуалізувати теріторію"
+msgstr "Візуалізувати територію"
 
 #. hint for ownership
 msgid "contribute:ownership:hint"
@@ -607,7 +607,7 @@ msgstr "Розпочати участь!"
 
 # title
 msgid "general settings title"
-msgstr "Загальні та налаштування AI-енджину"
+msgstr "Загальні налаштування та налаштування рушія"
 
 msgid "file not found"
 msgstr "Шлях не існує"
@@ -619,7 +619,7 @@ msgid "katago settings"
 msgstr "Налаштування KataGo"
 
 msgid "engine settings"
-msgstr "Налаштування AI-енджину"
+msgstr "Налаштування рушія"
 
 msgid "config file path"
 msgstr "Усі налаштування збережені в:"
@@ -637,11 +637,11 @@ msgid "engine:config"
 msgstr "Шлях до файлу конфігурації KataGo"
 
 msgid "engine:altcommand"
-msgstr "Змінити команду запуску енджину"
+msgstr "Змінити команду запуску рушія"
 
 msgid "engine:altcommand:hint"
 msgstr ""
-"Повна команда для запуску енджина. Усі інші параметри моделі будуть "
+"Повна команда для запуску рушія. Усі інші параметри моделі будуть "
 "ігноруватися."
 
 msgid "engine:max_visits"
@@ -728,7 +728,7 @@ msgid "Starting Kata failed"
 msgstr "Не вдалося запустити KataGo з командою '{command}', помилка: {error}."
 
 msgid "Engine died unexpectedly"
-msgstr "Енджин несподівано припинив роботу без виведення: {error}"
+msgstr "Рушій несподівано припинив роботу без виведення: {error}"
 
 msgid "Engine missing DLL"
 msgstr ""
@@ -742,7 +742,7 @@ msgstr "Допомога з налаштуванням KataGo"
 
 msgid "engine died popup opening message"
 msgstr ""
-"Енджин KataGo не вдалося запустити або він аварійно завершив роботу.\n"
+"Рушій KataGo не вдалося запустити або він аварійно завершив роботу.\n"
 "\n"
 "Помилка: [color=#CC2222]{error_message}[/color]\n"
 "\n"
@@ -763,7 +763,7 @@ msgstr ""
 
 #. as in "click here" to go to this page,
 msgid "link_here"
-msgstr "натиснить тут"
+msgstr "натисніть тут"
 
 #. AI names, help etc
 msgid "strength:kyu"
@@ -778,8 +778,8 @@ msgstr "KataGo"
 msgid "aihelp:default"
 msgstr ""
 "Повна сила AI KataGo. Сила залежить від параметрів 'max visits' і 'model' у "
-"загальних налаштуваннях розділу енджина та у файлі конфігурації енджина. "
-"Ніякі опції тут недоступні."
+"загальних налаштуваннях розділу рушія та у файлі конфігурації рушія. Ніякі "
+"опції тут недоступні."
 
 #. ai which handles handicap games better
 msgid "ai:handicap"
@@ -792,7 +792,7 @@ msgstr ""
 "встановлено 'automatic', KaTrain автоматично підбере відповідне значення."
 
 msgid "ai:simple"
-msgstr "Simple Style"
+msgstr "Простий стиль"
 
 msgid "aihelp:simple"
 msgstr ""
@@ -803,10 +803,9 @@ msgstr ""
 "стабілізують територію опонента (з важливістю 'settled_weight' * "
 "'opponent_fac'), уникають тенукі (більше ніж на 5 клітин, важливість "
 "'tenuki_penalty') та уникають прикріплення (важливість "
-"'attachment_penalty'). Ваги можуть бути негативними, щоб ускладнити гру, а "
-"wideRootNoise (у загальних налаштуваннях) може бути використаний для для "
-"гри, більш відповідної до обраного стилю, але за рахунок зниження сили "
-"ходів."
+"'attachment_penalty'). Ваги можуть бути від'ємними, щоб ускладнити гру, а "
+"wideRootNoise (у загальних налаштуваннях) може бути використаний для гри, "
+"більш відповідної до обраного стилю, але за рахунок зниження сили ходів."
 
 msgid "ai:jigo"
 msgstr "KataJigo"
@@ -836,10 +835,10 @@ msgstr "Політика"
 
 msgid "aihelp:policy"
 msgstr ""
-"Виконує найкращий хід згідно з політичною мережею без додаткового аналізу. "
-"Сила переважно залежить від параметра 'модель' у налаштуваннях енджина. "
-"Параметр 'opening_moves' впливає на кількість більш випадкових ходів на "
-"початку гри."
+"Виконує найкращий хід згідно з мережею політики (policy) без додаткового "
+"аналізу. Сила переважно залежить від параметра 'model' у налаштуваннях "
+"рушія. Параметр 'opening_moves' впливає на кількість більш випадкових ходів "
+"на початку гри."
 
 msgid "ai:p:weighted"
 msgstr "Політика з коефіцієнтами"
@@ -883,7 +882,7 @@ msgstr ""
 "очевидних помилок. Вищий 'stddev' змушує грати ще далі."
 
 msgid "ai:p:influence"
-msgstr "Influential Style"
+msgstr "Стиль впливу"
 
 msgid "aihelp:p:influence"
 msgstr ""
@@ -892,11 +891,11 @@ msgstr ""
 "після того, як буде заповнено частину дошки, визначену параметром 'endgame'."
 
 msgid "ai:p:territory"
-msgstr "Territorial Style"
+msgstr "Територіальний стиль"
 
 msgid "aihelp:p:territory"
 msgstr ""
-"Вибирає ходи, що перевищують 'threshold', і робить найкращий. Збільште "
+"Вибирає ходи, нижчі за 'threshold', і робить найкращий. Збільште "
 "'line_weight', щоб більше штрафувати ходи біля центру. Стратегія "
 "припиняється після того, як буде заповнено частину дошки, визначену "
 "параметром 'endgame'."
@@ -944,7 +943,7 @@ msgstr "Всі доступні виконувані файли вже зава�
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze max visits"
-msgstr "Кількість визитів на хід"
+msgstr "Кількість візитів на хід"
 
 #. label in little popup for analyzing entire game
 msgid "reanalyze mistakes only"
@@ -1056,61 +1055,53 @@ msgstr "Генерувати гру до ходу:"
 
 #. distance of wall to existing stones
 msgid "tsumego:walldistance"
-msgstr "Дістанція до стінки"
+msgstr "Відстань до стінки"
 
 #. tsumego: ko is good enough?
 msgid "tsumego:ko"
 msgstr "Дозволити ко?"
 
-#. TODO
 msgid "ai:human"
-msgstr "Humanlike Model"
+msgstr "Людиноподібний"
 
-#. TODO
 msgid "ai:pro"
-msgstr "Historical Pro"
+msgstr "Профі за роками"
 
-#. TODO
 msgid "aihelp:pro"
 msgstr ""
-"Picks moves according to a humanlike KataGo model. Specifically, Imitate pro"
-" and strong insei moves based on historical game records from the specified "
-"year and surrounding years."
+"Обирає ходи за допомогою людиноподібної моделі KataGo. А саме, імітує ходи "
+"професіоналів та сильних інсеїв на основі історичних партій зазначеного року"
+" та сусідніх років."
 
-#. TODO
 msgid "aihelp:human"
 msgstr ""
-"Picks moves according to a humanlike KataGo model. If 'modern_style' is "
-"ticked, the model will play according to a post-2016 AlphaZero opening "
-"style."
+"Обирає ходи за допомогою людиноподібної моделі KataGo. Якщо позначено "
+"'modern_style', модель розігруватиме дебют у стилі AlphaZero після 2016 "
+"року."
 
-#. TODO
 msgid "engine:humanlike_model"
-msgstr "Path to human-like model"
+msgstr "Шлях до «людиноподібної» моделі"
 
-#. TODO
 msgid "engine:remote_url"
-msgstr "KataGo WebSocket URL"
+msgstr "WebSocket-адреса KataGo"
 
-#. TODO
 msgid "engine:remote_url:hint"
-msgstr "Leave blank to use a local KataGo engine. Use ws:// or wss://."
+msgstr ""
+"Залиште порожнім, щоб використовувати локальний рушій KataGo. Використовуйте"
+" ws:// або wss://."
 
-#. TODO
 msgid "Remote KataGo URL is empty"
-msgstr "Remote KataGo URL is empty"
+msgstr "Адресу віддаленого KataGo не вказано"
 
-#. TODO
 msgid "Remote KataGo URL must start with ws:// or wss://"
-msgstr "Remote KataGo URL must start with ws:// or wss://"
+msgstr "Адреса віддаленого KataGo має починатися з ws:// або wss://"
 
-#. TODO
 msgid "Connecting to remote KataGo failed"
-msgstr "Connecting to remote KataGo at {url} failed: {error}"
+msgstr ""
+"Не вдалося підключитися до віддаленого KataGo за адресою {url}: {error}"
 
-#. TODO
 msgid "Remote KataGo engine disconnected"
-msgstr "Remote KataGo engine disconnected: {error}"
+msgstr "Віддалений рушій KataGo від'єднано: {error}"
 
 #. Shown instead of "engine died popup opening message" for remote
 #. engines.
@@ -1144,3 +1135,10 @@ msgstr "Власна команда"
 
 msgid "engine:backend:note"
 msgstr "Вибрана вкладка визначає використовуваний рушій."
+
+msgid "show move numbers"
+msgstr "Показувати номери ходів на дошці (перемикання клавішею «m»)"
+
+msgid "general:anim_pv_moves"
+msgstr ""
+"Скільки ходів показувати під час анімації послідовності (0 — не анімувати)"
