@@ -30,7 +30,6 @@ from katrain.gui.widgets.material import CircularRippleBehavior, RectangularRipp
 class SizedButton(RectangularRippleBehavior, LeftButtonBehavior, AnchorLayout, BackgroundMixin):
     text = StringProperty("")
     text_color = ListProperty(Theme.BUTTON_TEXT_COLOR)
-    text_size = ListProperty([100, 100])
     halign = OptionProperty("center", options=["left", "center", "right", "justify", "auto"])
     label = ObjectProperty(None)
     padding_x = NumericProperty(6)
@@ -80,7 +79,6 @@ class TransparentIconButton(CircularRippleBehavior, Button):
     color = ListProperty([1, 1, 1, 1])
     icon_size = ListProperty([25, 25])
     icon = StringProperty("")
-    disabled = BooleanProperty(False)
 
 
 class PauseButton(CircularRippleBehavior, LeftButtonBehavior, Widget):

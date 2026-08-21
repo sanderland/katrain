@@ -105,7 +105,12 @@ class ProgressLoader(BoxLayout):
         if self.download_redirected:
             self.download_redirected(request)
 
+    def stop_spinner(self):
+        """The spinner restarts its own animation while active, so it has to be switched off."""
+        self.ids.spinner.active = False
+
     def cleanup(self):
+        self.stop_spinner()
         self.root_instance.remove_widget(self)
 
     def handle_error(self, request, error):
@@ -113,7 +118,7 @@ class ProgressLoader(BoxLayout):
         if request.resp_status:
             status += f" ({request.resp_status})"
         self.label_downloading_text = self.downloading_text.format(status)
-        self.ids.spinner.active = False
+        self.stop_spinner()
         if self.download_error:
             self.download_error(request, error)
 

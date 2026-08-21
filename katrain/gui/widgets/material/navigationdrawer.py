@@ -56,7 +56,7 @@ class NavigationLayout(FloatLayout):
 class NavigationDrawer(BoxLayout):
     """Panel that slides in from the side, by dragging its edge or via :meth:`set_state`."""
 
-    state = OptionProperty("close", options=("close", "open"))
+    state = OptionProperty("close", options=("close", "open"))  # where it is heading, not where it is
     open_progress = NumericProperty(0.0)  # 0 fully closed, 1 fully open
 
     close_on_click = BooleanProperty(True)  # close on escape or a click outside the drawer
@@ -79,10 +79,12 @@ class NavigationDrawer(BoxLayout):
             new_state = "close" if self.state == "open" else "open"
         opening = new_state == "open"
         target = 1.0 if opening else 0.0
+        # Set the state before animating: a toggle part-way through an animation has to see
+        # where the drawer is going, or it just re-issues the move it is already making.
+        self.state = new_state
         Animation.cancel_all(self, "open_progress")
         if not animation or self.open_progress == target:
             self.open_progress = target
-            self.state = new_state
             return
         duration = (
             (self.opening_time * (1 - self.open_progress)) if opening else (self.closing_time * self.open_progress)
@@ -93,8 +95,6 @@ class NavigationDrawer(BoxLayout):
     def on_open_progress(self, _instance, progress):
         if isinstance(self.parent, NavigationLayout):
             self.parent.set_scrim_opacity(getattr(AnimationTransition, self.scrim_transition)(progress))
-        if not self._swiping and progress in (0.0, 1.0):
-            self.state = "open" if progress == 1.0 else "close"
 
     def on_touch_down(self, touch):
         if self.state == "close":

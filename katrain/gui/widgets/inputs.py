@@ -31,7 +31,7 @@ class KeyValueSpinner(Spinner):
     def input_value(self):
         try:
             return self.value_refs[self.selected_index]
-        except KeyError:
+        except IndexError:
             return ""
 
     @property

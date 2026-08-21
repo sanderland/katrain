@@ -651,8 +651,10 @@ class BaseConfigPopup(QuickConfigGui):
             self.check_models()
 
         for c in self.download_progress_box.children:
-            if isinstance(c, ProgressLoader) and c.request:
-                c.request.cancel()
+            if isinstance(c, ProgressLoader):
+                c.stop_spinner()  # the box is about to be cleared, and its animation would outlive it
+                if c.request:
+                    c.request.cancel()
         Clock.schedule_once(lambda _dt: self.download_progress_box.clear_widgets(), -1)  # main thread
         downloading = False
 

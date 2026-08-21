@@ -1,4 +1,4 @@
-"""Material Design touch ripple, drawn in the host widget's ``canvas.after``.
+"""Material Design touch ripple, drawn on top of the host widget.
 
 Mix :class:`RectangularRippleBehavior` or :class:`CircularRippleBehavior` into a
 widget that also has a :class:`~kivy.uix.behaviors.ButtonBehavior`, listing the
@@ -9,14 +9,22 @@ ripple *before* the button behaviour so that the ripple sees the touch first::
 """
 
 from kivy.animation import Animation
-from kivy.graphics import Color, Ellipse, Rectangle, StencilPop, StencilPush, StencilUnUse, StencilUse
+from kivy.graphics import Canvas, Color, Ellipse, Rectangle, StencilPop, StencilPush, StencilUnUse, StencilUse
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, StringProperty
 
 from katrain.gui.theme import Theme
 
 
 class RippleBehavior:
-    """Expanding-and-fading circle that follows a touch, clipped to the widget."""
+    """Expanding-and-fading circle that follows a touch, clipped to the widget.
+
+    The ripple gets its own layer inside the host's ``canvas.after`` rather than
+    drawing there directly, so that clearing it up cannot take anything else drawn
+    on the widget with it (`BadukPanWidget` draws the pass-move policy hint onto the
+    pass button that way), nor be taken out by such a redraw mid-ripple.
+    """
+
+    _ripple_layer = None
 
     ripple_color = ListProperty(Theme.RIPPLE_COLOR)
     ripple_alpha = NumericProperty(0.5)
@@ -47,16 +55,19 @@ class RippleBehavior:
         return super().on_touch_move(touch, *args)
 
     def on_touch_up(self, touch):
-        if self._expanding and self.collide_point(touch.x, touch.y):
+        if self._expanding and not self._releasing and self.collide_point(touch.x, touch.y):
             self._release_ripple()
         return super().on_touch_up(touch)
 
     def anim_complete(self, *_args):
-        """Cancel any running ripple and clear it from the canvas."""
+        """Cancel any running ripple and take its layer back off the canvas."""
         Animation.cancel_all(self, "_ripple_radius", "ripple_color")
         self.unbind(ripple_color=self._set_ripple_color, _ripple_radius=self._set_ripple_radius)
         self._expanding = self._releasing = self._fading_out = False
-        self.canvas.after.clear()
+        if self._ripple_layer is not None:
+            if self._ripple_layer in self.canvas.after.children:  # a redraw may have cleared it already
+                self.canvas.after.remove(self._ripple_layer)
+            self._ripple_layer = None
 
     # -- internals
 
@@ -67,6 +78,8 @@ class RippleBehavior:
         self._ripple_radius = self.ripple_start_radius
         self.ripple_color = [*self.ripple_color[:3], self.ripple_alpha]
         self._final_radius = max(self.width, self.height) * self.ripple_scale
+        self._ripple_layer = Canvas()
+        self.canvas.after.add(self._ripple_layer)
         self._draw_ripple()
         self._expanding = True
         anim = Animation(_ripple_radius=self._final_radius, t="linear", duration=self.ripple_duration_in_slow)
@@ -95,7 +108,7 @@ class RippleBehavior:
         anim.start(self)
 
     def _draw_ripple(self):
-        """Add the ripple instructions, clipped to the widget's shape."""
+        """Fill :attr:`_ripple_layer` with the ripple, clipped to the widget's shape."""
         raise NotImplementedError
 
     def _set_ripple_color(self, _instance, value):
@@ -111,7 +124,7 @@ class RectangularRippleBehavior(RippleBehavior):
     ripple_scale = NumericProperty(2.75)
 
     def _draw_ripple(self):
-        with self.canvas.after:
+        with self._ripple_layer:
             StencilPush()
             Rectangle(pos=self.pos, size=self.size)
             StencilUse()
@@ -135,7 +148,7 @@ class CircularRippleBehavior(RippleBehavior):
     ripple_scale = NumericProperty(1)
 
     def _draw_ripple(self):
-        with self.canvas.after:
+        with self._ripple_layer:
             StencilPush()
             Ellipse(
                 size=(self.width * self.ripple_scale, self.height * self.ripple_scale),
