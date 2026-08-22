@@ -130,7 +130,7 @@ jobs:
     - name: Install macOS dependencies
       run: |
         brew update
-        brew install libzip ninja
+        brew install libzip ninja protobuf abseil
         brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
 
     - name: Build KataGo
