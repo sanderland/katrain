@@ -45,10 +45,13 @@ If you have selected an older KataGo binary of your own, either upgrade it or se
 ### Running from source
 
 Make sure you `brew install katago` or set the engine path to your own KataGo binary, as there is no executable included.
+Homebrew's KataGo uses the Metal backend, which is the fastest option on macOS.
 
-### New Macs with M1 architecture
+### Which engine the .app bundles
 
-Make sure you `brew install katago` as the provided executable does not work on rosetta.
+The Apple Silicon .app bundles a KataGo built with the Metal backend, which uses the GPU and Neural Engine and
+ requires macOS 13 or later. The Intel .app bundles an OpenCL build.
+If the bundled engine does not work on your machine, `brew install katago` and set the engine path to that binary.
 
 ### Getting more information about errors
 

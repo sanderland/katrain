@@ -70,7 +70,7 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
 
 ## <a name="kata"></a>  Configuring KataGo
 
-KaTrain comes pre-packaged with a working KataGo (OpenCL version) for Windows, Linux and Mac, and the `b10c384h6nbt` transformer model, which is stronger per visit than the strongest 18 block models while being about as fast.
+KaTrain comes pre-packaged with a working KataGo for Windows, Linux and Mac (OpenCL, except on Apple Silicon where it uses the Metal backend), and the `b10c384h6nbt` transformer model, which is stronger per visit than the strongest 18 block models while being about as fast.
 
 To change the model, open 'General and Engine settings' in the application and 'Download models'. You can then select the model you want from the dropdown menu.
 
