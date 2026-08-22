@@ -111,8 +111,10 @@ jobs:
         include:
           - runner: macos-latest
             arch: arm64
+            backend: METAL
           - runner: macos-15-intel
             arch: x86_64
+            backend: OPENCL
     runs-on: ${{ matrix.runner }}
     env:
       KATRAIN_VERSION: ${{ needs.prepare.outputs.version }}
@@ -128,7 +130,7 @@ jobs:
     - name: Install macOS dependencies
       run: |
         brew update
-        brew install libzip
+        brew install libzip ninja protobuf abseil
         brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
 
     - name: Build KataGo
@@ -136,8 +138,8 @@ jobs:
         rm -f katrain/KataGo/katago katrain/KataGo/*.dll katrain/KataGo/katago.exe
         git clone --depth 1 --branch stable https://github.com/lightvector/KataGo.git ../KataGo
         pushd ../KataGo/cpp
-        cmake . -DUSE_BACKEND=OPENCL -DBUILD_DISTRIBUTED=1
-        make -j$(sysctl -n hw.ncpu)
+        cmake -G Ninja . -DUSE_BACKEND=${{ matrix.backend }} -DBUILD_DISTRIBUTED=1
+        cmake --build . -j$(sysctl -n hw.ncpu)
         cp katago ../../katrain/katrain/KataGo/katago-osx
         popd
 
