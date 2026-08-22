@@ -76,8 +76,10 @@ To change the model, open 'General and Engine settings' in the application and '
 
 To change the katago binary, e.g. to the Eigen/CPU version if you don't have a GPU, click 'Download KataGo versions'.
   You can then select the KataGo binary from the dropdown menu.
-There are also CUDA and TensorRT versions available on [the KataGo release site](https://github.com/lightvector/KataGo/releases). Particularly the latter may offer much better performance on NVIDIA GPUs, but will be harder to 
-set up: [see here for more details](https://github.com/lightvector/KataGo#opencl-vs-cuda-vs-tensorrt-vs-eigen).
+There are also versions for specific hardware available on [the KataGo release site](https://github.com/lightvector/KataGo/releases):
+CUDA and TensorRT for NVIDIA GPUs, ROCm for AMD GPUs, and ONNX for Intel GPUs/NPUs (OpenVINO) or any DirectX 12 GPU (DirectML).
+These may offer much better performance than OpenCL, but are harder to set up, and the ONNX version additionally requires setting
+ `onnxProvider` in `KataGo/analysis_config.cfg`: [see here for more details](https://github.com/lightvector/KataGo#opencl-vs-cuda-vs-tensorrt-vs-eigen).
 
 Finally, you can override the entire command used to start the analysis engine, which 
  can be useful for connecting to a remote server. Do keep in mind that KaTrain uses the *analysis engine*
