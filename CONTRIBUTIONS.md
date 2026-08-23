@@ -1,13 +1,14 @@
-# Contributing 
+# Contributing
 
 If you are a new contributor wanting to make a larger contribution,
  please first discuss the change you wish to make via
- an issue, reddit or discord before making a pull request.
+ an issue or [Discord](https://discord.gg/AjTPFpN) before making a pull request.
 
 ## Python contributions
 
-Python code is formatted using [black](https://github.com/psf/black) with the settings `-l 120`.
-This is not enforced, and contributions with incorrect formatting will be accepted, but formatting this way is appreciated.
+Python code is formatted and linted using [ruff](https://docs.astral.sh/ruff/), with the settings in `pyproject.toml` (line length 120).
+Run `uvx pre-commit install` once to have `ruff format` and `ruff check` run automatically when you commit,
+ or run `uv run ruff format` and `uv run ruff check --fix` by hand.
 
 ## Translations
 
@@ -19,7 +20,7 @@ This is not enforced, and contributions with incorrect formatting will be accept
 
 ### Adding a translation
 
-Adding a translation requires making a new `.po` file with entries for that languages.
+Adding a translation requires making a new `.po` file with entries for that language.
 
 * Copy the [English .po file](https://github.com/sanderland/katrain/blob/master/katrain/i18n/locales/en/LC_MESSAGES/katrain.po)
 * Change all the `msgstr` entries to your target language.

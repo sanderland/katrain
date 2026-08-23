@@ -1,14 +1,15 @@
 # KataGo troubleshooting
 
 This page lists common ways in which the provided KataGo fails to work out of the box, and how to resolve these issues.
-If you find your problem is not in here, you can ask on the [Leela Zero & Friends Discord](http://discord.gg/AjTPFpN) (use the #gui channel),
- providing detailed information about your error.  
+If you find your problem is not in here, you can ask on the [Computer Go Community Discord](https://discord.gg/AjTPFpN) (use the #gui channel),
+ providing detailed information about your error.
 
 
 * [General](#General)
     * [GPU vs CPU](#CPU)
+    * [KataGo model versions](#Models)
+* [macOS specific help](#Mac)
 * [Windows specific help](#Windows)
-* [MacOS specific help](#Mac)
 * [Linux specific help](#Linux)
 
 
@@ -31,12 +32,10 @@ visits to a lower number to compensate for this.
 
 ###  <a name="Models"></a> KataGo model versions
 
-KataGo models have changed over time, and selecting an older executable with a newer model can lead to errors.
-Of the provided binaries, this is typically the case for the 1.6.1 'bigger boards' binary, which should
- only be used with the standard 15/20/30/40 block models, and not the newer distributed training models.
-
+KataGo models have changed over time, and loading a newer model with an older executable can lead to errors.
 The transformer models, including the `b10c384h6nbt` model included with KaTrain, require KataGo v1.17.0 or later.
-If you have selected an older KataGo binary of your own, either upgrade it or select an older model, such as one of
+The binaries offered under 'Download KataGo versions' are all recent enough, but if you have selected an older
+ KataGo binary of your own, either upgrade it or select an older model, such as one of
  the distributed training models available under 'Download models'.
 
 
@@ -55,14 +54,14 @@ If the bundled engine does not work on your machine, `brew install katago` and s
 
 ### Getting more information about errors
 
-On macOS, the .app distributable will not show a console, so you will need install using `pip` to see the console window.
+On macOS, the .app distributable will not show a console, so you will need to install via pip/pipx and run `katrain` from a terminal to see console output.
 
 ##  <a name="Windows"></a><img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Windows_logo_-_2012.svg" alt="Windows" height="35"/> For Windows users
 
 ### Getting more information about errors
 
-Run DebugKaTrain.exe, which is released in the .zip file distributable in releases. This will show a console window
- which typically tells you more.
+Run `debugkatrain.exe`, which is included next to the main executable in the `KaTrain.zip` distributable on the
+ [releases page](https://github.com/sanderland/katrain/releases). This will show a console window which typically tells you more.
 
 
 ## <a name="Linux"></a><img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Linux_Logo_in_Linux_Libertine_Font.svg" alt="Linux" height="35"/> For Linux users

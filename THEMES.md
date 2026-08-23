@@ -64,9 +64,9 @@ The colors are specified as RGB values and a maximum alpha transparency.
 
 ### Alternate board/stones theme by "koast"
 
-[Download](https://github.com/sanderland/katrain/blob/master/themes/koast-theme.zip)
+[Download](themes/koast-theme.zip)
 
-<img src="https://raw.githubusercontent.com/sanderland/katrain/master/themes/koast.png" width="500">
+<img src="themes/koast.png" width="500">
 
 ### Lizzie-like theme
 
@@ -74,9 +74,9 @@ The colors are specified as RGB values and a maximum alpha transparency.
 * Images taken from [Lizzie](https://github.com/featurecat/lizzie/) by featurecat and contributors.
 * Hides hints for low visit/uncertain moves instead of showing small dots. 
 
-[Download](https://github.com/sanderland/katrain/blob/master/themes/eric-lizzie-look.zip)
+[Download](themes/eric-lizzie-look.zip)
 
-<img src="https://raw.githubusercontent.com/sanderland/katrain/master/themes/eric-lizzie.png" width="500">
+<img src="themes/eric-lizzie.png" width="500">
 
 ### Milos Theme
 * Clean and crisp display.
@@ -92,5 +92,5 @@ The colors are specified as RGB values and a maximum alpha transparency.
 * This theme makes Jeff comment `Ahhh?` and `What?!` when you make mistakes.
 * Sounds provided by Mikkgo.
 
-[Download](https://github.com/sanderland/katrain/blob/master/themes/jeff-sounds.zip)
+[Download](themes/jeff-sounds.zip)
 

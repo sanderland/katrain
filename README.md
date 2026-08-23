@@ -1,10 +1,10 @@
 # <a name="manual"></a> KaTrain
 
-[![Latest Release](http://img.shields.io/github/release/sanderland/katrain?label=download)](http://github.com/sanderland/katrain/releases)
-[![License:MIT](http://img.shields.io/pypi/l/katrain)](http://en.wikipedia.org/wiki/MIT_License)
-[![GitHub Downloads](http://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)](http://github.com/sanderland/katrain/releases)
-[![PyPI Downloads](http://pepy.tech/badge/katrain)](http://pepy.tech/project/katrain)
-[![Discord](http://img.shields.io/discord/417022162348802048?logo=discord)](http://discord.com/channels/417022162348802048/629446365688365067)
+[![Latest Release](https://img.shields.io/github/release/sanderland/katrain?label=download)](https://github.com/sanderland/katrain/releases)
+[![License:MIT](https://img.shields.io/pypi/l/katrain)](https://en.wikipedia.org/wiki/MIT_License)
+[![GitHub Downloads](https://img.shields.io/github/downloads/sanderland/katrain/total?color=%23336699&label=github%20downloads)](https://github.com/sanderland/katrain/releases)
+[![PyPI Downloads](https://pepy.tech/badge/katrain)](https://pepy.tech/project/katrain)
+[![Discord](https://img.shields.io/discord/417022162348802048?logo=discord)](https://discord.com/channels/417022162348802048/629446365688365067)
 
 KaTrain is a tool for analyzing games and playing go with AI feedback from KataGo:
 
@@ -18,64 +18,62 @@ KaTrain is a tool for analyzing games and playing go with AI feedback from KataG
 <table>
 <td>
 
-- [ KaTrain](#-katrain)
-  - [Manual](#manual)
-  - [  Preview and Youtube Videos](#--preview-and-youtube-videos)
-  - [ Installation](#-installation)
-  - [  Configuring KataGo](#--configuring-katago)
-  - [ Play against AI](#-play-against-ai)
-    - [Instant feedback](#instant-feedback)
-    - [AIs](#ais)
-  - [ Analysis](#-analysis)
-  - [ Keyboard and mouse shortcuts](#-keyboard-and-mouse-shortcuts)
-  - [ Contributing to distributed training](#-contributing-to-distributed-training)
-  - [ Themes](#-themes)
-  - [ FAQ](#-faq)
-  - [ Support / Contribute](#-support--contribute)
+- [Preview and YouTube videos](#preview)
+- [Installation](#install)
+- [Configuring KataGo](#kata)
+- [Play against AI](#ai)
+  - [Instant feedback](#instant-feedback)
+  - [AIs](#ais)
+- [Analysis](#analysis)
+- [Keyboard and mouse shortcuts](#keyboard)
+- [Contributing to distributed training](#distributed)
+- [Themes](#themes)
+- [FAQ](#faq)
+- [Support / Contribute](#support)
 
 
 <td>
 
-<a href="http://github.com/sanderland/katrain/blob/master/README.md"><img alt="English" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-uk.png" width=50></a>
-<a href="http://translate.google.com/translate?sl=en&tl=de&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="German" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-de.png" width=50></a>
-<a href="http://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-fr.png" width=50></a>
-<a href="http://translate.google.com/translate?sl=en&tl=uk&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Ukrainian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ua.png" width=50></a>
-<a href="http://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ru.png" width=50></a>
+<a href="https://github.com/sanderland/katrain/blob/master/README.md"><img alt="English" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-uk.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=de&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="German" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-de.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=fr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="French" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-fr.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=uk&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Ukrainian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ua.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=ru&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Russian" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ru.png" width=50></a>
 <br/>
-<a href="http://translate.google.com/translate?sl=en&tl=tr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Turkish" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-tr.png" width=50></a>
-<a href="http://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Simplified Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-cn.png" width=50></a>
-<a href="http://translate.google.com/translate?sl=en&tl=zh-TW&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Traditional Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-tw.png" width=50></a>
-<a href="http://translate.google.com/translate?sl=en&tl=ko&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Korean" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ko.png" width=50></a>
-<a href="http://translate.google.com/translate?sl=en&tl=ja&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Japanese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-jp.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=tr&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Turkish" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-tr.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=zh-CN&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Simplified Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-cn.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=zh-TW&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Traditional Chinese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-tw.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=ko&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Korean" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-ko.png" width=50></a>
+<a href="https://translate.google.com/translate?sl=en&tl=ja&u=https%3A%2F%2Fgithub.com%2Fsanderland%2Fkatrain%2Fblob%2Fmaster%2FREADME.md"><img alt="Japanese" src="https://github.com/sanderland/katrain/blob/master/katrain/img/flags/flag-jp.png" width=50></a>
 
 </td>
 </table>
 
-## <a name="preview"></a>  Preview and Youtube Videos
+## <a name="preview"></a> Preview and YouTube videos
 
 <img alt="screenshot" src="https://raw.githubusercontent.com/sanderland/katrain/master/screenshots/analysis.png" width="550">
 
 | **Local Joseki Analysis**                  | **Analysis Tutorial**                                                                              | **Teaching Game Tutorial**                                                                                   |
 |:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------:|
-| [![Local Joseki Analysis Video](http://i.imgur.com/YcpmSBx.png)](https://www.youtube.com/watch?v=tXniX57KtKk) | [![Analysis Tutorial](http://i.imgur.com/3EP4IEr.png)](http://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](http://i.imgur.com/jAdcSL5.png)](http://www.youtube.com/watch?v=wFl4Bab_eGM)   |
+| [![Local Joseki Analysis Video](https://i.imgur.com/YcpmSBx.png)](https://www.youtube.com/watch?v=tXniX57KtKk) | [![Analysis Tutorial](https://i.imgur.com/3EP4IEr.png)](https://www.youtube.com/watch?v=qjxkcKgrsbU) | [![ Teaching Game Tutorial](https://i.imgur.com/jAdcSL5.png)](https://www.youtube.com/watch?v=wFl4Bab_eGM)   |
 
 
 
 ## <a name="install"></a> Installation
-* See the [releases page](http://github.com/sanderland/katrain/releases) for downloadable executables for Windows and macOS.
+* See the [releases page](https://github.com/sanderland/katrain/releases) for downloadable executables for Windows and macOS.
 * Alternatively use `pipx install katrain` to install the latest version from PyPI on any 64-bit OS in an isolated environment.
-* On macOS, you can also use `brew install katrain` to install the app.
-* [This page](https://github.com/sanderland/katrain/blob/master/INSTALL.md) has detailed instructions for Window, Linux and macOS,
+* On macOS, there is also a `brew install katrain` cask, although it can lag several versions behind the releases page.
+* [INSTALL.md](https://github.com/sanderland/katrain/blob/master/INSTALL.md) has detailed instructions for Windows, Linux and macOS,
   as well as troubleshooting and setting up KataGo to use multiple GPUs.
 
 ## <a name="kata"></a>  Configuring KataGo
 
 KaTrain comes pre-packaged with a working KataGo for Windows, Linux and Mac (OpenCL, except on Apple Silicon where it uses the Metal backend), and the `b10c384h6nbt` transformer model, which is stronger per visit than the strongest 18 block models while being about as fast.
 
-To change the model, open 'General and Engine settings' in the application and 'Download models'. You can then select the model you want from the dropdown menu.
+To change the model, open 'General & Engine Settings' in the application (F8) and click 'Download models'. You can then select the model you want from the dropdown menu.
 
-To change the katago binary, e.g. to the Eigen/CPU version if you don't have a GPU, click 'Download KataGo versions'.
-  You can then select the KataGo binary from the dropdown menu.
+To change the KataGo binary, e.g. to the Eigen/CPU version if you don't have a GPU, click 'Download KataGo versions'.
+ You can then select the KataGo binary from the dropdown menu.
 There are also versions for specific hardware available on [the KataGo release site](https://github.com/lightvector/KataGo/releases):
 CUDA and TensorRT for NVIDIA GPUs, ROCm for AMD GPUs, and ONNX for Intel GPUs/NPUs (OpenVINO) or any DirectX 12 GPU (DirectML).
 These may offer much better performance than OpenCL, but are harder to set up, and the ONNX version additionally requires setting
@@ -102,7 +100,7 @@ The dots on the move indicate how many points were lost by that move.
 
 In short, if you are a weaker player you should mostly focus on large dots that are red or purple,
 while stronger players can pay more attention to smaller mistakes. If you want to hide some colours
-on the board, or not output details for them in SGFs,you can do so under 'Configure Teacher'.
+on the board, or not output details for them in SGFs, you can do so under 'Teaching/Analysis Settings'.
 
 ### AIs
 
@@ -116,8 +114,11 @@ This estimate should be reasonably accurate as long as you have not changed the 
     * **KataGo** is full KataGo, above professional level. The analysis and feedback given is always based on this full strength KataGo AI.
     * **Calibrated Rank Bot** was calibrated on various bots (e.g. GnuGo and Pachi at different strength settings) to play a balanced
      game from the opening to the endgame without making serious (DDK) blunders. Further discussion can be found
-      [here](http://github.com/sanderland/katrain/issues/44) and [here](http://github.com/sanderland/katrain/issues/74).
-    * **Simple Style** Prefers moves that solidify both player's territory, leading to relatively simpler moves.
+      [here](https://github.com/sanderland/katrain/issues/44) and [here](https://github.com/sanderland/katrain/issues/74).
+    * **Simple Style** prefers moves that solidify both players' territory, leading to relatively simpler moves.
+    * **Human-like** and **Historical Pro** use KataGo's human-trained model to imitate human players of a given rank,
+      or professional players from a given era. To enable them, download the 'Human-like model' under 'Download models'
+      and select it as the human-like model in the engine settings.
 * Legacy options which were developed earlier include: 
     * **ScoreLoss** is KataGo analyzing as usual, but
       choosing from potential moves depending on the expected score loss, leading to a varied style with mostly small mistakes.
@@ -130,13 +131,13 @@ This estimate should be reasonably accurate as long as you have not changed the 
        * **Tenuki Style** will consider mostly moves away from the last move.
        * **Influential Style** will consider mostly 4th+ line moves, leading to a center-oriented style.
        * **Territory Style** is biased in the opposite way, towards 1-3rd line moves.
-    * **KataJigo** is KataGo attempting to win by 0.5 points, typically by responding to your mistakes with an immediate mistake of it's own.
+    * **KataJigo** is KataGo attempting to win by 0.5 points, typically by responding to your mistakes with an immediate mistake of its own.
     * **KataAntiMirror** is KataGo assuming you are playing mirror go and attempting to break out of it with profit as long as you are.
     
 The Engine based AIs (KataGo, ScoreLoss, KataJigo) are affected by both the model and choice of visits and maximum time,
  while the policy net based AIs are affected by the choice of model file, but work identically with 1 visit.
 
-Further technical details and discussion on some of these AIs can be found on [this](http://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
+Further technical details and discussion on some of these AIs can be found on [this](https://lifein19x19.com/viewtopic.php?f=10&t=17488&sid=b11e42c005bb6f4f48c83771e6a27eff) thread at the life in 19x19 forums.
 
 ## <a name="analysis"></a> Analysis
 
@@ -151,8 +152,8 @@ The checkboxes at the top of the screen:
 | Key          | Short Description     | Details                                                                                                                                                                                                                                     |
 | ------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <kbd>q</kbd> | Child moves are shown | On by default, can turn it off to avoid obscuring other information or when wanting to guess the next move.                                                                                                                                 |
-| <kbd>w</kbd> | Show all dots         | Toggles showing coloured evaluation 'dots' on the last few moves or not. You can configure the thresholds, along with how many of the last moves they are shown for under 'Teaching/Analysis Settings'.                                     |
-| <kbd>e</kbd> | Top moves             | Show the next moves KataGo considered, colored by their expected point loss. Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). Hover over any of them to see the principal variation. |
+| <kbd>w</kbd> | Show all dots         | Toggles showing coloured evaluation 'dots' on the last few moves or not. You can configure the thresholds, along with how many of the last moves they are shown for, under 'Teaching/Analysis Settings'.                                     |
+| <kbd>e</kbd> | Top moves             | Show the next moves KataGo considered, colored by their expected point loss. Small/faint dots indicate high uncertainty and never show text (lower than your 'fast visits' setting). Hover over any of them to see the principal variation, which is animated move by move; the speed and length of this animation can be set via 'anim_pv_time' and 'anim_pv_moves' in the general settings. |
 | <kbd>r</kbd> | Policy moves          | Show KataGo's policy network evaluation, i.e. where it thinks the best next move is purely from the position, and in the absence of any 'reading'. This turns off the 'top moves' setting as the overlap is often not useful.               |
 | <kbd>t</kbd> | Expected territory    | Show expected ownership of each intersection.                                                                                                                                                                                               |
 
@@ -184,6 +185,7 @@ In addition to shortcuts mentioned above and those shown in the main menu:
 | <kbd>Alt</kbd>                                 | Open the main menu                                                                   |                                                                                                                                         |
 | <kbd>~</kbd> or <kbd>`</kbd> or <kbd>F12</kbd> | Cycles through more minimalistic UI modes                                            |                                                                                                                                         |
 | <kbd>k</kbd>                                   | Toggle display of board coordinates                                                  |                                                                                                                                         |
+| <kbd>m</kbd>                                   | Toggle display of move numbers                                                       | The default can be set under 'Teaching/Analysis Settings'.                                                                               |
 | <kbd>p</kbd>                                   | Pass                                                                                 |                                                                                                                                         |
 | <kbd>Pause</kbd>                               | Pause/Resume timer                                                                   |                                                                                                                                         |
 | <kbd>←</kbd> or <kbd>z</kbd>                   | Undo move                                                                            | Hold shift for 10 moves at a time, or ctrl to skip to the start.                                                                        |
@@ -227,7 +229,7 @@ A few keyboard shortcuts have special functions in this mode:
 
 ## <a name="themes"></a> Themes
 
-See [these instructions](THEMES.md) for how to modify the look of any graphics or colours, and creating or install themes.
+See [THEMES.md](https://github.com/sanderland/katrain/blob/master/THEMES.md) for how to modify the look of any graphics or colours, and how to create or install themes.
    
 ## <a name="faq"></a> FAQ
 
@@ -245,12 +247,12 @@ See [these instructions](THEMES.md) for how to modify the look of any graphics o
 
 ## <a name="support"></a> Support / Contribute
 
-[![GitHub issues](http://img.shields.io/github/issues/sanderland/katrain)](http://github.com/sanderland/katrain/issues)
-[![Contributors](http://img.shields.io/static/v1?label=contributors&message=<3&color=dcb424)](CONTRIBUTIONS.md)
+[![GitHub issues](https://img.shields.io/github/issues/sanderland/katrain)](https://github.com/sanderland/katrain/issues)
+[![Contributors](https://img.shields.io/static/v1?label=contributors&message=<3&color=dcb424)](https://github.com/sanderland/katrain/blob/master/CONTRIBUTIONS.md)
 
  * Ideas, feedback, and contributions to code or translations are all very welcome.
-    * For suggestions and planned improvements, see [open issues](http://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
-* You can join the [Computer Go Community Discord (formerly Leela Zero & Friends)](http://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation. Please do not use github issues to ask for technical help, this is only for bugs, suggestions and discussing contributions.
+    * For suggestions and planned improvements, see [open issues](https://github.com/sanderland/katrain/issues) on github to check if the functionality is already planned.
+* You can join the [Computer Go Community Discord (formerly Leela Zero & Friends)](https://discord.gg/AjTPFpN) (use the #gui channel) to get help, discuss improvements, or simply show your appreciation. Please do not use github issues to ask for technical help, this is only for bugs, suggestions and discussing contributions.
 
 
 
