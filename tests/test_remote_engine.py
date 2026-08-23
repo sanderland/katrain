@@ -242,3 +242,40 @@ def test_new_game_clears_resend_backlog(monkeypatch, fast_backoff):
         assert all("foo" not in payload for payload in ws2.sent)
     finally:
         engine.shutdown()
+
+
+def test_writer_does_not_hold_the_lock_while_sending(monkeypatch, fast_backoff):
+    """A stalled socket must not freeze is_idle(), which the Kivy main thread polls every update."""
+    release = threading.Event()
+    created = []
+
+    class BlockingWS(FakeWS):
+        def send(self, payload):
+            assert release.wait(timeout=5), "send was never released"
+            super().send(payload)
+
+    def factory(*args, **kwargs):
+        ws = BlockingWS()
+        created.append(ws)
+        return ws
+
+    monkeypatch.setattr(remote_engine, "create_connection", factory)
+
+    katrain = FakeKatrain()
+    engine = RemoteKataGoEngine(katrain, {"remote_url": "ws://test", "allow_recovery": True})
+    try:
+        assert wait_until(lambda: len(created) == 1)
+        engine.send_query({"foo": "bar"}, lambda *a: None, None)
+        # The query is registered under the lock, so the writer is now parked inside send().
+        assert wait_until(lambda: len(engine.queries) == 1)
+        assert not created[0].sent, "send() should still be blocked"
+
+        polled = []
+        poller = threading.Thread(target=lambda: polled.append(engine.is_idle()), daemon=True)
+        poller.start()
+        poller.join(timeout=2)
+        assert not poller.is_alive(), "is_idle() blocked behind the writer's send()"
+        assert polled == [False]
+    finally:
+        release.set()
+        engine.shutdown()

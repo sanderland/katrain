@@ -221,23 +221,24 @@ class RemoteKataGoEngine(KataGoEngine):
     def _resend_outstanding(self):
         """Resume queries that are still registered."""
         with self.thread_lock:
-            payloads = [self.sent_payloads[qid] for qid in self.queries if qid in self.sent_payloads]
-            if not payloads:
+            payloads = [json.dumps(self.sent_payloads[qid]) for qid in self.queries if qid in self.sent_payloads]
+        if not payloads:
+            return
+        self.katrain.log(
+            f"Re-sending {len(payloads)} outstanding queries after reconnect",
+            OUTPUT_INFO,
+        )
+        # Serialized above so the sends, which block, happen without thread_lock held.
+        for payload in payloads:
+            ws = self.ws
+            if ws is None:
                 return
-            self.katrain.log(
-                f"Re-sending {len(payloads)} outstanding queries after reconnect",
-                OUTPUT_INFO,
-            )
-            for query in payloads:
-                ws = self.ws
-                if ws is None:
-                    return
-                try:
-                    with self.ws_send_lock:
-                        ws.send(json.dumps(query))
-                except Exception as e:
-                    self.katrain.log(f"Failed to re-send query after reconnect: {e}", OUTPUT_ERROR)
-                    return
+            try:
+                with self.ws_send_lock:
+                    ws.send(payload)
+            except Exception as e:
+                self.katrain.log(f"Failed to re-send query after reconnect: {e}", OUTPUT_ERROR)
+                return
 
     def _set_status(self, message):
         try:
@@ -312,7 +313,8 @@ class RemoteKataGoEngine(KataGoEngine):
                 )
             except queue.Empty:
                 continue
-            with self.thread_lock:
+            payload = tag = None
+            with self.thread_lock:  # bookkeeping only -- the blocking send happens outside the lock
                 if self._closing or conn_id != self._conn_id:
                     self.write_queue.put((query, callback, error_callback, next_move, node, generation))
                     return
@@ -323,6 +325,7 @@ class RemoteKataGoEngine(KataGoEngine):
                     query["id"] = f"QUERY:{self.query_counter}"
 
                 ponder = query.pop(self.PONDER_KEY, False)
+                send = True
                 if ponder:
                     pq = self.ponder_query or {}
                     differences = {
@@ -338,38 +341,41 @@ class RemoteKataGoEngine(KataGoEngine):
                         query["reportDuringSearchEvery"] = PONDERING_REPORT_DT
                         self.ponder_query = query
                     else:
-                        continue
+                        send = False
 
-                terminate = query.get("action") == "terminate"
-                if not terminate:
-                    self.queries[query["id"]] = (
-                        callback,
-                        error_callback,
-                        time.time(),
-                        next_move,
-                        node,
-                    )
-                    self.sent_payloads[query["id"]] = query
-                tag = "ponder " if ponder else ("terminate " if terminate else "")
-                self.katrain.log(
-                    f"Sending {tag}query {query['id']}: {json.dumps(query)}",
-                    OUTPUT_DEBUG,
-                )
-                try:
+                if send:
+                    terminate = query.get("action") == "terminate"
+                    if not terminate:
+                        self.queries[query["id"]] = (
+                            callback,
+                            error_callback,
+                            time.time(),
+                            next_move,
+                            node,
+                        )
+                        self.sent_payloads[query["id"]] = query
+                    tag = "ponder " if ponder else ("terminate " if terminate else "")
                     payload = json.dumps(query)
-                    with self.ws_send_lock:
-                        ws.send(payload)
-                except WebSocketException as e:
-                    self._handle_disconnect(os_error=str(e), conn_id=conn_id)
-                    return
-                except Exception as e:
-                    self.katrain.log(
-                        f"Unexpected exception sending to remote KataGo: {e}",
-                        OUTPUT_ERROR,
-                    )
-                    traceback.print_exc()
-                    self._handle_disconnect(os_error=str(e), conn_id=conn_id)
-                    return
+
+            if payload is None:  # a pondering query for this position is already running
+                continue
+            # Sending under thread_lock would stall every other user of it -- including the Kivy
+            # main thread, which polls is_idle() -- for as long as the socket blocks.
+            self.katrain.log(f"Sending {tag}query {query['id']}: {payload}", OUTPUT_DEBUG)
+            try:
+                with self.ws_send_lock:
+                    ws.send(payload)
+            except WebSocketException as e:
+                self._handle_disconnect(os_error=str(e), conn_id=conn_id)
+                return
+            except Exception as e:
+                self.katrain.log(
+                    f"Unexpected exception sending to remote KataGo: {e}",
+                    OUTPUT_ERROR,
+                )
+                traceback.print_exc()
+                self._handle_disconnect(os_error=str(e), conn_id=conn_id)
+                return
 
     def _analysis_read_thread(self, conn_id):
         """Read responses from one connection."""
