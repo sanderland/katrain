@@ -31,7 +31,7 @@
         "anim_pv_moves": 100,
         "debug_level": 0,
         "lang": "en",
-        "version": "1.19.1",
+        "version": "1.20.0",
         "load_fast_analysis": false,
         "load_sgf_rewind": true
     },
