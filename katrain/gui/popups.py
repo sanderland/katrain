@@ -749,8 +749,10 @@ class BaseConfigPopup(QuickConfigGui):
             self.check_katas()
 
         for c in self.katago_download_progress_box.children:
-            if isinstance(c, ProgressLoader) and c.request:
-                c.request.cancel()
+            if isinstance(c, ProgressLoader):
+                c.stop_spinner()  # the box is about to be cleared, and its animation would outlive it
+                if c.request:
+                    c.request.cancel()
         self.katago_download_progress_box.clear_widgets()
         downloading = False
         for name, url in self.KATAGOS.get(platform, {}).items():
