@@ -181,7 +181,7 @@ requires-dist = [
     { name = "ffpyplayer", specifier = ">=4.5.1" },
     { name = "kivy", specifier = ">=2.3.1" },
     { name = "pygame", marker = "sys_platform == 'darwin'", specifier = "~=2.0" },
-    { name = "pysgf", git = "https://github.com/sanderland/pysgf.git?rev=claude%2Fkatrain-latest-fixes-port-0bt9kl" },
+    { name = "pysgf", specifier = ">=1.0.0,<2" },
     { name = "screeninfo", marker = "sys_platform != 'darwin'", specifier = ">=0.8.1,<0.9" },
     { name = "urllib3", specifier = ">=2.2.2" },
     { name = "websocket-client", specifier = ">=1.9.0" },
@@ -398,9 +398,13 @@ wheels = [
 [[package]]
 name = "pysgf"
 version = "1.0.0"
-source = { git = "https://github.com/sanderland/pysgf.git?rev=claude%2Fkatrain-latest-fixes-port-0bt9kl#128402f8d942171929fc0324c59782d037aa246f" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "chardet" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fd/71/267ae49b0d4b7ec94e22158d578d76dfcb35cad806c702c3591501f27bd6/pysgf-1.0.0.tar.gz", hash = "sha256:69243149a92c3fda32d3f84edf47f0171e5d77478d4f2397fef380e1d1c09fac", size = 62609, upload-time = "2026-08-21T09:14:49.896Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/dd/19/e9f0e42cd54349a8f24f0a00c820accfdce1aa2304e88557c6dae9a1e099/pysgf-1.0.0-py3-none-any.whl", hash = "sha256:57a47ef242a8bf18c914d7e5355fe040216cc409bc53c441d3e7143bda17001e", size = 9154, upload-time = "2026-08-21T09:14:49.061Z" },
 ]
 
 [[package]]

@@ -27,8 +27,7 @@ dependencies = [
     "kivy>=2.3.1",
     "websocket-client>=1.9.0",
     "certifi>=2026.2.25",
-    # TODO: point at a pysgf release once the v1 branch is published to PyPI
-    "pysgf @ git+https://github.com/sanderland/pysgf.git@claude/katrain-latest-fixes-port-0bt9kl",
+    "pysgf>=1.0.0,<2",
 ]
 
 [project.urls]
@@ -64,9 +63,6 @@ select = ["E4", "E7", "E9", "F", "I", "RUF100"]
 # Kivy's config has to be set before kivy submodules are imported, so module-level
 # imports legitimately appear after code in the GUI entry points.
 ignore = ["E402"]
-
-[tool.hatch.metadata]
-allow-direct-references = true  # for the pysgf git dependency, remove with the TODO above
 
 [tool.hatch.build.targets.sdist]
 include = ["katrain"]
