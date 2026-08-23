@@ -234,6 +234,10 @@ def generate_local_tenuki_weights(ai_mode, ai_settings, policy_grid, cn, size):
     return weighted_coords, ai_thoughts
 
 
+class AnalysisDiscardedException(Exception):
+    """The analysis a strategy was waiting for was thrown away, so there is nothing left to wait for."""
+
+
 class AIStrategy(ABC):
     """Base strategy class for AI move generation"""
 
@@ -242,12 +246,22 @@ class AIStrategy(ABC):
         self.settings = ai_settings
         self.cn = game.current_node
         self.strategy_name = self.__class__.__name__
+        # A new game or an engine restart discards outstanding queries without calling back, so
+        # remember which generation our work belongs to and stop waiting once the engine moves past it.
+        self.query_generations = {bw: engine.query_generation for bw, engine in game.engines.items()}
         self.game.katrain.log(f"Initializing {self.strategy_name} with settings: {self.settings}", OUTPUT_DEBUG)
 
     @abstractmethod
     def generate_move(self) -> Tuple[Move, str]:
         """Generate a move and explanation"""
         pass
+
+    def raise_if_discarded(self, engine, player):
+        """Abort if the engine threw our queries away -- nothing will ever call back for them."""
+        if engine.query_generation != self.query_generations.get(player, engine.query_generation):
+            raise AnalysisDiscardedException(
+                f"analysis for {self.strategy_name} discarded by a new game or an engine restart"
+            )
 
     def request_analysis(self, extra_settings: Dict) -> Optional[Dict]:
         """Helper to request additional analysis with custom settings"""
@@ -278,8 +292,11 @@ class AIStrategy(ABC):
             extra_settings=extra_settings,
         )
         self.game.katrain.log(f"[{self.strategy_name}] Waiting for analysis to complete...", OUTPUT_DEBUG)
-        while not (error or analysis):
-            time.sleep(0.01)  # TODO: prevent deadlock if esc, check node in queries?
+        while True:
+            self.raise_if_discarded(engine, self.cn.player)
+            if error or analysis:
+                break
+            time.sleep(0.01)
             engine.check_alive(exception_if_dead=True)
 
         if analysis:
@@ -289,9 +306,11 @@ class AIStrategy(ABC):
     def wait_for_analysis(self):
         """Wait for the analysis to complete"""
         self.game.katrain.log(f"[{self.strategy_name}] Waiting for regular analysis to complete...", OUTPUT_DEBUG)
+        engine = self.game.engines[self.cn.next_player]
         while not self.cn.analysis_complete:
+            self.raise_if_discarded(engine, self.cn.next_player)
             time.sleep(0.01)
-            self.game.engines[self.cn.next_player].check_alive(exception_if_dead=True)
+            engine.check_alive(exception_if_dead=True)
         self.game.katrain.log(f"[{self.strategy_name}] Regular analysis completed", OUTPUT_DEBUG)
 
     def should_play_top_move(self, policy_moves, top_5_pass, override=0.0, overridetwo=1.0):
@@ -1620,9 +1639,10 @@ class HumanStyleStrategy(AIStrategy):
 
         # Wait for analysis to complete
         wait_count = 0
-        while not (error or analysis):
-            import time
-
+        while True:
+            self.raise_if_discarded(engine, self.cn.player)
+            if error or analysis:
+                break
             time.sleep(0.01)
             wait_count += 1
             if wait_count % 100 == 0:  # Log every 1 second
@@ -1716,7 +1736,7 @@ class HumanStyleStrategy(AIStrategy):
         return move, ai_thoughts
 
 
-def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move, Optional[GameNode]]:
+def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Optional[Move], Optional[GameNode]]:
     """Generate a move using the selected AI strategy"""
     # Custom configs may refer to a removed strategy.
     strategy_class = STRATEGY_REGISTRY.get(ai_mode)
@@ -1726,7 +1746,11 @@ def generate_ai_move(game: Game, ai_mode: str, ai_settings: Dict) -> Tuple[Move,
     strategy = strategy_class(game, ai_settings)
 
     game.katrain.log(f"Generating move using {strategy.__class__.__name__} (mode {ai_mode})", OUTPUT_DEBUG)
-    move, ai_thoughts = strategy.generate_move()
+    try:
+        move, ai_thoughts = strategy.generate_move()
+    except AnalysisDiscardedException as e:
+        game.katrain.log(f"Discarding AI move: {e}", OUTPUT_DEBUG)
+        return None, None
 
     played_node = game.play(move, expected_node=strategy.cn)
     if played_node is None:

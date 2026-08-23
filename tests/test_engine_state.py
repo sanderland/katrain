@@ -2,9 +2,11 @@
 
 import queue
 import threading
+import time
 
 import pytest
 
+from katrain.core.ai import STRATEGY_REGISTRY, AIStrategy, AnalysisDiscardedException, generate_ai_move
 from katrain.core.base_katrain import KaTrainBase
 from katrain.core.engine import BaseEngine, KataGoEngine
 from katrain.core.game import BaseGame, Game, IllegalMoveException, Move
@@ -164,3 +166,76 @@ class TestGameLocking:
         expected = BaseGame(katrain, move_tree=game.root)
         expected.set_current_node(game.current_node)
         assert set(expected.stones) == set(game.stones)
+
+
+class FakeNode:
+    """Just the bits of GameNode that the AI wait loops read."""
+
+    def __init__(self):
+        self.analysis_complete = False
+        self.player = "B"
+        self.next_player = "W"
+
+
+class FakeGame:
+    def __init__(self, katrain, engine, node):
+        self.katrain = katrain
+        self.engines = {"B": engine, "W": engine}
+        self.current_node = node
+
+
+class WaitingStrategy(AIStrategy):
+    def generate_move(self):
+        self.wait_for_analysis()
+        return Move.from_gtp("D4", player="B"), "analysis arrived"
+
+
+class TestDiscardedAnalysis:
+    """A discarded query never calls back, so waiting on one has to end by itself."""
+
+    def strategy(self, katrain):
+        engine = StubEngine(katrain)
+        return engine, WaitingStrategy(FakeGame(katrain, engine, FakeNode()), {})
+
+    def test_wait_for_analysis_aborts_after_new_game(self, katrain):
+        engine, strategy = self.strategy(katrain)
+        engine.on_new_game()  # bumps query_generation, discarding outstanding work
+        with pytest.raises(AnalysisDiscardedException):
+            strategy.wait_for_analysis()
+
+    def test_wait_for_analysis_aborts_after_restart(self, katrain):
+        engine, strategy = self.strategy(katrain)
+        engine.start = lambda: None
+        engine.restart()
+        with pytest.raises(AnalysisDiscardedException):
+            strategy.wait_for_analysis()
+
+    def test_wait_for_analysis_does_not_abort_while_the_query_still_stands(self, katrain):
+        _engine, strategy = self.strategy(katrain)
+        node = strategy.cn
+
+        def complete_analysis():
+            time.sleep(0.05)
+            node.analysis_complete = True
+
+        threading.Thread(target=complete_analysis, daemon=True).start()
+        done = threading.Event()
+        threading.Thread(target=lambda: (strategy.wait_for_analysis(), done.set()), daemon=True).start()
+        assert done.wait(timeout=5), "wait_for_analysis did not return once the analysis completed"
+
+    def test_generate_ai_move_gives_up_instead_of_raising(self, katrain, monkeypatch):
+        """The discard lands while the move is being generated -- the interleaving that used to wedge."""
+        engine, strategy = self.strategy(katrain)
+        monkeypatch.setitem(STRATEGY_REGISTRY, "test:waiting", WaitingStrategy)
+
+        result = []
+        done = threading.Event()
+        threading.Thread(
+            target=lambda: (result.append(generate_ai_move(strategy.game, "test:waiting", {})), done.set()),
+            daemon=True,
+        ).start()
+        time.sleep(0.05)  # let it reach the wait loop
+        engine.on_new_game()
+
+        assert done.wait(timeout=5), "generate_ai_move kept waiting for analysis that was discarded"
+        assert [(None, None)] == result
