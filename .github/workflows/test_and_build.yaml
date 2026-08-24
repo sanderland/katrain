@@ -29,7 +29,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get project version
         id: version
@@ -44,7 +44,7 @@ jobs:
         python-version: ['3.11', '3.12', '3.13']
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Setup Python and uv
       uses: ./.github/actions/setup-python-uv
@@ -68,7 +68,7 @@ jobs:
       KATRAIN_VERSION: ${{ needs.prepare.outputs.version }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Setup Python, uv
       uses: ./.github/actions/setup-python-uv
@@ -98,7 +98,7 @@ jobs:
       shell: powershell
 
     - name: Upload Windows artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: KaTrainWindows-${{ env.KATRAIN_VERSION }}
         path: windows_exe
@@ -120,12 +120,10 @@ jobs:
       KATRAIN_VERSION: ${{ needs.prepare.outputs.version }}
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Setup Python, uv, and PyInstaller
       uses: ./.github/actions/setup-python-uv
-      with:
-        install-pyinstaller: 'true'
 
     - name: Install macOS dependencies
       run: |
@@ -167,7 +165,7 @@ jobs:
         mv "KaTrain-${{ env.KATRAIN_VERSION }}-${{ matrix.arch }}.dmg" osx_app/
 
     - name: Upload macOS artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: KaTrainMacOS-${{ env.KATRAIN_VERSION }}-${{ matrix.arch }}
         path: osx_app
@@ -179,7 +177,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_pypi == 'true'
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Setup Python and uv
       uses: ./.github/actions/setup-python-uv
@@ -205,14 +203,14 @@ jobs:
       contents: write # Required for softprops/action-gh-release
     steps:
     - name: Download all build artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         path: ./artifacts
         pattern: KaTrain*
         merge-multiple: true
 
     - name: Create Draft Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         tag_name: "v${{ needs.prepare.outputs.version }}"
         name: "KaTrain v${{ needs.prepare.outputs.version }}"
