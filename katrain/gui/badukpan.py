@@ -310,7 +310,7 @@ class BadukPanWidget(Widget):
 
         if depth:
             text = str(depth)
-            Color(*Theme.NUMBER_COLOR)
+            Color(*Theme.MOVE_NUMBER_COLORS[player])
             draw_text(pos=self.gridpos[y][x], text=text, font_size=self.stone_size * 0.9, font_name="Roboto")
 
     def eval_color(self, points_lost, show_dots_for_class: List[bool] = None) -> Optional[List[float]]:
