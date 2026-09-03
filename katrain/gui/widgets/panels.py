@@ -121,6 +121,10 @@ class PlayerInfo(BoxLayout, BackgroundMixin):
         super().__init__(**kwargs)
         self.bind(player_type=self.set_label, player_subtype=self.set_label, name=self.set_label, rank=self.set_label)
 
+    def on_kv_post(self, _base_widget):
+        """Render the initial player label after its KV child exists."""
+        self.set_label()
+
     def set_label(self, *_args):
         """Show the player's name where we have one, and otherwise what they are."""
         if not self.subtype_label:  # building

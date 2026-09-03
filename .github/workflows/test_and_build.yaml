@@ -98,7 +98,7 @@ jobs:
       shell: powershell
 
     - name: Upload Windows artifacts
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: KaTrainWindows-${{ env.KATRAIN_VERSION }}
         path: windows_exe
@@ -127,9 +127,11 @@ jobs:
 
     - name: Install macOS dependencies
       run: |
-        brew update
-        brew install libzip ninja protobuf abseil
-        brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
+        # Use the hosted image's internally consistent Homebrew state. Updating
+        # can upgrade unrelated dependencies (notably openssl@3) and fail in
+        # their post-install hooks.
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install libzip ninja protobuf abseil
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
 
     - name: Build KataGo
       run: |
@@ -140,6 +142,11 @@ jobs:
         cmake --build . -j$(sysctl -n hw.ncpu)
         cp katago ../../katrain/katrain/KataGo/katago-osx
         popd
+
+    - name: Stage standalone KataGo
+      run: |
+        mkdir -p katago_artifact
+        cp katrain/KataGo/katago-osx "katago_artifact/KaTrain-KataGo-${{ env.KATRAIN_VERSION }}-macos-${{ matrix.arch }}"
 
     - name: Build app with PyInstaller
       env:
@@ -165,10 +172,16 @@ jobs:
         mv "KaTrain-${{ env.KATRAIN_VERSION }}-${{ matrix.arch }}.dmg" osx_app/
 
     - name: Upload macOS artifacts
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: KaTrainMacOS-${{ env.KATRAIN_VERSION }}-${{ matrix.arch }}
         path: osx_app
+
+    - name: Upload standalone KataGo binary
+      uses: actions/upload-artifact@v6
+      with:
+        name: KaTrainKataGo-${{ env.KATRAIN_VERSION }}-macos-${{ matrix.arch }}
+        path: katago_artifact/KaTrain-KataGo-${{ env.KATRAIN_VERSION }}-macos-${{ matrix.arch }}
 
   # This job publishes the package to PyPI.
   publish-pypi:
@@ -203,7 +216,7 @@ jobs:
       contents: write # Required for softprops/action-gh-release
     steps:
     - name: Download all build artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v7
       with:
         path: ./artifacts
         pattern: KaTrain*
@@ -222,6 +235,7 @@ jobs:
           - **Windows**: Download the `.exe` files or `.zip` folders.
           - **macOS (Apple Silicon)**: Download the `arm64` `.dmg` file.
           - **macOS (Intel)**: Download the `x86_64` `.dmg` file.
+          - **Standalone KataGo for macOS**: Download the flat binary matching your Mac's architecture.
         files: ./artifacts/*
         draft: true
         prerelease: false

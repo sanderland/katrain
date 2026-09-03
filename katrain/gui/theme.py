@@ -115,7 +115,7 @@ class Theme:
     PASS_CIRCLE_TEXT_COLOR = [0.85, 0.85, 0.85]
 
     STONE_COLORS = {"B": BLACK, "W": WHITE}
-    NUMBER_COLOR = [0.85, 0.68, 0.40, 0.8]
+    MOVE_NUMBER_COLORS = {"B": [1, 1, 1, 1], "W": [0, 0, 0, 1]}
 
     NEXT_MOVE_DASH_CONTRAST_COLORS = {"B": LIGHTER_GREY, "W": GREY}
     OUTLINE_COLORS = {"B": [0.3, 0.3, 0.3, 0.5], "W": [0.7, 0.7, 0.7, 0.5]}
