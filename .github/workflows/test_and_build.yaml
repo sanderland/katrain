@@ -133,8 +133,8 @@ jobs:
         brew update
         # Do not upgrade preinstalled formulae: upgrades can fail in unrelated
         # post-install hooks (notably openssl@3) after our dependencies exist.
-        brew install --no-upgrade libzip ninja protobuf abseil
-        brew install --no-upgrade --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
+        HOMEBREW_NO_INSTALL_UPGRADE=1 brew install libzip ninja protobuf abseil
+        HOMEBREW_NO_INSTALL_UPGRADE=1 brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
 
     - name: Build KataGo
       run: |
