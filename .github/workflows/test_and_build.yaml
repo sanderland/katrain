@@ -178,9 +178,13 @@ jobs:
       uses: actions/upload-artifact@v6
       with:
         name: KaTrainMacOS-${{ env.KATRAIN_VERSION }}-${{ matrix.arch }}
-        path: |
-          osx_app
-          katago_artifact
+        path: osx_app
+
+    - name: Upload standalone KataGo binary
+      uses: actions/upload-artifact@v6
+      with:
+        name: KaTrainKataGo-${{ env.KATRAIN_VERSION }}-macos-${{ matrix.arch }}
+        path: katago_artifact/KaTrain-KataGo-${{ env.KATRAIN_VERSION }}-macos-${{ matrix.arch }}
 
   # This job publishes the package to PyPI.
   publish-pypi:
