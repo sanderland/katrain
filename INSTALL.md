@@ -15,7 +15,7 @@
 
 You can find downloadable macOS installers [on the releases page](https://github.com/sanderland/katrain/releases). Recent releases include both Intel (`KaTrain-*-x86_64.dmg`) and Apple Silicon (`KaTrain-*-arm64.dmg`) installers, so download the one matching your Mac. Mount the `.dmg` and drag the `.app` to your Applications folder.
 
-Each release also includes the bundled KataGo binary as `KaTrain-KataGo-*-macos-<arch>.tar.gz`, for use outside the app. Extract the archive with `tar -xzf <archive>` and choose the extracted `katago-osx` file under General & Engine Settings.
+Each release also includes the bundled KataGo binary as the flat file `KaTrain-KataGo-*-macos-<arch>`, for use outside the app. If macOS marks the downloaded file as non-executable, run `chmod +x <file>` and choose it under General & Engine Settings.
 
 There is also a [Homebrew](https://brew.sh/) cask: `brew install katrain` downloads and installs a pre-built .app, but note that the cask can lag several versions behind the releases page.
 
