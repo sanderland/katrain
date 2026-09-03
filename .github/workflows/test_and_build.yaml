@@ -127,14 +127,11 @@ jobs:
 
     - name: Install macOS dependencies
       run: |
-        # aws/tap is preconfigured on some hosted runners but is irrelevant here;
-        # remove it before updating Homebrew to avoid its trust warning.
-        brew untap aws/tap 2>/dev/null || true
-        brew update
-        # Do not upgrade preinstalled formulae: upgrades can fail in unrelated
-        # post-install hooks (notably openssl@3) after our dependencies exist.
-        HOMEBREW_NO_INSTALL_UPGRADE=1 brew install libzip ninja protobuf abseil
-        HOMEBREW_NO_INSTALL_UPGRADE=1 brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
+        # Use the hosted image's internally consistent Homebrew state. Updating
+        # can upgrade unrelated dependencies (notably openssl@3) and fail in
+        # their post-install hooks.
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install libzip ninja protobuf abseil
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
 
     - name: Build KataGo
       run: |
