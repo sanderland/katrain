@@ -129,7 +129,11 @@ jobs:
       run: |
         brew update
         brew install libzip ninja protobuf abseil
-        brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer
+        # Homebrew can return 1 for an unrelated openssl@3 post-install failure
+        # after all SDL formulae have been installed. Verify the actual build
+        # dependencies before accepting that result.
+        brew install --build-from-source sdl2 sdl2_image sdl2_ttf sdl2_mixer || \
+          brew list --versions sdl2 sdl2_image sdl2_ttf sdl2_mixer
 
     - name: Build KataGo
       run: |
