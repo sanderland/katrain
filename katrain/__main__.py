@@ -5,6 +5,11 @@ import os
 import sys
 
 os.environ["KCFG_KIVY_LOG_LEVEL"] = os.environ.get("KCFG_KIVY_LOG_LEVEL", "warning")
+# ffpyplayer and Kivy bundle incompatible SDL2 copies on macOS. The packaged
+# app already excludes ffpyplayer, so use the same SDL2 audio provider locally.
+if sys.platform == "darwin":
+    os.environ.setdefault("KIVY_AUDIO", "sdl2,avplayer")
+    os.environ.setdefault("KIVY_IMAGE", "tex,imageio,dds,sdl2,pil,gif")
 
 from kivy.utils import platform as kivy_platform
 
