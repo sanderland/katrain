@@ -141,6 +141,11 @@ jobs:
         cp katago ../../katrain/katrain/KataGo/katago-osx
         popd
 
+    - name: Package standalone KataGo
+      run: |
+        mkdir -p katago_artifact
+        tar -C katrain/KataGo -czf "katago_artifact/KaTrain-KataGo-${{ env.KATRAIN_VERSION }}-macos-${{ matrix.arch }}.tar.gz" katago-osx
+
     - name: Build app with PyInstaller
       env:
         KIVY_HEADLESS: 1
@@ -168,7 +173,9 @@ jobs:
       uses: actions/upload-artifact@v5
       with:
         name: KaTrainMacOS-${{ env.KATRAIN_VERSION }}-${{ matrix.arch }}
-        path: osx_app
+        path: |
+          osx_app
+          katago_artifact
 
   # This job publishes the package to PyPI.
   publish-pypi:
@@ -222,6 +229,7 @@ jobs:
           - **Windows**: Download the `.exe` files or `.zip` folders.
           - **macOS (Apple Silicon)**: Download the `arm64` `.dmg` file.
           - **macOS (Intel)**: Download the `x86_64` `.dmg` file.
+          - **Standalone KataGo for macOS**: Download the `.tar.gz` matching your Mac's architecture.
         files: ./artifacts/*
         draft: true
         prerelease: false
