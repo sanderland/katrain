@@ -7,6 +7,7 @@
         "model": "katrain/models/b10c384h6nbttflrs.bin.gz",
         "humanlike_model": "",
         "config": "katrain/KataGo/analysis_config.cfg",
+        "max_board_size": 0,
         "max_visits": 500,
         "fast_visits": 25,
         "max_time": 8.0,

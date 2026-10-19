@@ -59,6 +59,7 @@ class BaseEngine:  # some common elements between analysis and contribute engine
     def __init__(self, katrain, config):
         self.katrain = katrain
         self.config = config
+        self.nn_buffer_size = 0  # board size the NN buffers were limited to (max_board_size), 0 = KataGo default
 
     @staticmethod
     def get_rules(ruleset):
@@ -157,6 +158,20 @@ class KataGoEngine(BaseEngine):
                 "-override-config",
                 f"homeDataDir={os.path.expanduser(DATA_FOLDER)}",
             ]
+            max_board_size = config.get("max_board_size", 0)
+            if max_board_size:
+                if isinstance(max_board_size, int) and 2 <= max_board_size <= 19:
+                    # KataGo sizes its neural net buffers for 19x19 unless told otherwise, even when only smaller
+                    # boards are played, so shrinking them makes analysis on small boards much cheaper.
+                    self.nn_buffer_size = max_board_size
+                    self.command += [
+                        "-override-config",
+                        f"maxBoardXSizeForNNBuffer={max_board_size},maxBoardYSizeForNNBuffer={max_board_size}",
+                    ]
+                else:
+                    self.katrain.log(
+                        f"Ignoring engine max_board_size {max_board_size!r}: expected 2 to 19", OUTPUT_ERROR
+                    )
         self.start()
 
     def on_error(self, message, code=None, allow_popup=True):
@@ -455,6 +470,15 @@ class KataGoEngine(BaseEngine):
         include_policy=True,
         report_every: Optional[float] = None,
     ):
+        size_x, size_y = analysis_node.board_size
+        if self.nn_buffer_size and max(size_x, size_y) > self.nn_buffer_size:
+            # KataGo never answers such a query, it only logs an error, so don't wait for a response
+            self.katrain.log(
+                f"Not analyzing a {size_x}x{size_y} board: engine max_board_size is {self.nn_buffer_size}",
+                OUTPUT_ERROR,
+            )
+            return
+
         nodes = analysis_node.nodes_from_root
         moves = [m for node in nodes for m in node.moves]
         initial_stones = [m for node in nodes for m in node.placements]
@@ -472,8 +496,6 @@ class KataGoEngine(BaseEngine):
             visits = self.config["max_visits"]
             if analyze_fast and self.config.get("fast_visits"):
                 visits = self.config["fast_visits"]
-
-        size_x, size_y = analysis_node.board_size
 
         if find_alternatives:
             avoid = [

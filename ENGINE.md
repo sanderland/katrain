@@ -8,6 +8,7 @@ If you find your problem is not in here, you can ask on the [Computer Go Communi
 * [General](#General)
     * [GPU vs CPU](#CPU)
     * [KataGo model versions](#Models)
+    * [Faster analysis on smaller boards](#SmallBoards)
 * [macOS specific help](#Mac)
 * [Windows specific help](#Windows)
 * [Linux specific help](#Linux)
@@ -38,6 +39,17 @@ The binaries offered under 'Download KataGo versions' are all recent enough, but
  KataGo binary of your own, either upgrade it or select an older model, such as one of
  the distributed training models available under 'Download models'.
 
+
+###  <a name="SmallBoards"></a> Faster analysis on smaller boards
+
+By default KataGo sizes its neural network buffers for a 19x19 board, so analysing a 9x9 game costs the same as
+analysing a 19x19 one. If you only play smaller boards, tell KaTrain the largest board you will use by setting
+`max_board_size` in the `engine` section of your `config.json`, for example `"max_board_size": 9`.
+This makes analysis on small boards noticeably faster, most visibly on weaker GPUs and when analysing a whole game.
+
+Boards larger than `max_board_size` can then no longer be analysed, so set it back to `0` (the default, which leaves
+the choice to KataGo) before loading a larger game. If you use your own KataGo config file, the equivalent settings are
+`maxBoardXSizeForNNBuffer` and `maxBoardYSizeForNNBuffer`.
 
 ## <a name="Mac"></a><img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Apple_Logo.svg" alt="macOs" height="35"/> For macOS users
 
