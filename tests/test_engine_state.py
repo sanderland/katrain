@@ -44,6 +44,46 @@ def katrain():
     return MockKaTrain(force_package_config=True, debug_level=0)
 
 
+class TestNNBufferArgs:
+    """The optional engine/max_board_size setting shrinks KataGo's neural net buffers on the command line."""
+
+    @pytest.fixture
+    def launch(self, katrain, monkeypatch):
+        monkeypatch.setattr(KataGoEngine, "start", lambda self: None)
+        monkeypatch.setattr(KataGoEngine, "get_engine_path", lambda self, exe: "katago")
+
+        def make(**extra):
+            return KataGoEngine(katrain, {"model": "m.bin.gz", "config": "c.cfg", **extra}).command
+
+        return make
+
+    def test_unset_leaves_katago_config_in_charge(self, launch):
+        assert not any("NNBuffer" in arg for arg in launch())
+        assert not any("NNBuffer" in arg for arg in launch(max_board_size=0))
+
+    def test_small_board_shrinks_nn_buffers(self, launch):
+        command = launch(max_board_size=9)
+        assert command[-2:] == ["-override-config", "maxBoardXSizeForNNBuffer=9,maxBoardYSizeForNNBuffer=9"]
+        assert any(arg.startswith("homeDataDir=") for arg in command)  # the existing override is untouched
+
+    @pytest.mark.parametrize("invalid", [1, 20, -9, "9", 9.0])
+    def test_invalid_size_is_ignored(self, launch, invalid):
+        assert not any("NNBuffer" in arg for arg in launch(max_board_size=invalid))
+
+    def test_oversized_board_is_not_sent_to_the_engine(self, katrain):
+        # KataGo never answers a query for a board larger than its NN buffers, so KaTrain must not wait for one.
+        engine = StubEngine(katrain)
+        engine.nn_buffer_size = 9
+        sent = []
+        engine.send_query = lambda *args, **kwargs: sent.append(args)
+        engine.request_analysis(GameNode(properties={"SZ": 19}), lambda *args: None)
+        assert not sent
+        engine.override_settings = {}
+        engine.config = {"max_visits": 1, "wide_root_noise": 0, "max_time": 1, "_enable_ownership": False}
+        engine.request_analysis(GameNode(properties={"SZ": 9}), lambda *args: None)
+        assert len(sent) == 1
+
+
 class TestEngineErrors:
     def test_base_on_error_accepts_shared_call_signature(self, katrain):
         engine = BaseEngine(katrain, {})
