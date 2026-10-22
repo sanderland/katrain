@@ -37,7 +37,7 @@ from katrain.core.constants import (
 )
 from katrain.core.engine import resolve_engine_backend
 from katrain.core.lang import i18n, rank_label
-from katrain.core.utils import PATHS, find_package_resource
+from katrain.core.utils import PATHS, find_package_resource, is_plain_filename
 from katrain.gui.theme import Theme
 from katrain.gui.widgets.base import BackgroundMixin
 from katrain.gui.widgets.inputs import I18NSpinner
@@ -733,6 +733,9 @@ class BaseConfigPopup(QuickConfigGui):
                             os.chmod(path, os.stat(path).st_mode | stat.S_IXUSR | stat.S_IXGRP)
                         for f in zipObj.namelist():
                             if f.lower().endswith("dll"):
+                                if not is_plain_filename(f):
+                                    self.katrain.log(f"Skipping {f} in {tmp_path}: not a plain file name", OUTPUT_ERROR)
+                                    continue
                                 try:
                                     with open(os.path.join(os.path.split(path)[0], f), "wb") as fout:
                                         fout.write(zipObj.read(f))

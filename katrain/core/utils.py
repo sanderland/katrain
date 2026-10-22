@@ -54,6 +54,11 @@ def find_package_resource(path, silent_errors=False):
         return str(Path(path).expanduser().absolute())
 
 
+def is_plain_filename(name: str) -> bool:
+    """True if name has no directory, drive or parent part, so joining it to a folder stays in that folder."""
+    return name not in ("", ".", "..") and not any(c in name for c in "/\\:")
+
+
 def pack_floats(float_list):
     if float_list is None:
         return b""
