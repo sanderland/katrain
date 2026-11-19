@@ -191,9 +191,7 @@ class BaseGame:
         # suicide: check rules and throw exception if needed
         if -1 not in neighbours(self.chains[this_chain]):
             rules = self.rules
-            if len(self.chains[this_chain]) == 1:  # even in new zealand rules, single stone suicide is not allowed
-                raise IllegalMoveException("Single stone suicide")
-            elif (isinstance(rules, str) and rules in ["tromp-taylor", "new zealand"]) or (
+            if (isinstance(rules, str) and rules in ["tromp-taylor", "new zealand"]) or (
                 isinstance(rules, dict) and rules.get("suicide", False)
             ):
                 self.last_capture += self.chains[this_chain]
@@ -201,6 +199,8 @@ class BaseGame:
                     self.board[om.coords[1]][om.coords[0]] = -1
                 self.chains[this_chain] = []
                 self.prisoners += self.last_capture
+            elif len(self.chains[this_chain]) == 1:
+                raise IllegalMoveException("Single stone suicide")
             else:  # suicide not allowed by rules
                 raise IllegalMoveException("Suicide")
 
