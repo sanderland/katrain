@@ -616,7 +616,7 @@ class Game(BaseGame):
             move_range = kwargs.get("move_range", None)
             if move_range:
                 if move_range[1] < move_range[0]:
-                    move_range = reversed(move_range)
+                    move_range = move_range[::-1]
             threshold = self.katrain.config("trainer/eval_thresholds")[-4]
             if "visits" in kwargs:
                 visits = kwargs["visits"]
