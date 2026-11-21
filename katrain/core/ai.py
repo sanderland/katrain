@@ -111,7 +111,7 @@ def game_report(game, thresholds, depth_filter=None):
     cn = game.current_node
     nodes = cn.nodes_from_root
     while cn.children:  # main branch
-        cn = cn.children[0]
+        cn = cn.ordered_children[0]
         nodes.append(cn)
 
     x, y = game.board_size
